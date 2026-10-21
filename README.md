@@ -1,308 +1,122 @@
-# 🔥 PHOENIX UI 🔥
+<p align="center">
+  <img src="docs/screenshots/home.png" alt="Phoenix UI settings window" width="860">
+</p>
 
-> *"Rise from the ashes of ordinary interfaces"*
+# Phoenix UI
 
-### 📞 Contact & Support
-- 🐙 **GitHub**: [Github Repository](https://github.com/Vajalol/Phoenix_UI)
-- 💬 **Discord**: [Community Discord](https://discord.gg/69q6YWmvks)
-- 💰 **Donate**: [Paypal](https://www.paypal.com/donate/?hosted_button_id=67ASZ8FXPXMDY)
+**A clean, fast and modern skin for the World of Warcraft 12.x interface.**
+Retail · Interface 120105 (12.1.5) · by **VortexQ8** · MIT licence
 
-### 🤝 Contributing
+Phoenix UI builds on Blizzard's interface instead of replacing it. Edit Mode keeps control of layout, and Phoenix
+adds a consistent look and small comforts on top. That keeps it light, taint-free and ready for every patch.
 
--------------------🔥🔥🔥🔥🔥🔥🔥-------------------
+[CurseForge](https://www.curseforge.com/projects/1242528) ·
+[Wago](https://addons.wago.io/addons/jK8XQjKy) ·
+[GitHub](https://github.com/vortexq89/Phoenix_UI)
 
-## 📋 Table of Contents
-- [Recent Updates](#-recent-updates)
-- [Getting Started](#-getting-started)
-  - [Installation](#-installation)
-  - [Configuration](#️-configuration)
-  - [Troubleshooting](#-troubleshooting)
-- [Features](#-features)
-  - [General](#-general)
-  - [Unit Frames](#-unit-frames)
-  - [Nameplates](#️-nameplates)
-  - [Action Bars](#️-action-bars)
-  - [Cast Bars](#-cast-bars)
-  - [Tooltip](#-tooltip)
-  - [Buffs & Debuffs](#-buffs--debuffs)
-  - [Chat](#-chat)
-  - [Maps](#️-maps)
-  - [Integrations](#-integrations)
-  - [Miscellaneous](#-miscellaneous)
-- [Support & Community](#-support--community)
-  - [Contact](#-contact--support)
-  - [Contributing](#-contributing)
-  - [License](#️-license)
-  - [Acknowledgments](#-acknowledgments)
+---
 
--------------------🔥🔥🔥🔥🔥🔥🔥-------------------
+## Features
 
-## 🚀 GETTING STARTED
+| Category | Module | What it does |
+|---|---|---|
+| System | **General** | Theme (Phoenix Ember, Frost, Fel, Arcane, Class, Custom), fonts, bar texture, font scale, reduce motion |
+| Interface | **Skins** | Phoenix styling for the game menu, popups and ready check |
+| | **Action Bars** | Square buttons, readable hotkeys and macro names, out-of-range tint |
+| | **Unit Frames** | Bar texture, class and power colours, fonts for player, target, focus and pet |
+| | **Group Frames** | Party and raid frame textures, fonts and borders |
+| | **Cast Bars** | Flat cast bars; icon, timer and latency on your own bar |
+| | **Buffs & Debuffs** | Cropped icons, crisp borders, readable timers and stacks |
+| | **Nameplates** | Bar texture and a health percent that works in restricted content; nameplate visibility toggles |
+| | **Tooltip** | Dark style, class and quality borders, health bar, target, role and IDs, cursor anchor, hide in combat |
+| | **Item Level** | Item levels on the character sheet and bags |
+| | **Minimap** | Square minimap, zone text style, coordinates |
+| | **Data Bar** | FPS, latency, speed, durability, gold and clock, movable in Edit Mode |
+| Combat | **Cooldown Text** | Blizzard's countdown numbers in the Phoenix font |
+| | **Combat Text** | Every floating combat text option in one page |
+| | **Damage Meter** | Skin for Blizzard's built-in meter; optional one-click Details! style |
+| | **Spell History** | A strip of your recent casts, movable in Edit Mode |
+| | **PvP** | Safe queue pop with timer, TAB targets players in PvP, `/gg` to surrender an arena |
+| Social | **Chat** | Clickable URLs with a copy box, copy-chat window |
+| | **AFK Screen** | A calm full-screen view of your character while away |
+| Utility | **Quality of Life** | Hide talking heads, quiet errors in combat, achievement screenshots, Cooldown Manager toggle |
+| | **Automation** | Repair, sell junk, fill "DELETE", decline duels, accept friend invites and resurrections, release in BGs, skip seen cinematics |
+| | **Mythic+** | Auto-insert your keystone, report your new key |
 
-### 📥 Installation
-1. Download the latest release
-2. Extract to your World of Warcraft/_retail_/Interface/AddOns folder
-3. Enable the addon in-game
-4. Type `/pui` or `/phoenix` to access the configuration menu
+Every module can be switched off. Modules that hook Blizzard frames ask for a reload when you turn them off.
 
-### ⚙️ Configuration
-- Use the in-game configuration menu (`/pui`) to customize all features
-- Global configuration via Game Menu (ESC) > Phoenix UI button
-- Important slash commands:
-  ```
-  /pui or /phoenix - Opens the main configuration panel
-  /rl              - Reloads the UI
-  /fs              - Shows the frame stack tool
-  /uis-reset       - Resets UI scaling to default
-  ```
-- Settings are saved per-character by default
-- Most changes take effect immediately without requiring UI reload
+## Screenshots
 
-### 🔧 Troubleshooting
-- If settings aren't being saved correctly, try using the Game Menu button instead of slash commands
-- For font issues, try changing the font in the General settings and reload your UI
-- If you encounter startup messages from other addons, check the suppression settings in Misc
+| | |
+|---|---|
+| ![Home](docs/screenshots/home.png) | ![Module page](docs/screenshots/module.png) |
+| ![Search](docs/screenshots/search.png) | ![Profiles](docs/screenshots/profiles.png) |
 
--------------------🔥🔥🔥🔥🔥🔥🔥-------------------
+The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`).
 
-## 🔥 FEATURES
+## Installation
 
-### 📊 General
-- **🎨 Theme System**: Multiple themes including Dark, Class-based, and Custom color schemes
-- **⚙️ Automation**: 
-  - Auto-delete junk items
-  - Auto-repair equipment
-  - Auto-sell gray items
-  - Auto-stack buy
-  - Auto-decline duels
-  - Auto-release in battlegrounds
-  - Auto-accept resurrection
-  - Auto-skip cinematics
-- **👁️ Display Options**:
-  - Item level display
-  - FPS and MS monitoring
-  - Movement speed display
-  - AFK screen customization
-  - Talkhead frame control
-  - Error message filtering
+Install from CurseForge or Wago, or download a release and extract `Phoenix_UI` into
+`World of Warcraft/_retail_/Interface/AddOns/`.
 
-### 🧬 Unit Frames
-- **👤 Player & Target Frames**:
-  - Customizable size and style
-  - Class color integration
-  - Faction color options
-  - PvP badge display
-  - Combat icon indicators
-  - Hit indicators
-  - Totem icons
-  - Class bar integration
-  - Corner icon display
-- **💪 Boss Frames**:
-  - Custom health bar colors
-  - Reputation-based coloring
-  - Texture customization
-- **👥 Raid Frames**:
-  - Customizable size and layout
-  - Always-on-top option
-  - Custom textures
-  - Height and width adjustments
+## Usage
 
-### 🏷️ Nameplates
-- **🔧 Customization**:
-  - Multiple style options
-  - Custom textures
-  - Arena number display
-  - Totem icons
-  - Health text
-  - Server name display
-  - Color customization
-  - Cast time display
-  - Stacking mode
-  - Height and width adjustments
-  - Decimal precision control
-- **🎯 NPC Colors**:
-  - Extensive dungeon-specific NPC coloring
-  - Customizable color schemes
-  - Focus highlight options
+| Command | Action |
+|---|---|
+| `/pui` or `/phoenix` | Open or close the settings window |
+| `/pui edit` | Open Edit Mode |
+| `/pui profile [name]` | Show or switch the profile |
+| `/pui reset` | Reset the settings window position |
+| `/pui <module>` | Jump to a module, e.g. `/pui tooltip` |
+| `/pui settings` | Open the Phoenix page in Blizzard's settings |
+| `/gg` | Surrender an arena match (PvP module, asks first) |
 
-### ⚔️ Action Bars
-- **🔘 Button Features**:
-  - Key binding display
-  - Macro text display
-  - Range indicator
-  - Flash effect toggle
-  - Customizable size
-- **📑 Menu Options**:
-  - Micro menu customization
-  - Bag bar display options
-- **⚡ Bar Configuration**:
-  - Individual bar toggles (1-8)
-  - Pet bar customization
-  - Stance bar options
+You can also open the settings from the Addon Compartment (the button by the minimap) or from
+*Options → AddOns → Phoenix UI*.
 
-### 🔄 Cast Bars
-- **🔮 Player Cast Bar**:
-  - Custom style options
-  - Timer display
-  - Icon display
-  - Latency indicator with ms display
-  - Target name display with class coloring
-- **🎯 Target Cast Bar**:
-  - Customizable size
-  - Position options
-  - Timer and icon display
-- **👁️ Focus Cast Bar**:
-  - Customizable size
-  - Position options
-  - Timer and icon display
+### Profiles
 
-### 💬 Tooltip
-- **🎨 Customization**:
-  - Multiple style options
-  - Life on top display
-  - Mouse anchor options
-  - Enhanced information display
-- **🎯 Gameplay Enhancements**:
-  - Target of target information
-  - Role indicators (tank/healer/dps)
-  - Detailed aura information:
-    - Duration and time remaining
-    - Aura source (who cast it)
-    - Classification (Magic/Curse/Disease/Poison)
+Profiles are shared across your account. You can create, duplicate, rename, reset and delete them, switch
+automatically per specialization, and share them as text strings. An import shows what the string contains before
+anything is changed.
 
-### ✨ Buffs & Debuffs
-- **⬆️ Buff Display**:
-  - Customizable size
-  - Padding control
-  - Icon count configuration
-- **⬇️ Debuff Display**:
-  - Customizable size
-  - Padding control
-  - Icon count configuration
+### Upgrading from Phoenix UI 11.x
 
-### 💭 Chat
-- **📝 Style & Core Features**
-  - Custom style options with top/bottom input positioning
-  - Clickable links for easy copying
-  - Class-colored names and messages
-  - Enhanced copy button with chat history access
-  - Quick join options for friends and groups
-  - Loot icon integration for better visibility
+On first login, 2.0 imports your old profiles once where the setting still exists (theme, automation, tooltip,
+action bar text, cast bar extras, chat links, PvP options and more). Everything else starts from fresh defaults.
 
-- **😀 Emoji System**
-  - Full emoji support with clickable emoji panel
-  - Automatic conversion of text patterns to emojis (`:)`, `:D`, etc.)
-  - Custom emoji codes (`:smile:`, `:love:`, etc.)
-  - Adjustable emoji size
+## What changed in 2.0, and where features went
 
-- **👤 Enhanced Player Identification**
-  - Class icons alongside names
-  - Configurable icon positioning (before/after name)
-  - Role icons display (tank/healer/dps)
-  - Improved visual clarity with customizable indicators
+12.x changed what addons are allowed to do. Addons can no longer read the combat log, and many combat values are
+"secret" in restricted content. Blizzard also now ships many features that used to need addons. Phoenix UI 2.0
+follows that. It skins and configures the Blizzard features and no longer bundles copies of other addons.
 
-- **🔍 Advanced History Features**
-  - Searchable chat history with multiple filtering options
-  - Date/time separators for better context
-  - One-click copying from search results
-  - Chat history retention with configurable duration
+| Old Phoenix feature | Use instead |
+|---|---|
+| Frame mover (MoveAny) | Blizzard **Edit Mode** (`/pui edit`) |
+| Scrolling combat text (MikScrollingBattleText) | Phoenix **Combat Text** page (Blizzard floating combat text), or [MikScrollingBattleText](https://www.curseforge.com/wow/addons/mik-scrolling-battle-text) |
+| Group finder filters (Premade Groups Filter) | [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) |
+| Buff overlays on raid frames (BuffOverlay) | [BuffOverlay](https://www.curseforge.com/wow/addons/buffoverlay) |
+| Cooldown tracker / spell notifications | Blizzard **Cooldown Manager** (Quality of Life page), [OmniCD](https://www.curseforge.com/wow/addons/omnicd) for party cooldowns |
+| Details! skin | Phoenix **Damage Meter** page (Blizzard meter skin + one-click Details! style) |
 
-- **📊 Message Organization**
-  - Smart message categorization (loot, combat, system, achievement)
-  - Intelligent collapsing of repetitive messages
-  - Visual category indicators with color-coding
-  - Cleaner chat experience with reduced clutter
+## Development
 
-- **👥 Social Integration**
-  - Enhanced friend status display
-  - Guild rank indicators
-  - Inline tooltips with player information
-  - Friend note display
-  - Battle.net integration
+```bash
+luacheck .                          # zero warnings, generated 12.1.5 API std
+python3 tools/check_api.py          # APIs, events, CVars, templates, atlases vs. 12.1.5; load-chain check
+python3 tools/check_locales.py      # locale coverage
+lua5.1 tools/smoke/harness.lua .    # offline load test
+```
 
-- **⚡ Performance Features**
-  - Chat history compression to reduce memory usage
-  - Automatic cleanup of old messages
-  - Virtual scrolling for smooth performance with large histories
-  - Update throttling during high chat activity
+CI runs all four on every push. Read [`AGENTS.md`](AGENTS.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+before contributing. They cover the module contract, taint and secret-value rules, and the theme tokens.
 
-### 🗺️ Maps
-- **🧭 Minimap**:
-  - Size customization
-  - Style options
-  - Small mode toggle
-  - Opacity control
-  - Coordinate display
-  - Clock display
-  - Date display
-  - Garrison button
-  - Tracking options
-  - Button display
-  - Expansion button toggle
+## Credits
 
-### 🔥 Integrations
-- **⚡ WeakAuras Integration**:
-  - Dedicated configuration tab in Phoenix UI settings
-  - Apply Phoenix UI themes to WeakAuras elements
-  - Themed borders for WeakAuras icons
-  - Themed progress bars with Phoenix UI textures
-  - Phoenix UI font integration
-  - Performance optimization during combat
-  - Adaptive FPS-based throttling
-  - Synchronization with BuffOverlay
-  - Prevention of duplicate aura displays
-  - Coordination with other Phoenix UI modules
+- Libraries: LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibEditMode (each under its own licence).
+- Fonts: Inter, Roboto, Roboto Condensed and Cinzel, under the SIL Open Font License 1.1 (`Media/Fonts`).
 
-- **📊 Details! Damage Meter Skin**:
-  - Custom phoenix/fire-themed skin for Details! windows
-  - Orange and dark color scheme matching Phoenix UI
-  - Custom texture and font settings
-  - Default profile that can be imported directly
-  - Easy apply button in Phoenix UI settings
-  - Slash commands support: `/phoenixskin` and `/phoeniximport`
+## Licence
 
-### 🗺️ Mythic+ Tools
-- **⏱️ Dungeon Timer**:
-  - Live timer showing time elapsed and time remaining
-  - Multiple display formats (Remaining Only, Elapsed Only, or Both)
-  - Color-coded progress tracking
-  - Indicates 2-chest and 3-chest timings
-  - Customizable position and appearance
-
-- **📈 Objective Tracking**:
-  - Real-time progress tracking with percentage and count
-  - Enhanced objective display with completion status
-  - Death counter with time penalty calculation
-  - Automatic tracking of prideful/shrouded spawns
-
-- **🔑 Keystone Enhancement**:
-  - In-depth keystone information display
-  - Weekly affix explanations
-  - Auto-gossip for dungeon NPCs
-  - Streamlined dungeon navigation
-
-### 🔥 Miscellaneous
-- **⚔️ PvP Features**:
-  - Safe queue functionality
-  - Tab binding options
-  - Pull timer
-  - Interrupt tracker
-  - Dampening display
-  - Arena nameplate options
-  - Surrender options
-- **🌟 Quality of Life**:
-  - Loss of control display
-  - Reputation bar
-  - Menu button
-  - Dragon flying support
-
-
-## 🤝 SUPPORT & COMMUNITY
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-### ⚖️ License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-### 👏 Acknowledgments
-- Thanks to all contributors and testers
-- Special thanks to the World of Warcraft addon community for inspiration and support 
+MIT © 2024–2026 VortexQ8. See [LICENSE](LICENSE).

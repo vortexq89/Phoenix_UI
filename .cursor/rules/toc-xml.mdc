@@ -6,7 +6,7 @@ alwaysApply: false
 # TOC / XML
 
 - `## Interface: 120105` only (single value, retail). Required fields: `Title`, `Notes`, `Author`, `Version`, `Category`, `IconTexture`, `SavedVariables: PhoenixUIDB`, `SavedVariablesPerCharacter: PhoenixUICharDB` (+ legacy SVs during the migration window), `X-License`, `X-Curse-Project-ID`, `X-Wago-ID`.
-- No `## AddonCompartmentFunc` (needs a global); register with `AddonCompartmentFrame:RegisterAddon{}` in `Core/Settings.lua`.
+- No `## AddonCompartmentFunc` (needs a global); register with `AddonCompartmentFrame:RegisterAddon{}` in `UI/Config/Blizzard.lua`.
 - Load order: `Libs\Libs.xml` → `Locales\Locales.xml` → `Core\Core.xml` → `UI\UI.xml` → `Modules\Modules.xml`.
 - Paths are **case-exact** and use backslashes in XML/TOC. Every Lua file is referenced exactly once. No orphan files, no `.bak`, no nested `.toc` files in the shipped tree.
 - XML files contain only `<Script>`/`<Include>` (and templates when unavoidable). No stray text nodes or `##` lines inside XML.

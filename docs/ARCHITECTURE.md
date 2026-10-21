@@ -20,45 +20,47 @@ This is the contract every phase-2 change is measured against. If code and this 
 
 ## 2. Folder layout
 
+As built in phase 2 (see §14 for where this differs from the original plan):
+
 ```
 Phoenix_UI/
-├─ Phoenix_UI.toc               -- only file list; order = Libs → Locales → Core → UI → Modules
+├─ Phoenix_UI.toc               -- only file list; order = Libs → Locales → Core → UI → Modules → Core/Init.lua
 ├─ Libs/
 │  ├─ Libs.xml
 │  ├─ LibStub/  CallbackHandler-1.0/  LibSharedMedia-3.0/  LibEditMode/
 ├─ Locales/
-│  ├─ Locales.xml  enUS.lua  deDE.lua  esES.lua  esMX.lua  frFR.lua  itIT.lua  koKR.lua  ptBR.lua  ruRU.lua  zhCN.lua  zhTW.lua
+│  ├─ Locales.xml  Locales.lua (fallback table, ns.RegisterLocale)  enUS.lua
 ├─ Core/
 │  ├─ Core.xml
-│  ├─ Namespace.lua     -- ns tables, version, constants, ns.Print / ns.Debug
+│  ├─ Namespace.lua     -- ns tables, version, constants, ns:Print / ns:Debug, SafeCall
 │  ├─ Util.lua          -- pure helpers (tables, strings, colour maths on *non-secret* data)
-│  ├─ Events.lua        -- ns.Events: game-event dispatcher + internal message bus
+│  ├─ Events.lua        -- ns.Events: game-event dispatcher + internal message bus (combat-log guard)
 │  ├─ Secret.lua        -- ns.Secret: issecretvalue/canaccessvalue wrappers, restriction state
-│  ├─ Combat.lua        -- ns.Combat: lockdown queue (run-after-combat), protected-call guard
-│  ├─ DB.lua            -- ns.DB: SavedVariables, profiles, defaults merge, change notifications
+│  ├─ Combat.lua        -- ns.Combat: lockdown queue (run-after-combat), CVar option accessors
+│  ├─ Media.lua         -- fonts/textures/icons registry (+ LSM registration)
+│  ├─ Theme.lua         -- design tokens, presets, font roles
+│  ├─ Skin.lua          -- skin primitives (panel, border, shadow, text, statusbar, icon, hide/restore)
+│  ├─ DB.lua            -- ns.DB: SavedVariables, profiles, defaults merge/strip, change notifications
 │  ├─ Migrations.lua    -- ordered schema migrations + legacy Phoenix_UIDB importer
-│  ├─ Modules.lua       -- ns:NewModule, lifecycle, enable/disable, dependency order
-│  ├─ Media.lua         -- fonts/textures/sounds registry (+ LSM registration)
-│  ├─ Theme.lua         -- design tokens, palettes, theme switching
-│  ├─ Skin.lua          -- skin primitives (backdrop, border, button, statusbar, font, icon)
-│  ├─ EditMode.lua      -- LibEditMode wrapper for our frames
-│  ├─ Settings.lua      -- Blizzard Settings landing category + Addon Compartment + slash
-│  └─ Profiles.lua      -- export/import strings (C_EncodingUtil CBOR + compress + base64)
+│  ├─ Modules.lua       -- ns:NewModule, lifecycle, enable/disable
+│  ├─ EditMode.lua      -- LibEditMode wrapper for Phoenix-owned frames
+│  ├─ Profiles.lua      -- export/import strings (C_EncodingUtil CBOR + deflate + base64)
+│  └─ Init.lua          -- boot sequence + slash commands (loaded last, from the TOC)
 ├─ UI/
 │  ├─ UI.xml
-│  ├─ Widgets/          -- Button, Toggle, Slider, Dropdown(MenuUtil), ColorSwatch, Input, Section, List, Tabs, Badge, Tooltip
-│  └─ Config/           -- Window, Sidebar, Search, Page renderer (schema → widgets), Preview, Profiles page, About
+│  ├─ Anim.lua
+│  ├─ Widgets/          -- Core, Button, Toggle, Slider, Dropdown, ColorSwatch, Input, Scroll, Section, Popup
+│  └─ Config/           -- Window, Renderer (schema → widgets), Search, Home, Profiles, About, Blizzard (landing + compartment)
 ├─ Modules/
-│  ├─ Modules.xml
+│  ├─ Modules.xml       -- lists every module file directly (no per-module XML)
 │  └─ <ModuleName>/
-│     ├─ <ModuleName>.xml   -- lists files of the module only
 │     ├─ <ModuleName>.lua   -- module object, defaults, lifecycle
-│     ├─ Options.lua        -- options schema (no UI code)
-│     └─ *.lua              -- feature files
-├─ Media/ Fonts/ Textures/ (curated, §11.2)
-├─ tools/ audit/ (API/lint generators)   .luacheck/ wow_std_12.1.5.lua
-├─ docs/  AUDIT.md  ARCHITECTURE.md  PROMPTS.md  audit/
-├─ AGENTS.md   .cursor/rules/*.mdc   .luacheckrc   .pkgmeta
+│     └─ Options.lua        -- options schema (no UI code)
+├─ Media/ Fonts/ Textures/ Textures/Icons/ (curated, §11.2)
+├─ tools/ check_api.py  check_locales.py  smoke/harness.lua  audit/ (reference generators)  media/
+├─ .luacheck/ wow_std_12.1.5.lua  reference_12.1.5.json  deprecated_12.1.5.json
+├─ docs/  AUDIT.md  ARCHITECTURE.md  PROMPTS.md  audit/  screenshots/
+├─ .github/workflows/luacheck.yml   .pkgmeta   AGENTS.md   .cursor/rules/*.mdc   .luacheckrc
 ```
 
 File and include names are **case-exact** (the audit found 52 Windows-only includes).
@@ -75,14 +77,14 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `Auras` | Buffs, buffoverlay | Skin BuffFrame/DebuffFrame; optional `CustomAuraContainer` displays |
 | `NamePlates` | NamePlates | Cosmetics only (texture, font, health %, cast bar skin) |
 | `Tooltip` | Tooltip, idTip | `TooltipDataProcessor` post-calls; IDs; item level; secret-safe unit lines |
-| `Chat` | Chat | Style, URL copy, copy window, history/search, emoji, class/role icons — secret-aware |
-| `Minimap` | Maps | Shape/size, coords, clock, button tray, compartment |
+| `Chat` | Chat | URL links + copy popup, copy-chat window — secret-aware (history and emoji dropped) |
+| `Minimap` | Maps | Square shape, zone text, coords (size and clock: Edit Mode / data bar) |
 | `DataTexts` | General/_Stats, MoveAny fps | FPS/latency/speed/durability/gold/etc, Edit Mode movable |
 | `ItemLevel` | General/_Itemlevel, _BagIlvl, Tooltip ilvl | Character/inspect/bags/bank |
 | `Automation` | General automation, Misc bits | Repair, sell junk, decline duels, release, accept res, invites, cinematics, stack-buy |
 | `AFK` | General/_AfkCam | |
-| `MythicPlus` | Mythic+ | Timer, objectives %, deaths count, keystone info, auto-gossip |
-| `PvP` | Misc PvP | Safe queue, tab-target binder (out of combat), surrender, dampening |
+| `MythicPlus` | Mythic+ | Auto-insert keystone, new-key report (timer/objectives: Blizzard's own tracker) |
+| `PvP` | Misc PvP | Safe queue, tab-target binder (out of combat), /gg surrender (dampening removed) |
 | `CooldownText` | CooldownTracker CooldownText | Styles Blizzard countdown numbers on Cooldown frames |
 | `SpellHistory` | CooldownTracker SpellTracker | Player-only recent casts strip (secrecy-checked) |
 | `CombatText` | MSBT | Configures/themes Blizzard floating combat text v2 |
@@ -207,7 +209,7 @@ The exact key list is built in phase 2 from `Core/Init.lua` defaults (lines ~59�
 * `Locales/enUS.lua` defines the base table: `ns.L = setmetatable({ KEY = "English text", … }, { __index = function(t, k) return k end })`.
 * Other locale files return early unless `GetLocale()` matches, and only override keys.
 * Code uses **keys**, never inline English: `L.TOOLTIP_SHOW_IDS`. Option schema `label`/`desc` fields are locale keys.
-* Fonts must support the client locale. `ns.Media:Font(role)` falls back to Blizzard `STANDARD_TEXT_FONT` / `UNIT_NAME_FONT` on koKR/zhCN/zhTW (the bundled Latin fonts lack CJK glyphs) and checks ruRU Cyrillic coverage (Roboto/Inter yes; Expressway/Cinzel no → fallback per role).
+* Fonts must support the client locale. `ns.Media:Font(role)` falls back to Blizzard `STANDARD_TEXT_FONT` / `UNIT_NAME_FONT` on koKR/zhCN/zhTW (the bundled Latin fonts lack CJK glyphs) . Roboto and Inter cover Cyrillic (ruRU); Cinzel is only used for the Latin "PHOENIX" wordmark.
 
 ---
 
@@ -233,11 +235,11 @@ Presets: **Phoenix Ember** (default), **Obsidian** (neutral), **Class** (accent 
 
 ## 8. Blizzard Settings registration
 
-* `Settings.RegisterCanvasLayoutCategory(landingFrame, "Phoenix UI")` + `Settings.RegisterAddOnCategory(category)`. The landing canvas is themed and shows: the logo, version, an **Open Phoenix UI** button, quick module toggles, profile selector, and a "reset window position" button.
-* `ns.Settings.categoryID = category:GetID()`; `/pui settings` → `Settings.OpenToCategory(ns.Settings.categoryID)`.
-* Addon Compartment: `AddonCompartmentFrame:RegisterAddon({ text = "Phoenix UI", icon = …, notCheckable = true, func = ns.ToggleConfig, funcOnEnter = …, funcOnLeave = … })`. There is no `## AddonCompartmentFunc` global.
-* Slash: `RegisterNewSlashCommand(ns.HandleSlash, "pui", "phoenix")`. Sub-commands: `config`, `settings`, `profile <name>`, `editmode`, `reset`, `debug`.
-* Opening the config window in combat is allowed (it is not protected). Any setting that touches protected frames queues through `ns.Combat:Run` and shows an "applies after combat" badge.
+* `Settings.RegisterCanvasLayoutCategory(landingFrame, "Phoenix UI")` + `Settings.RegisterAddOnCategory(category)` (UI/Config/Blizzard.lua). The landing canvas is themed: logo, short text and an **Open Phoenix UI** button.
+* `/pui settings` → `Settings.OpenToCategory(category:GetID())`.
+* Addon Compartment: `AddonCompartmentFrame:RegisterAddon({ text, icon, notCheckable, func, funcOnEnter, funcOnLeave })` with a themed tooltip. There is no `## AddonCompartmentFunc` global.
+* Slash (Core/Init.lua): `RegisterNewSlashCommand(handler, "pui", "phoenix")`. Sub-commands: none/`config`, `settings`, `edit`, `profile [name]`, `reset`, `debug`, `<module key>`.
+* Opening the config window in combat is allowed (it is not protected). Any setting that touches protected state queues through `ns.Combat:Run` and shows an "out of combat" badge.
 
 ---
 
@@ -310,18 +312,21 @@ Combat colours (health, power, reaction, class, dispel types) are **not** re-inv
 
 ### 11.2 Typography (bundled fonts, curated)
 
+Roles live in `Theme.fontRoles`; users can override the interface font (body/desc) and the unit font (unit/combat) and scale every UI role.
+
 | Role | Font file (Media/Fonts) | Size | Flags |
 |---|---|---:|---|
-| `brand` (logo/wordmark) | `Cinzel-Bold.ttf` | 20 | — (+ gradient) |
-| `title` (page titles) | `Expressway.ttf` | 18 | — |
-| `heading` (section headers, uppercase, +1 tracking via spacing) | `Expressway.ttf` | 12 | — |
+| `brand` (logo/wordmark) | `Cinzel-Bold.ttf` | 20 | — |
+| `title` (page titles) | `InterBold.ttf` | 17 | — |
+| `heading` (section headers, uppercase) | `Roboto_Condensed-Bold.ttf` | 11 | — |
 | `body` (labels, controls) | `Roboto-Medium.ttf` | 12 | — |
 | `desc` (descriptions) | `Roboto-Regular.ttf` | 11 | — |
-| `mono/number` (values, timers) | `Roboto_Condensed-Bold.ttf` | 12 | — |
-| `unit` (in-world frames, nameplates, bars) | `Roboto_Condensed-SemiBold.ttf` | per element | `OUTLINE` optional, shadow 1,-1 |
-| `combat` (big timers, CDs) | `Expressway.ttf` | per element | `OUTLINE` |
+| `number` (values, timers) | `Roboto_Condensed-SemiBold.ttf` | 12 | — |
+| `small` (badges, footer) | `Roboto_Condensed-Medium.ttf` | 10 | — |
+| `unit` (in-world frames, nameplates, bars) | `Roboto_Condensed-SemiBold.ttf` | per element | shadow 1,-1 or `OUTLINE` |
+| `combat` (big timers, CDs) | `Roboto_Condensed-Bold.ttf` | per element | `OUTLINE` |
 
-Shipped font set (≈12 files): Cinzel-Bold, Expressway, Roboto-{Regular,Medium,Bold}, Roboto_Condensed-{Regular,SemiBold,Bold}, InterBold, PTSansNarrow, PhoenixFont, plus `Invisible.ttf` if used for hiding. Everything else, including the 13 MB `AvantGarde.TTF` and the 40+ italic/thin weights, is removed. All shipped fonts are also registered with LSM under `Phoenix *` names.
+Shipped font set (9 files, all SIL OFL 1.1): Cinzel-Bold, InterBold, Roboto-{Regular,Medium,Bold}, Roboto_Condensed-{Regular,Medium,SemiBold,Bold}. Expressway, PT Sans Narrow, AvantGarde and the other legacy fonts were dropped (licence unclear or unused). koKR/zhCN/zhTW clients fall back to `STANDARD_TEXT_FONT`. All shipped fonts and bars are registered with LSM under `Phoenix *` names.
 
 ### 11.3 Spacing, sizing, borders
 * **4-px grid**: `space(1)=4, (2)=8, (3)=12, (4)=16, (6)=24, (8)=32`. Page padding 24, section padding 16, control row height 28, sidebar width 200, header 48.
@@ -358,3 +363,17 @@ Shipped font set (≈12 files): Cinzel-Bold, Expressway, Roboto-{Regular,Medium,
 | **2.4 Combat UI** | Skins core + ActionBars, UnitFrames, CastBars, GroupFrames, Auras, NamePlates, CooldownText | No taint ("/console taintLog 2" clean through a dungeon + BG), no secret errors |
 | **2.5 Content** | MythicPlus, PvP, SpellHistory, CombatText, DamageMeter skin, remaining Blizzard window skins | M+ run with `secretChallengeModeRestrictionsForced=1` is clean |
 | **2.6 Migration & polish** | Full legacy key map, locale stubs, reduce-motion, accessibility (font scale), performance pass, packaging | Clean install and legacy-upgrade both verified; tagged 2.0.0 |
+
+---
+
+## 14. Phase 2 implementation notes (deviations from the plan above)
+
+* **No `Core/Settings.lua`.** Boot and slash live in `Core/Init.lua` (loaded last from the TOC so every module is registered); the Blizzard landing page and compartment entry live with the rest of the config UI in `UI/Config/Blizzard.lua`.
+* **No per-module XML.** `Modules/Modules.xml` lists `<Module>.lua` + `Options.lua` for every module; one place to read the load order.
+* **No empty locale stubs.** Only `enUS.lua` ships; `ns.RegisterLocale` accepts other locales when translations exist. `tools/check_locales.py` keeps enUS complete and free of unused keys.
+* **Theme presets:** Phoenix Ember (default), Frost, Fel, Arcane, Class and Custom accents over one shared dark surface palette. "Obsidian"/"Blizzard" presets were not built.
+* **Positions:** Phoenix never moves Blizzard frames. Only Phoenix-owned frames (data bar, spell history) register with LibEditMode; their positions are stored per Edit Mode layout.
+* **Removed with no replacement in Phoenix:** chat history/emoji, arena dampening display, minimap size slider, M+ timer/objectives (Blizzard's tracker covers it), mouseover bar fading. Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
+* **Details!:** optional, never a dependency. The Damage Meter page offers a one-click "Style Details!" button that calls Details' public instance API inside `pcall`; it is never applied automatically because it rewrites Details' own saved settings.
+* **Checks:** `luacheck .` (generated 12.1.5 std), `tools/check_api.py` (methods/events/CVars/templates/atlases vs. the 12.1.5 reference, forbidden patterns, TOC/XML completeness and case), `tools/check_locales.py`, and `tools/smoke/harness.lua` (offline load + boot + every settings page). All run in `.github/workflows/luacheck.yml`.
+

@@ -47,19 +47,11 @@ Never invent an API. If you can't find it in (1)–(3), it does not exist.
 * 4-space indent, double quotes, `local` everything, early returns, ≤140 columns.
 * Names: modules `PascalCase` keys (`"Tooltip"`). Files `PascalCase.lua`. Locals/functions `camelCase`. Methods `PascalCase` (`M:OnEnable`, Blizzard convention). Constants `UPPER_SNAKE` on `ns.C`. Locale keys `MODULE_THING`. Internal messages `PUI_*`. Frame names (only when Blizzard requires one, e.g. `UISpecialFrames`) `PhoenixUI_<Thing>`.
 * Cache hot globals in locals at file top only where profiling shows benefit (no blanket `local _G = _G` blocks).
-* One responsibility per file; a module folder lists its files in `<Module>.xml` in load order.
+* One responsibility per file. Module files are listed directly in `Modules/Modules.xml` (`<Module>.lua`, then `Options.lua`).
 * Comments explain *why* (especially every secret/taint workaround, with the API doc reference).
 * No dead code, no commented-out blocks, no `.bak`, no debug prints (use `ns:Debug()`, compiled out unless `/pui debug`).
 
 ## 5. Module template
-
-`Modules/Example/Example.xml`
-```xml
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <Script file="Example.lua"/>
-    <Script file="Options.lua"/>
-</Ui>
-```
 
 `Modules/Example/Example.lua`
 ```lua
@@ -124,7 +116,7 @@ ns:RegisterOptions("Example", {
 })
 ```
 
-Then add `<Include file="Example\Example.xml"/>` to `Modules/Modules.xml` and the locale keys to `Locales/enUS.lua`.
+Then add `<Script file="Example\Example.lua"/>` and `<Script file="Example\Options.lua"/>` to `Modules/Modules.xml` (in its category block) and the locale keys to `Locales/enUS.lua`.
 
 ## 6. How to add a feature (checklist)
 
@@ -134,7 +126,7 @@ Then add `<Include file="Example\Example.xml"/>` to `Modules/Modules.xml` and th
 4. Add defaults, the options schema and locale keys. No UI code in modules for options.
 5. Implement with `ns.Events`, `ns.Combat`, `ns.Secret`, `ns.Skin`. No new frames for events.
 6. `luacheck .` must be clean. Then run the in-game checklist (§7).
-7. Update `docs/ARCHITECTURE.md` if you changed a contract. Add a CHANGELOG entry.
+7. Update `docs/ARCHITECTURE.md` if you changed a contract. Add an entry to `CHANGES.md`.
 
 ## 7. Testing
 
@@ -142,11 +134,14 @@ There is no headless WoW client, so testing has two layers:
 
 **Static (agent can run):**
 ```bash
-luacheck .                                   # 0 warnings required
-python3 tools/audit/mainline_files.py >/dev/null && echo ok   # (when regenerating std)
-rg -n "COMBAT_LOG_EVENT|CombatLogGetCurrentEventInfo|collectgarbage|EnumerateFrames|getglobal" Core UI Modules  # must be empty
+luacheck .                          # 0 warnings required (generated 12.1.5 std)
+python3 tools/check_api.py          # methods/events/CVars/templates/atlases vs 12.1.5, forbidden patterns,
+                                    # TOC/XML files exist with exact case, every .lua loaded exactly once
+python3 tools/check_locales.py      # enUS has every key used, and no unused or duplicate keys
+lua5.1 tools/smoke/harness.lua .    # offline load: every file, boot events, every settings page, profiles, slash
 ```
-Also check that every file in a `.xml` exists with exact case, and every `.lua` is referenced by exactly one `.xml`.
+CI (`.github/workflows/luacheck.yml`) runs the same four commands. The harness uses permissive stubs: it proves the
+load order and boot path, not in-game behaviour.
 
 **In-game (human, before merge to main):** `/console scriptErrors 1`, BugSack optional, then:
 * login / `/reload` / logout with all modules on, and again with all modules off → no errors
