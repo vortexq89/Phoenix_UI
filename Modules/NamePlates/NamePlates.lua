@@ -1,5 +1,5 @@
 local _, ns = ...
-local Theme, Skin, Secret = ns.Theme, ns.Skin, ns.Secret
+local Theme, Skin, Secret, Media, Style = ns.Theme, ns.Skin, ns.Secret, ns.Media, ns.Style
 
 --[[ NamePlates: cosmetic touches on Blizzard nameplates (bar texture, health percent text, Mythic+
     enemy forces). Forbidden plates are never requested. Health percent is secret in restricted
@@ -9,12 +9,21 @@ local Theme, Skin, Secret = ns.Theme, ns.Skin, ns.Secret
     FontString:SetText, so mobs that give nothing show nothing without the value being tested. ]]
 local M = ns:NewModule("NamePlates", {
     label = "NAMEPLATES", desc = "NAMEPLATES_DESC", category = "interface", order = 55, reloadOnToggle = true,
-    defaults = { texture = true, healthText = true, textSize = 10, forces = true },
+    defaults = {
+        texture = true, healthText = true, forces = true,
+        bar = "",                                       -- "" = the theme's bar texture
+        border = Style.Border(),
+        background = Style.Background({ alpha = 0.75 }),
+        health = Style.Text(10, { outline = "OUTLINE", shadow = false }),
+        name = Style.Text(10, { styled = true }),
+        forcesText = Style.Text(10, { outline = "OUTLINE", shadow = false }),
+    },
 })
 
 local plates = {}                                    -- unit -> health bar
 local texts = setmetatable({}, { __mode = "k" })     -- health bar -> our FontString
 local forcesTexts = setmetatable({}, { __mode = "k" }) -- health bar -> forces FontString
+local nameOf = setmetatable({}, { __mode = "k" })      -- health bar -> Blizzard's name FontString
 local ScaleTo100 = CurveConstants.ScaleTo100
 
 local function healthBarOf(plate)
@@ -23,24 +32,44 @@ local function healthBarOf(plate)
     return uf.healthBar or (uf.HealthBarsContainer and uf.HealthBarsContainer.healthBar)
 end
 
-local function styleText(fs)
-    Skin:Text(fs, "number", "text.primary", M.db.textSize, "OUTLINE")
+---------------------------------------------------------------- style (shared with the options preview)
+function M:BarTexture()
+    return self.db.bar ~= "" and Media:Bar(self.db.bar) or Theme:Bar()
 end
+
+function M:StyleBar(bar)
+    if self.db.texture then bar:SetStatusBarTexture(self:BarTexture()) end
+    Skin:BorderSpec(bar, self.db.border, "border.black")
+    Skin:Backdrop(bar, self.db.background, "bg.sunken")
+end
+
+function M:StyleHealthText(fs, bar)
+    Skin:TextSpec(fs, self.db.health, "number", "text.primary")
+    Skin:Place(fs, bar, self.db.health)
+end
+
+-- Blizzard's own name text: face, size, outline and shadow only (its colour and place stay Blizzard's).
+function M:StyleName(fs)
+    if self.db.name.styled then Skin:TextSpec(fs, self.db.name, "unit") end
+end
+
+function M:StyleForces(fs)
+    Skin:TextSpec(fs, self.db.forcesText, "number", "accent.secondary")
+end
+
+local function styleText(fs) M:StyleHealthText(fs, fs:GetParent()) end
 
 local function textFor(bar)
     local fs = texts[bar]
     if not fs then
         fs = bar:CreateFontString(nil, "OVERLAY")
-        fs:SetPoint("CENTER")
         styleText(fs)
         texts[bar] = fs
     end
     return fs
 end
 
-local function styleForces(fs)
-    Skin:Text(fs, "number", "accent.secondary", M.db.textSize, "OUTLINE")
-end
+local function styleForces(fs) M:StyleForces(fs) end
 
 local function forcesFor(bar)
     local fs = forcesTexts[bar]
@@ -71,7 +100,8 @@ local function updateHealth(unit)
 end
 
 local function apply(unit, bar)
-    if M.db.texture then bar:SetStatusBarTexture(Theme:Bar()) end
+    M:StyleBar(bar)
+    if nameOf[bar] then M:StyleName(nameOf[bar]) end
     local fs = textFor(bar)
     fs:SetShown(M.db.healthText)
     if M.db.healthText then updateHealth(unit) end
@@ -80,9 +110,11 @@ end
 
 local function onAdded(_, _, unit)
     if Secret.IsSecret(unit) then return end
-    local bar = healthBarOf(C_NamePlate.GetNamePlateForUnit(unit))
+    local plate = C_NamePlate.GetNamePlateForUnit(unit)
+    local bar = healthBarOf(plate)
     if not bar then return end
     plates[unit] = bar
+    nameOf[bar] = plate.UnitFrame.name
     apply(unit, bar)
 end
 

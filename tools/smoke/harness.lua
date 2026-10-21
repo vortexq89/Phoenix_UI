@@ -13,7 +13,7 @@ local function newMagic() return setmetatable({}, getmetatable(magic)) end
 local defaults = {
     GetWidth = 400, GetHeight = 300, GetScale = 1, GetEffectiveScale = 1, GetAlpha = 1, GetFrameLevel = 1,
     GetLeft = 10, GetRight = 410, GetTop = 310, GetBottom = 10, GetNumPoints = 1, GetCenter = { 210, 160 },
-    GetStringWidth = 50, GetStringHeight = 12, GetLineHeight = 12, GetText = "", GetValue = 0, GetNumber = 0,
+    GetStringWidth = 50, GetUnboundedStringWidth = 50, GetStringHeight = 12, GetLineHeight = 12, GetText = "", GetValue = 0, GetNumber = 0,
     IsShown = false, IsVisible = false, IsForbidden = false, IsProtected = false, IsMouseOver = false,
     HasFocus = false, GetChecked = false, IsEnabled = true, GetObjectType = "Frame", GetName = nil,
     GetMinMaxValues = { 0, 1 }, GetTexCoord = { 0, 1, 0, 1 }, GetTextColor = { 1, 1, 1, 1 },
@@ -431,6 +431,25 @@ local events = {
     { "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" }, { "CHALLENGE_MODE_COMPLETED" }, { "DUEL_REQUESTED", "Someone" },
     { "ZONE_CHANGED_NEW_AREA" }, { "UI_ERROR_MESSAGE", 1, "x" }, { "BAG_UPDATE_DELAYED" },
 }
+-- previews: every kind builds and redraws with its module's settings, and with a unit picked
+try("previews", function()
+    local n = 0
+    for kind, def in pairs(ns.Previews.kinds) do
+        local m = assert(ns.modules[def.module], kind .. " preview names no module")
+        local stage = ns.Previews:Create(kind, env.CreateFrame("Frame"), m, { scope = { unit = "target" } })
+        stage:Redraw()
+        n = n + 1
+    end
+    assert(n >= 1, "no previews registered")
+end)
+-- 2.0 -> 2.1: flat size keys move into the per-element style tables
+try("style keys move", function()
+    local sv = { profiles = { P = { modules = { NamePlates = { textSize = 13 } } } } }
+    ns.Migrations.steps[2].run(sv)
+    local np = sv.profiles.P.modules.NamePlates
+    assert(np.health.size == 13 and np.textSize == nil, "NamePlates.textSize was not moved")
+end)
+
 for _, e in ipairs(events) do fire(unpack(e)) end
 fire("PLAYER_LOGOUT")
 

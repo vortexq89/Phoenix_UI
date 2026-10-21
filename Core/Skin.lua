@@ -208,7 +208,8 @@ function Sk:TextSpec(fs, spec, role, token)
         fs:SetShadowColor(0, 0, 0, 0)
         fs:SetShadowOffset(0, 0)
     end
-    if spec.color ~= nil or token then fs:SetTextColor(self:SpecColor(spec.color, token)) end
+    -- no token and no picked colour: the element keeps the colour its owner gives it (reaction, class …)
+    if type(spec.color) == "table" or token then fs:SetTextColor(self:SpecColor(spec.color, token)) end
 end
 
 local JUSTIFY = { LEFT = "LEFT", TOPLEFT = "LEFT", BOTTOMLEFT = "LEFT", RIGHT = "RIGHT", TOPRIGHT = "RIGHT", BOTTOMRIGHT = "RIGHT" }

@@ -16,7 +16,9 @@ USE_PATTERNS = [
     re.compile(r"\b(?:label|desc|text|button|title|err|status)\s*=\s*\"(" + KEY + r")\""),
     re.compile(r"\breturn\s+(?:nil|false),\s*\"(" + KEY + r")\""),
     re.compile(r"\"(CAT_[A-Z]+)\""),
-    re.compile(r"\blabel\s+or\s+\"(" + KEY + r")\""),  # option kit defaults: label = label or "KEY"
+    re.compile(r"\blabel\s+or\s+\"(" + KEY + r")\""),
+    re.compile(r"\bOpt\.\w+\([^,()]+,\s*\"(" + KEY + r")\""),  # ns.Opt row builders: Opt.Text(path, "KEY")
+    re.compile(r"\bsample\s*=\s*\"(" + KEY + r")\""),          # preview sample captions  # option kit defaults: label = label or "KEY"
 ]
 # Locale keys built dynamically: prefix .. VALUE
 DYNAMIC = re.compile(r"L\[\"(" + KEY + r"_)\"\s*\.\.")

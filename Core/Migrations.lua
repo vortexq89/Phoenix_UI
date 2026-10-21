@@ -93,8 +93,29 @@ local function importLegacy(sv)
     Mg.legacyReport = { imported = imported, skipped = skipped }
 end
 
+-- 2.0 keys that became per-element style tables in 2.1: { module, old path, new path }.
+Mg.MOVES = {
+    { "NamePlates", "textSize", "health.size" },
+}
+
+local function moveKeys(sv)
+    local U = ns.Util
+    for _, profile in pairs(sv.profiles) do
+        local modules = type(profile) == "table" and type(profile.modules) == "table" and profile.modules
+        for _, row in ipairs(modules and Mg.MOVES or {}) do
+            local db = modules[row[1]]
+            local ok, value = pcall(U.GetPath, db, row[2])
+            if type(db) == "table" and ok and value ~= nil then
+                local okNew = pcall(U.SetPath, db, row[3], value)
+                if okNew then U.SetPath(db, row[2], nil) end
+            end
+        end
+    end
+end
+
 Mg.steps = {
     { version = 1, run = importLegacy },
+    { version = 2, run = moveKeys },
 }
 
 function Mg:Run(sv)

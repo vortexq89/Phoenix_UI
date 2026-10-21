@@ -9,7 +9,7 @@ local Theme, Skin, Media = ns.Theme, ns.Skin, ns.Media
 local WHITE = Media.textures.WHITE
 
 W.ROW_HEIGHT = 30
-W.CONTROL_WIDTH = 220
+W.CONTROL_WIDTH = 200
 
 function W.Texture(parent, layer, sub, path)
     local t = parent:CreateTexture(nil, layer or "ARTWORK", nil, sub or 0)

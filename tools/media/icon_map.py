@@ -36,4 +36,6 @@ ICONS = [
     ("boss", "crown-simple"), ("deaths", "skull"), ("forces", "users-four"),
     # chat
     ("keyboard", "keyboard"),
+    # options: sub-option cogs, fonts page
+    ("cog", "gear-six"), ("fonts", "text-aa"),
 ]

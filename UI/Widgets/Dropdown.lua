@@ -34,6 +34,7 @@ local function getPopup()
     if popup then return popup end
     popup = CreateFrame("Frame", nil, UIParent)
     popup:SetFrameStrata("FULLSCREEN_DIALOG")
+    popup:SetFrameLevel(120)
     popup:SetClampedToScreen(true)
     popup:EnableMouse(true)
     popup:EnableMouseWheel(true)
@@ -163,6 +164,7 @@ local function getPopup()
         end
     end
     popup:Hide()
+    W.PopoverKeepOpen(popup) -- choosing from a list inside a cog popover keeps the popover open
     return popup
 end
 

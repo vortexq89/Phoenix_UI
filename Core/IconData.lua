@@ -98,5 +98,7 @@ ns.IconData = {
         ["deaths"] = 86,
         ["forces"] = 87,
         ["keyboard"] = 88,
+        ["cog"] = 89,
+        ["fonts"] = 90,
     },
 }
