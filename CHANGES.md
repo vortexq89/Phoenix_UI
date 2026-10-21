@@ -8,8 +8,15 @@ everything else starts from fresh defaults.
 ### New
 - **Standalone settings window** (`/pui`): sidebar by category, instant search across every option, live changes,
   "reload" and "out of combat" badges, resizable and remembered between sessions.
-- **Phoenix Ember theme** with Frost, Fel, Arcane, Class and Custom accents, curated fonts (Inter, Roboto, Cinzel),
-  three bar textures, font scaling and a reduce-motion option.
+- **Phoenix Ember theme** with Frost, Fel, Arcane, Class and Custom accents, font scaling and a reduce-motion option.
+- **Fonts and textures**: 89 font files in 36 families (SIL OFL 1.1, Ubuntu Font Licence; see `Media/Fonts/FONTS.md`)
+  and 24 original statusbars, registered with LibSharedMedia as "Phoenix …" so other addons can use them. Pickers
+  show every font in its own face and every bar as a strip, grouped, with type-to-filter.
+- **Options 2.1**: two-column pages, tabs, live previews built from each module's own styling code (Nameplates,
+  Unit Frames with a unit selector, Cast Bars, Action Bars, Buffs & Debuffs, Data Bar, Tooltip, Chat and the theme),
+  cog popovers for per-text font, size, outline, shadow, colour and position, border style/size/colour,
+  background opacity/colour, icon zoom and slot placement, "Apply to" This / All / Multiple, "Apply all settings
+  from", a window scale slider and Reload UI / Close in the footer. Search also finds options inside cogs.
 - **Profiles**: create, duplicate, rename, reset, delete, per-specialization switching, and export/import strings
   with a preview before anything is changed.
 - **Damage Meter** skin for Blizzard's built-in meter, plus an optional one-click style for Details!.

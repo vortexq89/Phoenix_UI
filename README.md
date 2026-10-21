@@ -22,7 +22,7 @@ Mode cannot reach.
 
 | Category | Module | What it does |
 |---|---|---|
-| System | **General** | Theme (Phoenix Ember, Frost, Fel, Arcane, Class, Custom), fonts, bar texture, font scale, reduce motion |
+| System | **General** | Theme (Phoenix Ember, Frost, Fel, Arcane, Class, Custom), fonts, bar texture, font scale, reduce motion; 89 bundled fonts and 24 statusbars shared through LibSharedMedia |
 | | **Bugs** | Catches Lua errors, blocked actions (taint) and Lua warnings from every addon; viewer with search, sessions and copy; data-bar count, minimap indicator, optional chat notice and sound; works alongside BugGrabber/BugSack |
 | Interface | **Skins** | Phoenix styling for the game menu, popups and ready check |
 | | **Action Bars** | Square buttons, readable hotkeys and macro names, out-of-range tint |
@@ -56,7 +56,9 @@ Every module can be switched off. Modules that hook Blizzard frames ask for a re
 | ![Home](docs/screenshots/home.png) | ![Module page](docs/screenshots/module.png) |
 | ![Search](docs/screenshots/search.png) | ![Profiles](docs/screenshots/profiles.png) |
 | ![Bug viewer](docs/screenshots/bugs.png) | ![Movers](docs/screenshots/movers.png) |
-| ![Mythic+ timer and nameplate forces](docs/screenshots/mplus.png) | |
+| ![Mythic+ timer and nameplate forces](docs/screenshots/mplus.png) | ![Nameplates with live preview](docs/screenshots/nameplates.png) |
+| ![Unit frames with unit selector](docs/screenshots/unitframes.png) | ![Font picker](docs/screenshots/fonts.png) |
+| ![Bar texture picker](docs/screenshots/textures.png) | ![Bundled fonts and statusbars](docs/screenshots/media.png) |
 
 The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
 same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world timer at 150 % and sample nameplates.

@@ -206,6 +206,10 @@ The payload is `{ v, schema, addon, name, profile }`. Import checks the prefix a
 | `mythicplus.enabled/showTimer/showObjectives/deathTracker` | `modules.MythicPlus.enabled/timer/timerForces+timerBosses/timerDeaths` (timer scale, position and colours are Edit Mode and theme now; `enhanceKeystones`, `autoGossip` have no counterpart) |
 | MSBT / CooldownTracker PartyCD / MoveAny / PGF / BuffOverlay blobs | **not migrated** (features removed) |
 
+**Migration 2 (style specs):** flat 2.0 keys move into the style specs added in 2.1 (`Mg.MOVES`):
+`NamePlates.textSize → health.size`, `ActionBars.fontSize → hotkey.size`, `Auras.durationSize → duration.size`,
+`Auras.countSize → count.size`. Only values saved in the profile move (defaults are not stored), and the old key is removed.
+
 ---
 
 ## 6. Localization
@@ -213,7 +217,7 @@ The payload is `{ v, schema, addon, name, profile }`. Import checks the prefix a
 * `Locales/enUS.lua` defines the base table: `ns.L = setmetatable({ KEY = "English text", … }, { __index = function(t, k) return k end })`.
 * Other locale files return early unless `GetLocale()` matches, and only override keys.
 * Code uses **keys**, never inline English: `L.TOOLTIP_SHOW_IDS`. Option schema `label`/`desc` fields are locale keys.
-* Fonts must support the client locale. `ns.Theme:Font(role)` falls back to Blizzard `STANDARD_TEXT_FONT` / `UNIT_NAME_FONT` on koKR/zhCN/zhTW (the bundled Latin fonts lack CJK glyphs). Roboto and Inter cover Cyrillic (ruRU); Cinzel is only used for the Latin "PHOENIX" wordmark.
+* Fonts must support the client locale. `ns.Theme:Font(role)` falls back to Blizzard `STANDARD_TEXT_FONT` / `UNIT_NAME_FONT` on koKR/zhCN/zhTW (the bundled Latin fonts lack CJK glyphs). On ruRU the pickers only list fonts whose subset covers А–я (`cyrillic = true` in `Core/FontData.lua`); Cinzel is only used for the Latin "PHOENIX" wordmark.
 
 ---
 
@@ -231,6 +235,23 @@ ns.Skin:Icon(tex)                -- crop 0.08–0.92 + border
 ns.Skin:Text(fs, "label")        -- font + colour + shadow
 ns.Skin:Restore(frame)           -- undo (module disable)
 ```
+
+### 7.1 Media
+`Core/FontData.lua` and `Core/TextureData.lua` are generated (`tools/media/gen_fonts.py`, `gen_textures.py`) and
+list every bundled font and statusbar with its saved key, LibSharedMedia name ("Phoenix …"), family/weight or style
+group. `Core/Media.lua` registers them with LSM when it is present, adds the Roboto/Inter/Cinzel core set and
+answers `Media:Font(key)`, `Media:Bar(key)` and `Media:List(kind)` (items carry the path and group heading the
+pickers need for live samples). `tools/check_api.py` verifies every file exists, has a licence and that no key or
+name is used twice. Licences and sizes: `Media/Fonts/FONTS.md`.
+
+### 7.2 Style specs
+`Core/Style.lua` defines the per-module look as plain tables stored in the profile:
+`Style.Text(size)` (font, size, outline, shadow, colour, anchor, x, y, show), `Style.Border` (none/solid/glow/
+shadow, size, colour), `Style.Background` (alpha, colour) and `Style.Icons` (size, spacing, zoom, growth).
+`colour = false` means "follow the theme token", so presets keep working. `ns.Opt.Text/Border/Background/Icons`
+build the matching option rows (a font row with a cog for size/outline/shadow/colour/position, and so on), and
+`ns.Skin:TextSpec/Place/BorderSpec/Backdrop/IconZoom` apply a spec to a frame. Modules style their frames through
+these helpers only, which is what lets the previews reuse the same code.
 
 Presets change the accent family over one shared dark surface palette: **Phoenix Ember** (default), **Frost**, **Fel**, **Arcane**, **Class** (`C_ClassColor.GetClassColor`) and **Custom** (`theme.custom = { r, g, b }`). Changing a preset fires `PUI_THEME_CHANGED`, and every skinned object re-applies from tokens (registry of weak-keyed skinned objects).
 
@@ -250,18 +271,33 @@ Presets change the accent family over one shared dark surface palette: **Phoenix
 
 Movable and resizable (860×540 to 1600×1100, default 1000×660). Built on first open, closes with Esc
 (`UISpecialFrames`, frame `PhoenixUI_Config`), position and size saved in `global.ui` (`/pui reset` clears them).
-Header 56, sidebar 216, footer 28. See `docs/screenshots` for the rendered layout.
+Header 56, sidebar 216, footer 40 (profile, status, window scale 0.7–1.4 applied on mouse-up and saved in
+`global.ui.scale`, Reload UI, Close). See `docs/screenshots` for the rendered layout.
 
 * **Sidebar:** Home, then modules grouped System / Interface / Combat / Social / Utility, then Profiles and About.
   Rows show the module icon and state (enabled, errored, reload pending).
-* **Search:** indexes every schema entry (`label`, `desc`, `keywords`, module name). Picking a result opens the
-  page, scrolls to the row and flashes it.
+* **Search:** indexes every schema entry (`label`, `desc`, `keywords`, module name) and the rows inside cogs.
+  Picking a result opens the page, switches to its tab, scrolls to the row and flashes it.
 * **Live updates:** controls write through `ns.DB:Set(module, path, value)`, which calls
   `module:OnSettingChanged()` and fires `PUI_SETTING_CHANGED`.
 * **Schema → widgets** (`UI/Config/Renderer.lua`): `header`, `description`, `toggle`, `range`, `select`, `font`,
   `texture`, `color`, `input`, `button`, `custom` (`build(row, module)`). Per entry: `key` or `get`/`set`, `desc`,
   `keywords`, `disabled = fn(m)`, `hidden = fn(m)`, `reload` (Reload badge) and `combat` (applies after combat).
+* **2.1 additions:** `tab` (splits a page; cards belong to the last tab), `preview` (`kind` registered in
+  `UI/Previews`), `scope` (a unit selector; keys containing `@` resolve to the chosen unit, with "Apply to"
+  This / All / Multiple and "Apply all settings from"), `colors` (several token swatches in one row) and
+  `cog = { … }` on any row (a popover with the sub-options; cogs do not nest, `Opt.Flat` flattens rows for them).
+  `color` rows take `token`, `reset` and `alpha`; `texture` and `font` pickers draw live samples, filter as you
+  type from 12 entries and group by family or style.
+* **Previews** (`UI/Previews/*.lua`): `ns.Previews:Register(kind, { module, height, build(stage, m) })`. The build
+  creates plain frames with fixed sample data and returns a redraw function that calls the module's own style
+  methods (for example `NamePlates:StyleBar`, `UnitFrames:StyleTexts`, `CastBars:FillColor`). Redraws on
+  `PUI_SETTING_CHANGED` for the module or General, on `PUI_THEME_CHANGED` and on show. No secure templates, no
+  unit tokens, nothing that can taint. Kinds: theme, nameplate, unitframe, castbar, actionbar, aura, datatext,
+  tooltip, chat.
 * **Layout:** page padding 24, card gap 16, card header 40, rows 36 (52 with a description), controls 28 high.
+  From 760 px of content width cards flow into two columns (each card goes to the shorter column; `wide`
+  headers and a lone card span both).
 
 ## 10. Edit Mode support
 
