@@ -5,9 +5,9 @@
 ## Version: @project-version@
 ## Category: User Interface
 ## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
-## SavedVariables: PhoenixUIDB, Phoenix_UIDB
+## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, Phoenix_UIDB
 ## SavedVariablesPerCharacter: Phoenix_UIPerCharDB
-## OptionalDeps: Details
+## OptionalDeps: !BugGrabber, Details
 ## X-License: MIT
 ## X-Website: https://github.com/vortexq89/Phoenix_UI
 ## X-Curse-Project-ID: 1242528

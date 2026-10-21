@@ -14,11 +14,13 @@ codes = true
 globals = {
   "GetMinimapShape",
   "PhoenixUIDB",
+  "PhoenixUIBugsDB", -- captured error reports (account-wide; read by the Phoenix Uploader app)
   "Phoenix_UIDB", "Phoenix_UIPerCharDB", -- legacy, read once by the migration then set to nil
 }
 
 read_globals = {
   "LibStub", -- embedded in Libs/ (loaded first by Libs/Libs.xml)
+  "BugGrabber", -- optional third-party error catcher (OptionalDeps); read only, see Core/Errors.lua
   -- set by <Script> blocks in Blizzard_Fonts_Shared/Shared/GameFonts.xml (not visible to the Lua-only std generator)
   "STANDARD_TEXT_FONT", "UNIT_NAME_FONT", "DAMAGE_TEXT_FONT", "NAMEPLATE_FONT", "NAMEPLATE_SPELLCAST_FONT",
 }

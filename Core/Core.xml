@@ -3,6 +3,7 @@
     <Script file="Util.lua"/>
     <Script file="Events.lua"/>
     <Script file="Secret.lua"/>
+    <Script file="Errors.lua"/>
     <Script file="Combat.lua"/>
     <Script file="Media.lua"/>
     <Script file="Theme.lua"/>
