@@ -15,8 +15,15 @@ globals = {
   "Phoenix_UIDB", "Phoenix_UIPerCharDB", -- legacy, read once by the migration then set to nil
 }
 
+read_globals = {
+  "LibStub", -- embedded in Libs/ (loaded first by Libs/Libs.xml)
+  -- set by <Script> blocks in Blizzard_Fonts_Shared/Shared/GameFonts.xml (not visible to the Lua-only std generator)
+  "STANDARD_TEXT_FONT", "UNIT_NAME_FONT", "DAMAGE_TEXT_FONT", "NAMEPLATE_FONT", "NAMEPLATE_SPELLCAST_FONT",
+}
+
 ignore = {
   "212/self",   -- unused self in mixin methods
+  "432/self",   -- script handlers named self inside widget constructors
   "212/_.*",    -- unused args prefixed with _
   "211/_.*", "213/_.*",
   "542",        -- empty if branch (explicit no-op)
@@ -26,3 +33,6 @@ exclude_files = {
   "Libs/**",           -- third-party embeds, linted upstream
   ".luacheck/**", "tools/**",
 }
+
+-- Locale files are prose; long string lines are expected there.
+files["Locales/*.lua"] = { max_line_length = false }

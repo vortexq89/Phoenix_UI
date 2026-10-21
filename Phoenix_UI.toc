@@ -1,0 +1,21 @@
+## Interface: 120105
+## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r
+## Notes: A modern, Midnight-ready interface suite with a standalone configuration window.
+## Author: VortexQ8
+## Version: @project-version@
+## Category: User Interface
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem
+## SavedVariables: PhoenixUIDB, Phoenix_UIDB
+## SavedVariablesPerCharacter: PhoenixUICharDB, Phoenix_UIPerCharDB
+## OptionalDeps: Details
+## X-License: MIT
+## X-Website: https://github.com/vortexq89/Phoenix_UI
+## X-Curse-Project-ID: 1242528
+## X-Wago-ID: jK8XQjKy
+
+Libs\Libs.xml
+Locales\Locales.xml
+Core\Core.xml
+UI\UI.xml
+Modules\Modules.xml
+Core\Init.lua

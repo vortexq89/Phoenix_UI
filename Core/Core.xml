@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="Namespace.lua"/>
+    <Script file="Util.lua"/>
+    <Script file="Events.lua"/>
+    <Script file="Secret.lua"/>
+    <Script file="Combat.lua"/>
+    <Script file="Media.lua"/>
+    <Script file="Theme.lua"/>
+    <Script file="Skin.lua"/>
+    <Script file="DB.lua"/>
+    <Script file="Migrations.lua"/>
+    <Script file="Modules.lua"/>
+    <Script file="EditMode.lua"/>
+    <Script file="Profiles.lua"/>
+</Ui>
