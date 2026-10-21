@@ -1,6 +1,7 @@
 local _, ns = ...
 
 ns:RegisterOptions("MythicPlus", {
+    { type = "preview", kind = "keystones" },
     { type = "header", label = "MPLUS_TIMER", icon = "clock" },
     { type = "toggle", key = "timer", label = "MPLUS_TIMER_SHOW", desc = "MPLUS_TIMER_SHOW_DESC",
       keywords = "timer chest upgrade clock overlay" },
@@ -22,4 +23,12 @@ ns:RegisterOptions("MythicPlus", {
     { type = "toggle", key = "autoInsert", label = "MPLUS_AUTO_INSERT", desc = "MPLUS_AUTO_INSERT_DESC",
       keywords = "keystone font of power" },
     { type = "toggle", key = "reportKey", label = "MPLUS_REPORT", desc = "MPLUS_REPORT_DESC" },
+    { type = "header", label = "MPLUS_KEYS", icon = "groupframes", wide = true },
+    { type = "toggle", key = "partyKeys", label = "MPLUS_KEYS_SHARE", desc = "MPLUS_KEYS_SHARE_DESC",
+      keywords = "keystone party keys libkeystone bigwigs dbm" },
+    { type = "custom", label = "MPLUS_KEYS_LIST", fullWidth = true, height = 150, get = function() return true end,
+      hidden = function(m) return not m.db.partyKeys end, build = function(row) return ns.modules.MythicPlus.Keystones.BuildRow(row) end },
+    { type = "button", label = "MPLUS_KEYS_REQUEST", desc = "MPLUS_KEYS_REQUEST_DESC", button = "MPLUS_KEYS_REFRESH",
+      icon = "reload", hidden = function(m) return not m.db.partyKeys end,
+      func = function(m) m.Keystones:Request() end },
 })

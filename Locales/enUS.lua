@@ -807,4 +807,19 @@ ns.RegisterLocale("enUS", {
     MPLUS_TIMER_SPLITS_DESC = "Each boss and the forces show how far ahead (green) or behind (red) you are against your fastest timed run of this dungeon and level. Bosses still to kill show the time to beat.",
     MPLUS_TIMER_PULL = "Current pull",
     MPLUS_TIMER_PULL_DESC = "In combat, adds the forces of the enemies you are fighting to the forces line (+4.10%). Only shown when the game lets addons read those values; otherwise the line stays as it is.",
+    ---------------------------------------------------------------- keystones
+    MPLUS_KEYS = "Party keystones",
+    MPLUS_KEYS_SHARE = "Share keystones with the party",
+    MPLUS_KEYS_SHARE_DESC = "Swaps keystone, dungeon and rating with party members who run Phoenix UI, BigWigs, DBM or another addon that speaks LibKeystone. Only outside instances: the game blocks addon messages inside them.",
+    MPLUS_KEYS_LIST = "Keystones",
+    MPLUS_KEYS_REQUEST = "Ask the party",
+    MPLUS_KEYS_REQUEST_DESC = "Requests every member's keystone again.",
+    MPLUS_KEYS_REFRESH = "Refresh",
+    MPLUS_KEYS_NONE = "No keystone",
+    MPLUS_KEYS_UNKNOWN = "Unknown (no compatible addon)",
+    MPLUS_KEYS_SOLO = "Join a party to see your group's keystones here.",
+    ---------------------------------------------------------------- keystones
+    PREVIEW_KEYS_DUNGEON1 = "Ember Spire",
+    PREVIEW_KEYS_DUNGEON2 = "Ashen Vault",
+    PREVIEW_KEYS_DUNGEON3 = "Cinder Deeps",
 })

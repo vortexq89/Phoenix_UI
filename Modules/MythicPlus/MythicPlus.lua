@@ -9,7 +9,7 @@ local M = ns:NewModule("MythicPlus", {
     defaults = {
         autoInsert = true, reportKey = true,
         timer = true, timerForces = true, timerBosses = true, timerDeaths = true, timerBest = true,
-        timerSplits = true, timerPull = true,
+        timerSplits = true, timerPull = true, partyKeys = true,
     },
     -- run: splits of the key in progress (survives /reload); best: fastest timed run per "mapID:level";
     -- bestSplits: that run's boss and forces splits, compared live on the timer.
@@ -46,6 +46,7 @@ end
 
 function M:OnEnable()
     self:EnableTimer()
+    if self.db.partyKeys then self:EnableKeystones() end
     ns.Events:On("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN", self, insert)
     ns.Events:On("CHALLENGE_MODE_COMPLETED", self, function()
         if not M.db.reportKey then return end
@@ -59,8 +60,10 @@ end
 
 function M:OnDisable()
     self:DisableTimer()
+    self:DisableKeystones()
 end
 
 function M:Refresh()
     self:RefreshTimer()
+    if self.db.partyKeys then self:EnableKeystones() else self:DisableKeystones() end
 end

@@ -205,7 +205,8 @@ local libs = {
         SettingType = setmetatable({}, { __index = function(_, k) return k end }),
     },
 }
-rawset(env, "LibStub", setmetatable({}, { __call = function(_, name)
+rawset(env, "LibStub", setmetatable({}, { __call = function(_, name, silent)
+    if silent then return libs[name] end -- optional libraries embedded by other addons
     return assert(libs[name], "unknown library " .. tostring(name))
 end }))
 
@@ -462,6 +463,37 @@ try("mythic+ pull", function()
     fire("NAME_PLATE_UNIT_REMOVED", "nameplate1")
     fire("NAME_PLATE_UNIT_REMOVED", "nameplate2")
     assert(M.PullCount() == 0, "removed plates still counted")
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
+end)
+-- party keystones over the LibKeystone protocol: store answers, answer requests, stay quiet in lockdown
+try("mythic+ keystones", function()
+    local K = ns.modules.MythicPlus.Keystones
+    local saved, sent, locked = {}, {}, false
+    for _, k in ipairs({ "UnitName", "UnitClass", "IsInGroup", "IsInRaid", "Ambiguate", "C_ChatInfo", "C_MythicPlus" }) do
+        saved[k] = rawget(env, k) or false
+    end
+    rawset(env, "UnitName", function(unit) return unit == "party1" and "Tank" or (unit == "player" and "Me" or nil) end)
+    rawset(env, "UnitClass", function() return "Warrior", "WARRIOR" end)
+    rawset(env, "IsInGroup", function() return true end)
+    rawset(env, "IsInRaid", function() return false end)
+    rawset(env, "Ambiguate", function(name) return (name:gsub("%-.*$", "")) end)
+    rawset(env, "C_MythicPlus", { GetOwnedKeystoneLevel = function() return 12 end,
+        GetOwnedKeystoneChallengeMapID = function() return 501 end })
+    rawset(env, "C_ChatInfo", { RegisterAddonMessagePrefix = function() end,
+        InChatMessagingLockdown = function() return locked end,
+        SendAddonMessage = function(prefix, text, channel) sent[#sent + 1] = prefix .. "|" .. text .. "|" .. channel end })
+    fire("CHAT_MSG_ADDON", "LibKS", "14,500,3120", "PARTY", "Tank-Realm")
+    assert(K.keys.Tank and K.keys.Tank.level == 14 and K.keys.Tank.mapID == 500, "a party keystone was not stored")
+    fire("CHAT_MSG_ADDON", "LibKS", "R", "PARTY", "Tank-Realm")
+    assert(sent[#sent] and sent[#sent]:match("^LibKS|12,501,%d+|PARTY$"), "no answer to a request: " .. tostring(sent[#sent]))
+    local rows = K:Rows()
+    assert(#rows == 2 and rows[1].own and rows[2].level == 14, "keystone rows are wrong")
+    locked = true
+    local n = #sent
+    K:Request(); K:Share()
+    assert(#sent == n, "addon messages were sent during chat lockdown")
+    fire("CHAT_MSG_ADDON", "LibKS", "garbage", "PARTY", "Tank-Realm")
+    K.keys = {}
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- a representative set of gameplay events with plausible payloads
