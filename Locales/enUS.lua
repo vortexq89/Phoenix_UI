@@ -786,4 +786,6 @@ ns.RegisterLocale("enUS", {
     TAB_TEXT = "Text",
     TAB_GAME = "Game settings",
     TAB_CONTENT = "Content",
+    ---------------------------------------------------------------- nameplates
+    NP_FRAME = "Border and background",
 })

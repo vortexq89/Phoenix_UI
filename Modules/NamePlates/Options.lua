@@ -14,6 +14,7 @@ ns:RegisterOptions("NamePlates", {
     { type = "toggle", key = "texture", label = "NP_TEXTURE", desc = "NP_TEXTURE_DESC", reload = true },
     { type = "texture", key = "bar", label = "BAR_TEXTURE", allowDefault = true,
       disabled = function(m) return not m.db.texture end, keywords = "statusbar texture" },
+    { type = "header", label = "NP_FRAME" },
     Opt.Border("border"),
     Opt.Background("background"),
     { type = "tab", label = "TAB_TEXT" },

@@ -511,7 +511,12 @@ function Config.BuildSchemaPage(parent, m, schema)
             if top.isPreview then top:SetHeight(40 + top.pane:GetHeight() + 16) end
             y = y + top:GetHeight() + CARD_GAP
         end
-        local cols = (not m.singleColumn and width >= TWO_COLUMNS_AT) and 2 or 1
+        local onPage = 0
+        for _, c in ipairs(self.cards) do
+            if not self.tabs or c.tab == self.tab then onPage = onPage + 1 end
+        end
+        -- a lone card spans the page instead of leaving an empty column beside it
+        local cols = (not m.singleColumn and width >= TWO_COLUMNS_AT and onPage > 1) and 2 or 1
         local colW = math.floor((width - (cols - 1) * CARD_GAP) / cols)
         local colY = { y, y }
         for _, c in ipairs(self.cards) do
