@@ -1,5 +1,24 @@
 # Phoenix UI changelog
 
+## 2.0.0-beta1
+
+### New
+- **Mythic+ timer**: ahead/behind against your best timed run of the dungeon and level for every boss and the forces,
+  the time to beat beside bosses still alive, and the current pull added to the forces line when the game lets
+  addons read it (otherwise it stays silent).
+- **Party keystones** on the Mythic+ page: your group's keys, dungeons and ratings over the LibKeystone protocol, so
+  BigWigs and DBM users show up too. Sent only outside instances, never during chat lockdown.
+- **This week** on Home: Great Vault progress for dungeons, raid and world, Mythic+ rating, runs and best key.
+- **Chat**: unread tabs glow in the accent colour; whisper tabs use the whisper colour.
+- **Translations**: deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW, for every string.
+- `/phoenix testerror` raises a harmless, clearly labelled error to try the bug catcher and the uploader.
+- `docs/TESTING.md`: the in-game checklist for this beta.
+
+### Fixed
+- The version no longer reads `@project-version@` in an unpackaged checkout: the source TOC carries `2.0.0-beta1`
+  and only packaged builds use the packager token.
+
+
 ## 2.0.0 — Midnight rebuild (Interface 120105, WoW 12.1.5)
 
 A ground-up rewrite for the 12.x interface. Settings from 11.x are imported once where they still mean something;

@@ -41,13 +41,20 @@ Mode cannot reach.
 | | **Damage Meter** | Skin for Blizzard's built-in meter; optional one-click Details! style |
 | | **Spell History** | A strip of your recent casts, movable in Edit Mode |
 | | **PvP** | Safe queue pop with timer, TAB targets players in PvP, `/gg` to surrender an arena |
-| Social | **Chat** | Clickable URLs with a copy box, copy-chat window, arrow-key history that survives a reload, Shift/Ctrl wheel scrolling |
+| Social | **Chat** | Clickable URLs with a copy box, copy-chat window, arrow-key history that survives a reload, Shift/Ctrl wheel scrolling, unread tabs that glow in the accent colour, whisper tabs in the whisper colour |
 | | **AFK Screen** | A calm full-screen view of your character while away |
 | Utility | **Quality of Life** | Hide talking heads, quiet errors in combat, achievement screenshots, Cooldown Manager toggle |
 | | **Automation** | Repair, sell junk, fill "DELETE", decline duels, accept friend invites and resurrections, release in BGs, skip seen cinematics |
-| | **Mythic+** | Run timer with chest thresholds, enemy forces, boss splits, deaths and personal bests; auto-insert your keystone, report your new key |
+| | **Mythic+** | Run timer with chest thresholds, enemy forces, boss splits, deaths and personal bests; ahead/behind against your best run, the current pull on the forces line (when the game allows it); party keystones over LibKeystone (works with BigWigs and DBM users); auto-insert your keystone, report your new key |
 
 Every module can be switched off. Modules that hook Blizzard frames ask for a reload when you turn them off.
+
+Home shows **this week** at a glance: Great Vault progress for dungeons, raid and world, your Mythic+ rating, runs
+and best key.
+
+**Languages:** English, Deutsch, Français, Español (ES and MX), Português (BR), Русский, Italiano, 한국어, 简体中文 and
+繁體中文, every string. Korean and Chinese clients draw all Phoenix text with the game's own font so no glyph is ever
+missing; Russian clients only offer bundled fonts that include Cyrillic.
 
 ## Screenshots
 
@@ -59,6 +66,7 @@ Every module can be switched off. Modules that hook Blizzard frames ask for a re
 | ![Mythic+ timer and nameplate forces](docs/screenshots/mplus.png) | ![Nameplates with live preview](docs/screenshots/nameplates.png) |
 | ![Unit frames with unit selector](docs/screenshots/unitframes.png) | ![Font picker](docs/screenshots/fonts.png) |
 | ![Bar texture picker](docs/screenshots/textures.png) | ![Bundled fonts and statusbars](docs/screenshots/media.png) |
+| ![This week: Great Vault and rating on Home](docs/screenshots/vault.png) | ![Mythic+ page with party keystones](docs/screenshots/keystones.png) |
 
 The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
 same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world timer at 150 % and sample nameplates.
@@ -144,11 +152,12 @@ follows that. It skins and configures the Blizzard features and no longer bundle
 ```bash
 luacheck .                          # zero warnings, generated 12.1.5 API std
 python3 tools/check_api.py          # APIs, events, CVars, templates, atlases vs. 12.1.5; load-chain check
-python3 tools/check_locales.py      # locale coverage
+python3 tools/check_locales.py      # locale coverage; every translation complete
 lua5.1 tools/smoke/harness.lua .    # offline load test
 ```
 
-CI runs all four on every push. Read [`AGENTS.md`](AGENTS.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+CI runs all four on every push. The in-game checklist for a release is [`docs/TESTING.md`](docs/TESTING.md).
+ Read [`AGENTS.md`](AGENTS.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 before contributing. They cover the module contract, taint and secret-value rules, and the theme tokens.
 
 ## Credits

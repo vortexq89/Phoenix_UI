@@ -37,17 +37,17 @@ item levels and movers. The first four were missing or partial in 2.0.0.
 | M7 | **Theme tokens everywhere** | The range tint and item level text used literal colors and did not follow theme changes | `ns.Theme` `state.danger` and `Skin:Text`, plus `PUI_THEME_CHANGED` | S | Done, a02ce19 |
 | M8 | **Enemy forces on nameplates** | Pulling for count is the core M+ planning task. Platynator proved the API works | `C_ScenarioInfo.GetUnitCriteriaProgressValues(unit)` (12.0.5), which may be secret, so it is shown with `C_StringUtil.WrapString(TruncateWhenZero(count), "+")` and never compared | S | Done, 7140a64. **Verify in game** |
 
-## Should (next)
+## Should (done for 2.0.0-beta1)
 
-| # | Item | Why | API and feasibility | Effort |
-|---|---|---|---|---|
-| S1 | **Timer: compare against your best splits** | WarpDeplete users rely on "ahead/behind" for each boss | Splits are already stored per run. Store the best run's splits with `best[...]` and show the difference. Plain numbers only | S |
-| S2 | **Timer: forces "pull" preview** | Shows how much the current pull adds before it dies | Sum `GetUnitCriteriaProgressValues` over nameplates in combat. **Only if the values are not secret in game**. If they are, the sum cannot be done and the item is dropped | M |
-| S3 | **Keystone list in the Mythic+ page** | Lets you see party keys without asking in chat | Party data needs addon messages (`C_ChatInfo.SendAddonMessage`), which are restricted inside instances in 12.x. Possible in town only. Needs a design decision | M |
-| S4 | **Great Vault and season summary on Home** | One glance at weekly progress | `C_WeeklyRewards.GetActivities`, `C_MythicPlus.GetRunHistory`. Non-secret | S |
-| S5 | **Chat: tab flash and whisper tab colors** | Small readability win | `FCF_StartAlertFlash` hooks, theme tokens. Purely cosmetic | S |
-| S6 | **Locales** beyond enUS | 582 keys, enUS only today | Locale files plus `check_locales.py` already enforce the key set. Needs translators | M |
-| S7 | **In-game test pass** for M2, M8 and the tooltip rating | Secret behaviour of the forces API and completion events can only be confirmed live | A test checklist in docs/AUDIT.md | S |
+| # | Item | Why | API and feasibility | Effort | Status |
+|---|---|---|---|---|---|
+| S1 | **Timer: compare against your best splits** | WarpDeplete users rely on "ahead/behind" for each boss | Splits are already stored per run. Store the best run's splits with `best[...]` and show the difference. Plain numbers only | S | Done, 6675461 |
+| S2 | **Timer: forces "pull" preview** | Shows how much the current pull adds before it dies | Sum `GetUnitCriteriaProgressValues` over nameplates in combat. **Only if the values are not secret in game**. If they are, the sum cannot be done and the item is dropped | M | Done, 6675461. The sum is dropped silently when any value is secret. **Verify in game** |
+| S3 | **Keystone list in the Mythic+ page** | Lets you see party keys without asking in chat | Party data needs addon messages (`C_ChatInfo.SendAddonMessage`), which are restricted inside instances in 12.x. Possible in town only. Needs a design decision | M | Done, b1315e3. Speaks LibKeystone (BigWigs, DBM); never sends during chat lockdown |
+| S4 | **Great Vault and season summary on Home** | One glance at weekly progress | `C_WeeklyRewards.GetActivities`, `C_MythicPlus.GetRunHistory`. Non-secret | S | Done, 2466387 |
+| S5 | **Chat: tab flash and whisper tab colors** | Small readability win | `FCF_StartAlertFlash` hooks, theme tokens. Purely cosmetic | S | Done, f613919 |
+| S6 | **Locales** beyond enUS | 756 keys, enUS only before beta1 | Locale files plus `check_locales.py` already enforce the key set. Needs translators | M | Done: deDE, frFR, esES (also esMX), ptBR, ruRU, itIT, koKR, zhCN, zhTW (91bc938…90f6425). check_locales.py and the harness enforce completeness. Native-speaker review welcome |
+| S7 | **In-game test pass** for M2, M8 and the tooltip rating | Secret behaviour of the forces API and completion events can only be confirmed live | A test checklist in docs/TESTING.md | S | Done: docs/TESTING.md (f9cdae4) |
 
 ## Could (later, if there is demand)
 

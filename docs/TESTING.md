@@ -219,8 +219,8 @@ the game.
 
 - [ ] **14.1 ruRU.** **Expect:** every page in Russian, with Cyrillic in all bundled fonts (fonts without Cyrillic fall
   back to the game font). No text runs past its row.
-- [ ] **14.2 koKR.** **Expect:** Korean text everywhere with no empty boxes (□). Font pickers list only fonts that can
-  show Hangul, with the game font as the default.
+- [ ] **14.2 koKR.** **Expect:** Korean text everywhere with no empty boxes (□). All Phoenix text uses the game's own
+  font on Korean and Chinese clients, so picking another font in a picker changes nothing there (that is by design).
 - [ ] **14.3 zhCN or zhTW.** As 14.2, for Chinese characters.
 - [ ] **14.4 Back to your language.** Switch back to English.
   **Expect:** everything is English again, and settings are unchanged.

@@ -30,6 +30,7 @@ Phoenix_UI/
 │  ├─ LibStub/  CallbackHandler-1.0/  LibSharedMedia-3.0/  LibEditMode/
 ├─ Locales/
 │  ├─ Locales.xml  Locales.lua (fallback table, ns.RegisterLocale)  enUS.lua
+│  │  deDE frFR esES(+esMX) ptBR ruRU itIT koKR zhCN zhTW .lua  (complete; checked by check_locales.py + harness)
 ├─ Core/
 │  ├─ Core.xml
 │  ├─ Namespace.lua     -- ns tables, version, constants, ns:Print / ns:Debug, SafeCall
@@ -217,7 +218,11 @@ is always the last step's version, and strings from a newer schema are refused. 
 ## 6. Localization
 
 * `Locales/enUS.lua` defines the base table: `ns.L = setmetatable({ KEY = "English text", … }, { __index = function(t, k) return k end })`.
-* Other locale files return early unless `GetLocale()` matches, and only override keys.
+* Other locale files return early unless `GetLocale()` matches, and only override keys. Every shipped translation
+  defines every enUS key with the same format specifiers, `\n` and colour codes (`check_locales.py`, harness "locales").
+  Lua's `format` has no positional arguments, so a translation must keep the `%s`/`%d` order of the English text.
+* koKR/zhCN/zhTW: `Media:Font` returns `STANDARD_TEXT_FONT` (bundled fonts have no CJK glyphs); ruRU hides fonts without
+  Cyrillic from the pickers and swaps them for Roboto.
 * Code uses **keys**, never inline English: `L.TOOLTIP_SHOW_IDS`. Option schema `label`/`desc` fields are locale keys.
 * Fonts must support the client locale. `ns.Theme:Font(role)` falls back to Blizzard `STANDARD_TEXT_FONT` / `UNIT_NAME_FONT` on koKR/zhCN/zhTW (the bundled Latin fonts lack CJK glyphs). On ruRU the pickers only list fonts whose subset covers А–я (`cyrillic = true` in `Core/FontData.lua`); Cinzel is only used for the Latin "PHOENIX" wordmark.
 
