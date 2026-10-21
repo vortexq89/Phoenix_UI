@@ -753,4 +753,14 @@ ns.RegisterLocale("enUS", {
     DT_COLOR_VALUES = "Colour by state",
     DT_COLOR_VALUES_DESC = "Green, amber or red values for frame rate, latency and durability.",
     DT_ICONS = "Show icons",
+    ---------------------------------------------------------------- tooltip 2.1
+    TOOLTIP_BAR_HEIGHT = "Bar height",
+    TOOLTIP_TEXT = "Text",
+    TOOLTIP_FONTS = "Restyle tooltip text",
+    TOOLTIP_FONTS_DESC = "Use your fonts for every tooltip line.",
+    TOOLTIP_HEADER_FONT = "Title font",
+    TOOLTIP_BODY_FONT = "Line font",
+    PREVIEW_TT_GUILD = "<Ashes of Al'ar>",
+    PREVIEW_TT_LEVEL = "Level 90 Blood Elf Mage",
+    PREVIEW_TT_ROLE = "Damage",
 })

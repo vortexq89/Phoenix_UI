@@ -109,3 +109,6 @@ function Opt.Flat(...)
     end
     return out
 end
+
+-- Adds fields (disabled, hidden, desc …) to a row built by the helpers above.
+function Opt.With(row, extra) return with(row, extra) end

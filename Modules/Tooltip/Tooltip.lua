@@ -1,6 +1,6 @@
 local _, ns = ...
 local L = ns.L
-local Skin, Secret = ns.Skin, ns.Secret
+local Skin, Secret, Style, Media, Theme = ns.Skin, ns.Secret, ns.Style, ns.Media, ns.Theme
 
 --[[ Tooltip: Phoenix skin, cursor anchoring, class/quality borders and extra lines.
     All data comes from TooltipDataProcessor post-calls; anything secret is skipped, never compared. ]]
@@ -9,6 +9,11 @@ local M = ns:NewModule("Tooltip", {
     defaults = {
         skin = true, anchor = "DEFAULT", hideInCombat = false, target = true, role = true, ids = false,
         classBorder = true, qualityBorder = true, healthBar = true, mplusRating = true,
+        backdrop = Style.Background({ alpha = 0.97 }),
+        border = Style.Border(),
+        fonts = true,
+        header = Style.Text(14), body = Style.Text(12),
+        barTexture = "", barHeight = 4,
     },
 })
 
@@ -17,9 +22,29 @@ local isOurs = {}
 local skinned = setmetatable({}, { __mode = "k" })
 local ROLE_ATLAS = { TANK = "roleicon-tiny-tank", HEALER = "roleicon-tiny-healer", DAMAGER = "roleicon-tiny-dps" }
 
+---------------------------------------------------------------- style (shared with the options preview)
+function M:StyleFrame(frame)
+    Skin:Backdrop(frame, self.db.backdrop, "bg.raised")
+    Skin:BorderSpec(frame, self.db.border, "border.strong")
+end
+
+function M:BorderColor() return Skin:SpecColor(self.db.border.color, "border.strong") end
+
+-- Line fonts; the line colours stay whatever the tooltip gives them.
+function M:StyleLines(header, body)
+    if not self.db.fonts then return end
+    if header then Skin:TextSpec(header, self.db.header, "body") end
+    for _, fs in ipairs(body or {}) do Skin:TextSpec(fs, self.db.body, "desc") end
+end
+
+function M:StyleHealthBar(bar)
+    bar:SetStatusBarTexture(self.db.barTexture ~= "" and Media:Bar(self.db.barTexture) or Theme:Bar())
+    bar:SetHeight(self.db.barHeight)
+end
+
 local function border(tt, r, g, b)
     if not skinned[tt] then return end
-    if r then Skin:SetBorderColor(tt, r, g, b, 1) else Skin:SetBorderColor(tt, "border.strong") end
+    if r then Skin:SetBorderColor(tt, r, g, b, 1) else Skin:SetBorderColor(tt, M:BorderColor()) end
 end
 
 local function skin(tt)
@@ -27,11 +52,19 @@ local function skin(tt)
     Skin:HideRegion(tt.NineSlice)
     if not skinned[tt] then
         skinned[tt] = true
-        Skin:Register(tt, function(self)
-            Skin:Panel(self, "raised", { border = "border.strong", shadow = 8, sheen = 20 })
-        end)
+        Skin:Register(tt, function(self) M:StyleFrame(self) end)
         tt:HookScript("OnTooltipCleared", function(self) border(self) end)
     end
+end
+
+-- Tooltip lines use these shared font objects; restyling them reaches every tooltip line.
+local FONT_OBJECTS = { header = { "GameTooltipHeaderText" }, body = { "GameTooltipText", "GameTooltipTextSmall" } }
+local function styleFonts()
+    if not M.db.fonts then return end
+    local header = _G[FONT_OBJECTS.header[1]]
+    local body = {}
+    for _, name in ipairs(FONT_OBJECTS.body) do body[#body + 1] = _G[name] end
+    M:StyleLines(header, body)
 end
 
 local function onBackdrop(tt)
@@ -133,7 +166,18 @@ function M:OnEnable()
         end
     end
     if self.db.healthBar and GameTooltip.StatusBar then
-        GameTooltip.StatusBar:SetHeight(4)
-        Skin:Register(GameTooltip.StatusBar, function(bar) Skin:StatusBar(bar, { border = true }) end)
+        Skin:Register(GameTooltip.StatusBar, function(bar)
+            Skin:StatusBar(bar, { border = true })
+            M:StyleHealthBar(bar)
+        end)
     end
+    styleFonts()
+end
+
+function M:Refresh()
+    for tt in pairs(skinned) do self:StyleFrame(tt); border(tt) end
+    if self.db.healthBar and GameTooltip.StatusBar and Skin:IsSkinned(GameTooltip.StatusBar) then
+        self:StyleHealthBar(GameTooltip.StatusBar)
+    end
+    styleFonts()
 end

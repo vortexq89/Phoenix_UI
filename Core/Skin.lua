@@ -169,7 +169,7 @@ local function recordFont(fs)
     if originals[fs] then return end
     local path, osize, oflags = fs:GetFont()
     local r, g, b, a = fs:GetTextColor()
-    originals[fs] = { font = { path, osize, oflags }, fontObject = fs:GetFontObject(), color = { r, g, b, a } }
+    originals[fs] = { font = { path, osize, oflags }, fontObject = fs.GetFontObject and fs:GetFontObject(), color = { r, g, b, a } }
 end
 
 function Sk:Text(fs, role, colorToken, size, flags)
