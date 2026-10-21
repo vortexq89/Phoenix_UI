@@ -1,0 +1,16 @@
+---
+description: Lua code style and namespacing for all addon Lua files
+globs: ["**/*.lua"]
+alwaysApply: false
+---
+# Lua style
+
+- First line of every addon file: `local ADDON, ns = ...`. Pull shared objects from `ns` (`local L = ns.L`).
+- **No globals.** No implicit globals, no `_G.X = …`, no `setglobal`, no assigning to `string.*`/`table.*`/`math.*` (12.1.5 ships natives like `string.startswith`, `table.contains`, `math.clamp`; use them, never polyfill).
+- Allowed SavedVariables only: `PhoenixUIDB`, `PhoenixUICharDB` (+ legacy `Phoenix_UIDB`, `Phoenix_UIPerCharDB` inside `Core/Migrations.lua`).
+- 4 spaces, double quotes, ≤140 cols, early returns, no commented-out code, no `print` (use `ns:Print` / `ns:Debug`).
+- Naming: methods `PascalCase`, locals `camelCase`, constants `UPPER_SNAKE` on `ns.C`, locale keys `MODULE_KEY`, internal messages `PUI_*`, required frame names `PhoenixUI_*`.
+- Use modern namespaces: `C_Spell`, `C_Item`, `C_AddOns`, `C_SpecializationInfo`, `C_UnitAuras`, `C_ChatInfo`, `C_Timer`, `C_EncodingUtil`, `ChatFrameUtil`, `MenuUtil`, `Settings`, `TooltipDataProcessor`, `EventUtil`.
+- Tables from `C_Spell.GetSpellInfo` etc. are tables, not multiple returns. Read the doc's `Returns`.
+- Pools over ad-hoc creation (`CreateFramePool`, `CreateObjectPool`); create frames lazily on first enable.
+- Write a helper once in `Core/Util.lua` (or the module that owns it) and search before adding a new one.

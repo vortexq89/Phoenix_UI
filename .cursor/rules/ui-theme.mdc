@@ -1,0 +1,17 @@
+---
+description: Theme, skin and config-UI rules (design language "Phoenix Ember")
+globs: ["UI/**/*", "Modules/**/*.lua", "Core/Theme.lua", "Core/Skin.lua", "Core/Media.lua"]
+alwaysApply: false
+---
+# Theme & UI
+
+- All visuals come from `ns.Theme` tokens (ARCHITECTURE §11) through `ns.Skin` primitives: `Panel`, `Button`, `StatusBar`, `Icon`, `Text`, `Border`, `Restore`. **No literal colours, hex codes, font paths, font sizes, backdrop tables or texture paths in modules.** Add a token instead.
+- Fonts by role only: `brand, title, heading, body, desc, number, unit, combat` → `ns.Theme:Font(role)`. It is locale-aware (CJK falls back to `STANDARD_TEXT_FONT`).
+- Spacing from the 4-px scale `ns.Theme:Space(n)`. Borders are 1 physical pixel (`PixelUtil`). Icons are cropped 8 %.
+- Combat colours (class, power, reaction, dispel) come from Blizzard sources, applied via colour curves when values may be secret.
+- Skins must re-apply on `PUI_THEME_CHANGED` (register the object with `ns.Skin`) and be reversible (`ns.Skin:Restore`).
+- Skin Blizzard windows lazily: `EventUtil.ContinueOnAddOnLoaded("Blizzard_X", fn)`. Target frames by mixin/parentKey (`frame.NineSlice`, `frame.Bg`, `frame.TitleContainer`), never by removed global names such as `*Inset`, `*TextureFrame`, `MainMenuBarArtFrame`.
+- Config window widgets live in `UI/Widgets`. Modules never create option widgets; they declare schema in `Options.lua`.
+- Motion: durations 80–160 ms via AnimationGroups, disabled by `ui.reduceMotion`. No OnUpdate except during an active transition. No animations on in-world frames during combat.
+- Dropdowns/context menus: `MenuUtil` / `DropdownButton` (`WowStyle1DropdownTemplate`). No `UIDropDownMenu`, no `EasyMenu`.
+- Edit Mode: our movable frames register through `ns.EditMode:Register`. Never move Blizzard Edit Mode systems.
