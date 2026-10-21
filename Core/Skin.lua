@@ -112,20 +112,20 @@ local SLICE = { -- texture is 64x64 with 16px corners
     { "BOTTOMLEFT", 0, 0.25, 0.75, 1 }, { "BOTTOM", 0.25, 0.75, 0.75, 1 }, { "BOTTOMRIGHT", 0.75, 1, 0.75, 1 },
 }
 
-function Sk:Shadow(frame, size, token, alpha)
+local function nineSlice(frame, slot, file, size, r, g, b, a)
     local s = st(frame)
-    size = size or 10
-    if not s.shadow then
-        s.shadow = {}
+    local sh = s[slot]
+    if not sh then
+        sh = {}
         for i, def in ipairs(SLICE) do
             local t = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
-            t:SetTexture(Media.textures.SHADOW)
             t:SetTexCoord(def[2], def[3], def[4], def[5])
-            s.shadow[i] = t
+            sh[i] = t
         end
+        s[slot] = sh
     end
-    local sh = s.shadow
     local o = size
+    for i = 1, 8 do sh[i]:SetTexture(file); sh[i]:ClearAllPoints() end
     sh[1]:SetPoint("TOPLEFT", -o, o);                 sh[1]:SetSize(o, o)
     sh[3]:SetPoint("TOPRIGHT", o, o);                 sh[3]:SetSize(o, o)
     sh[6]:SetPoint("BOTTOMLEFT", -o, -o);             sh[6]:SetSize(o, o)
@@ -134,15 +134,28 @@ function Sk:Shadow(frame, size, token, alpha)
     sh[7]:SetPoint("TOPLEFT", sh[6], "TOPRIGHT");     sh[7]:SetPoint("BOTTOMRIGHT", sh[8], "BOTTOMLEFT")
     sh[4]:SetPoint("TOPLEFT", sh[1], "BOTTOMLEFT");   sh[4]:SetPoint("BOTTOMRIGHT", sh[6], "TOPRIGHT")
     sh[5]:SetPoint("TOPLEFT", sh[3], "BOTTOMLEFT");   sh[5]:SetPoint("BOTTOMRIGHT", sh[8], "TOPRIGHT")
-    local r, g, b = 0, 0, 0
-    if token then r, g, b = Theme:Color(token) end
-    for i = 1, 8 do sh[i]:SetVertexColor(r, g, b, alpha or 0.6); sh[i]:Show() end
+    for i = 1, 8 do sh[i]:SetVertexColor(r, g, b, a); sh[i]:Show() end
 end
 
-function Sk:HideShadow(frame)
+local function hideSlices(frame, slot)
     local s = state[frame]
-    if s and s.shadow then for i = 1, 8 do s.shadow[i]:Hide() end end
+    if s and s[slot] then for i = 1, 8 do s[slot][i]:Hide() end end
 end
+
+function Sk:Shadow(frame, size, token, alpha)
+    local r, g, b = 0, 0, 0
+    if token then r, g, b = Theme:Color(token) end
+    nineSlice(frame, "shadow", Media.textures.SHADOW, size or 10, r, g, b, alpha or 0.6)
+end
+
+-- Coloured outer glow; kind: "Soft" | "Tight" | "Wide" (Core/TextureData.lua).
+function Sk:Glow(frame, size, kind, r, g, b, a)
+    nineSlice(frame, "glow", Media:Glow(kind), size or 8, r, g, b, a or 0.9)
+end
+
+function Sk:HideGlow(frame) hideSlices(frame, "glow") end
+
+function Sk:HideShadow(frame) hideSlices(frame, "shadow") end
 
 ---------------------------------------------------------------- gradients
 function Sk:Gradient(tex, orientation, tokenA, tokenB, alphaA, alphaB)
@@ -152,13 +165,15 @@ function Sk:Gradient(tex, orientation, tokenA, tokenB, alphaA, alphaB)
 end
 
 ---------------------------------------------------------------- text
+local function recordFont(fs)
+    if originals[fs] then return end
+    local path, osize, oflags = fs:GetFont()
+    local r, g, b, a = fs:GetTextColor()
+    originals[fs] = { font = { path, osize, oflags }, fontObject = fs:GetFontObject(), color = { r, g, b, a } }
+end
+
 function Sk:Text(fs, role, colorToken, size, flags)
-    local o = originals[fs]
-    if not o then
-        local path, osize, oflags = fs:GetFont()
-        local r, g, b, a = fs:GetTextColor()
-        originals[fs] = { font = { path, osize, oflags }, fontObject = fs:GetFontObject(), color = { r, g, b, a } }
-    end
+    recordFont(fs)
     local path, rsize, rflags = Theme:Font(role, size)
     fs:SetFont(path, rsize, flags or rflags)
     if flags == nil and rflags == "" then
@@ -166,6 +181,89 @@ function Sk:Text(fs, role, colorToken, size, flags)
         fs:SetShadowOffset(1, -1)
     end
     if colorToken then fs:SetTextColor(Theme:Color(colorToken)) end
+end
+
+---------------------------------------------------------------- style specs
+--[[ Specs are the saved shapes built by ns.Style (Core/Style.lua) and edited by the options. Modules and
+    the option previews both style through these, so a preview is drawn by the same code as the real frame.
+    A spec colour of false means "the theme token passed by the caller". ]]
+local OUTLINES = { NONE = "", OUTLINE = "OUTLINE", THICK = "THICKOUTLINE", MONO = "OUTLINE, MONOCHROME" }
+Sk.OUTLINES = OUTLINES
+
+function Sk:SpecColor(color, token)
+    if type(color) == "table" then return color.r or 1, color.g or 1, color.b or 1, color.a or 1 end
+    return Theme:Color(token or "text.primary")
+end
+
+-- spec: { font = key|"", size, outline = NONE|OUTLINE|THICK|MONO, shadow = bool, color = {r,g,b}|false }
+function Sk:TextSpec(fs, spec, role, token)
+    recordFont(fs)
+    local path, size = Theme:Font(role or "unit", spec.size)
+    if spec.font and spec.font ~= "" then path = Media:Font(spec.font) end
+    fs:SetFont(path, size, OUTLINES[spec.outline] or "")
+    if spec.shadow then
+        fs:SetShadowColor(0, 0, 0, 0.9)
+        fs:SetShadowOffset(1, -1)
+    else
+        fs:SetShadowColor(0, 0, 0, 0)
+        fs:SetShadowOffset(0, 0)
+    end
+    if spec.color ~= nil or token then fs:SetTextColor(self:SpecColor(spec.color, token)) end
+end
+
+local JUSTIFY = { LEFT = "LEFT", TOPLEFT = "LEFT", BOTTOMLEFT = "LEFT", RIGHT = "RIGHT", TOPRIGHT = "RIGHT", BOTTOMRIGHT = "RIGHT" }
+
+-- spec: { anchor = "CENTER"|"LEFT"|..., x, y }. Only for FontStrings we created ourselves.
+function Sk:Place(fs, parent, spec)
+    local anchor = spec.anchor or "CENTER"
+    local inset = (JUSTIFY[anchor] == "LEFT" and 4) or (JUSTIFY[anchor] == "RIGHT" and -4) or 0
+    fs:ClearAllPoints()
+    fs:SetPoint(anchor, parent, anchor, inset + (spec.x or 0), spec.y or 0)
+    fs:SetJustifyH(JUSTIFY[anchor] or "CENTER")
+end
+
+-- spec: { style = "none"|"solid"|"glow"|"shadow", size = px, color = {r,g,b,a}|false }
+function Sk:BorderSpec(frame, spec, token)
+    local style = spec.style or "solid"
+    local r, g, b, a = self:SpecColor(spec.color, token or "border.black")
+    local s = state[frame]
+    if style == "none" then
+        if s and s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
+        self:HideGlow(frame)
+        return
+    end
+    if style == "glow" then
+        if s and s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
+        self:Glow(frame, 4 + (spec.size or 1) * 3, "Tight", r, g, b, a)
+        return
+    end
+    self:Border(frame, nil, spec.size or 1)
+    self:SetBorderColor(frame, r, g, b, a)
+    if style == "shadow" then
+        self:Glow(frame, 6 + (spec.size or 1) * 3, "Soft", 0, 0, 0, 0.75)
+    else
+        self:HideGlow(frame)
+    end
+end
+
+-- spec: { alpha = 0..1, color = {r,g,b}|false }; drawn under everything on frame.
+function Sk:Backdrop(frame, spec, token)
+    local s = st(frame)
+    if not s.backdrop then
+        s.backdrop = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
+        s.backdrop:SetTexture(WHITE)
+        s.backdrop:SetAllPoints()
+    end
+    local r, g, b = self:SpecColor(spec.color, token or "bg.sunken")
+    s.backdrop:SetVertexColor(r, g, b, spec.alpha or 0.6)
+    s.backdrop:SetShown((spec.alpha or 0.6) > 0)
+end
+
+-- Icon crop: zoom 0 = Blizzard's full art, 0.08 = the usual trim, up to 0.3.
+function Sk:IconZoom(tex, zoom)
+    if not originals[tex] then originals[tex] = { texcoord = { tex:GetTexCoord() } } end
+    local z = zoom or 0.08
+    tex:SetTexCoord(z, 1 - z, z, 1 - z)
 end
 
 ---------------------------------------------------------------- status bars
@@ -213,7 +311,9 @@ function Sk:Restore(obj)
         if s.sheen then s.sheen:Hide() end
         if s.barbg then s.barbg:Hide() end
         if s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
+        if s.backdrop then s.backdrop:Hide() end
         self:HideShadow(obj)
+        self:HideGlow(obj)
     end
     local o = originals[obj]
     if not o then return end
