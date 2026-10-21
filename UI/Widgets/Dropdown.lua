@@ -22,13 +22,14 @@ local function getPopup()
         self:Render()
     end)
     -- Close when clicking anywhere else.
-    popup:SetScript("OnUpdate", function(self)
-        local clicked = IsMouseButtonDown("LeftButton") or IsMouseButtonDown("RightButton")
-        if clicked and not self:IsMouseOver() and not self.owner:IsMouseOver() then
-            self:Hide()
-        end
+    popup:SetScript("OnEvent", function(self)
+        if not self:IsMouseOver() and not self.owner:IsMouseOver() then self:Hide() end
     end)
-    popup:SetScript("OnHide", function(self) if self.owner then self.owner:SetOpen(false) end end)
+    popup:SetScript("OnShow", function(self) self:RegisterEvent("GLOBAL_MOUSE_DOWN") end)
+    popup:SetScript("OnHide", function(self)
+        self:UnregisterEvent("GLOBAL_MOUSE_DOWN")
+        if self.owner then self.owner:SetOpen(false) end
+    end)
 
     function popup:Row(i)
         local r = self.rows[i]

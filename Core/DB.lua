@@ -135,9 +135,6 @@ end
 
 function DB:ImportProfile(name, data)
     self.sv.profiles[name] = data
-    if name == self.profileName then
-        self.profileName = nil
-    end
     self:SetProfile(name)
 end
 

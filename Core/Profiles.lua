@@ -47,8 +47,19 @@ function P:Summarize(payload)
     return list
 end
 
+-- Never overwrites: a taken name becomes "Name (2)", "Name (3)" …
+local function freeName(base)
+    local profiles, name, n = ns.DB.sv.profiles, base, 1
+    while profiles[name] do
+        n = n + 1
+        name = ("%s (%d)"):format(base, n)
+    end
+    return name
+end
+
 function P:Import(payload, name)
     name = (type(name) == "string" and name ~= "") and name or (type(payload.name) == "string" and payload.name) or "Imported"
+    name = freeName(name)
     local profile = { modules = {} }
     for key, values in pairs(type(payload.profile.modules) == "table" and payload.profile.modules or {}) do
         if ns.modules[key] and type(values) == "table" then profile.modules[key] = values end

@@ -114,7 +114,7 @@ function Config:Search(query)
         end
     end
     for i = n + 1, #f.rows do f.rows[i]:Hide() end
-    f.title:SetText(L.SEARCH_RESULTS:format(n):upper())
+    f.title:SetText((n == 1 and L.SEARCH_RESULT or L.SEARCH_RESULTS:format(n)):upper())
     Skin:Text(f.title, "heading", "text.muted")
     f.empty:SetText(n == 0 and L.SEARCH_NONE:format(query) or "")
     f.scroll.child:SetHeight(n * RESULT_H)

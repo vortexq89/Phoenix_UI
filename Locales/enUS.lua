@@ -19,6 +19,7 @@ ns.RegisterLocale("enUS", {
     CAT_UTILITY = "Utility",
     CAT_PHOENIX = "Phoenix",
     SEARCH_PLACEHOLDER = "Search settings…",
+    SEARCH_RESULT = "1 result",
     SEARCH_RESULTS = "%d results",
     SEARCH_NONE = "Nothing matches that search.",
     NO_OPTIONS = "This module has no further settings.",
