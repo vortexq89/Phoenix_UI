@@ -235,10 +235,12 @@ ns.RegisterLocale("enUS", {
 
     ---------------------------------------------------------------- Minimap
     MINIMAP = "Minimap",
-    MINIMAP_DESC = "A square minimap with coordinates.",
+    MINIMAP_DESC = "Square minimap, coordinates and a themed zone name.",
     MINIMAP_SHAPE = "Shape",
     MINIMAP_SQUARE = "Square minimap",
     MINIMAP_SQUARE_DESC = "Square mask with a thin border.",
+    MINIMAP_SIZE = "Size",
+    MINIMAP_SIZE_DESC = "Set in Edit Mode (Minimap > Size, 50–200 %) so it follows your layouts. Shown here for reference.",
     MINIMAP_INFO = "Information",
     MINIMAP_ZONE_TEXT = "Zone text",
     MINIMAP_ZONE_TEXT_DESC = "Restyle the zone name.",

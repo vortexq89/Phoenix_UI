@@ -2,7 +2,8 @@ local _, ns = ...
 local Skin, Media = ns.Skin, ns.Media
 
 --[[ Minimap: optional square shape with a Phoenix border, themed zone text and player coordinates.
-    Size, position and wheel zoom stay with Blizzard Edit Mode / the default Minimap. ]]
+    Size (50-200 %), position and wheel zoom stay with Blizzard Edit Mode / the default Minimap; the
+    settings page shows the current Edit Mode size and opens Edit Mode to change it. ]]
 local M = ns:NewModule("Minimap", {
     label = "MINIMAP", desc = "MINIMAP_DESC", category = "interface", order = 80, reloadOnToggle = true,
     defaults = { square = true, coords = true, zoneText = true },
@@ -63,6 +64,13 @@ end
 
 function M:Refresh()
     setupCoords(self)
+end
+
+-- Edit Mode's Minimap "Size" setting as a percentage, or nil before Edit Mode has initialized.
+-- EditModeSystemMixin:GetSettingValue only reads the system's settingMap.
+function M:GetEditModeSize()
+    if not (MinimapCluster and MinimapCluster.GetSettingValue and MinimapCluster:IsInitialized()) then return nil end
+    return MinimapCluster:GetSettingValue(Enum.EditModeMinimapSetting.Size)
 end
 
 function M:OnDisable()
