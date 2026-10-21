@@ -1,20 +1,26 @@
 local _, ns = ...
 local L = ns.L
-local Theme, Skin, Secret = ns.Theme, ns.Skin, ns.Secret
+local Theme, Skin, Secret, W = ns.Theme, ns.Skin, ns.Secret, ns.Widgets
 
---[[ DataTexts: one slim, Edit Mode movable info bar (FPS, latency, speed, durability, gold, clock).
-    Each segment is an accent glyph + value + muted unit label. ]]
+--[[ DataTexts: one slim, Edit Mode movable info bar (FPS, latency, speed, durability, gold, clock, bugs).
+    Each segment is an accent glyph + value + muted unit label. The bugs segment shows this session's
+    error count (Bugs module), flashes on a new one and opens the bug viewer on click. ]]
 local M = ns:NewModule("DataTexts", {
     label = "DATATEXTS", desc = "DATATEXTS_DESC", category = "interface", order = 90,
     defaults = {
-        fps = true, latency = true, speed = false, durability = true, gold = false, clock = true,
+        fps = true, latency = true, speed = false, durability = true, gold = false, clock = true, bugs = true,
         clock24 = true, background = true, scale = 1,
     },
 })
 
-local ORDER = { "fps", "latency", "speed", "durability", "gold", "clock" }
+local ORDER = { "fps", "latency", "speed", "durability", "gold", "clock", "bugs" }
 local bar, segments = nil, {}
 local ICON_SIZE = 12
+
+local function bugsModule()
+    local b = ns:GetModule("Bugs")
+    return b and b:IsEnabled() and b or nil
+end
 
 local function colorFor(good, ok, value, invert)
     if invert then value = -value; good = -good; ok = -ok end
@@ -52,7 +58,16 @@ local PROVIDERS = {
         local t = date(M.db.clock24 and "%H:%M" or "%I:%M")
         return t, M.db.clock24 and "" or date("%p")
     end,
+    bugs = function()
+        local unique = bugsModule():Counts()
+        return unique, L.DT_BUGS_UNIT, unique > 0 and "state.danger" or "state.success"
+    end,
 }
+
+-- A segment is shown when enabled here and, for bugs, when the Bugs module is running.
+local function wanted(key)
+    return M.db[key] and (key ~= "bugs" or bugsModule() ~= nil)
+end
 
 local function segment(key)
     local s = segments[key]
@@ -69,6 +84,20 @@ local function segment(key)
         Skin:Text(self.value, "number", "text.primary", 12)
         Skin:Text(self.unit, "small", "text.muted", 10)
     end)
+    if key == "bugs" then
+        s.glow = W.Texture(s, "BACKGROUND", 0, ns.Media.textures.CIRCLE)
+        s.glow:SetSize(ICON_SIZE * 2.4, ICON_SIZE * 2.4)
+        s.glow:SetPoint("CENTER", s.icon)
+        s.glow:SetAlpha(0)
+        Skin:Register(s.glow, function(self) W.Color(self, "state.danger", 0.6) end)
+        s:EnableMouse(true)
+        s:SetScript("OnMouseUp", function() local b = bugsModule(); if b then b:OpenViewer() end end)
+        s:SetScript("OnEnter", function(self)
+            local unique, total = bugsModule():Counts()
+            W.ShowTooltip(self, L.BUGS, L.BUGS_INDICATOR_TIP:format(unique, total))
+        end)
+        s:SetScript("OnLeave", W.HideTooltip)
+    end
     segments[key] = s
     return s
 end
@@ -77,7 +106,7 @@ local function layout()
     local x = 10
     for _, key in ipairs(ORDER) do
         local s = segments[key]
-        if M.db[key] then
+        if wanted(key) then
             s = segment(key)
             s:ClearAllPoints()
             s:SetPoint("LEFT", bar, "LEFT", x, 0)
@@ -93,7 +122,7 @@ end
 
 local function update()
     for _, key in ipairs(ORDER) do
-        if M.db[key] then
+        if wanted(key) then
             local s = segment(key)
             local value, unit, token = PROVIDERS[key]()
             s.value:SetText(value)
@@ -122,6 +151,11 @@ function M:OnEnable()
     self.ticker = C_Timer.NewTicker(1, update)
     ns.Events:On("PLAYER_MONEY", self, update)
     ns.Events:On("UPDATE_INVENTORY_DURABILITY", self, update)
+    ns.Events:Listen("PUI_BUG", self, function(_, _, _report, isNew)
+        update()
+        local b = bugsModule()
+        if isNew and segments.bugs and segments.bugs:IsShown() and b and b.db.flash then b.Pulse(segments.bugs.glow) end
+    end)
 end
 
 function M:OnDisable()
