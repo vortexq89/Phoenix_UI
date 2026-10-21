@@ -10,6 +10,7 @@
 ## Notes-zhTW: 重新美化預設介面並加入實用的小功能。輸入 /pui 開啟設定。
 ## Notes-koKR: 기본 인터페이스를 새로 꾸미고 작은 편의 기능을 더합니다. 설정은 /pui를 입력하세요.
 ## Notes-ptBR: Reestiliza a interface padrão e adiciona pequenos recursos de conveniência. Digite /pui para as opções.
+## Notes-itIT: Ristilizza l'interfaccia predefinita e aggiunge piccole comodità. Scrivi /pui per le impostazioni.
 ## Author: VortexQ8
 #@debug@
 ## Version: 2.0.0-beta1
