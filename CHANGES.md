@@ -13,7 +13,7 @@ everything else starts from fresh defaults.
   and 24 original statusbars, registered with LibSharedMedia as "Phoenix …" so other addons can use them. Pickers
   show every font in its own face and every bar as a strip, grouped, with type-to-filter.
 - **Options 2.1**: two-column pages, tabs, live previews built from each module's own styling code (Nameplates,
-  Unit Frames with a unit selector, Cast Bars, Action Bars, Buffs & Debuffs, Data Bar, Tooltip, Chat and the theme),
+  Unit Frames with a unit selector, Group Frames, Cast Bars, Action Bars, Buffs & Debuffs, Data Bar, Tooltip, Chat and the theme),
   cog popovers for per-text font, size, outline, shadow, colour and position, border style/size/colour,
   background opacity/colour, icon zoom and slot placement, "Apply to" This / All / Multiple, "Apply all settings
   from", a window scale slider and Reload UI / Close in the footer. Search also finds options inside cogs.

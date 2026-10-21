@@ -27,7 +27,7 @@ Mode cannot reach.
 | Interface | **Skins** | Phoenix styling for the game menu, popups and ready check |
 | | **Action Bars** | Square buttons, readable hotkeys and macro names, out-of-range tint |
 | | **Unit Frames** | Bar texture, class and power colors, fonts for player, target, focus and pet |
-| | **Group Frames** | Party and raid frame textures, fonts and borders |
+| | **Group Frames** | Party and raid frame bar texture, border, background and name/status fonts, with a live party preview |
 | | **Cast Bars** | Flat cast bars; icon, timer and latency on your own bar |
 | | **Buffs & Debuffs** | Cropped icons, crisp borders, readable timers and stacks |
 | | **Nameplates** | Bar texture, a health percent that works in restricted content, Mythic+ enemy forces per mob; nameplate visibility toggles |

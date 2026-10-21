@@ -208,7 +208,9 @@ The payload is `{ v, schema, addon, name, profile }`. Import checks the prefix a
 
 **Migration 2 (style specs):** flat 2.0 keys move into the style specs added in 2.1 (`Mg.MOVES`):
 `NamePlates.textSize → health.size`, `ActionBars.fontSize → hotkey.size`, `Auras.durationSize → duration.size`,
-`Auras.countSize → count.size`. Only values saved in the profile move (defaults are not stored), and the old key is removed.
+`Auras.countSize → count.size`, and (step 3, which re-runs the same idempotent move) `GroupFrames.nameSize → name.size`.
+Imported export strings with an older `schema` get the same upgrade (`Migrations:UpgradeProfile`); `ns.C.SCHEMA`
+is always the last step's version, and strings from a newer schema are refused. Only values saved in the profile move (defaults are not stored), and the old key is removed.
 
 ---
 
@@ -293,7 +295,7 @@ Header 56, sidebar 216, footer 40 (profile, status, window scale 0.7–1.4 appli
   creates plain frames with fixed sample data and returns a redraw function that calls the module's own style
   methods (for example `NamePlates:StyleBar`, `UnitFrames:StyleTexts`, `CastBars:FillColor`). Redraws on
   `PUI_SETTING_CHANGED` for the module or General, on `PUI_THEME_CHANGED` and on show. No secure templates, no
-  unit tokens, nothing that can taint. Kinds: theme, nameplate, unitframe, castbar, actionbar, aura, datatext,
+  unit tokens, nothing that can taint. Kinds: theme, nameplate, unitframe, groupframe, castbar, actionbar, aura, datatext,
   tooltip, chat.
 * **Layout:** page padding 24, card gap 16, card header 40, rows 36 (52 with a description), controls 28 high.
   From 760 px of content width cards flow into two columns (each card goes to the shorter column; `wide`
