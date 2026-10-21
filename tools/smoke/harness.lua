@@ -447,6 +447,26 @@ try("icon tiers", function()
     assert(ns.Icons:Markup("home", 14):find("Icons48", 1, true), "markup should pick the 48 px atlas")
 end)
 
+-- media: every bundled font and bar resolves to a file of ours, old keys still work, pickers open
+try("media", function()
+    local M = ns.Media
+    assert(#M.fonts >= 80 and #M.bars >= 20, "bundled media lists are short")
+    for _, f in ipairs(M.fonts) do
+        assert(M:Font(f.key):find("Phoenix_UI", 1, true), "font " .. f.key .. " does not resolve")
+        assert(f.name:find("^Phoenix "), "font " .. f.key .. " is not registered under Phoenix")
+    end
+    assert(M:Font("Inter") == M:Font("InterBold") and M:Font("Cinzel") == M:Font("CinzelBold"), "2.0 font keys lost")
+    for _, b in ipairs(M.bars) do assert(M:Bar(b.key):find("Phoenix_UI", 1, true), "bar " .. b.key) end
+    local lsm = env.LibStub("LibSharedMedia-3.0")
+    assert(lsm:Fetch("font", "Phoenix Inter Bold") and lsm:Fetch("statusbar", "Phoenix Aurora"), "LSM registration")
+    assert(lsm:Fetch("border", "Phoenix Solid"), "LSM border")
+    local list = M:List("font")
+    assert(list[1].font and list[1].group, "font list items lack their sample font or group")
+    local d = ns.Widgets:Dropdown(env.CreateFrame("Frame"), function() return M:List("statusbar") end, "bar")
+    d:SetValue("Aurora")
+    scripts[d].OnClick(d)
+end)
+
 print(("smoke: %d files loaded, %d modules, %d errors"):format(loaded, #(ns.moduleList or {}), #errors))
 for _, e in ipairs(errors) do print("  " .. e) end
 os.exit(#errors == 0 and 0 or 1)

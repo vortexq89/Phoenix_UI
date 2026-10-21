@@ -638,5 +638,7 @@ ns.RegisterLocale("enUS", {
     RECOMMENDED = "Recommended addons",
     RECOMMENDED_TEXT = "Features dropped in 2.0 are better served by dedicated addons that are maintained for Midnight: Premade Groups Filter for group finder filters and MikScrollingBattleText for scrolling combat text. Frame moving is Edit Mode's job; the Movers module covers the few frames it does not manage. Party cooldown and aura-overlay trackers are limited by 12.x secret values; Blizzard's Cooldown Manager covers your own cooldowns.",
     CREDITS = "Credits",
-    CREDITS_TEXT = "LibStub, CallbackHandler-1.0, LibSharedMedia-3.0 and LibEditMode by their authors. Inter, Roboto and Cinzel fonts under the SIL Open Font License. Icons from Phosphor Icons (phosphoricons.com) under the MIT License.",
+    CREDITS_TEXT = "LibStub, CallbackHandler-1.0, LibSharedMedia-3.0 and LibEditMode by their authors. 89 bundled fonts (Inter, Barlow, Oswald, Fira Sans, Cinzel, Roboto and more) under the SIL Open Font License, the Ubuntu Font Licence or Apache 2.0; see Media/Fonts/FONTS.md. Icons from Phosphor Icons (phosphoricons.com) under the MIT License.",
+    ---------------------------------------------------------------- pickers
+    DROPDOWN_FILTER = "Type to filter…",
 })
