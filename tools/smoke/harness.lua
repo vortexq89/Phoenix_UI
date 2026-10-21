@@ -297,6 +297,21 @@ try("profile new", function()
     ns.DB:SetProfile("Default")
     ns.DB:DeleteProfile("Smoke")
 end)
+-- 11.x settings: chat history and the Mythic+ panel land on their 2.0 keys
+try("legacy import", function()
+    rawset(env, "Phoenix_UIDB", { profiles = { Old = {
+        chat = { history = { enabled = false, lines = 500 } },
+        mythicplus = { enabled = true, showTimer = false, showObjectives = false, deathTracker = true, autoGossip = true },
+    } } })
+    local sv = { profiles = {}, profileKeys = {} }
+    ns.Migrations.steps[1].run(sv)
+    rawset(env, "Phoenix_UIDB", nil)
+    local m = sv.profiles.Old.modules
+    assert(m.Chat.keepHistory == false, "chat.history.enabled was not migrated")
+    assert(m.MythicPlus.enabled == true and m.MythicPlus.timer == false, "mythicplus.enabled/showTimer were not migrated")
+    assert(m.MythicPlus.timerForces == false and m.MythicPlus.timerBosses == false, "showObjectives was not migrated")
+    assert(m.MythicPlus.timerDeaths == true and m.MythicPlus.autoGossip == nil, "deathTracker/autoGossip mapping is wrong")
+end)
 -- colour values are keyed { r, g, b } end to end: swatch -> saved setting -> theme
 try("colour round-trip", function()
     local swatch = ns.Widgets:ColorSwatch(env.CreateFrame("Frame"))

@@ -200,10 +200,10 @@ The payload is `{ v, schema, addon, name, profile }`. Import checks the prefix a
 | `actionbars.*` (hotkeys, macros, range, flash) | `modules.ActionBars.*` |
 | `unitframes.*`, `castbars.*`, `nameplates.*` (cosmetic keys only) | matching modules |
 | `tooltip.*` + `idtip.*` | `modules.Tooltip.*` |
-| `chat.*` (style, urls, emoji, history) | `modules.Chat.*` |
+| `chat.link`, `chat.copy`, `chat.history.enabled` | `modules.Chat.urls/copyButton/keepHistory` (the switch only: stored received lines are not imported, 2.0 keeps typed lines) |
 | `maps.minimap.*` | `modules.Minimap.*` |
 | `general.autorepair/autosell/…` | `modules.Automation.*` |
-| `mythicplus.*` (timer/objectives) | `modules.MythicPlus.*` |
+| `mythicplus.enabled/showTimer/showObjectives/deathTracker` | `modules.MythicPlus.enabled/timer/timerForces+timerBosses/timerDeaths` (timer scale, position and colours are Edit Mode and theme now; `enhanceKeystones`, `autoGossip` have no counterpart) |
 | MSBT / CooldownTracker PartyCD / MoveAny / PGF / BuffOverlay blobs | **not migrated** (features removed) |
 
 ---

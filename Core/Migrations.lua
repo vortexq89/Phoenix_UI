@@ -42,6 +42,16 @@ local LEGACY_MAP = {
     { "tooltip.roleIcons", "Tooltip", "role", bool },
     { "chat.link", "Chat", "urls", bool },
     { "chat.copy", "Chat", "copyButton", bool },
+    -- 11.x "Save chat history" kept received lines across sessions; 2.0 keeps what you typed (secret message text
+    -- can no longer be stored). The switch carries over; the old stored lines do not.
+    { "chat.history.enabled", "Chat", "keepHistory", bool },
+    -- 11.x Mythic+ panel. Timer scale/position/colours have no counterpart: Edit Mode places the timer, the theme
+    -- colours it. enhanceKeystones (keystone tooltips) and autoGossip have no 2.0 feature to map to.
+    { "mythicplus.enabled", "MythicPlus", "enabled", bool },
+    { "mythicplus.showTimer", "MythicPlus", "timer", bool },
+    { "mythicplus.showObjectives", "MythicPlus", "timerForces", bool },
+    { "mythicplus.showObjectives", "MythicPlus", "timerBosses", bool },
+    { "mythicplus.deathTracker", "MythicPlus", "timerDeaths", bool },
     { "maps.coords", "Minimap", "coords", bool },
     { "maps.clock", "DataTexts", "clock", bool },
     { "misc.safequeue", "PvP", "safeQueue", bool },
