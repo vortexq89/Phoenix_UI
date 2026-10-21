@@ -109,7 +109,6 @@ function Config:Search(query)
             ns.Icons:Apply(row.icon, e.module.icon, 14)
             row.label:SetText(e.label)
             row.path:SetText(e.path)
-            row.icon:SetTexture(e.module.icon)
             row:Paint()
             row:Show()
         end

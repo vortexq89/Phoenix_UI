@@ -81,7 +81,7 @@ end
 
 ---------------------------------------------------------------- environment
 -- Globals that must start out nil (libraries create them; SavedVariables start empty).
-local NIL = { PhoenixUIDB = true, PhoenixUICharDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true }
+local NIL = { PhoenixUIDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true }
 local env = setmetatable({}, { __index = function(t, k)
     local v = _G[k]
     if v ~= nil or NIL[k] then return v end
@@ -284,6 +284,19 @@ try("profile new", function()
     ns.DB:ResetProfile()
     ns.DB:SetProfile("Default")
     ns.DB:DeleteProfile("Smoke")
+end)
+-- colour values are keyed { r, g, b } end to end: swatch -> saved setting -> theme
+try("colour round-trip", function()
+    local swatch = ns.Widgets:ColorSwatch(env.CreateFrame("Frame"))
+    swatch:SetValue({ r = 0.2, g = 0.4, b = 0.6 })
+    local v = swatch:GetValue()
+    assert(v.r == 0.2 and v.g == 0.4 and v.b == 0.6, "swatch lost a channel")
+    local general = ns.modules.General
+    ns.DB:Set(general, "theme.custom", v)
+    ns.DB:Set(general, "theme.preset", "custom")
+    local r, g, b = ns.Theme:Color("accent.primary")
+    assert(r == 0.2 and g == 0.4 and b == 0.6, ("custom accent is %s %s %s"):format(tostring(r), tostring(g), tostring(b)))
+    ns.DB:Set(general, "theme.preset", "ember")
 end)
 for _, msg in ipairs({ "", "", "profile", "profile Default", "debug", "debug", "general", "nonsense", "reset" }) do
     try("/pui " .. msg, slashes.pui or error, msg)
