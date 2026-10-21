@@ -99,26 +99,37 @@ Mg.MOVES = {
     { "ActionBars", "fontSize", "hotkey.size" },
     { "Auras", "durationSize", "duration.size" },
     { "Auras", "countSize", "count.size" },
+    { "GroupFrames", "nameSize", "name.size" },
 }
 
-local function moveKeys(sv)
+-- Moves flat 2.0 keys into the style specs of one profile; idempotent (a moved key no longer exists).
+local function moveProfile(profile)
     local U = ns.Util
-    for _, profile in pairs(sv.profiles) do
-        local modules = type(profile) == "table" and type(profile.modules) == "table" and profile.modules
-        for _, row in ipairs(modules and Mg.MOVES or {}) do
-            local db = modules[row[1]]
-            local ok, value = pcall(U.GetPath, db, row[2])
-            if type(db) == "table" and ok and value ~= nil then
-                local okNew = pcall(U.SetPath, db, row[3], value)
-                if okNew then U.SetPath(db, row[2], nil) end
-            end
+    local modules = type(profile) == "table" and type(profile.modules) == "table" and profile.modules
+    for _, row in ipairs(modules and Mg.MOVES or {}) do
+        local db = modules[row[1]]
+        local ok, value = pcall(U.GetPath, db, row[2])
+        if type(db) == "table" and ok and value ~= nil then
+            local okNew = pcall(U.SetPath, db, row[3], value)
+            if okNew then U.SetPath(db, row[2], nil) end
         end
     end
+end
+
+local function moveKeys(sv)
+    for _, profile in pairs(sv.profiles) do moveProfile(profile) end
+end
+
+-- Profiles imported from an older export string get the same upgrade.
+function Mg:UpgradeProfile(profile, schema)
+    if (tonumber(schema) or 0) < ns.C.SCHEMA then ns.SafeCall(moveProfile, profile) end
+    return profile
 end
 
 Mg.steps = {
     { version = 1, run = importLegacy },
     { version = 2, run = moveKeys },
+    { version = 3, run = moveKeys },   -- GroupFrames.nameSize joined MOVES after step 2 shipped on the branch
 }
 
 function Mg:Run(sv)

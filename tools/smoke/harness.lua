@@ -83,6 +83,7 @@ end
 ---------------------------------------------------------------- environment
 -- Globals that must start out nil (libraries create them; SavedVariables start empty).
 local NIL = { PhoenixUIDB = true, PhoenixUIBugsDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true, BugGrabber = true }
+local env_cbor -- last payload given to the CBOR stub, so export -> decode round-trips
 local env = setmetatable({}, { __index = function(t, k)
     local v = _G[k]
     if v ~= nil or NIL[k] then return v end
@@ -158,9 +159,9 @@ local api = {
     C_SpecializationInfo = { GetSpecialization = function() return 1 end,
         GetNumSpecializationsForClassID = function() return 3 end,
         GetSpecializationInfo = function(i) return i, "Spec" .. i, "", 0 end },
-    C_EncodingUtil = { SerializeCBOR = function() return "x" end, CompressString = function(s) return s end,
+    C_EncodingUtil = { SerializeCBOR = function(t) env_cbor = t; return "x" end, CompressString = function(s) return s end,
         EncodeBase64 = function(s) return s end, DecodeBase64 = function(s) return s end,
-        DecompressString = function(s) return s end, DeserializeCBOR = function() return nil end },
+        DecompressString = function(s) return s end, DeserializeCBOR = function() return env_cbor end },
     RAID_CLASS_COLORS = setmetatable({}, { __index = function() return { r = 1, g = 1, b = 1, colorStr = "ffffffff" } end }),
     LEVEL = "Level", GetGuildInfo = function() return nil end,
     C_MerchantFrame = { GetNumJunkItems = function() return 0 end, SellAllJunkItems = function() end },
@@ -514,6 +515,25 @@ try("style keys move", function()
     local mods = sv.profiles.P.modules
     assert(mods.ActionBars.hotkey.size == 9 and mods.Auras.duration.size == 8 and mods.Auras.count.size == 15,
         "ActionBars/Auras sizes were not moved")
+    sv = { profiles = { P = { modules = { GroupFrames = { nameSize = 13 } } } } }
+    ns.Migrations.steps[3].run(sv)
+    assert(sv.profiles.P.modules.GroupFrames.name.size == 13, "GroupFrames.nameSize was not moved by step 3")
+end)
+
+-- export strings carry the schema; our own strings must import, older ones are upgraded on the way in
+try("schema and import", function()
+    local steps = ns.Migrations.steps
+    assert(steps[#steps].version == ns.C.SCHEMA, "ns.C.SCHEMA is not the last migration step")
+    assert(ns.DB.sv.schema == ns.C.SCHEMA, "saved schema " .. tostring(ns.DB.sv.schema) .. " after migrations")
+    local payload, err = ns.Profiles:Decode(ns.Profiles:Export())
+    assert(payload, "a fresh export does not decode: " .. tostring(err))
+    local old = { schema = 1, name = "Old", profile = { modules = { NamePlates = { textSize = 14 } } } }
+    local current = ns.DB:GetProfileName()
+    local name = ns.Profiles:Import(old, "Old")
+    local np = ns.DB.sv.profiles[name].modules.NamePlates
+    assert(np.health and np.health.size == 14 and np.textSize == nil, "an old export was not upgraded on import")
+    ns.DB:SetProfile(current)
+    ns.DB.sv.profiles[name] = nil
 end)
 
 for _, e in ipairs(events) do fire(unpack(e)) end

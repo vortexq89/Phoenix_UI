@@ -64,6 +64,7 @@ function P:Import(payload, name)
     for key, values in pairs(type(payload.profile.modules) == "table" and payload.profile.modules or {}) do
         if ns.modules[key] and type(values) == "table" then profile.modules[key] = values end
     end
+    ns.Migrations:UpgradeProfile(profile, payload.schema)
     ns.DB:ImportProfile(name, profile)
     return name
 end
