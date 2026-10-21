@@ -4,6 +4,7 @@ local presets = {}
 for _, p in ipairs(ns.Theme.presets) do presets[#presets + 1] = { value = p.key, label = p.label } end
 
 ns:RegisterOptions("General", {
+    { type = "preview", kind = "theme" },
     { type = "header", label = "APPEARANCE" },
     { type = "select", key = "theme.preset", label = "THEME", desc = "THEME_DESC", values = presets, keywords = "color colour accent" },
     { type = "color", key = "theme.custom", label = "THEME_CUSTOM_COLOR",

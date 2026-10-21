@@ -777,4 +777,8 @@ ns.RegisterLocale("enUS", {
     PREVIEW_CHAT_TAB_GENERAL = "General",
     PREVIEW_CHAT_TAB_GUILD = "Guild",
     PREVIEW_CHAT_TAB_WHISPERS = "Whispers",
+    ---------------------------------------------------------------- general 2.1
+    PREVIEW_THEME_HEADING = "Section heading",
+    PREVIEW_THEME_BODY = "Option label in the interface font",
+    PREVIEW_THEME_DESC = "Descriptions and hints use the lighter weight.",
 })
