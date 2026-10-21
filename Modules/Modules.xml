@@ -28,6 +28,9 @@
     <Script file="Minimap\Options.lua"/>
     <Script file="DataTexts\DataTexts.lua"/>
     <Script file="DataTexts\Options.lua"/>
+    <Script file="Movers\Movers.lua"/>
+    <Script file="Movers\Toolbar.lua"/>
+    <Script file="Movers\Options.lua"/>
     <!-- combat -->
     <Script file="CooldownText\CooldownText.lua"/>
     <Script file="CooldownText\Options.lua"/>

@@ -347,6 +347,21 @@ try("bugs contract", function()
     E:Clear("all")
     assert(#db.reports == 0, "clear all failed")
 end)
+-- movers: Edit Mode systems are refused, positions round-trip through the profile
+try("movers", function()
+    local M = ns.modules.Movers
+    assert(M.IsManaged({ system = 1 }) and M.IsManaged({ isManagedFrame = true }) and not M.IsManaged({}),
+        "Edit Mode detection")
+    M:SetUnlocked(true)
+    local e = M:GetEntry("Errors")
+    assert(e, "UIErrorsFrame entry missing")
+    M.Nudge(e, 10, 0)
+    assert(M.db.frames.Errors and M.db.frames.Errors.point, "nudge did not save a position")
+    M.SetFrameScale(e, 1.2)
+    M:ResetFrame("Errors")
+    assert(M.db.frames.Errors == nil, "reset did not clear the position")
+    M:SetUnlocked(false)
+end)
 -- a representative set of gameplay events with plausible payloads
 local events = {
     { "PLAYER_REGEN_DISABLED" }, { "PLAYER_REGEN_ENABLED" }, { "MERCHANT_SHOW" }, { "PLAYER_FLAGS_CHANGED", "player" },
