@@ -1,0 +1,51 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- system -->
+    <Script file="General\General.lua"/>
+    <Script file="General\Options.lua"/>
+    <!-- interface -->
+    <Script file="Skins\Skins.lua"/>
+    <Script file="Skins\Options.lua"/>
+    <Script file="ActionBars\ActionBars.lua"/>
+    <Script file="ActionBars\Options.lua"/>
+    <Script file="UnitFrames\UnitFrames.lua"/>
+    <Script file="UnitFrames\Options.lua"/>
+    <Script file="GroupFrames\GroupFrames.lua"/>
+    <Script file="GroupFrames\Options.lua"/>
+    <Script file="CastBars\CastBars.lua"/>
+    <Script file="CastBars\Options.lua"/>
+    <Script file="Auras\Auras.lua"/>
+    <Script file="Auras\Options.lua"/>
+    <Script file="NamePlates\NamePlates.lua"/>
+    <Script file="NamePlates\Options.lua"/>
+    <Script file="Tooltip\Tooltip.lua"/>
+    <Script file="Tooltip\Options.lua"/>
+    <Script file="ItemLevel\ItemLevel.lua"/>
+    <Script file="ItemLevel\Options.lua"/>
+    <Script file="Minimap\Minimap.lua"/>
+    <Script file="Minimap\Options.lua"/>
+    <Script file="DataTexts\DataTexts.lua"/>
+    <Script file="DataTexts\Options.lua"/>
+    <!-- combat -->
+    <Script file="CooldownText\CooldownText.lua"/>
+    <Script file="CooldownText\Options.lua"/>
+    <Script file="CombatText\CombatText.lua"/>
+    <Script file="CombatText\Options.lua"/>
+    <Script file="DamageMeter\DamageMeter.lua"/>
+    <Script file="DamageMeter\Options.lua"/>
+    <Script file="SpellHistory\SpellHistory.lua"/>
+    <Script file="SpellHistory\Options.lua"/>
+    <Script file="PvP\PvP.lua"/>
+    <Script file="PvP\Options.lua"/>
+    <!-- social -->
+    <Script file="Chat\Chat.lua"/>
+    <Script file="Chat\Options.lua"/>
+    <Script file="AFK\AFK.lua"/>
+    <Script file="AFK\Options.lua"/>
+    <!-- utility -->
+    <Script file="Quality\Quality.lua"/>
+    <Script file="Quality\Options.lua"/>
+    <Script file="Automation\Automation.lua"/>
+    <Script file="Automation\Options.lua"/>
+    <Script file="MythicPlus\MythicPlus.lua"/>
+    <Script file="MythicPlus\Options.lua"/>
+</Ui>
