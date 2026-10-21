@@ -118,7 +118,7 @@ CARDS = [("general", "General", "System", "Theme, fonts and textures shared by e
          ("actionbars", "Action Bars", "Interface", "Crisp square buttons, readable text and range feedback.", True),
          ("unitframes", "Unit Frames", "Interface", "Textures, colors and fonts for player, target, focus and pet.", True),
          ("castbars", "Cast Bars", "Interface", "Flat cast bars with icon, timer and latency.", True),
-         ("nameplates", "Nameplates", "Interface", "Bar texture and health percent on Blizzard nameplates.", True),
+         ("nameplates", "Nameplates", "Interface", "Bar texture, health percent and Mythic+ enemy forces on Blizzard nameplates.", True),
          ("tooltip", "Tooltip", "Interface", "A cleaner tooltip with class borders, health bar and extra lines.", True),
          ("damagemeter", "Damage Meter", "Combat", "Phoenix skin for Blizzard's damage meter.", True),
          ("spellhistory", "Spell History", "Combat", "A strip of your most recent casts.", False),
@@ -172,10 +172,11 @@ def tooltip(highlight=False, search="Search settings…", focus=False):
     ])
     body += section("Behavior", [
         opt("Anchor", dd("Cursor"), "Where tooltips that use the default position appear."),
-        opt("Hide in combat", tog(False), "Hide unit tooltips while in combat."),
+        opt("Hide in combat", tog(False), "Hide unit tooltips while in combat. Hold Shift, Ctrl or Alt to see them anyway."),
     ])
     body += section("Extra lines", [
         opt("Target", tog(), "Show what the unit is targeting."),
+        opt("Mythic+ rating", tog(), "Show a player's current season rating in Blizzard's rarity color."),
         opt("IDs", tog(False), "Show item and spell IDs.", badge=rel),
     ])
     return shell("tooltip", body, search=search, focus=focus)
@@ -332,8 +333,53 @@ def movers_page():
 <div class="gy mid" style="top:400px"></div></div>{hs}{tool}</body></html>'''
 
 
+# ---------------------------------------------------------------- mythic+ timer (Modules/MythicPlus/Timer.lua)
+def mplus_page():
+    chests = [("+3", "1:24", "var(--accent)"), ("+2", "8:00", "var(--text2)"), ("+1", "14:36", "var(--text2)")]
+    chest = "".join(f'<span style="flex:1;text-align:{a}">{t}&nbsp;&nbsp;<span style="color:{c}">{v}</span></span>'
+                    for (t, v, c), a in zip(chests, ("left", "center", "right")))
+    bosses = [("Vexamus", "5:58", True), ("Overgrown Ancient", "12:40", True), ("Crawth", "", False),
+              ("Echo of Doragosa", "", False)]
+    rows = "".join(f'''<div class="mprow"><span style="color:{"var(--ok)" if done else "var(--muted)"}">{ico("boss", "sm")}</span>
+<span class="mpl" style="color:{"var(--text2)" if done else "var(--text)"}">{name}</span><span class="mpv" style="color:{"var(--ok)" if done else "var(--text2)"}">{at}</span></div>'''
+                   for name, at, done in bosses)
+    timer = f'''<div class="mpt">
+<div style="display:flex;align-items:center;gap:8px"><span class="mplvl">+12</span><span class="mpname">Algeth&#39;ar Academy</span>
+<span style="margin-left:auto;color:var(--danger)">{ico("deaths", "sm")}</span><span class="mpnum">3&nbsp;&nbsp;−15s</span></div>
+<div class="mpaff">Fortified&nbsp;&nbsp;·&nbsp;&nbsp;Bolstering</div>
+<div style="display:flex;align-items:baseline;margin-top:8px"><span class="mpclock">18:24</span><span class="mplim">/ 33:00</span>
+<span class="mppb">Best 28:32</span></div>
+<div class="mpbar"><span style="width:55.8%"></span><i style="left:60%"></i><i style="left:80%"></i></div>
+<div class="mpchest">{chest}</div>
+<div class="mprow" style="margin-top:10px"><span style="color:var(--muted)">{ico("forces", "sm")}</span><span class="mpl">Enemy forces</span>
+<span class="mpv" style="color:var(--text)">72.40%</span></div><div class="mpfb"><span style="width:72.4%"></span></div>{rows}</div>'''
+    plates = "".join(f'''<div class="np" style="left:{x}px;top:{y}px"><div class="npn">{n}</div><div class="npb"><span style="width:{w}%"></span>
+<b>{w}%</b></div><span class="npf">{f}</span></div>''' for n, x, y, w, f in
+                     [("Spellbound Battleaxe", 330, 300, 64, "+4"), ("Arcane Ravager", 520, 360, 88, "+7"), ("Vile Lasher", 400, 440, 100, "")])
+    css = """<style>
+.mpt{position:absolute;right:120px;top:150px;width:256px;padding:12px;background:var(--bg-base);border:1px solid var(--border);
+ box-shadow:0 0 24px rgba(0,0,0,.6);transform:scale(1.5);transform-origin:top right;font-family:RobotoMedium;font-size:12px}
+.mplvl{font-family:CondSemi;font-size:16px;color:var(--accent)} .mpname{font-family:Inter;font-size:14px}
+.mpnum{font-family:CondSemi;color:var(--text2)} .mpaff{font-family:Cond;font-size:10px;color:var(--muted);margin-top:4px}
+.mpclock{font-family:CondBold;font-size:28px;text-shadow:1px 1px 0 #000} .mplim{font-family:CondSemi;font-size:14px;color:var(--muted);margin-left:6px}
+.mppb{margin-left:auto;font-family:Cond;font-size:10px;color:var(--muted)}
+.mpbar{position:relative;height:6px;margin-top:8px;background:var(--bg-sunken);border:1px solid #000}
+.mpbar span{position:absolute;left:0;top:0;bottom:0;background:var(--accent)} .mpbar i{position:absolute;top:0;bottom:0;width:1px;background:rgba(236,238,242,.7)}
+.mpchest{display:flex;margin-top:6px;font-family:Cond;font-size:10px;color:var(--text2)}
+.mprow{display:flex;align-items:center;gap:8px;height:20px} .mpl{flex:1} .mpv{font-family:CondSemi}
+.mpfb{height:4px;margin-left:22px;background:var(--bg-sunken);border:1px solid #000;position:relative}
+.mpfb span{position:absolute;left:0;top:0;bottom:0;background:var(--accent2)}
+.np{position:absolute;width:150px;font-family:CondSemi} .npn{font-size:11px;color:#ffd5d5;text-align:center;text-shadow:1px 1px 0 #000}
+.npb{position:relative;height:10px;margin-top:2px;background:var(--bg-sunken);border:1px solid #000}
+.npb span{position:absolute;left:0;top:0;bottom:0;background:#c8323c} .npb b{position:absolute;inset:0;font-size:9px;text-align:center;line-height:10px;color:var(--text);text-shadow:1px 1px 0 #000}
+.npf{position:absolute;left:154px;top:14px;font-size:11px;color:var(--accent2);text-shadow:1px 1px 0 #000}
+</style>"""
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css">{css}</head>
+<body><div class="world"></div>{plates}{timer}</body></html>'''
+
+
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
-         "bugs": bugs_page, "movers": movers_page}
+         "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page}
 SIZES = {"icons": ("1280,1240", "2")}
 
 if __name__ == "__main__":

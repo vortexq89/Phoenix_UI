@@ -30,10 +30,10 @@ Mode cannot reach.
 | | **Group Frames** | Party and raid frame textures, fonts and borders |
 | | **Cast Bars** | Flat cast bars; icon, timer and latency on your own bar |
 | | **Buffs & Debuffs** | Cropped icons, crisp borders, readable timers and stacks |
-| | **Nameplates** | Bar texture and a health percent that works in restricted content; nameplate visibility toggles |
-| | **Tooltip** | Dark style, class and quality borders, health bar, target, role and IDs, cursor anchor, hide in combat |
+| | **Nameplates** | Bar texture, a health percent that works in restricted content, Mythic+ enemy forces per mob; nameplate visibility toggles |
+| | **Tooltip** | Dark style, class and quality borders, health bar, target, role and IDs, Mythic+ rating, cursor anchor, hide in combat |
 | | **Item Level** | Item levels on the character sheet and bags |
-| | **Minimap** | Square minimap, zone text style, coordinates |
+| | **Minimap** | Square minimap, zone text style, coordinates; size stays in Edit Mode |
 | | **Data Bar** | FPS, latency, speed, durability, gold, clock and bug count, movable in Edit Mode |
 | | **Movers** | Move, scale and fade frames Edit Mode does not manage: zone text, error messages, alerts, top-center widgets, boss banner, event toasts, ready check |
 | Combat | **Cooldown Text** | Blizzard's countdown numbers in the Phoenix font |
@@ -41,11 +41,11 @@ Mode cannot reach.
 | | **Damage Meter** | Skin for Blizzard's built-in meter; optional one-click Details! style |
 | | **Spell History** | A strip of your recent casts, movable in Edit Mode |
 | | **PvP** | Safe queue pop with timer, TAB targets players in PvP, `/gg` to surrender an arena |
-| Social | **Chat** | Clickable URLs with a copy box, copy-chat window |
+| Social | **Chat** | Clickable URLs with a copy box, copy-chat window, arrow-key history that survives a reload, Shift/Ctrl wheel scrolling |
 | | **AFK Screen** | A calm full-screen view of your character while away |
 | Utility | **Quality of Life** | Hide talking heads, quiet errors in combat, achievement screenshots, Cooldown Manager toggle |
 | | **Automation** | Repair, sell junk, fill "DELETE", decline duels, accept friend invites and resurrections, release in BGs, skip seen cinematics |
-| | **Mythic+** | Auto-insert your keystone, report your new key |
+| | **Mythic+** | Run timer with chest thresholds, enemy forces, boss splits, deaths and personal bests; auto-insert your keystone, report your new key |
 
 Every module can be switched off. Modules that hook Blizzard frames ask for a reload when you turn them off.
 
@@ -56,13 +56,14 @@ Every module can be switched off. Modules that hook Blizzard frames ask for a re
 | ![Home](docs/screenshots/home.png) | ![Module page](docs/screenshots/module.png) |
 | ![Search](docs/screenshots/search.png) | ![Profiles](docs/screenshots/profiles.png) |
 | ![Bug viewer](docs/screenshots/bugs.png) | ![Movers](docs/screenshots/movers.png) |
+| ![Mythic+ timer and nameplate forces](docs/screenshots/mplus.png) | |
 
 The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
-same rasterized icon atlas the addon ships.
+same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world timer at 150 % and sample nameplates.
 
 ### Icons
 
-Every icon in the window, the data bar and Phoenix's own frames comes from one set: 84
+Every icon in the window, the data bar and Phoenix's own frames comes from one set: 88
 [Phosphor](https://phosphoricons.com) duotone glyphs (MIT), packed into white atlases with 24, 48 and 96 px
 cells and tinted by the active theme. Each icon picks the atlas that matches its size in physical pixels,
 so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
