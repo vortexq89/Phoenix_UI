@@ -5,7 +5,8 @@ local W, Skin, Media = ns.Widgets, ns.Skin, ns.Media
 function W:Card(parent, title, icon)
     local c = CreateFrame("Frame", nil, parent)
     c.header = W.Text(c, "heading", "text.secondary")
-    c.header:SetPoint("TOPLEFT", 30, -15)
+    -- The tick (10 px) or icon (14 px) sits 6 px before the title and lines up with the 16 px row inset.
+    c.header:SetPoint("TOPLEFT", icon and title and 36 or 32, -16)
     c.header:SetText(title and title:upper() or "")
     c.hasHeader = title ~= nil
     c.header:SetShown(c.hasHeader)

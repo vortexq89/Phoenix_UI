@@ -81,13 +81,13 @@ body { width: 1280px; height: 800px; overflow: hidden; font-family: RobotoMedium
 .tog.on { background: linear-gradient(90deg, var(--accent), var(--accent2)); border-color: transparent; box-shadow: 0 0 8px rgba(255,106,26,.35); }
 .tog.on::after { left: 20px; background: #fff; }
 .tog .ico { --s: 10px; position: absolute; top: 3px; left: 21px; color: var(--accent); z-index: 1; }
-.sec { background: var(--bg-raised); border: 1px solid var(--border); margin-bottom: 14px; position: relative; }
+.sec { background: var(--bg-raised); border: 1px solid var(--border); margin-bottom: 16px; position: relative; }
 .sec::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 22px; background: linear-gradient(180deg, rgba(255,255,255,.035), transparent); }
 .sech { display: flex; align-items: center; gap: 8px; padding: 13px 16px 8px; font-family: CondBold; font-size: 11px; letter-spacing: 1.6px; color: var(--text2); text-transform: uppercase; }
 .sech::before { content: ""; width: 8px; height: 2px; background: var(--accent); }
 .sech.i::before { display: none; } .sech .ico { --s: 14px; color: var(--accent); }
 .opt { display: flex; align-items: center; min-height: 36px; padding: 6px 16px; border-top: 1px solid rgba(255,255,255,.03); }
-.opt.d { min-height: 50px; }
+.opt.d { min-height: 52px; }
 .opt.hl { background: rgba(255,106,26,.08); box-shadow: inset 2px 0 0 var(--accent); }
 .opt .l { flex: 1; } .opt .l b { font-weight: normal; display: block; font-size: 12.5px; }
 .opt .l i { font-style: normal; font-family: Roboto; color: var(--muted); font-size: 11.5px; display: block; margin-top: 3px; }

@@ -5,7 +5,7 @@ local Config = ns.Config
 
 --[[ Schema renderer: turns ns.options[moduleKey] into cards of rows. Every control writes through
     ns.DB:Set so the live UI updates immediately (live preview). ]]
-local PAD, CARD_GAP, ROW_H, ROW_H_DESC = 24, 14, 36, 50
+local PAD, CARD_GAP, ROW_H, ROW_H_DESC = 24, 16, 36, 52
 
 local function text(key) return key and (L[key] or key) or "" end
 
@@ -242,7 +242,7 @@ function Config.BuildSchemaPage(parent, m, schema)
     function page:Layout()
         local y = 84
         for _, c in ipairs(self.cards) do
-            local cy = c.hasHeader and 40 or 10
+            local cy = c.hasHeader and 40 or 8
             for i, row in ipairs(c.rows) do
                 if row.hiddenState then
                     row:Hide()
@@ -262,8 +262,8 @@ function Config.BuildSchemaPage(parent, m, schema)
             c:ClearAllPoints()
             c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
             c:SetPoint("TOPRIGHT", child, "TOPRIGHT", -PAD, -y)
-            c:SetHeight(cy + 10)
-            y = y + cy + 10 + CARD_GAP
+            c:SetHeight(cy + 8)
+            y = y + cy + 8 + CARD_GAP
         end
         child:SetHeight(y + PAD)
         self.scroll:UpdateBar()
