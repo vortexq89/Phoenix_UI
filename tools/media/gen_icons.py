@@ -30,7 +30,7 @@ COLS = 10
 DUOTONE_ALPHA = 0.3  # Phosphor ships 0.2; slightly stronger so the fill reads at 16 px on dark panels
 # Micro-control glyphs keep only the line layer: Phosphor's duotone fill for these is a solid box that reads as a
 # checkbox behind a close "x" or a check mark.
-LINE_ONLY = {"close", "check", "add", "chevron-right", "chevron-down", "resize"}
+LINE_ONLY = {"close", "check", "add", "chevron-right", "chevron-down", "chevron-left", "resize"}
 TIERS = [(24, 1), (48, 2), (96, 3)]  # (cell px, gutter px per side)
 
 

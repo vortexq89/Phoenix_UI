@@ -26,4 +26,10 @@ ICONS = [
     ("gold", "coins"), ("clock", "clock"),
     # fallback for unknown names
     ("question", "question"),
+    # bugs (error catcher)
+    ("bugs", "bug"), ("taint", "shield-warning"), ("upload", "cloud-arrow-up"), ("bell", "bell-ringing"),
+    ("sound", "speaker-high"), ("fingerprint", "fingerprint"), ("filter", "funnel"), ("chevron-left", "caret-left"),
+    # movers
+    ("movers", "frame-corners"), ("grid", "grid-four"), ("snap", "magnet"), ("opacity", "circle-half"),
+    ("arrow-up", "arrow-up"), ("arrow-down", "arrow-down"), ("arrow-left", "arrow-left"), ("arrow-right", "arrow-right"),
 ]
