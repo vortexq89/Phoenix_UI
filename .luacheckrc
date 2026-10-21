@@ -36,6 +36,7 @@ ignore = {
 exclude_files = {
   "Libs/**",           -- third-party embeds, linted upstream
   ".luacheck/**", "tools/**",
+  "uploader/**",       -- Go companion app; its testdata is a sample SavedVariables dump
 }
 
 -- Locale files are prose; long string lines are expected there.
