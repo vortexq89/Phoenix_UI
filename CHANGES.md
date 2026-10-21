@@ -18,6 +18,11 @@ everything else starts from fresh defaults.
 - **Spell History** strip of your recent casts, movable in Edit Mode.
 - **Nameplates** health percent that keeps working in restricted content.
 - Blizzard Settings landing page and an Addon Compartment entry.
+- **One icon set everywhere**: 68 Phosphor duotone icons (MIT) in the sidebar, page and section headers,
+  search results, buttons, toggles, dropdowns, profile lists, home tiles, the About page, popups, the footer
+  status, the data bar and the PvP queue timer. They follow the accent colour and stay sharp at 4K.
+- New high-resolution Phoenix emblem and logo (addon list, Addon Compartment, window header, home, About,
+  Settings landing page, AFK screen).
 
 ### Changed
 - Layout belongs to Edit Mode: Phoenix no longer moves Blizzard frames. The data bar and spell history are

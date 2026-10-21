@@ -52,7 +52,17 @@ Every module can be switched off. Modules that hook Blizzard frames ask for a re
 | ![Home](docs/screenshots/home.png) | ![Module page](docs/screenshots/module.png) |
 | ![Search](docs/screenshots/search.png) | ![Profiles](docs/screenshots/profiles.png) |
 
-The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`).
+The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
+same rasterized icon atlas the addon ships.
+
+### Icons
+
+Every icon in the window, the data bar and Phoenix's own frames comes from one set: 68
+[Phosphor](https://phosphoricons.com) duotone glyphs (MIT), packed into white atlases with 24, 48 and 96 px
+cells and tinted by the active theme. Each icon picks the atlas that matches its size in physical pixels,
+so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
+
+![Icon set](docs/screenshots/icons.png)
 
 ## Installation
 
@@ -116,6 +126,8 @@ before contributing. They cover the module contract, taint and secret-value rule
 
 - Libraries: LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibEditMode (each under its own licence).
 - Fonts: Inter, Roboto, Roboto Condensed and Cinzel, under the SIL Open Font License 1.1 (`Media/Fonts`).
+- Icons: [Phosphor Icons](https://phosphoricons.com) 2.1.1 (© 2023 Phosphor Icons), MIT License
+  (`Media/Icons/LICENSE`). Rasterized by `tools/media/gen_icons.py`.
 
 ## Licence
 

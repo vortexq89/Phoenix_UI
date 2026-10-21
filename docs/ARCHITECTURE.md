@@ -37,7 +37,9 @@ Phoenix_UI/
 │  ├─ Events.lua        -- ns.Events: game-event dispatcher + internal message bus (combat-log guard)
 │  ├─ Secret.lua        -- ns.Secret: issecretvalue/canaccessvalue wrappers, restriction state
 │  ├─ Combat.lua        -- ns.Combat: lockdown queue (run-after-combat), CVar option accessors
-│  ├─ Media.lua         -- fonts/textures/icons registry (+ LSM registration)
+│  ├─ Media.lua         -- fonts/bar/surface texture registry (+ LSM registration)
+│  ├─ IconData.lua      -- GENERATED icon manifest (names → atlas cell, tier geometry)
+│  ├─ Icons.lua         -- ns.Icons: named icons, tint/states, tier pick by physical px, markup, brand art
 │  ├─ Theme.lua         -- design tokens, presets, font roles
 │  ├─ Skin.lua          -- skin primitives (panel, border, shadow, text, statusbar, icon, hide/restore)
 │  ├─ DB.lua            -- ns.DB: SavedVariables, profiles, defaults merge/strip, change notifications
@@ -56,7 +58,7 @@ Phoenix_UI/
 │  └─ <ModuleName>/
 │     ├─ <ModuleName>.lua   -- module object, defaults, lifecycle
 │     └─ Options.lua        -- options schema (no UI code)
-├─ Media/ Fonts/ Textures/ Textures/Icons/ (curated, §11.2)
+├─ Media/ Fonts/ Textures/ (surfaces, Emblem64/128/256, Logo512/1024)  Icons/ (Icons24/48/96 atlases + LICENSE)
 ├─ tools/ check_api.py  check_locales.py  smoke/harness.lua  audit/ (reference generators)  media/
 ├─ .luacheck/ wow_std_12.1.5.lua  reference_12.1.5.json  deprecated_12.1.5.json
 ├─ docs/  AUDIT.md  ARCHITECTURE.md  PROMPTS.md  audit/  screenshots/
@@ -132,7 +134,7 @@ local M = ns:NewModule("Tooltip", {
     label    = "TOOLTIP",           -- locale key
     category = "interface",         -- sidebar group
     order    = 40,
-    icon     = "Interface/AddOns/Phoenix_UI/Media/Textures/Icons/Tooltip",
+    icon     = "tooltip",           -- ns.Icons name (defaults to the lower-cased module key)
     requires = { },                 -- module keys that must be enabled first
     defaults = { enabled = true, anchor = "CURSOR", showIDs = true, … },
     reloadOnToggle = false,         -- true only when disabling cannot be undone (e.g. secure hooks)
@@ -375,5 +377,28 @@ Shipped font set (9 files, all SIL OFL 1.1): Cinzel-Bold, InterBold, Roboto-{Reg
 * **Positions:** Phoenix never moves Blizzard frames. Only Phoenix-owned frames (data bar, spell history) register with LibEditMode; their positions are stored per Edit Mode layout.
 * **Removed with no replacement in Phoenix:** chat history/emoji, arena dampening display, minimap size slider, M+ timer/objectives (Blizzard's tracker covers it), mouseover bar fading. Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
 * **Details!:** optional, never a dependency. The Damage Meter page offers a one-click "Style Details!" button that calls Details' public instance API inside `pcall`; it is never applied automatically because it rewrites Details' own saved settings.
+* **Icons (§15):** one Phosphor duotone set via `ns.Icons`; brand art via `ns.Icons:Brand`.
 * **Checks:** `luacheck .` (generated 12.1.5 std), `tools/check_api.py` (methods/events/CVars/templates/atlases vs. the 12.1.5 reference, forbidden patterns, TOC/XML completeness and case), `tools/check_locales.py`, and `tools/smoke/harness.lua` (offline load + boot + every settings page). All run in `.github/workflows/luacheck.yml`.
 
+## 15. Icon system
+
+* **Source:** [Phosphor Icons](https://phosphoricons.com) 2.1.1, duotone weight only (MIT, `Media/Icons/LICENSE`). The SVGs
+  live in `tools/media/phosphor/`; `tools/media/icon_map.py` maps Phoenix names (`home`, `cat-combat`, `delete`, `fps` …)
+  to glyphs. The list is append-only so atlas cells stay stable. Micro-controls (`close`, `check`, `add`, chevrons,
+  `resize`) render the line layer only; the duotone fill is 30 % opacity.
+* **Build:** `python3 tools/media/gen_icons.py` rasterizes white glyphs with cairosvg into three atlases (RLE TGA,
+  power of two, clean alpha): `Icons24` (24 px cells, 256²), `Icons48` (48 px, 512²), `Icons96` (96 px, 1024²),
+  each cell with a transparent gutter so bilinear sampling never bleeds. It also writes `Core/IconData.lua`, the
+  emblem (`Emblem64/128/256`) and logo (`Logo512/1024`), and the PNGs used by the doc mockups.
+* **Why tiers:** WoW does not mipmap addon TGAs. `ns.Icons` converts the on-screen size to physical pixels
+  (`size × effectiveScale ÷ PixelUtil.GetPixelToUIUnitFactor()`) and picks the smallest tier that covers it, so
+  downsampling never exceeds ~2×. A 16-unit icon uses 24 px cells at 1080p and 48 px cells at 4K/1.15; page
+  headers use 96 px cells. Tiers are re-picked on `UI_SCALE_CHANGED`, `DISPLAY_SIZE_CHANGED` and when a frame's
+  own scale changes (data bar).
+* **API:** `Icons:Create(parent, name, size, token, layer)`, `Apply`, `Tint(tex, token, alpha)`,
+  `SetState(tex, "hover"|"active"|"danger"|"disabled")`, `Markup(name, size, token)` for FontStrings,
+  `Brand(tex, "emblem"|"logo", width)` and `Has`. `W.Icon` and `W.Color` route through it, so icons repaint
+  with the theme. Unknown names show the `question` glyph and are recorded in `Icons.missing`.
+* **Checks:** `tools/check_api.py` rejects unknown literal icon names, unused glyphs, missing atlas/brand files,
+  dead files under `Media/` and unused `Media.textures` keys. The smoke harness fails on any unknown icon request
+  and asserts the 48/96 px tier choice at 4K.
