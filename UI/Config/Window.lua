@@ -8,7 +8,8 @@ local Config = {}
 ns.Config = Config
 Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
-local HEADER_H, SIDEBAR_W, FOOTER_H = 56, 216, 28
+local HEADER_H, SIDEBAR_W, FOOTER_H = 56, 216, 40
+local MIN_SCALE, MAX_SCALE = 0.7, 1.4
 local MIN_W, MIN_H, MAX_W, MAX_H = 860, 540, 1600, 1100
 local DEFAULT_W, DEFAULT_H = 1000, 660
 local CATEGORY_LABEL = {
@@ -218,13 +219,32 @@ local function buildFooter(f)
     ft.profileIcon:SetPoint("LEFT", 16, 0)
     ft.profile = W.Text(ft, "small", "text.secondary")
     ft.profile:SetPoint("LEFT", ft.profileIcon, "RIGHT", 6, 0)
-    ft.status = W.Text(ft, "small", "text.muted", "CENTER")
-    ft.status:SetPoint("CENTER", 8, 0)
     ft.statusIcon = W.Icon(ft, "preview", 12, "text.muted")
-    ft.statusIcon:SetPoint("RIGHT", ft.status, "LEFT", -6, 0)
-    ft.credit = W.Text(ft, "small", "text.muted", "RIGHT")
-    ft.credit:SetPoint("RIGHT", -30, 0)
-    ft.credit:SetText(ns.title .. "  ·  " .. L.BY_AUTHOR)
+    ft.statusIcon:SetPoint("LEFT", SIDEBAR_W + 24, 0)
+    ft.status = W.Text(ft, "small", "text.muted")
+    ft.status:SetPoint("LEFT", ft.statusIcon, "RIGHT", 6, 0)
+    ft.close = W:Button(ft, L.CLOSE, "secondary", "close")
+    ft.close:SetHeight(26)
+    ft.close:SetPoint("RIGHT", -26, 0)
+    ft.close.onClick = function() f:Hide() end
+    ft.reload = W:Button(ft, L.RELOAD_UI, "primary", "reload")
+    ft.reload:SetHeight(26)
+    ft.reload:SetPoint("RIGHT", ft.close, "LEFT", -8, 0)
+    ft.reload.onClick = function() C_UI.Reload() end
+    -- Window scale: applied when the drag ends, so the slider does not move away under the cursor.
+    ft.scale = W:Slider(ft, MIN_SCALE, MAX_SCALE, 0.05, true)
+    ft.scale:SetWidth(150)
+    ft.scale:SetPoint("RIGHT", ft.reload, "LEFT", -18, 0)
+    ft.scale:SetValue(uiStore().scale or 1)
+    ft.scale.onChange = function(_, v)
+        uiStore().scale = v
+        if not IsMouseButtonDown("LeftButton") then f:SetScale(v) end
+    end
+    ft.scale.bar:HookScript("OnMouseUp", function() f:SetScale(uiStore().scale or 1) end)
+    ft.scaleLabel = W.Text(ft, "small", "text.muted", "RIGHT")
+    ft.scaleLabel:SetPoint("RIGHT", ft.scale, "LEFT", -8, 0)
+    ft.scaleLabel:SetText(L.WINDOW_SCALE:upper())
+    ft.status:SetPoint("RIGHT", ft.scaleLabel, "LEFT", -16, 0)
     f.footer = ft
     Skin:Register(ft, function(self)
         Skin:Panel(self, "sunken", { border = "border.subtle" })
@@ -232,7 +252,7 @@ local function buildFooter(f)
         Skin:Text(self.profile, "small", "text.secondary")
         Skin:Text(self.status, "small", self.statusToken or "text.muted")
         W.Color(self.statusIcon, self.statusToken or "text.muted")
-        Skin:Text(self.credit, "small", "text.muted")
+        Skin:Text(self.scaleLabel, "small", "text.muted")
     end)
     local grip = CreateFrame("Button", nil, f)
     grip:SetSize(16, 16)
@@ -284,6 +304,7 @@ function Config:Build()
     local s = uiStore()
     f:SetSize(s.w or DEFAULT_W, s.h or DEFAULT_H)
     f:SetPoint(s.point or "CENTER", UIParent, s.rel or "CENTER", s.x or 0, s.y or 0)
+    f:SetScale(math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
     Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.strong", shadow = 18 }) end)
     self.frame = f
 
@@ -342,6 +363,8 @@ function Config:ResetPosition()
     f:ClearAllPoints()
     f:SetPoint("CENTER")
     f:SetSize(DEFAULT_W, DEFAULT_H)
+    f:SetScale(1)
+    f.footer.scale:SetValue(1)
 end
 
 function Config:Show(key)

@@ -10,7 +10,6 @@ ns.RegisterLocale("enUS", {
     MODULES_ENABLED = "Modules enabled",
     ACTIVE_PROFILE = "Active profile",
     PROFILE_LABEL = "Profile: %s",
-    BY_AUTHOR = "by VortexQ8",
     ACCENT = "Accent",
     CAT_SYSTEM = "System",
     CAT_INTERFACE = "Interface",
@@ -708,4 +707,6 @@ ns.RegisterLocale("enUS", {
     PREVIEW_MOB_HOSTILE = "Ashen Brute",
     PREVIEW_MOB_NEUTRAL = "Ember Wisp",
     PREVIEW_MOB_FRIENDLY = "Phoenix Guard",
+    ---------------------------------------------------------------- window
+    WINDOW_SCALE = "Window scale",
 })
