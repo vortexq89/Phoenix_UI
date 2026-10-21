@@ -6,6 +6,7 @@
 ## Notes-esES: Cambia el estilo de la interfaz predeterminada y añade pequeñas mejoras de comodidad. Escribe /pui para las opciones.
 ## Notes-esMX: Cambia el estilo de la interfaz predeterminada y añade pequeñas mejoras de comodidad. Escribe /pui para las opciones.
 ## Notes-ruRU: Переоформляет стандартный интерфейс и добавляет мелкие удобства. Введите /pui, чтобы открыть настройки.
+## Notes-zhCN: 重新美化默认界面并加入实用的小功能。输入 /pui 打开设置。
 ## Author: VortexQ8
 #@debug@
 ## Version: 2.0.0-beta1
