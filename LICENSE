@@ -20,5 +20,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Fonts in Media/Fonts (Inter, Cinzel, Roboto, Roboto Condensed) are distributed
-under the SIL Open Font License 1.1; see the license files next to them. Libraries in Libs/ keep their original licenses.
+Fonts in Media/Fonts keep their own licences: the SIL Open Font License 1.1, the
+Ubuntu Font Licence 1.0 (Ubuntu) or the Apache License 2.0 (Roboto, Roboto Condensed).
+The licence texts are in Media/Fonts/Licenses and the full list is in Media/Fonts/FONTS.md. Libraries in Libs/ keep their original licenses.

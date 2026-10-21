@@ -40,8 +40,8 @@ T.presets = {
 }
 
 T.fontRoles = {
-    brand   = { font = "Cinzel",            size = 20, flags = "" },
-    title   = { font = "Inter",             size = 17, flags = "" },
+    brand   = { font = "CinzelBold",        size = 20, flags = "" },
+    title   = { font = "InterBold",         size = 17, flags = "" },
     heading = { font = "CondensedBold",     size = 11, flags = "" },
     body    = { font = "RobotoMedium",      size = 12, flags = "" },
     desc    = { font = "Roboto",            size = 11, flags = "" },
@@ -117,7 +117,7 @@ function T:Font(role, sizeOverride)
     if (role == "unit" or role == "combat") and s.unitFont ~= "" then key = s.unitFont end
     if (role == "body" or role == "desc") and s.uiFont ~= "" then key = s.uiFont end
     local size = sizeOverride or math.floor(r.size * (role ~= "unit" and role ~= "combat" and s.fontScale or 1) + 0.5)
-    return ns.Media:Font(key), size, r.flags
+    return ns.Media:Font(key, role == "brand"), size, r.flags
 end
 
 function T:Bar()

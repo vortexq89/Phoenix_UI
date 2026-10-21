@@ -5,6 +5,8 @@
     <Script file="Secret.lua"/>
     <Script file="Errors.lua"/>
     <Script file="Combat.lua"/>
+    <Script file="FontData.lua"/>
+    <Script file="TextureData.lua"/>
     <Script file="Media.lua"/>
     <Script file="Theme.lua"/>
     <Script file="Skin.lua"/>

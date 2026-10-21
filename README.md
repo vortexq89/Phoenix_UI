@@ -152,7 +152,9 @@ before contributing. They cover the module contract, taint and secret-value rule
 ## Credits
 
 - Libraries: LibStub, CallbackHandler-1.0, LibSharedMedia-3.0, LibEditMode (each under its own licence).
-- Fonts: Inter, Roboto, Roboto Condensed and Cinzel, under the SIL Open Font License 1.1 (`Media/Fonts`).
+- Fonts: 89 faces in 36 families (Inter, Barlow, Oswald, Fira Sans, Rajdhani, Cinzel, Roboto and more) under the
+  SIL Open Font License 1.1, the Ubuntu Font Licence or Apache 2.0. See `Media/Fonts/FONTS.md` and
+  `Media/Fonts/Licenses`.
 - Icons: [Phosphor Icons](https://phosphoricons.com) 2.1.1 (© 2023 Phosphor Icons), MIT License
   (`Media/Icons/LICENSE`). Rasterized by `tools/media/gen_icons.py`.
 

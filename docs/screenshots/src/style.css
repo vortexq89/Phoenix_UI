@@ -1,6 +1,6 @@
 /* Mockup of the Phoenix UI settings window. Colours, sizes and fonts mirror Core/Theme.lua and UI/Config/Window.lua. */
 @font-face { font-family: "Cinzel"; src: url("../../../Media/Fonts/Cinzel-Bold.ttf"); }
-@font-face { font-family: "Inter"; src: url("../../../Media/Fonts/InterBold.ttf"); }
+@font-face { font-family: "Inter"; src: url("../../../Media/Fonts/Inter-Bold.ttf"); }
 @font-face { font-family: "Roboto"; src: url("../../../Media/Fonts/Roboto-Regular.ttf"); }
 @font-face { font-family: "RobotoMedium"; src: url("../../../Media/Fonts/Roboto-Medium.ttf"); }
 @font-face { font-family: "Cond"; src: url("../../../Media/Fonts/Roboto_Condensed-Medium.ttf"); }

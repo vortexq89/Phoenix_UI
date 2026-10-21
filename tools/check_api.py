@@ -13,7 +13,8 @@ Checks, for Core/, UI/, Modules/ and Locales/:
   * icons: every literal icon name passed to the icon API exists in Core/IconData.lua, every atlas glyph
     is referenced somewhere, and every atlas/brand texture named in Lua exists with exact case;
   * media: every file under Media/ (tga/ttf) is referenced (no dead media), every Media.textures key
-    is used, and the TOC IconTexture exists with exact case.
+    is used, every font/texture/licence named by Core/FontData.lua, Core/TextureData.lua and Core/Media.lua
+    exists with exact case, and the TOC IconTexture exists with exact case.
 Exit code 1 on any finding. Run from anywhere: python3 tools/check_api.py"""
 import json
 import pathlib
@@ -196,6 +197,19 @@ for brand in re.findall(r'file\s*=\s*"([^"]+)"', icons_lua):
 for m in re.finditer(r'TEXTURES\s*\.\.\s*"([^"]+)"', "\n".join(code.values())):
     if not media_exists(f"Media/Textures/{m.group(1)}.tga"):
         problems.append(f"missing or wrong-case Media/Textures/{m.group(1)}.tga")
+
+for data, folder, ext in (("FontData.lua", "Fonts", ""), ("TextureData.lua", "Textures", ".tga")):
+    for name in re.findall(r'file\s*=\s*"([^"]+)"', code[ROOT / "Core" / data]):
+        if not media_exists(f"Media/{folder}/{name}{ext}"):
+            problems.append(f"Core/{data}: missing or wrong-case Media/{folder}/{name}{ext}")
+for name in re.findall(r'core\("\w+", "[^"]+", "([^"]+)"', code[ROOT / "Core" / "Media.lua"]):
+    if not media_exists(f"Media/Fonts/{name}"):
+        problems.append(f"Core/Media.lua: missing or wrong-case Media/Fonts/{name}")
+for f in sorted((ROOT / "Media" / "Fonts").glob("*.ttf")):
+    lic = sorted((ROOT / "Media" / "Fonts" / "Licenses").glob("*"))
+    stem = f.stem.split("-")[0].replace("_", "")
+    if not any(stem.lower().startswith(l.stem.split("-", 1)[-1].lower()) for l in lic):
+        problems.append(f"{f.relative_to(ROOT)}: no licence file in Media/Fonts/Licenses")
 
 toc_text = toc.read_text(encoding="utf-8")
 icon_tex = re.search(r"^## IconTexture:\s*Interface\\AddOns\\Phoenix_UI\\(\S+)", toc_text, re.M)
