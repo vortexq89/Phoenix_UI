@@ -567,6 +567,8 @@ function Config.BuildSchemaPage(parent, m, schema)
     end
 
     page:HookScript("OnHide", W.HidePopover)
+    -- the first layout can run before the scroll frame has a size; columns are settled once it has one
+    page.scroll:HookScript("OnSizeChanged", function() page:Layout() end)
     ns.Events:Listen("PUI_SETTING_CHANGED", page, function(_, _, moduleKey)
         if page:IsShown() and moduleKey == key then
             for _, row in ipairs(page.rows) do
