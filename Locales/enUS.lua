@@ -802,4 +802,9 @@ ns.RegisterLocale("enUS", {
     CHAT_TAB_FLASH_DESC = "A tab with unread messages glows in your accent colour instead of white.",
     CHAT_WHISPER_TABS = "Coloured whisper tabs",
     CHAT_WHISPER_TABS_DESC = "Whisper window tabs use the whisper colour from your chat settings.",
+    ---------------------------------------------------------------- mythic plus splits
+    MPLUS_TIMER_SPLITS = "Compare with your best run",
+    MPLUS_TIMER_SPLITS_DESC = "Each boss and the forces show how far ahead (green) or behind (red) you are against your fastest timed run of this dungeon and level. Bosses still to kill show the time to beat.",
+    MPLUS_TIMER_PULL = "Current pull",
+    MPLUS_TIMER_PULL_DESC = "In combat, adds the forces of the enemies you are fighting to the forces line (+4.10%). Only shown when the game lets addons read those values; otherwise the line stays as it is.",
 })

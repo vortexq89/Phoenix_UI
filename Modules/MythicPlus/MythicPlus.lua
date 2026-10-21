@@ -9,9 +9,11 @@ local M = ns:NewModule("MythicPlus", {
     defaults = {
         autoInsert = true, reportKey = true,
         timer = true, timerForces = true, timerBosses = true, timerDeaths = true, timerBest = true,
+        timerSplits = true, timerPull = true,
     },
-    -- run: splits of the key in progress (survives /reload); best: fastest timed run per "mapID:level".
-    globalDefaults = { run = { splits = {} }, best = {} },
+    -- run: splits of the key in progress (survives /reload); best: fastest timed run per "mapID:level";
+    -- bestSplits: that run's boss and forces splits, compared live on the timer.
+    globalDefaults = { run = { splits = {} }, best = {}, bestSplits = {} },
 })
 
 local function findKeystone()

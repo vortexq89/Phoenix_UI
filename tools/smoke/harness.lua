@@ -431,8 +431,37 @@ try("mythic+ timer", function()
     done = true
     fire("CHALLENGE_MODE_COMPLETED")
     assert(M.global.best["500:10"] == 1500, "personal best not stored: " .. tostring(M.global.best["500:10"]))
-    M.global.best["500:10"] = nil
+    local bs = M.global.bestSplits["500:10"]
+    assert(bs and bs["11"] == 600 and bs["12"] == 600, "best run splits not stored")
+    -- a later run renders deltas against them
+    done = false
     M.global.run = { splits = {} }
+    fire("CHALLENGE_MODE_RESET")
+    fire("CHALLENGE_MODE_START")
+    M:RefreshTimer()
+    M.global.best["500:10"], M.global.bestSplits["500:10"] = nil, nil
+    M.global.run = { splits = {} }
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
+end)
+-- current pull: summed over hostile nameplates in combat, dropped as soon as one value is secret
+try("mythic+ pull", function()
+    local M = ns.modules.MythicPlus
+    local saved = {}
+    for _, k in ipairs({ "UnitAffectingCombat", "UnitCanAttack", "C_ScenarioInfo" }) do saved[k] = rawget(env, k) or false end
+    rawset(env, "UnitAffectingCombat", function() return true end)
+    rawset(env, "UnitCanAttack", function() return true end)
+    rawset(env, "C_ScenarioInfo", { GetUnitCriteriaProgressValues = function(unit) return unit == "nameplate2" and 4 or 3 end })
+    fire("NAME_PLATE_UNIT_ADDED", "nameplate1")
+    fire("NAME_PLATE_UNIT_ADDED", "nameplate2")
+    assert(M.PullCount() == 7, "pull sum is " .. tostring(M.PullCount()))
+    local isSecret = ns.Secret.IsSecret
+    ns.Secret.IsSecret = function(v) return v == 4 end
+    local ok, sum = pcall(M.PullCount)
+    ns.Secret.IsSecret = isSecret
+    assert(ok and sum == nil, "a secret count must drop the pull silently")
+    fire("NAME_PLATE_UNIT_REMOVED", "nameplate1")
+    fire("NAME_PLATE_UNIT_REMOVED", "nameplate2")
+    assert(M.PullCount() == 0, "removed plates still counted")
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- a representative set of gameplay events with plausible payloads

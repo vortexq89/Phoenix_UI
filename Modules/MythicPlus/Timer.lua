@@ -12,6 +12,7 @@ local WIDTH, PAD, ROW, BAR_H, FORCES_H = 256, 12, 20, 6, 4
 local CHEST = { { tier = 3, fraction = 0.6 }, { tier = 2, fraction = 0.8 }, { tier = 1, fraction = 1 } }
 local TICK = 0.25
 
+local Secret = ns.Secret
 local T                   -- the overlay frame
 local run                 -- live state, see sync()
 local sample              -- Edit Mode preview state
@@ -44,11 +45,11 @@ local function readCriteria(state)
             if info.isWeightedProgress then
                 state.forces = forcesOf(info)
                 if info.completed and not splits.forces then splits.forces = state.elapsed end
-                state.forces.at = splits.forces
+                state.forces.at, state.forces.key = splits.forces, "forces"
             else
                 local key = tostring(info.criteriaID)
                 if info.completed and not splits[key] then splits[key] = state.elapsed end
-                state.bosses[#state.bosses + 1] = { name = info.description, done = info.completed, at = splits[key] }
+                state.bosses[#state.bosses + 1] = { name = info.description, done = info.completed, at = splits[key], key = key }
             end
         end
     end
@@ -98,8 +99,44 @@ local function finish()
     if info.practiceRun then return end
     local best = M.global.best
     local key = bestKey(run)
-    if info.onTime and (not best[key] or run.elapsed < best[key]) then best[key] = run.elapsed end
+    if info.onTime and (not best[key] or run.elapsed < best[key]) then
+        best[key] = run.elapsed
+        -- the splits of the fastest timed run are what later runs are compared against
+        local copy = {}
+        for k, v in pairs(M.global.run.splits or {}) do copy[k] = v end
+        M.global.bestSplits[key] = copy
+    end
 end
+
+---------------------------------------------------------------- pull preview (roadmap S2)
+-- Enemy forces of every hostile nameplate in combat, summed. GetUnitCriteriaProgressValues can be
+-- secret: one secret value (or a secret combat flag) and the whole sum is dropped, silently.
+local plateUnits = {}
+
+local function pullCount()
+    local sum = 0
+    for unit in pairs(plateUnits) do
+        local fighting = UnitAffectingCombat(unit)
+        local hostile = UnitCanAttack("player", unit)
+        if Secret.IsSecret(fighting) or Secret.IsSecret(hostile) then return nil end
+        if fighting and hostile then
+            local count = C_ScenarioInfo.GetUnitCriteriaProgressValues(unit)
+            if Secret.IsSecret(count) then return nil end
+            if type(count) == "number" then sum = sum + count end
+        end
+    end
+    return sum
+end
+
+-- Percentage the current pull adds, or nil when it cannot (or need not) be shown.
+local function pullPercent(forces)
+    if not (M.db.timerPull and forces and not forces.done and forces.total and forces.total > 0) then return nil end
+    if not InCombatLockdown() then return nil end
+    local sum = pullCount()
+    if not sum or sum <= 0 then return nil end
+    return sum / forces.total * 100
+end
+M.PullCount = pullCount -- exposed for the smoke harness
 
 ---------------------------------------------------------------- frame
 local function line(parent)
@@ -251,7 +288,20 @@ local function renderClock(state, elapsed, limit)
 end
 
 -- Each body row returns the new anchor, the gap below it and the height it added.
-local function renderForces(forces, anchor, y)
+-- "+0:12" behind / "-0:12" ahead of the best run, coloured, or "" without a best split.
+local function delta(at, bestAt)
+    if not (M.db.timerSplits and at and bestAt) then return "" end
+    local d = at - bestAt
+    local token = d <= 0 and "state.success" or "state.danger"
+    return ("  |cff%s%s%s|r"):format(U.Hex(Theme:Color(token)), d <= 0 and "-" or "+", U.FormatClock(math.abs(d)))
+end
+
+local function bestSplitsOf(state)
+    if state.bestSplits then return state.bestSplits end
+    return state.mapID and M.global.bestSplits[bestKey(state)] or nil
+end
+
+local function renderForces(forces, anchor, y, best)
     local show = M.db.timerForces and forces ~= nil
     T.forces:SetShown(show)
     if not show then return anchor, y, 0 end
@@ -260,24 +310,34 @@ local function renderForces(forces, anchor, y)
     T.forces:SetPoint("RIGHT", T, "RIGHT", -PAD, 0)
     T.forces.label:SetText(L.MPLUS_FORCES)
     if forces.done and forces.at then
-        T.forces.value:SetFormattedText("100%%  %s", U.FormatClock(forces.at))
+        T.forces.value:SetText(("100%%  %s"):format(U.FormatClock(forces.at)) .. delta(forces.at, best and best.forces))
     else
-        T.forces.value:SetFormattedText("%.2f%%", forces.pct)
+        local pull = forces.pull or pullPercent(forces)
+        local extra = pull and ("  |cff%s+%.2f%%|r"):format(U.Hex(Theme:Color("accent.secondary")), pull) or ""
+        T.forces.value:SetText(("%.2f%%"):format(forces.pct) .. extra)
     end
     T.forces.value:SetTextColor(Theme:Color(forces.done and "state.success" or "text.primary"))
     T.forcesBar:SetValue(forces.pct)
     return T.forces, -(FORCES_H + 6), -y + ROW + FORCES_H
 end
 
-local function renderBoss(i, boss, anchor, y)
+local function renderBoss(i, boss, anchor, y, best)
     local r = bossLine(i)
     r:ClearAllPoints()
     r:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, y)
     r:SetPoint("RIGHT", T, "RIGHT", -PAD, 0)
     r.label:SetText(boss.name)
     r.label:SetTextColor(Theme:Color(boss.done and "text.secondary" or "text.primary"))
-    r.value:SetText(boss.at and U.FormatClock(boss.at) or (boss.done and L.MPLUS_DONE or ""))
-    r.value:SetTextColor(Theme:Color(boss.done and "state.success" or "text.secondary"))
+    local bestAt = best and boss.key and best[boss.key]
+    if boss.at then
+        r.value:SetText(U.FormatClock(boss.at) .. delta(boss.at, bestAt))
+    elseif boss.done then
+        r.value:SetText(L.MPLUS_DONE)
+    else
+        -- still to kill: the time to beat, muted
+        r.value:SetText((M.db.timerSplits and bestAt) and U.FormatClock(bestAt) or "")
+    end
+    r.value:SetTextColor(Theme:Color(boss.done and "state.success" or (boss.at and "text.secondary" or "text.muted")))
     ns.Icons:Tint(r.icon, boss.done and "state.success" or "text.muted")
     r:Show()
     return r, 0, -y + ROW
@@ -291,13 +351,14 @@ local function render(state)
     -- Height from the known row metrics: rect queries are not resolved until the next layout pass.
     local height = PAD + T.level:GetStringHeight() + 4 + T.affixes:GetStringHeight() + 8 + T.clock:GetStringHeight()
         + 8 + BAR_H + 6 + T.chests[1]:GetStringHeight()
-    local anchor, y, added = renderForces(state.forces, T.chests[1], -10)
+    local best = bestSplitsOf(state)
+    local anchor, y, added = renderForces(state.forces, T.chests[1], -10, best)
     height = height + added
 
     local shown = 0
     if M.db.timerBosses then
         for i, boss in ipairs(state.bosses or {}) do
-            anchor, y, added = renderBoss(i, boss, anchor, y)
+            anchor, y, added = renderBoss(i, boss, anchor, y, best)
             height, shown = height + added, i
         end
     end
@@ -313,12 +374,13 @@ local function sampleRun()
     sample = {
         name = L.MPLUS_SAMPLE_DUNGEON, level = 12, limit = 1980, elapsed = 1104, syncedAt = GetTime(),
         affixes = { L.MPLUS_SAMPLE_AFFIX1, L.MPLUS_SAMPLE_AFFIX2 }, deaths = 3, timeLost = 15, best = 1712,
-        forces = { pct = 72.4 },
+        forces = { pct = 72.4, pull = 4.1 },
         bosses = {
-            { name = L.MPLUS_SAMPLE_BOSS1, done = true, at = 402 },
-            { name = L.MPLUS_SAMPLE_BOSS2, done = true, at = 931 },
-            { name = L.MPLUS_SAMPLE_BOSS3, done = false },
+            { name = L.MPLUS_SAMPLE_BOSS1, done = true, at = 402, key = "b1" },
+            { name = L.MPLUS_SAMPLE_BOSS2, done = true, at = 931, key = "b2" },
+            { name = L.MPLUS_SAMPLE_BOSS3, done = false, key = "b3" },
         },
+        bestSplits = { b1 = 415, b2 = 902, b3 = 1490, forces = 1320 },
     }
     return sample
 end
@@ -372,6 +434,8 @@ function M:EnableTimer()
         ns.Events:On(event, events, refresh)
     end
     ns.Events:On("CHALLENGE_MODE_COMPLETED", events, function() sync(); finish(); update() end)
+    ns.Events:On("NAME_PLATE_UNIT_ADDED", events, function(_, _, unit) plateUnits[unit] = true end)
+    ns.Events:On("NAME_PLATE_UNIT_REMOVED", events, function(_, _, unit) plateUnits[unit] = nil end)
     refresh()
 end
 
