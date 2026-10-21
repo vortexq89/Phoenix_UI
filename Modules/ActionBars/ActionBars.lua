@@ -1,5 +1,5 @@
 local _, ns = ...
-local Skin = ns.Skin
+local Skin, Theme = ns.Skin, ns.Theme
 
 --[[ ActionBars: cosmetic layer over Blizzard's secure action buttons. We only change textures,
     fonts, alpha and vertex colours (never attributes, anchors or scripts), so buttons stay secure.
@@ -13,13 +13,19 @@ local BARS = { "MainActionBar", "MultiBarBottomLeft", "MultiBarBottomRight", "Mu
     "MultiBar5", "MultiBar6", "MultiBar7" }
 local outOfRange = setmetatable({}, { __mode = "k" })
 local buttons = {}
-local RANGE = { 0.95, 0.25, 0.25 }
+local RANGE_TOKEN = "state.danger"
+
+local function rangeTint(button)
+    local r, g, b = Theme:Color(RANGE_TOKEN)
+    button.icon:SetVertexColor(r, g, b)
+end
 
 -- Blizzard's UpdateUsable sets the usable/no-mana/unusable tint; we only override it while out of range.
--- Restoring repeats Blizzard's colours rather than calling the secure button's method from addon code.
+-- Restoring repeats Blizzard's own values (ActionBarActionButtonMixin:UpdateUsable) rather than calling
+-- the secure button's method from addon code.
 local function tint(button)
     if outOfRange[button] and M.db.rangeTint then
-        button.icon:SetVertexColor(RANGE[1], RANGE[2], RANGE[3])
+        rangeTint(button)
         return
     end
     local isUsable, notEnoughMana = C_ActionBar.IsUsableAction(button.action)
@@ -33,9 +39,7 @@ local function tint(button)
 end
 
 local function onUsable(button)
-    if outOfRange[button] and M:IsEnabled() and M.db.rangeTint then
-        button.icon:SetVertexColor(RANGE[1], RANGE[2], RANGE[3])
-    end
+    if outOfRange[button] and M:IsEnabled() and M.db.rangeTint then rangeTint(button) end
 end
 
 local function style(button)

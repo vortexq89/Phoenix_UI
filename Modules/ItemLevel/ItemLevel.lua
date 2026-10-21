@@ -1,5 +1,5 @@
 local _, ns = ...
-local Theme = ns.Theme
+local Theme, Skin = ns.Theme, ns.Skin
 
 --[[ Item level badges on the character sheet and in bags. Text lives in a weak side table keyed by
     the Blizzard button, never as a field on it. ]]
@@ -19,9 +19,7 @@ local function label(button)
         fs:SetJustifyH("RIGHT")
         labels[button] = fs
     end
-    fs:SetFont(Theme:Font("number", M.db.size))
-    fs:SetShadowOffset(1, -1)
-    fs:SetShadowColor(0, 0, 0, 1)
+    Skin:Text(fs, "number", nil, M.db.size)
     return fs
 end
 
@@ -60,25 +58,31 @@ local function onBagUpdate(frame)
     end
 end
 
-local hooked
-function M:OnEnable()
-    if hooked then return end
-    hooked = true
-    hooksecurefunc("PaperDollItemSlotButton_Update", onSlotUpdate)
+local function eachBag(fn)
     for i = 1, NUM_CONTAINER_FRAMES do
         local frame = _G["ContainerFrame" .. i]
-        if frame and frame.UpdateItems then hooksecurefunc(frame, "UpdateItems", onBagUpdate) end
+        if frame and frame.UpdateItems then fn(frame) end
     end
-    hooksecurefunc(ContainerFrameCombinedBags, "UpdateItems", onBagUpdate)
+    fn(ContainerFrameCombinedBags)
+end
+
+local hooked
+function M:OnEnable()
+    ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
+    if hooked then self:Refresh(); return end
+    hooked = true
+    hooksecurefunc("PaperDollItemSlotButton_Update", onSlotUpdate)
+    eachBag(function(frame) hooksecurefunc(frame, "UpdateItems", onBagUpdate) end)
 end
 
 function M:OnDisable()
     for _, fs in pairs(labels) do fs:SetText("") end
 end
 
+-- Re-paints what is on screen: character slots directly, bags through the same path as UpdateItems.
 function M:Refresh()
-    for button, fs in pairs(labels) do
-        fs:SetFont(Theme:Font("number", self.db.size))
+    for button in pairs(labels) do
         if button:IsVisible() and button.GetBagID == nil then onSlotUpdate(button) end
     end
+    eachBag(function(frame) if frame:IsShown() then onBagUpdate(frame) end end)
 end
