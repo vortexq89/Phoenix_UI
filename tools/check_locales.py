@@ -30,6 +30,9 @@ for path in SRC:
         for m in pat.finditer(text):
             used.setdefault(m.group(1), str(path.relative_to(ROOT)))
     dynamic_prefixes.update(DYNAMIC.findall(text))
+    for block in re.findall(r"\blabels\s*=\s*\{([^}]*)\}", text):  # swatch group captions
+        for key in re.findall(r"\"(" + KEY + r")\"", block):
+            used.setdefault(key, str(path.relative_to(ROOT)))
 
 en = (ROOT / "Locales" / "enUS.lua").read_text(encoding="utf-8")
 defined = set(re.findall(r"^\s*(" + KEY + r")\s*=", en, re.M))

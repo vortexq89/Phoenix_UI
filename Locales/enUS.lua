@@ -722,4 +722,18 @@ ns.RegisterLocale("enUS", {
     UF_POWER_FONT = "Power text font",
     PREVIEW_UNIT_PLAYER = "Phoenixia",
     PREVIEW_UNIT_PET = "Cinder",
+    ---------------------------------------------------------------- cast bars 2.1
+    CB_BAR = "Cast bar",
+    CB_COLORS = "Colours",
+    CB_FILL_COLORS = "Fill colours",
+    CB_FILL_COLORS_DESC = "Casts, channels and casts that cannot be interrupted. Right-click a swatch to follow the theme.",
+    CB_COLOR_CAST = "Cast",
+    CB_COLOR_CHANNEL = "Channel",
+    CB_COLOR_LOCKED = "Cannot be interrupted",
+    CB_TEXT = "Text",
+    CB_SPELL_FONT = "Spell name font",
+    CB_TIME_FONT = "Cast time font",
+    PREVIEW_SPELL_CAST = "Pyroblast",
+    PREVIEW_SPELL_CHANNEL = "Arcane Missiles",
+    PREVIEW_SPELL_LOCKED = "Ember Storm",
 })

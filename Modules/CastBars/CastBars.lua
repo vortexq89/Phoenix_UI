@@ -1,42 +1,85 @@
 local _, ns = ...
-local Theme, Skin, Secret = ns.Theme, ns.Skin, ns.Secret
+local Theme, Skin, Secret, Media, Style = ns.Theme, ns.Skin, ns.Secret, ns.Media, ns.Style
 
 --[[ CastBars: Phoenix look for Blizzard's player/target/focus cast bars, plus player-only extras
     (spell icon, remaining time, latency zone). Target/focus cast data may be secret: we only
     restyle those, never read their values. ]]
+local function barDefaults()
+    return {
+        texture = "",                                  -- "" = the theme's bar texture
+        border = Style.Border({ style = "shadow" }),
+        background = Style.Background({ alpha = 0.85 }),
+        text = Style.Text(11), time = Style.Text(11),
+        colors = { cast = false, channel = false, locked = false },
+    }
+end
 local M = ns:NewModule("CastBars", {
     label = "CASTBARS", desc = "CASTBARS_DESC", category = "interface", order = 40, reloadOnToggle = true,
-    defaults = { style = true, icon = true, timer = true, latency = true, classColor = false },
+    defaults = {
+        style = true, icon = true, timer = true, latency = true, classColor = false,
+        iconZoom = 0.08,
+        bars = { player = barDefaults(), target = barDefaults(), focus = barDefaults() },
+    },
 })
+M.BARS = { "player", "target", "focus" }
 
 local ART = { "Border", "BorderShield", "TextBorder", "Background", "DropShadow" }
 local TYPE_TOKEN = { channel = "state.info", uninterruptable = "text.muted", interrupted = "state.danger" }
-local bars = {}
+local TYPE_COLOR = { channel = "channel", uninterruptable = "locked" }
+local bars = {}   -- bar -> "player" | "target" | "focus"
 local extras
 
 local function plain(v) return not Secret.IsSecret(v) end
 
-local function fill(bar)
-    if not (M:IsEnabled() and M.db.style and bars[bar]) then return end
-    bar:SetStatusBarTexture(Theme:Bar())
-    local barType = bar.barType
-    local token = plain(barType) and TYPE_TOKEN[barType]
-    if token then
-        bar:SetStatusBarColor(Theme:Color(token))
-    elseif bar == PlayerCastingBarFrame and M.db.classColor then
+---------------------------------------------------------------- style (shared with the options preview)
+function M:Bar(key) return self.db.bars[key] or self.db.bars.player end
+
+function M:BarTexture(key)
+    local b = self:Bar(key)
+    return b.texture ~= "" and Media:Bar(b.texture) or Theme:Bar()
+end
+
+-- Fill colour for a cast of barType ("standard", "channel", "uninterruptable", "interrupted" …).
+function M:FillColor(key, barType)
+    local b = self:Bar(key)
+    local slot = TYPE_COLOR[barType]
+    if slot and type(b.colors[slot]) == "table" then return Skin:SpecColor(b.colors[slot]) end
+    local token = TYPE_TOKEN[barType]
+    if token then return Theme:Color(token) end
+    if key == "player" and self.db.classColor then
         local _, classFile = UnitClass("player")
-        bar:SetStatusBarColor(ns.Util.ClassColor(classFile))
-    else
-        bar:SetStatusBarColor(Theme:Color("accent.primary"))
+        return ns.Util.ClassColor(classFile)
     end
+    return Skin:SpecColor(b.colors.cast, "accent.primary")
+end
+
+function M:StyleFrame(bar, key)
+    local b = self:Bar(key)
+    Skin:Backdrop(bar, b.background, "bg.sunken")
+    Skin:BorderSpec(bar, b.border, "border.black")
+    bar:SetStatusBarTexture(self:BarTexture(key))
+end
+
+function M:StyleTexts(text, time, key)
+    local b = self:Bar(key)
+    if text then Skin:TextSpec(text, b.text, "body", "text.primary") end
+    if time then Skin:TextSpec(time, b.time, "number", "text.primary") end
+end
+
+local function fill(bar)
+    local key = M:IsEnabled() and M.db.style and bars[bar]
+    if not key then return end
+    bar:SetStatusBarTexture(M:BarTexture(key))
+    local barType = bar.barType
+    bar:SetStatusBarColor(M:FillColor(key, plain(barType) and barType or nil))
 end
 
 local function style(bar)
     for _, key in ipairs(ART) do Skin:HideRegion(bar[key]) end
     Skin:Register(bar, function(self)
-        Skin:Panel(self, "sunken", { border = "border.black", shadow = 6, inset = -1 })
-        if self.Text then Skin:Text(self.Text, "body", "text.primary", 11) end
-        if self.CastTimeText then Skin:Text(self.CastTimeText, "number", "text.primary", 11) end
+        local key = bars[self]
+        M:StyleFrame(self, key)
+        M:StyleTexts(self.Text, self.CastTimeText, key)
         fill(self)
     end)
     hooksecurefunc(bar, "UpdateBarFillTexture", fill)
@@ -71,9 +114,9 @@ local function buildExtras()
     e.lag = bar:CreateTexture(nil, "ARTWORK", nil, 2)
     e.lag:SetTexture(ns.Media.textures.WHITE)
     Skin:Register(e, function(self)
-        Skin:Icon(self.icon)
+        Skin:IconZoom(self.icon, M.db.iconZoom)
         Skin:Border(self.iconBorder, "border.black")
-        Skin:Text(self.time, "number", "text.primary", 11)
+        M:StyleTexts(nil, self.time, "player")
         self.lag:SetVertexColor(Theme:Color("state.danger"))
         self.lag:SetAlpha(0.45)
     end)
@@ -126,9 +169,9 @@ local STOP_EVENTS = { "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_INTERRUPTED", "UNIT
     "UNIT_SPELLCAST_EMPOWER_STOP" }
 
 function M:OnEnable()
-    for _, bar in ipairs({ PlayerCastingBarFrame, TargetFrame and TargetFrame.spellbar, FocusFrame and FocusFrame.spellbar }) do
-        if bar then bars[bar] = true end
-    end
+    bars[PlayerCastingBarFrame] = "player"
+    if TargetFrame and TargetFrame.spellbar then bars[TargetFrame.spellbar] = "target" end
+    if FocusFrame and FocusFrame.spellbar then bars[FocusFrame.spellbar] = "focus" end
     if self.db.style then
         for bar in pairs(bars) do style(bar) end
     end
@@ -138,6 +181,16 @@ function M:OnEnable()
 end
 
 function M:Refresh()
-    for bar in pairs(bars) do fill(bar) end
+    if self.db.style then
+        for bar, key in pairs(bars) do
+            self:StyleFrame(bar, key)
+            self:StyleTexts(bar.Text, bar.CastTimeText, key)
+            fill(bar)
+        end
+    end
+    if extras then
+        Skin:IconZoom(extras.icon, self.db.iconZoom)
+        self:StyleTexts(nil, extras.time, "player")
+    end
     onCastStart()
 end
