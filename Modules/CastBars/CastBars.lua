@@ -54,6 +54,10 @@ local function castInfo()
     return texture, startMs, endMs, true
 end
 
+-- The timer reads the end time cached at cast start instead of querying the cast every frame, and
+-- the text is refreshed at 20 Hz. The frame is a child of the cast bar, so OnUpdate stops when it hides.
+local TIMER_INTERVAL = 0.05
+
 local function buildExtras()
     local bar = PlayerCastingBarFrame
     local e = CreateFrame("Frame", nil, bar)
@@ -65,7 +69,6 @@ local function buildExtras()
     e.time = e:CreateFontString(nil, "OVERLAY")
     e.time:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
     e.lag = bar:CreateTexture(nil, "ARTWORK", nil, 2)
-    e.lag:SetPoint("TOP"); e.lag:SetPoint("BOTTOM")
     e.lag:SetTexture(ns.Media.textures.WHITE)
     Skin:Register(e, function(self)
         Skin:Icon(self.icon)
@@ -74,11 +77,13 @@ local function buildExtras()
         self.lag:SetVertexColor(Theme:Color("state.danger"))
         self.lag:SetAlpha(0.45)
     end)
-    e:SetScript("OnUpdate", function(self)
-        if not M.db.timer then self.time:SetText(""); return end
-        local _, _, endMs = castInfo()
-        if endMs and plain(endMs) then
-            self.time:SetFormattedText("%.1f", math.max(0, endMs / 1000 - GetTime()))
+    e.elapsed = 0
+    e:SetScript("OnUpdate", function(self, elapsed)
+        self.elapsed = self.elapsed + elapsed
+        if self.elapsed < TIMER_INTERVAL then return end
+        self.elapsed = 0
+        if self.endTime then
+            self.time:SetFormattedText("%.1f", math.max(0, self.endTime - GetTime()))
         else
             self.time:SetText("")
         end
@@ -95,8 +100,11 @@ local function onCastStart()
     extras.icon:SetShown(db.icon and texture ~= nil)
     extras.iconBorder:SetShown(db.icon and texture ~= nil)
     if texture then extras.icon:SetTexture(texture) end
+    local known = startMs and plain(startMs) and plain(endMs) and endMs > startMs
+    extras.endTime = (db.timer and known) and endMs / 1000 or nil
+    extras.time:SetText("")
     extras.lag:Hide()
-    if db.latency and startMs and plain(startMs) and plain(endMs) and endMs > startMs then
+    if db.latency and known then
         local _, _, _, world = GetNetStats()
         local fraction = math.min(1, world / (endMs - startMs))
         extras.lag:ClearAllPoints()
@@ -107,6 +115,15 @@ local function onCastStart()
     end
 end
 
+local function onCastStop()
+    if extras then extras.endTime = nil end
+end
+
+local START_EVENTS = { "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_DELAYED",
+    "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_EMPOWER_START", "UNIT_SPELLCAST_EMPOWER_UPDATE" }
+local STOP_EVENTS = { "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_INTERRUPTED",
+    "UNIT_SPELLCAST_CHANNEL_STOP", "UNIT_SPELLCAST_EMPOWER_STOP" }
+
 function M:OnEnable()
     for _, bar in ipairs({ PlayerCastingBarFrame, TargetFrame and TargetFrame.spellbar, FocusFrame and FocusFrame.spellbar }) do
         if bar then bars[bar] = true end
@@ -115,10 +132,8 @@ function M:OnEnable()
         for bar in pairs(bars) do style(bar) end
     end
     extras = buildExtras()
-    for _, event in ipairs({ "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_DELAYED",
-        "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_EMPOWER_START" }) do
-        ns.Events:OnUnit(event, self, onCastStart, "player")
-    end
+    for _, event in ipairs(START_EVENTS) do ns.Events:OnUnit(event, self, onCastStart, "player") end
+    for _, event in ipairs(STOP_EVENTS) do ns.Events:OnUnit(event, self, onCastStop, "player") end
 end
 
 function M:Refresh()

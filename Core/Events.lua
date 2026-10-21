@@ -1,23 +1,22 @@
 local _, ns = ...
 
 --[[ ns.Events — the only game-event dispatcher in Phoenix_UI.
-    On(event, owner, fn)           fn(owner, event, ...)
-    OnUnit(event, owner, fn, u1, u2) unit-filtered (RegisterUnitEvent)
+    On(event, owner, fn)              fn(owner, event, ...)
+    OnUnit(event, owner, fn, u1, u2)  unit-filtered (RegisterUnitEvent), one frame per owner and unit pair
     Off(event, owner) / OffAll(owner)
-    Listen(msg, owner, fn) / Fire(msg, ...)   internal PUI_* messages: fn(owner, msg, ...)
-]]
+    Listen(msg, owner, fn) / Fire(msg, ...)   internal PUI_* messages: fn(owner, msg, ...) ]]
 local E = {}
 ns.Events = E
 
 local frame = CreateFrame("Frame")
 local handlers = {}      -- event -> { [owner] = fn }
-local unitFrames = {}    -- owner -> { [event] = frame }
+local unitFrames = {}    -- owner -> { [unitKey] = frame }, frame.handlers[event] = fn
 local listeners = {}     -- message -> { [owner] = fn }
 local safecall = ns.SafeCall
 
-local function isForbidden(event)
-    -- Midnight: registering the combat log errors for addons (Patch 12.0.0 API changes).
-    return event:find("^COMBAT_LOG_EVENT") ~= nil
+-- Midnight: registering the combat log errors for addons (Patch 12.0.0 API changes).
+local function assertAllowed(event)
+    assert(not event:find("^COMBAT_LOG_EVENT"), "Phoenix_UI: combat-log events are forbidden in 12.x")
 end
 
 local function dispatch(map, name, ...)
@@ -32,9 +31,13 @@ frame:SetScript("OnEvent", function(_, event, ...)
     dispatch(handlers, event, ...)
 end)
 
+local function onUnitEvent(self, event, ...)
+    local fn = self.handlers[event]
+    if fn then safecall(fn, self.owner, event, ...) end
+end
+
 function E:On(event, owner, fn)
-    assert(not isForbidden(event), "Phoenix_UI: combat-log events are forbidden in 12.x")
-    assert(type(fn) == "function", "handler must be a function")
+    assertAllowed(event)
     local list = handlers[event]
     if not list then
         list = {}
@@ -44,37 +47,49 @@ function E:On(event, owner, fn)
     list[owner] = fn
 end
 
+function E:OnUnit(event, owner, fn, unit1, unit2)
+    assertAllowed(event)
+    local frames = unitFrames[owner]
+    if not frames then
+        frames = {}
+        unitFrames[owner] = frames
+    end
+    local key = unit2 and (unit1 .. "|" .. unit2) or unit1
+    local f = frames[key]
+    if not f then
+        f = CreateFrame("Frame")
+        f.owner, f.handlers = owner, {}
+        f:SetScript("OnEvent", onUnitEvent)
+        frames[key] = f
+    end
+    f.handlers[event] = fn
+    if unit2 then f:RegisterUnitEvent(event, unit1, unit2) else f:RegisterUnitEvent(event, unit1) end
+end
+
 function E:Off(event, owner)
     local list = handlers[event]
-    if list then
+    if list and list[owner] then
         list[owner] = nil
         if next(list) == nil then
             handlers[event] = nil
             frame:UnregisterEvent(event)
         end
     end
-    local uf = unitFrames[owner] and unitFrames[owner][event]
-    if uf then uf:UnregisterEvent(event) end
-end
-
-function E:OnUnit(event, owner, fn, unit1, unit2)
-    assert(not isForbidden(event), "Phoenix_UI: combat-log events are forbidden in 12.x")
-    unitFrames[owner] = unitFrames[owner] or {}
-    local f = unitFrames[owner][event]
-    if not f then
-        f = CreateFrame("Frame")
-        unitFrames[owner][event] = f
+    for _, f in pairs(unitFrames[owner] or {}) do
+        if f.handlers[event] then
+            f.handlers[event] = nil
+            f:UnregisterEvent(event)
+        end
     end
-    f:SetScript("OnEvent", function(_, ev, ...) safecall(fn, owner, ev, ...) end)
-    if unit2 then f:RegisterUnitEvent(event, unit1, unit2) else f:RegisterUnitEvent(event, unit1) end
 end
 
 function E:OffAll(owner)
     for event, list in pairs(handlers) do
         if list[owner] then self:Off(event, owner) end
     end
-    if unitFrames[owner] then
-        for _, f in pairs(unitFrames[owner]) do f:UnregisterAllEvents() end
+    for _, f in pairs(unitFrames[owner] or {}) do
+        f:UnregisterAllEvents()
+        wipe(f.handlers)
     end
     for _, list in pairs(listeners) do list[owner] = nil end
 end
@@ -82,10 +97,6 @@ end
 function E:Listen(message, owner, fn)
     listeners[message] = listeners[message] or {}
     listeners[message][owner] = fn
-end
-
-function E:Unlisten(message, owner)
-    if listeners[message] then listeners[message][owner] = nil end
 end
 
 function E:Fire(message, ...)

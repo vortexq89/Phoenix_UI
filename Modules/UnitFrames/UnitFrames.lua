@@ -61,7 +61,7 @@ function M:OnEnable()
     hooksecurefunc("UnitFrameManaBar_UpdateType", onManaType)
     for bar in pairs(healthBars) do onHealthUpdate(bar) end
     for bar in pairs(manaBars) do onManaType(bar) end
-    ns.Events:Listen("PUI_THEME_CHANGED", self, function() self:Refresh() end)
+    ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
 end
 
 function M:Refresh()

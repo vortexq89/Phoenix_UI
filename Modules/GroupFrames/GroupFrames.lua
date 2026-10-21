@@ -38,7 +38,7 @@ end
 function M:OnEnable()
     hooksecurefunc("CompactUnitFrame_UpdateAll", style)
     hooksecurefunc("DefaultCompactUnitFrameSetup", style)
-    ns.Events:Listen("PUI_THEME_CHANGED", self, function() self:Refresh() end)
+    ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
 end
 
 function M:Refresh()

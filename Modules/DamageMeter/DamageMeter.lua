@@ -6,22 +6,26 @@ local Theme, Skin, Media = ns.Theme, ns.Skin, ns.Media
     Meter values are secret in combat: entries are restyled only, never read. ]]
 local M = ns:NewModule("DamageMeter", {
     label = "DAMAGEMETER", desc = "DAMAGEMETER_DESC", category = "combat", order = 30, reloadOnToggle = true,
-    defaults = { skin = true, barHeightText = true },
+    defaults = { skin = true },
 })
 
 local windows = setmetatable({}, { __mode = "k" })
+local entries = setmetatable({}, { __mode = "k" })
 
+-- Entries are recycled by the scroll box, and InitEntry runs on every data refresh, so each entry is
+-- styled once and kept themed through Skin:Register. Text keeps a 12 pt base: Blizzard applies the
+-- meter's text scale on top with FontString:SetTextScale.
 local function styleEntry(entry)
-    if not (M:IsEnabled() and M.db.skin) or not entry.StatusBar then return end
+    if entries[entry] or not (M:IsEnabled() and M.db.skin) or not entry.StatusBar then return end
+    entries[entry] = true
     local bar = entry.StatusBar
-    if bar.BackgroundRegions then
-        for _, region in ipairs(bar.BackgroundRegions) do Skin:HideRegion(region) end
-    end
-    Skin:StatusBar(bar)
-    local scale = DamageMeter:GetTextScale() or 1
-    if bar.Name then Skin:Text(bar.Name, "unit", "text.primary", math.floor(12 * scale + 0.5)) end
-    if bar.Value then Skin:Text(bar.Value, "number", "text.primary", math.floor(12 * scale + 0.5)) end
+    for _, region in ipairs(bar.BackgroundRegions or {}) do Skin:HideRegion(region) end
     if entry.Icon and entry.Icon.Icon then Skin:Icon(entry.Icon.Icon) end
+    Skin:Register(bar, function(self)
+        Skin:StatusBar(self)
+        if self.Name then Skin:Text(self.Name, "unit", "text.primary", 12) end
+        if self.Value then Skin:Text(self.Value, "number", "text.primary", 12) end
+    end)
 end
 
 local function styleWindow(window)

@@ -15,18 +15,26 @@ local outOfRange = setmetatable({}, { __mode = "k" })
 local buttons = {}
 local RANGE = { 0.95, 0.25, 0.25 }
 
-local function usableColor(button)
+-- Blizzard's UpdateUsable sets the usable/no-mana/unusable tint; we only override it while out of range.
+-- Restoring repeats Blizzard's colours rather than calling the secure button's method from addon code.
+local function tint(button)
+    if outOfRange[button] and M.db.rangeTint then
+        button.icon:SetVertexColor(RANGE[1], RANGE[2], RANGE[3])
+        return
+    end
     local isUsable, notEnoughMana = C_ActionBar.IsUsableAction(button.action)
-    if isUsable then return 1, 1, 1 elseif notEnoughMana then return 0.5, 0.5, 1 end
-    return 0.4, 0.4, 0.4
+    if isUsable then
+        button.icon:SetVertexColor(1, 1, 1)
+    elseif notEnoughMana then
+        button.icon:SetVertexColor(0.5, 0.5, 1)
+    else
+        button.icon:SetVertexColor(0.4, 0.4, 0.4)
+    end
 end
 
-local function tint(button)
-    if not (M:IsEnabled() and M.db.rangeTint) or not button.action then return end
-    if outOfRange[button] then
+local function onUsable(button)
+    if outOfRange[button] and M:IsEnabled() and M.db.rangeTint then
         button.icon:SetVertexColor(RANGE[1], RANGE[2], RANGE[3])
-    else
-        button.icon:SetVertexColor(usableColor(button))
     end
 end
 
@@ -47,10 +55,13 @@ local function style(button)
     button.Name:SetAlpha(db.macroText and 1 or 0)
 end
 
+-- Fires on every range poll; only act when the state flips.
 local function onRange(button, checksRange, inRange)
-    if not buttons[button] then return end
-    outOfRange[button] = (checksRange and not inRange) or nil
-    tint(button)
+    if not buttons[button] or not M:IsEnabled() then return end
+    local out = (checksRange and not inRange) or nil
+    if out == outOfRange[button] then return end
+    outOfRange[button] = out
+    if button.action then tint(button) end
 end
 
 local function collect()
@@ -66,7 +77,7 @@ function M:OnEnable()
     collect()
     for button in pairs(buttons) do
         Skin:Register(button, style)
-        hooksecurefunc(button, "UpdateUsable", tint)
+        hooksecurefunc(button, "UpdateUsable", onUsable)
     end
     hooksecurefunc("ActionButton_UpdateRangeIndicator", onRange)
 end
@@ -74,7 +85,7 @@ end
 function M:Refresh()
     for button in pairs(buttons) do
         style(button)
-        tint(button)
+        if button.action then tint(button) end
     end
 end
 
