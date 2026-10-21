@@ -63,8 +63,8 @@ def sidebar(active, scroll=0):
 
 
 def shell(active, body, search="Search settings…", focus=False, status="Changes apply instantly", scroll=0, overlay="",
-          status_icon="preview", status_cls=""):
-    return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"></head>
+          status_icon="preview", status_cls="", head="", above=""):
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css">{head}</head>
 <body><div class="world"></div><div class="win">
 <div class="hdr"><div class="emblem"></div><div class="brand">PHOENIX</div><div class="brand-ui">UI</div>
 <span class="badge">v2.0.0</span>
@@ -72,8 +72,10 @@ def shell(active, body, search="Search settings…", focus=False, status="Change
 <div class="ibtn">{ico("editmode")}</div><div class="ibtn">{ico("reload")}</div><div class="ibtn">{ico("close")}</div></div>
 {sidebar(active, scroll)}
 <div class="content">{body}</div>{overlay}
-<div class="ftr">{ico("profiles", "pico")}Profile: Default &nbsp;·&nbsp; 20 modules active<span class="mid {status_cls}">{ico(status_icon)}{status}</span>Phoenix UI · by VortexQ8<span class="grip">{ico("resize")}</span></div>
-</div></body></html>'''
+<div class="ftr">{ico("profiles", "pico")}Profile: Default &nbsp;·&nbsp; 20 modules active<span class="mid {status_cls}">{ico(status_icon)}{status}</span>
+<span class="scl">WINDOW SCALE</span><span class="sl"><span style="width:43%"></span></span><span class="val">1.00</span>
+{btn("Reload UI", "reload", "primary")}{btn("Close", "close")}<span class="grip">{ico("resize")}</span></div>
+</div>{above}</body></html>'''
 
 
 def opt(label, ctl, desc=None, badge="", hl=False):
@@ -378,11 +380,241 @@ def mplus_page():
 <body><div class="world"></div>{plates}{timer}</body></html>'''
 
 
+# ---------------------------------------------------------------- options 2.1 (UI/Config/Renderer.lua, UI/Previews)
+FONT_DATA = ROOT / "Core" / "FontData.lua"
+TEX_DATA = ROOT / "Core" / "TextureData.lua"
+BARS = OUT / "assets" / "bars"
+
+
+def font_data():
+    import re
+    text = FONT_DATA.read_text(encoding="utf-8")
+    pat = re.compile(r'key = "(\w+)", name = "Phoenix ([^"]+)", file = "([^"]+)",\s*family = "([^"]+)", weight = "([^"]+)", '
+                     r'category = "(\w+)", cyrillic = (\w+)')
+    return [dict(key=k, name=n, file=f, family=fam, weight=w, cat=c, cyr=cy == "true")
+            for k, n, f, fam, w, c, cy in pat.findall(text)]
+
+
+def bar_data():
+    import re
+    text = TEX_DATA.read_text(encoding="utf-8").split("borders = {")[0]
+    return [dict(key=k, name=n, file=f, style=st)
+            for k, n, f, st in re.findall(r'key = "(\w+)", name = "Phoenix ([^"]+)", file = "(\w+)", style = "(\w+)"', text)]
+
+
+def export_bars():
+    """The shipped TGA statusbars as PNG, so the mockups tint the real art (multiply = SetVertexColor)."""
+    from PIL import Image
+    BARS.mkdir(parents=True, exist_ok=True)
+    for b in bar_data():
+        png = BARS / f"{b['file']}.png"
+        src = ROOT / "Media" / "Textures" / f"{b['file']}.tga"
+        if not png.exists() or png.stat().st_mtime < src.stat().st_mtime:
+            Image.open(src).save(png, optimize=True)
+
+
+def faces(fonts):
+    return "<style>" + "".join(f'@font-face{{font-family:"F-{f["key"]}";src:url("../../../Media/Fonts/{f["file"]}")}}'
+                               for f in fonts) + "</style>"
+
+
+def bar(pct, color, tex="BarSatin", h=14, w=None, border="1px solid #000", text="", cls=""):
+    width = f"width:{w}px;" if w else ""
+    inner = f'<b>{text}</b>' if text else ""
+    return (f'<span class="pbar {cls}" style="{width}height:{h}px;border:{border}">'
+            f'<span style="width:{pct}%;background-color:{color};background-image:url(../assets/bars/{tex}.png)"></span>{inner}</span>')
+
+
+def cog(open_=False):
+    return f'<span class="cog{" on" if open_ else ""}">{ico("cog")}</span>'
+
+
+def tabs(names, active=0):
+    return '<div class="tabs">' + "".join(f'<span class="{"on" if i == active else ""}">{n}</span>'
+                                          for i, n in enumerate(names)) + "</div>"
+
+
+def seg(items, active, multi=()):
+    return '<span class="seg">' + "".join(
+        f'<span class="{"on" if i == active or i in multi else ""}">{t}</span>' for i, t in enumerate(items)) + "</span>"
+
+
+def preview_card(stage, h):
+    return (f'<div class="sec pv"><div class="sech i">{ico("preview")}Live preview<span class="hint">Sample data, redrawn as you change settings</span></div>'
+            f'<div class="stage" style="height:{h}px">{stage}</div></div>')
+
+
+def card2(title, rows, wide=False):
+    return f'<div class="sec c2{" wide" if wide else ""}"><div class="sech">{title}</div>{"".join(rows)}</div>'
+
+
+def row(label, ctl, desc=None, gear=None, hl=False):
+    d = f"<i>{desc}</i>" if desc else ""
+    return (f'<div class="opt{" d" if desc else ""}{" hl" if hl else ""}"><div class="l"><b>{label}</b>{d}</div>'
+            f'<div class="ctl c2">{ctl}{gear or ""}</div></div>')
+
+
+def dd2(text, face=None, tex=None):
+    style = f' style="font-family:{face}"' if face else ""
+    strip = (f'<span class="ddbar" style="background-image:url(../assets/bars/{tex}.png)"></span>' if tex else "")
+    return f'<span class="dd c2">{strip}<span class="ddl"{style}>{text}</span>{ico("chevron-down", "chev")}</span>'
+
+
+def sl2(pct, val):
+    return f'<span class="sl c2"><span style="width:{pct}%"></span></span><span class="val">{val}</span>'
+
+
+def sw(color):
+    return f'<span class="sw" style="background:{color}"></span>'
+
+
+def popover(title, rows, left, top, width=300):
+    body = "".join(f'<div class="prow"><b>{l}</b><span class="ctl c2">{c}</span></div>' for l, c in rows)
+    return (f'<div class="pop" style="left:{left}px;top:{top}px;width:{width}px"><div class="poph">{ico("cog", "xs")}{title}</div>'
+            f'{body}</div>')
+
+
+def plate(name, pct, color, forces="", tex="BarEmber"):
+    f = f'<span class="npf2">{forces}</span>' if forces else ""
+    return (f'<div class="np2"><div class="npn2" style="color:{color}">{name}</div>'
+            f'<div style="position:relative">{bar(pct, color, tex, 15, 187, "1px solid #000", f"{pct}%")}{f}</div></div>')
+
+
+def nameplates_page():
+    stage = (plate("Ashen Brute", 72, "#ff4d5e", "+4") + plate("Ember Wisp", 100, "#ffc24b")
+             + plate("Phoenix Guard", 46, "#3ddc97"))
+    body = page_head("nameplates", "Nameplates", "Bar texture, health percent and Mythic+ enemy forces on Blizzard nameplates.")
+    body += tabs(["Appearance", "Text", "Game settings"], 1)
+    body += preview_card(f'<div class="plates">{stage}</div>', 110)
+    body += card2("Text", [
+        row("Health percent", tog(), "Show health percent on the bar."),
+        row("Health text font", dd2("Barlow Condensed SemiBold", "F-BarlowCondSemiBold"), gear=cog(True)),
+        row("Restyle names", tog(), "Use your font settings for the unit names above the plates."),
+        row("Name font", dd2("Default"), gear=cog()),
+        row("Enemy forces", tog(), "In Mythic+, how much enemy forces each mob is worth (+4) beside its health bar."),
+        row("Enemy forces font", dd2("Default"), gear=cog()),
+    ], wide=True)
+    pop = popover("Health text font", [
+        ("Font size", sl2(45, "11")), ("Outline", dd2("Outline")), ("Drop shadow", tog()),
+        ("Text colour", sw("#eceef2") + btn("Reset", None, "ghost")), ("Position", dd2("Center")),
+        ("Horizontal offset", sl2(50, "0")), ("Vertical offset", sl2(50, "0")),
+    ], 810, 527, 340)
+    # cog popovers live on UIParent (clamped to the screen), so this one may hang below the window
+    return shell("nameplates", body, above=pop, head=faces(font_data()))
+
+
+UNIT_ROWS = ["Player", "Target", "Focus", "Pet"]
+
+
+def unitframe_sample():
+    return f'''<div class="uf"><div class="ufp" style="background-image:url(../assets/emblem.png)"></div>
+<div class="ufb"><div class="ufn"><span style="font-family:F-InterSemiBold">Phoenixia</span><span style="color:var(--warn)">90</span></div>
+{bar(86, "#3fc7eb", "BarSmooth", 27, 227, "1px solid #ff6a1a", "55.2K", "big")}
+{bar(64, "#4da3ff", "BarSmooth", 14, 227, "1px solid #000", "64%", "small")}</div></div>'''
+
+
+def unitframes_page():
+    body = page_head("unitframes", "Unit Frames", "Textures, colors and fonts for player, target, focus and pet.")
+    scope = (f'<div class="scope"><div class="srow"><span class="slab">FRAME</span>{seg(UNIT_ROWS, 0)}'
+             f'<span class="slab" style="margin-left:22px">APPLY TO</span>{seg(["This", "All", "Multiple"], 2)}</div>'
+             f'<div class="srow"><span class="shint">Changes also go to the frames picked here</span>{seg(UNIT_ROWS, -1, (0, 1, 2))}</div>'
+             f'<div class="srow"><span class="slab">APPLY ALL SETTINGS FROM</span>{dd2("Target")}{btn("Copy", "copy")}</div></div>')
+    body += scope + preview_card(unitframe_sample(), 120)
+    left = card2("Bars", [
+        row("Phoenix bar texture", tog(), "Use the bar texture from General."),
+        row("Bar texture", dd2("Smooth", tex="BarSmooth")),
+        row("Health bar border", dd2("Glow"), gear=cog()),
+        row("Background opacity", sl2(60, "60%"), gear=cog()),
+    ]) + card2("Colours", [
+        row("Class-colored health", tog(), "Color player health bars by class."),
+        row("Power colors", tog(), "Color power bars by resource type."),
+    ])
+    right = card2("Text", [
+        row("Phoenix fonts", tog(), "Use the unit font for names and values."),
+        row("Name font", dd2("Inter SemiBold", "F-InterSemiBold"), gear=cog()),
+        row("Health text font", dd2("Barlow Condensed Bold", "F-BarlowCondBold"), gear=cog()),
+        row("Power text font", dd2("Default"), gear=cog()),
+    ])
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    return shell("unitframes", body, status="Applied to Player, Target and Focus", status_icon="success", status_cls="ok",
+                 head=faces(font_data()))
+
+
+def general_page(picker):
+    fonts, bars = font_data(), bar_data()
+    body = page_head("general", "General", "Theme, fonts and textures shared by every module.")
+    sample = (f'<div class="tpv"><div class="tph">SECTION HEADING</div><div class="tpb">Option label in the interface font</div>'
+              f'<div class="tpd">Descriptions and hints use the lighter weight.</div></div><div class="tpbars">'
+              + bar(82, "#ff6a1a", "BarSatin", 16, 300, text="82%") + bar(64, "#3ddc97", "BarSatin", 16, 300, text="64%")
+              + bar(40, "#4da3ff", "BarSatin", 16, 300, text="40%") + "</div>")
+    body += preview_card(f'<div class="theme">{sample}</div>', 120)
+    left = card2("Appearance", [
+        row("Theme", dd2("Phoenix Ember"), "Accent colour for every Phoenix element."),
+        row("Bar texture", dd2("Satin", tex="BarSatin"), "Status bar texture for unit frames, cast bars, nameplates and meters.",
+            hl=picker == "bar"),
+    ])
+    right = card2("Typography", [
+        row("UI font", dd2("Inter Medium", "F-InterMedium"), "Font used for labels and text Phoenix draws."),
+        row("Unit font", dd2("Barlow Condensed SemiBold", "F-BarlowCondSemiBold"), "Font used for names and numbers on frames.",
+            hl=picker == "font"),
+        row("Font scale", sl2(33, "100%"), "Scales every Phoenix font."),
+    ])
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    if picker == "font":
+        # type-to-filter, a heading per family, every name drawn in its own face (UI/Widgets/Dropdown.lua, preview = "font")
+        items, last = [], None
+        for f in fonts:
+            if "cond" not in f["name"].lower():
+                continue
+            if f["family"] != last:
+                items.append(f'<div class="ph">{f["family"].upper()}</div>')
+                last = f["family"]
+            on = f["key"] == "BarlowCondSemiBold"
+            items.append(f'<div class="pi{" on" if on else ""}" style="font-family:F-{f["key"]}">{f["name"]}'
+                         f'{ico("check", "xs") if on else ""}</div>')
+        pop = (f'<div class="pick" style="left:944px;top:507px;width:240px"><div class="pin focus">{ico("search", "xs")}cond<span class="caret"></span></div>'
+               + "".join(items[:11]) + '<div class="pthumb"></div></div>')
+    else:
+        # the shipped statusbars as accent-tinted strips with the name on top (preview = "bar")
+        rows = "".join(f'<div class="pb{" on" if b["key"] == "Satin" else ""}"><span class="pbs" style="background-image:url(../assets/bars/{b["file"]}.png)"></span>'
+                       f'<span class="pbl">{b["name"]}</span>{ico("check", "xs") if b["key"] == "Satin" else ""}</div>' for b in bars[:11])
+        pop = (f'<div class="pick bars" style="left:528px;top:513px;width:210px"><div class="pin">{ico("search", "xs")}Filter</div>'
+               f'<div class="ph">PHOENIX</div>{rows}<div class="pthumb"></div></div>')
+    # dropdown popups are parented to UIParent, so they may hang below the settings window
+    return shell("general", body, above=pop, head=faces(fonts))
+
+
+def media_sheet():
+    """Close-up of everything the addon ships: the font families (each in its own face) and the statusbars."""
+    fonts, bars = font_data(), bar_data()
+    fams = {}
+    for f in fonts:
+        fams.setdefault(f["family"], []).append(f)
+    cells = []
+    for fam, fs in fams.items():
+        mid = next((f for f in fs if f["weight"] in ("Medium", "Regular", "SemiBold")), fs[0])
+        cyr = " · Кириллица" if fs[0]["cyr"] else ""
+        cells.append(f'<div class="fc"><div class="fs" style="font-family:F-{mid["key"]}">{fam}</div>'
+                     f'<div class="fw">{" · ".join(f["weight"] for f in fs)}{cyr}</div>'
+                     f'<div class="fx" style="font-family:F-{fs[-1]["key"]}">Pyroblast 1.24M 87% +4</div></div>')
+    strips = "".join(f'<div class="bs"><span class="bsb" style="background-image:url(../assets/bars/{b["file"]}.png)"><b>{b["name"]}</b></span>'
+                     f'<span class="bst">{b["style"]}</span></div>' for b in bars)
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css">{faces(fonts)}</head>
+<body class="media"><div class="world"></div><div class="sheet">
+<div class="ihead"><div class="ilogo"></div><div class="imeta"><b>Fonts and textures</b>
+<i>{len(fonts)} font files in {len(fams)} families plus the Roboto / Roboto Condensed core set (SIL OFL 1.1, Ubuntu Font Licence) and {len(bars)} original statusbars, registered with LibSharedMedia as "Phoenix …".</i></div></div>
+<div class="sech" style="padding-left:0;margin-top:14px">Fonts</div><div class="fgrid">{"".join(cells)}</div>
+<div class="sech" style="padding-left:0;margin-top:8px">Statusbars</div><div class="bgrid">{strips}</div></div></body></html>'''
+
+
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
-         "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page}
-SIZES = {"icons": ("1280,1240", "2")}
+         "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page, "nameplates": nameplates_page,
+         "unitframes": unitframes_page, "fonts": lambda: general_page("font"),
+         "textures": lambda: general_page("bar"), "media": media_sheet}
+SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1")}
 
 if __name__ == "__main__":
+    export_bars()
     for name, fn in PAGES.items():
         html = SRC / f"{name}.html"
         html.write_text(fn(), encoding="utf-8")
