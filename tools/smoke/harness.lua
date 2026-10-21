@@ -565,6 +565,7 @@ try("locales", function()
                 assert(specs(t[k]) == specs(v), file .. "." .. k .. " changes the format specifiers")
             end
             for k in pairs(t) do assert(en[k], file .. " has unknown key " .. k) end
+            if file == "esES" then assert(capture("Locales/esES.lua", "esMX").esMX, "esES strings must also register for esMX") end
         end
     end
     assert(n > 0, "no translations listed in Locales.xml")

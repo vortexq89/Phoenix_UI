@@ -3,6 +3,8 @@
 ## Notes: Restyles the default interface and adds small quality-of-life features. Type /pui for settings.
 ## Notes-deDE: Gestaltet die Standardoberfläche neu und ergänzt kleine Komfortfunktionen. Gib /pui für die Einstellungen ein.
 ## Notes-frFR: Restylise l'interface par défaut et ajoute de petites fonctions de confort. Tapez /pui pour les options.
+## Notes-esES: Cambia el estilo de la interfaz predeterminada y añade pequeñas mejoras de comodidad. Escribe /pui para las opciones.
+## Notes-esMX: Cambia el estilo de la interfaz predeterminada y añade pequeñas mejoras de comodidad. Escribe /pui para las opciones.
 ## Author: VortexQ8
 #@debug@
 ## Version: 2.0.0-beta1
