@@ -202,6 +202,13 @@ for data, folder, ext in (("FontData.lua", "Fonts", ""), ("TextureData.lua", "Te
     for name in re.findall(r'file\s*=\s*"([^"]+)"', code[ROOT / "Core" / data]):
         if not media_exists(f"Media/{folder}/{name}{ext}"):
             problems.append(f"Core/{data}: missing or wrong-case Media/{folder}/{name}{ext}")
+    # keys are saved settings and names are LibSharedMedia keys: a duplicate silently shadows a font or bar
+    # (checked per list: bars, borders and glows are separate namespaces)
+    for block in re.split(r"\n    \w+ = \{\n", code[ROOT / "Core" / data]):
+        for field in ("key", "name"):
+            seen = re.findall(r"\b" + field + r'\s*=\s*"([^"]+)"', block)
+            for dupe in sorted({v for v in seen if seen.count(v) > 1}):
+                problems.append(f"Core/{data}: duplicate {field} \"{dupe}\"")
 for name in re.findall(r'core\("\w+", "[^"]+", "([^"]+)"', code[ROOT / "Core" / "Media.lua"]):
     if not media_exists(f"Media/Fonts/{name}"):
         problems.append(f"Core/Media.lua: missing or wrong-case Media/Fonts/{name}")
