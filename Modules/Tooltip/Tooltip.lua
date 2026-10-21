@@ -8,7 +8,7 @@ local M = ns:NewModule("Tooltip", {
     label = "TOOLTIP", desc = "TOOLTIP_DESC", category = "interface", order = 60, reloadOnToggle = true,
     defaults = {
         skin = true, anchor = "DEFAULT", hideInCombat = false, target = true, role = true, ids = false,
-        classBorder = true, qualityBorder = true, healthBar = true,
+        classBorder = true, qualityBorder = true, healthBar = true, mplusRating = true,
     },
 })
 
@@ -46,6 +46,31 @@ local function plain(...)
     return true
 end
 
+local function addRole(tt, unit)
+    local role = UnitGroupRolesAssigned(unit)
+    if plain(role) and ROLE_ATLAS[role] then
+        GameTooltip_AddNormalLine(tt, CreateAtlasMarkup(ROLE_ATLAS[role], 14, 14) .. " " .. _G[role])
+    end
+end
+
+-- C_PlayerInfo.GetPlayerMythicPlusRatingSummary carries no Secret* return flags; guarded all the same.
+local function addRating(tt, unit)
+    local summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary(unit)
+    local score = summary and summary.currentSeasonScore
+    if not (plain(score) and score and score > 0) then return end
+    local color = C_ChallengeMode.GetDungeonScoreRarityColor(score) or HIGHLIGHT_FONT_COLOR
+    GameTooltip_AddNormalLine(tt, L.TOOLTIP_MPLUS_LINE:format(color:WrapTextInColorCode(BreakUpLargeNumbers(score))))
+end
+
+local function addTarget(tt, unit)
+    local target = unit .. "target"
+    local name = UnitExists(target) and UnitName(target)
+    if not (plain(name) and name) then return end
+    local _, classFile = UnitClass(target)
+    local color = (plain(classFile) and classFile) and C_ClassColor.GetClassColor(classFile)
+    GameTooltip_AddNormalLine(tt, L.TOOLTIP_TARGET_LINE:format(color and color:WrapTextInColorCode(name) or name))
+end
+
 local function onUnit(tt, data)
     if not M:IsEnabled() or tt:IsForbidden() then return end
     local _, unit = tt:GetUnit()
@@ -60,22 +85,9 @@ local function onUnit(tt, data)
         local _, classFile = UnitClass(unit)
         if plain(classFile) then border(tt, ns.Util.ClassColor(classFile)) end
     end
-    if M.db.role then
-        local role = UnitGroupRolesAssigned(unit)
-        if plain(role) and ROLE_ATLAS[role] then
-            GameTooltip_AddNormalLine(tt, CreateAtlasMarkup(ROLE_ATLAS[role], 14, 14) .. " " .. _G[role])
-        end
-    end
-    if M.db.target then
-        local target = unit .. "target"
-        local name = UnitExists(target) and UnitName(target)
-        if plain(name) and name then
-            local _, classFile = UnitClass(target)
-            local color = (plain(classFile) and classFile) and C_ClassColor.GetClassColor(classFile)
-            local text = color and color:WrapTextInColorCode(name) or name
-            GameTooltip_AddNormalLine(tt, L.TOOLTIP_TARGET_LINE:format(text))
-        end
-    end
+    if M.db.role then addRole(tt, unit) end
+    if isPlayer and M.db.mplusRating then addRating(tt, unit) end
+    if M.db.target then addTarget(tt, unit) end
     if M.db.ids and data and plain(data.id) and data.id then
         GameTooltip_AddColoredLine(tt, L.TOOLTIP_ID:format(data.id), GRAY_FONT_COLOR)
     end
