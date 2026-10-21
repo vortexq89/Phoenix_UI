@@ -797,4 +797,9 @@ ns.RegisterLocale("enUS", {
     PREVIEW_PARTY_DPS1 = "Cinderfall",
     PREVIEW_PARTY_DPS2 = "Ashwhisper",
     PREVIEW_PARTY_DEAD = "Dead",
+    ---------------------------------------------------------------- chat tabs
+    CHAT_TAB_FLASH = "Flashing tabs in the accent colour",
+    CHAT_TAB_FLASH_DESC = "A tab with unread messages glows in your accent colour instead of white.",
+    CHAT_WHISPER_TABS = "Coloured whisper tabs",
+    CHAT_WHISPER_TABS_DESC = "Whisper window tabs use the whisper colour from your chat settings.",
 })

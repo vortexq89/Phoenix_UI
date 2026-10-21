@@ -10,6 +10,7 @@ local M = ns:NewModule("Chat", {
     label = "CHAT", desc = "CHAT_DESC", category = "social", order = 10,
     defaults = {
         urls = true, copyButton = true, arrowKeys = true, keepHistory = true, fastScroll = true,
+        tabFlash = true, whisperTabs = true,
         urlColor = false,                                  -- false = the theme's info colour
         styleText = false,
         messages = Style.Text(14, { outline = "NONE", shadow = true }),  -- size stays the chat window's own
@@ -49,6 +50,21 @@ end
 
 function M:StyleTab(fs)
     if self.db.styleText and fs then Skin:TextSpec(fs, self.db.tabs, "small") end
+end
+
+local WHISPER = { WHISPER = true, BN_WHISPER = true }
+
+-- Tab label colour: whisper windows take their channel colour (the game's chat colour settings).
+function M:WhisperColor(chatType)
+    local info = ChatTypeInfo and ChatTypeInfo[chatType]
+    if info and info.r then return info.r, info.g, info.b end
+    return Theme:Color("accent.secondary")
+end
+
+-- tab: a chat tab (or a preview stand-in with .glow and a FontString); alerting: new messages waiting.
+function M:StyleTabState(tab, fs, chatType, alerting)
+    if self.db.whisperTabs and WHISPER[chatType] and fs then fs:SetTextColor(self:WhisperColor(chatType)) end
+    if self.db.tabFlash and alerting and tab.glow then tab.glow:SetVertexColor(Theme:Color("accent.primary")) end
 end
 
 local function linkify(url) return M:Linkify(url) end
@@ -151,6 +167,19 @@ local function setupEditBox(chatFrame)
     box:SetAltArrowKeyMode(not M.db.arrowKeys and editBoxes[box].altArrows)
 end
 
+---------------------------------------------------------------- tabs
+-- Post-hooks of FCFTab_UpdateColors / FCF_StartAlertFlash: only colours change, Blizzard keeps the logic.
+local function tabState(tab)
+    if not (M:IsEnabled() and tab and tab.GetID) then return end
+    local chatFrame = _G["ChatFrame" .. tab:GetID()]
+    if not chatFrame then return end
+    M:StyleTabState(tab, tab:GetFontString(), chatFrame.chatType, ChatFrameUtil.IsTabAlerting(tab))
+end
+
+local function onAlert(chatFrame)
+    if chatFrame and chatFrame.GetName then tabState(_G[chatFrame:GetName() .. "Tab"]) end
+end
+
 ---------------------------------------------------------------- scrolling
 -- Runs after FloatingChatFrame_OnMouseScroll has moved one line. The scroll methods come from
 -- ScrollingMessageFrameSecureMixin, which runs them untainted when addon code calls them.
@@ -179,6 +208,8 @@ function M:OnEnable()
         local function onNewWindow() if M:IsEnabled() then M:Refresh() end end
         hooksecurefunc("FCF_OpenNewWindow", onNewWindow)
         hooksecurefunc("FCF_OpenTemporaryWindow", onNewWindow)
+        hooksecurefunc("FCFTab_UpdateColors", tabState)
+        hooksecurefunc("FCF_StartAlertFlash", onAlert)
     end
     self:Refresh()
 end
@@ -197,6 +228,7 @@ function M:Refresh()
         self:StyleMessages(chatFrame)
         local tab = _G[chatFrame:GetName() .. "Tab"]
         self:StyleTab(tab and tab.Text)
+        tabState(tab)
         if not wheelHooked[chatFrame] then
             wheelHooked[chatFrame] = true
             chatFrame:HookScript("OnMouseWheel", onWheel)

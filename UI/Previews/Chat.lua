@@ -8,7 +8,9 @@ local LINES = {
     { "PARTY", sample = "PREVIEW_CHAT_PARTY", url = true },
     { "SYSTEM", sample = "PREVIEW_CHAT_SYSTEM" },
 }
-local TABS = { { sample = "PREVIEW_CHAT_TAB_GENERAL" }, { sample = "PREVIEW_CHAT_TAB_GUILD" }, { sample = "PREVIEW_CHAT_TAB_WHISPERS" } }
+-- The guild tab is flashing (new messages); the third is a whisper window.
+local TABS = { { sample = "PREVIEW_CHAT_TAB_GENERAL" }, { sample = "PREVIEW_CHAT_TAB_GUILD", alerting = true },
+    { sample = "PREVIEW_CHAT_TAB_WHISPERS", chatType = "WHISPER" } }
 
 local function channelColor(kind)
     local info = ChatTypeInfo and ChatTypeInfo[kind]
@@ -27,7 +29,11 @@ P:Register("chat", {
         for i, tab in ipairs(TABS) do
             local fs = P.Text(win)
             fs:SetPoint("BOTTOMLEFT", win, "TOPLEFT", 8 + (i - 1) * 86, 6)
-            fs.key = tab.sample
+            fs.key, fs.def = tab.sample, tab
+            fs.holder = { glow = win:CreateTexture(nil, "BACKGROUND") }
+            fs.holder.glow:SetTexture(ns.Media.textures.FADE_V)
+            fs.holder.glow:SetPoint("BOTTOMLEFT", fs, "BOTTOMLEFT", -6, -6)
+            fs.holder.glow:SetPoint("TOPRIGHT", fs, "TOPRIGHT", 6, 4)
             win.tabs[i] = fs
         end
         win.text = CreateFrame("Frame", nil, win)
@@ -48,6 +54,10 @@ P:Register("chat", {
                 if db.styleText then m:StyleTab(fs) else Skin:Text(fs, "small") end
                 fs:SetTextColor(Theme:Color(i == 1 and "text.primary" or "text.muted"))
                 fs:SetText(L[fs.key])
+                -- Blizzard's own flash glow is white until a colour is applied
+                fs.holder.glow:SetVertexColor(1, 1, 1, 0.5)
+                fs.holder.glow:SetShown(fs.def.alerting == true)
+                m:StyleTabState(fs.holder, fs, fs.def.chatType, fs.def.alerting)
             end
             for i, fs in ipairs(win.lines) do
                 local line = LINES[i]
