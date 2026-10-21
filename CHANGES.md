@@ -16,7 +16,14 @@ everything else starts from fresh defaults.
 - **Combat Text** page that gathers Blizzard's floating combat text options in one place.
 - **Cooldown Text** uses Blizzard's countdown numbers with the Phoenix font and color.
 - **Spell History** strip of your recent casts, movable in Edit Mode.
-- **Nameplates** health percent that keeps working in restricted content.
+- **Nameplates** health percent that keeps working in restricted content, and Mythic+ enemy forces per mob.
+- **Mythic+ timer**: level, affixes, clock against the limit with +2/+3 thresholds, enemy forces, boss splits,
+  deaths with their time penalty and your best time per dungeon and level. Movable in Edit Mode, where it shows a
+  sample run.
+- **Tooltip** Mythic+ rating line for players, colored like Blizzard's rating.
+- **Chat** arrow-key history of what you typed, kept across reloads (32 lines), and fast scrolling: Shift + wheel
+  jumps to the top or bottom, Ctrl + wheel pages.
+- **Minimap** page shows the size set in Edit Mode and opens Edit Mode to change it.
 - Blizzard Settings landing page and an Addon Compartment entry.
 - **Bugs**: an error catcher in the spirit of BugGrabber + BugSack. Lua errors, blocked actions and Lua warnings
   from every addon are captured from load time, with stack and locals, deduplicated with counts, attributed to
@@ -27,7 +34,7 @@ everything else starts from fresh defaults.
 - **Movers** (`/pui movers`): move, scale and fade the frames Edit Mode does not manage (zone text, error
   messages, alerts, top-center widgets, boss banner, event toasts, ready check) with a grid, snapping, arrow-key
   nudging and per-profile positions. Locks itself in combat and never touches Edit Mode frames.
-- **One icon set everywhere**: 84 Phosphor duotone icons (MIT) in the sidebar, page and section headers,
+- **One icon set everywhere**: 88 Phosphor duotone icons (MIT) in the sidebar, page and section headers,
   search results, buttons, toggles, dropdowns, profile lists, home tiles, the About page, popups, the footer
   status, the data bar and the PvP queue timer. They follow the accent color and stay sharp at 4K.
 - New high-resolution Phoenix emblem and logo (addon list, Addon Compartment, window header, home, About,
@@ -47,7 +54,7 @@ everything else starts from fresh defaults.
   replace them.
 - Combat-log features (scrolling battle text, spell notifications, cooldown tracking from the log, arena
   dampening): addons can no longer read the combat log in 12.x.
-- Chat history and emoji, the minimap size slider and the Mythic+ timer overlay.
+- Chat emoji and the separate minimap size slider (the size now lives in Edit Mode).
 
 ### Upgrading from 11.x
 - Your old profiles are imported on first login and a chat message says how many settings came across. The old

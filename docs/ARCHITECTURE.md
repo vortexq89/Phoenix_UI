@@ -62,7 +62,7 @@ Phoenix_UI/
 ├─ Media/ Fonts/ Textures/ (surfaces, Emblem64/128/256, Logo512/1024)  Icons/ (Icons24/48/96 atlases + LICENSE)
 ├─ tools/ check_api.py  check_locales.py  smoke/harness.lua  audit/ (reference generators)  media/
 ├─ .luacheck/ wow_std_12.1.5.lua  reference_12.1.5.json  deprecated_12.1.5.json
-├─ docs/  AUDIT.md  ARCHITECTURE.md  PROMPTS.md  audit/  screenshots/
+├─ docs/  AUDIT.md  ARCHITECTURE.md  ROADMAP.md  PROMPTS.md  audit/  screenshots/
 ├─ .github/workflows/luacheck.yml   .pkgmeta   AGENTS.md   .cursor/rules/*.mdc   .luacheckrc
 ```
 
@@ -79,15 +79,15 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `GroupFrames` | RaidFrames | Texture and fonts on party/raid `CompactUnitFrame`s |
 | `CastBars` | CastBars | Restyle player/target/focus bars; player-only icon, timer and latency zone |
 | `Auras` | Buffs | Cropped icons and themed timers on BuffFrame/DebuffFrame |
-| `NamePlates` | NamePlates | Bar texture and secret-safe health percent |
-| `Tooltip` | Tooltip, idTip | Skin, cursor anchor, class/quality borders, target/role/ID lines |
-| `Chat` | Chat | Clickable URLs with a copy popup, copy-chat window |
-| `Minimap` | Maps | Square mask, zone text, coordinates |
+| `NamePlates` | NamePlates | Bar texture, secret-safe health percent, Mythic+ enemy forces per mob (`C_ScenarioInfo.GetUnitCriteriaProgressValues`, shown through `C_StringUtil`) |
+| `Tooltip` | Tooltip, idTip | Skin, cursor anchor, class/quality borders, target/role/ID lines, Mythic+ rating |
+| `Chat` | Chat | Clickable URLs with a copy popup, copy-chat window, typed-line history (arrow keys, kept across reloads in `global.history`), Shift/Ctrl wheel scrolling |
+| `Minimap` | Maps | Square mask, zone text, coordinates; shows the Edit Mode size and opens Edit Mode (size is never written by Phoenix) |
 | `DataTexts` | General/_Stats | Edit Mode movable bar: FPS, latency, speed, durability, gold, clock, bug count |
 | `ItemLevel` | _Itemlevel, _BagIlvl | Item level on the character sheet and bags |
 | `Automation` | General automation | Repair, sell junk, invites, duels, resurrections, BG release, DELETE fill, cinematics |
 | `AFK` | _AfkCam | AFK screen |
-| `MythicPlus` | Mythic+ | Auto-insert keystone, new-key report |
+| `MythicPlus` | Mythic+ | Run timer overlay (`Timer.lua`: chest thresholds, forces, boss splits, deaths, personal bests in `global.best`; Edit Mode frame), auto-insert keystone, new-key report |
 | `PvP` | Misc PvP | Safe queue, TAB targets players, `/gg` |
 | `CooldownText` | CooldownTracker CooldownText | Phoenix font and color on Blizzard countdown numbers |
 | `SpellHistory` | CooldownTracker SpellTracker | Player-only recent casts strip |
@@ -344,7 +344,7 @@ Shipped font set (9 files, all SIL OFL 1.1): Cinzel-Bold, InterBold, Roboto-{Reg
 * **No per-module XML.** `Modules/Modules.xml` lists `<Module>.lua` + `Options.lua` for every module; one place to read the load order.
 * **No empty locale stubs.** Only `enUS.lua` ships; `ns.RegisterLocale` accepts other locales when translations exist. `tools/check_locales.py` keeps enUS complete and free of unused keys.
 * **Positions:** Edit Mode owns layout. Phoenix-owned frames that belong in Edit Mode (data bar, spell history) register with LibEditMode and are stored per Edit Mode layout. The Movers module (§16) positions only a verified list of Blizzard frames Edit Mode does not manage, plus small Phoenix frames such as the bug indicator; it never touches an Edit Mode system.
-* **Removed with no replacement in Phoenix:** chat history/emoji, arena dampening display, minimap size slider, M+ timer/objectives (Blizzard's tracker covers it), mouseover bar fading. Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
+* **Removed with no replacement in Phoenix:** chat emoji, arena dampening display (aura data is restricted in arenas), a Phoenix minimap size slider (Edit Mode owns the size; the Minimap page links to it), mouseover bar fading. Brought back on 12.x APIs: the M+ timer (`MythicPlus/Timer.lua`, non-secret `C_ChallengeMode`/`C_ScenarioInfo` data) and chat history (typed lines only, not received messages). Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
 * **Details!:** optional, never a dependency. The Damage Meter page offers a one-click "Style Details!" button that calls Details' public instance API inside `pcall`; it is never applied automatically because it rewrites Details' own saved settings.
 * **Icons (§14):** one Phosphor duotone set via `ns.Icons`; brand art via `ns.Icons:Brand`.
 * **Checks:** `luacheck .` (generated 12.1.5 std), `tools/check_api.py` (methods/events/CVars/templates/atlases vs. the 12.1.5 reference, forbidden patterns, TOC/XML completeness and case), `tools/check_locales.py`, and `tools/smoke/harness.lua` (offline load + boot + every settings page). All run in `.github/workflows/luacheck.yml`.
