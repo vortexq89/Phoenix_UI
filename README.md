@@ -8,8 +8,9 @@
 Retail · Interface 120105 (12.1.5) · by **VortexQ8** · MIT licence
 
 Phoenix UI builds on Blizzard's interface instead of replacing it. Edit Mode keeps control of layout, and Phoenix
-adds a consistent look and small comforts on top. It restyles secure frames but never moves or rebuilds them,
-which keeps it light and out of the way of taint.
+adds a consistent look and small comforts on top. It restyles secure frames but never rebuilds them, which keeps
+it light and out of the way of taint. It also catches Lua errors from every addon, and moves the few frames Edit
+Mode cannot reach.
 
 [CurseForge](https://www.curseforge.com/projects/1242528) ·
 [Wago](https://addons.wago.io/addons/jK8XQjKy) ·
@@ -22,6 +23,7 @@ which keeps it light and out of the way of taint.
 | Category | Module | What it does |
 |---|---|---|
 | System | **General** | Theme (Phoenix Ember, Frost, Fel, Arcane, Class, Custom), fonts, bar texture, font scale, reduce motion |
+| | **Bugs** | Catches Lua errors, blocked actions (taint) and Lua warnings from every addon; viewer with search, sessions and copy; data-bar count, minimap indicator, optional chat notice and sound; works alongside BugGrabber/BugSack |
 | Interface | **Skins** | Phoenix styling for the game menu, popups and ready check |
 | | **Action Bars** | Square buttons, readable hotkeys and macro names, out-of-range tint |
 | | **Unit Frames** | Bar texture, class and power colors, fonts for player, target, focus and pet |
@@ -32,7 +34,8 @@ which keeps it light and out of the way of taint.
 | | **Tooltip** | Dark style, class and quality borders, health bar, target, role and IDs, cursor anchor, hide in combat |
 | | **Item Level** | Item levels on the character sheet and bags |
 | | **Minimap** | Square minimap, zone text style, coordinates |
-| | **Data Bar** | FPS, latency, speed, durability, gold and clock, movable in Edit Mode |
+| | **Data Bar** | FPS, latency, speed, durability, gold, clock and bug count, movable in Edit Mode |
+| | **Movers** | Move, scale and fade frames Edit Mode does not manage: zone text, error messages, alerts, top-center widgets, boss banner, event toasts, ready check |
 | Combat | **Cooldown Text** | Blizzard's countdown numbers in the Phoenix font |
 | | **Combat Text** | Every floating combat text option in one page |
 | | **Damage Meter** | Skin for Blizzard's built-in meter; optional one-click Details! style |
@@ -52,13 +55,14 @@ Every module can be switched off. Modules that hook Blizzard frames ask for a re
 |---|---|
 | ![Home](docs/screenshots/home.png) | ![Module page](docs/screenshots/module.png) |
 | ![Search](docs/screenshots/search.png) | ![Profiles](docs/screenshots/profiles.png) |
+| ![Bug viewer](docs/screenshots/bugs.png) | ![Movers](docs/screenshots/movers.png) |
 
 The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
 same rasterized icon atlas the addon ships.
 
 ### Icons
 
-Every icon in the window, the data bar and Phoenix's own frames comes from one set: 68
+Every icon in the window, the data bar and Phoenix's own frames comes from one set: 84
 [Phosphor](https://phosphoricons.com) duotone glyphs (MIT), packed into white atlases with 24, 48 and 96 px
 cells and tinted by the active theme. Each icon picks the atlas that matches its size in physical pixels,
 so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
@@ -76,6 +80,8 @@ Install from CurseForge or Wago, or download a release and extract `Phoenix_UI` 
 |---|---|
 | `/pui` or `/phoenix` | Open or close the settings window |
 | `/pui edit` | Open Edit Mode |
+| `/pui bugs` | Open the bug viewer (`/pui bugs clear`, `/pui bugs options`) |
+| `/pui movers` | Unlock or lock the movers |
 | `/pui profile [name]` | Show or switch the profile |
 | `/pui reset` | Reset the settings window position |
 | `/pui <module>` | Jump to a module, e.g. `/pui tooltip` |
@@ -84,6 +90,25 @@ Install from CurseForge or Wago, or download a release and extract `Phoenix_UI` 
 
 You can also open the settings from the Addon Compartment (the button by the minimap) or from
 *Options → AddOns → Phoenix UI*.
+
+### Bug reports
+
+The Bugs module records every Lua error, blocked action and Lua warning, from load time on, without taking over
+Blizzard's error window or BugSack (it hands every error on to them). Repeats are counted instead of stored twice.
+Open the viewer from the data bar, the minimap bug button, a right-click on the Addon Compartment entry or
+`/pui bugs`, and use **Copy** to paste a report anywhere.
+
+Reports are saved to `WTF\Account\<account>\SavedVariables\Phoenix_UI.lua` when you log out or reload. To share
+them with the author, run the **Phoenix Uploader** app for Windows from
+[vq8s.com/phoenix-ui](https://vq8s.com/phoenix-ui): it sends new reports to VQ8S.com. Nothing leaves your PC
+otherwise. The file format is documented in [docs/BUG_REPORTS.md](docs/BUG_REPORTS.md).
+
+### Movers
+
+Edit Mode places action bars, unit frames, the minimap and most of the HUD. `/pui movers` unlocks the frames it does
+not cover: drag to move, mouse wheel to scale (Shift: opacity), arrow keys to nudge, right-click to reset, with an
+optional snap grid. Positions are saved per profile. Movers never touches an Edit Mode frame and locks itself in
+combat.
 
 ### Profiles
 
@@ -104,7 +129,7 @@ follows that. It skins and configures the Blizzard features and no longer bundle
 
 | Old Phoenix feature | Use instead |
 |---|---|
-| Frame mover (MoveAny) | Blizzard **Edit Mode** (`/pui edit`) |
+| Frame mover (MoveAny) | Blizzard **Edit Mode** (`/pui edit`) + Phoenix **Movers** (`/pui movers`) |
 | Scrolling combat text (MikScrollingBattleText) | Phoenix **Combat Text** page (Blizzard floating combat text), or [MikScrollingBattleText](https://www.curseforge.com/wow/addons/mikscrollingbattletext) (the 12.x rewrite) |
 | Group finder filters (Premade Groups Filter) | [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) |
 | Buff overlays on raid frames (BuffOverlay) | Blizzard raid frame aura settings. BuffOverlay does not work in 12.x, where aura data is secret in restricted content |

@@ -36,6 +36,7 @@ Phoenix_UI/
 │  ├─ Util.lua          -- pure helpers (tables, strings, colour maths on *non-secret* data)
 │  ├─ Events.lua        -- ns.Events: game-event dispatcher + internal message bus (combat-log guard)
 │  ├─ Secret.lua        -- ns.Secret.IsSecret: the one secret-value gate
+│  ├─ Errors.lua        -- ns.Errors: error catcher installed at load (§15), owns PhoenixUIBugsDB
 │  ├─ Combat.lua        -- ns.Combat: lockdown queue (run after combat), CVar option accessors
 │  ├─ Media.lua         -- fonts/bar/surface texture registry (+ LSM registration)
 │  ├─ IconData.lua      -- GENERATED icon manifest (names → atlas cell, tier geometry)
@@ -82,7 +83,7 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `Tooltip` | Tooltip, idTip | Skin, cursor anchor, class/quality borders, target/role/ID lines |
 | `Chat` | Chat | Clickable URLs with a copy popup, copy-chat window |
 | `Minimap` | Maps | Square mask, zone text, coordinates |
-| `DataTexts` | General/_Stats | Edit Mode movable bar: FPS, latency, speed, durability, gold, clock |
+| `DataTexts` | General/_Stats | Edit Mode movable bar: FPS, latency, speed, durability, gold, clock, bug count |
 | `ItemLevel` | _Itemlevel, _BagIlvl | Item level on the character sheet and bags |
 | `Automation` | General automation | Repair, sell junk, invites, duels, resurrections, BG release, DELETE fill, cinematics |
 | `AFK` | _AfkCam | AFK screen |
@@ -93,6 +94,8 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `CombatText` | MSBT | Blizzard floating combat text settings in one page |
 | `DamageMeter` | Detail-Skin | Skin for `Blizzard_DamageMeter`, optional one-click Details! style |
 | `Quality` | Talkhead, Errors | Talking head, error filter, achievement screenshots, Cooldown Manager toggle |
+| `Bugs` | — (BugGrabber/BugSack style) | Error catcher UI: viewer, chat notice, sound, minimap/compartment indicator, upload info (§15) |
+| `Movers` | MoveAny (partial) | Move/scale/fade a verified list of Blizzard frames Edit Mode does not manage (§16) |
 
 ---
 
@@ -163,7 +166,7 @@ function M:OnProfileChanged() end  -- default = Disable/Enable or Refresh
 
 ### 5.1 TOC
 ```
-## SavedVariables: PhoenixUIDB, Phoenix_UIDB
+## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, Phoenix_UIDB
 ## SavedVariablesPerCharacter: Phoenix_UIPerCharDB
 ```
 `Phoenix_UIDB` / `Phoenix_UIPerCharDB` are the **legacy** tables, listed only so they can be read once and then set to `nil` (dropping them from disk). After a grace release they are removed from the TOC.
@@ -340,7 +343,7 @@ Shipped font set (9 files, all SIL OFL 1.1): Cinzel-Bold, InterBold, Roboto-{Reg
 * **No `Core/Settings.lua`.** Boot and slash live in `Core/Init.lua` (loaded last from the TOC so every module is registered); the Blizzard landing page and compartment entry live with the rest of the config UI in `UI/Config/Blizzard.lua`.
 * **No per-module XML.** `Modules/Modules.xml` lists `<Module>.lua` + `Options.lua` for every module; one place to read the load order.
 * **No empty locale stubs.** Only `enUS.lua` ships; `ns.RegisterLocale` accepts other locales when translations exist. `tools/check_locales.py` keeps enUS complete and free of unused keys.
-* **Positions:** Phoenix never moves Blizzard frames. Only Phoenix-owned frames (data bar, spell history) register with LibEditMode; their positions are stored per Edit Mode layout.
+* **Positions:** Edit Mode owns layout. Phoenix-owned frames that belong in Edit Mode (data bar, spell history) register with LibEditMode and are stored per Edit Mode layout. The Movers module (§16) positions only a verified list of Blizzard frames Edit Mode does not manage, plus small Phoenix frames such as the bug indicator; it never touches an Edit Mode system.
 * **Removed with no replacement in Phoenix:** chat history/emoji, arena dampening display, minimap size slider, M+ timer/objectives (Blizzard's tracker covers it), mouseover bar fading. Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
 * **Details!:** optional, never a dependency. The Damage Meter page offers a one-click "Style Details!" button that calls Details' public instance API inside `pcall`; it is never applied automatically because it rewrites Details' own saved settings.
 * **Icons (§14):** one Phosphor duotone set via `ns.Icons`; brand art via `ns.Icons:Brand`.
@@ -368,3 +371,84 @@ Shipped font set (9 files, all SIL OFL 1.1): Cinzel-Bold, InterBold, Roboto-{Reg
 * **Checks:** `tools/check_api.py` rejects unknown literal icon names, unused glyphs, missing atlas/brand files,
   dead files under `Media/` and unused `Media.textures` keys. The smoke harness fails on any unknown icon request
   and asserts the 48/96 px tier choice at 4K.
+
+## 15. Error catcher (Bugs)
+
+`Core/Errors.lua` (`ns.Errors`) loads with Core, so it sees errors from the moment Phoenix's files run. The
+Bugs module (`Modules/Bugs`) is only the UI on top. The stored shape is a contract with the Phoenix Uploader and
+VQ8S.com; see `docs/BUG_REPORTS.md`.
+
+* **Lua errors.** In 12.x `Blizzard_ScriptErrors` installs `HandleLuaError` with `seterrorhandler`
+  (`AddLuaErrorHandler` asserts `issecure()`, so addons cannot use it). We read `geterrorhandler()` first and
+  install a wrapper that captures and then always returns `previous(msg, ...)`, so Blizzard's window and any
+  other handler still run. A re-entrancy flag and `pcall` keep a fault in the catcher from recursing or from
+  swallowing the original error. We never restore or replace the handler later; disabling the module only stops
+  recording.
+* **Stack level.** Same arithmetic as Blizzard's `GetErrorData`:
+  `GetCallstackHeight() - (GetErrorCallstackHeight() - 1)`, falling back to level 4. `debugstack(level)` and
+  `debuglocals(level)` are captured there. Locals are skipped while `C_InstanceEncounter.IsEncounterInProgress()`
+  is true (cheaper, and secret values are likeliest there).
+* **Events.** `ADDON_ACTION_BLOCKED` and `ADDON_ACTION_FORBIDDEN` (payload addon, function) are recorded as
+  `kind = "taint"` with the addon as `source`; `LUA_WARNING` (payload warning text) as `kind = "warning"`.
+  All three fire synchronously, so the stack is useful after trimming our own frames.
+* **Midnight.** Any message may be a secret value: text goes through `canaccessvalue`/`ns.Secret` before use and
+  becomes `"<secret value>"` otherwise. `|K` kstrings are neutralised the way Blizzard does (`gsub("|([kK])", "%1")`).
+  Messages, stacks and locals are truncated (2000/6000/6000 chars).
+* **Dedupe and floods.** The hash is djb2/×131 over the message and first three stack frames with numbers and
+  addresses stripped (16 hex chars), so the same bug on another line or table address counts as one report. A
+  repeat in the same session bumps `count`/`lastSeen`. A token bucket (10/s, burst 30) drops floods and counts
+  them in `Errors.dropped`.
+* **Attribution.** `source` is the first `Interface/AddOns/<name>/` in the message or stack (`Blizzard_*` →
+  `"Blizzard"`), else `"Unknown"`.
+* **BugGrabber.** `!BugGrabber` is an OptionalDep, so it loads first and replaces `seterrorhandler` with a no-op.
+  When the global `BugGrabber` exists we stand down (no handler, no events), subscribe to
+  `BugGrabber_BugGrabbed` and import this session's entries from `BugGrabber:GetDB()` at login. BugSack keeps
+  working unchanged.
+* **Storage.** `PhoenixUIBugsDB` (account-wide): `schema`, random 16-hex `installId`, `session` incremented once
+  per login/reload, `reports` newest last, capped (default 500, 100–500 in settings). Reports captured before
+  ADDON_LOADED are buffered and placed on open.
+* **UI.** Listeners are notified on the next frame (`C_Timer.After(0)`), never inside someone else's error path.
+  The viewer (`PhoenixUI_Bugs`, closes on Escape) lists reports with a search box and session filter
+  (this/previous/all), shows a detail pane with a selectable report text (Copy selects it for Ctrl+C), prev/next,
+  clear and a link to the upload settings. A data-bar segment, a minimap indicator (movable via Movers) and the
+  addon-compartment entry (right-click) show the count and pulse on new errors. Optional chat notice with an
+  `addon:Phoenix_UI:bugs` link and an optional sound (10 s gap).
+* **Blizzard popup.** The "Blizzard error window" option is the `scriptErrors` CVar, which
+  `ScriptErrorsFrame` already checks (`ShouldHideErrorFrame`). The blocked-action StaticPopup cannot be
+  suppressed safely and is left alone.
+
+## 16. Movers
+
+`Modules/Movers` moves, scales and fades frames that Edit Mode does not reach. Every entry was checked against
+the 12.1.5 FrameXML (`/workspace/ref`).
+
+| Key | Frame | Notes |
+|---|---|---|
+| `ZoneText`, `SubZoneText` | `ZoneTextFrame`, `SubZoneTextFrame` | FadingFrame drives alpha → position/scale only |
+| `Errors` | `UIErrorsFrame` | Barbershop saves its current point on show and restores it on hide, so ours survives |
+| `Alerts` | `AlertFrame` | 10×10 anchor for the alert queue; position only |
+| `TopWidgets` | `UIWidgetTopCenterContainerFrame` | Score/objective widgets; deferred in combat |
+| `BossBanner` | `BossBanner` | Animated alpha → position/scale only |
+| `EventToasts` | `EventToastManagerFrame` | `UpdateAnchor` re-anchors it; re-applied with `hooksecurefunc` |
+| `ReadyCheck` | `ReadyCheckFrame` | Calls `SetAlpha(1)` on show → no alpha |
+| `BugIndicator` | Phoenix minimap bug button | registered with `Movers:Register` |
+
+**Excluded, and why.** Everything with an Edit Mode system: action bars, unit frames, minimap, buffs/debuffs,
+objective tracker, loot, talking head, vehicle seat, vehicle leave button, durability, encounter bar (including
+`UIWidgetPowerBarContainerFrame`/`PlayerPowerBarAlt`), extra abilities, loss of control, raid warnings, timer bars
+(`MirrorTimerContainer`), archaeology bar, status tracking bars, bags, micro menu, chat, tooltip anchor, damage
+meter, cooldown viewer, personal resource display, encounter events. `UIWidgetBelowMinimapContainerFrame` (right
+managed: UIParent lays it out every update), `TicketStatusFrame` (placed by the buff-frame status tray),
+`GhostFrame` (secure, anchored to the top-center widgets) and full-screen helpers (`AutoFollowStatus`,
+`ActionStatus`) are also left out.
+
+* **Guard.** `IsManaged(f)` refuses any frame with `system` or `isManagedFrame`. Positions are applied with
+  `ClearAllPoints`/`SetPoint` from outside; we never call `SetMovable`, `StartMoving` or `SetScript` on a Blizzard
+  frame and never assign fields on it. Protected frames are deferred through `ns.Combat:Run`.
+* **Unlock mode.** `/pui movers` or the settings page: Phoenix-styled overlays (drag on the overlay, wheel scale,
+  Shift+wheel alpha, right-click reset, arrow keys nudge while hovered, Escape locks), an optional grid with snap
+  and a toolbar (frame cycle, nudge buttons, scale/opacity sliders, reset, done). Keyboard input is enabled only
+  while an overlay is hovered (no `SetPropagateKeyboardInput`). Unlocking is refused in combat, combat start and
+  Edit Mode entry (`EditMode.Enter`) lock it.
+* **Storage.** Per profile in `modules.Movers.frames[key] = { point, x, y, scale, alpha }`. Offsets are UIParent
+  units from the nearest screen third, so positions survive UI scale and resolution changes.

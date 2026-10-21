@@ -16,3 +16,4 @@ alwaysApply: false
 - Motion: 80–160 ms tweens through `ns.Anim` (one shared OnUpdate that only runs while a tween is active), skipped when reduce motion is on. No animations on in-world frames during combat.
 - Config window dropdowns use `W:Dropdown`. Menus on Blizzard or in-world frames use `MenuUtil`. No `UIDropDownMenu`, no `EasyMenu`.
 - Edit Mode: our movable frames register through `ns.EditMode:Register`. Never move Blizzard Edit Mode systems.
+- Blizzard frames outside Edit Mode move only through the Movers list (`Modules/Movers`, ARCHITECTURE §16) after checking FrameXML; small Phoenix frames that do not fit Edit Mode use `Movers:Register`.

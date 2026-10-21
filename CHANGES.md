@@ -18,15 +18,25 @@ everything else starts from fresh defaults.
 - **Spell History** strip of your recent casts, movable in Edit Mode.
 - **Nameplates** health percent that keeps working in restricted content.
 - Blizzard Settings landing page and an Addon Compartment entry.
-- **One icon set everywhere**: 68 Phosphor duotone icons (MIT) in the sidebar, page and section headers,
+- **Bugs**: an error catcher in the spirit of BugGrabber + BugSack. Lua errors, blocked actions and Lua warnings
+  from every addon are captured from load time, with stack and locals, deduplicated with counts, attributed to
+  the addon and protected against floods. A Phoenix-styled viewer (search, session filter, prev/next, copy,
+  clear), a data-bar count, a minimap indicator and the Addon Compartment entry flash on new errors; optional chat
+  notice and sound; a switch for Blizzard's error window. Blizzard's handler and BugGrabber keep working. Reports
+  are stored in `PhoenixUIBugsDB` for the Phoenix Uploader app (VQ8S.com).
+- **Movers** (`/pui movers`): move, scale and fade the frames Edit Mode does not manage (zone text, error
+  messages, alerts, top-center widgets, boss banner, event toasts, ready check) with a grid, snapping, arrow-key
+  nudging and per-profile positions. Locks itself in combat and never touches Edit Mode frames.
+- **One icon set everywhere**: 84 Phosphor duotone icons (MIT) in the sidebar, page and section headers,
   search results, buttons, toggles, dropdowns, profile lists, home tiles, the About page, popups, the footer
   status, the data bar and the PvP queue timer. They follow the accent color and stay sharp at 4K.
 - New high-resolution Phoenix emblem and logo (addon list, Addon Compartment, window header, home, About,
   Settings landing page, AFK screen).
 
 ### Changed
-- Layout belongs to Edit Mode: Phoenix no longer moves Blizzard frames. The data bar and spell history are
-  Edit Mode frames with per-layout positions.
+- Layout belongs to Edit Mode: Phoenix no longer moves Edit Mode frames. The data bar and spell history are
+  Edit Mode frames with per-layout positions; the old MoveAny mover is replaced by Movers, which only covers a
+  verified list of frames Edit Mode does not manage.
 - Action bars, unit frames, group frames, cast bars, auras, tooltip, minimap, item level, chat, AFK screen,
   automation, Mythic+ and PvP were rewritten on top of Blizzard's 12.x frames and handle secret values.
 - `/gg` (arena surrender) now asks for confirmation through Blizzard's own dialog.

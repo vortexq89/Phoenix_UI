@@ -33,7 +33,7 @@ Never invent an API. If you can't find it in (1)–(3), it does not exist.
 
 ## 3. Hard rules (each one is a review blocker)
 
-1. **No globals.** Only `PhoenixUIDB`, `GetMinimapShape` (square minimap convention) and the legacy SVs during migration. Every file starts with `local ADDON, ns = ...`. luacheck W111/W112/W121/W122 = fail.
+1. **No globals.** Only `PhoenixUIDB`, `PhoenixUIBugsDB` (error reports, `Core/Errors.lua`; shape fixed by `docs/BUG_REPORTS.md`), `GetMinimapShape` (square minimap convention) and the legacy SVs during migration. Every file starts with `local ADDON, ns = ...`. luacheck W111/W112/W121/W122 = fail.
 2. **No taint.** Never assign to Blizzard globals or fields of Blizzard frames/tables, never replace Blizzard functions, never `SetScript` on Blizzard frames (use `HookScript`/`hooksecurefunc`). Protected frame changes only out of combat via `ns.Combat:Run`. See `.cursor/rules/taint-combat.mdc`.
 3. **Secret-safe.** Treat health, power (non-player), auras, cooldowns, casts, unit names/GUIDs, threat and chat text as possibly secret. Use the display sinks; gate logic with `ns.Secret`. See `.cursor/rules/midnight-secrets.mdc`.
 4. **Forbidden:** `COMBAT_LOG_EVENT(_UNFILTERED)`, `CombatLogGetCurrentEventInfo`, parsing combat-log chat, addon comms or `SendChatMessage` during lockdown, reading NPC IDs from GUIDs, `collectgarbage`, `EnumerateFrames`, disabling other addons, `loadstring` on user input outside the import path.
@@ -41,13 +41,14 @@ Never invent an API. If you can't find it in (1)–(3), it does not exist.
 6. **Theme only.** No literal colours, font paths, sizes or backdrops in modules. Use `ns.Theme`/`ns.Skin`. See `.cursor/rules/ui-theme.mdc`.
 7. **Localize.** User-visible strings use `L.KEY` from `Locales/enUS.lua`.
 8. **Lint clean.** `luacheck .` returns 0 warnings for `Core/ UI/ Modules/ Locales/`.
+9. **Errors and positions are owned.** Only `Core/Errors.lua` calls `seterrorhandler`, and it always chains to the previous handler (stand down when BugGrabber is present). Only the Movers module repositions Blizzard frames, only frames on its verified list (ARCHITECTURE §16), never an Edit Mode system.
 
 ## 4. Code style
 
 * 4-space indent, double quotes, `local` everything, early returns, ≤140 columns.
 * Names: modules `PascalCase` keys (`"Tooltip"`). Files `PascalCase.lua`. Locals/functions `camelCase`. Methods `PascalCase` (`M:OnEnable`, Blizzard convention). Constants `UPPER_SNAKE` on `ns.C`. Locale keys `MODULE_THING`. Internal messages `PUI_*`. Frame names (only when Blizzard requires one, e.g. `UISpecialFrames`) `PhoenixUI_<Thing>`.
 * Cache hot globals in locals at file top only where profiling shows benefit (no blanket `local _G = _G` blocks).
-* One responsibility per file. Module files are listed directly in `Modules/Modules.xml` (`<Module>.lua`, then `Options.lua`).
+* One responsibility per file. Module files are listed directly in `Modules/Modules.xml` (`<Module>.lua`, any helper files such as `Viewer.lua`, then `Options.lua`).
 * Comments explain *why* (especially every secret/taint workaround, with the API doc reference).
 * No dead code, no commented-out blocks, no `.bak`, no debug prints (use `ns:Debug()`, compiled out unless `/pui debug`).
 
