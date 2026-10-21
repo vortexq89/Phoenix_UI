@@ -2,12 +2,16 @@ local _, ns = ...
 local L = ns.L
 local W, Secret = ns.Widgets, ns.Secret
 
---[[ Chat: clickable URLs (copy popup) and a per-window "copy chat" button.
-    Message filters see secret strings while chat is restricted: those pass through untouched. ]]
+--[[ Chat: clickable URLs (copy popup), a per-window "copy chat" button, edit box history on the
+    plain arrow keys that persists across sessions, and faster scrolling (Shift: top/bottom,
+    Ctrl: page). Message filters see secret strings while chat is restricted: those pass through
+    untouched, and secret text is never stored. ]]
 local M = ns:NewModule("Chat", {
     label = "CHAT", desc = "CHAT_DESC", category = "social", order = 10,
-    defaults = { urls = true, copyButton = true },
+    defaults = { urls = true, copyButton = true, arrowKeys = true, keepHistory = true, fastScroll = true },
+    globalDefaults = { history = {} },
 })
+local HISTORY_MAX = 32 -- ChatFrameEditBoxTemplate historyLines
 
 local EVENTS = {
     "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_GUILD", "CHAT_MSG_OFFICER", "CHAT_MSG_PARTY", "CHAT_MSG_PARTY_LEADER",
@@ -93,6 +97,48 @@ local function copyButton(chatFrame)
     return b
 end
 
+---------------------------------------------------------------- edit box history
+local restoring = false
+
+-- Post-hook of EditBox:AddHistoryLine, which ChatFrameEditBoxMixin calls for every line sent.
+local function onHistoryLine(_, text)
+    if restoring or not (M:IsEnabled() and M.db.keepHistory) then return end
+    if Secret.IsSecret(text) or type(text) ~= "string" or text == "" then return end
+    local history = M.global.history
+    if history[#history] == text then return end
+    history[#history + 1] = text
+    while #history > HISTORY_MAX do table.remove(history, 1) end
+end
+
+local editBoxes = {}
+local function setupEditBox(chatFrame)
+    local box = chatFrame.editBox
+    if not box then return end
+    if not editBoxes[box] then
+        editBoxes[box] = { altArrows = box:GetAltArrowKeyMode() }
+        hooksecurefunc(box, "AddHistoryLine", onHistoryLine)
+        if M.db.keepHistory then
+            restoring = true
+            for _, text in ipairs(M.global.history) do box:AddHistoryLine(text) end
+            restoring = false
+        end
+    end
+    box:SetAltArrowKeyMode(not M.db.arrowKeys and editBoxes[box].altArrows)
+end
+
+---------------------------------------------------------------- scrolling
+-- Runs after FloatingChatFrame_OnMouseScroll has moved one line. The scroll methods come from
+-- ScrollingMessageFrameSecureMixin, which runs them untainted when addon code calls them.
+local wheelHooked = {}
+local function onWheel(chatFrame, delta)
+    if not (M:IsEnabled() and M.db.fastScroll) then return end
+    if IsShiftKeyDown() then
+        if delta > 0 then chatFrame:ScrollToTop() else chatFrame:ScrollToBottom() end
+    elseif IsControlKeyDown() then
+        if delta > 0 then chatFrame:PageUp() else chatFrame:PageDown() end
+    end
+end
+
 local function onLink(_, link)
     if type(link) ~= "string" then return end
     local url = link:match("^addon:Phoenix_UI:url:(.+)$")
@@ -102,6 +148,13 @@ end
 function M:OnEnable()
     for _, event in ipairs(EVENTS) do ChatFrameUtil.AddMessageEventFilter(event, filter) end
     EventRegistry:RegisterCallback("SetItemRef", onLink, self)
+    if not self.windowHooks then
+        -- New and temporary (whisper) windows get the copy button, arrow keys and scrolling too.
+        self.windowHooks = true
+        local function onNewWindow() if M:IsEnabled() then M:Refresh() end end
+        hooksecurefunc("FCF_OpenNewWindow", onNewWindow)
+        hooksecurefunc("FCF_OpenTemporaryWindow", onNewWindow)
+    end
     self:Refresh()
 end
 
@@ -109,10 +162,20 @@ function M:OnDisable()
     for _, event in ipairs(EVENTS) do ChatFrameUtil.RemoveMessageEventFilter(event, filter) end
     EventRegistry:UnregisterCallback("SetItemRef", self)
     for _, b in pairs(buttons) do b:Hide() end
+    for box, saved in pairs(editBoxes) do box:SetAltArrowKeyMode(saved.altArrows) end
 end
 
 function M:Refresh()
     ChatFrameUtil.ForEachChatFrame(function(chatFrame)
         copyButton(chatFrame):SetShown(self.db.copyButton)
+        setupEditBox(chatFrame)
+        if not wheelHooked[chatFrame] then
+            wheelHooked[chatFrame] = true
+            chatFrame:HookScript("OnMouseWheel", onWheel)
+        end
     end)
+end
+
+function M:ClearHistory()
+    self.global.history = {}
 end

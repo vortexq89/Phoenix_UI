@@ -36,6 +36,7 @@ ns.RegisterLocale("enUS", {
     DUPLICATE = "Duplicate",
     RENAME = "Rename",
     RESET = "Reset",
+    CLEAR = "Clear",
     PREVIEW = "Preview",
     GENERATE = "Generate",
     SCALE = "Scale",
@@ -475,7 +476,7 @@ ns.RegisterLocale("enUS", {
 
     ---------------------------------------------------------------- Chat
     CHAT = "Chat",
-    CHAT_DESC = "Clickable links and a copy button for chat.",
+    CHAT_DESC = "Clickable links, copy, faster scrolling and an edit box history that survives a reload.",
     CHAT_FEATURES = "Features",
     CHAT_URLS = "Clickable URLs",
     CHAT_URLS_DESC = "Turn web addresses in chat into links you can copy.",
@@ -484,6 +485,15 @@ ns.RegisterLocale("enUS", {
     CHAT_COPY_BUTTON_DESC = "Add a button to copy the chat window's text.",
     CHAT_COPY = "Copy chat",
     CHAT_COPY_DESC = "Select text and press Ctrl+C.",
+    CHAT_FAST_SCROLL = "Fast scrolling",
+    CHAT_FAST_SCROLL_DESC = "Shift + mouse wheel jumps to the top or bottom, Ctrl + mouse wheel scrolls a page.",
+    CHAT_INPUT = "Input",
+    CHAT_ARROW_KEYS = "History on arrow keys",
+    CHAT_ARROW_KEYS_DESC = "Up and Down recall what you typed, without holding Alt.",
+    CHAT_KEEP_HISTORY = "Remember typed lines",
+    CHAT_KEEP_HISTORY_DESC = "Keep the last 32 lines you sent across reloads and characters. Stored on this PC only.",
+    CHAT_CLEAR_HISTORY = "Forget typed lines",
+    CHAT_CLEAR_HISTORY_DESC = "Delete the stored history. Lines already in the edit box stay until you reload.",
 
     ---------------------------------------------------------------- AFK
     AFK = "AFK Screen",
