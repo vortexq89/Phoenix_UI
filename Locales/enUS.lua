@@ -180,12 +180,14 @@ ns.RegisterLocale("enUS", {
 
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Nameplates",
-    NAMEPLATES_DESC = "Bar texture and health percent on Blizzard nameplates.",
+    NAMEPLATES_DESC = "Bar texture, health percent and Mythic+ enemy forces on Blizzard nameplates.",
     NP_STYLE = "Style",
     NP_TEXTURE = "Phoenix bar texture",
     NP_TEXTURE_DESC = "Use the bar texture from General.",
     NP_HEALTH_TEXT = "Health percent",
     NP_HEALTH_TEXT_DESC = "Show health percent on the bar.",
+    NP_FORCES = "Enemy forces",
+    NP_FORCES_DESC = "In Mythic+, how much enemy forces each mob is worth (+4) beside its health bar. Mobs worth nothing stay blank.",
     NP_SHOW_ALL = "Always show nameplates",
     NP_SHOW_ALL_DESC = "Keep nameplates visible out of combat.",
     NP_SHOW_ENEMIES = "Enemy nameplates",
