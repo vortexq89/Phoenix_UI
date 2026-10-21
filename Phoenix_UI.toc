@@ -1,6 +1,6 @@
 ## Interface: 120105
 ## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r
-## Notes: A modern, Midnight-ready interface suite with a standalone configuration window.
+## Notes: Restyles the default interface and adds small quality-of-life features. Type /pui for settings.
 ## Author: VortexQ8
 ## Version: @project-version@
 ## Category: User Interface
