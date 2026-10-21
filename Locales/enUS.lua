@@ -822,4 +822,14 @@ ns.RegisterLocale("enUS", {
     PREVIEW_KEYS_DUNGEON1 = "Ember Spire",
     PREVIEW_KEYS_DUNGEON2 = "Ashen Vault",
     PREVIEW_KEYS_DUNGEON3 = "Cinder Deeps",
+    ---------------------------------------------------------------- home weekly
+    HOME_WEEK = "This week",
+    HOME_VAULT_DUNGEONS = "Dungeons",
+    HOME_VAULT_RAID = "Raid",
+    HOME_VAULT_WORLD = "World",
+    HOME_VAULT_DONE = "All unlocked",
+    HOME_SEASON_RATING = "Mythic+ rating",
+    HOME_RUNS_WEEK = "%d runs this week",
+    HOME_BEST_WEEK = "best +%d",
+    HOME_NO_RUNS = "No Mythic+ runs this week yet",
 })

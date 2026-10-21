@@ -496,6 +496,27 @@ try("mythic+ keystones", function()
     K.keys = {}
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
+-- this week on Home: vault slots from C_WeeklyRewards, season from the rating summary and run history
+try("weekly summary", function()
+    local saved = {}
+    for _, k in ipairs({ "C_WeeklyRewards", "C_MythicPlus", "C_PlayerInfo" }) do saved[k] = rawget(env, k) or false end
+    rawset(env, "C_WeeklyRewards", { GetActivities = function()
+        return { { index = 2, threshold = 4, progress = 3, level = 10 }, { index = 1, threshold = 1, progress = 3, level = 12 },
+                 { index = 3, threshold = 8, progress = 3, level = 0 } }
+    end })
+    rawset(env, "C_MythicPlus", { GetRunHistory = function()
+        return { { level = 12, thisWeek = true }, { level = 14, thisWeek = true }, { level = 9, thisWeek = true } }
+    end, RequestMapInfo = function() end })
+    rawset(env, "C_PlayerInfo", { GetPlayerMythicPlusRatingSummary = function() return { currentSeasonScore = 2875 } end })
+    local t = ns.Weekly:Track(ns.Weekly.TRACKS[1])
+    assert(#t.slots == 3 and t.done == 1 and t.slots[1].threshold == 1, "vault slots are wrong")
+    local season = ns.Weekly:Season()
+    assert(season.rating == 2875 and season.runs == 3 and season.best == 14, "season summary is wrong")
+    ns.Config:Show("home")
+    rawset(env, "C_WeeklyRewards", { GetActivities = function() error("not ready") end })
+    assert(#ns.Weekly:Track(ns.Weekly.TRACKS[2]).slots == 0, "a failing API must read as no data")
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
+end)
 -- a representative set of gameplay events with plausible payloads
 local events = {
     { "PLAYER_REGEN_DISABLED" }, { "PLAYER_REGEN_ENABLED" }, { "MERCHANT_SHOW" }, { "PLAYER_FLAGS_CHANGED", "player" },

@@ -3,8 +3,9 @@ local L = ns.L
 local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
 local Config = ns.Config
 
---[[ Home: hero banner, quick theme switch, live stats and a grid of module cards. ]]
-local PAD, GAP, CARD_MIN_W, CARD_H = 24, 12, 236, 108
+--[[ Home: hero banner, quick theme switch, live stats, this week (Great Vault and Mythic+ season)
+    and a grid of module cards. ]]
+local PAD, GAP, CARD_MIN_W, CARD_H, WEEK_H = 24, 12, 236, 108, 132
 local PRESETS = { "ember", "frost", "fel", "arcane", "class" }
 
 local function moduleCard(parent, m)
@@ -146,6 +147,93 @@ local function buildHero(parent)
     return h
 end
 
+---------------------------------------------------------------- this week (ns.Weekly)
+local PIP = 14
+
+local function weekCard(parent)
+    local c = W:Card(parent, L.HOME_WEEK, "clock")
+    c:SetHeight(WEEK_H)
+    c.tracks = {}
+    for i, track in ipairs(ns.Weekly.TRACKS) do
+        local r = CreateFrame("Frame", nil, c)
+        r:SetSize(10, 22)
+        r:SetPoint("TOPLEFT", 16, -40 - (i - 1) * 26)
+        r:SetPoint("RIGHT", c, "CENTER", 0, 0)
+        r.label = W.Text(r, "body", "text.secondary")
+        r.label:SetPoint("LEFT")
+        r.label:SetWidth(96)
+        r.label:SetText(L[track.label])
+        r.pips = {}
+        for p = 1, 3 do
+            local t = W.Texture(r, "ARTWORK")
+            t:SetSize(PIP, PIP)
+            t:SetPoint("LEFT", r.label, "RIGHT", (p - 1) * (PIP + 6), 0)
+            r.pips[p] = t
+        end
+        r.value = W.Text(r, "number", "text.primary")
+        r.value:SetPoint("LEFT", r.pips[3], "RIGHT", 12, 0)
+        r.track = track
+        c.tracks[i] = r
+    end
+    c.rating = W.Text(c, "number", "text.primary", "RIGHT")
+    c.rating:SetPoint("TOPRIGHT", -20, -40)
+    c.ratingLabel = W.Text(c, "small", "text.muted", "RIGHT")
+    c.ratingLabel:SetPoint("TOPRIGHT", c.rating, "BOTTOMRIGHT", 0, -4)
+    c.ratingLabel:SetText(L.HOME_SEASON_RATING:upper())
+    c.runs = W.Text(c, "small", "text.secondary", "RIGHT")
+    c.runs:SetPoint("TOPRIGHT", c.ratingLabel, "BOTTOMRIGHT", 0, -10)
+    Skin:Register(c, function(self)
+        Skin:Text(self.rating, "number", "text.primary", 26)
+        Skin:Text(self.ratingLabel, "small", "text.muted")
+        Skin:Text(self.runs, "small", "text.secondary")
+        for _, r in ipairs(self.tracks) do
+            Skin:Text(r.label, "body", "text.secondary")
+            Skin:Text(r.value, "number", "text.primary")
+        end
+        if self.data then self:Paint(self.data) end
+    end)
+
+    -- data: { tracks = { [key] = Weekly:Track() }, season = Weekly:Season() }; sample data for previews works too
+    function c:Paint(data)
+        self.data = data
+        for _, r in ipairs(self.tracks) do
+            local t = data.tracks[r.track.key] or { slots = {}, progress = 0, done = 0 }
+            for p, pip in ipairs(r.pips) do
+                local slot = t.slots[p]
+                W.Color(pip, slot and slot.done and "accent.primary" or "bg.sunken", slot and 1 or 0.6)
+            end
+            local nextSlot = t.slots[t.done + 1]
+            if nextSlot then
+                r.value:SetFormattedText("%d / %d", math.min(t.progress, nextSlot.threshold), nextSlot.threshold)
+                r.value:SetTextColor(Theme:Color("text.primary"))
+            elseif #t.slots > 0 then
+                r.value:SetText(L.HOME_VAULT_DONE)
+                r.value:SetTextColor(Theme:Color("state.success"))
+            else
+                r.value:SetText("—")
+                r.value:SetTextColor(Theme:Color("text.muted"))
+            end
+        end
+        local s = data.season
+        self.rating:SetText(s.rating > 0 and BreakUpLargeNumbers(math.floor(s.rating)) or "—")
+        local color = s.rating > 0 and C_ChallengeMode.GetDungeonScoreRarityColor(s.rating)
+        if color and color.GetRGB then self.rating:SetTextColor(color:GetRGB()) else
+            self.rating:SetTextColor(Theme:Color("text.muted")) end
+        if s.runs > 0 then
+            self.runs:SetText(L.HOME_RUNS_WEEK:format(s.runs) .. "  ·  " .. L.HOME_BEST_WEEK:format(s.best))
+        else
+            self.runs:SetText(L.HOME_NO_RUNS)
+        end
+    end
+
+    function c:Update()
+        local data = { tracks = {}, season = ns.Weekly:Season() }
+        for _, track in ipairs(ns.Weekly.TRACKS) do data.tracks[track.key] = ns.Weekly:Track(track) end
+        self:Paint(data)
+    end
+    return c
+end
+
 local function build(parent)
     local page = CreateFrame("Frame", nil, parent)
     page.scroll = W:Scroll(page)
@@ -157,6 +245,10 @@ local function build(parent)
     page.hero:SetPoint("TOPLEFT", PAD, -PAD)
     page.hero:SetPoint("TOPRIGHT", -PAD, -PAD)
     page.stats = { statChip(child, "addon"), statChip(child, "profiles"), statChip(child, "theme") }
+    page.week = weekCard(child)
+    local function weekly() if page:IsVisible() then page.week:Update() end end
+    ns.Events:On("WEEKLY_REWARDS_UPDATE", page.week, weekly)
+    ns.Events:On("CHALLENGE_MODE_MAPS_UPDATE", page.week, weekly)
 
     page.gridTitle = W.Text(child, "heading", "text.muted")
     page.gridTitle:SetText(L.MODULES:upper())
@@ -176,7 +268,11 @@ local function build(parent)
             s:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + (i - 1) * (sw + GAP), -y)
             s:SetWidth(sw)
         end
-        y = y + 54 + 22
+        y = y + 54 + GAP
+        self.week:ClearAllPoints()
+        self.week:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
+        self.week:SetWidth(w)
+        y = y + WEEK_H + 22
         self.gridTitle:ClearAllPoints()
         self.gridTitle:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
         y = y + 22
@@ -205,6 +301,8 @@ local function build(parent)
         self.stats[2]:Set(ns.DB:GetProfileName(), L.ACTIVE_PROFILE)
         self.stats[3]:Set(L["THEME_" .. Theme.settings.preset:upper()], L.THEME)
         for _, c in ipairs(self.cards) do c:Paint() end
+        ns.Weekly:Request()
+        self.week:Update()
         for _, s in ipairs(self.hero.swatches) do s:Paint() end
     end
     ns.Events:Listen("PUI_THEME_CHANGED", page, function() if page:IsShown() then page:Refresh() end end)

@@ -18,4 +18,5 @@
     <Script file="Modules.lua"/>
     <Script file="EditMode.lua"/>
     <Script file="Profiles.lua"/>
+    <Script file="Weekly.lua"/>
 </Ui>
