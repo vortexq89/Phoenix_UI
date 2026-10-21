@@ -1,0 +1,16 @@
+package-as: Phoenix_UI
+
+manual-changelog:
+  filename: CHANGES.md
+  markup-type: markdown
+
+ignore:
+  - .github
+  - .cursor
+  - .luacheck
+  - .luacheckrc
+  - .gitignore
+  - docs
+  - tools
+  - AGENTS.md
+  - README.md
