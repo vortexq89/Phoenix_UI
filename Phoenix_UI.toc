@@ -1,6 +1,7 @@
 ## Interface: 120105
 ## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r
 ## Notes: Restyles the default interface and adds small quality-of-life features. Type /pui for settings.
+## Notes-deDE: Gestaltet die Standardoberfläche neu und ergänzt kleine Komfortfunktionen. Gib /pui für die Einstellungen ein.
 ## Author: VortexQ8
 #@debug@
 ## Version: 2.0.0-beta1

@@ -532,6 +532,43 @@ try("test error", function()
     local ok, e = pcall(queued)
     assert(not ok and tostring(e):find("PHOENIX TEST ERROR", 1, true), "wrong test error: " .. tostring(e))
 end)
+-- every translation listed in Locales.xml loads only on its own client, covers every enUS key and keeps format specifiers
+try("locales", function()
+    local function capture(path, locale)
+        local got = {}
+        local fake = { RegisterLocale = function(loc, t) got[loc] = t end }
+        local chunk = assert(loadfile(ROOT .. "/" .. path))
+        local saved = env.GetLocale
+        rawset(env, "GetLocale", function() return locale end)
+        setfenv(chunk, env)
+        local ok, e = pcall(chunk, NAME, fake)
+        rawset(env, "GetLocale", saved)
+        assert(ok, path .. ": " .. tostring(e))
+        return got
+    end
+    local en = capture("Locales/enUS.lua", "enUS").enUS
+    local function specs(v)
+        local t = {}
+        for sp in v:gmatch("%%[-+ 0#]*%d*%.?%d*[sdifgxXc]") do t[#t + 1] = sp end
+        table.sort(t)
+        return table.concat(t, ",")
+    end
+    local n = 0
+    for file in readAll("Locales/Locales.xml"):gmatch("file=\"([%a]+)%.lua\"") do
+        if file ~= "Locales" and file ~= "enUS" then
+            n = n + 1
+            assert(next(capture("Locales/" .. file .. ".lua", "enUS")) == nil, file .. " registers on an English client")
+            local got = capture("Locales/" .. file .. ".lua", file)
+            local t = assert(got[file], file .. " did not register for its own client")
+            for k, v in pairs(en) do
+                assert(type(t[k]) == "string" and t[k] ~= "", file .. " misses " .. k)
+                assert(specs(t[k]) == specs(v), file .. "." .. k .. " changes the format specifiers")
+            end
+            for k in pairs(t) do assert(en[k], file .. " has unknown key " .. k) end
+        end
+    end
+    assert(n > 0, "no translations listed in Locales.xml")
+end)
 -- a representative set of gameplay events with plausible payloads
 local events = {
     { "PLAYER_REGEN_DISABLED" }, { "PLAYER_REGEN_ENABLED" }, { "MERCHANT_SHOW" }, { "PLAYER_FLAGS_CHANGED", "player" },

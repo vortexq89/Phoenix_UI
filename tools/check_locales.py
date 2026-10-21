@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Locale coverage: every key the code uses must exist in Locales/enUS.lua, and every enUS key must be used.
+Every translation (Locales/<locale>.lua) must define exactly the enUS keys, with the same format specifiers,
+line breaks and colour codes, and be listed in Locales/Locales.xml.
 
 Keys are found as L.KEY / L["KEY"] and as UPPER_SNAKE string literals in option schemas and module
 definitions (label/desc/text/button/title fields, value labels). Exit code 1 on any problem."""
@@ -48,4 +50,36 @@ for k in unused:
 for k in dupes:
     print(f"duplicate: {k}")
 print(f"{len(used)} keys used, {len(defined)} defined, {len(missing)} missing, {len(unused)} unused, {len(dupes)} duplicate")
-sys.exit(1 if missing or unused or dupes else 0)
+
+# ---------------------------------------------------------------- translations
+ENTRY = re.compile(r'^\s*(' + KEY + r')\s*=\s*"((?:[^"\\]|\\.)*)"\s*,?\s*$', re.M)
+SPEC = re.compile(r"%(?:\d+\$)?[-+ 0#]*\d*(?:\.\d+)?[sdifgxXc]")
+MARKS = ("\\n", "|c", "|r", "|T", "|t")
+en_values = dict(ENTRY.findall(en))
+xml = (ROOT / "Locales" / "Locales.xml").read_text(encoding="utf-8")
+problems = 0
+for path in sorted((ROOT / "Locales").glob("*.lua")):
+    if path.name in ("Locales.lua", "enUS.lua"):
+        continue
+    text = path.read_text(encoding="utf-8")
+    entries = ENTRY.findall(text)
+    keys = [k for k, _ in entries]
+    have = dict(entries)
+    bad = []
+    bad += [f"missing {k}" for k in sorted(defined - set(have))]
+    bad += [f"unknown {k}" for k in sorted(set(have) - defined)]
+    bad += [f"duplicate {k}" for k in sorted({k for k in keys if keys.count(k) > 1})]
+    for k, v in have.items():
+        ev = en_values.get(k)
+        if ev is None:
+            continue
+        if sorted(SPEC.findall(ev)) != sorted(SPEC.findall(v)):
+            bad.append(f"{k}: format specifiers differ from enUS")
+        bad += [f"{k}: {m!r} count differs from enUS" for m in MARKS if ev.count(m) != v.count(m)]
+    if f'file="{path.name}"' not in xml:
+        bad.append("not listed in Locales.xml")
+    for b in bad:
+        print(f"{path.stem}: {b}")
+    problems += len(bad)
+    print(f"{path.stem}: {len(have)}/{len(defined)} keys")
+sys.exit(1 if missing or unused or dupes or problems else 0)
