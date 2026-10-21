@@ -16,7 +16,7 @@ local function plain(v) return not Secret.IsSecret(v) end
 local function colorHealth(bar, unit)
     if not (M:IsEnabled() and M.db.classColor) or not healthBars[bar] then return end
     unit = unit or bar.unit
-    if not unit or not plain(unit) then return end
+    if not plain(unit) or not unit then return end
     local isPlayer = UnitIsPlayer(unit)
     if not plain(isPlayer) or not isPlayer then return end
     local _, classFile = UnitClass(unit)

@@ -100,7 +100,7 @@ local function onCastStart()
     extras.icon:SetShown(db.icon and texture ~= nil)
     extras.iconBorder:SetShown(db.icon and texture ~= nil)
     if texture then extras.icon:SetTexture(texture) end
-    local known = startMs and plain(startMs) and plain(endMs) and endMs > startMs
+    local known = plain(startMs) and plain(endMs) and startMs and endMs and endMs > startMs
     extras.endTime = (db.timer and known) and endMs / 1000 or nil
     extras.time:SetText("")
     extras.lag:Hide()

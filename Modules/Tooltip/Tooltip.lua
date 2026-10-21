@@ -49,7 +49,7 @@ end
 local function onUnit(tt, data)
     if not M:IsEnabled() or tt:IsForbidden() then return end
     local _, unit = tt:GetUnit()
-    if not unit or not plain(unit) then return end
+    if not plain(unit) or not unit then return end
     if M.db.hideInCombat and InCombatLockdown() and not IsModifierKeyDown() and tt == GameTooltip then
         tt:Hide()
         return
@@ -69,7 +69,7 @@ local function onUnit(tt, data)
     if M.db.target then
         local target = unit .. "target"
         local name = UnitExists(target) and UnitName(target)
-        if name and plain(name) then
+        if plain(name) and name then
             local _, classFile = UnitClass(target)
             local color = (plain(classFile) and classFile) and C_ClassColor.GetClassColor(classFile)
             local text = color and color:WrapTextInColorCode(name) or name
@@ -85,7 +85,7 @@ local function onItem(tt, data)
     if not M:IsEnabled() or tt:IsForbidden() then return end
     if M.db.qualityBorder then
         local _, link = tt:GetItem()
-        local quality = link and plain(link) and C_Item.GetItemQualityByID(link)
+        local quality = plain(link) and link and C_Item.GetItemQualityByID(link)
         local color = quality and ITEM_QUALITY_COLORS[quality]
         if color and quality > 1 then border(tt, color.r, color.g, color.b) end
     end
