@@ -276,16 +276,27 @@ if ns.Profiles then
     end)
 end
 -- write every option back with its current value (exercises OnSettingChanged/Refresh paths)
+local function eachItem(list, fn)
+    for _, item in ipairs(list or {}) do
+        fn(item)
+        eachItem(item.cog, fn)
+    end
+end
 for _, m in ipairs(ns.moduleList or {}) do
-    for _, item in ipairs(ns.options[m.key] or {}) do
-        if item.key then
-            try("set " .. m.key .. "." .. item.key, function() ns.DB:Set(m, item.key, ns.DB:Get(m, item.key)) end)
+    eachItem(ns.options[m.key], function(item)
+        local key = item.key and item.key:gsub("@", "player")
+        if key and not (item.get and item.set) then
+            try("set " .. m.key .. "." .. key, function()
+                local v = ns.DB:Get(m, key)
+                assert(v ~= nil, "option " .. m.key .. "." .. key .. " has no default")
+                ns.DB:Set(m, key, v)
+            end)
         elseif item.get and item.set then
             try("set " .. m.key .. "." .. tostring(item.label), function() item.set(m, item.get(m)) end)
         end
         if item.disabled then try("disabled " .. m.key, item.disabled, m) end
         if item.hidden then try("hidden " .. m.key, item.hidden, m) end
-    end
+    end)
 end
 -- profiles, theme and slash commands
 try("profile new", function()
@@ -431,6 +442,28 @@ local events = {
     { "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" }, { "CHALLENGE_MODE_COMPLETED" }, { "DUEL_REQUESTED", "Someone" },
     { "ZONE_CHANGED_NEW_AREA" }, { "UI_ERROR_MESSAGE", 1, "x" }, { "BAG_UPDATE_DELAYED" },
 }
+-- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
+try("scope apply/copy", function()
+    local m = ns.modules.UnitFrames
+    local page = ns.Config:Show("UnitFrames")
+    assert(page.scope and page.scope.unit == "player", "UnitFrames page has no unit scope")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.key == "units.@.texture" then row = r end end
+    page.scope.mode = "all"
+    row.control.onChange(row.control, "Aurora")
+    for _, u in ipairs(m.UNITS) do assert(m.db.units[u].texture == "Aurora", u .. " missed Apply to: All") end
+    page.scope.mode = "this"
+    row.control.onChange(row.control, "Frost")
+    assert(m.db.units.player.texture == "Frost" and m.db.units.target.texture == "Aurora", "Apply to: This leaked")
+    page.scope.mode, page.scope.multi = "multi", { focus = true }
+    row.control.onChange(row.control, "Glass")
+    assert(m.db.units.focus.texture == "Glass" and m.db.units.target.texture == "Aurora", "Apply to: Multiple is wrong")
+    page.scope.mode, page.scope.unit = "this", "pet"
+    m.db.units.player.name.size = 17
+    ns.DB:Set(m, "units.pet", ns.Util.DeepCopy(m.db.units.player))
+    assert(m.db.units.pet.name.size == 17 and m.db.units.pet ~= m.db.units.player, "copy settings shares tables")
+    assert(m.db.units["@"] == nil, "a scoped key was written literally")
+end)
 -- previews: every kind builds and redraws with its module's settings, and with a unit picked
 try("previews", function()
     local n = 0

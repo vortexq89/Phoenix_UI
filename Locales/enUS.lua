@@ -709,4 +709,17 @@ ns.RegisterLocale("enUS", {
     PREVIEW_MOB_FRIENDLY = "Phoenix Guard",
     ---------------------------------------------------------------- window
     WINDOW_SCALE = "Window scale",
+    ---------------------------------------------------------------- unit frames 2.1
+    UF_FRAME = "Frame",
+    UF_PLAYER = "Player",
+    UF_TARGET = "Target",
+    UF_FOCUS = "Focus",
+    UF_PET = "Pet",
+    UF_HEALTH_BORDER = "Health bar border",
+    UF_COLORS = "Colours",
+    UF_NAME_FONT = "Name font",
+    UF_HEALTH_FONT = "Health text font",
+    UF_POWER_FONT = "Power text font",
+    PREVIEW_UNIT_PLAYER = "Phoenixia",
+    PREVIEW_UNIT_PET = "Cinder",
 })

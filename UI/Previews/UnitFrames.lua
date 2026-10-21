@@ -1,0 +1,78 @@
+local _, ns = ...
+local L, P, Skin, Theme = ns.L, ns.Previews, ns.Skin, ns.Theme
+
+-- A sample of the unit picked in the scope bar: portrait, name, health and power, styled by UnitFrames.
+local SAMPLES = {
+    player = { sample = "PREVIEW_UNIT_PLAYER", class = "MAGE", health = 0.86, power = 0.64, hp = "55.2K", level = "90",
+               portrait = "Interface\\Icons\\ClassIcon_Mage" },
+    target = { sample = "PREVIEW_MOB_HOSTILE", token = "state.danger", health = 0.58, power = 0.3, hp = "1.24M", level = "92",
+               portrait = "Interface\\Icons\\Spell_Fire_SelfDestruct" },
+    focus  = { sample = "PREVIEW_MOB_NEUTRAL", token = "state.warning", health = 1, power = 1, hp = "410K", level = "90",
+               portrait = "Interface\\Icons\\Spell_Fire_FlameBolt" },
+    pet    = { sample = "PREVIEW_UNIT_PET", token = "state.success", health = 0.74, power = 0.9, hp = "21.7K", level = "90",
+               portrait = "Interface\\Icons\\Spell_Frost_SummonWaterElemental_2" },
+}
+local SCALE = 1.35
+
+P:Register("unitframe", {
+    module = "UnitFrames",
+    height = 120,
+    build = function(stage, m)
+        local f = CreateFrame("Frame", nil, stage)
+        f:SetSize(236, 62)
+        f:SetScale(SCALE)
+        f:SetPoint("CENTER", 0, 0)
+        f.portrait = f:CreateTexture(nil, "ARTWORK")
+        f.portrait:SetSize(54, 54)
+        f.portrait:SetPoint("LEFT", 4, 0)
+        f.portraitFrame = CreateFrame("Frame", nil, f)
+        f.portraitFrame:SetAllPoints(f.portrait)
+        f.health = P.Bar(f, 1, 168, 20)
+        f.health:SetPoint("TOPLEFT", f.portrait, "TOPRIGHT", 6, -14)
+        f.power = P.Bar(f, 1, 168, 10)
+        f.power:SetPoint("TOPLEFT", f.health, "BOTTOMLEFT", 0, -2)
+        f.name = P.Text(f)
+        f.name:SetPoint("BOTTOMLEFT", f.health, "TOPLEFT", 2, 3)
+        f.level = P.Text(f)
+        f.level:SetPoint("BOTTOMRIGHT", f.health, "TOPRIGHT", -2, 3)
+        f.hpText = P.Text(f.health)
+        f.hpText:SetPoint("CENTER")
+        f.ppText = P.Text(f.power)
+        f.ppText:SetPoint("CENTER")
+        return function(_, unit)
+            local key = SAMPLES[unit] and unit or "player"
+            local s = SAMPLES[key]
+            local db = m.db
+            f.portrait:SetTexture(s.portrait)
+            Skin:IconZoom(f.portrait, 0.08)
+            Skin:Border(f.portraitFrame, "border.black")
+            if not db.texture then
+                f.health:SetStatusBarTexture(ns.Media.textures.WHITE)
+                f.power:SetStatusBarTexture(ns.Media.textures.WHITE)
+            end
+            m:StyleHealthBar(f.health, key)
+            m:StylePowerBar(f.power, key)
+            f.health:SetValue(s.health)
+            f.power:SetValue(s.power)
+            if s.class and db.classColor then
+                f.health:SetStatusBarColor(ns.Util.ClassColor(s.class))
+            else
+                f.health:SetStatusBarColor(Theme:Color(s.token or "state.success"))
+            end
+            if db.powerColor then f.power:SetStatusBarColor(Theme:Color("state.info")) else
+                f.power:SetStatusBarColor(Theme:Color("accent.primary"))
+            end
+            local texts = { name = f.name, health = { f.hpText }, power = { f.ppText } }
+            if db.fonts then
+                m:StyleTexts(texts, key)
+            else
+                Skin:Text(f.name, "unit"); Skin:Text(f.hpText, "unit", nil, 11); Skin:Text(f.ppText, "unit", nil, 10)
+            end
+            Skin:Text(f.level, "unit", "state.warning", 11)
+            f.name:SetText(L[s.sample])
+            f.level:SetText(s.level)
+            f.hpText:SetText(s.hp)
+            f.ppText:SetText(("%d%%"):format(s.power * 100))
+        end
+    end,
+})
