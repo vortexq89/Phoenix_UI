@@ -1,6 +1,6 @@
 local _, ns = ...
 local L = ns.L
-local W, Secret = ns.Widgets, ns.Secret
+local W, Secret, Skin, Style, Media, Theme = ns.Widgets, ns.Secret, ns.Skin, ns.Style, ns.Media, ns.Theme
 
 --[[ Chat: clickable URLs (copy popup), a per-window "copy chat" button, edit box history on the
     plain arrow keys that persists across sessions, and faster scrolling (Shift: top/bottom,
@@ -8,7 +8,13 @@ local W, Secret = ns.Widgets, ns.Secret
     untouched, and secret text is never stored. ]]
 local M = ns:NewModule("Chat", {
     label = "CHAT", desc = "CHAT_DESC", category = "social", order = 10,
-    defaults = { urls = true, copyButton = true, arrowKeys = true, keepHistory = true, fastScroll = true },
+    defaults = {
+        urls = true, copyButton = true, arrowKeys = true, keepHistory = true, fastScroll = true,
+        urlColor = false,                                  -- false = the theme's info colour
+        styleText = false,
+        messages = Style.Text(14, { outline = "NONE", shadow = true }),  -- size stays the chat window's own
+        tabs = Style.Text(11),
+    },
     globalDefaults = { history = {} },
 })
 local HISTORY_MAX = 32 -- ChatFrameEditBoxTemplate historyLines
@@ -19,14 +25,33 @@ local EVENTS = {
     "CHAT_MSG_WHISPER", "CHAT_MSG_WHISPER_INFORM", "CHAT_MSG_BN_WHISPER", "CHAT_MSG_BN_WHISPER_INFORM",
     "CHAT_MSG_CHANNEL", "CHAT_MSG_COMMUNITIES_CHANNEL",
 }
-local LINK = "|cff4da3ff|Haddon:Phoenix_UI:url:%s|h[%s]|h|r"
+local LINK = "|cff%s|Haddon:Phoenix_UI:url:%s|h[%s]|h|r"
 local PATTERNS = {
     "(%a[%w+.-]+://[^%s|]+)",            -- scheme://…
     "(www%.[%w_-]+%.[^%s|]+)",           -- www.example.com/…
     "([%w_.-]+%.%a%a+/[^%s|]*)",          -- example.com/path
 }
 
-local function linkify(url) return LINK:format(url, url) end
+---------------------------------------------------------------- style (shared with the options preview)
+function M:URLHex() return ns.Util.Hex(Skin:SpecColor(self.db.urlColor, "state.info")) end
+function M:Linkify(url) return LINK:format(self:URLHex(), url, url) end
+
+-- Message text: face, outline and shadow from the settings; the size stays the window's (Blizzard's menu).
+function M:StyleMessages(frame)
+    if not self.db.styleText then return end
+    local spec = self.db.messages
+    local _, size = frame:GetFont()
+    local path = spec.font ~= "" and Media:Font(spec.font) or Theme:Font("body")
+    frame:SetFont(path, size or 14, Skin.OUTLINES[spec.outline] or "")
+    frame:SetShadowColor(0, 0, 0, spec.shadow and 0.9 or 0)
+    frame:SetShadowOffset(spec.shadow and 1 or 0, spec.shadow and -1 or 0)
+end
+
+function M:StyleTab(fs)
+    if self.db.styleText and fs then Skin:TextSpec(fs, self.db.tabs, "small") end
+end
+
+local function linkify(url) return M:Linkify(url) end
 
 local function filter(_, _, msg, ...)
     if Secret.IsSecret(msg) or type(msg) ~= "string" or not M.db.urls then return false end
@@ -169,6 +194,9 @@ function M:Refresh()
     ChatFrameUtil.ForEachChatFrame(function(chatFrame)
         copyButton(chatFrame):SetShown(self.db.copyButton)
         setupEditBox(chatFrame)
+        self:StyleMessages(chatFrame)
+        local tab = _G[chatFrame:GetName() .. "Tab"]
+        self:StyleTab(tab and tab.Text)
         if not wheelHooked[chatFrame] then
             wheelHooked[chatFrame] = true
             chatFrame:HookScript("OnMouseWheel", onWheel)

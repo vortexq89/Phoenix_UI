@@ -19,6 +19,7 @@
     <Script file="Previews\Auras.lua"/>
     <Script file="Previews\DataTexts.lua"/>
     <Script file="Previews\Tooltip.lua"/>
+    <Script file="Previews\Chat.lua"/>
     <Script file="Config\Window.lua"/>
     <Script file="Config\Renderer.lua"/>
     <Script file="Config\Search.lua"/>

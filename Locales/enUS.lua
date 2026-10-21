@@ -763,4 +763,18 @@ ns.RegisterLocale("enUS", {
     PREVIEW_TT_GUILD = "<Ashes of Al'ar>",
     PREVIEW_TT_LEVEL = "Level 90 Blood Elf Mage",
     PREVIEW_TT_ROLE = "Damage",
+    ---------------------------------------------------------------- chat 2.1
+    CHAT_URL_COLOR = "Link colour",
+    CHAT_TEXT = "Text",
+    CHAT_STYLE_TEXT = "Restyle chat text",
+    CHAT_STYLE_TEXT_DESC = "Use your font for messages and tabs. Message size stays the one set in each chat window's menu.",
+    CHAT_MESSAGE_FONT = "Message font",
+    CHAT_TAB_FONT = "Tab font",
+    PREVIEW_CHAT_GUILD = "[Guild] [Phoenixia]: Ara-Kara +12 tonight, need a tank",
+    PREVIEW_CHAT_WHISPER = "[Cinder] whispers: inv please",
+    PREVIEW_CHAT_PARTY = "[Party] [Emberlynn]: route is here",
+    PREVIEW_CHAT_SYSTEM = "Phoenixia has come online.",
+    PREVIEW_CHAT_TAB_GENERAL = "General",
+    PREVIEW_CHAT_TAB_GUILD = "Guild",
+    PREVIEW_CHAT_TAB_WHISPERS = "Whispers",
 })
