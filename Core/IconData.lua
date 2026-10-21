@@ -94,5 +94,8 @@ ns.IconData = {
         ["arrow-down"] = 82,
         ["arrow-left"] = 83,
         ["arrow-right"] = 84,
+        ["boss"] = 85,
+        ["deaths"] = 86,
+        ["forces"] = 87,
     },
 }

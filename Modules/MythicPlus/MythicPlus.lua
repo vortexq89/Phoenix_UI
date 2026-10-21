@@ -1,11 +1,17 @@
 local _, ns = ...
 local L = ns.L
 
---[[ MythicPlus: slots your keystone as soon as the Font of Power opens and reports the new key
-    after a run. Bag data is plain (not secret); nothing here touches combat. ]]
+--[[ MythicPlus: a run timer overlay (Timer.lua), slots your keystone as soon as the Font of Power
+    opens and reports the new key after a run. Bag and run data are plain (not secret); nothing here
+    touches combat data. ]]
 local M = ns:NewModule("MythicPlus", {
     label = "MYTHICPLUS", desc = "MYTHICPLUS_DESC", category = "utility", order = 30,
-    defaults = { autoInsert = true, reportKey = true },
+    defaults = {
+        autoInsert = true, reportKey = true,
+        timer = true, timerForces = true, timerBosses = true, timerDeaths = true, timerBest = true,
+    },
+    -- run: splits of the key in progress (survives /reload); best: fastest timed run per "mapID:level".
+    globalDefaults = { run = { splits = {} }, best = {} },
 })
 
 local function findKeystone()
@@ -37,6 +43,7 @@ local function describeKey()
 end
 
 function M:OnEnable()
+    self:EnableTimer()
     ns.Events:On("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN", self, insert)
     ns.Events:On("CHALLENGE_MODE_COMPLETED", self, function()
         if not M.db.reportKey then return end
@@ -48,3 +55,10 @@ function M:OnEnable()
     end)
 end
 
+function M:OnDisable()
+    self:DisableTimer()
+end
+
+function M:Refresh()
+    self:RefreshTimer()
+end

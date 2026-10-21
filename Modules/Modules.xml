@@ -53,5 +53,6 @@
     <Script file="Automation\Automation.lua"/>
     <Script file="Automation\Options.lua"/>
     <Script file="MythicPlus\MythicPlus.lua"/>
+    <Script file="MythicPlus\Timer.lua"/>
     <Script file="MythicPlus\Options.lua"/>
 </Ui>

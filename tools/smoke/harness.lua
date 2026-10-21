@@ -194,7 +194,12 @@ local libs = {
         RegisterCallback = function() end,
     },
     LibEditMode = {
-        AddFrame = function() end, AddFrameSettings = function() end, RegisterCallback = function() end,
+        callbacks = {},
+        AddFrame = function() end, AddFrameSettings = function() end,
+        RegisterCallback = function(self, event, fn)
+            self.callbacks[event] = self.callbacks[event] or {}
+            table.insert(self.callbacks[event], fn)
+        end,
         GetActiveLayoutName = function() return "Modern" end, IsInEditMode = function() return false end,
         SettingType = setmetatable({}, { __index = function(_, k) return k end }),
     },
@@ -361,6 +366,47 @@ try("movers", function()
     M:ResetFrame("Errors")
     assert(M.db.frames.Errors == nil, "reset did not clear the position")
     M:SetUnlocked(false)
+end)
+-- mythic+ timer: Edit Mode sample, a live run with splits, completion and personal best
+try("mythic+ timer", function()
+    local M, LEM = ns.modules.MythicPlus, libs.LibEditMode
+    for _, fn in ipairs(LEM.callbacks.enter or {}) do fn() end
+    for _, fn in ipairs(LEM.callbacks.exit or {}) do fn() end
+    local done, saved = false, {}
+    for _, k in ipairs({ "GetWorldElapsedTimers", "GetWorldElapsedTime", "C_Scenario", "C_ScenarioInfo", "C_ChallengeMode" }) do
+        saved[k] = rawget(env, k) or false
+    end
+    local criteria = {
+        { description = "Boss A", completed = true, quantity = 1, totalQuantity = 1, criteriaID = 11, quantityString = "1" },
+        { description = "Boss B", completed = false, quantity = 0, totalQuantity = 1, criteriaID = 12, quantityString = "0" },
+        { description = "Enemy Forces", completed = false, quantity = 40, totalQuantity = 285, criteriaID = 13,
+          isWeightedProgress = true, quantityString = "123%" },
+    }
+    rawset(env, "GetWorldElapsedTimers", function() return 7 end)
+    rawset(env, "GetWorldElapsedTime", function() return 0, 600, 0 end) -- the stub Enum maps every value to 0
+    rawset(env, "C_Scenario", { GetStepInfo = function() return "Stage", "", #criteria end })
+    rawset(env, "C_ScenarioInfo", { GetCriteriaInfo = function(i) return criteria[i] end })
+    rawset(env, "C_ChallengeMode", {
+        GetActiveChallengeMapID = function() return 500 end,
+        GetMapUIInfo = function() return "Test Dungeon", 500, 1800 end,
+        GetActiveKeystoneInfo = function() return 10, { 9, 10 }, true end,
+        GetAffixInfo = function(id) return "Affix" .. id end,
+        GetDeathCount = function() return 2, 10 end,
+        GetChallengeCompletionInfo = function()
+            return done and { time = 1500000, onTime = true, practiceRun = false } or nil
+        end,
+    })
+    fire("CHALLENGE_MODE_START")
+    assert(M.global.run.mapID == 500 and M.global.run.splits["11"] == 600, "boss split not recorded")
+    criteria[2].completed = true
+    fire("SCENARIO_CRITERIA_UPDATE")
+    assert(M.global.run.splits["12"] == 600, "second split not recorded")
+    done = true
+    fire("CHALLENGE_MODE_COMPLETED")
+    assert(M.global.best["500:10"] == 1500, "personal best not stored: " .. tostring(M.global.best["500:10"]))
+    M.global.best["500:10"] = nil
+    M.global.run = { splits = {} }
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- a representative set of gameplay events with plausible payloads
 local events = {

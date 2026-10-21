@@ -32,4 +32,6 @@ ICONS = [
     # movers
     ("movers", "frame-corners"), ("grid", "grid-four"), ("snap", "magnet"), ("opacity", "circle-half"),
     ("arrow-up", "arrow-up"), ("arrow-down", "arrow-down"), ("arrow-left", "arrow-left"), ("arrow-right", "arrow-right"),
+    # mythic+ timer
+    ("boss", "crown-simple"), ("deaths", "skull"), ("forces", "users-four"),
 ]
