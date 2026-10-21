@@ -4,7 +4,7 @@ local Skin = ns.Skin
 --[[ CooldownText: Blizzard draws the countdown numbers (they handle secret durations natively);
     we switch them on through the CVar and give them the Phoenix font. ]]
 local M = ns:NewModule("CooldownText", {
-    label = "COOLDOWNTEXT", desc = "COOLDOWNTEXT_DESC", category = "combat", order = 10, icon = ns.Media:Icon("cooldowns"),
+    label = "COOLDOWNTEXT", desc = "COOLDOWNTEXT_DESC", category = "combat", order = 10, icon = "cooldowntext",
     defaults = { size = 16, color = { r = 1, g = 0.82, b = 0.35 } },
 })
 

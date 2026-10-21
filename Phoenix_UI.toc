@@ -4,7 +4,7 @@
 ## Author: VortexQ8
 ## Version: @project-version@
 ## Category: User Interface
-## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
 ## SavedVariables: PhoenixUIDB, Phoenix_UIDB
 ## SavedVariablesPerCharacter: PhoenixUICharDB, Phoenix_UIPerCharDB
 ## OptionalDeps: Details

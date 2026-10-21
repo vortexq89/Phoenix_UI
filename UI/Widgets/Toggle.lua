@@ -13,6 +13,9 @@ function W:Toggle(parent)
     t.glow:SetPoint("TOPLEFT", -3, 3); t.glow:SetPoint("BOTTOMRIGHT", 3, -3)
     t.knob = W.Texture(t, "OVERLAY", 2, Media.textures.CIRCLE)
     t.knob:SetSize(14, 14)
+    t.mark = W.Icon(t, "check", 10, "accent.primary", "OVERLAY")
+    t.mark:SetDrawLayer("OVERLAY", 3)
+    t.mark:SetPoint("CENTER", t.knob, "CENTER", 0, 0)
     t.value = false
     t.knobX = 3
 
@@ -29,6 +32,8 @@ function W:Toggle(parent)
             Skin:Gradient(self.track, "HORIZONTAL", "accent.primary", "accent.secondary")
             self.edge:SetAlpha(0)
             self.knob:SetVertexColor(1, 1, 1, 1)
+            self.mark:Show()
+            ns.Icons:Tint(self.mark, "accent.primary")
             W.Color(self.glow, "accent.glow", self.hover and 0.5 or 0.25)
         else
             self.track:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 1))
@@ -36,6 +41,7 @@ function W:Toggle(parent)
             self.edge:SetAlpha(1)
             W.Color(self.edge, "bg.sunken")
             W.Color(self.knob, self.hover and "text.primary" or "text.secondary")
+            self.mark:Hide()
             self.glow:SetVertexColor(0, 0, 0, 0)
         end
         local target = on and 21 or 3

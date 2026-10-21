@@ -1,6 +1,6 @@
 local _, ns = ...
 local L = ns.L
-local W, Skin, Media = ns.Widgets, ns.Skin, ns.Media
+local W, Skin = ns.Widgets, ns.Skin
 local Config = ns.Config
 
 --[[ Integration points with Blizzard UI: a themed landing page in Options → AddOns and an
@@ -14,18 +14,20 @@ local function buildLanding()
     local f = CreateFrame("Frame")
     f.bg = W.Texture(f, "BACKGROUND")
     f.bg:SetPoint("TOPLEFT", 0, -4); f.bg:SetPoint("BOTTOMRIGHT", -4, 4)
-    f.emblem = W.Texture(f, "BORDER", 0, Media.textures.EMBLEM)
+    f.emblem = W.Texture(f, "BORDER", 0)
     f.emblem:SetSize(300, 300)
+    ns.Icons:Brand(f.emblem, "emblem", 300)
     f.emblem:SetPoint("BOTTOMRIGHT", 40, -40)
-    f.logo = W.Texture(f, "ARTWORK", 0, Media.textures.LOGO)
+    f.logo = W.Texture(f, "ARTWORK", 0)
     f.logo:SetSize(384, 96)
+    ns.Icons:Brand(f.logo, "logo", 384)
     f.logo:SetPoint("TOPLEFT", 16, -24)
     f.text = W.Text(f, "body", "text.secondary")
     f.text:SetWordWrap(true)
     f.text:SetPoint("TOPLEFT", 36, -130)
     f.text:SetWidth(420)
     f.text:SetText(L.SETTINGS_LANDING)
-    f.open = W:Button(f, L.OPEN_CONFIG, "primary", "phoenix", 200)
+    f.open = W:Button(f, L.OPEN_CONFIG, "primary", "cat-phoenix", 200)
     f.open:SetPoint("TOPLEFT", f.text, "BOTTOMLEFT", 0, -20)
     f.open.onClick = openFromSettings
     f.hint = W.Text(f, "small", "text.muted")
@@ -48,11 +50,11 @@ function Config:RegisterBlizzard()
     if AddonCompartmentFrame and AddonCompartmentFrame.RegisterAddon then
         AddonCompartmentFrame:RegisterAddon({
             text = ns.title,
-            icon = Media.textures.EMBLEM,
+            icon = ns.Icons.EMBLEM_SMALL,
             notCheckable = true,
             func = function() Config:Toggle() end,
             funcOnEnter = function(button)
-                W.ShowTooltip(button, ns.title, L.COMPARTMENT_TIP)
+                W.ShowTooltip(button, ns.Icons:Markup("cat-phoenix", 14, "accent.primary") .. " " .. ns.title, L.COMPARTMENT_TIP)
             end,
             funcOnLeave = function() W.HideTooltip() end,
         })

@@ -19,7 +19,7 @@ function ns:NewModule(key, def)
     if m.defaults.enabled == nil then m.defaults.enabled = true end
     m.category = m.category or "utility"
     m.order = m.order or 100
-    m.icon = m.icon or ns.Media:Icon(key:lower())
+    m.icon = m.icon or key:lower()
     m.state = "disabled"
     ns.modules[key] = m
     ns.moduleList[#ns.moduleList + 1] = m

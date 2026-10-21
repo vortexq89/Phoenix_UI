@@ -481,5 +481,5 @@ ns.RegisterLocale("enUS", {
     RECOMMENDED = "Recommended addons",
     RECOMMENDED_TEXT = "Features removed from Phoenix UI live on in dedicated, maintained addons: Premade Groups Filter, MikScrollingBattleText, OmniCD and BuffOverlay. Frame moving is built into Edit Mode.",
     CREDITS = "Credits",
-    CREDITS_TEXT = "LibStub, CallbackHandler-1.0, LibSharedMedia-3.0 and LibEditMode by their authors. Inter, Roboto and Cinzel fonts under the SIL Open Font License.",
+    CREDITS_TEXT = "LibStub, CallbackHandler-1.0, LibSharedMedia-3.0 and LibEditMode by their authors. Inter, Roboto and Cinzel fonts under the SIL Open Font License. Icons from Phosphor Icons (phosphoricons.com) under the MIT License.",
 })

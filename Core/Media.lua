@@ -29,15 +29,10 @@ M.bars = {
 M.textures = {
     WHITE = "Interface\\Buttons\\WHITE8X8",
     SHADOW = T .. "Shadow",
-    SPARK = T .. "Spark",
     PILL = T .. "Pill",
     CIRCLE = T .. "Circle",
     ROUNDED = T .. "Rounded",
-    ROUNDED_BORDER = T .. "RoundedBorder",
     FADE_V = T .. "FadeV",
-    FADE_H = T .. "FadeH",
-    LOGO = T .. "Logo",
-    EMBLEM = T .. "Emblem",
 }
 
 local byKey = {}
@@ -48,10 +43,6 @@ end
 -- Locales whose glyphs our bundled Latin/Cyrillic fonts don't cover.
 local CJK = { koKR = true, zhCN = true, zhTW = true }
 M.needsFallbackFont = CJK[GetLocale()] == true
-
-function M:Icon(name)
-    return ns.C.ICONS .. name
-end
 
 -- key may be one of ours or any LibSharedMedia name.
 function M:Font(key)

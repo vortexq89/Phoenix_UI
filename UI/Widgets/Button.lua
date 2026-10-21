@@ -1,5 +1,5 @@
 local _, ns = ...
-local W, Skin, Media = ns.Widgets, ns.Skin, ns.Media
+local W, Skin, Media, Icons = ns.Widgets, ns.Skin, ns.Media, ns.Icons
 
 -- variant: "primary" (accent gradient), "secondary" (raised), "ghost" (transparent), "danger"
 function W:Button(parent, text, variant, icon, width)
@@ -32,7 +32,7 @@ function W:Button(parent, text, variant, icon, width)
             Skin:Text(self.label, "body", "bg.base")
             self.label:SetShadowOffset(0, 0)
             Skin:SetBorderColor(self, "accent.primary")
-            if self.icon then W.Color(self.icon, "bg.base") end
+            if self.icon then Icons:SetState(self.icon, nil); Icons:Tint(self.icon, "bg.base") end
         else
             self.fill:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 1))
             if v == "danger" then
@@ -48,7 +48,10 @@ function W:Button(parent, text, variant, icon, width)
                 Skin:Text(self.label, "body", "text.primary")
                 Skin:SetBorderColor(self, "border.strong")
             end
-            if self.icon then W.Color(self.icon, v == "danger" and "state.danger" or "text.secondary") end
+            if self.icon then
+                Icons:SetState(self.icon, nil)
+                Icons:Tint(self.icon, v == "danger" and "state.danger" or "text.secondary")
+            end
         end
     end
     Skin:Border(b, "border.strong")
@@ -59,7 +62,7 @@ function W:Button(parent, text, variant, icon, width)
             self.shine:SetVertexColor(1, 1, 1, 0.32)
         else
             W.Color(self.fill, self.variant == "danger" and "state.danger" or "bg.hover", self.variant == "danger" and 0.26 or 1)
-            if self.icon then W.Color(self.icon, self.variant == "danger" and "state.danger" or "accent.primary") end
+            if self.icon then Icons:SetState(self.icon, self.variant == "danger" and "danger" or "active") end
             Skin:SetBorderColor(self, self.variant == "danger" and "state.danger" or "accent.primary")
         end
     end)
@@ -88,18 +91,16 @@ function W:IconButton(parent, icon, size, tooltipTitle, tooltipText)
     b.fill:SetAllPoints()
     b.icon = W.Icon(b, icon, math.floor((size or 28) * 0.5))
     b.icon:SetPoint("CENTER")
-    Skin:Register(b, function(self)
+    local function rest(self)
         W.Color(self.fill, "bg.hover", 0)
-        W.Color(self.icon, self.active and "accent.primary" or "text.secondary")
-    end)
+        Icons:SetState(self.icon, self.active and "active" or nil)
+    end
+    Skin:Register(b, rest)
     b:SetScript("OnEnter", function(self)
         W.Color(self.fill, "bg.hover", 1)
-        W.Color(self.icon, self.danger and "state.danger" or "accent.primary")
+        Icons:SetState(self.icon, self.danger and "danger" or "active")
     end)
-    b:SetScript("OnLeave", function(self)
-        W.Color(self.fill, "bg.hover", 0)
-        W.Color(self.icon, self.active and "accent.primary" or "text.secondary")
-    end)
+    b:SetScript("OnLeave", rest)
     b:SetScript("OnClick", function(self, ...)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
         if self.onClick then self.onClick(self, ...) end

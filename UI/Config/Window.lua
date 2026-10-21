@@ -13,6 +13,9 @@ local MIN_W, MIN_H, MAX_W, MAX_H = 860, 540, 1600, 1100
 local CATEGORY_LABEL = {
     system = "CAT_SYSTEM", interface = "CAT_INTERFACE", combat = "CAT_COMBAT", social = "CAT_SOCIAL", utility = "CAT_UTILITY",
 }
+local CATEGORY_ICON = {
+    system = "cat-system", interface = "cat-interface", combat = "cat-combat", social = "cat-social", utility = "cat-utility",
+}
 
 function Config:RegisterPage(key, builder)
     self.builders[key] = builder
@@ -38,8 +41,8 @@ local function buildHeader(f)
     f.header = h
 
     h.emblem = h:CreateTexture(nil, "ARTWORK")
-    h.emblem:SetTexture(Media.textures.EMBLEM)
-    h.emblem:SetSize(32, 32)
+    h.emblem:SetSize(34, 34)
+    ns.Icons:Brand(h.emblem, "emblem", 34)
     h.emblem:SetPoint("LEFT", 18, 0)
     h.brand = W.Text(h, "brand", "text.primary")
     h.brand:SetPoint("LEFT", h.emblem, "RIGHT", 10, 1)
@@ -146,11 +149,19 @@ local function navRow(parent, key, label, icon)
     return r
 end
 
-local function groupLabel(parent, text)
-    local fs = W.Text(parent, "heading", "text.muted")
-    fs:SetText(text:upper())
-    Skin:Register(fs, function(self) Skin:Text(self, "heading", "text.muted") end)
-    return fs
+local function groupLabel(parent, text, icon)
+    local g = CreateFrame("Frame", nil, parent)
+    g:SetSize(SIDEBAR_W - 40, 16)
+    g.icon = W.Icon(g, icon, 12, "text.muted")
+    g.icon:SetPoint("LEFT", 0, 0)
+    g.text = W.Text(g, "heading", "text.muted")
+    g.text:SetPoint("LEFT", g.icon, "RIGHT", 7, 0)
+    g.text:SetText(text:upper())
+    Skin:Register(g, function(self)
+        Skin:Text(self.text, "heading", "text.muted")
+        W.Color(self.icon, "accent.primary", 0.75)
+    end)
+    return g
 end
 
 local function buildSidebar(f)
@@ -186,14 +197,14 @@ local function buildSidebar(f)
         for _, m in ipairs(ns.moduleList) do if m.category == cat and not m.hidden then any = true end end
         if any then
             y = y + 10
-            add(groupLabel(c, L[CATEGORY_LABEL[cat]]), 22, 22)
+            add(groupLabel(c, L[CATEGORY_LABEL[cat]], CATEGORY_ICON[cat]), 22, 20)
             for _, m in ipairs(ns.moduleList) do
-                if m.category == cat and not m.hidden then add(navRow(c, m.key, L[m.label], m.icon:match("[^\\]+$")), 32) end
+                if m.category == cat and not m.hidden then add(navRow(c, m.key, L[m.label], m.icon), 32) end
             end
         end
     end
     y = y + 10
-    add(groupLabel(c, L.CAT_PHOENIX), 22, 22)
+    add(groupLabel(c, L.CAT_PHOENIX, "cat-phoenix"), 22, 20)
     add(navRow(c, "profiles", L.PROFILES, "profiles"), 32)
     add(navRow(c, "about", L.ABOUT, "about"), 32)
     c:SetHeight(y + 8)
@@ -207,7 +218,9 @@ local function buildFooter(f)
     ft.profile = W.Text(ft, "small", "text.secondary")
     ft.profile:SetPoint("LEFT", ft.profileIcon, "RIGHT", 6, 0)
     ft.status = W.Text(ft, "small", "text.muted", "CENTER")
-    ft.status:SetPoint("CENTER")
+    ft.status:SetPoint("CENTER", 8, 0)
+    ft.statusIcon = W.Icon(ft, "preview", 12, "text.muted")
+    ft.statusIcon:SetPoint("RIGHT", ft.status, "LEFT", -6, 0)
     ft.credit = W.Text(ft, "small", "text.muted", "RIGHT")
     ft.credit:SetPoint("RIGHT", -30, 0)
     ft.credit:SetText(ns.title .. "  ·  " .. L.BY_AUTHOR)
@@ -216,15 +229,15 @@ local function buildFooter(f)
         Skin:Panel(self, "sunken", { border = "border.subtle" })
         W.Color(self.profileIcon, "accent.primary")
         Skin:Text(self.profile, "small", "text.secondary")
-        Skin:Text(self.status, "small", "text.muted")
+        Skin:Text(self.status, "small", self.statusToken or "text.muted")
+        W.Color(self.statusIcon, self.statusToken or "text.muted")
         Skin:Text(self.credit, "small", "text.muted")
     end)
     local grip = CreateFrame("Button", nil, f)
     grip:SetSize(16, 16)
     grip:SetPoint("BOTTOMRIGHT", -4, 4)
-    grip.tex = W.Texture(grip, "OVERLAY", 3, Media:Icon("chevron"))
-    grip.tex:SetAllPoints()
-    grip.tex:SetRotation(math.rad(-45))
+    grip.tex = W.Icon(grip, "resize", 14, "text.muted", "OVERLAY")
+    grip.tex:SetPoint("CENTER")
     Skin:Register(grip, function(self) W.Color(self.tex, "text.muted") end)
     grip:SetScript("OnEnter", function(self) W.Color(self.tex, "accent.primary") end)
     grip:SetScript("OnLeave", function(self) W.Color(self.tex, "text.muted") end)
@@ -232,11 +245,20 @@ local function buildFooter(f)
     grip:SetScript("OnMouseUp", function() f:StopMovingOrSizing(); savePosition(f) end)
 end
 
-function Config:SetStatus(text, token)
+local STATUS_ICON = {
+    ["state.success"] = "success", ["state.warning"] = "warning", ["state.danger"] = "error", ["state.info"] = "about",
+}
+
+-- Footer status line; the leading glyph follows the token unless an explicit icon is given.
+function Config:SetStatus(text, token, icon)
     if not self.frame then return end
-    local s = self.frame.footer.status
-    s:SetText(text or "")
-    s:SetTextColor(Theme:Color(token or "text.muted"))
+    local ft = self.frame.footer
+    ft.statusToken = token or "text.muted"
+    ft.status:SetText(text or "")
+    ft.status:SetTextColor(Theme:Color(ft.statusToken))
+    ns.Icons:Apply(ft.statusIcon, icon or STATUS_ICON[ft.statusToken] or "preview", 12)
+    W.Color(ft.statusIcon, ft.statusToken)
+    ft.statusIcon:SetShown((text or "") ~= "")
 end
 
 function Config:UpdateFooter()
@@ -244,7 +266,7 @@ function Config:UpdateFooter()
     local n = 0
     for _, m in ipairs(ns.moduleList) do if m:IsEnabled() and not m.locked then n = n + 1 end end
     self.frame.footer.profile:SetText(L.PROFILE_LABEL:format(ns.DB:GetProfileName()) .. "   ·   " .. L.MODULES_ACTIVE:format(n))
-    if InCombatLockdown() then self:SetStatus(L.STATUS_COMBAT, "state.warning") else self:SetStatus(L.STATUS_LIVE) end
+    if InCombatLockdown() then self:SetStatus(L.STATUS_COMBAT, "state.warning", "lock") else self:SetStatus(L.STATUS_LIVE) end
 end
 
 function Config:Build()

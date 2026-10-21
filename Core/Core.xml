@@ -7,6 +7,8 @@
     <Script file="Media.lua"/>
     <Script file="Theme.lua"/>
     <Script file="Skin.lua"/>
+    <Script file="IconData.lua"/>
+    <Script file="Icons.lua"/>
     <Script file="DB.lua"/>
     <Script file="Migrations.lua"/>
     <Script file="Modules.lua"/>

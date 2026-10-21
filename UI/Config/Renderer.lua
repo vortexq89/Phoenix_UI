@@ -40,7 +40,7 @@ local function makeControl(row, m, item)
         c = W:Dropdown(row, function()
             local values = type(item.values) == "function" and item.values(m) or item.values
             local out = {}
-            for i, v in ipairs(values) do out[i] = { value = v.value, label = text(v.label) } end
+            for i, v in ipairs(values) do out[i] = { value = v.value, label = text(v.label), icon = v.icon } end
             return out
         end)
     elseif t == "font" then
@@ -91,7 +91,8 @@ local function buildRow(card, m, item)
     end
     row.label:SetPoint("RIGHT", row, "RIGHT", -(W.CONTROL_WIDTH + 40), 0)
     if item.reload or item.combat then
-        row.badge = W:Badge(row, item.reload and L.BADGE_RELOAD or L.BADGE_COMBAT, item.reload and "state.warning" or "state.info")
+        row.badge = W:Badge(row, item.reload and L.BADGE_RELOAD or L.BADGE_COMBAT,
+            item.reload and "state.warning" or "state.info", item.reload and "reload" or "lock")
         row.badge:SetPoint("LEFT", row.label, "LEFT", row.label:GetUnboundedStringWidth() + 8, 0)
     end
     row.control = makeControl(row, m, item)
@@ -158,7 +159,7 @@ local function buildPageHeader(page, m)
     h.iconBg = W.Texture(h, "ARTWORK", 0, Media.textures.ROUNDED)
     h.iconBg:SetSize(48, 48)
     h.iconBg:SetPoint("TOPLEFT", PAD, -20)
-    h.icon = W.Icon(h, m.icon:match("[^\\]+$"), 24)
+    h.icon = W.Icon(h, m.icon, 24, "accent.primary")
     h.icon:SetPoint("CENTER", h.iconBg)
     h.title = W.Text(h, "title", "text.primary")
     h.title:SetPoint("TOPLEFT", h.iconBg, "TOPRIGHT", 14, -4)
@@ -220,7 +221,7 @@ function Config.BuildSchemaPage(parent, m, schema)
     local card
     for _, item in ipairs(schema) do
         if item.type == "header" or not card then
-            card = W:Card(child, item.type == "header" and text(item.label) or nil)
+            card = W:Card(child, item.type == "header" and text(item.label) or nil, item.type == "header" and item.icon or nil)
             card.rows = {}
             card.title = item.type == "header" and text(item.label) or text(m.label)
             page.cards[#page.cards + 1] = card

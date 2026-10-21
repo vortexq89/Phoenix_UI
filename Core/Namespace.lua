@@ -13,7 +13,6 @@ ns.C = {
     MESSAGE_PREFIX = "PUI_",
 }
 ns.C.TEXTURES = ns.C.MEDIA .. "Textures\\"
-ns.C.ICONS = ns.C.TEXTURES .. "Icons\\"
 ns.C.FONTS = ns.C.MEDIA .. "Fonts\\"
 
 ns.L = ns.L or {}

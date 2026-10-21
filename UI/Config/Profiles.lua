@@ -6,12 +6,12 @@ local DB, Profiles = ns.DB, ns.Profiles
 
 --[[ Profiles page: switch / create / rename / delete, per-spec auto switching, export & import.
     Rendered through the schema renderer with a module-like page object. ]]
-local page = { key = "profiles", label = "PROFILES", desc = "PROFILES_DESC", icon = ns.Media:Icon("profiles"), locked = true, db = {} }
+local page = { key = "profiles", label = "PROFILES", desc = "PROFILES_DESC", icon = "profiles", locked = true, db = {} }
 local NONE = "\0none"
 
 -- Danger buttons need a second click within 3 s.
-local function confirmButton(row, label, action)
-    local b = W:Button(row, label, "danger", nil, 120)
+local function confirmButton(row, label, action, icon)
+    local b = W:Button(row, label, "danger", icon, 120)
     b.onClick = function(self)
         if self.armed then
             self.armed = nil
@@ -28,12 +28,12 @@ local function confirmButton(row, label, action)
     return b
 end
 
-local function nameAndButton(row, buttonLabel, onSubmit)
+local function nameAndButton(row, buttonLabel, onSubmit, icon)
     local holder = CreateFrame("Frame", nil, row)
     holder:SetSize(W.CONTROL_WIDTH + 96, 28)
     local input = W:Input(holder, W.CONTROL_WIDTH - 8, L.PROFILE_NAME)
     input:SetPoint("LEFT")
-    local b = W:Button(holder, buttonLabel, "secondary", nil, 96)
+    local b = W:Button(holder, buttonLabel, "secondary", icon, 96)
     b:SetPoint("LEFT", input, "RIGHT", 8, 0)
     local function submit()
         local name = strtrim(input:GetText() or "")
@@ -51,9 +51,9 @@ end
 
 local function profileValues(includeNone, excludeActive)
     local out = {}
-    if includeNone then out[1] = { value = NONE, label = L.NONE } end
+    if includeNone then out[1] = { value = NONE, label = L.NONE, icon = "close" } end
     for _, name in ipairs(DB:GetProfiles()) do
-        if not (excludeActive and name == DB:GetProfileName()) then out[#out + 1] = { value = name, label = name } end
+        if not (excludeActive and name == DB:GetProfileName()) then out[#out + 1] = { value = name, label = name, icon = "user" } end
     end
     return out
 end
@@ -63,7 +63,7 @@ local exportBox, importBox, importStatus, importName, pending
 
 local function buildSchema()
     local schema = {
-        { type = "header", label = "ACTIVE_PROFILE" },
+        { type = "header", label = "ACTIVE_PROFILE", icon = "profiles" },
         { type = "select", label = "PROFILE", desc = "PROFILE_DESC", values = function() return profileValues() end,
           get = function() return DB:GetProfileName() end, set = function(_, v) DB:SetProfile(v) end },
         { type = "custom", label = "PROFILE_NEW", desc = "PROFILE_NEW_DESC", build = function(row)
@@ -71,23 +71,23 @@ local function buildSchema()
                 if not DB:NewProfile(name) then return false end
                 DB:SetProfile(name)
                 return true
-            end)
+            end, "add")
         end },
         { type = "custom", label = "PROFILE_COPY", desc = "PROFILE_COPY_DESC", build = function(row)
             return nameAndButton(row, L.DUPLICATE, function(name)
                 if not DB:NewProfile(name, DB:GetProfileName()) then return false end
                 DB:SetProfile(name)
                 return true
-            end)
+            end, "duplicate")
         end },
         { type = "custom", label = "PROFILE_RENAME", desc = "PROFILE_RENAME_DESC", build = function(row)
-            return nameAndButton(row, L.RENAME, function(name) return DB:RenameProfile(DB:GetProfileName(), name) end)
+            return nameAndButton(row, L.RENAME, function(name) return DB:RenameProfile(DB:GetProfileName(), name) end, "rename")
         end },
         { type = "custom", label = "PROFILE_RESET", desc = "PROFILE_RESET_DESC", build = function(row)
             return confirmButton(row, L.RESET, function()
                 DB:ResetProfile()
                 Config:SetStatus(L.PROFILE_RESET_DONE, "state.success")
-            end)
+            end, "reset")
         end },
         { type = "select", label = "PROFILE_DELETE", desc = "PROFILE_DELETE_DESC", values = function() return profileValues(true, true) end,
           get = function() return deleteTarget or NONE end, set = function(_, v) deleteTarget = (v ~= NONE) and v or nil end },
@@ -98,10 +98,10 @@ local function buildSchema()
                     deleteTarget = nil
                     ns.Events:Fire("PUI_PROFILE_CHANGED", DB:GetProfileName())
                 end
-            end)
+            end, "delete")
         end },
 
-        { type = "header", label = "SPEC_PROFILES" },
+        { type = "header", label = "SPEC_PROFILES", icon = "spec" },
         { type = "toggle", label = "SPEC_PROFILES_ENABLE", desc = "SPEC_PROFILES_ENABLE_DESC",
           get = function() return DB:GetSpecProfiles().enabled end, set = function(_, v) DB:GetSpecProfiles().enabled = v end },
     }
@@ -119,7 +119,7 @@ local function buildSchema()
     end
 
     local rest = {
-        { type = "header", label = "EXPORT" },
+        { type = "header", label = "EXPORT", icon = "export" },
         { type = "custom", label = "EXPORT_STRING", desc = "EXPORT_DESC", build = function(row)
             local b = W:Button(row, L.GENERATE, "primary", "export", 140)
             b.onClick = function()
@@ -135,7 +135,7 @@ local function buildSchema()
             exportBox.edit:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
             return exportBox
         end },
-        { type = "header", label = "IMPORT" },
+        { type = "header", label = "IMPORT", icon = "import" },
         { type = "custom", label = "IMPORT_STRING", desc = "IMPORT_DESC", fullWidth = true, height = 160, build = function(row)
             importBox = W:TextArea(row, 600, 90)
             importBox.edit:HookScript("OnTextChanged", function(_, user)

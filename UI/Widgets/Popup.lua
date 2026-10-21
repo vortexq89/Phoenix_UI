@@ -3,7 +3,7 @@ local W, Skin = ns.Widgets, ns.Skin
 
 -- Small movable, themed dialog (copy URL, copy chat …). Its edit boxes close it on Escape
 -- (no keyboard capture on the frame itself: SetPropagateKeyboardInput is restricted in combat).
-function W:Popup(title, width, height)
+function W:Popup(title, width, height, icon)
     local f = CreateFrame("Frame", nil, UIParent)
     f:SetSize(width, height)
     f:SetPoint("CENTER")
@@ -19,7 +19,11 @@ function W:Popup(title, width, height)
     f.accent:SetPoint("TOPLEFT"); f.accent:SetPoint("TOPRIGHT")
     f.accent:SetHeight(2)
     f.title = W.Text(f, "heading", "text.secondary")
-    f.title:SetPoint("TOPLEFT", 16, -14)
+    f.title:SetPoint("TOPLEFT", icon and 36 or 16, -14)
+    if icon then
+        f.icon = W.Icon(f, icon, 14, "accent.primary")
+        f.icon:SetPoint("RIGHT", f.title, "LEFT", -6, 0)
+    end
     f.title:SetText(title:upper())
     f.close = W:IconButton(f, "close", 24, ns.L.CLOSE)
     f.close:SetPoint("TOPRIGHT", -8, -8)

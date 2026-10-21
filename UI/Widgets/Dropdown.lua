@@ -42,7 +42,9 @@ local function getPopup()
         r.bar = W.Texture(r, "BORDER")
         r.bar:SetPoint("TOPLEFT", 6, -5); r.bar:SetPoint("BOTTOMRIGHT", -6, 5)
         r.label = W.Text(r, "body", "text.primary")
-        r.label:SetPoint("LEFT", 10, 0); r.label:SetPoint("RIGHT", -26, 0)
+        r.label:SetPoint("RIGHT", -26, 0)
+        r.icon = W.Icon(r, "user", 14)
+        r.icon:SetPoint("LEFT", 10, 0)
         r.check = W.Icon(r, "check", 12, "accent.primary")
         r.check:SetPoint("RIGHT", -8, 0)
         r:SetScript("OnEnter", function(b) W.Color(b.hl, "bg.hover") end)
@@ -66,6 +68,17 @@ local function getPopup()
             if item then
                 r.value = item.value
                 r.label:SetText(item.label)
+                r.label:ClearAllPoints()
+                r.label:SetPoint("RIGHT", -26, 0)
+                if item.icon then
+                    ns.Icons:Apply(r.icon, item.icon, 14)
+                    ns.Icons:Tint(r.icon, item.value == owner.value and "accent.primary" or "text.secondary")
+                    r.icon:Show()
+                    r.label:SetPoint("LEFT", r.icon, "RIGHT", 8, 0)
+                else
+                    r.icon:Hide()
+                    r.label:SetPoint("LEFT", 10, 0)
+                end
                 if owner.preview == "font" then
                     r.label:SetFont(Media:Font(item.value), 13, "")
                 else
@@ -102,7 +115,7 @@ local function getPopup()
     return popup
 end
 
--- items: { {value=, label=}, ... } or function() -> items. preview: nil | "font" | "bar"
+-- items: { {value=, label=, icon=?}, ... } or function() -> items. preview: nil | "font" | "bar"
 function W:Dropdown(parent, items, preview, width)
     local d = CreateFrame("Button", nil, parent)
     d:SetSize(width or W.CONTROL_WIDTH, 26)
@@ -110,13 +123,16 @@ function W:Dropdown(parent, items, preview, width)
     d.label = W.Text(d, "body", "text.primary")
     d.label:SetPoint("LEFT", 10, 0)
     d.label:SetPoint("RIGHT", -26, 0)
-    d.arrow = W.Icon(d, "chevrondown", 12)
+    d.icon = W.Icon(d, "user", 14, "accent.primary")
+    d.icon:SetPoint("LEFT", 9, 0)
+    d.icon:Hide()
+    d.arrow = W.Icon(d, "chevron-down", 12)
     d.arrow:SetPoint("RIGHT", -9, 0)
     Skin:Register(d, function(self)
         Skin:Panel(self, "sunken", { border = self.open and "accent.primary" or "border.subtle" })
         Skin:Text(self.label, "body", "text.primary")
         if self.preview == "font" and self.value then self.label:SetFont(Media:Font(self.value), 12, "") end
-        W.Color(self.arrow, self.open and "accent.primary" or "text.secondary")
+        ns.Icons:Tint(self.arrow, self.open and "accent.primary" or "text.secondary")
     end)
     d:SetScript("OnEnter", function(self) if not self.open and not self.disabled then Skin:SetBorderColor(self, "border.strong") end end)
     d:SetScript("OnLeave", function(self) if not self.open then Skin:SetBorderColor(self, "border.subtle") end end)
@@ -127,15 +143,25 @@ function W:Dropdown(parent, items, preview, width)
     function d:SetOpen(open)
         self.open = open
         Skin:SetBorderColor(self, open and "accent.primary" or "border.subtle")
-        W.Color(self.arrow, open and "accent.primary" or "text.secondary")
+        ns.Icons:Tint(self.arrow, open and "accent.primary" or "text.secondary")
     end
     function d:SetValue(v)
         self.value = v
-        local text = tostring(v or "")
+        local text, icon = tostring(v or ""), nil
         for _, item in ipairs(self:GetItems()) do
-            if item.value == v then text = item.label end
+            if item.value == v then text, icon = item.label, item.icon end
         end
         self.label:SetText(text)
+        self.label:ClearAllPoints()
+        self.label:SetPoint("RIGHT", -26, 0)
+        if icon then
+            ns.Icons:Apply(self.icon, icon, 14)
+            self.icon:Show()
+            self.label:SetPoint("LEFT", self.icon, "RIGHT", 7, 0)
+        else
+            self.icon:Hide()
+            self.label:SetPoint("LEFT", 10, 0)
+        end
         if self.preview == "font" and v then self.label:SetFont(Media:Font(v), 12, "") end
     end
     function d:GetValue() return self.value end

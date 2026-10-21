@@ -43,7 +43,7 @@ local urlPopup, copyPopup
 
 local function showURL(url)
     if not urlPopup then
-        urlPopup = W:Popup(L.CHAT_COPY_URL, 460, 96)
+        urlPopup = W:Popup(L.CHAT_COPY_URL, 460, 96, "link")
         urlPopup.input = W:Input(urlPopup, 428)
         urlPopup.input:SetPoint("BOTTOM", 0, 16)
         urlPopup.input:HookScript("OnEscapePressed", function() urlPopup:Hide() end)
@@ -64,7 +64,7 @@ end
 
 local function showCopy(chatFrame)
     if not copyPopup then
-        copyPopup = W:Popup(L.CHAT_COPY, 620, 420)
+        copyPopup = W:Popup(L.CHAT_COPY, 620, 420, "copy")
         copyPopup.area = W:TextArea(copyPopup, 588, 360)
         copyPopup.area:SetPoint("BOTTOM", 0, 16)
         copyPopup.area.edit:HookScript("OnEscapePressed", function() copyPopup:Hide() end)
@@ -83,7 +83,7 @@ local buttons = {}
 local function copyButton(chatFrame)
     local b = buttons[chatFrame]
     if b then return b end
-    b = W:IconButton(chatFrame, "export", 20, L.CHAT_COPY, L.CHAT_COPY_DESC)
+    b = W:IconButton(chatFrame, "copy", 20, L.CHAT_COPY, L.CHAT_COPY_DESC)
     b:SetPoint("TOPRIGHT", chatFrame, "TOPRIGHT", 2, 2)
     b:SetAlpha(0.35)
     b:HookScript("OnEnter", function(self) self:SetAlpha(1) end)

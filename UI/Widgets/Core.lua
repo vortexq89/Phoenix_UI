@@ -26,16 +26,17 @@ function W.Text(parent, role, token, justify)
 end
 
 function W.Color(tex, token, alpha)
+    if ns.Icons:Owns(tex) then
+        ns.Icons:SetState(tex, nil)
+        return ns.Icons:Tint(tex, token, alpha)
+    end
     local r, g, b, a = Theme:Color(token)
     tex:SetVertexColor(r, g, b, alpha or a)
 end
 
-function W.Icon(parent, name, size, token)
-    local t = parent:CreateTexture(nil, "ARTWORK")
-    t:SetTexture(Media:Icon(name))
-    t:SetSize(size or 16, size or 16)
-    W.Color(t, token or "text.secondary")
-    return t
+-- Tintable glyph from the Phoenix icon set (ns.Icons). Colour with ns.Icons:Tint / :SetState.
+function W.Icon(parent, name, size, token, layer)
+    return ns.Icons:Create(parent, name, size or 16, token or "text.secondary", layer)
 end
 
 -- Shared disabled handling.

@@ -1,9 +1,9 @@
 local _, ns = ...
 local L = ns.L
-local Theme, Skin, Media, Secret = ns.Theme, ns.Skin, ns.Media, ns.Secret
+local Theme, Skin, Secret = ns.Theme, ns.Skin, ns.Secret
 
 --[[ DataTexts: one slim, Edit Mode movable info bar (FPS, latency, speed, durability, gold, clock).
-    Each segment is a value + muted unit label; segments are separated by small ember dots. ]]
+    Each segment is an accent glyph + value + muted unit label. ]]
 local M = ns:NewModule("DataTexts", {
     label = "DATATEXTS", desc = "DATATEXTS_DESC", category = "interface", order = 90,
     defaults = {
@@ -14,6 +14,7 @@ local M = ns:NewModule("DataTexts", {
 
 local ORDER = { "fps", "latency", "speed", "durability", "gold", "clock" }
 local bar, segments = nil, {}
+local ICON_SIZE = 12
 
 local function colorFor(good, ok, value, invert)
     if invert then value = -value; good = -good; ok = -ok end
@@ -58,35 +59,30 @@ local function segment(key)
     if s then return s end
     s = CreateFrame("Frame", nil, bar)
     s:SetHeight(22)
+    s.icon = ns.Icons:Create(s, key, ICON_SIZE, "accent.primary")
+    s.icon:SetPoint("LEFT")
     s.value = s:CreateFontString(nil, "OVERLAY")
-    s.value:SetPoint("LEFT")
+    s.value:SetPoint("LEFT", s.icon, "RIGHT", 5, 0)
     s.unit = s:CreateFontString(nil, "OVERLAY")
     s.unit:SetPoint("LEFT", s.value, "RIGHT", 3, 0)
-    s.dot = s:CreateTexture(nil, "ARTWORK")
-    s.dot:SetTexture(Media.textures.CIRCLE)
-    s.dot:SetSize(4, 4)
-    s.dot:SetPoint("RIGHT", s, "LEFT", -8, 0)
     Skin:Register(s, function(self)
         Skin:Text(self.value, "number", "text.primary", 12)
         Skin:Text(self.unit, "small", "text.muted", 10)
-        self.dot:SetVertexColor(Theme:Color("accent.primary"))
     end)
     segments[key] = s
     return s
 end
 
 local function layout()
-    local x, first = 10, true
+    local x = 10
     for _, key in ipairs(ORDER) do
         local s = segments[key]
         if M.db[key] then
             s = segment(key)
             s:ClearAllPoints()
             s:SetPoint("LEFT", bar, "LEFT", x, 0)
-            s.dot:SetShown(not first)
-            s:SetWidth(s.value:GetStringWidth() + s.unit:GetStringWidth() + 4)
-            x = x + s:GetWidth() + 18
-            first = false
+            s:SetWidth(ICON_SIZE + 5 + s.value:GetStringWidth() + s.unit:GetStringWidth() + 4)
+            x = x + s:GetWidth() + 16
             s:Show()
         elseif s then
             s:Hide()
@@ -137,5 +133,6 @@ function M:Refresh()
     if not bar then return end
     bar.bg:SetShown(self.db.background)
     bar:SetScale(self.db.scale)
+    for key, s in pairs(segments) do ns.Icons:Apply(s.icon, key, ICON_SIZE) end -- re-pick the atlas tier for the new scale
     update()
 end
