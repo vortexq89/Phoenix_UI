@@ -3,3 +3,5 @@ __pycache__/
 .release/
 .DS_Store
 Thumbs.db
+uploader/dist/
+uploader/*.syso
