@@ -67,7 +67,7 @@ def shell(active, body, search="Search settings…", focus=False, status="Change
     return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css">{head}</head>
 <body><div class="world"></div><div class="win">
 <div class="hdr"><div class="emblem"></div><div class="brand">PHOENIX</div><div class="brand-ui">UI</div>
-<span class="badge">v2.0.0</span>
+<span class="badge">v2.0.0-beta1</span>
 <div class="search{" focus" if focus else ""}">{ico("search")}{search}</div>
 <div class="ibtn">{ico("editmode")}</div><div class="ibtn">{ico("reload")}</div><div class="ibtn">{ico("close")}</div></div>
 {sidebar(active, scroll)}
@@ -157,31 +157,76 @@ linear-gradient(100deg, rgba(255,106,26,.20), rgba(255,61,0,.05) 45%, transparen
                                        ("profiles", "Default", "Active profile", "var(--text)"),
                                        ("theme", "Phoenix Ember", "Theme", "var(--accent)")])
     grid = "".join(card(*c) for c in CARDS)
-    body = (hero + f'<div style="display:flex;gap:12px;margin:14px 0">{chips}</div>'
-            '<div class="sech" style="padding:4px 0 10px">Modules</div>'
+    body = (hero + f'<div style="display:flex;gap:12px;margin:14px 0">{chips}</div>' + week_card()
+            + '<div class="sech" style="padding:4px 0 10px">Modules</div>'
             f'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">{grid}</div>')
-    return shell("home", body)
+    return shell("home", body, head=WEEK_CSS)
+
+
+WEEK_CSS = """<style>
+.wk{border:1px solid var(--border);background:var(--bg-raised);padding:12px 16px;margin:0 0 14px;display:grid;grid-template-columns:1fr 1fr 1fr 1.25fr;gap:18px}
+.wkh{grid-column:1/-1;font-family:CondBold;font-size:10.5px;letter-spacing:1.6px;color:var(--muted);margin-bottom:-8px}
+.wkt b{display:block;font-family:CondSemi;font-size:13px;font-weight:normal;color:var(--text)}
+.wkp{display:flex;gap:6px;margin:8px 0 6px} .wkp i{width:30px;height:8px;background:var(--bg-sunken);border:1px solid #000}
+.wkp i.on{background:var(--accent);box-shadow:0 0 8px rgba(255,106,26,.45)}
+.wkt span{font-family:Roboto;font-size:11.5px;color:var(--text2)}
+.wks{border-left:1px solid var(--border);padding-left:18px} .wks .rt{font-family:CondBold;font-size:26px;color:#ff8000;line-height:28px}
+.wks .lb{font-family:Cond;font-size:10.5px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.wks .sub{font-family:Roboto;font-size:11.5px;color:var(--text2);margin-top:4px}
+</style>"""
+
+
+def week_card():
+    tracks = [("Dungeons", 2, "6 / 8 runs · next at 8"), ("Raid", 1, "3 / 4 bosses · next at 4"), ("World", 3, "All unlocked")]
+    cells = "".join(f'<div class="wkt"><b>{n}</b><div class="wkp">{"".join(f"<i class={chr(34)}on{chr(34)}></i>" if k < on else "<i></i>" for k in range(3))}</div>'
+                    f'<span>{t}</span></div>' for n, on, t in tracks)
+    return (f'<div class="wk"><div class="wkh">THIS WEEK</div>{cells}<div class="wks"><div class="lb">Mythic+ rating</div>'
+            '<div class="rt">2,846</div><div class="sub">6 runs this week · best +14</div></div></div>')
+
+
+def vault_page():
+    page = home()
+    # scroll past the hero so the weekly card sits under the stats, as after a short scroll in game
+    assert '</div>\n<div class="ftr">' in page
+    return page.replace('<div class="content">', '<div class="content"><div style="margin-top:-164px">', 1).replace(
+        '</div>\n<div class="ftr">', '</div></div>\n<div class="ftr">', 1)
+
+
+TT_CSS = """<style>
+.tt{position:relative;width:250px;padding:10px 10px 8px;background:rgba(10,11,14,.94);border:1px solid #3fc7eb;font-family:F-InterRegular;font-size:12px;line-height:15px}
+.tt b{display:block;font-family:F-InterSemiBold;font-size:14px;color:#3fc7eb;margin-bottom:3px;font-weight:normal}
+.tt span{display:block;margin-top:3px;color:var(--text)} .tt .g{color:var(--ok)} .tt .a{color:var(--accent2)} .tt .r{color:var(--danger)}
+.ttbar{position:absolute;left:2px;right:2px;bottom:-8px}
+</style>"""
+
+
+def tooltip_sample():
+    return (f'<div style="display:grid;place-items:center;height:100%"><div class="tt"><b>Phoenixia</b>'
+            '<span class="g">&lt;Ashes of Al&#39;ar&gt;</span><span>Level 90 Blood Elf Mage</span><span>Damage</span>'
+            '<span>Mythic+ rating: <em class="a" style="font-style:normal">3,105</em></span>'
+            '<span>Target: <em class="r" style="font-style:normal">Ashen Brute</em></span>'
+            f'<div class="ttbar">{bar(82, "#3ddc97", "BarSatin", 6, 246, "1px solid #000")}</div></div></div>')
 
 
 def tooltip(highlight=False, search="Search settings…", focus=False):
     body = page_head("tooltip", "Tooltip", "A cleaner tooltip with class borders, health bar and extra lines.")
-    rel = badge("Reload", "warn", "reload")
-    body += section("Style", [
-        opt("Phoenix style", tog(), "Dark background and thin border."),
-        opt("Health bar", tog(), "Restyle the unit health bar."),
-        opt("Class border", tog(), "Color the border by the player's class.", hl=highlight),
-        opt("Item quality border", tog(), "Color the border by item quality."),
+    body += tabs(["Appearance", "Content"], 0)
+    body += preview_card(tooltip_sample(), 176)
+    left = card2("Style", [
+        row("Phoenix style", tog(), "Dark background and thin border."),
+        row("Health bar", tog(), "Restyle the unit health bar."),
+        row("Bar texture", dd2("Satin", tex="BarSatin")),
+        row("Bar height", sl2(30, "6")),
+        row("Class border", tog(), "Color the border by the player's class.", hl=highlight),
+        row("Item quality border", tog(), "Color the border by item quality."),
     ])
-    body += section("Behavior", [
-        opt("Anchor", dd("Cursor"), "Where tooltips that use the default position appear."),
-        opt("Hide in combat", tog(False), "Hide unit tooltips while in combat. Hold Shift, Ctrl or Alt to see them anyway."),
+    right = card2("Text", [
+        row("Restyle tooltip text", tog(), "Use your fonts for every tooltip line."),
+        row("Title font", dd2("Inter SemiBold", "F-InterSemiBold"), gear=cog()),
+        row("Line font", dd2("Inter", "F-InterRegular"), gear=cog()),
     ])
-    body += section("Extra lines", [
-        opt("Target", tog(), "Show what the unit is targeting."),
-        opt("Mythic+ rating", tog(), "Show a player's current season rating in Blizzard's rarity color."),
-        opt("IDs", tog(False), "Show item and spell IDs.", badge=rel),
-    ])
-    return shell("tooltip", body, search=search, focus=focus)
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    return shell("tooltip", body, search=search, focus=focus, head=faces(font_data()) + TT_CSS)
 
 
 def search_page():
@@ -340,11 +385,11 @@ def mplus_page():
     chests = [("+3", "1:24", "var(--accent)"), ("+2", "8:00", "var(--text2)"), ("+1", "14:36", "var(--text2)")]
     chest = "".join(f'<span style="flex:1;text-align:{a}">{t}&nbsp;&nbsp;<span style="color:{c}">{v}</span></span>'
                     for (t, v, c), a in zip(chests, ("left", "center", "right")))
-    bosses = [("Vexamus", "5:58", True), ("Overgrown Ancient", "12:40", True), ("Crawth", "", False),
-              ("Echo of Doragosa", "", False)]
+    bosses = [("Vexamus", "5:58", True, '<em class="dg">-0:21</em>'), ("Overgrown Ancient", "12:40", True, '<em class="dr">+0:34</em>'),
+              ("Crawth", "", False, '<em class="dm">19:05</em>'), ("Echo of Doragosa", "", False, '<em class="dm">27:40</em>')]
     rows = "".join(f'''<div class="mprow"><span style="color:{"var(--ok)" if done else "var(--muted)"}">{ico("boss", "sm")}</span>
-<span class="mpl" style="color:{"var(--text2)" if done else "var(--text)"}">{name}</span><span class="mpv" style="color:{"var(--ok)" if done else "var(--text2)"}">{at}</span></div>'''
-                   for name, at, done in bosses)
+<span class="mpl" style="color:{"var(--text2)" if done else "var(--text)"}">{name}</span>{d}<span class="mpv" style="color:{"var(--ok)" if done else "var(--text2)"}">{at}</span></div>'''
+                   for name, at, done, d in bosses)
     timer = f'''<div class="mpt">
 <div style="display:flex;align-items:center;gap:8px"><span class="mplvl">+12</span><span class="mpname">Algeth&#39;ar Academy</span>
 <span style="margin-left:auto;color:var(--danger)">{ico("deaths", "sm")}</span><span class="mpnum">3&nbsp;&nbsp;−15s</span></div>
@@ -354,7 +399,7 @@ def mplus_page():
 <div class="mpbar"><span style="width:55.8%"></span><i style="left:60%"></i><i style="left:80%"></i></div>
 <div class="mpchest">{chest}</div>
 <div class="mprow" style="margin-top:10px"><span style="color:var(--muted)">{ico("forces", "sm")}</span><span class="mpl">Enemy forces</span>
-<span class="mpv" style="color:var(--text)">72.40%</span></div><div class="mpfb"><span style="width:72.4%"></span></div>{rows}</div>'''
+<span class="mpv" style="color:var(--text)">72.40% <span style="color:var(--accent2)">+4.10%</span></span></div><div class="mpfb"><span style="width:72.4%"></span></div>{rows}</div>'''
     plates = "".join(f'''<div class="np" style="left:{x}px;top:{y}px"><div class="npn">{n}</div><div class="npb"><span style="width:{w}%"></span>
 <b>{w}%</b></div><span class="npf">{f}</span></div>''' for n, x, y, w, f in
                      [("Spellbound Battleaxe", 330, 300, 64, "+4"), ("Arcane Ravager", 520, 360, 88, "+7"), ("Vile Lasher", 400, 440, 100, "")])
@@ -369,6 +414,7 @@ def mplus_page():
 .mpbar span{position:absolute;left:0;top:0;bottom:0;background:var(--accent)} .mpbar i{position:absolute;top:0;bottom:0;width:1px;background:rgba(236,238,242,.7)}
 .mpchest{display:flex;margin-top:6px;font-family:Cond;font-size:10px;color:var(--text2)}
 .mprow{display:flex;align-items:center;gap:8px;height:20px} .mpl{flex:1} .mpv{font-family:CondSemi}
+.mprow em{font-style:normal;font-family:CondSemi;font-size:11px} .dg{color:var(--ok)} .dr{color:var(--danger)} .dm{color:var(--muted)}
 .mpfb{height:4px;margin-left:22px;background:var(--bg-sunken);border:1px solid #000;position:relative}
 .mpfb span{position:absolute;left:0;top:0;bottom:0;background:var(--accent2)}
 .np{position:absolute;width:150px;font-family:CondSemi} .npn{font-size:11px;color:#ffd5d5;text-align:center;text-shadow:1px 1px 0 #000}
@@ -607,10 +653,53 @@ def media_sheet():
 <div class="sech" style="padding-left:0;margin-top:8px">Statusbars</div><div class="bgrid">{strips}</div></div></body></html>'''
 
 
+KEYS_CSS = """<style>
+.ks{width:420px;margin:0 auto;padding-top:8px} .ksr{display:flex;align-items:center;gap:10px;height:24px;border-bottom:1px solid rgba(255,255,255,.04);font-family:RobotoMedium;font-size:12.5px}
+.ksr .n{width:130px} .ksr .k{flex:1;color:var(--text)} .ksr .k em{font-style:normal;font-family:CondSemi;color:var(--accent);margin-right:6px}
+.ksr .r{font-family:CondSemi;width:60px;text-align:right} .ksr .mut{color:var(--muted)}
+</style>"""
+
+
+def keys_list():
+    party = [("Phoenixia", "#3fc7eb", "14", "Ember Spire", "3,105", "#ff8000"),
+             ("Ashbringer", "#f48cba", "12", "Ashen Vault", "2,640", "#a335ee"),
+             ("Cindermaw", "#c69b6d", "10", "Cinder Deeps", "2,210", "#a335ee"),
+             ("Emberleaf", "#ff7c0a", "", "", "1,880", "#0070dd"),
+             ("Quickfuse", "#3fc7eb", None, "", "", "")]
+    rows = []
+    for n, c, lvl, dg, rt, rc in party:
+        if lvl is None:
+            k = '<span class="k mut">Unknown (no compatible addon)</span>'
+        elif not lvl:
+            k = '<span class="k mut">No keystone</span>'
+        else:
+            k = f'<span class="k"><em>+{lvl}</em>{dg}</span>'
+        rows.append(f'<div class="ksr"><span class="n" style="color:{c}">{n}</span>{k}<span class="r" style="color:{rc or "var(--muted)"}">{rt}</span></div>')
+    return f'<div class="ks">{"".join(rows)}</div>'
+
+
+def keystones_page():
+    body = page_head("mythicplus", "Mythic+", "Timer, keystone helpers and party keystones for Mythic+ dungeons.")
+    body += preview_card(keys_list(), 140)
+    left = card2("Mythic+ timer", [
+        row("Run timer", tog(), "Clock against the +1, +2 and +3 limits, with the time left for each chest."),
+        row("Boss splits", tog(), "Each boss with the run time it died at. Splits survive a reload."),
+        row("Compare with your best run", tog(), "Ahead (green) or behind (red) against your fastest timed run of this dungeon and level.", hl=True),
+        row("Current pull", tog(), "In combat, adds the forces of the enemies you are fighting to the forces line (+4.10%)."),
+    ])
+    right = card2("Party keystones", [
+        row("Share keystones with the party", tog(), "With Phoenix UI, BigWigs, DBM or any LibKeystone addon. Only outside instances."),
+        row("Ask the party", btn("Refresh", "reload"), "Requests every member's keystone again."),
+    ])
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    return shell("mythicplus", body, head=KEYS_CSS)
+
+
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
          "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page, "nameplates": nameplates_page,
          "unitframes": unitframes_page, "fonts": lambda: general_page("font"),
-         "textures": lambda: general_page("bar"), "media": media_sheet}
+         "textures": lambda: general_page("bar"), "media": media_sheet,
+         "vault": vault_page, "keystones": keystones_page}
 SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1")}
 
 if __name__ == "__main__":
