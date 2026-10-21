@@ -30,7 +30,7 @@ local PROVIDERS = {
     latency = function()
         local _, _, home, world = GetNetStats()
         local ms = math.max(home, world)
-        return ms, "MS", colorFor(100, 200, ms, true)
+        return ms, "ms", colorFor(100, 200, ms, true)
     end,
     speed = function()
         local speed = GetUnitSpeed("player")

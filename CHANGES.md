@@ -14,13 +14,13 @@ everything else starts from fresh defaults.
   with a preview before anything is changed.
 - **Damage Meter** skin for Blizzard's built-in meter, plus an optional one-click style for Details!.
 - **Combat Text** page that gathers Blizzard's floating combat text options in one place.
-- **Cooldown Text** uses Blizzard's countdown numbers with the Phoenix font and colour.
+- **Cooldown Text** uses Blizzard's countdown numbers with the Phoenix font and color.
 - **Spell History** strip of your recent casts, movable in Edit Mode.
 - **Nameplates** health percent that keeps working in restricted content.
 - Blizzard Settings landing page and an Addon Compartment entry.
 - **One icon set everywhere**: 68 Phosphor duotone icons (MIT) in the sidebar, page and section headers,
   search results, buttons, toggles, dropdowns, profile lists, home tiles, the About page, popups, the footer
-  status, the data bar and the PvP queue timer. They follow the accent colour and stay sharp at 4K.
+  status, the data bar and the PvP queue timer. They follow the accent color and stay sharp at 4K.
 - New high-resolution Phoenix emblem and logo (addon list, Addon Compartment, window header, home, About,
   Settings landing page, AFK screen).
 
@@ -28,12 +28,13 @@ everything else starts from fresh defaults.
 - Layout belongs to Edit Mode: Phoenix no longer moves Blizzard frames. The data bar and spell history are
   Edit Mode frames with per-layout positions.
 - Action bars, unit frames, group frames, cast bars, auras, tooltip, minimap, item level, chat, AFK screen,
-  automation, Mythic+ and PvP were rewritten on top of Blizzard's 12.x frames, taint-free and secret-value safe.
+  automation, Mythic+ and PvP were rewritten on top of Blizzard's 12.x frames and handle secret values.
 - `/gg` (arena surrender) now asks for confirmation through Blizzard's own dialog.
 
 ### Removed
 - Bundled copies of other addons: MoveAny, MikScrollingBattleText, Premade Groups Filter, BuffOverlay and the
-  others. Use the maintained originals (see the README) or the Blizzard features that replace them.
+  others. Use the maintained originals where they still exist (see the README) or the Blizzard features that
+  replace them.
 - Combat-log features (scrolling battle text, spell notifications, cooldown tracking from the log, arena
   dampening): addons can no longer read the combat log in 12.x.
 - Chat history and emoji, the minimap size slider and the Mythic+ timer overlay.

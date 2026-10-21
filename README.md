@@ -4,11 +4,12 @@
 
 # Phoenix UI
 
-**A clean, fast and modern skin for the World of Warcraft 12.x interface.**
+**A flat, consistent look for the default World of Warcraft 12.x interface.**
 Retail · Interface 120105 (12.1.5) · by **VortexQ8** · MIT licence
 
 Phoenix UI builds on Blizzard's interface instead of replacing it. Edit Mode keeps control of layout, and Phoenix
-adds a consistent look and small comforts on top. That keeps it light, taint-free and ready for every patch.
+adds a consistent look and small comforts on top. It restyles secure frames but never moves or rebuilds them,
+which keeps it light and out of the way of taint.
 
 [CurseForge](https://www.curseforge.com/projects/1242528) ·
 [Wago](https://addons.wago.io/addons/jK8XQjKy) ·
@@ -23,7 +24,7 @@ adds a consistent look and small comforts on top. That keeps it light, taint-fre
 | System | **General** | Theme (Phoenix Ember, Frost, Fel, Arcane, Class, Custom), fonts, bar texture, font scale, reduce motion |
 | Interface | **Skins** | Phoenix styling for the game menu, popups and ready check |
 | | **Action Bars** | Square buttons, readable hotkeys and macro names, out-of-range tint |
-| | **Unit Frames** | Bar texture, class and power colours, fonts for player, target, focus and pet |
+| | **Unit Frames** | Bar texture, class and power colors, fonts for player, target, focus and pet |
 | | **Group Frames** | Party and raid frame textures, fonts and borders |
 | | **Cast Bars** | Flat cast bars; icon, timer and latency on your own bar |
 | | **Buffs & Debuffs** | Cropped icons, crisp borders, readable timers and stacks |
@@ -104,10 +105,10 @@ follows that. It skins and configures the Blizzard features and no longer bundle
 | Old Phoenix feature | Use instead |
 |---|---|
 | Frame mover (MoveAny) | Blizzard **Edit Mode** (`/pui edit`) |
-| Scrolling combat text (MikScrollingBattleText) | Phoenix **Combat Text** page (Blizzard floating combat text), or [MikScrollingBattleText](https://www.curseforge.com/wow/addons/mik-scrolling-battle-text) |
+| Scrolling combat text (MikScrollingBattleText) | Phoenix **Combat Text** page (Blizzard floating combat text), or [MikScrollingBattleText](https://www.curseforge.com/wow/addons/mikscrollingbattletext) (the 12.x rewrite) |
 | Group finder filters (Premade Groups Filter) | [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) |
-| Buff overlays on raid frames (BuffOverlay) | [BuffOverlay](https://www.curseforge.com/wow/addons/buffoverlay) |
-| Cooldown tracker / spell notifications | Blizzard **Cooldown Manager** (Quality of Life page), [OmniCD](https://www.curseforge.com/wow/addons/omnicd) for party cooldowns |
+| Buff overlays on raid frames (BuffOverlay) | Blizzard raid frame aura settings. BuffOverlay does not work in 12.x, where aura data is secret in restricted content |
+| Cooldown tracker / spell notifications | Blizzard **Cooldown Manager** (Quality of Life page) for your own cooldowns. Party cooldown tracking relied on the combat log and was dropped |
 | Details! skin | Phoenix **Damage Meter** page (Blizzard meter skin + one-click Details! style) |
 
 ## Development
