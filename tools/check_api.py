@@ -9,7 +9,11 @@ Checks, for Core/, UI/, Modules/ and Locales/:
   * templates in CreateFrame(..., "Template") and atlases in SetAtlas("...") exist;
   * forbidden 12.x patterns (combat log, string execution, keyboard propagation) are absent;
   * every file listed by the TOC/XML chain exists with exact case, and every addon .lua file is loaded
-    exactly once.
+    exactly once;
+  * icons: every literal icon name passed to the icon API exists in Core/IconData.lua, every atlas glyph
+    is referenced somewhere, and every atlas/brand texture named in Lua exists with exact case;
+  * media: every file under Media/ (tga/ttf) is referenced (no dead media), every Media.textures key
+    is used, and the TOC IconTexture exists with exact case.
 Exit code 1 on any finding. Run from anywhere: python3 tools/check_api.py"""
 import json
 import pathlib
@@ -142,6 +146,76 @@ for p, n in counts.items():
 for p in sources:
     if p not in counts:
         problems.append(f"{p.relative_to(ROOT)}: never loaded (dead file)")
+
+# ---------------------------------------------------------------- icons & media
+icon_data = (ROOT / "Core" / "IconData.lua").read_text(encoding="utf-8")
+ICON_NAMES = set(re.findall(r'\["([a-z0-9-]+)"\]\s*=\s*\d+', icon_data))
+ICON_TIERS = re.findall(r'file\s*=\s*"([^"]+)"', icon_data)
+code = {p: strip_comments(p.read_text(encoding="utf-8")) for p in sources if p.name != "IconData.lua"}
+literals = set()
+for text in code.values():
+    literals.update(re.findall(r'"([^"\\\n]*)"', text))
+# Literal icon names in icon-taking positions: icon fields, W.Icon / Icons:Create/Apply/Markup,
+# (Icon)Button icon args, Badge/Popup/Card icon args and the category/status icon maps.
+ICON_USE = [
+    re.compile(r'\bicon\s*=\s*"([^"]+)"'),
+    re.compile(r'W\.Icon\([^,()]+,\s*"([^"]+)"'),
+    re.compile(r'Icons:(?:Create|Apply)\([^,()]+,\s*"([^"]+)"'),
+    re.compile(r'Icons:Markup\(\s*"([^"]+)"'),
+    re.compile(r'W:IconButton\([^,()]+,\s*"([^"]+)"'),
+    re.compile(r'W:Button\([^,()]+,[^,()]+(?:\([^()]*\))?,\s*"[^"]*",\s*"([^"]+)"'),
+    re.compile(r'W:(?:Popup|Badge)\([^()]*(?:\([^()]*\)[^()]*)*,\s*"([a-z0-9-]+)"\)'),
+    re.compile(r'\["?[\w.]+"?\]\s*=\s*"((?:cat|state)-?[a-z-]*|success|warning|error|about)"'),
+    re.compile(r'(?:,|\{)\s*\w+\s*=\s*"(cat-[a-z]+)"'),
+    re.compile(r'\bor\s+"([a-z0-9-]+)"\s*,\s*\d+\)'),
+]
+for path, text in code.items():
+    for rx in ICON_USE:
+        for m in rx.finditer(text):
+            name = m.group(1)
+            if name not in ICON_NAMES and not name.startswith("state."):
+                report(path, text, m.start(), f"unknown icon '{name}' (not in Core/IconData.lua)")
+module_keys = set()
+for text in code.values():
+    module_keys.update(k.lower() for k in re.findall(r'NewModule\(\s*"(\w+)"', text))
+for name in sorted(ICON_NAMES - literals - module_keys):
+    problems.append(f"Core/IconData.lua: icon '{name}' is never used (dead glyph)")
+
+def media_exists(rel):
+    return exact(ROOT / rel)
+
+for tier in ICON_TIERS:
+    if not media_exists(f"Media/Icons/{tier}.tga"):
+        problems.append(f"Core/IconData.lua: missing or wrong-case Media/Icons/{tier}.tga")
+if not media_exists("Media/Icons/LICENSE"):
+    problems.append("Media/Icons/LICENSE: icon licence is missing")
+icons_lua = code[ROOT / "Core" / "Icons.lua"]
+for brand in re.findall(r'file\s*=\s*"([^"]+)"', icons_lua):
+    if not media_exists(f"Media/Textures/{brand}.tga"):
+        problems.append(f"Core/Icons.lua: missing or wrong-case Media/Textures/{brand}.tga")
+for m in re.finditer(r'TEXTURES\s*\.\.\s*"([^"]+)"', "\n".join(code.values())):
+    if not media_exists(f"Media/Textures/{m.group(1)}.tga"):
+        problems.append(f"missing or wrong-case Media/Textures/{m.group(1)}.tga")
+
+toc_text = toc.read_text(encoding="utf-8")
+icon_tex = re.search(r"^## IconTexture:\s*Interface\\AddOns\\Phoenix_UI\\(\S+)", toc_text, re.M)
+toc_icon = icon_tex and icon_tex.group(1).replace("\\", "/")
+if not toc_icon or not any(media_exists(toc_icon + ext) for ext in ("", ".tga", ".blp", ".png")):
+    problems.append("Phoenix_UI.toc: IconTexture is missing or has the wrong case")
+all_text = "\n".join(code.values()) + "\n" + toc_text
+for f in sorted((ROOT / "Media").rglob("*")):
+    if f.suffix.lower() not in (".tga", ".ttf", ".blp", ".png"):
+        continue
+    stem = f.stem
+    used = stem in literals or f.name in literals or stem in ICON_TIERS or (toc_icon and toc_icon.endswith(stem))
+    if not used:
+        problems.append(f"{f.relative_to(ROOT)}: never referenced (dead media)")
+media_lua = code[ROOT / "Core" / "Media.lua"]
+tex_block = re.search(r"M\.textures\s*=\s*\{(.*?)\n\}", media_lua, re.S)
+others = "\n".join(t for p, t in code.items() if p.name != "Media.lua")
+for key in re.findall(r"^\s*(\w+)\s*=", tex_block.group(1), re.M) if tex_block else []:
+    if not re.search(r"textures\." + key + r"\b", others):
+        problems.append(f"Core/Media.lua: Media.textures.{key} is never used")
 
 for line in problems:
     print(line)

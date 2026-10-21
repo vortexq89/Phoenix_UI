@@ -142,6 +142,7 @@ local api = {
     CopyTable = function(t) local o = {} for k, v in pairs(t) do o[k] = v end return o end,
     RegisterNewSlashCommand = function(fn, cmd) slashes[cmd] = fn end,
     PixelUtil = { ConvertPixelsToUIForRegion = function(n) return n end, SetPoint = function() end,
+                  GetPixelToUIUnitFactor = function() return 768 / 2160 end, -- 4K panel
                   SetSize = function() end, SetWidth = function() end, SetHeight = function() end },
     C_AddOns = { GetAddOnMetadata = function() return "@project-version@" end, IsAddOnLoaded = function() return false end },
     C_Timer = { After = function() end, NewTicker = function() return { Cancel = function() end } end,
@@ -297,6 +298,19 @@ local events = {
 }
 for _, e in ipairs(events) do fire(unpack(e)) end
 fire("PLAYER_LOGOUT")
+
+-- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels
+for name in pairs(ns.Icons and ns.Icons.missing or {}) do errors[#errors + 1] = "unknown icon: " .. name end
+try("icon tiers", function()
+    local probe = env.CreateFrame("Frame"):CreateTexture()
+    ns.Icons:Apply(probe, "home", 16) -- 16 * 1 / (768/2160) = 45 px -> 48 px cells
+    local _, cell = ns.Icons:GetTier(probe)
+    assert(cell == 48, "16 pt icon at 4K should use 48 px cells, got " .. tostring(cell))
+    ns.Icons:Apply(probe, "home", 30)
+    _, cell = ns.Icons:GetTier(probe)
+    assert(cell == 96, "30 pt icon at 4K should use 96 px cells, got " .. tostring(cell))
+    assert(ns.Icons:Markup("home", 14):find("Icons48", 1, true), "markup should pick the 48 px atlas")
+end)
 
 print(("smoke: %d files loaded, %d modules, %d errors"):format(loaded, #(ns.moduleList or {}), #errors))
 for _, e in ipairs(errors) do print("  " .. e) end
