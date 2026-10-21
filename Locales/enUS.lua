@@ -788,4 +788,13 @@ ns.RegisterLocale("enUS", {
     TAB_CONTENT = "Content",
     ---------------------------------------------------------------- nameplates
     NP_FRAME = "Border and background",
+    ---------------------------------------------------------------- groupframes
+    GF_TEXT = "Text",
+    GF_NAME_FONT = "Name font",
+    GF_STATUS_FONT = "Status text font",
+    PREVIEW_PARTY_TANK = "Emberlynn",
+    PREVIEW_PARTY_HEALER = "Solaria",
+    PREVIEW_PARTY_DPS1 = "Cinderfall",
+    PREVIEW_PARTY_DPS2 = "Ashwhisper",
+    PREVIEW_PARTY_DEAD = "Dead",
 })

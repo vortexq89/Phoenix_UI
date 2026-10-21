@@ -1,0 +1,59 @@
+local _, ns = ...
+local L, P, Theme = ns.L, ns.Previews, ns.Theme
+
+-- A party of five as Blizzard's compact frames draw it, dressed by GroupFrames:StyleFrame.
+local PARTY = {
+    { sample = "PREVIEW_PARTY_TANK", class = "WARRIOR", health = 0.92, power = 0.35 },
+    { sample = "PREVIEW_PARTY_HEALER", class = "PRIEST", health = 0.78, power = 0.81 },
+    { sample = "PREVIEW_UNIT_PLAYER", class = "MAGE", health = 0.55, power = 0.64 },
+    { sample = "PREVIEW_PARTY_DPS1", class = "HUNTER", health = 0.31, power = 0.9 },
+    { sample = "PREVIEW_PARTY_DPS2", class = "ROGUE", health = 0, power = 0, status = "PREVIEW_PARTY_DEAD" },
+}
+local W_, H_, POWER_H, GAP, SCALE = 84, 40, 6, 6, 1.3
+
+P:Register("groupframe", {
+    module = "GroupFrames",
+    height = 100,
+    build = function(stage, m)
+        local row = CreateFrame("Frame", nil, stage)
+        row:SetSize(#PARTY * W_ + (#PARTY - 1) * GAP, H_)
+        row:SetScale(SCALE)
+        row:SetPoint("CENTER")
+        local frames = {}
+        for i, s in ipairs(PARTY) do
+            local f = CreateFrame("Frame", nil, row)
+            f:SetSize(W_, H_)
+            f:SetPoint("LEFT", (i - 1) * (W_ + GAP), 0)
+            f.health = P.Bar(f, s.health, W_, H_ - POWER_H)
+            f.health:SetPoint("TOPLEFT")
+            f.power = P.Bar(f, s.power, W_, POWER_H)
+            f.power:SetPoint("TOPLEFT", f.health, "BOTTOMLEFT")
+            f.name = P.Text(f.health)
+            f.name:SetPoint("TOPLEFT", 3, -3)
+            f.name:SetPoint("RIGHT", -3, 0)
+            f.name:SetJustifyH("LEFT")
+            f.status = P.Text(f.health)
+            f.status:SetPoint("CENTER", 0, -4)
+            frames[i] = f
+        end
+        return function()
+            for i, f in ipairs(frames) do
+                local s = PARTY[i]
+                if not m.db.texture then
+                    f.health:SetStatusBarTexture(ns.Media.textures.WHITE)
+                    f.power:SetStatusBarTexture(ns.Media.textures.WHITE)
+                end
+                m:StyleFrame(f, f.health, f.power, f.name, f.status)
+                f.health:SetStatusBarColor(ns.Util.ClassColor(s.class))
+                f.power:SetStatusBarColor(Theme:Color(s.class == "WARRIOR" and "state.danger" or "state.info"))
+                if not m.db.fonts then
+                    ns.Skin:Text(f.name, "unit", nil, 11); ns.Skin:Text(f.status, "number", nil, 10)
+                end
+                f.name:SetText(L[s.sample])
+                f.name:SetTextColor(1, 1, 1)
+                f.status:SetText(s.status and L[s.status] or "")
+                f.status:SetTextColor(Theme:Color("text.muted"))
+            end
+        end
+    end,
+})

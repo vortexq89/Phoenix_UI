@@ -1,11 +1,19 @@
 local _, ns = ...
-local Theme, Skin = ns.Theme, ns.Skin
+local Theme, Skin, Media, Style = ns.Theme, ns.Skin, ns.Media, ns.Style
 
---[[ GroupFrames: Phoenix textures and fonts on Blizzard's party/raid CompactUnitFrames.
-    Nameplates share CompactUnitFrame code, so anything forbidden or nameplate-driven is skipped. ]]
+--[[ GroupFrames: Phoenix textures, border, background and fonts on Blizzard's party/raid CompactUnitFrames.
+    Nameplates share CompactUnitFrame code, so anything forbidden or nameplate-driven is skipped.
+    Layout, sorting and sizes stay with Edit Mode; values are never read (health may be secret). ]]
 local M = ns:NewModule("GroupFrames", {
     label = "GROUPFRAMES", desc = "GROUPFRAMES_DESC", category = "interface", order = 30, reloadOnToggle = true,
-    defaults = { texture = true, fonts = true, nameSize = 11 },
+    defaults = {
+        texture = true, fonts = true,
+        bar = "",                                       -- "" = the theme's bar texture
+        border = Style.Border(),
+        background = Style.Background({ alpha = 0 }),
+        name = Style.Text(11),
+        status = Style.Text(10),
+    },
 })
 
 local styled = setmetatable({}, { __mode = "k" })
@@ -17,22 +25,32 @@ local function isGroupFrame(frame)
     return not unit:find("nameplate", 1, true)
 end
 
+---------------------------------------------------------------- style (shared with the options preview)
+function M:BarTexture()
+    return self.db.bar ~= "" and Media:Bar(self.db.bar) or Theme:Bar()
+end
+
+-- frame: the unit button; health/power: its bars; name/status: its FontStrings (Blizzard keeps placing them)
+function M:StyleFrame(frame, health, power, name, status)
+    local db = self.db
+    if db.texture then
+        local tex = self:BarTexture()
+        if health then health:SetStatusBarTexture(tex) end
+        if power then power:SetStatusBarTexture(tex) end
+    end
+    Skin:BorderSpec(frame, db.border, "border.black")
+    Skin:Backdrop(frame, db.background, "bg.sunken")
+    if db.fonts then
+        if name then Skin:TextSpec(name, db.name, "unit") end
+        if status then Skin:TextSpec(status, db.status, "number") end
+    end
+end
+
+---------------------------------------------------------------- Blizzard frames
 local function style(frame)
     if not (M:IsEnabled() and isGroupFrame(frame)) then return end
-    local db = M.db
-    if db.texture then
-        local tex = Theme:Bar()
-        if frame.healthBar then frame.healthBar:SetStatusBarTexture(tex) end
-        if frame.powerBar then frame.powerBar:SetStatusBarTexture(tex) end
-    end
-    if db.fonts then
-        if frame.name then Skin:Text(frame.name, "unit", nil, db.nameSize) end
-        if frame.statusText then Skin:Text(frame.statusText, "number", nil, db.nameSize - 1) end
-    end
-    if not styled[frame] then
-        styled[frame] = true
-        Skin:Border(frame, "border.black")
-    end
+    styled[frame] = true
+    M:StyleFrame(frame, frame.healthBar, frame.powerBar, frame.name, frame.statusText)
 end
 
 function M:OnEnable()
@@ -40,6 +58,8 @@ function M:OnEnable()
     hooksecurefunc("DefaultCompactUnitFrameSetup", style)
     ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
 end
+
+function M:OnSettingChanged() self:Refresh() end
 
 function M:Refresh()
     for frame in pairs(styled) do style(frame) end
