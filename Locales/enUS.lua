@@ -743,4 +743,14 @@ ns.RegisterLocale("enUS", {
     AURAS_TEXT = "Text",
     AURAS_DURATION_FONT = "Duration font",
     AURAS_COUNT_FONT = "Stacks font",
+    ---------------------------------------------------------------- data texts 2.1
+    DT_HEIGHT = "Bar height",
+    DT_SPACING = "Segment spacing",
+    FRAME_STRATA = "Frame strata",
+    DT_TEXT = "Text",
+    DT_VALUE_FONT = "Value font",
+    DT_UNIT_FONT = "Unit label font",
+    DT_COLOR_VALUES = "Colour by state",
+    DT_COLOR_VALUES_DESC = "Green, amber or red values for frame rate, latency and durability.",
+    DT_ICONS = "Show icons",
 })

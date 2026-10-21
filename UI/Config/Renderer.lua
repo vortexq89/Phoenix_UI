@@ -108,6 +108,7 @@ local function openCog(row, page, m, item)
     if not content then
         content = CreateFrame("Frame", nil, row)
         content.rows = {}
+        content.isCog = true
         local y = 0
         for _, child in ipairs(item.cog) do
             local r = buildRow(content, page, m, child)
@@ -171,6 +172,7 @@ function buildRow(card, page, m, item)
         row.control:SetPoint("RIGHT", -16, 0)
     end
     if item.cog then
+        assert(not card.isCog, "cog rows cannot nest: use ns.Opt.Flat")
         row.cog = W:Cog(row)
         if row.control then row.cog:SetPoint("RIGHT", row.control, "LEFT", -6, 0) else row.cog:SetPoint("RIGHT", -16, 0) end
         row.cog.onClick = function() openCog(row, page, m, item) end

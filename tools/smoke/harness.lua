@@ -464,6 +464,22 @@ try("scope apply/copy", function()
     assert(m.db.units.pet.name.size == 17 and m.db.units.pet ~= m.db.units.player, "copy settings shares tables")
     assert(m.db.units["@"] == nil, "a scoped key was written literally")
 end)
+-- every cog popover builds its rows (and none nests another cog); tabs switch
+try("cogs and tabs", function()
+    local opened = 0
+    for _, m in ipairs(ns.moduleList) do
+        local page = ns.Config:Show(m.key)
+        for _, r in ipairs(page.rows or {}) do
+            if r.cog then
+                r.cog.onClick(r.cog)
+                assert(r.cogContent and #r.cogContent.rows == #r.item.cog, m.key .. ": cog rows missing")
+                opened = opened + 1
+            end
+        end
+        if page.tabs then page.tabs.onChange(page.tabs, 2) end
+    end
+    assert(opened > 10, "expected the style cogs to be reachable, opened " .. opened)
+end)
 -- previews: every kind builds and redraws with its module's settings, and with a unit picked
 try("previews", function()
     local n = 0

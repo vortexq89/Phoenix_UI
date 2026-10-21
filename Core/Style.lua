@@ -96,3 +96,16 @@ function Opt.Icons(path, opts)
     end
     return rows
 end
+
+-- Rows for a cog popover (which cannot nest cogs): each row followed by its own cog rows.
+function Opt.Flat(...)
+    local out = {}
+    for i = 1, select("#", ...) do
+        local row = select(i, ...)
+        local copy = {}
+        for k, v in pairs(row) do if k ~= "cog" then copy[k] = v end end
+        out[#out + 1] = copy
+        for _, sub in ipairs(row.cog or {}) do out[#out + 1] = sub end
+    end
+    return out
+end
