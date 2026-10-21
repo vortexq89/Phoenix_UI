@@ -832,4 +832,6 @@ ns.RegisterLocale("enUS", {
     HOME_RUNS_WEEK = "%d runs this week",
     HOME_BEST_WEEK = "best +%d",
     HOME_NO_RUNS = "No Mythic+ runs this week yet",
+    ---------------------------------------------------------------- slash
+    SLASH_TEST_ERROR = "Raising a labelled test error for the bug catcher. It is harmless and safe to delete.",
 })

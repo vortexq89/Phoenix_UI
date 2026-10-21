@@ -5,6 +5,8 @@ local L = ns.L
     ADDON_LOADED  -> DB:Init (migrations), theme, module OnInitialize
     PLAYER_LOGIN  -> enable modules, Blizzard integration, one-time migration notice ]]
 local Init = {}
+-- Fixed English text (not localised) so reports are easy to find and delete on the dashboard.
+ns.TEST_ERROR = "PHOENIX TEST ERROR - safe to delete (/phoenix testerror)"
 
 local function slash(msg)
     local cmd, rest = strtrim(msg or ""):match("^(%S*)%s*(.-)$")
@@ -27,6 +29,11 @@ local function slash(msg)
     elseif cmd == "reset" then
         ns.Config:ResetPosition()
         ns:Print(L.SLASH_RESET_DONE)
+    elseif cmd == "testerror" then
+        -- Hidden: a harmless, clearly labelled Lua error to try the bug catcher and the uploader end to end.
+        -- Raised on the next frame so it reaches the global error handler like any real addon error.
+        ns:Print(L.SLASH_TEST_ERROR)
+        C_Timer.After(0, function() error(ns.TEST_ERROR, 0) end)
     elseif cmd == "debug" then
         ns.debug = not ns.debug
         ns:Print(L.SLASH_DEBUG, ns.debug and L.ENABLED or L.DISABLED)
@@ -40,6 +47,8 @@ local function slash(msg)
         ns:Print(L.SLASH_HELP)
     end
 end
+
+ns.TestSlash = slash -- the smoke harness drives sub-commands through this
 
 ns.Events:On("ADDON_LOADED", Init, function(_, _, name)
     if name ~= ADDON then return end

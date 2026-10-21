@@ -521,6 +521,17 @@ end)
 try("version", function()
     assert(type(ns.version) == "string" and not ns.version:find("@", 1, true), "version shows a placeholder: " .. tostring(ns.version))
 end)
+-- /phoenix testerror schedules a labelled error for the bug catcher
+try("test error", function()
+    local queued
+    local after = env.C_Timer.After
+    env.C_Timer.After = function(_, fn) queued = fn end
+    ns.TestSlash("testerror")
+    env.C_Timer.After = after
+    assert(queued, "testerror did not schedule an error")
+    local ok, e = pcall(queued)
+    assert(not ok and tostring(e):find("PHOENIX TEST ERROR", 1, true), "wrong test error: " .. tostring(e))
+end)
 -- a representative set of gameplay events with plausible payloads
 local events = {
     { "PLAYER_REGEN_DISABLED" }, { "PLAYER_REGEN_ENABLED" }, { "MERCHANT_SHOW" }, { "PLAYER_FLAGS_CHANGED", "player" },
