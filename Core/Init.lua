@@ -25,12 +25,7 @@ local function slash(msg)
             ns:Print(L.SLASH_PROFILE_MISSING, rest)
         end
     elseif cmd == "reset" then
-        wipe(ns.DB.sv.global.ui)
-        if ns.Config.frame then
-            ns.Config.frame:ClearAllPoints()
-            ns.Config.frame:SetPoint("CENTER")
-            ns.Config.frame:SetSize(1000, 660)
-        end
+        ns.Config:ResetPosition()
         ns:Print(L.SLASH_RESET_DONE)
     elseif cmd == "debug" then
         ns.debug = not ns.debug

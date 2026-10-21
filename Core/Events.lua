@@ -19,11 +19,32 @@ local function assertAllowed(event)
     assert(not event:find("^COMBAT_LOG_EVENT"), "Phoenix_UI: combat-log events are forbidden in 12.x")
 end
 
+-- Lua forbids adding keys to a table while next() walks it, so owners that register for the event being
+-- dispatched (a module enabled from an ADDON_LOADED handler, say) are added once the walk is over.
+local busy, pending = {}, {}
+
+local function add(list, owner, fn)
+    if busy[list] and list[owner] == nil then
+        pending[#pending + 1] = { list, owner, fn }
+    else
+        list[owner] = fn
+    end
+end
+
 local function dispatch(map, name, ...)
     local list = map[name]
     if not list then return end
+    busy[list] = (busy[list] or 0) + 1
     for owner, fn in pairs(list) do
         safecall(fn, owner, name, ...)
+    end
+    busy[list] = busy[list] > 1 and busy[list] - 1 or nil
+    if #pending > 0 and next(busy) == nil then
+        for i = 1, #pending do
+            local p = pending[i]
+            p[1][p[2]] = p[3]
+            pending[i] = nil
+        end
     end
 end
 
@@ -44,7 +65,7 @@ function E:On(event, owner, fn)
         handlers[event] = list
         frame:RegisterEvent(event)
     end
-    list[owner] = fn
+    add(list, owner, fn)
 end
 
 function E:OnUnit(event, owner, fn, unit1, unit2)
@@ -96,7 +117,7 @@ end
 
 function E:Listen(message, owner, fn)
     listeners[message] = listeners[message] or {}
-    listeners[message][owner] = fn
+    add(listeners[message], owner, fn)
 end
 
 function E:Fire(message, ...)

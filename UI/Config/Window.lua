@@ -10,6 +10,7 @@ Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
 local HEADER_H, SIDEBAR_W, FOOTER_H = 56, 216, 28
 local MIN_W, MIN_H, MAX_W, MAX_H = 860, 540, 1600, 1100
+local DEFAULT_W, DEFAULT_H = 1000, 660
 local CATEGORY_LABEL = {
     system = "CAT_SYSTEM", interface = "CAT_INTERFACE", combat = "CAT_COMBAT", social = "CAT_SOCIAL", utility = "CAT_UTILITY",
 }
@@ -281,7 +282,7 @@ function Config:Build()
     f:SetClampedToScreen(true)
     f:EnableMouse(true)
     local s = uiStore()
-    f:SetSize(s.w or 1000, s.h or 660)
+    f:SetSize(s.w or DEFAULT_W, s.h or DEFAULT_H)
     f:SetPoint(s.point or "CENTER", UIParent, s.rel or "CENTER", s.x or 0, s.y or 0)
     Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.strong", shadow = 18 }) end)
     self.frame = f
@@ -331,6 +332,16 @@ function Config:Build()
     ns.Events:On("PLAYER_REGEN_DISABLED", self, function() self:UpdateFooter() end)
     ns.Events:Listen("PUI_COMBAT_END", self, function() self:UpdateFooter() end)
     return f
+end
+
+-- /pui reset: forget the saved size and position.
+function Config:ResetPosition()
+    wipe(uiStore())
+    local f = self.frame
+    if not f then return end
+    f:ClearAllPoints()
+    f:SetPoint("CENTER")
+    f:SetSize(DEFAULT_W, DEFAULT_H)
 end
 
 function Config:Show(key)

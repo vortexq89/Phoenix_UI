@@ -13,6 +13,7 @@ local M = ns:NewModule("Tooltip", {
 })
 
 local TOOLTIPS = { "GameTooltip", "ItemRefTooltip", "ShoppingTooltip1", "ShoppingTooltip2", "EmbeddedItemTooltip" }
+local isOurs = {}
 local skinned = setmetatable({}, { __mode = "k" })
 local ROLE_ATLAS = { TANK = "roleicon-tiny-tank", HEALER = "roleicon-tiny-healer", DAMAGER = "roleicon-tiny-dps" }
 
@@ -35,9 +36,7 @@ end
 
 local function onBackdrop(tt)
     if not (M:IsEnabled() and M.db.skin) then return end
-    for _, name in ipairs(TOOLTIPS) do
-        if _G[name] == tt then skin(tt) end
-    end
+    if isOurs[tt] then skin(tt) end
 end
 
 local function plain(...)
@@ -107,10 +106,8 @@ local function onAnchor(tt, parent)
     end
 end
 
-local hooked
+-- reloadOnToggle: OnEnable runs at most once per session, so the hooks are installed once.
 function M:OnEnable()
-    if hooked then return end
-    hooked = true
     hooksecurefunc("SharedTooltip_SetBackdropStyle", onBackdrop)
     hooksecurefunc("GameTooltip_SetDefaultAnchor", onAnchor)
     TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, onUnit)
@@ -118,7 +115,10 @@ function M:OnEnable()
     TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, onSpell)
     for _, name in ipairs(TOOLTIPS) do
         local tt = _G[name]
-        if tt then skin(tt) end
+        if tt then
+            isOurs[tt] = true
+            skin(tt)
+        end
     end
     if self.db.healthBar and GameTooltip.StatusBar then
         GameTooltip.StatusBar:SetHeight(4)

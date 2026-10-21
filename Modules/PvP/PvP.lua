@@ -69,13 +69,10 @@ local function surrender()
     end
 end
 
-local hooked
+-- reloadOnToggle: OnEnable runs at most once per session.
 function M:OnEnable()
-    if not hooked then
-        hooked = true
-        hooksecurefunc("PVPReadyDialog_Display", onDisplay)
-        RegisterNewSlashCommand(function() if M:IsEnabled() then surrender() end end, "gg", "pvpgg")
-    end
+    hooksecurefunc("PVPReadyDialog_Display", onDisplay)
+    RegisterNewSlashCommand(surrender, "gg", "pvpgg")
     local function deferTab() ns.Combat:Run("pvp.tab", applyTab) end
     ns.Events:On("PLAYER_ENTERING_WORLD", self, deferTab)
     ns.Events:On("ZONE_CHANGED_NEW_AREA", self, deferTab)
