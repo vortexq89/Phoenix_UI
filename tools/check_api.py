@@ -219,6 +219,12 @@ for f in sorted((ROOT / "Media" / "Fonts").glob("*.ttf")):
         problems.append(f"{f.relative_to(ROOT)}: no licence file in Media/Fonts/Licenses")
 
 toc_text = toc.read_text(encoding="utf-8")
+# Version: a real one for unpackaged installs, the packager token inside #@non-debug@ for releases
+active = re.findall(r"^## Version:\s*(\S+)", toc_text, re.M)
+if len(active) != 1 or "@" in active[0]:
+    problems.append("Phoenix_UI.toc: needs exactly one active '## Version:' with a real version (no @token@)")
+if not re.search(r"#@non-debug@\n# ## Version: @project-version@\n#@end-non-debug@", toc_text):
+    problems.append("Phoenix_UI.toc: the packaged version line (#@non-debug@ … @project-version@) is missing")
 icon_tex = re.search(r"^## IconTexture:\s*Interface\\AddOns\\Phoenix_UI\\(\S+)", toc_text, re.M)
 toc_icon = icon_tex and icon_tex.group(1).replace("\\", "/")
 if not toc_icon or not any(media_exists(toc_icon + ext) for ext in ("", ".tga", ".blp", ".png")):

@@ -2,8 +2,10 @@ local ADDON, ns = ...
 
 -- Single private namespace. Nothing in Phoenix_UI is global except the SavedVariables.
 ns.ADDON = ADDON
+-- The TOC carries a real version in source (2.0.0-beta1) and the packager swaps in the tag; a placeholder
+-- that slipped through any other way never reaches the screen.
 local version = C_AddOns.GetAddOnMetadata(ADDON, "Version")
-ns.version = (version and not version:find("^@")) and version or "2.0.0-dev" -- unpackaged checkout
+ns.version = (type(version) == "string" and version ~= "" and not version:find("@", 1, true)) and version or "2.0.0-dev"
 ns.title = "Phoenix UI"
 
 ns.C = {

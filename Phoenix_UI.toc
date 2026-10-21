@@ -2,7 +2,12 @@
 ## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r
 ## Notes: Restyles the default interface and adds small quality-of-life features. Type /pui for settings.
 ## Author: VortexQ8
-## Version: @project-version@
+#@debug@
+## Version: 2.0.0-beta1
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
 ## Category: User Interface
 ## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
 ## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, Phoenix_UIDB

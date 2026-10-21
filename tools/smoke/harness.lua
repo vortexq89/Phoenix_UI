@@ -517,6 +517,10 @@ try("weekly summary", function()
     assert(#ns.Weekly:Track(ns.Weekly.TRACKS[2]).slots == 0, "a failing API must read as no data")
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
+-- an unsubstituted packager token (the stub returns one) never reaches the screen
+try("version", function()
+    assert(type(ns.version) == "string" and not ns.version:find("@", 1, true), "version shows a placeholder: " .. tostring(ns.version))
+end)
 -- a representative set of gameplay events with plausible payloads
 local events = {
     { "PLAYER_REGEN_DISABLED" }, { "PLAYER_REGEN_ENABLED" }, { "MERCHANT_SHOW" }, { "PLAYER_FLAGS_CHANGED", "player" },
