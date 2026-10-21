@@ -173,8 +173,6 @@ ns.RegisterLocale("enUS", {
     AURAS_STYLE = "Style",
     AURAS_SKIN = "Phoenix style",
     AURAS_SKIN_DESC = "Restyle the buff and debuff icons near the minimap.",
-    AURAS_DURATION_SIZE = "Duration size",
-    AURAS_COUNT_SIZE = "Stack size",
     AURAS_NOTE = "Icon size, rows and direction are set in Edit Mode.",
 
     ---------------------------------------------------------------- Nameplates
@@ -736,4 +734,13 @@ ns.RegisterLocale("enUS", {
     PREVIEW_SPELL_CAST = "Pyroblast",
     PREVIEW_SPELL_CHANNEL = "Arcane Missiles",
     PREVIEW_SPELL_LOCKED = "Ember Storm",
+    ---------------------------------------------------------------- bars and auras 2.1
+    AB_BORDER = "Button border",
+    AB_HOTKEY_FONT = "Keybind font",
+    AB_COUNT_FONT = "Charges font",
+    AB_MACRO_FONT = "Macro name font",
+    AB_RANGE_COLOR = "Out of range colour",
+    AURAS_TEXT = "Text",
+    AURAS_DURATION_FONT = "Duration font",
+    AURAS_COUNT_FONT = "Stacks font",
 })

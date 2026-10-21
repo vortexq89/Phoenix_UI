@@ -96,6 +96,9 @@ end
 -- 2.0 keys that became per-element style tables in 2.1: { module, old path, new path }.
 Mg.MOVES = {
     { "NamePlates", "textSize", "health.size" },
+    { "ActionBars", "fontSize", "hotkey.size" },
+    { "Auras", "durationSize", "duration.size" },
+    { "Auras", "countSize", "count.size" },
 }
 
 local function moveKeys(sv)

@@ -15,6 +15,8 @@
     <Script file="Previews\NamePlates.lua"/>
     <Script file="Previews\UnitFrames.lua"/>
     <Script file="Previews\CastBars.lua"/>
+    <Script file="Previews\ActionBars.lua"/>
+    <Script file="Previews\Auras.lua"/>
     <Script file="Config\Window.lua"/>
     <Script file="Config\Renderer.lua"/>
     <Script file="Config\Search.lua"/>

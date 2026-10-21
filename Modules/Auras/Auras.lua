@@ -1,25 +1,40 @@
 local _, ns = ...
-local Skin = ns.Skin
+local Skin, Style = ns.Skin, ns.Style
 
 --[[ Auras: cropped icons, crisp borders and themed timers on Blizzard's BuffFrame/DebuffFrame.
     Layout (size, rows, direction) stays in Edit Mode; aura data is never read here. ]]
 local M = ns:NewModule("Auras", {
     label = "AURAS", desc = "AURAS_DESC", category = "interface", order = 50, reloadOnToggle = true,
-    defaults = { style = true, durationSize = 11, countSize = 12 },
+    defaults = {
+        style = true,
+        iconZoom = 0.08,
+        border = Style.Border({ style = "shadow" }),
+        duration = Style.Text(11, { outline = "OUTLINE", shadow = false }),
+        count = Style.Text(12, { outline = "OUTLINE", shadow = false }),
+    },
 })
+
+local holders = setmetatable({}, { __mode = "k" })  -- aura button -> our border frame
+
+---------------------------------------------------------------- style (shared with the options preview)
+-- holder: a frame covering the icon that carries the border; Blizzard keeps placing the texts.
+function M:StyleAura(icon, holder, duration, count)
+    local db = self.db
+    Skin:IconZoom(icon, db.iconZoom)
+    Skin:BorderSpec(holder, db.border, "border.black")
+    if duration then Skin:TextSpec(duration, db.duration, "number") end
+    if count then Skin:TextSpec(count, db.count, "number") end
+end
 
 local function styleButton(button)
     if button.isAuraAnchor or not button.Icon then return end
-    local db = M.db
-    if not Skin:IsSkinned(button.Icon) then
-        Skin:Icon(button.Icon)
-        local holder = CreateFrame("Frame", nil, button)
+    local holder = holders[button]
+    if not holder then
+        holder = CreateFrame("Frame", nil, button)
         holder:SetAllPoints(button.Icon)
-        Skin:Border(holder, "border.black")
-        Skin:Shadow(holder, 4, nil, 0.5)
+        holders[button] = holder
     end
-    if button.Duration then Skin:Text(button.Duration, "number", nil, db.durationSize, "OUTLINE") end
-    if button.Count then Skin:Text(button.Count, "number", nil, db.countSize, "OUTLINE") end
+    M:StyleAura(button.Icon, holder, button.Duration, button.Count)
 end
 
 local function onUpdate(frame)

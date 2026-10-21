@@ -1,9 +1,16 @@
 local _, ns = ...
+local Opt = ns.Opt
+
+local function flat(m) return not m.db.style end
 
 ns:RegisterOptions("Auras", {
+    { type = "preview", kind = "auras" },
     { type = "header", label = "AURAS_STYLE" },
     { type = "toggle", key = "style", label = "AURAS_SKIN", desc = "AURAS_SKIN_DESC", reload = true, keywords = "buffs debuffs" },
-    { type = "range", key = "durationSize", label = "AURAS_DURATION_SIZE", min = 8, max = 16, step = 1 },
-    { type = "range", key = "countSize", label = "AURAS_COUNT_SIZE", min = 8, max = 18, step = 1 },
+    { type = "range", key = "iconZoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01, disabled = flat },
+    Opt.Border("border"),
+    { type = "header", label = "AURAS_TEXT" },
+    Opt.Text("duration", "AURAS_DURATION_FONT", { max = 18, row = { disabled = flat } }),
+    Opt.Text("count", "AURAS_COUNT_FONT", { max = 20, row = { disabled = flat } }),
     { type = "description", text = "AURAS_NOTE" },
 })

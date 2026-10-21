@@ -481,6 +481,11 @@ try("style keys move", function()
     ns.Migrations.steps[2].run(sv)
     local np = sv.profiles.P.modules.NamePlates
     assert(np.health.size == 13 and np.textSize == nil, "NamePlates.textSize was not moved")
+    sv = { profiles = { P = { modules = { ActionBars = { fontSize = 9 }, Auras = { durationSize = 8, countSize = 15 } } } } }
+    ns.Migrations.steps[2].run(sv)
+    local mods = sv.profiles.P.modules
+    assert(mods.ActionBars.hotkey.size == 9 and mods.Auras.duration.size == 8 and mods.Auras.count.size == 15,
+        "ActionBars/Auras sizes were not moved")
 end)
 
 for _, e in ipairs(events) do fire(unpack(e)) end
