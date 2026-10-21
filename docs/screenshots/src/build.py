@@ -20,13 +20,13 @@ COLS, CELL, GUTTER = 10, 96, 3
 
 NAV = [
     (None, [("home", "Home", "home", None)]),
-    ("System", [("general", "General", "general", True)]),
+    ("System", [("general", "General", "general", True), ("bugs", "Bugs", "bugs", True)]),
     ("Interface", [("skins", "Skins", "skins", True), ("actionbars", "Action Bars", "actionbars", True),
                    ("unitframes", "Unit Frames", "unitframes", True), ("groupframes", "Group Frames", "groupframes", True),
                    ("castbars", "Cast Bars", "castbars", True), ("auras", "Buffs & Debuffs", "auras", True),
                    ("nameplates", "Nameplates", "nameplates", True), ("tooltip", "Tooltip", "tooltip", True),
                    ("itemlevel", "Item Level", "itemlevel", True), ("minimap", "Minimap", "minimap", True),
-                   ("datatexts", "Data Bar", "datatexts", True)]),
+                   ("datatexts", "Data Bar", "datatexts", True), ("movers", "Movers", "movers", True)]),
     ("Combat", [("cooldowntext", "Cooldown Text", "cooldowntext", True), ("combattext", "Combat Text", "combattext", None),
                 ("damagemeter", "Damage Meter", "damagemeter", True), ("spellhistory", "Spell History", "spellhistory", False),
                 ("pvp", "PvP", "pvp", True)]),
@@ -218,7 +218,9 @@ GROUPS = [
     ("Pages & modules", lambda n: INDEX[n] < INDEX["cat-system"]),
     ("Categories", lambda n: n.startswith("cat-")),
     ("Actions & controls", lambda n: INDEX["search"] <= INDEX[n] < INDEX["fps"]),
-    ("Data bar & fallback", lambda n: INDEX[n] >= INDEX["fps"]),
+    ("Data bar & fallback", lambda n: INDEX["fps"] <= INDEX[n] <= INDEX["question"]),
+    ("Bugs", lambda n: INDEX["bugs"] <= INDEX[n] < INDEX["movers"]),
+    ("Movers", lambda n: INDEX[n] >= INDEX["movers"]),
 ]
 STATES = [("Normal", "var(--text2)"), ("Hover", "var(--text)"), ("Active", "var(--accent)"),
           ("Danger", "var(--danger)"), ("Disabled", "rgba(107,113,128,.6)")]
@@ -243,8 +245,96 @@ def icons_page():
 {"".join(groups)}</div></body></html>'''
 
 
-PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page}
-SIZES = {"icons": ("1280,1040", "2")}
+# ---------------------------------------------------------------- bug viewer (Modules/Bugs/Viewer.lua)
+BUGS = [
+    ("error", "Interface/AddOns/RareScanner/Core.lua:812: attempt to index field 'vignette' (a nil value)",
+     "RareScanner", 14, "21:42"),
+    ("taint", "[ADDON_ACTION_BLOCKED] AddOn 'ShinyBags' tried to call the protected function 'UseContainerItem()'.",
+     "ShinyBags", 2, "21:39"),
+    ("error", "Interface/AddOns/Phoenix_UI/Modules/Tooltip/Tooltip.lua:233: bad argument #1 to 'format'",
+     "Phoenix_UI", 1, "21:31"),
+    ("warning", "Interface/AddOns/OldQuestLog/OldQuestLog.lua:41: GetQuestLogTitle is deprecated",
+     "OldQuestLog", 6, "21:30"),
+    ("error", "Interface/AddOns/Blizzard_ObjectiveTracker/Blizzard_ObjectiveTrackerBlock.lua:418: secret value compared",
+     "Blizzard", 3, "21:12"),
+    ("error", "Interface/AddOns/WeakAuras/RegionTypes/Icon.lua:96: attempt to perform arithmetic on a nil value",
+     "WeakAuras", 1, "21:05"),
+]
+KIND = {"error": ("error", "Lua error", "var(--danger)"), "taint": ("taint", "Blocked action", "var(--warn)"),
+        "warning": ("warning", "Lua warning", "var(--info)")}
+STACK = """[Interface/AddOns/RareScanner/Core.lua]:812: in function 'UpdateVignette'
+[Interface/AddOns/RareScanner/Core.lua]:640: in function <Interface/AddOns/RareScanner/Core.lua:621>
+[C]: in function 'securecallfunction'
+[Interface/AddOns/Blizzard_SharedXMLBase/CallbackRegistry.lua]:144: in function 'TriggerEvent'"""
+LOCALS = """self = <table> {
+ vignettes = <table> {}
+ lastScan = 18342.512
+}
+guid = "Vignette-0-4227-2552-14-6214-0000A3F1C2"
+info = nil"""
+
+
+def esc(t):
+    return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def bugs_page():
+    rows = []
+    for i, (kind, msg, src, count, at) in enumerate(BUGS):
+        icon, label, col = KIND[kind]
+        rows.append(f'<div class="brow{" sel" if i == 0 else ""}"><span class="bk" style="color:{col}">{ico(icon)}</span>'
+                    f'<div class="bt"><b>{esc(msg.split(": ", 1)[-1] if kind != "taint" else msg)}</b>'
+                    f'<i>{label} · {src} · session 42</i></div><span class="bc">{count}×</span></div>')
+    kind, msg, src, count, _ = BUGS[0]
+    report = (f"Report 3f9a0c17be42d905-42-1\nKind: error   Source: {src}   Count: {count}\n"
+              f"First seen: 21:18:04   Last seen: 21:42:51\nPhoenix UI 2.0.0 · WoW 12.1.5.70448 · enUS\n\n"
+              f"Message:\n{msg}\n\nStack:\n{STACK}\n\nLocals:\n{LOCALS}")
+    viewer = f'''<div class="bview">
+<div class="bhdr"><span class="bico">{ico("bugs")}</span><b>Bug reports</b>{badge("6 this session · 27 hits", "danger")}
+<div class="search sm">{ico("search")}Search</div>{dd("This session", "clock")}<div class="ibtn">{ico("close")}</div></div>
+<div class="blist">{"".join(rows)}<div class="bthumb"></div></div>
+<div class="bdet"><div class="bbadges">{badge("Lua error", "danger", "error")}{badge("RareScanner", "info", "addon")}
+{badge("14×", "warn")}<span class="bseen">First 21:18 · last 21:42</span></div>
+<div class="bmsg">{esc(msg)}</div><pre class="bbox">{esc(report)}</pre></div>
+<div class="bftr"><div class="ibtn">{ico("chevron-left")}</div><div class="ibtn">{ico("chevron-right")}</div>
+<span class="bpos">1 / 6</span><span class="bstat">{ico("warning")}3 repeats skipped by flood protection.</span>
+{btn("Upload", "upload", "ghost")}{btn("Copy", "copy", "primary")}{btn("Clear", "delete", "danger")}</div></div>'''
+    minimap = f'''<div class="mm"><div class="mmz">Dornogal</div><div class="bugind pulse">{ico("bugs")}<span>6</span></div></div>
+<div class="dbar">{ico("fps")}<b>144</b> fps<span class="sep"></span>{ico("latency")}<b>32</b> ms<span class="sep"></span>
+<span class="dbug pulse">{ico("bugs")}<b>6</b> bugs</span><span class="sep"></span>{ico("clock")}<b>21:42</b></div>'''
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"></head>
+<body><div class="world"></div>{minimap}{viewer}</body></html>'''
+
+
+# ---------------------------------------------------------------- movers unlock mode (Modules/Movers)
+def movers_page():
+    gx = "".join(f'<div class="gx" style="left:{x}px"></div>' for x in range(0, 1281, 32))
+    gy = "".join(f'<div class="gy" style="top:{y}px"></div>' for y in range(0, 801, 32))
+    handles = [("Zone text", 440, 150, 400, 70, False, "TOP 0, -150"),
+               ("Top-center widgets", 520, 20, 240, 40, False, "TOP 0, -20"),
+               ("Error and quest messages", 390, 250, 500, 60, True, "TOP 0, -250"),
+               ("Boss banner (kill and loot)", 470, 330, 340, 110, False, "TOP 0, -330"),
+               ("Alerts (achievements, loot toasts)", 90, 520, 300, 80, False, "BOTTOMLEFT 90, 200"),
+               ("Event toasts (level up, scenario)", 470, 470, 340, 70, False, "CENTER 0, -105"),
+               ("Ready check", 900, 300, 300, 100, False, "RIGHT -80, 50"),
+               ("Bug indicator", 1110, 190, 140, 44, False, "TOPRIGHT -30, -190")]
+    hs = "".join(f'<div class="mh{" sel" if sel else ""}" style="left:{x}px;top:{y}px;width:{w}px;height:{h}px">'
+                 f'<b>{name}</b><i>{pos}</i></div>' for name, x, y, w, h, sel, pos in handles)
+    tool = f'''<div class="mtool"><div class="mrow"><span class="bico">{ico("movers")}</span><b>Movers</b>
+<div class="ibtn">{ico("chevron-left")}</div><span class="mname">Error and quest messages</span><div class="ibtn">{ico("chevron-right")}</div>
+<span class="mpos">TOP 0, -250</span><div class="ibtn hot on">{ico("grid")}</div><div class="ibtn hot on">{ico("snap")}</div>
+{btn("Done", "check", "primary")}</div>
+<div class="mrow"><div class="ibtn">{ico("arrow-left")}</div><div class="ibtn">{ico("arrow-up")}</div><div class="ibtn">{ico("arrow-down")}</div>
+<div class="ibtn">{ico("arrow-right")}</div><span class="mlab">{ico("resize", "sm")}</span>{sl(40, "1.10")}
+<span class="mlab">{ico("opacity", "sm")}</span>{sl(85, "90%")}{btn("Reset", "reset")}</div></div>'''
+    return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"></head>
+<body><div class="world"></div><div class="grid">{gx}{gy}<div class="gx mid" style="left:640px"></div>
+<div class="gy mid" style="top:400px"></div></div>{hs}{tool}</body></html>'''
+
+
+PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
+         "bugs": bugs_page, "movers": movers_page}
+SIZES = {"icons": ("1280,1240", "2")}
 
 if __name__ == "__main__":
     for name, fn in PAGES.items():
