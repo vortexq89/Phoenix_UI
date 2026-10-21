@@ -2,7 +2,6 @@ local _, ns = ...
 
 -- Locale table. Missing keys fall back to enUS, then to the key itself (never errors, never nil).
 local base = {}
-ns.LocaleBase = base
 ns.L = setmetatable({}, {
     __index = function(_, key)
         local v = base[key]

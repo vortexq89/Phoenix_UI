@@ -322,7 +322,6 @@ function Config:Build()
         self:UpdateFooter()
     end)
     ns.Events:Listen("PUI_PROFILE_CHANGED", self, function()
-        for _, page in pairs(self.pages) do page.dirty = true end
         if f:IsShown() then
             local page = self.pages[self.current]
             if page and page.Refresh then page:Refresh() end
@@ -364,8 +363,4 @@ end
 function Config:Toggle(key)
     local f = self:Build()
     if f:IsShown() and (not key or key == self.current) then f:Hide() else self:Show(key) end
-end
-
-function ns.ToggleConfig(key)
-    Config:Toggle(type(key) == "string" and key or nil)
 end

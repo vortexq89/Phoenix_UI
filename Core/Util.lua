@@ -92,22 +92,3 @@ function U.PlayerKey()
     return UnitName("player") .. " - " .. GetRealmName()
 end
 
--- Debounce: run fn once, delay seconds after the last call.
-function U.Debounce(delay, fn)
-    local timer
-    return function(...)
-        local args = { n = select("#", ...), ... }
-        if timer then timer:Cancel() end
-        timer = C_Timer.NewTimer(delay, function()
-            timer = nil
-            fn(unpack(args, 1, args.n))
-        end)
-    end
-end
-
-function U.Contains(list, value)
-    for i = 1, #list do
-        if list[i] == value then return true end
-    end
-    return false
-end

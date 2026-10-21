@@ -37,7 +37,6 @@ end
 
 function DB:Init()
     if type(PhoenixUIDB) ~= "table" then PhoenixUIDB = {} end
-    if type(PhoenixUICharDB) ~= "table" then PhoenixUICharDB = {} end
     local sv = PhoenixUIDB
     sv.profiles = type(sv.profiles) == "table" and sv.profiles or {}
     sv.profileKeys = type(sv.profileKeys) == "table" and sv.profileKeys or {}
@@ -46,7 +45,7 @@ function DB:Init()
     sv.global.layouts = type(sv.global.layouts) == "table" and sv.global.layouts or {}
     sv.global.ui = type(sv.global.ui) == "table" and sv.global.ui or {}
     sv.schema = tonumber(sv.schema) or 0
-    self.sv, self.char = sv, PhoenixUICharDB
+    self.sv = sv
     self.charKey = U.PlayerKey()
 
     ns.Migrations:Run(sv)

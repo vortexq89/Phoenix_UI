@@ -7,10 +7,6 @@ ns.Combat = C
 
 local queue, order = {}, {}
 
-function C:InLockdown()
-    return InCombatLockdown()
-end
-
 -- Run fn now if allowed, otherwise once after combat. Same key = latest fn wins (de-duplicated).
 function C:Run(key, fn, ...)
     if not InCombatLockdown() then
@@ -19,11 +15,6 @@ function C:Run(key, fn, ...)
     if not queue[key] then order[#order + 1] = key end
     queue[key] = { fn = fn, n = select("#", ...), ... }
     return false
-end
-
--- Returns true when protected work may run now. Callers should queue with Run() when false.
-function C:Guard()
-    return not InCombatLockdown()
 end
 
 ns.Events:On("PLAYER_REGEN_ENABLED", C, function()

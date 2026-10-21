@@ -48,26 +48,10 @@ function A:Tween(key, duration, from, to, set, done)
     driver:SetScript("OnUpdate", step)
 end
 
--- Colour lerp between two {r,g,b,a} tables.
-function A:Color(key, duration, from, to, apply)
-    local fr, fg, fb, fa = from[1], from[2], from[3], from[4] or 1
-    local tr, tg, tb, ta = to[1], to[2], to[3], to[4] or 1
-    self:Tween(key, duration, 0, 1, function(p)
-        apply(fr + (tr - fr) * p, fg + (tg - fg) * p, fb + (tb - fb) * p, fa + (ta - fa) * p)
-    end)
-end
-
-function A:FadeIn(frame, duration, slide)
+function A:FadeIn(frame, duration)
     frame:SetAlpha(0)
     frame:Show()
     self:Tween(frame, duration or 0.16, 0, 1, function(v) frame:SetAlpha(v) end)
-    if slide and frame.PUIAnchor then
-        local a = frame.PUIAnchor
-        self:Tween(a, duration or 0.16, slide, 0, function(v)
-            frame:ClearAllPoints()
-            frame:SetPoint(a[1], a[2], a[3], a[4], a[5] - v)
-        end)
-    end
 end
 
 function A:FadeOut(frame, duration)

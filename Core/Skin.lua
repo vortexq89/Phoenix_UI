@@ -28,10 +28,6 @@ function Sk:Register(obj, fn)
     fn(obj)
 end
 
-function Sk:Unregister(obj)
-    registry[obj] = nil
-end
-
 local function reapplyAll()
     for obj, fn in pairs(registry) do ns.SafeCall(fn, obj) end
 end
@@ -239,15 +235,4 @@ end
 
 function Sk:IsSkinned(obj)
     return originals[obj] ~= nil or state[obj] ~= nil
-end
-
--- Tracks a set of objects a module skinned so it can restore them all on disable.
-function Sk:NewSet()
-    local set = setmetatable({}, { __mode = "k" })
-    return {
-        Add = function(_, obj) set[obj] = true; return obj end,
-        RestoreAll = function()
-            for obj in pairs(set) do Sk:Restore(obj); set[obj] = nil end
-        end,
-    }
 end

@@ -93,16 +93,3 @@ function W.AttachTooltip(frame, title, text)
     end)
     frame:HookScript("OnLeave", W.HideTooltip)
 end
-
----------------------------------------------------------------- hover colour helper
--- Lerp a texture between two tokens on enter/leave.
-function W.HoverFill(frame, tex, idleToken, hoverToken, duration)
-    local function to(token)
-        local r1, g1, b1, a1 = tex:GetVertexColor()
-        ns.Anim:Color(tex, duration or 0.08, { r1, g1, b1, a1 }, { Theme:Color(token) }, function(r, g, b, a)
-            tex:SetVertexColor(r, g, b, a)
-        end)
-    end
-    frame:HookScript("OnEnter", function(self) if not self.disabled and not self.active then to(hoverToken) end end)
-    frame:HookScript("OnLeave", function(self) if not self.active then to(idleToken) end end)
-end

@@ -51,8 +51,6 @@ T.fontRoles = {
     combat  = { font = "CondensedBold",     size = 16, flags = "OUTLINE" },
 }
 
-T.space = { [0] = 0, 4, 8, 12, 16, 20, 24, 28, 32 }
-
 local tokens = {}
 T.tokens = tokens
 T.settings = {
@@ -120,10 +118,6 @@ function T:Font(role, sizeOverride)
     if (role == "body" or role == "desc") and s.uiFont ~= "" then key = s.uiFont end
     local size = sizeOverride or math.floor(r.size * (role ~= "unit" and role ~= "combat" and s.fontScale or 1) + 0.5)
     return ns.Media:Font(key), size, r.flags
-end
-
-function T:Space(n)
-    return self.space[n] or n * 4
 end
 
 function T:Bar()

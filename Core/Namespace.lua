@@ -10,7 +10,6 @@ ns.C = {
     MEDIA = "Interface\\AddOns\\" .. ADDON .. "\\Media\\",
     PREFIX = "|cffff6a1aPhoenix|r|cffffb23fUI|r",
     SCHEMA = 1,
-    MESSAGE_PREFIX = "PUI_",
 }
 ns.C.TEXTURES = ns.C.MEDIA .. "Textures\\"
 ns.C.FONTS = ns.C.MEDIA .. "Fonts\\"

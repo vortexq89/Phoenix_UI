@@ -39,10 +39,6 @@ function EM:Register(frame, opts)
     apply(entry)
 end
 
-function EM:IsEditing()
-    return LEM:IsInEditMode()
-end
-
 function EM:Open()
     ns.Combat:Run("editmode.open", function()
         if EditModeManagerFrame and not EditModeManagerFrame:IsShown() then ShowUIPanel(EditModeManagerFrame) end
@@ -52,5 +48,3 @@ end
 LEM:RegisterCallback("layout", function(layoutName)
     for _, entry in pairs(registered) do ns.SafeCall(apply, entry, layoutName) end
 end)
-LEM:RegisterCallback("enter", function() ns.Events:Fire("PUI_EDITMODE", true) end)
-LEM:RegisterCallback("exit", function() ns.Events:Fire("PUI_EDITMODE", false) end)

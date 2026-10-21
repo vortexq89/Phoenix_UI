@@ -6,7 +6,7 @@
 ## Category: User Interface
 ## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
 ## SavedVariables: PhoenixUIDB, Phoenix_UIDB
-## SavedVariablesPerCharacter: PhoenixUICharDB, Phoenix_UIPerCharDB
+## SavedVariablesPerCharacter: Phoenix_UIPerCharDB
 ## OptionalDeps: Details
 ## X-License: MIT
 ## X-Website: https://github.com/vortexq89/Phoenix_UI
