@@ -116,7 +116,7 @@ def page_head(icon, title, desc, toggle=True, state='<span class="badge ok">Acti
 # ---------------------------------------------------------------- home
 CARDS = [("general", "General", "System", "Theme, fonts and textures shared by every module.", True),
          ("actionbars", "Action Bars", "Interface", "Crisp square buttons, readable text and range feedback.", True),
-         ("unitframes", "Unit Frames", "Interface", "Textures, colours and fonts for player, target, focus and pet.", True),
+         ("unitframes", "Unit Frames", "Interface", "Textures, colors and fonts for player, target, focus and pet.", True),
          ("castbars", "Cast Bars", "Interface", "Flat cast bars with icon, timer and latency.", True),
          ("nameplates", "Nameplates", "Interface", "Bar texture and health percent on Blizzard nameplates.", True),
          ("tooltip", "Tooltip", "Interface", "A cleaner tooltip with class borders, health bar and extra lines.", True),
@@ -145,7 +145,7 @@ def home():
 linear-gradient(100deg, rgba(255,106,26,.20), rgba(255,61,0,.05) 45%, transparent 70%), var(--bg-raised);padding:22px 24px;display:flex;align-items:center;overflow:hidden">
 <div style="position:absolute;right:-60px;top:-80px;width:340px;height:340px;background:radial-gradient(circle, rgba(255,106,26,.22), transparent 65%)"></div>
 <div><div style="width:300px;height:64px;background:url(../assets/logo.png) left center / contain no-repeat"></div>
-<div style="font-family:Roboto;color:var(--text2);margin-top:8px;font-size:13px">A clean, fast and modern skin for the 12.x interface.</div>
+<div style="font-family:Roboto;color:var(--text2);margin-top:8px;font-size:13px">A flat, consistent look for the default 12.x interface.</div>
 <div style="display:flex;gap:10px;margin-top:16px;align-items:center"><span style="font-family:CondBold;font-size:10.5px;letter-spacing:1.6px;color:var(--muted)">ACCENT</span>{swatches}</div></div>
 <div style="position:absolute;right:-40px;top:-30px;width:220px;height:220px;background:url(../assets/emblem.png) center / contain no-repeat;opacity:.10"></div>
 <div style="margin-left:auto;display:flex;gap:10px;position:relative">{btn("Profiles", "profiles")}{btn("Edit Mode", "editmode", "primary")}</div></div>'''
@@ -167,11 +167,11 @@ def tooltip(highlight=False, search="Search settings…", focus=False):
     body += section("Style", [
         opt("Phoenix style", tog(), "Dark background and thin border."),
         opt("Health bar", tog(), "Restyle the unit health bar."),
-        opt("Class border", tog(), "Colour the border by the player's class.", hl=highlight),
-        opt("Item quality border", tog(), "Colour the border by item quality."),
+        opt("Class border", tog(), "Color the border by the player's class.", hl=highlight),
+        opt("Item quality border", tog(), "Color the border by item quality."),
     ])
-    body += section("Behaviour", [
-        opt("Anchor", dd("Cursor"), "Where tooltips without an owner position appear."),
+    body += section("Behavior", [
+        opt("Anchor", dd("Cursor"), "Where tooltips that use the default position appear."),
         opt("Hide in combat", tog(False), "Hide unit tooltips while in combat."),
     ])
     body += section("Extra lines", [
@@ -183,8 +183,8 @@ def tooltip(highlight=False, search="Search settings…", focus=False):
 
 def search_page():
     page = tooltip(highlight=True, search="class colo", focus=True)
-    results = [("tooltip", "Class border", "Tooltip · Style"), ("unitframes", "Class-coloured health", "Unit Frames · Bars"),
-               ("castbars", "Class colour", "Cast Bars · Style"), ("general", "Theme", "General · Appearance")]
+    results = [("tooltip", "Class border", "Tooltip · Style"), ("unitframes", "Class-colored health", "Unit Frames · Bars"),
+               ("castbars", "Class color", "Cast Bars · Style"), ("general", "Theme", "General · Appearance")]
     rows = "".join(f'''<div style="display:flex;align-items:center;gap:10px;height:42px;padding:0 12px;{"background:rgba(255,106,26,.10);box-shadow:inset 2px 0 0 var(--accent);" if i == 0 else ""}">
 <span style="width:28px;height:28px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)">{ico(icon, "sm")}</span><div><div style="font-size:12.5px">{label}</div><div style="font-family:Roboto;font-size:11px;color:var(--muted);margin-top:2px">{where}</div></div>
 <span style="margin-left:auto;color:{"var(--accent)" if i == 0 else "var(--muted)"}">{ico("chevron-right", "xs")}</span></div>'''
