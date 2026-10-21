@@ -1,18 +1,19 @@
 # Phoenix_UI 2.0 — Architecture
 
 Target: **WoW Retail 12.1.5 (Midnight), `## Interface: 120105`, build 12.1.5.70448.** Retail only. No Classic code paths.
-This is the contract every phase-2 change is measured against. If code and this document disagree, fix one of them in the same PR.
+This describes the code as it is. If code and this document disagree, fix one of them in the same change.
 
 ---
 
 ## 1. Headline decisions
 
 1. **One addon, one namespace, zero globals.** Everything hangs off the private addon table `local ADDON, ns = ...`.
-   The only globals are the SavedVariables and the `SLASH_PHOENIXUI*` strings created by Blizzard's `RegisterNewSlashCommand`.
+   The only globals are the SavedVariables, the `SLASH_*` strings created by Blizzard's `RegisterNewSlashCommand`, and
+   `GetMinimapShape` (defined by the Minimap module in square mode; minimap-button libraries read it).
 2. **No Ace3 / no embedded third-party addons.** Kept libraries: `LibStub`, `CallbackHandler-1.0`, `LibSharedMedia-3.0` (12000005, interop), `LibEditMode` (current, our own movable frames). Everything else is replaced by our small core or by Blizzard APIs (`C_EncodingUtil`, `MenuUtil`, `C_Timer`, `hooksecurefunc`, `Settings`).
-3. **Blizzard owns layout, we own looks.** Blizzard frames are positioned/sized by **Edit Mode**. Phoenix modules *skin* and *augment* Blizzard frames (textures, fonts, colours, extra text). We do not move or replace protected frames. Our *own* frames (data texts, M+ timer, spell history …) are registered with Edit Mode via LibEditMode.
-4. **Display-only combat UI.** Under Midnight secret values we never do maths/comparisons on combat data. We feed secrets straight into widgets (`StatusBar:SetValue`, `SetTimerDuration`, `Cooldown:SetCooldownFromDurationObject`, colour curves, `SetAlphaFromBoolean`, `AbbreviateNumbers`, `C_StringUtil`).
-5. **Declarative options.** Each module declares an options schema once. The same schema drives the standalone config window, the search index, profile import/export and the defaults table. There is no hand-built options page per module.
+3. **Blizzard owns layout, we own looks.** Blizzard frames are positioned/sized by **Edit Mode**. Phoenix modules *skin* and *augment* Blizzard frames (textures, fonts, colours, extra text). We do not move or replace protected frames. Our *own* frames (data bar, spell history) are registered with Edit Mode via LibEditMode.
+4. **Display-only combat UI.** Under Midnight secret values we never do maths/comparisons on combat data. We hand possible secrets straight to display sinks (`FontString:SetFormattedText`, `Texture:SetTexture`, `UnitHealthPercent` with `CurveConstants.ScaleTo100`) and never test them.
+5. **Declarative options.** Each module declares an options schema once (`Options.lua`). The same schema drives its config page and the search index. Defaults live on the module.
 6. **One theme.** Every pixel goes through `ns.Theme` tokens and `ns.Skin` primitives. No module hard-codes a colour, font path or border.
 7. **One SavedVariables owner (`ns.DB`)** with profiles, a schema version, and ordered migrations, including a one-shot import of the legacy `Phoenix_UIDB`.
 
@@ -20,7 +21,6 @@ This is the contract every phase-2 change is measured against. If code and this 
 
 ## 2. Folder layout
 
-As built in phase 2 (see §14 for where this differs from the original plan):
 
 ```
 Phoenix_UI/
@@ -35,8 +35,8 @@ Phoenix_UI/
 │  ├─ Namespace.lua     -- ns tables, version, constants, ns:Print / ns:Debug, SafeCall
 │  ├─ Util.lua          -- pure helpers (tables, strings, colour maths on *non-secret* data)
 │  ├─ Events.lua        -- ns.Events: game-event dispatcher + internal message bus (combat-log guard)
-│  ├─ Secret.lua        -- ns.Secret: issecretvalue/canaccessvalue wrappers, restriction state
-│  ├─ Combat.lua        -- ns.Combat: lockdown queue (run-after-combat), CVar option accessors
+│  ├─ Secret.lua        -- ns.Secret.IsSecret: the one secret-value gate
+│  ├─ Combat.lua        -- ns.Combat: lockdown queue (run after combat), CVar option accessors
 │  ├─ Media.lua         -- fonts/bar/surface texture registry (+ LSM registration)
 │  ├─ IconData.lua      -- GENERATED icon manifest (names → atlas cell, tier geometry)
 │  ├─ Icons.lua         -- ns.Icons: named icons, tint/states, tier pick by physical px, markup, brand art
@@ -67,31 +67,32 @@ Phoenix_UI/
 
 File and include names are **case-exact** (the audit found 52 Windows-only includes).
 
-### 2.1 Module set (target)
+### 2.1 Modules
 
-| Module (key) | Replaces legacy | Notes |
+| Module (key) | Replaces legacy | What it does |
 |---|---|---|
-| `Skins` | Skins/*, Init Skin/Color | Lazy per Blizzard addon, mixin/parentKey targeting |
-| `ActionBars` | ActionBars | Cosmetic: button skin, hotkey/macro text, range/usable tint, mouseover fade (secure state drivers) |
-| `UnitFrames` | UnitFrames | Player/Target/Focus/Boss/Arena skins, class colours, portraits, text via `UnitFrameUtil` |
-| `GroupFrames` | RaidFrames, part of buffoverlay | CompactUnitFrame skin: textures, fonts, role/dispel colours |
-| `CastBars` | CastBars | Skin `CastingBarMixin`; timer text from `UnitCastingDuration`; latency (player) |
-| `Auras` | Buffs, buffoverlay | Skin BuffFrame/DebuffFrame; optional `CustomAuraContainer` displays |
-| `NamePlates` | NamePlates | Cosmetics only (texture, font, health %, cast bar skin) |
-| `Tooltip` | Tooltip, idTip | `TooltipDataProcessor` post-calls; IDs; item level; secret-safe unit lines |
-| `Chat` | Chat | URL links + copy popup, copy-chat window — secret-aware (history and emoji dropped) |
-| `Minimap` | Maps | Square shape, zone text, coords (size and clock: Edit Mode / data bar) |
-| `DataTexts` | General/_Stats, MoveAny fps | FPS/latency/speed/durability/gold/etc, Edit Mode movable |
-| `ItemLevel` | General/_Itemlevel, _BagIlvl, Tooltip ilvl | Character/inspect/bags/bank |
-| `Automation` | General automation, Misc bits | Repair, sell junk, decline duels, release, accept res, invites, cinematics, stack-buy |
-| `AFK` | General/_AfkCam | |
-| `MythicPlus` | Mythic+ | Auto-insert keystone, new-key report (timer/objectives: Blizzard's own tracker) |
-| `PvP` | Misc PvP | Safe queue, tab-target binder (out of combat), /gg surrender (dampening removed) |
-| `CooldownText` | CooldownTracker CooldownText | Styles Blizzard countdown numbers on Cooldown frames |
-| `SpellHistory` | CooldownTracker SpellTracker | Player-only recent casts strip (secrecy-checked) |
-| `CombatText` | MSBT | Configures/themes Blizzard floating combat text v2 |
-| `DamageMeter` | Detail-Skin | Skin for `Blizzard_DamageMeter` |
-| `Quality` | Talkhead, Errors, misc hides | Talking head, error filter, small hides |
+| `General` | Init theme/fonts | Theme preset and accent, fonts, bar texture, reduce motion (locked on) |
+| `Skins` | Skins/* | Game menu, popups and ready check, applied lazily |
+| `ActionBars` | ActionBars | Square button art, hotkey/macro text, out-of-range tint |
+| `UnitFrames` | UnitFrames | Bar texture, class and power colors, fonts on player/target/focus/pet |
+| `GroupFrames` | RaidFrames | Texture and fonts on party/raid `CompactUnitFrame`s |
+| `CastBars` | CastBars | Restyle player/target/focus bars; player-only icon, timer and latency zone |
+| `Auras` | Buffs | Cropped icons and themed timers on BuffFrame/DebuffFrame |
+| `NamePlates` | NamePlates | Bar texture and secret-safe health percent |
+| `Tooltip` | Tooltip, idTip | Skin, cursor anchor, class/quality borders, target/role/ID lines |
+| `Chat` | Chat | Clickable URLs with a copy popup, copy-chat window |
+| `Minimap` | Maps | Square mask, zone text, coordinates |
+| `DataTexts` | General/_Stats | Edit Mode movable bar: FPS, latency, speed, durability, gold, clock |
+| `ItemLevel` | _Itemlevel, _BagIlvl | Item level on the character sheet and bags |
+| `Automation` | General automation | Repair, sell junk, invites, duels, resurrections, BG release, DELETE fill, cinematics |
+| `AFK` | _AfkCam | AFK screen |
+| `MythicPlus` | Mythic+ | Auto-insert keystone, new-key report |
+| `PvP` | Misc PvP | Safe queue, TAB targets players, `/gg` |
+| `CooldownText` | CooldownTracker CooldownText | Phoenix font and color on Blizzard countdown numbers |
+| `SpellHistory` | CooldownTracker SpellTracker | Player-only recent casts strip |
+| `CombatText` | MSBT | Blizzard floating combat text settings in one page |
+| `DamageMeter` | Detail-Skin | Skin for `Blizzard_DamageMeter`, optional one-click Details! style |
+| `Quality` | Talkhead, Errors | Talking head, error filter, achievement screenshots, Cooldown Manager toggle |
 
 ---
 
@@ -104,25 +105,26 @@ ns.name, ns.version = ADDON, C_AddOns.GetAddOnMetadata(ADDON, "Version")
 ns.L = ns.L or {}          -- filled by Locales
 ```
 
-`ns.Events` (Core/Events.lua) owns **one** hidden frame for game events and a callback registry for internal messages:
+`ns.Events` (Core/Events.lua) owns one hidden frame for game events, one frame per owner and unit pair for unit events, and a registry for internal messages:
 
 ```lua
 ns.Events:On("PLAYER_ENTERING_WORLD", owner, handler)       -- game event, handler(owner, event, ...)
 ns.Events:OnUnit("UNIT_HEALTH", owner, handler, "player")   -- RegisterUnitEvent under the hood
 ns.Events:Off("PLAYER_ENTERING_WORLD", owner)
 ns.Events:OffAll(owner)                                     -- used by Module:Disable()
-ns.Events:Fire("PUI_PROFILE_CHANGED", profileKey)           -- internal message (prefix PUI_)
+ns.Events:Fire("PUI_PROFILE_CHANGED", profileKey)           -- internal message (PUI_ prefix)
 ns.Events:Listen("PUI_PROFILE_CHANGED", owner, handler)
 ```
 
 Rules:
-* Registering an event no handler needs is a bug; the frame unregisters an event when its last listener leaves.
-* `COMBAT_LOG_EVENT` / `COMBAT_LOG_EVENT_UNFILTERED` are rejected by `ns.Events:On` with an error in debug builds (forbidden in 12.x).
-* Handlers run through `xpcall` with `ns.Errors` reporting (module name + stack) so one broken module never stops dispatch. In debug mode errors re-raise.
-* Internal messages used across modules: `PUI_PROFILE_CHANGED`, `PUI_SETTING_CHANGED(moduleKey, path, value)`, `PUI_THEME_CHANGED`, `PUI_MODULE_STATE(moduleKey, enabled)`, `PUI_COMBAT_END`, `PUI_RESTRICTION_CHANGED(state)`.
+* The frame unregisters an event when its last handler leaves.
+* `COMBAT_LOG_EVENT*` registrations raise an error (forbidden in 12.x).
+* Handlers run through `ns.SafeCall` (`xpcall` with `geterrorhandler()`, so BugSack and BugGrabber see them). One broken handler never stops dispatch.
+* Owners added while their event is being dispatched take effect after that dispatch.
+* Internal messages: `PUI_PROFILE_CHANGED(name)`, `PUI_SETTING_CHANGED(moduleKey, path, value)`, `PUI_THEME_CHANGED`, `PUI_MODULE_STATE(moduleKey, state)`, `PUI_COMBAT_END`.
 
-`ns.Secret` wraps `issecretvalue`, `canaccessvalue`, `issecrettable`, `C_Secrets.*` predicates and `C_RestrictedActions.GetAddOnRestrictionState`, listening to `ADDON_RESTRICTION_STATE_CHANGED`.
-`ns.Combat` provides `ns.Combat:Run(key, fn)` (runs now if out of combat, else once at `PLAYER_REGEN_ENABLED`, de-duplicated by key) and `ns.Combat:Guard()` (returns false + queues when locked down).
+`ns.Secret.IsSecret` is `issecretvalue`; every secret check goes through it.
+`ns.Combat:Run(key, fn, ...)` runs now if out of combat, else once at `PLAYER_REGEN_ENABLED`, de-duplicated by key. `ns.Combat.CVarAccessors` builds get/set pairs for CVar options whose writes wait for combat to end.
 
 ---
 
@@ -162,7 +164,7 @@ function M:OnProfileChanged() end  -- default = Disable/Enable or Refresh
 ### 5.1 TOC
 ```
 ## SavedVariables: PhoenixUIDB, Phoenix_UIDB
-## SavedVariablesPerCharacter: PhoenixUICharDB, Phoenix_UIPerCharDB
+## SavedVariablesPerCharacter: Phoenix_UIPerCharDB
 ```
 `Phoenix_UIDB` / `Phoenix_UIPerCharDB` are the **legacy** tables, listed only so they can be read once and then set to `nil` (dropping them from disk). After a grace release they are removed from the TOC.
 
@@ -173,22 +175,21 @@ PhoenixUIDB = {
   global   = { modules = { <key> = {…} }, ui = { windowPos, lastPage, … } },
   profiles = { ["Default"] = { modules = { <key> = { enabled = true, … } }, theme = {…} } },
   profileKeys = { ["Name - Realm"] = "Default" },
-  specProfiles = { ["Name - Realm"] = { [specID] = "Healer" } },   -- optional auto-switch
+  specProfiles = { ["Name - Realm"] = { enabled = true, [specIndex] = "Healer" } },
 }
-PhoenixUICharDB = { schema = 1, char = { … } }
 ```
 * **Defaults are not stored.** `ns.DB` applies the module `defaults` via metatables. Only diffs are written, which keeps SavedVariables small and makes default changes ship to users.
 * **Never store secret values** (they are saved as `nil`). `ns.DB:Set` asserts `not issecretvalue(v)`.
-* Profile ops: `New`, `Copy`, `Rename`, `Delete`, `Reset`, `SetActive`, per-spec auto switch (on `ACTIVE_PLAYER_SPECIALIZATION_CHANGED`, out of combat).
+* Profile ops: `NewProfile` (optionally copying), `RenameProfile`, `DeleteProfile`, `ResetProfile`, `SetProfile`, and a per-specialization auto switch.
 
 ### 5.3 Import/export
-`ns.Profiles:Export(profileName, {modules = …})` → `"!PUI1!" .. EncodeBase64(CompressString(SerializeCBOR(payload)))`, all through `C_EncodingUtil`.
-The payload includes `{schema, addonVersion, profile}`. Import validates the prefix and schema, runs migrations on the payload, then previews the diff in the config window before applying. There is no comms-based sharing (comms are blocked during lockdown).
+`ns.Profiles:Export()` → `"!PUI1!" .. EncodeBase64(CompressString(SerializeCBOR(payload)))`, all through `C_EncodingUtil`.
+The payload is `{ v, schema, addon, name, profile }`. Import checks the prefix and schema, lists the modules it contains, keeps only known modules, and saves under a free name (`Name (2)` when taken). There is no comms-based sharing (comms are blocked during lockdown).
 
 ### 5.4 Migrations
-`Core/Migrations.lua` holds an ordered list `{ version = n, run = function(db) … end }`. On `ADDON_LOADED` the core runs every migration with `version > db.schema` inside `xpcall`. Before the first migration it takes a backup in `PhoenixUIDB.backup` (one slot only, removed after 2 successful logins).
+`Core/Migrations.lua` holds an ordered list `{ version = n, run = function(db) … end }`. On `ADDON_LOADED` the core runs every migration with `version > db.schema` inside `xpcall`.
 
-**Legacy importer (migration 1):** if `Phoenix_UIDB` exists, map the known keys (see the table below), copy the profile names, then `Phoenix_UIDB = nil`. Unknown keys are dropped and listed once in chat as "not migrated".
+**Legacy importer (migration 1):** if `Phoenix_UIDB` exists, map the known keys (see the table below), copy the profile names, then `Phoenix_UIDB = nil`. Unknown keys are dropped; chat reports how many settings were imported.
 
 | Legacy (Phoenix_UIDB.profiles[*]) | New |
 |---|---|
@@ -202,8 +203,6 @@ The payload includes `{schema, addonVersion, profile}`. Import validates the pre
 | `mythicplus.*` (timer/objectives) | `modules.MythicPlus.*` |
 | MSBT / CooldownTracker PartyCD / MoveAny / PGF / BuffOverlay blobs | **not migrated** (features removed) |
 
-The exact key list is built in phase 2 from `Core/Init.lua` defaults (lines ~59–1100).
-
 ---
 
 ## 6. Localization
@@ -211,7 +210,7 @@ The exact key list is built in phase 2 from `Core/Init.lua` defaults (lines ~59�
 * `Locales/enUS.lua` defines the base table: `ns.L = setmetatable({ KEY = "English text", … }, { __index = function(t, k) return k end })`.
 * Other locale files return early unless `GetLocale()` matches, and only override keys.
 * Code uses **keys**, never inline English: `L.TOOLTIP_SHOW_IDS`. Option schema `label`/`desc` fields are locale keys.
-* Fonts must support the client locale. `ns.Media:Font(role)` falls back to Blizzard `STANDARD_TEXT_FONT` / `UNIT_NAME_FONT` on koKR/zhCN/zhTW (the bundled Latin fonts lack CJK glyphs) . Roboto and Inter cover Cyrillic (ruRU); Cinzel is only used for the Latin "PHOENIX" wordmark.
+* Fonts must support the client locale. `ns.Theme:Font(role)` falls back to Blizzard `STANDARD_TEXT_FONT` / `UNIT_NAME_FONT` on koKR/zhCN/zhTW (the bundled Latin fonts lack CJK glyphs). Roboto and Inter cover Cyrillic (ruRU); Cinzel is only used for the Latin "PHOENIX" wordmark.
 
 ---
 
@@ -222,7 +221,6 @@ The exact key list is built in phase 2 from `Core/Init.lua` defaults (lines ~59�
 ```lua
 ns.Theme:Color("bg.base")        -- returns r,g,b,a
 ns.Theme:Font("body")            -- returns path, size, flags (locale-aware)
-ns.Theme:Space(3)                -- 12 (4-px grid)
 ns.Skin:Panel(frame, "raised")   -- background + 1px border + optional accent edge
 ns.Skin:Button(btn, "primary")
 ns.Skin:StatusBar(bar, "health") -- texture + background + border; never reads values
@@ -231,7 +229,7 @@ ns.Skin:Text(fs, "label")        -- font + colour + shadow
 ns.Skin:Restore(frame)           -- undo (module disable)
 ```
 
-Presets: **Phoenix Ember** (default), **Obsidian** (neutral), **Class** (accent = class colour via `C_ClassColor.GetClassColor`), **Blizzard** (minimal: fonts only), **Custom** (user accent + base). Changing a preset fires `PUI_THEME_CHANGED`, and every skinned object re-applies from tokens (registry of weak-keyed skinned objects).
+Presets change the accent family over one shared dark surface palette: **Phoenix Ember** (default), **Frost**, **Fel**, **Arcane**, **Class** (`C_ClassColor.GetClassColor`) and **Custom** (`theme.custom = { r, g, b }`). Changing a preset fires `PUI_THEME_CHANGED`, and every skinned object re-applies from tokens (registry of weak-keyed skinned objects).
 
 ---
 
@@ -247,43 +245,26 @@ Presets: **Phoenix Ember** (default), **Obsidian** (neutral), **Class** (accent 
 
 ## 9. Standalone config window
 
-A movable, resizable (`SetResizeBounds`) window (default 980×640, saved position/scale), built lazily on first open and closable with Esc (`tinsert(UISpecialFrames, …)` using a uniquely named frame).
+Movable and resizable (860×540 to 1600×1100, default 1000×660). Built on first open, closes with Esc
+(`UISpecialFrames`, frame `PhoenixUI_Config`), position and size saved in `global.ui` (`/pui reset` clears them).
+Header 56, sidebar 216, footer 28. See `docs/screenshots` for the rendered layout.
 
-```
-┌───────────────────────────────────────────────────────────────────────────┐
-│ ◆ PHOENIX UI   v2.0.0                    [ 🔍 Search settings…   ]  ⟳  ✕ │  header 48px
-├──────────────┬────────────────────────────────────────────────────────────┤
-│ ● Home       │  Tooltip                                   [■■ Enabled ]   │  page header
-│ INTERFACE    │  Rich unit and item tooltips.                              │
-│   Action Bars│  ┌ Anchor ───────────────────────────────────────────────┐ │
-│   Unit Frames│  │ Position   [ Cursor        ▾ ]                         │ │
-│   Group      │  │ Offset X   ───────●────── 12                           │ │
-│   Cast Bars  │  └────────────────────────────────────────────────────────┘ │
-│   Tooltip  ◀ │  ┌ Content ──────────────────────────────────────────────┐ │
-│   …          │  │ [✓] Show spell / item IDs   [✓] Item level           │ │
-│ COMBAT       │  └────────────────────────────────────────────────────────┘ │
-│ SOCIAL       │                                                            │
-│ UTILITY      │                                          live preview ▸    │
-│ ───────────  │                                                            │
-│ Profiles     │                                                            │
-│ About        │                                                            │
-└──────────────┴────────────────────────────────────────────────────────────┘
-```
-
-* **Sidebar navigation:** groups Interface / Combat / Social / Utility / System, module rows with icon, an enabled dot, an error dot, and a reload badge. Collapsible groups. Keyboard ↑/↓ navigation.
-* **Search:** an index built from every schema entry (`label`, `desc`, `keywords`, module name), localized. Results list `Module › Section › Setting`; Enter jumps to the setting and the setting pulses with the accent highlight.
-* **Live preview:** every control writes through `ns.DB:Set(module, path, value)`, which fires `PUI_SETTING_CHANGED`, then `module:OnSettingChanged()`, so the real UI updates instantly. Pages can declare a `preview` (for example "show test cast bar" or "show tooltip sample") that drives demo frames, using Blizzard Edit Mode preview APIs where they exist (12.1.5 `SetEditModePreviewEnabled` on custom aura containers).
-* **Profile page:** active profile, new/copy/rename/delete/reset, per-spec mapping, an **Export** box (select-all string) and an **Import** box (paste → diff preview → apply).
-* **Per-module toggles:** in the page header and on the Home grid (cards with toggle + short description).
-* **Schema → widgets:** `toggle`, `range`, `select`, `color`, `font`, `texture`, `input`, `header`, `description`, `button`, `group`, `list`. The schema supports `disabled = fn`, `hidden = fn`, `requiresReload`, and `combatSafe = false`.
-
----
+* **Sidebar:** Home, then modules grouped System / Interface / Combat / Social / Utility, then Profiles and About.
+  Rows show the module icon and state (enabled, errored, reload pending).
+* **Search:** indexes every schema entry (`label`, `desc`, `keywords`, module name). Picking a result opens the
+  page, scrolls to the row and flashes it.
+* **Live updates:** controls write through `ns.DB:Set(module, path, value)`, which calls
+  `module:OnSettingChanged()` and fires `PUI_SETTING_CHANGED`.
+* **Schema → widgets** (`UI/Config/Renderer.lua`): `header`, `description`, `toggle`, `range`, `select`, `font`,
+  `texture`, `color`, `input`, `button`, `custom` (`build(row, module)`). Per entry: `key` or `get`/`set`, `desc`,
+  `keywords`, `disabled = fn(m)`, `hidden = fn(m)`, `reload` (Reload badge) and `combat` (applies after combat).
+* **Layout:** page padding 24, card gap 16, card header 40, rows 36 (52 with a description), controls 28 high.
 
 ## 10. Edit Mode support
 
 * Our movable frames register through `ns.EditMode:Register(frame, { name = L.X, default = { point = "CENTER", x = 0, y = 0 }, settings = { … } })`. This wraps **LibEditMode** (`AddFrame`, `AddFrameSettings`, layout callbacks). Positions are stored **per Edit Mode layout** in `global.layouts[layoutName][frameKey]`, so they follow the user's Blizzard layout switches.
 * Blizzard frames: we never call `SetPoint` on frames managed by `EditModeManagerFrame`. Size and position settings for Blizzard systems are left to Edit Mode. Our config page links to it with an "Open Edit Mode" button (`ShowUIPanel(EditModeManagerFrame)` out of combat).
-* `EDIT_MODE_LAYOUTS_UPDATED` and LibEditMode's `layout` callback re-apply our positions.
+* LibEditMode's `layout` callback re-applies our positions when the user switches layouts.
 
 ---
 
@@ -310,7 +291,7 @@ A movable, resizable (`SetResizeBounds`) window (default 980×640, saved positio
 | `state.danger` | `#FF4D5E` | errors, destructive buttons |
 | `state.info` | `#4DA3FF` | info badges |
 
-Combat colours (health, power, reaction, class, dispel types) are **not** re-invented. They come from Blizzard (`C_ClassColor`, `PowerBarColor` (read-only), `DEBUFF_TYPE_*`) through colour curves so they work with secret values.
+Combat colours (class, power, reaction) are not re-invented; they come from Blizzard (`C_ClassColor`, `PowerBarColor`, read only).
 
 ### 11.2 Typography (bundled fonts, curated)
 
@@ -331,56 +312,41 @@ Roles live in `Theme.fontRoles`; users can override the interface font (body/des
 Shipped font set (9 files, all SIL OFL 1.1): Cinzel-Bold, InterBold, Roboto-{Regular,Medium,Bold}, Roboto_Condensed-{Regular,Medium,SemiBold,Bold}. Expressway, PT Sans Narrow, AvantGarde and the other legacy fonts were dropped (licence unclear or unused). koKR/zhCN/zhTW clients fall back to `STANDARD_TEXT_FONT`. All shipped fonts and bars are registered with LSM under `Phoenix *` names.
 
 ### 11.3 Spacing, sizing, borders
-* **4-px grid**: `space(1)=4, (2)=8, (3)=12, (4)=16, (6)=24, (8)=32`. Page padding 24, section padding 16, control row height 28, sidebar width 200, header 48.
-* **Borders:** 1 physical pixel (`PixelUtil.SetSize`/`SetRoundLayoutToNearestPixel`), `border.subtle`. Panels have a 1-px top inner highlight (`#FFFFFF` α 0.04). Active nav row gets a 2-px left accent bar with an `accent.primary→secondary` vertical gradient (`SetGradient`).
-* **Icons:** cropped 8 % with a 1-px black border and an inner 1-px `border.subtle`.
-* **Status bars:** flat texture (`Phoenix Flat`), background `bg.sunken`, 1-px border. The optional "ember" spark uses Blizzard statusbar interpolation (`Enum.StatusBarInterpolation`).
-* No rounded corners baked into code. One 9-slice texture set (`Media/Textures/UI/Panel*`) gives a 2-px soft radius for windows only.
+* **4 px grid** for every offset and size in the config UI (see §9 for the main measurements).
+* **Borders:** 1 physical pixel (`PixelUtil`), `border.subtle` by default. Cards have a faint top sheen. The active
+  nav row gets a 2 px accent bar.
+* **Icons:** game icons are cropped 8 % with a 1 px black border; UI glyphs come from `ns.Icons` (§14).
+* **Status bars:** the bar texture chosen in General (any LSM texture), `bg.sunken` background, 1 px border.
+* No rounded corners.
 
 ### 11.4 Motion
-* Window open: 160 ms alpha 0→1 + 8-px upward slide (`AnimationGroup`, `Smooth` easing). Close: 120 ms fade.
-* Page switch: 120 ms cross-fade. Toggle knob: 100 ms translate. Hover: 80 ms colour lerp (driven by a single shared OnUpdate during transitions only).
-* Search-hit pulse: accent glow, 2 × 300 ms.
-* Setting `ui.reduceMotion` disables everything above. Animations never run in combat on in-world frames.
+* `ns.Anim` tweens on one shared OnUpdate that only runs while a tween is active.
+* Page switch and popups: 100–140 ms fade in. Toggle knob: 100 ms. Scroll: 120 ms. Search hit: 900 ms row flash.
+* Reduce motion (General) skips every tween. Nothing animates on in-world frames.
 
 ---
 
 ## 12. Cross-cutting rules (summary; details in `.cursor/rules`)
 
 * **Taint:** never assign to Blizzard globals or fields on Blizzard tables/frames, never replace Blizzard functions, only `hooksecurefunc`/`HookScript`. Protected operations go through `ns.Combat`.
-* **Secrets:** treat combat-related API returns as possibly secret. Use the display sinks. Gate any logic on `ns.Secret` predicates.
-* **Performance:** event-driven. OnUpdate is allowed only while something is animating or visible and time-dependent. No `collectgarbage`. Throttle with `C_Timer.NewTimer` de-bounce. Create frames lazily, and pool them (`CreateFramePool`/`CreateObjectPool`).
+* **Secrets:** treat combat-related API returns as possibly secret. Use the display sinks. Test with `ns.Secret.IsSecret` before any comparison.
+* **Performance:** event-driven. OnUpdate only while something is animating or visible and time-dependent, and throttled (the cast timer runs at 20 Hz). No allocation or `SetFont` in per-event paths such as `UNIT_HEALTH`; style once, then update values. No `collectgarbage`. Create frames lazily.
 * **Lint:** `luacheck .` must be clean with the generated 12.1.5 std (`.luacheckrc`).
 
 ---
 
-## 13. Phased build order
-
-| Phase | Scope | Exit criteria |
-|---|---|---|
-| **2.0 Clean slate** | Move legacy code out (delete on `rework`; history keeps it), new TOC `120105`, Libs (LibStub, CBH, LSM 12000005, LibEditMode current), `.luacheckrc`, `.pkgmeta` | Addon loads with zero Lua errors and zero globals (verified by luacheck + `/dump` checks) |
-| **2.1 Core** | Namespace, Events, Secret, Combat, DB+profiles, Migrations (+legacy importer skeleton), Modules, Media, Theme, Skin, Settings landing, slash, compartment, Locales enUS | Module toggle round-trip works; profile switch works; `/pui` opens a stub |
-| **2.2 Config UI** | Widgets, window, sidebar, search, schema renderer, profiles page (export/import), About/credits | Every widget type is themed; search finds every setting; import/export round-trips |
-| **2.3 Low-risk modules** | Quality, Automation, AFK, ItemLevel, Tooltip, Minimap, DataTexts, Chat | Each passes the test checklist (§AGENTS) incl. forced secret CVars |
-| **2.4 Combat UI** | Skins core + ActionBars, UnitFrames, CastBars, GroupFrames, Auras, NamePlates, CooldownText | No taint ("/console taintLog 2" clean through a dungeon + BG), no secret errors |
-| **2.5 Content** | MythicPlus, PvP, SpellHistory, CombatText, DamageMeter skin, remaining Blizzard window skins | M+ run with `secretChallengeModeRestrictionsForced=1` is clean |
-| **2.6 Migration & polish** | Full legacy key map, locale stubs, reduce-motion, accessibility (font scale), performance pass, packaging | Clean install and legacy-upgrade both verified; tagged 2.0.0 |
-
----
-
-## 14. Phase 2 implementation notes (deviations from the plan above)
+## 13. Scope notes
 
 * **No `Core/Settings.lua`.** Boot and slash live in `Core/Init.lua` (loaded last from the TOC so every module is registered); the Blizzard landing page and compartment entry live with the rest of the config UI in `UI/Config/Blizzard.lua`.
 * **No per-module XML.** `Modules/Modules.xml` lists `<Module>.lua` + `Options.lua` for every module; one place to read the load order.
 * **No empty locale stubs.** Only `enUS.lua` ships; `ns.RegisterLocale` accepts other locales when translations exist. `tools/check_locales.py` keeps enUS complete and free of unused keys.
-* **Theme presets:** Phoenix Ember (default), Frost, Fel, Arcane, Class and Custom accents over one shared dark surface palette. "Obsidian"/"Blizzard" presets were not built.
 * **Positions:** Phoenix never moves Blizzard frames. Only Phoenix-owned frames (data bar, spell history) register with LibEditMode; their positions are stored per Edit Mode layout.
 * **Removed with no replacement in Phoenix:** chat history/emoji, arena dampening display, minimap size slider, M+ timer/objectives (Blizzard's tracker covers it), mouseover bar fading. Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
 * **Details!:** optional, never a dependency. The Damage Meter page offers a one-click "Style Details!" button that calls Details' public instance API inside `pcall`; it is never applied automatically because it rewrites Details' own saved settings.
-* **Icons (§15):** one Phosphor duotone set via `ns.Icons`; brand art via `ns.Icons:Brand`.
+* **Icons (§14):** one Phosphor duotone set via `ns.Icons`; brand art via `ns.Icons:Brand`.
 * **Checks:** `luacheck .` (generated 12.1.5 std), `tools/check_api.py` (methods/events/CVars/templates/atlases vs. the 12.1.5 reference, forbidden patterns, TOC/XML completeness and case), `tools/check_locales.py`, and `tools/smoke/harness.lua` (offline load + boot + every settings page). All run in `.github/workflows/luacheck.yml`.
 
-## 15. Icon system
+## 14. Icon system
 
 * **Source:** [Phosphor Icons](https://phosphoricons.com) 2.1.1, duotone weight only (MIT, `Media/Icons/LICENSE`). The SVGs
   live in `tools/media/phosphor/`; `tools/media/icon_map.py` maps Phoenix names (`home`, `cat-combat`, `delete`, `fps` …)

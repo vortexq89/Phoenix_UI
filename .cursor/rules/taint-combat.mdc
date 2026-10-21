@@ -16,7 +16,7 @@ Taint = our (insecure) code touching data Blizzard secure code reads. In 12.x ta
 - Iterate all frames (`EnumerateFrames`), touch forbidden frames, or call `UpdateAddOnMemoryUsage`/`collectgarbage` at runtime.
 
 **Always**
-- Check `InCombatLockdown()` (or `ns.Combat:Guard()`) before protected work; queue with `ns.Combat:Run(key, fn)`, which re-runs at `PLAYER_REGEN_ENABLED`.
+- Check `InCombatLockdown()` before protected work; queue with `ns.Combat:Run(key, fn)`, which re-runs at `PLAYER_REGEN_ENABLED`.
 - Create secure stuff (state drivers, secure headers, click-casting attributes) only out of combat, and only on our own frames.
 - Prefer Blizzard extension points: `TooltipDataProcessor.AddTooltipPostCall`, `Menu.ModifyMenu`, `EventRegistry:RegisterCallback`, `EventUtil.ContinueOnAddOnLoaded`, mixin hooks (`hooksecurefunc(CastingBarMixin, "OnLoad", …)` only for future instances; plus a pass over existing instances).
 - Test with `/console taintLog 2` and read `Logs/taint.log` for `Phoenix_UI` lines.

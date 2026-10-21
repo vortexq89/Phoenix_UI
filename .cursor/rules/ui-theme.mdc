@@ -7,12 +7,12 @@ alwaysApply: false
 
 - All visuals come from `ns.Theme` tokens (ARCHITECTURE §11) through `ns.Skin` primitives: `Panel`, `Button`, `StatusBar`, `Icon`, `Text`, `Border`, `Restore`. **No literal colours, hex codes, font paths, font sizes, backdrop tables or texture paths in modules.** Add a token instead.
 - Fonts by role only: `brand, title, heading, body, desc, number, unit, combat` → `ns.Theme:Font(role)`. It is locale-aware (CJK falls back to `STANDARD_TEXT_FONT`).
-- Spacing from the 4-px scale `ns.Theme:Space(n)`. Borders are 1 physical pixel (`PixelUtil`). Icons are cropped 8 %.
+- Spacing and sizes on the 4 px grid (4, 8, 12, 16 …). Borders are 1 physical pixel (`PixelUtil`). Icons are cropped 8 %.
 - UI glyphs come only from `ns.Icons` (Phosphor duotone, `Media/Icons`). Never ship loose icon textures: add a name to `tools/media/icon_map.py` (append-only), run `python3 tools/media/gen_icons.py`, and reference it by name. Tint with theme tokens, never hard-coded colours.
 - Combat colours (class, power, reaction, dispel) come from Blizzard sources, applied via colour curves when values may be secret.
 - Skins must re-apply on `PUI_THEME_CHANGED` (register the object with `ns.Skin`) and be reversible (`ns.Skin:Restore`).
 - Skin Blizzard windows lazily: `EventUtil.ContinueOnAddOnLoaded("Blizzard_X", fn)`. Target frames by mixin/parentKey (`frame.NineSlice`, `frame.Bg`, `frame.TitleContainer`), never by removed global names such as `*Inset`, `*TextureFrame`, `MainMenuBarArtFrame`.
 - Config window widgets live in `UI/Widgets`. Modules never create option widgets; they declare schema in `Options.lua`.
-- Motion: durations 80–160 ms via AnimationGroups, disabled by `ui.reduceMotion`. No OnUpdate except during an active transition. No animations on in-world frames during combat.
-- Dropdowns/context menus: `MenuUtil` / `DropdownButton` (`WowStyle1DropdownTemplate`). No `UIDropDownMenu`, no `EasyMenu`.
+- Motion: 80–160 ms tweens through `ns.Anim` (one shared OnUpdate that only runs while a tween is active), skipped when reduce motion is on. No animations on in-world frames during combat.
+- Config window dropdowns use `W:Dropdown`. Menus on Blizzard or in-world frames use `MenuUtil`. No `UIDropDownMenu`, no `EasyMenu`.
 - Edit Mode: our movable frames register through `ns.EditMode:Register`. Never move Blizzard Edit Mode systems.

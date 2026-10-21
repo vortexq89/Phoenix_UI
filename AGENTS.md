@@ -33,7 +33,7 @@ Never invent an API. If you can't find it in (1)–(3), it does not exist.
 
 ## 3. Hard rules (each one is a review blocker)
 
-1. **No globals.** Only `PhoenixUIDB`/`PhoenixUICharDB` (+ legacy SVs during migration). Every file starts with `local ADDON, ns = ...`. luacheck W111/W112/W121/W122 = fail.
+1. **No globals.** Only `PhoenixUIDB`, `GetMinimapShape` (square minimap convention) and the legacy SVs during migration. Every file starts with `local ADDON, ns = ...`. luacheck W111/W112/W121/W122 = fail.
 2. **No taint.** Never assign to Blizzard globals or fields of Blizzard frames/tables, never replace Blizzard functions, never `SetScript` on Blizzard frames (use `HookScript`/`hooksecurefunc`). Protected frame changes only out of combat via `ns.Combat:Run`. See `.cursor/rules/taint-combat.mdc`.
 3. **Secret-safe.** Treat health, power (non-player), auras, cooldowns, casts, unit names/GUIDs, threat and chat text as possibly secret. Use the display sinks; gate logic with `ns.Secret`. See `.cursor/rules/midnight-secrets.mdc`.
 4. **Forbidden:** `COMBAT_LOG_EVENT(_UNFILTERED)`, `CombatLogGetCurrentEventInfo`, parsing combat-log chat, addon comms or `SendChatMessage` during lockdown, reading NPC IDs from GUIDs, `collectgarbage`, `EnumerateFrames`, disabling other addons, `loadstring` on user input outside the import path.
