@@ -32,6 +32,29 @@ function W:Input(parent, width, placeholder)
     return e
 end
 
+-- Read-only value with a leading icon; the copy button selects the text for Ctrl+C (links, install id).
+function W:CopyField(parent, value, icon, tipTitle)
+    local holder = CreateFrame("Frame", nil, parent)
+    holder:SetSize(W.CONTROL_WIDTH + 116, 28)
+    holder.icon = W.Icon(holder, icon, 16, "accent.primary")
+    holder.icon:SetPoint("LEFT", 0, 0)
+    local e = W:Input(holder, W.CONTROL_WIDTH + 52)
+    e:SetPoint("LEFT", holder.icon, "RIGHT", 10, 0)
+    holder.edit, holder.value = e, value
+    e:SetValue(value)
+    e:HookScript("OnEditFocusGained", function(self) self:HighlightText() end)
+    e:HookScript("OnTextChanged", function(self, user) if user then self:SetText(holder.value); self:HighlightText() end end)
+    local copy = W:IconButton(holder, "copy", 28, tipTitle or ns.L.CHAT_COPY_URL, ns.L.CHAT_COPY_DESC)
+    copy:SetPoint("LEFT", e, "RIGHT", 6, 0)
+    copy.onClick = function()
+        e:SetFocus()
+        e:HighlightText()
+        ns.Config:SetStatus(ns.L.CHAT_COPY_DESC, "state.info")
+    end
+    function holder:SetValue(v) self.value = v or ""; e:SetValue(self.value) end
+    return holder
+end
+
 -- Multi-line text area (profile export/import) inside a scroll frame.
 function W:TextArea(parent, width, height)
     local holder = CreateFrame("Frame", nil, parent)

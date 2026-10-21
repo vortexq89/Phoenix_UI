@@ -4,6 +4,7 @@
 -- Usage (from the repo root): lua5.1 tools/smoke/harness.lua
 local ROOT = arg and arg[1] or "."
 local errors, NAME = {}, "Phoenix_UI"
+local function errorHandler(e) errors[#errors + 1] = tostring(e) end
 local slashes = {}
 
 ---------------------------------------------------------------- permissive stubs
@@ -11,7 +12,7 @@ local magic
 local function newMagic() return setmetatable({}, getmetatable(magic)) end
 local defaults = {
     GetWidth = 400, GetHeight = 300, GetScale = 1, GetEffectiveScale = 1, GetAlpha = 1, GetFrameLevel = 1,
-    GetLeft = 10, GetRight = 410, GetTop = 310, GetBottom = 10, GetNumPoints = 1,
+    GetLeft = 10, GetRight = 410, GetTop = 310, GetBottom = 10, GetNumPoints = 1, GetCenter = { 210, 160 },
     GetStringWidth = 50, GetStringHeight = 12, GetLineHeight = 12, GetText = "", GetValue = 0, GetNumber = 0,
     IsShown = false, IsVisible = false, IsForbidden = false, IsProtected = false, IsMouseOver = false,
     HasFocus = false, GetChecked = false, IsEnabled = true, GetObjectType = "Frame", GetName = nil,
@@ -81,7 +82,7 @@ end
 
 ---------------------------------------------------------------- environment
 -- Globals that must start out nil (libraries create them; SavedVariables start empty).
-local NIL = { PhoenixUIDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true }
+local NIL = { PhoenixUIDB = true, PhoenixUIBugsDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true, BugGrabber = true }
 local env = setmetatable({}, { __index = function(t, k)
     local v = _G[k]
     if v ~= nil or NIL[k] then return v end
@@ -132,8 +133,14 @@ local api = {
     UnitGUID = function() return "Player-1-0001" end, UnitRace = function() return "Human", "Human" end,
     GetMoney = function() return 12345678 end, GetFramerate = function() return 60 end,
     GetNetStats = function() return 0, 0, 20, 30 end, GetServerTime = function() return os.time() end,
-    date = os.date, time = os.time, debugstack = function() return "" end,
-    geterrorhandler = function() return function(e) errors[#errors + 1] = tostring(e) end end,
+    date = os.date, time = os.time,
+    debugstack = function() return "[Interface/AddOns/Phoenix_UI/Core/Test.lua]:1: in function <x>\n[C]: ?" end,
+    debuglocals = function() return "x = 1" end,
+    GetCallstackHeight = function() return 6 end, GetErrorCallstackHeight = function() return 3 end,
+    -- a real handler chain: Core/Errors.lua must keep calling the one it replaced
+    geterrorhandler = function() return errorHandler end,
+    seterrorhandler = function(fn) errorHandler = fn end,
+    C_InstanceEncounter = { IsEncounterInProgress = function() return false end },
     securecallfunction = function(fn, ...) return fn(...) end,
     CreateColor = function(r, g, b, a)
         return { r = r, g = g, b = b, a = a, GetRGB = function() return r, g, b end,
@@ -301,6 +308,45 @@ end)
 for _, msg in ipairs({ "", "", "profile", "profile Default", "debug", "debug", "general", "nonsense", "reset" }) do
     try("/pui " .. msg, slashes.pui or error, msg)
 end
+-- error catcher: the stored shape must match the uploader contract (docs/BUG_REPORTS.md)
+try("bugs contract", function()
+    local E, db = ns.Errors, env.PhoenixUIBugsDB
+    assert(type(db) == "table" and db.schema == 1, "PhoenixUIBugsDB missing or wrong schema")
+    assert(type(db.installId) == "string" and db.installId:match("^%x+$") and #db.installId == 16, "bad installId")
+    assert(db.session == 1, "session should start at 1, got " .. tostring(db.session))
+    local before = #errors
+    env.geterrorhandler()("Interface/AddOns/Foo/Foo.lua:12: attempt to index a nil value")
+    assert(#errors == before + 1, "the handler must chain to the previous one")
+    errors[#errors] = nil
+    env.geterrorhandler()("Interface/AddOns/Foo/Foo.lua:99: attempt to index a nil value")
+    errors[#errors] = nil
+    local r = db.reports[#db.reports]
+    assert(#db.reports == 1 and r.count == 2, "same error on another line should dedupe to count 2")
+    assert(r.kind == "error" and r.source == "Foo" and r.uploaded == false, "bad kind/source/uploaded")
+    assert(r.id == ("%s-%d-%d"):format(db.installId, db.session, 1), "bad id " .. tostring(r.id))
+    assert(r.hash:match("^%x+$") and #r.hash == 16, "hash must be 16 hex")
+    assert(r.interface and r.build and r.locale and r.addonVersion and r.firstSeen and r.lastSeen, "missing field")
+    assert(r.stack ~= "" and r.locals == "x = 1", "stack/locals not captured")
+    fire("ADDON_ACTION_BLOCKED", "Bar", "CastSpellByName")
+    r = db.reports[#db.reports]
+    assert(r.kind == "taint" and r.source == "Bar", "blocked action not recorded")
+    fire("LUA_WARNING", "Interface/AddOns/Baz/Baz.lua:3: deprecated")
+    assert(db.reports[#db.reports].kind == "warning", "warning not recorded")
+    assert(E.Hash("a.lua:1: x", "") == E.Hash("a.lua:2: x", ""), "hash must ignore line numbers")
+    assert(E.Source("Interface/AddOns/Blizzard_UIPanels/x.lua:1: y") == "Blizzard", "Blizzard source")
+    assert(E.Source("Interface/AddOns/Phoenix_UI/x.lua:1: y") == "Phoenix_UI", "own source")
+    local cap = E.cap
+    E.cap = 5
+    for i = 1, 8 do E:Record("error", "cap test " .. string.rep("z", i)) end
+    assert(#db.reports == 5, "cap not applied: " .. #db.reports)
+    E.cap = cap
+    local bugs = ns.modules.Bugs
+    bugs:OpenViewer()
+    bugs:GetViewer():Select(2)
+    ns.Events:Fire("PUI_BUG", db.reports[1], true)
+    E:Clear("all")
+    assert(#db.reports == 0, "clear all failed")
+end)
 -- a representative set of gameplay events with plausible payloads
 local events = {
     { "PLAYER_REGEN_DISABLED" }, { "PLAYER_REGEN_ENABLED" }, { "MERCHANT_SHOW" }, { "PLAYER_FLAGS_CHANGED", "player" },

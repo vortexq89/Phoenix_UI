@@ -13,25 +13,8 @@ local LINKS = {
     { label = "LINK_GITHUB",     url = "https://github.com/vortexq89/Phoenix_UI",      icon = "github" },
 }
 
--- Read-only URL box with the site's icon; the copy button selects the text for Ctrl+C.
 local function linkBox(row, link)
-    local holder = CreateFrame("Frame", nil, row)
-    holder:SetSize(W.CONTROL_WIDTH + 116, 28)
-    holder.icon = W.Icon(holder, link.icon, 16, "accent.primary")
-    holder.icon:SetPoint("LEFT", 0, 0)
-    local e = W:Input(holder, W.CONTROL_WIDTH + 52)
-    e:SetPoint("LEFT", holder.icon, "RIGHT", 10, 0)
-    e:SetValue(link.url)
-    e:HookScript("OnEditFocusGained", function(self) self:HighlightText() end)
-    e:HookScript("OnTextChanged", function(self, user) if user then self:SetText(link.url); self:HighlightText() end end)
-    local copy = W:IconButton(holder, "copy", 28, L.CHAT_COPY_URL, L.CHAT_COPY_DESC)
-    copy:SetPoint("LEFT", e, "RIGHT", 6, 0)
-    copy.onClick = function()
-        e:SetFocus()
-        e:HighlightText()
-        Config:SetStatus(L.CHAT_COPY_DESC, "state.info")
-    end
-    return holder
+    return W:CopyField(row, link.url, link.icon)
 end
 
 local function hero(row)

@@ -48,17 +48,33 @@ function Config:RegisterBlizzard()
     self.settingsCategory = category
 
     if AddonCompartmentFrame and AddonCompartmentFrame.RegisterAddon then
-        AddonCompartmentFrame:RegisterAddon({
+        -- Our own table: the compartment reads .text each time it builds its menu (SetCompartmentBadge).
+        self.compartment = {
             text = ns.title,
             icon = ns.Icons.EMBLEM_SMALL,
             notCheckable = true,
-            func = function() Config:Toggle() end,
+            func = function(_, input)
+                local bugs = ns:GetModule("Bugs")
+                if input and input.buttonName == "RightButton" and bugs and bugs:IsEnabled() then
+                    bugs:OpenViewer()
+                else
+                    Config:Toggle()
+                end
+            end,
             funcOnEnter = function(button)
                 W.ShowTooltip(button, ns.Icons:Markup("cat-phoenix", 14, "accent.primary") .. " " .. ns.title, L.COMPARTMENT_TIP)
             end,
             funcOnLeave = function() W.HideTooltip() end,
-        })
+        }
+        AddonCompartmentFrame:RegisterAddon(self.compartment)
+        self:SetCompartmentBadge(self.compartmentBadge)
     end
+end
+
+-- Extra text after the title in the compartment menu (the Bugs module's error count); nil clears it.
+function Config:SetCompartmentBadge(text)
+    self.compartmentBadge = text
+    if self.compartment then self.compartment.text = text and (ns.title .. "  " .. text) or ns.title end
 end
 
 function Config:OpenBlizzardSettings()

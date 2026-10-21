@@ -32,7 +32,10 @@ local function slash(msg)
         ns:Print(L.SLASH_DEBUG, ns.debug and L.ENABLED or L.DISABLED)
     else
         for _, m in ipairs(ns.moduleList) do
-            if m.key:lower() == cmd then return ns.Config:Show(m.key) end
+            if m.key:lower() == cmd then
+                if m.OnSlash and m:IsEnabled() then return m:OnSlash(rest:lower()) end
+                return ns.Config:Show(m.key)
+            end
         end
         ns:Print(L.SLASH_HELP)
     end

@@ -2,6 +2,9 @@
     <!-- system -->
     <Script file="General\General.lua"/>
     <Script file="General\Options.lua"/>
+    <Script file="Bugs\Bugs.lua"/>
+    <Script file="Bugs\Viewer.lua"/>
+    <Script file="Bugs\Options.lua"/>
     <!-- interface -->
     <Script file="Skins\Skins.lua"/>
     <Script file="Skins\Options.lua"/>
