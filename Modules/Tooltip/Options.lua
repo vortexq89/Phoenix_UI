@@ -6,6 +6,7 @@ local function noFonts(m) return not m.db.fonts end
 
 ns:RegisterOptions("Tooltip", {
     { type = "preview", kind = "tooltip" },
+    { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "TOOLTIP_STYLE" },
     { type = "toggle", key = "skin", label = "TOOLTIP_SKIN", desc = "TOOLTIP_SKIN_DESC", reload = true },
     Opt.With(Opt.Background("backdrop", nil, "bg.raised"), { disabled = unskinned }),
@@ -21,6 +22,7 @@ ns:RegisterOptions("Tooltip", {
     { type = "toggle", key = "fonts", label = "TOOLTIP_FONTS", desc = "TOOLTIP_FONTS_DESC", reload = true },
     Opt.Text("header", "TOOLTIP_HEADER_FONT", { max = 24, row = { disabled = noFonts } }),
     Opt.Text("body", "TOOLTIP_BODY_FONT", { max = 20, row = { disabled = noFonts } }),
+    { type = "tab", label = "TAB_CONTENT" },
     { type = "header", label = "TOOLTIP_BEHAVIOUR" },
     { type = "select", key = "anchor", label = "TOOLTIP_ANCHOR", desc = "TOOLTIP_ANCHOR_DESC", values = {
         { value = "DEFAULT", label = "TOOLTIP_ANCHOR_DEFAULT" }, { value = "CURSOR", label = "TOOLTIP_ANCHOR_CURSOR" },

@@ -16,15 +16,22 @@ local function buildIndex()
             local mDesc = L[m.desc] or ""
             index[#index + 1] = { module = m, label = mLabel, path = mDesc, haystack = (mLabel .. " " .. mDesc):lower() }
             local section = mLabel
+            local function add(item, where)
+                local label = L[item.label]
+                local hay = table.concat({ label, item.desc and L[item.desc] or "", item.keywords or "", where, mLabel }, " ")
+                index[#index + 1] = {
+                    module = m, item = item, label = label, path = mLabel .. "  ›  " .. where, haystack = hay:lower(),
+                }
+            end
             for _, item in ipairs(ns.options[m.key] or {}) do
-                if item.type == "header" then
+                if item.type == "header" or item.type == "tab" then
                     section = L[item.label]
-                elseif item.label then
-                    local label = L[item.label]
-                    local hay = table.concat({ label, item.desc and L[item.desc] or "", item.keywords or "", section, mLabel }, " ")
-                    index[#index + 1] = {
-                        module = m, item = item, label = label, path = mLabel .. "  ›  " .. section, haystack = hay:lower(),
-                    }
+                elseif item.label and item.type ~= "scope" and item.type ~= "preview" then
+                    add(item, section)
+                    -- sub-options behind a cog are found too; the result flashes their row
+                    for _, sub in ipairs(item.cog or {}) do
+                        if sub.label then add(sub, section .. "  ›  " .. L[item.label]) end
+                    end
                 end
             end
         end

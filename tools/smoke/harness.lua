@@ -480,6 +480,18 @@ try("cogs and tabs", function()
     end
     assert(opened > 10, "expected the style cogs to be reachable, opened " .. opened)
 end)
+-- search reaches cog sub-options and a result focuses the right tab
+try("search", function()
+    ns.Config:Search("outline")
+    local rows = ns.Config.results and ns.Config.results.rows or {}
+    local hit
+    for _, r in ipairs(rows) do if r.entry and r.entry.item and r.entry.item.key == "health.outline" then hit = r.entry end end
+    assert(hit, "the nameplate health text outline (a cog option) is not searchable")
+    local page = ns.Config:Show("NamePlates")
+    page:Focus(hit.item)
+    assert(page.tab == 2, "focusing a Text-tab option did not switch tabs")
+    ns.Config:Search("")
+end)
 -- previews: every kind builds and redraws with its module's settings, and with a unit picked
 try("previews", function()
     local n = 0

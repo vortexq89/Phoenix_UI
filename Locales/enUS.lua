@@ -781,4 +781,9 @@ ns.RegisterLocale("enUS", {
     PREVIEW_THEME_HEADING = "Section heading",
     PREVIEW_THEME_BODY = "Option label in the interface font",
     PREVIEW_THEME_DESC = "Descriptions and hints use the lighter weight.",
+    ---------------------------------------------------------------- tabs
+    TAB_APPEARANCE = "Appearance",
+    TAB_TEXT = "Text",
+    TAB_GAME = "Game settings",
+    TAB_CONTENT = "Content",
 })
