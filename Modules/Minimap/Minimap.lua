@@ -33,9 +33,22 @@ local function setupCoords(self)
     end
 end
 
+-- The zoomed-in indoor/city map (Blizzard_HybridMinimap, load-on-demand) draws through its own circular mask.
+local function squareHybridMinimap()
+    HybridMinimap.CircleMask:SetTexture(Media.textures.WHITE)
+end
+
 function M:OnEnable()
     if self.db.square then
         Minimap:SetMaskTexture(Media.textures.WHITE)
+        -- Community convention read by LibDBIcon and other minimap-button addons to lay buttons out
+        -- along a square edge. The one global Phoenix defines besides its SavedVariables.
+        function GetMinimapShape() return "SQUARE" end
+        if HybridMinimap then
+            squareHybridMinimap()
+        else
+            EventUtil.ContinueOnAddOnLoaded("Blizzard_HybridMinimap", squareHybridMinimap)
+        end
         Skin:HideRegion(MinimapCompassTexture)
         Skin:Register(Minimap, function(frame)
             Skin:Border(frame, "border.black")

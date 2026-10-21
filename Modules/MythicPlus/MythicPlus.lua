@@ -18,7 +18,8 @@ local function findKeystone()
 end
 
 local function insert()
-    if not M.db.autoInsert or C_ChallengeMode.HasSlottedKeystone() then return end
+    -- Never pick up the key while the cursor holds something: PickupContainerItem would swap them.
+    if not M.db.autoInsert or C_ChallengeMode.HasSlottedKeystone() or CursorHasItem() then return end
     local bag, slot = findKeystone()
     if not bag then return end
     C_Container.PickupContainerItem(bag, slot)

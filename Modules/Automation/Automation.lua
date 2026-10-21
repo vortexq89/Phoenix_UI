@@ -12,7 +12,12 @@ local M = ns:NewModule("Automation", {
     },
 })
 
-local function money(copper) return C_CurrencyInfo.GetCoinTextureString(copper) end
+-- GetGuildBankWithdrawMoney returns -1 when the withdrawal limit is unlimited (guild master).
+local function guildCanPay(cost)
+    if not (IsInGuild() and CanGuildBankRepair()) then return false end
+    local limit = GetGuildBankWithdrawMoney()
+    return limit < 0 or limit >= cost
+end
 
 local function onMerchant(self)
     local db = self.db
@@ -23,23 +28,22 @@ local function onMerchant(self)
     if db.repair ~= "off" and CanMerchantRepair() then
         local cost, canRepair = GetRepairAllCost()
         if canRepair and cost > 0 then
-            local guild = db.repair == "guild" and CanGuildBankRepair() and GetGuildBankWithdrawMoney() >= cost
+            local guild = db.repair == "guild" and guildCanPay(cost)
             if guild or GetMoney() >= cost then
                 RepairAllItems(guild)
-                ns:Print(guild and L.AUTO_REPAIRED_GUILD or L.AUTO_REPAIRED, money(cost))
+                ns:Print(guild and L.AUTO_REPAIRED_GUILD or L.AUTO_REPAIRED, C_CurrencyInfo.GetCoinTextureString(cost))
             end
         end
     end
 end
 
--- Only accept from people we know. GUIDs may be secret during restrictions: then we do nothing.
+-- Only accept from people we know. The GUID may be secret while restrictions are active: then do nothing.
 local function isKnown(guid)
-    if not Secret.CanAccess(guid) or not guid then return false end
+    if not guid or Secret.IsSecret(guid) then return false end
     return C_FriendList.IsFriend(guid) or IsGuildMember(guid) or C_BattleNet.GetAccountInfoByGUID(guid) ~= nil
 end
 
 local DELETE_POPUPS = { DELETE_GOOD_ITEM = true, DELETE_GOOD_QUEST_ITEM = true }
-local hooked
 local function onPopup(which)
     if not (M:IsEnabled() and M.db.fillDelete and DELETE_POPUPS[which]) then return end
     local dialog = StaticPopup_FindVisible(which)
@@ -47,10 +51,11 @@ local function onPopup(which)
     if box then box:SetText(DELETE_ITEM_CONFIRM_STRING) end
 end
 
+local hooked
 function M:OnEnable()
     if not hooked then
-        hooksecurefunc("StaticPopup_Show", onPopup)
         hooked = true
+        hooksecurefunc("StaticPopup_Show", onPopup)
     end
     ns.Events:On("MERCHANT_SHOW", self, onMerchant)
     ns.Events:On("DUEL_REQUESTED", self, function()

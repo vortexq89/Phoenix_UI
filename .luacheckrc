@@ -9,9 +9,11 @@ max_line_length = 140
 max_cyclomatic_complexity = 30
 codes = true
 
--- The ONLY globals Phoenix_UI may write (SavedVariables). Everything else lives on the addon namespace.
+-- The ONLY globals Phoenix_UI may write: its SavedVariables, plus GetMinimapShape (the minimap-button
+-- convention, defined only while the square minimap is on). Everything else lives on the addon namespace.
 globals = {
-  "PhoenixUIDB", "PhoenixUICharDB",
+  "GetMinimapShape",
+  "PhoenixUIDB",
   "Phoenix_UIDB", "Phoenix_UIPerCharDB", -- legacy, read once by the migration then set to nil
 }
 

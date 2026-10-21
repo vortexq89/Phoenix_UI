@@ -26,7 +26,6 @@ local function newIcon(i)
     f.fade = f:CreateAnimationGroup()
     local a = f.fade:CreateAnimation("Alpha")
     a:SetFromAlpha(1); a:SetToAlpha(0); a:SetDuration(0.6)
-    f.fade.alpha = a
     f.fade:SetScript("OnFinished", function() f:Hide() end)
     icons[i] = f
     return f
@@ -49,32 +48,40 @@ local function layout()
     for i = db.count + 1, #icons do icons[i]:Hide() end
 end
 
--- Newest cast takes slot 1; older textures shift outward.
-local function push(texture)
+-- history[1] is the newest cast. Textures are kept here rather than read back from the icons: a
+-- texture from a secret spell ID is itself secret, so it may be passed to SetTexture but never tested.
+local history = {}
+
+local function render()
     local db = M.db
-    for i = db.count, 2, -1 do
-        local f, prev = icons[i], icons[i - 1]
+    local now = GetTime()
+    for i = 1, db.count do
+        local f, entry = icons[i], history[i]
         f.fade:Stop()
-        if prev:IsShown() then
-            f.tex:SetTexture(prev.tex:GetTexture())
-            f:SetAlpha(prev:GetAlpha())
-            f.expires = prev.expires
+        if entry and (db.fade <= 0 or now < entry.expires) then
+            f.tex:SetTexture(entry.texture)
+            f:SetAlpha(1)
             f:Show()
         else
             f:Hide()
         end
     end
-    local first = icons[1]
-    first.fade:Stop()
-    first.tex:SetTexture(texture)
-    first:SetAlpha(1)
-    first.expires = GetTime() + db.fade
-    first:Show()
+end
+
+local function push(texture)
+    local db = M.db
+    table.insert(history, 1, { texture = texture, expires = GetTime() + db.fade })
+    for i = #history, db.count + 1, -1 do history[i] = nil end
+    render()
 end
 
 local function onCast(_, _, _, _, spellID)
     if M.db.inCombatOnly and not InCombatLockdown() then return end
-    if not ns.Secret.IsSecret(spellID) and IGNORE[spellID] then return end
+    if ns.Secret.IsSecret(spellID) then
+        push(C_Spell.GetSpellTexture(spellID))
+        return
+    end
+    if IGNORE[spellID] then return end
     local texture = C_Spell.GetSpellTexture(spellID)
     if texture then push(texture) end
 end
@@ -82,11 +89,9 @@ end
 local function tick()
     if M.db.fade <= 0 then return end
     local now = GetTime()
-    for _, f in ipairs(icons) do
-        if f:IsShown() and f.expires and now >= f.expires and not f.fade:IsPlaying() then
-            f.expires = nil
-            f.fade:Play()
-        end
+    for i, entry in ipairs(history) do
+        local f = icons[i]
+        if f and f:IsShown() and now >= entry.expires and not f.fade:IsPlaying() then f.fade:Play() end
     end
 end
 
@@ -111,6 +116,9 @@ function M:OnDisable()
 end
 
 function M:Refresh()
-    if strip then layout() end
+    if not strip then return end
+    layout()
+    for i = #history, self.db.count + 1, -1 do history[i] = nil end
+    render()
 end
 

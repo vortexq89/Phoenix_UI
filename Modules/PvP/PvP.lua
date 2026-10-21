@@ -33,9 +33,13 @@ local function ensureTimer()
     return timer
 end
 
+-- Runs after PVPReadyDialog_Display has laid out the buttons, so the Enter button is re-centred the
+-- same way Blizzard does it for queues that never offer "Leave Queue".
 local function onDisplay(dialog)
     if not (M:IsEnabled() and M.db.safeQueue) then return end
     dialog.leaveButton:Hide()
+    dialog.enterButton:ClearAllPoints()
+    dialog.enterButton:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 25)
     ensureTimer():Show()
 end
 
