@@ -13,7 +13,7 @@ import (
 // Set at build time:  -ldflags "-X main.defaultIngestKey=<PHOENIX_INGEST_KEY> -X main.defaultEndpoint=<url>"
 // A config.json next to the exe (or in the data folder) overrides both.
 var (
-	version          = "1.1.0"
+	version          = "1.2.0"
 	defaultEndpoint  = "https://vq8s.com/phoenix/api/ingest"
 	defaultIngestKey = "" // placeholder: filled at release time, never committed
 )
@@ -25,6 +25,20 @@ type Config struct {
 	WowPaths    []string `json:"wowPaths,omitempty"`    // extra _retail_ (or World of Warcraft) folders to scan
 	ScanSeconds int      `json:"scanSeconds,omitempty"` // how often the background mode looks for changes (default 60)
 	Disabled    bool     `json:"disabled,omitempty"`    // true: never upload (the uploader still runs and logs)
+
+	// Sims (Phoenix UI's Sim page)
+	SimDisabled  bool   `json:"simDisabled,omitempty"`  // true: ignore sim requests
+	SimThreads   int    `json:"simThreads,omitempty"`   // SimC threads (default: all cores but two)
+	SimNotify    *bool  `json:"simNotify,omitempty"`    // false: no "sim finished" window
+	SimcPath     string `json:"simcPath,omitempty"`     // use your own simc.exe instead of the verified download
+	SimcManifest string `json:"simcManifest,omitempty"` // where the pinned SimulationCraft build is read from (https)
+}
+
+func boolDefault(p *bool, def bool) bool {
+	if p == nil {
+		return def
+	}
+	return *p
 }
 
 const configName = "config.json"

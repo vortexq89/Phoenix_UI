@@ -1,4 +1,5 @@
-// Phoenix Uploader: sends the Phoenix UI addon's saved error reports to vq8s.com.
+// Phoenix Uploader: sends the Phoenix UI addon's saved error reports to vq8s.com, and runs the sims the
+// addon's Sim page asks for (SimulationCraft, downloaded on first use only after the player agrees).
 //
 // World of Warcraft addons cannot use the network, so the addon's error catcher writes reports into its
 // SavedVariables (PhoenixUIBugsDB, written when you log out, reload or quit) and this program delivers them.
@@ -45,6 +46,10 @@ func main() {
 		startOn    = flag.Bool("install-startup", false, "start with Windows (current user)")
 		startOff   = flag.Bool("remove-startup", false, "stop starting with Windows")
 		showVer    = flag.Bool("version", false, "print the version")
+		noSim      = flag.Bool("no-sim", false, "ignore sim requests from the addon's Sim page")
+		allowSimc  = flag.Bool("allow-simc-download", false, "agree to download the verified SimulationCraft build without asking")
+		simcPath   = flag.String("simc", "", "use this simc executable instead of the verified download")
+		simcRemove = flag.Bool("remove-simc", false, "delete the downloaded SimulationCraft and forget the download answer")
 		wow        multi
 	)
 	flag.Var(&wow, "wow", "a World of Warcraft or _retail_ folder to scan (repeatable)")
@@ -75,9 +80,24 @@ func main() {
 		log.Printf("cannot start: %v", err)
 		os.Exit(1)
 	}
+	if *simcPath != "" {
+		app.cfg.SimcPath = *simcPath
+	}
+	if !*noSim && !*dry {
+		app.sims = NewSimService(app, *allowSimc)
+	}
+	if *simcRemove {
+		if err := NewSimService(app, false).RemoveSimc(); err != nil {
+			log.Printf("remove SimulationCraft: %v", err)
+			os.Exit(1)
+		}
+		log.Printf("SimulationCraft removed")
+		return
+	}
 	if *once || *dry {
 		s := app.Cycle(true)
 		log.Printf("%s", s)
+		app.RunSimsOnce()
 		switch {
 		case s.Err != nil:
 			os.Exit(1)

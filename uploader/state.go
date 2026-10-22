@@ -18,6 +18,9 @@ type State struct {
 	LastUpload int64                `json:"lastUpload"`
 	LastError  string               `json:"lastError,omitempty"`
 	Startup    bool                 `json:"startupOffered"`
+	Sims       map[string]int64     `json:"sims,omitempty"`        // sim request id -> when it was answered
+	SimAnswer  string               `json:"simcConsent,omitempty"` // "yes" / "no": the SimulationCraft download question
+	SimVersion string               `json:"simcConsentVersion,omitempty"`
 }
 
 // SentEntry is one delivered report: its count when sent, and when we last saw it in a file.
@@ -78,6 +81,36 @@ func (s *State) MarkSkipped(rs []Report) {
 	}
 }
 
+// SimDone reports whether a sim request was already answered.
+func (s *State) SimDone(id string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	_, ok := s.Sims[id]
+	return ok
+}
+
+func (s *State) MarkSimDone(id string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.Sims == nil {
+		s.Sims = map[string]int64{}
+	}
+	s.Sims[id] = time.Now().Unix()
+}
+
+// SimConsent is the player's answer to the download question and the SimulationCraft version it was for.
+func (s *State) SimConsent() (string, string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.SimAnswer, s.SimVersion
+}
+
+func (s *State) SetSimConsent(answer, version string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.SimAnswer, s.SimVersion = answer, version
+}
+
 func (s *State) Save() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -85,6 +118,11 @@ func (s *State) Save() error {
 	for id, e := range s.Sent {
 		if e.Seen < cut {
 			delete(s.Sent, id)
+		}
+	}
+	for id, at := range s.Sims {
+		if at < cut {
+			delete(s.Sims, id)
 		}
 	}
 	b, err := json.MarshalIndent(s, "", " ")

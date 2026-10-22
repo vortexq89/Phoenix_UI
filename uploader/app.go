@@ -27,6 +27,7 @@ type App struct {
 	done      map[string]time.Time // file -> mtime whose reports are all delivered
 	holdUntil time.Time            // server asked us to wait (429 / 5xx / offline)
 	status    string
+	sims      *SimService // nil with --no-sim / --dry-run
 }
 
 // Summary of one cycle.
@@ -229,19 +230,52 @@ func (a *App) Loop(stop <-chan struct{}, kick <-chan struct{}) {
 	}
 	t := time.NewTicker(time.Duration(a.cfg.ScanSeconds) * time.Second)
 	defer t.Stop()
+	// Sim requests are a time stamp check every few seconds, so a /reload is answered quickly.
+	simTick := time.NewTicker(simScanEvery)
+	defer simTick.Stop()
+	if a.sims != nil {
+		go a.sims.Worker(stop)
+	}
 	a.report(a.Cycle(true))
+	a.scanSims(true)
 	for {
 		select {
 		case <-stop:
+			a.sims.Cancel()
 			a.log.Printf("stopped")
 			return
 		case <-kick:
 			a.holdUntil = time.Time{}
 			a.report(a.Cycle(true))
+			a.scanSims(true)
 		case <-t.C:
 			a.report(a.Cycle(false))
+		case <-simTick.C:
+			a.scanSims(false)
 		}
 	}
+}
+
+const simScanEvery = 5 * time.Second
+
+func (a *App) scanSims(force bool) {
+	if a.sims != nil {
+		a.sims.Enqueue(a.sims.Scan(a.folders(false), force))
+	}
+}
+
+// RunSimsOnce answers every open sim request now (--once); returns how many ran.
+func (a *App) RunSimsOnce() int {
+	if a.sims == nil {
+		return 0
+	}
+	n := 0
+	for _, q := range a.sims.Scan(a.folders(false), true) {
+		res := a.sims.Run(q)
+		a.log.Printf("sim %s: %s %s", q.ID, res.State, res.Error)
+		n++
+	}
+	return n
 }
 
 func (a *App) report(s Summary) {
