@@ -73,7 +73,7 @@ the step number.
 ## 3. Every module page
 
 For **each** module in the sidebar (General, Action Bars, Unit Frames, Group Frames, Name Plates, Cast Bars, Auras,
-Cooldown Text, Combat Text, Damage Meter, Tooltip, Chat, Minimap, Data Texts, Item Level, Spell History, Mythic+,
+Auras & Cooldowns, Cooldown Text, Combat Text, Damage Meter, Tooltip, Chat, Minimap, Data Texts, Item Level, Spell History, Mythic+,
 PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 
 - [ ] **3.1 Preview.** The live preview at the top of the page reacts at once to every option you change.
@@ -94,6 +94,34 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Expect:** every font/texture setting of every module listed on one page; changing one here changes it on the
   module page too (the → arrow jumps there). **Apply to all** sets every row at once; **Use theme** returns them to
   Default. Sounds: each **Play** button plays the alert or the 5→1 countdown.
+- [ ] **3.5c Auras & Cooldowns (Combat group).** First turn on Blizzard's Cooldown Manager (Options → Gameplay →
+  Advanced Options → Cooldown Manager) and press **Open** on the **Choose spells** row (Behaviour tab) to pick a few spells.
+  **Expect:** the Essential, Utility, Buffs and Bars viewers show square, cropped icons with a border and Phoenix
+  timer/stack fonts; **Square icons** off gives Blizzard's round icons back; the Bars viewer uses your bar texture
+  and colour. Timers and swipes keep counting **in combat** (they are Blizzard's). **Fade out of combat** dims the
+  viewers until you pull. **If not:** name the viewer and the option, and send `/pui bugs`.
+- [ ] **3.5d Countdown voice.** Press **Try it** on the Behaviour tab: you hear 5 → 1 in the chosen voice. Then
+  in a group type `/countdown 10` (or let DBM/BigWigs start a pull).
+  **Expect:** the voice speaks the last five seconds; `/countdown 0` (cancel) stops it. Mythic+ key start and
+  arena/battleground gates count down too when **Mythic+, arena and battleground starts** is on. Nothing is spoken twice.
+- [ ] **3.5e Unit Frames depth.** On the Unit Frames page pick **Boss** in the frame bar and press **Test** on the **Show test frames** row.
+  **Expect:** sample Target, Focus and Boss 1–3 frames appear where the real ones sit, each tagged *TEST*, in your
+  styles; pressing again hides them; entering combat hides them at once. Try **Portrait → Class icon / Hidden**,
+  the Leader / Raid marker / PvP icon switches, **Fade out of range** (target a party member and walk away: the
+  frame fades; enemies never fade), and **Phoenix aura icons** (cropped buff/debuff icons under target and focus).
+  **If not:** name the frame and the option.
+- [ ] **3.5f Nameplates depth.** On the **Colours** tab turn on target and focus colours and **Threat colours**.
+  **Expect:** your target and focus plates take their colours; in a dungeon as a tank, mobs you hold are green,
+  mobs slipping are yellow and mobs on others red (as damage or healer: red when they attack you). The plate cast
+  bar uses the Phoenix texture/colour/font, and the debuff icons above the plates are cropped with a border.
+  No Lua errors in Mythic+ or delves. **If not:** send `/pui bugs`.
+- [ ] **3.5g Presets.** Tools → Presets: apply **Clean**, then **Vivid**, then press **Undo**.
+  **Expect:** each look changes the theme colour, fonts, bar texture and borders everywhere at once; Undo puts the
+  previous look back exactly. Your profile list and other settings are untouched.
+- [ ] **3.5h Welcome picker.** Only on a brand-new install (no `Phoenix_UI.lua` in SavedVariables) or with
+  **Open** on the Presets page.
+  **Expect:** about four seconds after the first login a window offers the three looks and **Skip**; picking or
+  skipping closes it for good. Existing users never see it on their own.
 - [ ] **3.6 Tooltip page.** It has two tabs, **Appearance** and **Content**. The preview tooltip changes with every option.
 - [ ] **3.7 Chat page.** Turn on **Flashing tabs in the accent colour** and **Coloured whisper tabs**. Ask someone to whisper you while another
   tab is selected.
@@ -146,6 +174,9 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Expect:** no "Interface action failed because of an AddOn" message.
 - [ ] **6.4 After combat.** Leave combat.
   **Expect:** anything that waited for combat to end has now applied.
+- [ ] **6.4b New features in combat.** With the Cooldown Manager skin, aura icons, threat colours and range fade
+  on, do a full Mythic+ key or a raid boss.
+  **Expect:** no `secret value` errors, no `ADDON_ACTION_BLOCKED`, and the test frames refuse to open in combat.
 - [ ] **6.5 taint.log.** After the session, search `Logs\taint.log` for `Phoenix`.
   **Expect:** no lines blaming Phoenix_UI. **If not:** send the file.
 

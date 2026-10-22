@@ -319,3 +319,36 @@ body.media { height: 1420px; }
 .val2 .d { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); } .val2 .d.w { background: var(--warn); }
 .ta { margin: 2px 16px 14px; height: 120px; background: var(--bg-sunken); border: 1px solid var(--border); padding: 9px 11px;
   font-family: Cond; font-size: 11.5px; line-height: 1.5; color: var(--text2); white-space: pre-wrap; overflow: hidden; }
+
+/* Auras & Cooldowns preview */
+.spl { position: relative; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #000;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06); color: rgba(255,255,255,.92); overflow: hidden; flex: none; }
+.spl .swipe { position: absolute; left: 0; right: 0; top: 0; background: rgba(0,0,0,.6); }
+.spl .tm { position: absolute; font-family: CondBold; font-size: 15px; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000; }
+.spl .ct { position: absolute; right: 2px; bottom: 0; font-family: CondBold; font-size: 11px; color: #fff; text-shadow: 1px 1px 0 #000; }
+.spl.rnd { border: none; } .spl .ring { position: absolute; inset: -2px; border-radius: 50%; border: 3px solid #23262d; }
+.trk { position: absolute; left: 34px; top: 22px; display: flex; flex-direction: column; gap: 12px; }
+.trow { display: flex; gap: 6px; align-items: center; }
+.tbars { position: absolute; right: 30px; top: 26px; display: flex; flex-direction: column; gap: 8px; }
+.tbr { position: relative; display: flex; align-items: center; gap: 4px; }
+.tbr .tbn { position: absolute; left: 34px; font-family: F-InterSemiBold, Inter; font-size: 11.5px; text-shadow: 1px 1px 0 #000; }
+.tbr .tbt { position: absolute; right: 6px; font-family: CondBold; font-size: 12px; text-shadow: 1px 1px 0 #000; }
+/* Unit frame test mode */
+.uft { position: absolute; z-index: 9; }
+.uft .uf.static { position: static; transform: none; }
+.uft .ufp { width: 56px; height: 56px; }
+.uftag { display: inline-flex; gap: 4px; align-items: center; font-family: CondBold; font-size: 11px; letter-spacing: .6px;
+  color: var(--accent); margin-bottom: 3px; text-shadow: 1px 1px 0 #000; }
+.ufa { display: flex; gap: 2px; margin-top: 3px; }
+/* Presets */
+.pintro { color: var(--text2); font-size: 12.5px; line-height: 1.45; padding: 4px 16px 10px; }
+.looks { display: flex; gap: 14px; padding: 4px 16px 16px; }
+.look { position: relative; flex: 1; background: var(--bg-sunken); border: 1px solid var(--border); padding: 14px 14px 12px; }
+.look.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(255,106,26,.25); }
+.look .lstrip { position: absolute; left: 0; right: 0; top: 0; height: 3px; }
+.look .ok { position: absolute; right: 10px; top: 10px; color: var(--accent); }
+.look .lname { font-size: 19px; margin-bottom: 10px; }
+.look .lbars { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.look .ldesc { color: var(--text2); font-size: 12px; line-height: 1.4; min-height: 34px; margin-bottom: 10px; }
+.trk.one { left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; }
+.look { min-width: 0; } .look .pbar { width: 100% !important; }

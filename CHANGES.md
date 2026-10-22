@@ -12,6 +12,17 @@
 - **Card pickers** for fonts, textures and sounds, with search and style filters; 100 fonts (SIL OFL), new bar
   textures, alert sounds and a countdown voice (CC0) — credits in `Media/*/*.md`.
 - **Appearance & Media** pages: every font and texture setting of every module on one page, with Apply to all.
+- **Auras & Cooldowns** (Combat): the Phoenix take on WeakAuras within Midnight's rules. Blizzard's Cooldown
+  Manager viewers get square cropped icons (or keep the round ones), borders, Phoenix fonts for timers, stacks and
+  bar names, your bar texture and colour, and an optional fade out of combat. A countdown voice (CC0) speaks the
+  last seconds of pull timers and of Mythic+, arena and battleground start timers.
+- **Unit Frames**: Boss 1–5 frames, class-icon or hidden portraits, leader/raid-marker/PvP icon switches, a range
+  fade for group members you target or focus, cropped aura icons, and **test frames** shown where the real frames
+  sit (they close in combat).
+- **Nameplates**: target and focus colours, role-aware threat colours (tank or damage/healer), a styled plate cast
+  bar, and cropped, bordered debuff/buff icons with Phoenix fonts.
+- **Presets** (Tools): three complete looks — Ember, Clean, Vivid — in one click with Undo; new installs are offered
+  them once in a welcome window.
 - **Tools → Diagnostics**: the media check, icon source (falls back to Blizzard icons if the Phoenix sheet fails)
   and a copyable report.
 - `/pui diag`: checks that every Phoenix texture and icon atlas loads in your client and records what the

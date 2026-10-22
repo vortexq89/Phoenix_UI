@@ -19,7 +19,7 @@ INDEX = {name: i for i, (name, _) in enumerate(ICONS)}
 COLS, CELL, GUTTER = 10, 96, 3
 
 # The 13 sidebar groups of UI/Config/Groups.lua: (key, label, icon, entries); entries are (key, label, icon, on)
-# with on = None for pages without an enable switch. P1 pages (tracker, presets) are listed when they ship.
+# with on = None for pages without an enable switch.
 SIDEBAR = [
     ("home", "Home", "home", [("home", "Home", "home", None)]),
     ("general", "General", "general", [("general", "General", "general", None)]),
@@ -45,7 +45,7 @@ SIDEBAR = [
                                        ("presets", "Presets", "presets", None), ("bugs", "Bugs", "bugs", True),
                                        ("diagnostics", "Diagnostics", "diagnostics", None), ("about", "About", "about", None)]),
 ]
-HIDDEN = {"tracker", "presets"}  # entries not shipped yet
+HIDDEN = set()  # entries not shipped yet
 
 
 def ico(name, cls="", size=None):
@@ -797,13 +797,128 @@ def keystones_page():
     return shell("mythicplus", body, head=KEYS_CSS)
 
 
+# ---------------------------------------------------------------- Auras & Cooldowns, UF test mode, Presets
+# Spell-like tiles: a coloured glow and a glyph from the same atlas (the real viewers show your spell icons).
+SPELLS = [("#ff6a1a", "#5a1500", "cat-combat"), ("#ffb23f", "#4a2a00", "speed"), ("#b46bff", "#250a45", "theme"),
+          ("#4da3ff", "#06203f", "opacity"), ("#3ddc97", "#063622", "heart"), ("#ff4d5e", "#3d0710", "warning"),
+          ("#ffc24b", "#3b2a00", "spec"), ("#7fd8ff", "#06283a", "clock")]
+
+
+def spell(i, size, timer="", count="", cd=0, square=True):
+    c1, c2, g = SPELLS[i % len(SPELLS)]
+    rad = "0" if square else "50%"
+    ring = "" if square else '<span class="ring"></span>'
+    sw_ = f'<span class="swipe" style="height:{cd}%"></span>' if cd else ""
+    t = f'<b class="tm">{timer}</b>' if timer else ""
+    n = f'<b class="ct">{count}</b>' if count else ""
+    return (f'<span class="spl{"" if square else " rnd"}" style="width:{size}px;height:{size}px;border-radius:{rad};'
+            f'background:radial-gradient(circle at 35% 30%, {c1}, {c2} 78%)">{ico(g, "", int(size * .52))}{sw_}{t}{n}{ring}</span>')
+
+
+def tracker_page():
+    body = page_head("tracker", "Auras & Cooldowns",
+                     "Phoenix style for Blizzard's Cooldown Manager, fade out of combat and countdown voices for pull timers.")
+    scope = (f'<div class="scope"><div class="srow"><span class="slab">VIEWER</span>'
+             f'{seg(["Essential", "Utility", "Buffs", "Bars"], 0)}</div></div>')
+    essential = "".join(spell(i, 52, t, c, cd) for i, (t, c, cd) in enumerate(
+        [("", "", 0), ("8", "", 62), ("", "", 0), ("24", "2", 30), ("", "", 0), ("1:12", "", 85), ("", "", 0)]))
+    utility = "".join(spell(i + 3, 32, t, "", cd) for i, (t, cd) in enumerate([("", 0), ("41", 70), ("", 0), ("2:30", 90), ("", 0), ("", 0)]))
+    bars = "".join(f'<div class="tbr">{spell(i, 22, "", c)}{bar(v, "#ff6a1a", "BarSatin", 18, 300, "1px solid #000")}'
+                   f'<span class="tbn">{n}</span><span class="tbt">{t}</span></div>'
+                   for i, (n, v, t, c) in enumerate([("Combustion", 82, "14.2", ""), ("Heating Up", 46, "6.8", "3"),
+                                                     ("Arcane Intellect", 20, "2.1", "")]))
+    del utility, bars  # the preview shows the viewer picked in the scope bar (Essential here)
+    stage = f'<div class="trk one"><div class="trow">{essential}</div></div>'
+
+    body += scope + tabs(["Appearance", "Text", "Behaviour"], 0) + preview_card(stage, 120)
+    left = card2("Icons", [
+        row("Phoenix style", tog(), "Dress the Cooldown Manager items: crop, border and fonts."),
+        row("Square icons", tog(), "Square, cropped icons instead of Blizzard's round ones.", gear=cog()),
+        row("Border", dd2("Solid"), gear=cog(), reset=True),
+        row("Hide debuff border", tog(False)),
+    ], icon="tracker", reset=True)
+    right = card2("Countdown voice", [
+        row("Speak the countdown", tog(), "Counts down the last seconds of pull timers and start timers."),
+        row("Voice", dd2("Jim (CC0)")),
+        row("Start counting at", sl2(30, "5")),
+        row("Try it", btn("Play", "sound")),
+    ], icon="sound")
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    return shell("tracker", body, head=faces(font_data()), status="Viewer skin applied live", status_icon="success", status_cls="ok")
+
+
+def uf_test_frame(tag, name, pct, color, hp, left, top, lvl="92", portrait="emblem"):
+    return (f'<div class="uft" style="left:{left}px;top:{top}px"><span class="uftag">{ico("test", "xs")}{tag}</span>'
+            f'<div class="uf static"><div class="ufp" style="background-image:url(../assets/{portrait}.png)"></div>'
+            f'<div class="ufb"><div class="ufn"><span style="font-family:F-InterSemiBold">{name}</span><span style="color:var(--warn)">{lvl}</span></div>'
+            f'{bar(pct, color, "BarSmooth", 22, 190, "1px solid #000", hp, "big")}'
+            f'{bar(50, "#4da3ff", "BarSmooth", 11, 190, "1px solid #000", "", "small")}'
+            f'<div class="ufa">{"".join(spell(i, 15, "", c) for i, c in enumerate(["", "2", "", "4"]))}</div></div></div></div>')
+
+
+def uf_test_page():
+    body = page_head("unitframes", "Unit Frames", "Textures, colours, portraits, icons, auras and fonts for your unit frames.")
+    scope = (f'<div class="scope"><div class="srow"><span class="slab">FRAME</span>'
+             f'{seg(["Player", "Target", "Focus", "Pet", "Boss"], 4)}</div></div>')
+    body += scope + tabs(["Appearance", "Text"], 0)
+    left = card2("Testing", [
+        row("Test frames", btn("Hide test frames", "test", "primary"),
+            "Shows sample target, focus and boss frames where the real ones sit. They close in combat."),
+    ], icon="test") + card2("Portrait & icons", [
+        row("Portrait", dd2("Class icon")),
+        row("Leader icon", tog()), row("Raid marker", tog()), row("PvP icon", tog(False)),
+    ])
+    right = card2("Range", [
+        row("Fade out of range", tog(), "Group members you target or focus fade when out of range.", gear=cog()),
+    ]) + card2("Auras", [
+        row("Phoenix aura icons", tog(), "Crops the icons under target, focus and boss frames."),
+        row("Border", dd2("None"), gear=cog()),
+    ])
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    frames = (uf_test_frame("TEST · Boss 1", "Ragnaros", 72, "#ff4d5e", "48.6M", 1236, 120, "??")
+              + uf_test_frame("TEST · Boss 2", "Ashen Brute", 100, "#ff4d5e", "12.1M", 1236, 230, "??")
+              + uf_test_frame("TEST · Target", "Ashen Brute", 58, "#ff4d5e", "1.24M", 1236, 470)
+              + uf_test_frame("TEST · Focus", "Ember Wisp", 100, "#ffc24b", "410K", 1236, 600))
+    wide = "<style>body{width:1560px}</style>"
+    return shell("unitframes", body, above=frames, head=faces(font_data()) + wide,
+                 status="Test frames shown; they close when combat starts", status_icon="test")
+
+
+LOOKS = [("Ember", "The Phoenix default: ember accents, Satin bars, soft shadows.", "#ff6a1a", "#ffb23f", "BarSatin", "F-InterSemiBold", True),
+         ("Clean", "Frost blue, flat bars, Inter fonts and crisp solid borders.", "#4da3ff", "#7fd8ff", "BarFlat", "F-InterSemiBold", False),
+         ("Vivid", "Arcane violet, glossy bars, Barlow fonts and a soft glow.", "#b46bff", "#ff6ad5", "BarGloss", "F-BarlowCondBold", False)]
+
+
+def look_card(name, desc, a1, a2, tex, face, on):
+    bars = (bar(82, a1, tex, 16, 250, "1px solid #000") + bar(58, a2, tex, 10, 250, "1px solid #000")
+            + bar(34, "#3ddc97", tex, 10, 250, "1px solid #000"))
+    mark = f'<span class="ok">{ico("check")}</span>' if on else ""
+    return (f'<div class="look{" on" if on else ""}"><div class="lstrip" style="background:linear-gradient(90deg,{a1},{a2})"></div>{mark}'
+            f'<div class="lname" style="font-family:{face}">{name}</div><div class="lbars">{bars}</div>'
+            f'<div class="ldesc">{desc}</div>{btn("Applied" if on else "Apply", "check" if on else "theme", "primary" if not on else "")}</div>')
+
+
+def presets_page():
+    body = page_head("presets", "Presets", "Complete looks in one click, with Undo.", toggle=False, state="")
+    intro = ('<div class="pintro">Each look sets the theme colour, fonts and bar texture under General, the border style of auras, '
+             'plates, cast bars, group frames and the tracker, and puts every font and texture row back on Default so it follows '
+             'the look. Nothing else changes.</div>')
+    looks = "".join(look_card(*l) for l in LOOKS)
+    body += card2("Looks", [intro, f'<div class="looks">{looks}</div>'], wide=True, icon="presets")
+    body += card2("Undo and welcome", [row("Undo the last preset", btn("Undo", "reset"), "Puts back every setting the last preset changed (this session)."),
+                       row("Welcome picker", btn("Open", "presets"), "Opens the window new users see on their first login.")], wide=True)
+    return shell("presets", body, head=faces(font_data()), status="Ember applied: 34 settings changed", status_icon="success",
+                 status_cls="ok")
+
+
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
          "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page, "nameplates": nameplates_page,
          "unitframes": unitframes_page, "fonts": lambda: appearance_page("font"),
          "textures": lambda: appearance_page("bar"), "media": media_sheet, "pinned": lambda: nameplates_page(True),
          "diagnostics": diagnostics_page, "sidebar": sidebar_shot,
-         "vault": vault_page, "keystones": keystones_page}
-SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1")}
+         "vault": vault_page, "keystones": keystones_page, "tracker": tracker_page, "uftest": uf_test_page,
+         "presets": presets_page}
+SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1"), "uftest": ("1560,800", "1")}
 
 if __name__ == "__main__":
     export_bars()
