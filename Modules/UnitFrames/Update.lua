@@ -88,6 +88,25 @@ function Live:Guild(f)
     if guild == nil then return "" end
     return guild
 end
+--[[ An NPC's title: the second line of the game's unit tooltip data when it is not the level line ("Level 80 …").
+    Players and secret lines give "". Read through C_TooltipInfo (no tooltip is shown). ]]
+function M.TitleFromLines(lines, levelWord)
+    local line = type(lines) == "table" and lines[2]
+    local text = line and line.leftText
+    if not plain(text) or type(text) ~= "string" or text == "" then return "" end
+    if type(levelWord) == "string" and levelWord ~= "" and text:find(levelWord, 1, true) then return "" end
+    return text
+end
+function Live:Title(f)
+    if yes(UnitIsPlayer(f.unit)) or not (C_TooltipInfo and C_TooltipInfo.GetUnit) then return "" end
+    local ok, data = pcall(C_TooltipInfo.GetUnit, f.unit)
+    if not ok or not plain(data) or type(data) ~= "table" then return "" end
+    return M.TitleFromLines(data.lines, LEVEL)
+end
+function Live:GuildOrTitle(f)
+    if yes(UnitIsPlayer(f.unit)) then return self:Guild(f) end
+    return self:Title(f)
+end
 function Live:Health(f) return UnitHealth(f.unit) end
 function Live:HealthMax(f) return UnitHealthMax(f.unit) end
 function Live:HealthText(f, kind)
@@ -211,6 +230,8 @@ Sample.Status = Live.Status
 function Sample:Group(f) return sv(f).group or "" end
 function Sample:Away() return "" end
 function Sample:Guild(f) return sv(f).guild or "" end
+function Sample:Title(f) return sv(f).title or "" end
+function Sample:GuildOrTitle(f) local s = sv(f); return s.title or s.guild or "" end
 function Sample:Health(f) return sv(f).hp or 0 end
 function Sample:HealthMax(f) return sv(f).hpMax or 1 end
 function Sample:HealthText(f, kind)

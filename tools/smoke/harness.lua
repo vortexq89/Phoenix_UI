@@ -3720,7 +3720,7 @@ try("gap rows: bars, data texts and colours (S17)", function()
     local db = DT.db
     local saved = {}
     for _, k in ipairs({ "UnitHonor", "UnitHonorMax", "UnitHonorLevel", "UnitLevel", "GetMaxLevelForPlayerExpansion",
-        "IsXPUserDisabled", "C_CurrencyInfo" }) do saved[k] = rawget(env, k) end
+        "IsXPUserDisabled", "C_CurrencyInfo" }) do saved[k] = rawget(env, k) or false end
     rawset(env, "IsXPUserDisabled", function() return true end)
     rawset(env, "UnitHonor", function() return 300 end)
     rawset(env, "UnitHonorMax", function() return 1200 end)
@@ -3744,7 +3744,7 @@ try("gap rows: bars, data texts and colours (S17)", function()
         GetCurrencyIDFromLink = function(link) return tonumber(link:match("(%d+)")) end,
         GetCurrencyInfo = function(id) return id == 3002 and { name = "Valorstones", quantity = 1450, maxQuantity = 2000,
             iconFileID = 1 } or nil end,
-    }, { __index = saved.C_CurrencyInfo }))
+    }, { __index = saved.C_CurrencyInfo or nil }))
     local choices = DT.CurrencyChoices()
     assert(#choices == 2 and choices[1].name == "Bronze" and choices[2].id == 3002, "currency choices")
     db.currency1, db.currency2, db.currency3 = 3002, 0, 9999
@@ -3756,7 +3756,7 @@ try("gap rows: bars, data texts and colours (S17)", function()
     end
     db.currency1, db.currency2, db.currency3, db.barTexture, db.barGradient = 0, 0, 0, "", "none"
     db.barReverse, db.barSmooth = false, true
-    for k, v in pairs(saved) do rawset(env, k, v) end
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
     -- power and dispel colour overrides (General) with the game's colours behind them
     local th = ns.Theme.settings
     th.powerColors.MANA = { r = 0.1, g = 0.2, b = 0.3 }
@@ -3815,17 +3815,17 @@ try("gap rows: unit frame extras (S17)", function()
         ns.Previews:Create("unitframe", env.CreateFrame("Frame"), M, {}):Redraw()
     end
     -- spell cost from the live source: the cast's cost in the current power, nothing for channels / secrets
-    local saved = { UnitCastingInfo = rawget(env, "UnitCastingInfo"), C_Spell = rawget(env, "C_Spell") }
+    local saved = { UnitCastingInfo = rawget(env, "UnitCastingInfo") or false, C_Spell = rawget(env, "C_Spell") or false }
     rawset(env, "UnitCastingInfo", function() return "Flash Heal", "", 1, 0, 1, false, "x", false, 2061 end)
     rawset(env, "C_Spell", setmetatable({ GetSpellPowerCost = function(id)
-        return id == 2061 and { { type = 3, cost = 99 }, { type = 0, cost = 1200 } } or nil end }, { __index = saved.C_Spell }))
+        return id == 2061 and { { type = 3, cost = 99 }, { type = 0, cost = 1200 } } or nil end }, { __index = saved.C_Spell or nil }))
     local f = { unit = "player" }
     assert(M.Live:SpellCost(f, 0) == 1200 and M.Live:SpellCost(f, 3) == 99, "spell cost per power type")
     assert(M.Live:SpellCost(f, 1) == nil, "no cost in another power")
     assert(M.Live:SpellCost({ unit = "target" }, 0) == nil, "cost only for the player")
     rawset(env, "UnitCastingInfo", function() return nil end)
     assert(M.Live:SpellCost(f, 0) == nil, "no cast, no cost")
-    for k, v in pairs(saved) do rawset(env, k, v) end
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
     pu.absorb.overheal, pu.powerBar.cost, pu.portraitSize, M.db.classPower.shape = keep[1], keep[2], keep[3], keep[4]
     -- the click casting link opens the game's window when it exists
     local opened = false
@@ -3861,12 +3861,12 @@ try("gap rows: chat timestamp colour and emotes (S17)", function()
     -- emotes from the game's lists, labelled with their slash command
     local saved = {}
     for _, k in ipairs({ "EmoteList", "TextEmoteSpeechList", "MAXEMOTEINDEX", "EMOTE1_TOKEN", "EMOTE1_CMD1", "EMOTE2_TOKEN",
-        "C_ChatInfo" }) do saved[k] = rawget(env, k) end
+        "C_ChatInfo" }) do saved[k] = rawget(env, k) or false end
     rawset(env, "EmoteList", { "WAVE", "DANCE" }); rawset(env, "TextEmoteSpeechList", { "HELPME", "WAVE" })
     rawset(env, "MAXEMOTEINDEX", 3); rawset(env, "EMOTE1_TOKEN", "WAVE"); rawset(env, "EMOTE1_CMD1", "/wave")
     rawset(env, "EMOTE2_TOKEN", "DANCE")
     local done
-    rawset(env, "C_ChatInfo", setmetatable({ PerformEmote = function(t) done = t end }, { __index = saved.C_ChatInfo }))
+    rawset(env, "C_ChatInfo", setmetatable({ PerformEmote = function(t) done = t end }, { __index = saved.C_ChatInfo or nil }))
     local list = C.EmoteChoices()
     assert(#list == 3 and list[1].label == "/wave" and list[2].label == "/dance" and list[3].token == "HELPME", "emote list")
     assert(C.PerformEmote("DANCE") and done == "DANCE", "perform emote")
@@ -3879,9 +3879,82 @@ try("gap rows: chat timestamp colour and emotes (S17)", function()
         ns.Previews:Create("chat", env.CreateFrame("Frame"), C, {}):Redraw()
     end
     C.ShowEmotes(env.UIParent)
-    for k, v in pairs(saved) do rawset(env, k, v) end
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
     C.db.chatBar, C.db.emotes = false, false
     C:RefreshBar()
+end)
+
+try("gap rows: NPC titles and tooltip item extras (S17)", function()
+    local UF = ns.modules.UnitFrames
+    assert(UF.TitleFromLines({ { leftText = "Bob" }, { leftText = "Innkeeper" } }, "Level") == "Innkeeper", "title line")
+    assert(UF.TitleFromLines({ { leftText = "Bob" }, { leftText = "Level 80 Humanoid" } }, "Level") == "", "level line")
+    assert(UF.TitleFromLines({ { leftText = "Bob" } }, "Level") == "" and UF.TitleFromLines(nil) == "", "no title")
+    local oldIs = ns.Secret.IsSecret
+    local SECRET = {}
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    assert(UF.TitleFromLines({ {}, { leftText = SECRET } }, "Level") == "", "secret title")
+    ns.Secret.IsSecret = oldIs
+    local c = UF.CompileTags("[guild:title] [npctitle]", 0)
+    assert(#c.getters == 2, "title tags compile")
+    local f = { sample = { title = "Innkeeper", guild = "Phoenix" } }
+    assert(UF.Sample:GuildOrTitle(f) == "Innkeeper" and UF.Sample:Title(f) == "Innkeeper", "sample title")
+    assert(ns.modules.NamePlates.DEFAULTS.styles.friendly.infoTag == "[guild:title]", "friendly plates show titles")
+    ns.Previews:Create("nameplate", env.CreateFrame("Frame"), ns.modules.NamePlates, {}):Redraw()
+    -- tooltip item extras
+    local T = ns.modules.Tooltip
+    local mapID, level, affixes = T.ParseKeystone("|cffa335ee|Hkeystone:180653:503:12:10:148:9:152|h[Keystone]|h|r")
+    assert(mapID == 503 and level == 12 and #affixes == 4 and affixes[2] == 148, "keystone link")
+    assert(T.ParseKeystone("|Hitem:180653::::|h") == nil and T.ParseKeystone(nil) == nil, "not a keystone")
+    assert(T.Clock(1980) == "33:00" and T.Clock(61.7) == "1:01" and T.Clock(nil) == "0:00", "clock")
+    local saved = {}
+    for _, k in ipairs({ "C_ToyBox", "PlayerHasToy", "C_MountJournal", "C_PetJournal", "C_TransmogCollection", "C_Item",
+        "C_ChallengeMode", "C_MythicPlus", "C_CurrencyInfo", "GameTooltip_AddNormalLine", "GameTooltip_AddColoredLine" }) do
+        saved[k] = rawget(env, k) or false
+    end
+    local added = {}
+    rawset(env, "GameTooltip_AddNormalLine", function(_, text) added[#added + 1] = text end)
+    rawset(env, "GameTooltip_AddColoredLine", function(_, text) added[#added + 1] = text end)
+    rawset(env, "C_ToyBox", { GetToyInfo = function(id) return id == 1 and 1 or nil end })
+    rawset(env, "PlayerHasToy", function(id) return id == 1 end)
+    rawset(env, "C_MountJournal", { GetMountFromItem = function(id) return id == 2 and 77 or nil end,
+        GetMountInfoByID = function() return "Horse", 1, 1, false, true, 0, false, false, 0, false, false end })
+    rawset(env, "C_PetJournal", { GetPetInfoByItemID = function(id)
+        if id == 3 then return "Cat", 1, 1, 1, "", "", false, false, false, false, false, false, 55 end end,
+        GetNumCollectedInfo = function() return 1, 3 end })
+    rawset(env, "C_TransmogCollection", { GetItemInfo = function(link) return 1, link == "app" and 9 or nil end,
+        PlayerHasTransmogByItemInfo = function() return false end })
+    assert(T.Collected(1) == true and T.Collected(2) == false and T.Collected(3) == true, "toy / mount / pet")
+    assert(T.Collected(4, "app") == false and T.Collected(4, "other") == nil, "appearance")
+    rawset(env, "C_Item", setmetatable({ GetItemInfo = function() return "x", "l", 4, 1, 1, "", "", 1, "", 1, 12345 end },
+        { __index = saved.C_Item or nil }))
+    rawset(env, "C_CurrencyInfo", setmetatable({ GetCoinTextureString = function(v) return v .. "c" end },
+        { __index = saved.C_CurrencyInfo or nil }))
+    rawset(env, "C_ChallengeMode", setmetatable({ GetMapUIInfo = function() return "Dungeon", 503, 1980 end },
+        { __index = saved.C_ChallengeMode or nil }))
+    rawset(env, "C_MythicPlus", setmetatable({ GetSeasonBestForMap = function() return { level = 14, durationSec = 1800 } end },
+        { __index = saved.C_MythicPlus or nil }))
+    T.db.vendorPrice, T.db.collected, T.db.keystone = true, true, true
+    T:ItemExtras({}, { id = 1, lines = {} })
+    local joined = table.concat(added, "|")
+    assert(joined:find("12345c", 1, true) and joined:find(ns.L.TOOLTIP_COLLECTED, 1, true), "vendor + collected lines")
+    added = {}
+    local sell = env.Enum.TooltipDataLineType and env.Enum.TooltipDataLineType.SellPrice
+    T:ItemExtras({}, { id = 5, lines = { { type = sell } } })
+    if sell ~= nil then assert(#added == 0, "no vendor line when the game shows one") end
+    added = {}
+    T:ItemExtras({}, { id = 180653, hyperlink = "|Hkeystone:180653:503:12:10|h", lines = {} })
+    if RETAIL then assert(table.concat(added, "|"):find("33:00", 1, true), "keystone timer line") end
+    T.db.vendorPrice, T.db.collected, T.db.keystone = false, false, false
+    added = {}
+    T:ItemExtras({}, { id = 1, hyperlink = "|Hkeystone:180653:503:12|h", lines = {} })
+    assert(#added == 0, "item extras off")
+    T.db.vendorPrice, T.db.collected, T.db.keystone = true, true, true
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
+    for _, on in ipairs({ true, false }) do
+        T.db.vendorPrice, T.db.collected, T.db.keystone, T.db.itemCount = on, on, on, on
+        ns.Previews:Create("tooltip", env.CreateFrame("Frame"), T, {}):Redraw()
+    end
+    T.db.vendorPrice, T.db.collected, T.db.keystone, T.db.itemCount = true, true, true, true
 end)
 
 fire("PLAYER_LOGOUT")

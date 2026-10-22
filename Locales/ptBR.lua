@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "Recurso",
     UF_TAGS = "Tags de texto",
     UF_TAGS_DESC = "Texto com tags entre colchetes, por exemplo [name] ou [health:current-percent]. Deixe vazio para ocultar.",
-    UF_TAGS_HELP = "Tags: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Até 8 por texto.",
+    UF_TAGS_HELP = "Tags: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Até 8 por texto.",
     UF_TAG_HEALTH = "Texto de vida",
     UF_TAG_INFO = "Texto extra",
     UF_TAG_NAME = "Texto do nome",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "Colore os horários do chat do jogo (a cor entra no próprio formato, então vale para toda mensagem). Clique direito volta a sem cor.",
     CHAT_EMOTES = "Seletor de emotes",
     CHAT_EMOTES_DESC = "Um botão na barra de chat que abre os emotes do jogo (animados e de voz); um clique executa um.",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "Estalajadeiro",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "Preço de venda",
+    TOOLTIP_VENDOR_DESC = "Adiciona quanto um vendedor paga pelo item quando a dica do jogo não mostra preço de venda.",
+    TOOLTIP_VENDOR_PRICE = "Vendedor: %s",
+    TOOLTIP_COLLECT = "Coletado ou não",
+    TOOLTIP_COLLECT_DESC = "Em aparências, brinquedos, montarias e mascotes: uma linha dizendo se você já tem.",
+    TOOLTIP_COLLECTED = "Coletado",
+    TOOLTIP_NOT_COLLECTED = "Não coletado",
+    TOOLTIP_KEYSTONE = "Detalhes da pedra angular",
+    TOOLTIP_KEYSTONE_DESC = "Numa pedra angular: o tempo da masmorra e sua melhor corrida lá nesta temporada.",
+    TOOLTIP_KEY_TIMER = "+%d · tempo %s",
+    TOOLTIP_KEY_BEST = "Melhor da temporada: +%d em %s",
+    TOOLTIP_LFG_LINK_DESC = "Pontuação, nível da chave e funções nos anúncios do localizador de grupos são definidos na página dele.",
+    PREVIEW_TT_ITEM = "Lâmina Forjada em Brasa",
+    PREVIEW_TT_ITEM_LEVEL = "Nível do item 684",
 }
 
 ns.RegisterLocale("ptBR", T)

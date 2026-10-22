@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "Risorsa",
     UF_TAGS = "Tag di testo",
     UF_TAGS_DESC = "Testo con tag tra parentesi quadre, per esempio [name] o [health:current-percent]. Lascia vuoto per nascondere.",
-    UF_TAGS_HELP = "Tag: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Fino a 8 per testo.",
+    UF_TAGS_HELP = "Tag: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Fino a 8 per testo.",
     UF_TAG_HEALTH = "Testo salute",
     UF_TAG_INFO = "Testo extra",
     UF_TAG_NAME = "Testo nome",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "Colora gli orari della chat del gioco (il colore è nel formato stesso, quindi in ogni messaggio). Clic destro per tornare senza colore.",
     CHAT_EMOTES = "Selettore emote",
     CHAT_EMOTES_DESC = "Un pulsante sulla barra della chat che apre le emote del gioco (animate e vocali); un clic ne esegue una.",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "Locandiere",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "Prezzo del mercante",
+    TOOLTIP_VENDOR_DESC = "Aggiunge quanto paga un mercante per l'oggetto quando il tooltip del gioco non mostra il prezzo di vendita.",
+    TOOLTIP_VENDOR_PRICE = "Mercante: %s",
+    TOOLTIP_COLLECT = "Collezionato o no",
+    TOOLTIP_COLLECT_DESC = "Su aspetti, giocattoli, cavalcature e mascotte: una riga che dice se lo possiedi già.",
+    TOOLTIP_COLLECTED = "Collezionato",
+    TOOLTIP_NOT_COLLECTED = "Non collezionato",
+    TOOLTIP_KEYSTONE = "Dettagli chiave del potere",
+    TOOLTIP_KEYSTONE_DESC = "Su una chiave del potere: il tempo limite della spedizione e la tua miglior run lì in questa stagione.",
+    TOOLTIP_KEY_TIMER = "+%d · tempo %s",
+    TOOLTIP_KEY_BEST = "Migliore della stagione: +%d in %s",
+    TOOLTIP_LFG_LINK_DESC = "Punteggio, livello chiave e ruoli negli annunci della ricerca gruppo si impostano nella sua pagina.",
+    PREVIEW_TT_ITEM = "Lama forgiata nella brace",
+    PREVIEW_TT_ITEM_LEVEL = "Livello oggetto 684",
 }
 
 ns.RegisterLocale("itIT", T)

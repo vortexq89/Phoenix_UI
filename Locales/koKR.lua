@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "자원",
     UF_TAGS = "문자 태그",
     UF_TAGS_DESC = "대괄호 태그가 들어간 문자입니다. 예: [name], [health:current-percent]. 비우면 숨깁니다.",
-    UF_TAGS_HELP = "태그: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. 문자당 최대 8개.",
+    UF_TAGS_HELP = "태그: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. 문자당 최대 8개.",
     UF_TAG_HEALTH = "생명력 문자",
     UF_TAG_INFO = "추가 문자",
     UF_TAG_NAME = "이름 문자",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "게임 채팅 시간 표시에 색을 입힙니다(색이 시간 형식 자체에 들어가 모든 메시지에 적용됩니다). 우클릭하면 색이 없어집니다.",
     CHAT_EMOTES = "감정 표현 선택기",
     CHAT_EMOTES_DESC = "채팅 바에 게임의 감정 표현(동작 및 음성)을 여는 버튼을 추가합니다. 클릭하면 실행합니다.",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "여관주인",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "상점 판매가",
+    TOOLTIP_VENDOR_DESC = "게임 툴팁에 판매 가격이 없을 때 상인이 지불하는 가격을 추가합니다.",
+    TOOLTIP_VENDOR_PRICE = "상인: %s",
+    TOOLTIP_COLLECT = "수집 여부",
+    TOOLTIP_COLLECT_DESC = "외형, 장난감, 탈것, 애완동물에 이미 가지고 있는지 한 줄로 표시합니다.",
+    TOOLTIP_COLLECTED = "수집함",
+    TOOLTIP_NOT_COLLECTED = "수집하지 않음",
+    TOOLTIP_KEYSTONE = "쐐기돌 세부 정보",
+    TOOLTIP_KEYSTONE_DESC = "쐐기돌에 던전 제한 시간과 이번 시즌 그 던전의 최고 기록을 표시합니다.",
+    TOOLTIP_KEY_TIMER = "+%d · 제한 시간 %s",
+    TOOLTIP_KEY_BEST = "시즌 최고: +%d (%s)",
+    TOOLTIP_LFG_LINK_DESC = "파티 찾기 목록의 점수, 쐐기 단계, 역할 줄은 파티 찾기 페이지에서 설정합니다.",
+    PREVIEW_TT_ITEM = "잉걸불 벼림 칼날",
+    PREVIEW_TT_ITEM_LEVEL = "아이템 레벨 684",
 }
 
 ns.RegisterLocale("koKR", T)

@@ -81,7 +81,7 @@ local DEFAULTS = {
         enemy = style({ w = 140, h = 12, cast = true, spellTarget = true, debuffs = "mine", buffs = "purgeable" }),
         friendly = style({ w = 110, h = 8, nameOnly = true, cast = false, debuffs = "off", buffs = "off", cc = false,
                            healthText = false, quest = false, elite = false, color = "class", nameColor = "class",
-                           infoTag = "[guild]" }),
+                           infoTag = "[guild:title]" }),
     },
     -- colours shared by both kinds (reaction, tapped, quest, execute, target and focus effects)
     colors = { hostile = false, neutral = false, friendly = false, tapped = false, quest = false, execute = false,

@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "Ressource",
     UF_TAGS = "Balises de texte",
     UF_TAGS_DESC = "Texte avec des balises entre crochets, par exemple [name] ou [health:current-percent]. Laissez vide pour masquer.",
-    UF_TAGS_HELP = "Balises : [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Jusqu'à 8 par texte.",
+    UF_TAGS_HELP = "Balises : [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Jusqu'à 8 par texte.",
     UF_TAG_HEALTH = "Texte de vie",
     UF_TAG_INFO = "Texte supplémentaire",
     UF_TAG_NAME = "Texte du nom",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "Colore les horodatages du chat du jeu (la couleur fait partie du format, donc de chaque message). Clic droit pour revenir sans couleur.",
     CHAT_EMOTES = "Sélecteur d'émotes",
     CHAT_EMOTES_DESC = "Un bouton de la barre de chat qui ouvre les émotes du jeu (animées et vocales) ; un clic en joue une.",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "Aubergiste",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "Prix de vente",
+    TOOLTIP_VENDOR_DESC = "Ajoute ce qu'un marchand paie pour l'objet quand l'infobulle du jeu n'affiche pas de prix de vente.",
+    TOOLTIP_VENDOR_PRICE = "Marchand : %s",
+    TOOLTIP_COLLECT = "Collectionné ou non",
+    TOOLTIP_COLLECT_DESC = "Sur les apparences, jouets, montures et mascottes : une ligne indiquant si vous l'avez déjà.",
+    TOOLTIP_COLLECTED = "Collectionné",
+    TOOLTIP_NOT_COLLECTED = "Non collectionné",
+    TOOLTIP_KEYSTONE = "Détails de la clé",
+    TOOLTIP_KEYSTONE_DESC = "Sur une clé : le chrono du donjon et votre meilleure partie là-bas cette saison.",
+    TOOLTIP_KEY_TIMER = "+%d · chrono %s",
+    TOOLTIP_KEY_BEST = "Meilleur de la saison : +%d en %s",
+    TOOLTIP_LFG_LINK_DESC = "Le score, le niveau de clé et les rôles des annonces de recherche de groupe se règlent sur sa page.",
+    PREVIEW_TT_ITEM = "Lame forgée dans la braise",
+    PREVIEW_TT_ITEM_LEVEL = "Niveau d'objet 684",
 }
 
 ns.RegisterLocale("frFR", T)

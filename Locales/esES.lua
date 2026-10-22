@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "Recurso",
     UF_TAGS = "Etiquetas de texto",
     UF_TAGS_DESC = "Texto con etiquetas entre corchetes, por ejemplo [name] o [health:current-percent]. Déjalo vacío para ocultarlo.",
-    UF_TAGS_HELP = "Etiquetas: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Hasta 8 por texto.",
+    UF_TAGS_HELP = "Etiquetas: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Hasta 8 por texto.",
     UF_TAG_HEALTH = "Texto de salud",
     UF_TAG_INFO = "Texto extra",
     UF_TAG_NAME = "Texto del nombre",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "Colorea las marcas de hora del chat del juego (el color va en el propio formato, así que llega a cada mensaje). Clic derecho para quitar el color.",
     CHAT_EMOTES = "Selector de emociones",
     CHAT_EMOTES_DESC = "Un botón en la barra de chat que abre las emociones del juego (animadas y de voz); un clic realiza una.",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "Tabernero",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "Precio de venta",
+    TOOLTIP_VENDOR_DESC = "Añade lo que paga un vendedor por el objeto cuando el tooltip del juego no muestra precio de venta.",
+    TOOLTIP_VENDOR_PRICE = "Vendedor: %s",
+    TOOLTIP_COLLECT = "Coleccionado o no",
+    TOOLTIP_COLLECT_DESC = "En apariencias, juguetes, monturas y mascotas: una línea que indica si ya lo tienes.",
+    TOOLTIP_COLLECTED = "Coleccionado",
+    TOOLTIP_NOT_COLLECTED = "No coleccionado",
+    TOOLTIP_KEYSTONE = "Detalles de la piedra angular",
+    TOOLTIP_KEYSTONE_DESC = "En una piedra angular: el tiempo límite de la mazmorra y tu mejor carrera allí esta temporada.",
+    TOOLTIP_KEY_TIMER = "+%d · tiempo %s",
+    TOOLTIP_KEY_BEST = "Mejor de la temporada: +%d en %s",
+    TOOLTIP_LFG_LINK_DESC = "La puntuación, el nivel de piedra y los roles en las listas del buscador de grupos se ajustan en su página.",
+    PREVIEW_TT_ITEM = "Hoja forjada en ascuas",
+    PREVIEW_TT_ITEM_LEVEL = "Nivel de objeto 684",
 }
 
 ns.RegisterLocale("esES", T)

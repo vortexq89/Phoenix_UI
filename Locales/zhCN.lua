@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "能量",
     UF_TAGS = "文字标签",
     UF_TAGS_DESC = "带方括号标签的文字，例如 [name] 或 [health:current-percent]。留空则隐藏。",
-    UF_TAGS_HELP = "标签：[name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]。每段文字最多 8 个。",
+    UF_TAGS_HELP = "标签：[name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]。每段文字最多 8 个。",
     UF_TAG_HEALTH = "生命文字",
     UF_TAG_INFO = "额外文字",
     UF_TAG_NAME = "名字文字",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "为游戏聊天时间戳着色（颜色写入时间戳格式本身，因此每条消息都会生效）。右键点击恢复无颜色。",
     CHAT_EMOTES = "表情选择器",
     CHAT_EMOTES_DESC = "聊天栏上的一个按钮，打开游戏的表情（动作和语音）；点击即可执行。",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "旅店老板",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "商人售价",
+    TOOLTIP_VENDOR_DESC = "当游戏提示中没有出售价格时，添加商人收购该物品的价格。",
+    TOOLTIP_VENDOR_PRICE = "商人：%s",
+    TOOLTIP_COLLECT = "是否已收藏",
+    TOOLTIP_COLLECT_DESC = "在外观、玩具、坐骑和宠物上显示一行，说明你是否已拥有。",
+    TOOLTIP_COLLECTED = "已收藏",
+    TOOLTIP_NOT_COLLECTED = "未收藏",
+    TOOLTIP_KEYSTONE = "钥石详情",
+    TOOLTIP_KEYSTONE_DESC = "在钥石上显示该地下城的计时和你本赛季在那里的最佳成绩。",
+    TOOLTIP_KEY_TIMER = "+%d · 计时 %s",
+    TOOLTIP_KEY_BEST = "赛季最佳：+%d，用时 %s",
+    TOOLTIP_LFG_LINK_DESC = "队伍查找器列表上的评分、钥石等级和职责行在队伍查找器页面中设置。",
+    PREVIEW_TT_ITEM = "余烬锻造之刃",
+    PREVIEW_TT_ITEM_LEVEL = "物品等级 684",
 }
 
 ns.RegisterLocale("zhCN", T)

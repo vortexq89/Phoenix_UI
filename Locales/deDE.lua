@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "Ressource",
     UF_TAGS = "Text-Tags",
     UF_TAGS_DESC = "Text mit Tags in eckigen Klammern, z. B. [name] oder [health:current-percent]. Leer lassen zum Ausblenden.",
-    UF_TAGS_HELP = "Tags: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Bis zu 8 Tags pro Text.",
+    UF_TAGS_HELP = "Tags: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. Bis zu 8 Tags pro Text.",
     UF_TAG_HEALTH = "Gesundheitstext",
     UF_TAG_INFO = "Zusatztext",
     UF_TAG_NAME = "Namenstext",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "Färbt die Chat-Zeitstempel des Spiels (die Farbe steckt im Zeitstempelformat selbst, also in jeder Nachricht). Rechtsklick entfernt die Farbe.",
     CHAT_EMOTES = "Emote-Auswahl",
     CHAT_EMOTES_DESC = "Eine Schaltfläche auf der Chatleiste, die die Emotes des Spiels öffnet (animiert und Sprache); ein Klick führt eines aus.",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "Gastwirt",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "Händlerpreis",
+    TOOLTIP_VENDOR_DESC = "Zeigt, was ein Händler für den Gegenstand zahlt, wenn der Tooltip des Spiels keinen Verkaufspreis zeigt.",
+    TOOLTIP_VENDOR_PRICE = "Händler: %s",
+    TOOLTIP_COLLECT = "Gesammelt oder nicht",
+    TOOLTIP_COLLECT_DESC = "Bei Vorlagen, Spielzeugen, Reittieren und Haustieren: eine Zeile, ob du es schon hast.",
+    TOOLTIP_COLLECTED = "Gesammelt",
+    TOOLTIP_NOT_COLLECTED = "Nicht gesammelt",
+    TOOLTIP_KEYSTONE = "Schlüsseldetails",
+    TOOLTIP_KEYSTONE_DESC = "Auf einem Schlüsselstein: das Zeitlimit des Dungeons und dein bester Lauf dort in dieser Saison.",
+    TOOLTIP_KEY_TIMER = "+%d · Zeit %s",
+    TOOLTIP_KEY_BEST = "Saisonbestwert: +%d in %s",
+    TOOLTIP_LFG_LINK_DESC = "Wertung, Schlüsselstufe und Rollen in Gruppensuche-Einträgen werden auf der Seite Gruppensuche eingestellt.",
+    PREVIEW_TT_ITEM = "Glutgeschmiedete Klinge",
+    PREVIEW_TT_ITEM_LEVEL = "Gegenstandsstufe 684",
 }
 
 ns.RegisterLocale("deDE", T)

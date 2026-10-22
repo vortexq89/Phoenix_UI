@@ -1,15 +1,66 @@
 local _, ns = ...
 local L, P, Theme = ns.L, ns.Previews, ns.Theme
 
+-- the item tooltip beside the unit one
+local function drawItem(item, m, db)
+    if db.skin then m:StyleFrame(item) else ns.Skin:Panel(item, "raised", { border = "border.strong" }) end
+    local epic = ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[4]
+    if db.skin and db.qualityBorder and epic then ns.Skin:SetBorderColor(item, epic.r, epic.g, epic.b, 1) end
+    local ibody = {}
+    for i, fs in ipairs(item.lines) do ibody[i] = fs end
+    if db.fonts then m:StyleLines(item.header, ibody) else
+        ns.Skin:Text(item.header, "body", nil, 14)
+        for _, fs in ipairs(ibody) do ns.Skin:Text(fs, "desc", nil, 12) end
+    end
+    item.header:SetText(L.PREVIEW_TT_ITEM)
+    if epic then item.header:SetTextColor(epic.r, epic.g, epic.b) end
+    local keyed = db.keystone and ns:Supports("mythicplus")
+    local ilines = {
+        { L.PREVIEW_TT_ITEM_LEVEL, "text.primary" },
+        db.collected and { L.TOOLTIP_NOT_COLLECTED, "text.muted" } or false,
+        db.itemCount and { m.CountLine(3, 13, 15), "text.muted" } or false,
+        db.vendorPrice and { L.TOOLTIP_VENDOR_PRICE:format(tostring(C_CurrencyInfo.GetCoinTextureString(184520))), "text.primary" }
+            or false,
+        keyed and { L.TOOLTIP_KEY_TIMER:format(12, m.Clock(1980)), "text.primary" } or false,
+    }
+    local ishown, iheight = 0, 20 + item.header:GetStringHeight()
+    for _, line in ipairs(ilines) do
+        if line then
+            ishown = ishown + 1
+            local fs = item.lines[ishown]
+            fs:SetText(line[1])
+            fs:SetTextColor(Theme:Color(line[2]))
+            fs:Show()
+            iheight = iheight + fs:GetStringHeight() + 3
+        end
+    end
+    for i = ishown + 1, #item.lines do item.lines[i]:Hide() end
+    item:SetHeight(iheight)
+    item:SetScale(db.scale or 1)
+end
+
 -- A unit tooltip with the extra lines Tooltip adds (guild rank, realm, inspect, mount, targeted by...), a
--- class-coloured border and name, and the health bar with its percent text.
+-- class-coloured border and name, and the health bar with its percent text; beside it an item tooltip with the
+-- item lines (count, collected, vendor price, keystone timer).
 P:Register("tooltip", {
     module = "Tooltip",
+    width = 540,
     height = 270,
     build = function(stage, m)
         local tt = CreateFrame("Frame", nil, stage)
         tt:SetSize(250, 120)
-        tt:SetPoint("CENTER", 0, 8)
+        tt:SetPoint("LEFT", 14, 8)
+        local item = CreateFrame("Frame", nil, stage)
+        item:SetSize(250, 60)
+        item:SetPoint("TOPRIGHT", -14, -24)
+        item.header = P.Text(item)
+        item.header:SetPoint("TOPLEFT", 10, -10)
+        item.lines = {}
+        for i = 1, 5 do
+            local fs = P.Text(item)
+            fs:SetPoint("TOPLEFT", i == 1 and item.header or item.lines[i - 1], "BOTTOMLEFT", 0, -3)
+            item.lines[i] = fs
+        end
         tt.header = P.Text(tt)
         tt.header:SetPoint("TOPLEFT", 10, -10)
         tt.lines = {}
@@ -76,6 +127,7 @@ P:Register("tooltip", {
             tt.hp:SetText("82%")
             tt.hp:SetShown(db.healthBar and db.healthText)
             tt:SetScale(db.scale or 1)
+            drawItem(item, m, db)
             ns.Skin:Backdrop(tt.bar, { alpha = 0.9 }, "bg.sunken")
         end
     end,

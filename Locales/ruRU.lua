@@ -1411,7 +1411,7 @@ local T = {
     UF_TAB_POWER = "Ресурс",
     UF_TAGS = "Текстовые теги",
     UF_TAGS_DESC = "Текст с тегами в квадратных скобках, например [name] или [health:current-percent]. Оставьте пустым, чтобы скрыть.",
-    UF_TAGS_HELP = "Теги: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. До 8 в тексте.",
+    UF_TAGS_HELP = "Теги: [name] [name:short] [level] [classification] [class] [status] [group] [afk] [guild] [guild:title] [npctitle] [health:current] [health:max] [health:percent] [health:current-max] [health:current-percent] [health:deficit] [absorbs] [power:current] [power:max] [power:percent] [power:current-max] [altpower]. До 8 в тексте.",
     UF_TAG_HEALTH = "Текст здоровья",
     UF_TAG_INFO = "Доп. текст",
     UF_TAG_NAME = "Текст имени",
@@ -3282,6 +3282,23 @@ local T = {
     CHAT_TIMESTAMP_COLOR_DESC = "Окрашивает игровые метки времени в чате (цвет входит в сам формат, поэтому применяется к каждому сообщению). ПКМ — без цвета.",
     CHAT_EMOTES = "Выбор эмоций",
     CHAT_EMOTES_DESC = "Кнопка на панели чата, открывающая игровые эмоции (анимации и голос); щелчок выполняет эмоцию.",
+    -- S17: NPC title tag
+    PREVIEW_NPC_TITLE = "Хозяин таверны",
+    -- S17: tooltip vendor price, collected, keystone, group finder link
+    TOOLTIP_VENDOR = "Цена у торговца",
+    TOOLTIP_VENDOR_DESC = "Добавляет цену продажи торговцу, если игровая подсказка её не показывает.",
+    TOOLTIP_VENDOR_PRICE = "Торговец: %s",
+    TOOLTIP_COLLECT = "Собрано или нет",
+    TOOLTIP_COLLECT_DESC = "Для обликов, игрушек, транспорта и питомцев: строка о том, есть ли это у вас.",
+    TOOLTIP_COLLECTED = "Собрано",
+    TOOLTIP_NOT_COLLECTED = "Не собрано",
+    TOOLTIP_KEYSTONE = "Подробности ключа",
+    TOOLTIP_KEYSTONE_DESC = "На ключе: таймер подземелья и ваш лучший забег там в этом сезоне.",
+    TOOLTIP_KEY_TIMER = "+%d · таймер %s",
+    TOOLTIP_KEY_BEST = "Лучшее за сезон: +%d за %s",
+    TOOLTIP_LFG_LINK_DESC = "Рейтинг, уровень ключа и роли в объявлениях поиска группы настраиваются на странице «Поиск группы».",
+    PREVIEW_TT_ITEM = "Клинок, выкованный в угольях",
+    PREVIEW_TT_ITEM_LEVEL = "Уровень предмета 684",
 }
 
 ns.RegisterLocale("ruRU", T)

@@ -216,6 +216,9 @@ tag("status", "%s", function(f, s) return s:Status(f) end)
 tag("group", "%s", function(f, s) return s:Group(f) end)
 tag("afk", "%s", function(f, s) return s:Away(f) end)
 tag("guild", "%s", function(f, s) return s:Guild(f) end)
+-- an NPC's title (<Innkeeper>, <Flight Master>) and "guild for players, title for NPCs" (S17)
+tag("npctitle", "%s", function(f, s) return s:Title(f) end)
+tag("guild:title", "%s", function(f, s) return s:GuildOrTitle(f) end)
 tag("health:current", "%s", num("current"))
 tag("health:max", "%s", num("max"))
 tag("health:percent", "%P", hpct)
@@ -229,8 +232,8 @@ tag("power:percent", "%P", ppct)
 tag("power:current-max", "%s / %s", pnum("current"), pnum("max"))
 tag("altpower", "%s", function(f, s) return s:AltPowerText(f) end)
 -- list for the options help, in a stable order
-M.TAG_LIST = { "name", "name:short", "level", "classification", "class", "status", "group", "afk", "guild", "health:current",
-    "health:max", "health:percent", "health:current-max", "health:current-percent", "health:deficit", "absorbs",
+M.TAG_LIST = { "name", "name:short", "level", "classification", "class", "status", "group", "afk", "guild", "guild:title", "npctitle",
+    "health:current", "health:max", "health:percent", "health:current-max", "health:current-percent", "health:deficit", "absorbs",
     "power:current", "power:max", "power:percent", "power:current-max", "altpower" }
 M.MAX_TAG_VALUES = 8
 

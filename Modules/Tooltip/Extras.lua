@@ -2,7 +2,9 @@ local _, ns = ...
 local L, Theme = ns.L, ns.Theme
 
 --[[ Tooltip extras: name colours, guild rank, realm, targeted by, inspect (item level and specialization),
-    mount, PvP-line hiding, health text, item counts and IDs.
+    mount, PvP-line hiding, health text, item counts and IDs; on items (S17) the vendor price when the game shows
+    none, whether you have collected it (appearance, toy, mount, pet) and, for keystones, the dungeon's timer and
+    your season best there.
     Every value read from a unit may be secret in restricted content (instances, combat); each one goes through
     M.Plain first and is skipped when secret, never compared. Inspect requests are throttled, never sent in
     combat or while the Inspect window is open, and cached per GUID for five minutes. ]]
@@ -57,6 +59,97 @@ function M:AddItemCount(tt, data)
     if not plain(bags, bank, all) then return end
     local text = M.CountLine(bags, bank, all)
     if text then GameTooltip_AddColoredLine(tt, text, GRAY_FONT_COLOR) end
+end
+
+---------------------------------------------------------------- item extras (S17)
+-- "keystone:180653:mapID:level:affix…" -> mapID, level, { affixIDs } (nil for anything else; pure).
+function M.ParseKeystone(link)
+    if type(link) ~= "string" then return nil end
+    local body = link:match("keystone:([%d:]+)")
+    if not body then return nil end
+    local parts = {}
+    for n in body:gmatch("(%d+)") do parts[#parts + 1] = tonumber(n) end
+    local mapID, level = parts[2], parts[3]
+    if not (mapID and mapID > 0 and level) then return nil end
+    local affixes = {}
+    for i = 4, #parts do if parts[i] > 0 then affixes[#affixes + 1] = parts[i] end end
+    return mapID, level, affixes
+end
+
+-- "33:00" for a number of seconds (pure).
+function M.Clock(sec)
+    sec = math.max(0, math.floor(tonumber(sec) or 0))
+    return ("%d:%02d"):format(math.floor(sec / 60), sec % 60)
+end
+
+-- Does the tooltip data already carry the game's sell price line?
+local function hasSellPrice(data)
+    local kind = Enum.TooltipDataLineType and Enum.TooltipDataLineType.SellPrice
+    for _, line in ipairs(type(data) == "table" and data.lines or {}) do
+        if plain(line) and line.type == kind and kind ~= nil then return true end
+    end
+    return false
+end
+
+-- true / false when the item is something you collect (appearance, toy, mount, pet), nil otherwise.
+function M.Collected(id, link)
+    if C_ToyBox and C_ToyBox.GetToyInfo and C_ToyBox.GetToyInfo(id) then return PlayerHasToy(id) and true or false end
+    if C_MountJournal and C_MountJournal.GetMountFromItem then
+        local mountID = C_MountJournal.GetMountFromItem(id)
+        if plain(mountID) and mountID then
+            local collected = select(11, C_MountJournal.GetMountInfoByID(mountID))
+            return plain(collected) and collected and true or false
+        end
+    end
+    if C_PetJournal and C_PetJournal.GetPetInfoByItemID then
+        local species = select(13, C_PetJournal.GetPetInfoByItemID(id))
+        if plain(species) and type(species) == "number" then
+            local owned = C_PetJournal.GetNumCollectedInfo(species)
+            return plain(owned) and (owned or 0) > 0
+        end
+    end
+    if C_TransmogCollection and C_TransmogCollection.PlayerHasTransmogByItemInfo and link then
+        local _, sourceID = C_TransmogCollection.GetItemInfo(link)
+        if plain(sourceID) and sourceID then
+            local has = C_TransmogCollection.PlayerHasTransmogByItemInfo(link)
+            if plain(has) then return has and true or false end
+        end
+    end
+    return nil
+end
+
+function M:ItemExtras(tt, data)
+    local db = self.db
+    local id = data and data.id
+    local link = data and data.hyperlink
+    if not plain(link) then link = nil end
+    if db.keystone and link and ns:Supports("mythicplus") then
+        local mapID, level = M.ParseKeystone(link)
+        if mapID then
+            local _, _, limit = C_ChallengeMode.GetMapUIInfo(mapID)
+            if plain(limit) and type(limit) == "number" and limit > 0 then
+                GameTooltip_AddNormalLine(tt, L.TOOLTIP_KEY_TIMER:format(level, M.Clock(limit)))
+            end
+            local best = C_MythicPlus.GetSeasonBestForMap(mapID)
+            if plain(best) and type(best) == "table" and best.level then
+                GameTooltip_AddNormalLine(tt, L.TOOLTIP_KEY_BEST:format(best.level, M.Clock(best.durationSec)))
+            end
+        end
+    end
+    if not (plain(id) and type(id) == "number") then return end
+    if db.collected then
+        local has = M.Collected(id, link)
+        if has ~= nil then
+            GameTooltip_AddColoredLine(tt, has and L.TOOLTIP_COLLECTED or L.TOOLTIP_NOT_COLLECTED,
+                has and GREEN_FONT_COLOR or GRAY_FONT_COLOR)
+        end
+    end
+    if db.vendorPrice and not hasSellPrice(data) then
+        local price = select(11, C_Item.GetItemInfo(id))
+        if plain(price) and type(price) == "number" and price > 0 then
+            GameTooltip_AddNormalLine(tt, L.TOOLTIP_VENDOR_PRICE:format(tostring(C_CurrencyInfo.GetCoinTextureString(price))))
+        end
+    end
 end
 
 ---------------------------------------------------------------- name colours, guild rank, PvP line

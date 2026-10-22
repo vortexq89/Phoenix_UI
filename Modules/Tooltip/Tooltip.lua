@@ -27,6 +27,7 @@ local M = ns:NewModule("Tooltip", {
         idKinds = { spell = true, item = true, unit = true, aura = true, currency = true, quest = true,
             achievement = true, mount = true },
         itemCount = true,
+        vendorPrice = true, collected = true, keystone = true,     -- S17 item extras
     },
 })
 
@@ -183,6 +184,7 @@ local function onItem(tt, data)
     end
     if M.db.simLine then addSim(tt, data) end
     if M.db.itemCount then M:AddItemCount(tt, data) end
+    M:ItemExtras(tt, data)
     M:AddID(tt, "item", data)
 end
 

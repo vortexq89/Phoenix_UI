@@ -525,6 +525,8 @@ function M.Samples()
           debuffs = { { icon = icons.pain, duration = 18, elapsed = 12 } } },
         { kind = "friendly", name = me, level = 90, class = class, reaction = 5, hp = 400000, hpMax = 520000, hover = true,
           guild = "Phoenix" },
+        { kind = "friendly", name = L.PREVIEW_MOB_FRIENDLY, level = 90, reaction = 5, hp = 300000, hpMax = 300000,
+          title = L.PREVIEW_NPC_TITLE },
     }
 end
 

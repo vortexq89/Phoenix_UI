@@ -125,7 +125,7 @@ P:Register("nameplate", {
             if not phoenix then drawOld(view); return end
             if not plates then
                 plates = {}
-                for i = 1, 3 do
+                for i = 1, 4 do
                     local p = m:BuildPlate(stage, { preview = true, sample = true })
                     p:EnableMouse(false)
                     plates[i] = p
@@ -144,7 +144,7 @@ P:Register("nameplate", {
                 if st.absorb then s.absorb = math.floor((s.hpMax or 1) * 0.15) else s.absorb = 0 end
                 if st.low and i == 1 then s.hp = math.floor((s.hpMax or 1) * 0.14) end
                 p:ClearAllPoints()
-                p:SetPoint("CENTER", stage, "LEFT", w * (i - 0.5) / 3, 4)
+                p:SetPoint("CENTER", stage, "LEFT", w * (i - 0.5) / #plates, 4)
                 p:Show()
                 m:DrawSample(p, s)
             end
