@@ -91,6 +91,45 @@
   },
   "134376": {
    "path": "interface\\icons\\inv_misc_pocketwatch_01"
+  },
+  "136512": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-chest"
+  },
+  "136513": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-feet"
+  },
+  "136514": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-finger"
+  },
+  "136515": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-hands"
+  },
+  "136516": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-head"
+  },
+  "136517": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-legs"
+  },
+  "136518": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-mainhand"
+  },
+  "136519": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-neck"
+  },
+  "136524": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-secondaryhand"
+  },
+  "136526": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-shoulder"
+  },
+  "136528": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-trinket"
+  },
+  "136529": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-waist"
+  },
+  "136530": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-wrists"
   }
  },
  "files": {

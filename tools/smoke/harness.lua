@@ -87,7 +87,8 @@ end
 
 ---------------------------------------------------------------- environment
 -- Globals that must start out nil (libraries create them; SavedVariables start empty).
-local NIL = { PhoenixUIDB = true, PhoenixUIBugsDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true, BugGrabber = true }
+local NIL = { PhoenixUIDB = true, PhoenixUIBugsDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true, BugGrabber = true,
+    PhoenixUISimDB = true, PhoenixUISimResults = true }
 local env_cbor -- last payload given to the CBOR stub, so export -> decode round-trips
 local env = setmetatable({}, { __index = function(t, k)
     local v = _G[k]
@@ -141,6 +142,8 @@ local api = {
     GetLocale = function() return "enUS" end, GetTime = function() return os.clock() end,
     GetBuildInfo = function() return "12.1.5", "70448", "Oct 2026", 120105 end,
     UnitName = function() return "Tester", "Realm" end, GetRealmName = function() return "Realm" end,
+    GetNormalizedRealmName = function() return "Realm" end,
+    BreakUpLargeNumbers = function(n) return tostring(n) end,
     UnitClass = function() return "Mage", "MAGE", 8 end, UnitLevel = function() return 90 end,
     UnitGUID = function() return "Player-1-0001" end, UnitRace = function() return "Human", "Human" end,
     GetMoney = function() return 12345678 end, GetFramerate = function() return 60 end,
@@ -1251,6 +1254,144 @@ try("schema and import", function()
 end)
 
 for _, e in ipairs(events) do fire(unpack(e)) end
+-- A value written the way WoW writes SavedVariables (sorted keys, array items marked "-- [n]").
+local function savedVariable(name, value)
+    local out = { name .. " = " }
+    local function emit(v, depth)
+        local t = type(v)
+        if t == "string" then out[#out + 1] = ("%q"):format(v):gsub("\\\n", "\\n")
+        elseif t ~= "table" then out[#out + 1] = tostring(v)
+        else
+            local pad = ("\t"):rep(depth + 1)
+            out[#out + 1] = "{\n"
+            local keys = {}
+            for k in pairs(v) do if type(k) == "string" then keys[#keys + 1] = k end end
+            table.sort(keys)
+            for _, k in ipairs(keys) do
+                out[#out + 1] = pad .. ("[%q] = "):format(k)
+                emit(v[k], depth + 1)
+                out[#out + 1] = ",\n"
+            end
+            for i, item in ipairs(v) do
+                out[#out + 1] = pad
+                emit(item, depth + 1)
+                out[#out + 1] = (", -- [%d]\n"):format(i)
+            end
+            out[#out + 1] = ("\t"):rep(depth) .. "}"
+        end
+    end
+    emit(value, 0)
+    out[#out + 1] = "\n"
+    return table.concat(out)
+end
+
+-- Sim: item export, request shape, and importing what the app writes (uploader/testdata/sim_results.lua is
+-- rendered by the Go writer and checked by its tests, so this is the shared file contract)
+try("sim", function()
+    local M, X = ns.modules.Sim, ns.SimExport
+    assert(M and X and M.db.mode == "compare", "sim defaults")
+    local function link(fields, name)
+        return ("|cffa335ee|Hitem:%s|h[%s]|h|r"):format(table.concat(fields, ":"), name)
+    end
+    -- id enchant gem1-4 suffix unique level spec mask context | 3 bonus IDs | 2 modifiers | relics, crafter
+    local ring = link({ 212400, 7334, 213743, "", "", "", "", "", 90, 63, "", 13, 3, 10390, 11977, 1520,
+        2, 9, 90, 29, 36, "", "", "", "" }, "Band of Tests")
+    local saved = { C_TradeSkillUI = env.C_TradeSkillUI }
+    rawset(env, "C_TradeSkillUI", { GetItemCraftedQualityByItemInfo = function() return 5 end })
+    assert(X.Key(ring) == "212400:1520:10390:11977", "item key: " .. tostring(X.Key(ring)))
+    local line = X.ItemLine(ring)
+    assert(line == ",id=212400,enchant_id=7334,gem_id=213743,bonus_id=10390/11977/1520,drop_level=90,crafted_stats=36,crafting_quality=5",
+        "item line: " .. tostring(line))
+    assert(X.Split("|Hspell:1|h") == nil and X.ItemLine("junk") == nil, "non-item links must not export")
+    -- a full profile and a compare request from stubbed character, equipment and bags
+    local old = { link = ring, slot = 11 }
+    local plain = link({ 190000, "", "", "", "", "", "", "", 90, 63, "", 13, 1, 1520, 0 }, "Old Ring")
+    old.link = plain
+    local stub = {
+        UnitClass = function() return "Mage", "MAGE", 8 end, UnitRace = function() return "Void Elf", "VoidElf", 29 end,
+        UnitLevel = function() return 90 end, GetCurrentRegionName = function() return "EU" end,
+        GetProfessions = function() return nil end, CanDualWield = function() return false end,
+        GetInventoryItemLink = function(_, slot) return slot == 11 and plain or nil end,
+        C_SpecializationInfo = { GetSpecialization = function() return 2 end,
+            GetSpecializationInfo = function() return 63 end },
+        C_ClassTalents = { GetActiveConfigID = function() return 1 end },
+        C_Traits = { GenerateImportString = function() return "CABBBBtest" end },
+        ItemLocation = { CreateFromEquipmentSlot = function(_, slot) return { slot = slot } end,
+            CreateFromBagAndSlot = function(_, bag, slot) return { bag = bag, bagSlot = slot } end },
+        C_Item = { DoesItemExist = function(loc) return loc.slot == 11 or loc.bag == 0 end,
+            GetItemLink = function(loc) return loc.slot == 11 and plain or ring end,
+            GetCurrentItemLevel = function(loc) return loc.slot and 250 or 263 end,
+            GetItemInfoInstant = function(l) return l:find("212400") and 212400 or 190000, nil, nil, "INVTYPE_FINGER", 1, 4, 0 end,
+            GetItemQualityByID = function() return 4 end, GetItemInfo = function() return nil end },
+        C_Container = { GetContainerNumSlots = function(bag) return bag == 0 and 1 or 0 end,
+            GetContainerItemInfo = function(bag) return bag == 0 and { hyperlink = ring, itemID = 212400 } or nil end },
+        C_PlayerInfo = { CanUseItem = function() return true end },
+    }
+    for k, v in pairs(stub) do saved[k] = rawget(env, k); rawset(env, k, v) end
+    local profile = X.Profile()
+    assert(profile and profile:find('mage="Tester"', 1, true) and profile:find("spec=fire", 1, true)
+        and profile:find("race=void_elf", 1, true) and profile:find("talents=CABBBBtest", 1, true)
+        and profile:find("finger1=,id=190000", 1, true), "profile:\n" .. tostring(profile))
+    local bag = M:BagItems()
+    assert(#bag == 1 and bag[1].key == "212400:1520:10390:11977" and bag[1].slot == "finger", "bag gear")
+    M.prepared = nil
+    assert(select(2, M:Prepare()) == "SIM_ERR_NOTHING", "a compare with nothing ticked was accepted")
+    M:Toggle(bag[1].key, true)
+    assert(M:SetCount("compare", M:SelectedItems(bag), M:Equipped()) == 2, "a ring compares in both finger slots")
+    local id = M:Prepare()
+    local req = id and env.PhoenixUISimDB.requests[id]
+    assert(req and req.char == "Tester-Realm" and req.mode == "compare" and #req.items == 1 and #req.equipped == 1
+        and req.fight.style == "Patchwerk" and req.items[1].line == line, "request shape")
+    assert(M:Status() == "ready", "a prepared request should be ready to send")
+    -- the request as WoW saves it, for the app's tests (uploader/testdata/sim_request.lua, read by
+    -- TestAddonRequest); PHOENIX_UPDATE_FIXTURES=1 rewrites it
+    local fixture = env.CopyTable(req)
+    fixture.id, fixture.created = "68f8e510c0ffee", 1761130000
+    local sv = savedVariable("PhoenixUISimDB", { schema = 1, requests = { [fixture.id] = fixture } })
+    local path = "uploader/testdata/sim_request.lua"
+    if os.getenv("PHOENIX_UPDATE_FIXTURES") == "1" then
+        local f = assert(io.open(path, "wb"))
+        f:write(sv)
+        f:close()
+    end
+    local f = assert(io.open(path, "rb"), path .. " is missing; run with PHOENIX_UPDATE_FIXTURES=1")
+    assert(f:read("*a") == sv, path .. " is stale; run with PHOENIX_UPDATE_FIXTURES=1")
+    f:close()
+    M.prepared = nil
+    assert(M:Status() == "sent", "a request on disk should be sent")
+    -- what the app writes: a done compare and a failure, imported once
+    rawset(env, "time", function() return 1761130000 + 600 end)
+    local chunk = assert(loadfile("uploader/testdata/sim_results.lua"))
+    setfenv(chunk, env)
+    chunk()
+    assert(M:Import() == 2 and env.PhoenixUISimResults == nil, "results not imported")
+    env.PhoenixUISimResults = nil
+    local hist = M:History()
+    assert(#hist == 2 and hist[1].state == "done" and hist[1].sets[2].label == "Band of | Tests", "history")
+    assert(hist[2].error:find("no talents", 1, true), "the failure text was lost")
+    -- the request answered by the fixture is closed (its id differs, so the open one stays)
+    assert(env.PhoenixUISimDB.requests[id], "an unrelated request was closed")
+    M.index = nil
+    local r = M:ItemResult(ring)
+    assert(r and r.pct == 0.42 and r.delta == 960, "item result from the sim")
+    assert(M:Describe(r):find("+0.4%", 1, true), "describe: " .. M:Describe(r))
+    assert(M:ItemResult(plain) == nil, "an item that was not simmed has no result")
+    chunk()
+    assert(M:Import() == 0, "the same results imported twice")
+    rawset(env, "time", function() return 1761130000 + 40 * 86400 end)
+    env.PhoenixUISimDB.imported = {}
+    chunk()
+    assert(M:Import() == 0, "results older than the import marks came back")
+    rawset(env, "time", function() return 1761130000 + 600 end)
+    M:Delete(hist[2].id)
+    assert(#M:History() == 1, "delete")
+    M:Cancel()
+    assert(M:Status() == "idle", "cancel")
+    rawset(env, "time", nil)
+    M.selected = {}
+    for k, v in pairs(saved) do rawset(env, k, v) end
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels
