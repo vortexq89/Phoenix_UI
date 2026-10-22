@@ -1916,7 +1916,7 @@ try("action bars engine", function()
 end)
 try("action bars depth", function()
     local Config = ns.Config
-    for key, target in pairs({ ActionBars = 114, CooldownText = 12 }) do
+    for key, target in pairs({ ActionBars = 112, CooldownText = 12 }) do
         local n = Config.CountSettings(ns.options[key])
         assert(n >= target and Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
     end
@@ -2357,7 +2357,7 @@ try("group frames blizzard fallback", function()
 end)
 try("group frames depth (S11)", function()
     local n = ns.Config.CountSettings(ns.options.GroupFrames)
-    assert(n >= 68 and ns.Config.DEPTH.GroupFrames == 68, ("GroupFrames has %d of 68 settings"):format(n))
+    assert(n >= 67 and ns.Config.DEPTH.GroupFrames == 67, ("GroupFrames has %d of 67 settings"):format(n))
     print(("  GroupFrames settings: %d"):format(n))
 end)
 
@@ -2942,7 +2942,7 @@ try("window skins (S13b)", function()
     assert(S:Wanted({ key = "vault", feature = "vault" }) == RETAIL, "Great Vault skin is retail-only")
 end)
 try("bags, data texts and skins depth (S13b)", function()
-    for key, target in pairs({ Bags = 47, DataTexts = 47, Skins = 28 }) do
+    for key, target in pairs({ Bags = 42, DataTexts = 47, Skins = 28 }) do
         local n = ns.Config.CountSettings(ns.options[key])
         assert(n >= target and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
         print(("  %s settings: %d"):format(key, n))
@@ -3388,7 +3388,7 @@ try("group finder depth and gating (S15)", function()
     for _, g in ipairs(ns.Config.GROUPS) do
         if g.key == "content" then for _, e in ipairs(g.entries) do if e == "GroupFinder" then inContent = true end end end
     end
-    assert(inContent and ns.Config.DEPTH.GroupFinder == 14, "Group Finder is not in the Content group with its target")
+    assert(inContent and ns.Config.DEPTH.GroupFinder == 13, "Group Finder is not in the Content group with its target")
     if RETAIL then
         local n = ns.Config.CountSettings(ns.options.GroupFinder)
         assert(n >= 14, ("GroupFinder has %d of 14 settings"):format(n))
@@ -3404,6 +3404,123 @@ try("group finder depth and gating (S15)", function()
         for _, e in ipairs(g.entries) do assert(e ~= "GroupFinder", "Group Finder is in the sidebar on Forever") end
     end
     assert(ns.Config:Show("GroupFinder") == ns.Config.pages.home, "opening Group Finder on Forever did not fall back to Home")
+end)
+
+-- S16: remaining modules: pure helpers, live previews, depth targets, Forever gating and the settings consistency rules
+try("remaining modules helpers (S16)", function()
+    local G = ns.modules.General
+    local ids = G.ParseMute("123, 456 abc 789 123")
+    assert(#ids == 3 and ids[1] == 123 and ids[3] == 789, "mute list parse")
+    assert(#G.ParseMute("") == 0, "empty mute list")
+    -- class colour override follows the theme and falls back to the game colour
+    local cc = ns.Theme.settings.classColors
+    local keep = cc.MAGE
+    cc.MAGE = { r = 0.1, g = 0.2, b = 0.3 }
+    local r, g, b = ns.Util.ClassColor("MAGE")
+    assert(math.abs(r - 0.1) < 1e-6 and math.abs(g - 0.2) < 1e-6 and math.abs(b - 0.3) < 1e-6, "class colour override")
+    assert(ns.Util.WrapClass("MAGE", "x"):find("x", 1, true), "WrapClass lost the text")
+    cc.MAGE = keep
+    local Mv = ns.modules.Movers
+    assert(Mv.NormalizeKey("ctrl-shift-m") == "CTRL-SHIFT-M" and Mv.NormalizeKey("") == nil
+        and Mv.NormalizeKey("ctrl+m") == nil, "unlock key normalising")
+    local x, y = Mv.SnapToEdges(103, 0, 20, 20, { { 0, 0, 180, 40 } })
+    assert(x == 100 and y == 0, ("snap to edges gave %s,%s"):format(tostring(x), tostring(y)))
+    local A = ns.modules.Automation
+    assert(A.WantsAutoLoot(true, false) and A.WantsAutoLoot(false, true), "auto loot")
+    assert(not A.WantsAutoLoot(true, true) and not A.WantsAutoLoot(false, false), "auto loot modifier")
+    assert(A.SingleGossip({ { gossipOptionID = 7 } }, {}, {}) == 7, "single gossip option")
+    assert(A.SingleGossip({ { gossipOptionID = 7 } }, { {} }, {}) == nil, "gossip with a quest must wait")
+    assert(A.SingleGossip({ { gossipOptionID = 7 }, { gossipOptionID = 8 } }, {}, {}) == nil, "two gossip options")
+    local text = ns.modules.AFK.StatsText(642, 2840, 3, 9)
+    assert(text:find("642") and text:find("2840") and text:find("3/9"), "AFK stats line")
+    assert(ns.modules.AFK.StatsText(nil, 0, 0, 0) == "", "AFK stats must drop empty parts")
+    local IL = ns.modules.ItemLevel
+    assert(type(IL.DetailsText(IL.db, "|cffa335ee|Hitem:1::::::::80:::::|h[x]|h|r", 1, "player")) == "string", "details")
+end)
+
+try("remaining modules styling and previews (S16)", function()
+    local DM = ns.modules.DamageMeter
+    local bar = env.CreateFrame("StatusBar")
+    DM:StyleBar(bar, bar:CreateFontString(), bar:CreateFontString())
+    DM:StyleWindow(env.CreateFrame("Frame"))
+    -- combat text scroll: a secret amount only reaches SetFormattedText, merges count up
+    local CT = ns.modules.CombatText
+    local sc = CT.db.scroll
+    local keep = { sc.enabled, sc.merge }
+    sc.enabled, sc.merge = true, true
+    local secretAmount = setmetatable({}, { __tostring = function() error("secret amount was turned into text") end })
+    for area in pairs(sc.areas) do sc.areas[area].show = true end
+    CT.AddLine("incoming", { 1, 0, 0 }, "-", secretAmount, false, "k1")
+    CT.AddLine("incoming", { 1, 0, 0 }, "-", secretAmount, true, "k1")
+    CT.AddLine("notify", "accent.primary", "Dodge", nil, false)
+    CT:TestScroll()
+    sc.enabled, sc.merge = keep[1], keep[2]
+    -- Quality: markers, banners and the combat banner
+    local Q = ns.modules.Quality
+    Q.db.markers, Q.db.hideZoneText, Q.db.hideBossBanner = true, true, true
+    Q:ApplyMarkers(); Q:ApplyBanners()
+    Q.ShowCombatBanner(true); Q.ShowCombatBanner(false)
+    Q.db.markers, Q.db.hideZoneText, Q.db.hideBossBanner = false, false, false
+    Q:ApplyMarkers(); Q:ApplyBanners()
+    -- Sim: bank and vault items join the picker with their source
+    local S = ns.modules.Sim
+    if RETAIL and S:IsEnabled() then
+        local items = S.FromLinks({ { link = "|cffa335ee|Hitem:2::::::::80:::::|h[y]|h|r", level = 600 } }, "bank")
+        assert(#items <= 1 and (not items[1] or items[1].source == "bank"), "bank item lost its source")
+        assert(type(S:ExtraItems()) == "table", "extra items")
+    end
+    local kinds = { "quality", "pvp", "afk", "damagemeter", "combattext", "spellhistory", "itemlevel", "theme" }
+    if RETAIL then kinds[#kinds + 1] = "mplustimer" end
+    local mods = { quality = "Quality", pvp = "PvP", afk = "AFK", damagemeter = "DamageMeter", combattext = "CombatText",
+        spellhistory = "SpellHistory", itemlevel = "ItemLevel", mplustimer = "MythicPlus", theme = "General" }
+    for _, kind in ipairs(kinds) do
+        local stage = ns.Previews:Create(kind, env.CreateFrame("Frame"), ns.modules[mods[kind]], {})
+        assert(stage, "no preview " .. kind)
+        stage:Redraw()
+    end
+end)
+
+try("settings consistency (S16)", function()
+    -- every module page reaches its plan v2 target (retail: Forever lacks the encounter timeline and other APIs)
+    for key, target in pairs(ns.Config.DEPTH) do
+        if RETAIL and ns.Config:EntryExists(key) then
+            local n = ns.Config:Depth(key)
+            assert(n >= target, ("%s has %d of %d settings"):format(key, n, target))
+        end
+    end
+    -- one owner per CVar: two pages may link to each other, never both write the same CVar
+    local owner, pages = {}, {}
+    for _, m in ipairs(ns.moduleList) do pages[m.key] = true end
+    for key in pairs(ns.Config.builders) do pages[key] = true end
+    for key in pairs(pages) do
+        local f = io.open(ROOT .. "/Phoenix_UI_Options/Options/" .. key .. ".lua")
+        if f then
+            local src = f:read("*a")
+            f:close()
+            for name in src:gmatch('[Cc][Vv]ar%w*%("([%w_]+)"') do
+                assert(not owner[name] or owner[name] == key,
+                    ("CVar %s is set on both %s and %s"):format(name, tostring(owner[name]), key))
+                owner[name] = key
+            end
+        end
+    end
+    assert(owner.SpellQueueWindow == "Quality" and owner.nameplateMaxDistance == "NamePlates", "CVar scan found nothing")
+    -- every module appears once in the sidebar, and every visible module is in a group
+    local seen = {}
+    for _, g in ipairs(ns.Config:Groups()) do
+        for _, e in ipairs(g.entries) do
+            assert(not seen[e], e .. " is listed twice in the settings sidebar")
+            seen[e] = true
+        end
+    end
+    for _, m in ipairs(ns.moduleList) do
+        if not m.hidden then assert(seen[m.key], m.key .. " is missing from the settings sidebar") end
+    end
+    if not RETAIL then
+        for _, key in ipairs({ "MythicPlus", "GroupFinder" }) do
+            assert(not seen[key], key .. " is in the sidebar on Forever")
+        end
+    end
 end)
 
 fire("PLAYER_LOGOUT")
@@ -3480,6 +3597,48 @@ try("media", function()
     d:SetValue("Aurora")
     scripts[d].OnClick(d)
 end)
+
+-- PUI_DEPTH_OUT=<file>: settings each page has now, one "page count" line each (the gap matrix NOW column uses it)
+if os.getenv("PUI_DEPTH_OUT") and ns.Config then
+    local out = assert(io.open(os.getenv("PUI_DEPTH_OUT"), "w"))
+    local keys = {}
+    for _, m in ipairs(ns.moduleList or {}) do if not m.hidden then keys[#keys + 1] = m.key end end
+    for key in pairs(ns.Config.builders or {}) do if not ns.modules[key] then keys[#keys + 1] = key end end
+    table.sort(keys)
+    for _, key in ipairs(keys) do
+        local ok, now = pcall(ns.Config.Depth, ns.Config, key)
+        out:write(key, " ", tostring(ok and now or 0), "\n")
+    end
+    out:close()
+end
+
+-- PUI_LABELS_OUT=<file>: every counted row as "page<TAB>header<TAB>label<TAB>key" (the gap-matrix audit reads it)
+if os.getenv("PUI_LABELS_OUT") and ns.Config then
+    local out = assert(io.open(os.getenv("PUI_LABELS_OUT"), "w"))
+    local COUNTED = { toggle = 1, range = 1, select = 1, font = 1, texture = 1, sound = 1, style = 1, color = 1, input = 1,
+        colors = 1, custom = 1, button = 1 }
+    local function txt(v) return tostring(type(v) == "string" and (ns.L[v] or v) or "") end
+    local pages = {}
+    for _, m in ipairs(ns.moduleList or {}) do if not m.hidden then pages[m.key] = true end end
+    for key in pairs(ns.Config.builders or {}) do pages[key] = true end
+    for key in pairs(pages) do
+        local ok, schema = pcall(ns.Config.SchemaOf, ns.Config, key)
+        local head = ""
+        local function walk(list, parent)
+            for _, item in ipairs(type(list) == "table" and list or {}) do
+                if item.type == "header" or item.type == "tab" then head = txt(item.label) end
+                if COUNTED[item.type] then
+                    local keyText = item.key or table.concat(item.keys or {}, ",")
+                    out:write(key, "\t", head, "\t", parent and (parent .. " > ") or "", txt(item.label), "\t",
+                        item.type, ":", tostring(keyText), "\n")
+                end
+                walk(item.cog, txt(item.label))
+            end
+        end
+        if ok then walk(type(schema) == "function" and schema() or schema) end
+    end
+    out:close()
+end
 
 print(("smoke: %d files loaded, %d modules, %d errors"):format(loaded, #(ns.moduleList or {}), #errors))
 for _, e in ipairs(errors) do print("  " .. e) end

@@ -152,8 +152,8 @@ P:Register("itemlevel", {
                 b:SetPoint("LEFT", (i - 1) * (size + 6), 0)
                 Skin:Icon(b.tex)
                 b.level = P.Text(b, "OVERLAY")
-                b.level:SetPoint("TOPRIGHT", -1, -2)
-                b.level:SetJustifyH("RIGHT")
+                b.extra = P.Text(b, "OVERLAY")
+                b.extra:SetPoint("BOTTOMLEFT", 1, 1); b.extra:SetPoint("BOTTOMRIGHT", -1, 1)
                 b.sample = s
                 holder.items[i] = b
             end
@@ -167,20 +167,24 @@ P:Register("itemlevel", {
             local w = self:GetWidth()
             gear:ClearAllPoints(); gear:SetPoint("CENTER", self, "LEFT", w * 0.36, 8)
             bags:ClearAllPoints(); bags:SetPoint("CENTER", self, "LEFT", w * 0.8, 8)
-            for _, group in ipairs({ { gear, db.character }, { bags, db.bags } }) do
+            for gi, group in ipairs({ { gear, db.character }, { bags, db.bags } }) do
                 local holder, on = group[1], group[2]
                 holder:SetAlpha(on and 1 or 0.35)
-                for _, b in ipairs(holder.items) do
-                    local q = b.sample[3]
+                for i, b in ipairs(holder.items) do
                     Skin:Border(b, "border.black")
                     if on then
-                        Skin:Text(b.level, "number", nil, db.size)
-                        local r, g, bl = C_Item.GetItemQualityColor(q)
-                        if db.qualityColor and r then b.level:SetTextColor(r, g, bl) else b.level:SetTextColor(1, 1, 1) end
+                        m:StyleLabel(b.level, b)
+                        b.level:SetTextColor(m.ColorFor(b.sample[3]))
                         b.level:SetText(b.sample[2])
                     else
                         b.level:SetText("")
                     end
+                    -- sample details on two worn items: an upgrade track and an empty socket
+                    local parts = {}
+                    if on and gi == 1 and db.track and i == 1 then parts[#parts + 1] = L.ITEMLEVEL_SAMPLE_TRACK end
+                    if on and gi == 1 and db.gems and i == 3 then parts[#parts + 1] = "|cffff4d5e" .. L.ITEMLEVEL_NO_GEM .. "|r" end
+                    Skin:Text(b.extra, "small", "text.secondary", math.max(8, db.size - 3), "OUTLINE")
+                    b.extra:SetText(table.concat(parts, " · "))
                 end
             end
         end
@@ -499,10 +503,14 @@ P:Register("afk", {
         f.info:SetPoint("TOPLEFT", f.name, "BOTTOMLEFT", 0, -3)
         f.timer = P.Text(f.bar, "OVERLAY")
         f.timer:SetPoint("RIGHT", -16, 0)
+        f.stats = P.Text(f.bar, "OVERLAY")
+        f.stats:SetPoint("RIGHT", f.timer, "LEFT", -18, 0)
         return function()
-            f.dim:SetVertexColor(0, 0, 0, 0.55)
+            local db = m.db
+            f.dim:SetVertexColor(0, 0, 0, db.dim)
             f.figure:SetVertexColor(Theme:Color("text.muted"))
             f.figure:SetAlpha(0.35)
+            f.figure:SetShown(db.showModel)
             Skin:Panel(f.bar, "base", { border = false })
             Skin:SetPanelColor(f.bar, "bg.sunken")
             f.line:SetGradient("HORIZONTAL", Theme:ColorObj("accent.primary"), CreateColor(0, 0, 0, 0))
@@ -511,10 +519,61 @@ P:Register("afk", {
             f.name:SetTextColor(r, g, b)
             f.name:SetText(L.PREVIEW_UNIT_PLAYER)
             Skin:Text(f.info, "body", "text.secondary", 10)
-            f.info:SetText(L.PREVIEW_TT_LEVEL)
-            Skin:Text(f.timer, "number", "accent.primary", 18)
+            f.info:SetText(L.PREVIEW_TT_LEVEL .. (db.showGuild and ("  ·  " .. L.PREVIEW_TT_GUILD) or ""))
+            Skin:TextSpec(f.timer, db.timer, "number", "accent.primary")
+            f.timer:SetFont(f.timer:GetFont(), math.min(db.timer.size, 22), select(3, f.timer:GetFont()))
             f.timer:SetText("04:12")
-            f.spin:SetShown(m.db.spin and not Theme.settings.reduceMotion)
+            Skin:Text(f.stats, "body", "text.secondary", 10)
+            f.stats:SetText(db.stats and m.StatsText(642, ns:Supports("mythicplus") and 2840 or nil, 3,
+                ns:Supports("vault") and 9 or nil) or "")
+            f.spin:SetShown(db.showModel and db.spin and not Theme.settings.reduceMotion)
+        end
+    end,
+})
+
+---------------------------------------------------------------- quality of life (S16)
+-- Raid markers bar, the combat banner, the cursor ring and a merchant item tinted as already known.
+P:Register("quality", {
+    module = "Quality",
+    height = 130,
+    build = function(stage, m)
+        local bar = CreateFrame("Frame", nil, stage)
+        bar:SetSize(9 * 23 + 8, 28)
+        bar:SetPoint("TOPLEFT", 16, -14)
+        bar.icons = {}
+        for i = 1, 9 do
+            local t = bar:CreateTexture(nil, "ARTWORK")
+            t:SetSize(18, 18)
+            t:SetPoint("LEFT", 6 + (i - 1) * 23, 0)
+            if i <= 8 then m.SetMarker(t, i) else ns.Icons:Apply(t, "close", 16) end
+        end
+        bar.caption = caption(stage, bar, L.QUALITY_MARKERS)
+        local banner = P.Text(stage, "OVERLAY")
+        banner:SetPoint("TOPRIGHT", -24, -18)
+        local item = P.Icon(stage, 36, 9)
+        item:SetPoint("BOTTOMLEFT", 26, 18)
+        item.caption = P.Text(stage, "OVERLAY")
+        item.caption:SetPoint("LEFT", item, "RIGHT", 8, 0)
+        local ring = stage:CreateTexture(nil, "OVERLAY")
+        ring:SetTexture(Media.textures.RING_CIRCLE)
+        ring:SetPoint("CENTER", stage, "BOTTOMRIGHT", -70, 44)
+        local arrow = W.Icon(stage, "chevron-left", 12, "text.primary")
+        arrow:SetPoint("CENTER", ring, "CENTER", 0, 0)
+        return function()
+            local db = m.db
+            Skin:Panel(bar, "base", { border = "border.subtle" })
+            bar:SetAlpha(db.markers and 1 or 0.35)
+            Skin:Text(banner, "title", "state.danger", 18, "OUTLINE")
+            banner:SetText(L.QUALITY_COMBAT_IN)
+            banner:SetAlpha(db.combatAlert and 1 or 0.3)
+            Skin:Border(item, "border.black")
+            if db.knownTint then item.tex:SetVertexColor(0.35, 0.95, 0.4) else item.tex:SetVertexColor(1, 1, 1) end
+            Skin:Text(item.caption, "body", "text.secondary", 11)
+            item.caption:SetText(db.knownTint and L.QUALITY_KNOWN or L.OFF)
+            local size = math.min(db.ringSize, 90)
+            ring:SetSize(size, size)
+            ring:SetVertexColor(Theme:Color("accent.primary"))
+            ring:SetAlpha(db.cursorRing and 1 or 0.2)
         end
     end,
 })

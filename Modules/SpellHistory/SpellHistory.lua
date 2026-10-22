@@ -4,10 +4,12 @@ local Skin = ns.Skin
 
 --[[ SpellHistory: a strip of your most recent successful casts. Spell IDs may be secret in
     restricted content; then the icon is still shown (C_Spell.GetSpellTexture and
-    Texture:SetTexture accept secrets) but filtering is skipped. ]]
+    Texture:SetTexture accept secrets) but filtering is skipped. Interrupted and failed casts can join the
+    strip greyed out with a red cross (UNIT_SPELLCAST_INTERRUPTED / _FAILED, same spell ID rules). ]]
 local M = ns:NewModule("SpellHistory", {
     label = "SPELLHISTORY", desc = "SPELLHISTORY_DESC", category = "combat", order = 40,
-    defaults = { count = 6, size = 32, spacing = 4, grow = "RIGHT", fade = 8, inCombatOnly = false },
+    defaults = { count = 6, size = 32, spacing = 4, grow = "RIGHT", fade = 8, inCombatOnly = false,
+        border = ns.Style.Border({ style = "solid" }), zoom = 0.08, markFailed = false },
 })
 
 local IGNORE = { [6603] = true, [75] = true } -- spellIDs: Auto Attack (Forever: Attack), Auto Shot
@@ -15,13 +17,30 @@ local IGNORE = { [6603] = true, [75] = true } -- spellIDs: Auto Attack (Forever:
 local strip
 local icons = {}
 
+-- One history icon, real or preview: crop, the border spec, and the failed-cast cross (hidden).
+function M:StyleIcon(f)
+    Skin:IconZoom(f.tex, self.db.zoom)
+    Skin:BorderSpec(f, self.db.border, "border.black")
+    if not f.cross then
+        f.cross = f:CreateFontString(nil, "OVERLAY")
+        f.cross:SetPoint("CENTER")
+        f.cross:SetText("×")
+        f.cross:Hide()
+    end
+    Skin:Text(f.cross, "combat", "state.danger", math.max(12, math.floor(f:GetHeight() * 0.8)))
+end
+
+-- failed: draw the icon as an interrupted / failed cast
+function M.MarkIcon(f, failed)
+    f.tex:SetDesaturated(failed and true or false)
+    f.tex:SetVertexColor(1, failed and 0.55 or 1, failed and 0.55 or 1)
+    if f.cross then f.cross:SetShown(failed and true or false) end
+end
+
 local function newIcon(i)
     local f = CreateFrame("Frame", nil, strip)
     f.tex = f:CreateTexture(nil, "ARTWORK")
     f.tex:SetAllPoints()
-    Skin:Icon(f.tex)
-    Skin:Border(f, "border.black")
-    Skin:Shadow(f, 4, nil, 0.45)
     f.fade = f:CreateAnimationGroup()
     local a = f.fade:CreateAnimation("Alpha")
     a:SetFromAlpha(1); a:SetToAlpha(0); a:SetDuration(0.6)
@@ -39,6 +58,7 @@ local function layout()
     for i = 1, db.count do
         local f = icons[i] or newIcon(i)
         f:SetSize(db.size, db.size)
+        M:StyleIcon(f)
         f:ClearAllPoints()
         local offset = (i - 1) * (db.size + db.spacing) * sign
         local anchor = sign > 0 and (horiz and "LEFT" or "BOTTOM") or (horiz and "RIGHT" or "TOP")
@@ -59,6 +79,7 @@ local function render()
         f.fade:Stop()
         if entry and (db.fade <= 0 or now < entry.expires) then
             f.tex:SetTexture(entry.texture)
+            M.MarkIcon(f, entry.failed)
             f:SetAlpha(1)
             f:Show()
         else
@@ -73,23 +94,36 @@ local function startTicker()
     if not M.ticker and M.db.fade > 0 then M.ticker = C_Timer.NewTicker(0.25, tick) end
 end
 
-local function push(texture)
+local function push(texture, failed)
     local db = M.db
-    table.insert(history, 1, { texture = texture, expires = GetTime() + db.fade })
+    table.insert(history, 1, { texture = texture, expires = GetTime() + db.fade, failed = failed })
     for i = #history, db.count + 1, -1 do history[i] = nil end
     render()
     startTicker()
 end
 
-local function onCast(_, _, _, _, spellID)
+local function record(spellID, failed)
     if M.db.inCombatOnly and not InCombatLockdown() then return end
     if ns.Secret.IsSecret(spellID) then
-        push(C_Spell.GetSpellTexture(spellID))
+        push(C_Spell.GetSpellTexture(spellID), failed)
         return
     end
     if IGNORE[spellID] then return end
     local texture = C_Spell.GetSpellTexture(spellID)
-    if texture then push(texture) end
+    if texture then push(texture, failed) end
+end
+
+local function onCast(_, _, _, _, spellID) record(spellID, false) end
+
+-- A failed attempt repeats while a key is held (out of range, not ready): one mark per cast GUID.
+local lastFailed
+local function onFailed(_, _, _, castGUID, spellID)
+    if not M.db.markFailed then return end
+    if castGUID and not ns.Secret.IsSecret(castGUID) then
+        if castGUID == lastFailed then return end
+        lastFailed = castGUID
+    end
+    record(spellID, true)
 end
 
 function tick()
@@ -114,6 +148,8 @@ function M:OnEnable()
     end
     strip:Show()
     ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", self, onCast, "player")
+    ns.Events:OnUnit("UNIT_SPELLCAST_INTERRUPTED", self, onFailed, "player")
+    ns.Events:OnUnit("UNIT_SPELLCAST_FAILED", self, onFailed, "player")
     startTicker()
 end
 

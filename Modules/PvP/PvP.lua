@@ -4,10 +4,16 @@ local Skin = ns.Skin
 
 --[[ PvP: safer queue pops (no accidental "Leave Queue", visible timer), TAB targets enemy players
     inside arenas/battlegrounds, and /gg to surrender an arena. Arena dampening display was removed:
-    it relied on combat-log/aura data that 12.x restricts. ]]
+    it relied on combat-log/aura data that 12.x restricts.
+    S16: the countdown is its own toggle with a font, and a queue pop sound plays on the chosen channel (so
+    it is heard with game sound off when the channel is Master). Arena frames, objective placement and
+    battleground auto release stay on their own pages (Unit Frames, Movers, Automation) and are linked. ]]
 local M = ns:NewModule("PvP", {
     label = "PVP", desc = "PVP_DESC", category = "combat", order = 50, reloadOnToggle = true,
-    defaults = { safeQueue = true, tabBinder = false, surrender = true },
+    defaults = {
+        safeQueue = true, showTimer = true, tabBinder = false, surrender = true, queueSound = "",
+        timer = ns.Style.Text(14, { outline = "OUTLINE", shadow = false }),
+    },
 })
 
 ---------------------------------------------------------------- safe queue
@@ -21,7 +27,7 @@ local function ensureTimer()
     timer.text:SetPoint("CENTER", 9, 0)
     timer.icon = ns.Icons:Create(timer, "clock", 14, "accent.primary", "OVERLAY")
     timer.icon:SetPoint("RIGHT", timer.text, "LEFT", -5, 0)
-    Skin:Text(timer.text, "number", "accent.primary", 14, "OUTLINE")
+    M:StyleTimer()
     timer:SetScript("OnUpdate", function(self, elapsed)
         self.acc = (self.acc or 0) + elapsed
         if self.acc < 0.2 then return end
@@ -33,14 +39,25 @@ local function ensureTimer()
     return timer
 end
 
+function M:StyleTimer(fs)
+    fs = fs or (timer and timer.text)
+    if fs then Skin:TextSpec(fs, self.db.timer, "number", "accent.primary") end
+end
+
+function M:Refresh()
+    self:StyleTimer()
+end
+
 -- Runs after PVPReadyDialog_Display has laid out the buttons, so the Enter button is re-centred the
 -- same way Blizzard does it for queues that never offer "Leave Queue".
 local function onDisplay(dialog)
-    if not (M:IsEnabled() and M.db.safeQueue) then return end
+    if not M:IsEnabled() then return end
+    if M.db.queueSound ~= "" then ns.Media:PlaySound(M.db.queueSound) end
+    if M.db.showTimer then ensureTimer():Show() elseif timer then timer:Hide() end
+    if not M.db.safeQueue then return end
     dialog.leaveButton:Hide()
     dialog.enterButton:ClearAllPoints()
     dialog.enterButton:SetPoint("BOTTOM", dialog, "BOTTOM", 0, 25)
-    ensureTimer():Show()
 end
 
 ---------------------------------------------------------------- TAB binder

@@ -182,7 +182,7 @@ local function buildPicker(row)
         r.name:SetText(it.name)
         r.name:SetTextColor(qualityColor(it.quality))
         r.level:SetText(it.level > 0 and it.level or "")
-        r.slot:SetText(slotLabel(it.slot))
+        r.slot:SetText(it.source and L["SIM_SOURCE_" .. it.source:upper()] or slotLabel(it.slot))
         local res = index[it.key]
         r.sim:SetText(res and C.Signed(res.pct, "%.1f%%") or "")
         if res then r.sim:SetTextColor(Theme:Color(res.pct >= 0 and "state.success" or "state.danger")) end
@@ -404,6 +404,9 @@ ns:RegisterOptions("Sim", {
     { type = "preview", kind = "sim" },
     { type = "header", label = "SIM_START", icon = "sim", wide = true },
     { type = "description", text = "SIM_INTRO" },
+    { type = "toggle", key = "bank", label = "SIM_BANK", desc = "SIM_BANK_DESC", keywords = "bank warband gear include" },
+    { type = "toggle", key = "vault", label = "SIM_VAULT", desc = "SIM_VAULT_DESC", keywords = "great vault weekly reward",
+      feature = "vault" },
     { type = "custom", label = "SIM_PICK", fullWidth = true, height = 340, get = function() return true end,
       build = function(row) return buildPicker(row) end },
     { type = "custom", label = "SIM_RUN", fullWidth = true, height = 128, get = function() return true end,

@@ -232,7 +232,8 @@ function Sk:Place(fs, parent, spec)
 end
 
 --[[ The style library: one spec drives every module's borders, shadows and backdrops (Core/Style.lua).
-    border spec: { style, size = px, color = {r,g,b,a}|{token="class"}|false, shadow = "auto"|"none"|"soft"|"hard"|"glow" }
+    border spec: { style, size = px, color = {r,g,b,a}|{token="class"}|false, shadow = "auto"|"none"|"soft"|"hard"|"glow",
+      shadowSize = px (0 = sized from the border) }
       theme   follow Appearance & General (theme.borderStyle, theme.borderSize)
       none    nothing                       pixel   exactly one physical pixel, whatever the size
       solid   size px lines                 thick   double weight (min 2 px)
@@ -309,13 +310,14 @@ function Sk:BorderSpec(frame, spec, token)
     end
     local kind = shadowOf(style, spec.shadow)
     local depth = Theme.settings.shadowAlpha or 0.75
+    local fixed = type(spec.shadowSize) == "number" and spec.shadowSize > 0 and spec.shadowSize or nil
     if kind == "soft" then
-        self:Shadow(frame, 6 + size * 3, nil, depth)
+        self:Shadow(frame, fixed or 6 + size * 3, nil, depth)
     elseif kind == "hard" then
-        nineSlice(frame, "shadow", Media:Glow("Tight"), 3 + size * 2, 0, 0, 0, math.min(1, depth + 0.2))
+        nineSlice(frame, "shadow", Media:Glow("Tight"), fixed or 3 + size * 2, 0, 0, 0, math.min(1, depth + 0.2))
     elseif kind == "glow" then
         local gr, gg, gb = Theme:Color("accent.glow")
-        nineSlice(frame, "shadow", Media:Glow("Wide"), 8 + size * 3, gr, gg, gb, 0.7)
+        nineSlice(frame, "shadow", Media:Glow("Wide"), fixed or 8 + size * 3, gr, gg, gb, 0.7)
     else
         self:HideShadow(frame)
     end

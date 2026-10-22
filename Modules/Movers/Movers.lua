@@ -11,10 +11,14 @@ local W, Skin = ns.Widgets, ns.Skin
       target only receives ClearAllPoints/SetPoint/SetScale/SetAlpha. Protected targets are touched
       out of combat only (ns.Combat:Run); unlock mode itself closes when combat starts.
     * Positions are per profile: db.frames[key] = { point, x, y (UIParent units), scale, alpha }.
-      The original anchors are kept in memory so "reset" restores Blizzard's own layout. ]]
+      The original anchors are kept in memory so "reset" restores Blizzard's own layout.
+    * S16: snapping to other frames' edges, an arrow-key switch, live coordinates, an unlock key (an override
+      binding to our own button, set out of combat) and one scale for Blizzard's UI panel windows (M.WINDOWS,
+      none of them Edit Mode systems; scaled on show, protected ones out of combat only). ]]
 local M = ns:NewModule("Movers", {
     label = "MOVERS", desc = "MOVERS_DESC", category = "interface", order = 95,
-    defaults = { grid = true, gridSize = 32, snap = true, frames = {} },
+    defaults = { grid = true, gridSize = 32, snap = true, frames = {}, snapFrames = true, arrows = true, coords = true,
+        unlockKey = "", windowScale = 1 },
 })
 
 local OVERLAY_MIN_W, OVERLAY_MIN_H = 160, 36
@@ -33,6 +37,11 @@ M.BLIZZARD = {
     { key = "EventToasts", frame = "EventToastManagerFrame", label = "MOVERS_EVENT_TOASTS", noAlpha = true, hook = "UpdateAnchor" },
     { key = "ReadyCheck", frame = "ReadyCheckFrame", label = "MOVERS_READY_CHECK", noAlpha = true },
 }
+
+-- UI panel windows "Scale Blizzard windows" applies to (several load on demand; scaled when shown).
+M.WINDOWS = { "CharacterFrame", "PVEFrame", "FriendsFrame", "MerchantFrame", "MailFrame", "GossipFrame", "QuestFrame",
+    "BankFrame", "PlayerSpellsFrame", "CollectionsJournal", "EncounterJournal", "AchievementFrame", "ProfessionsFrame",
+    "AuctionHouseFrame", "WeeklyRewardsFrame", "CommunitiesFrame", "PlayerChoiceFrame" }
 
 local entries, byKey = {}, {}
 for _, e in ipairs(M.BLIZZARD) do entries[#entries + 1] = e; byKey[e.key] = e end
@@ -188,6 +197,30 @@ local function snapped(v, origin)
     return origin + math.floor((v - origin) / g + 0.5) * g
 end
 
+-- Edge snapping: pull the dragged box's centre so one of its edges (or its centre line) meets another
+-- shown frame's edge when within SNAP px. Returns the adjusted centre.
+local SNAP = 10
+function M.SnapToEdges(cx, cy, w, h, others)
+    local bestX, bestY = SNAP + 1, SNAP + 1
+    local nx, ny = cx, cy
+    for _, o in ipairs(others) do
+        local ox, oy, ow, oh = o[1], o[2], o[3], o[4]
+        for _, mine in ipairs({ -w / 2, 0, w / 2 }) do
+            for _, theirs in ipairs({ -ow / 2, 0, ow / 2 }) do
+                local d = (ox + theirs) - (cx + mine)
+                if math.abs(d) < math.abs(bestX) then bestX, nx = d, cx + d end
+            end
+        end
+        for _, mine in ipairs({ -h / 2, 0, h / 2 }) do
+            for _, theirs in ipairs({ -oh / 2, 0, oh / 2 }) do
+                local d = (oy + theirs) - (cy + mine)
+                if math.abs(d) < math.abs(bestY) then bestY, ny = d, cy + d end
+            end
+        end
+    end
+    return nx, ny
+end
+
 ---------------------------------------------------------------- overlays
 local overlays = {}
 
@@ -206,7 +239,28 @@ local function syncOverlay(o)
     o:SetPoint("CENTER", UIParent, "BOTTOMLEFT", cx, cy)
     o:SetSize(math.max(OVERLAY_MIN_W, w), math.max(OVERLAY_MIN_H, h))
     local s = saved(o.entry)
+    o.state:SetShown(M.db.coords)
     o.state:SetText(s and s.point and ("%s  %d, %d"):format(s.point, s.x, s.y) or L.MOVERS_DEFAULT_POS)
+end
+
+-- Every other shown overlay's box, for edge snapping.
+local function otherBoxes(self)
+    local out = {}
+    for _, other in pairs(overlays) do
+        if other ~= self and other:IsShown() then
+            local x, y = other:GetCenter()
+            if x then out[#out + 1] = { x, y, other:GetWidth(), other:GetHeight() } end
+        end
+    end
+    return out
+end
+
+-- Centre (UIParent units) of the overlay at the end of a drag: grid snap, then edge snap.
+local function dropPoint(self)
+    local cx, cy = self:GetCenter()
+    cx, cy = snapped(cx, UIParent:GetWidth() / 2), snapped(cy, UIParent:GetHeight() / 2)
+    if M.db.snapFrames then cx, cy = M.SnapToEdges(cx, cy, self:GetWidth(), self:GetHeight(), otherBoxes(self)) end
+    return cx, cy
 end
 
 local function selectEntry(e)
@@ -294,12 +348,19 @@ local function overlayFor(e)
         selectEntry(e)
         self.dragging = true
         self:StartMoving()
+        -- live coordinates while dragging
+        if M.db.coords then
+            self:SetScript("OnUpdate", function(me)
+                local x, y = me:GetCenter()
+                if x then me.state:SetFormattedText("%d, %d", x - UIParent:GetWidth() / 2, y - UIParent:GetHeight() / 2) end
+            end)
+        end
     end)
     o:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
+        self:SetScript("OnUpdate", nil)
         self.dragging = false
-        local cx, cy = self:GetCenter()
-        commit(e, snapped(cx, UIParent:GetWidth() / 2), snapped(cy, UIParent:GetHeight() / 2))
+        commit(e, dropPoint(self))
         syncOverlay(self)
         if toolbar then toolbar:Update() end
         ns.Events:Fire("PUI_MOVERS")
@@ -315,7 +376,7 @@ local function overlayFor(e)
     end)
     -- Arrow keys nudge the hovered overlay (keyboard is captured only while the cursor is on it).
     o:SetScript("OnEnter", function(self)
-        if not InCombatLockdown() then self:EnableKeyboard(true) end
+        if M.db.arrows and not InCombatLockdown() then self:EnableKeyboard(true) end
         W.ShowTooltip(self, M:LabelOf(e), L.MOVERS_OVERLAY_TIP)
     end)
     o:SetScript("OnLeave", function(self)
@@ -419,16 +480,63 @@ function M:OnSlash()
     self:SetUnlocked(not unlocked)
 end
 
+---------------------------------------------------------------- Blizzard windows scale
+local scaledHooks = {}
+local function scaleWindow(f)
+    if not (M:IsEnabled() and type(f) == "table" and f.SetScale) or f:IsForbidden() or M.IsManaged(f) then return end
+    local want = M.db.windowScale or 1
+    if blocked(f) then return ns.Combat:Run("movers.window", scaleWindow, f) end
+    if want == 1 and not scaledHooks[f] then return end
+    f:SetScale(want)
+end
+
+function M:ApplyWindowScale()
+    for _, name in ipairs(M.WINDOWS) do
+        local f = rawget(_G, name) -- load-on-demand windows may not exist yet
+        if type(f) == "table" and f.HookScript then
+            if not scaledHooks[f] and (self.db.windowScale or 1) ~= 1 then
+                scaledHooks[f] = true
+                f:HookScript("OnShow", scaleWindow)
+            end
+            if scaledHooks[f] and f:IsShown() then scaleWindow(f) end
+        end
+    end
+end
+
+---------------------------------------------------------------- unlock key
+-- An override binding (ours, owned by a hidden frame) clicks our own toggle button: no Blizzard binding changes.
+local keyOwner = CreateFrame("Frame")
+local toggleButton = CreateFrame("Button", "PhoenixUI_MoversToggle", UIParent)
+toggleButton:Hide()
+toggleButton:SetScript("OnClick", function() if not InCombatLockdown() then M:SetUnlocked(not unlocked) end end)
+
+-- "ctrl-shift-m" -> "CTRL-SHIFT-M"; empty or malformed keys bind nothing.
+function M.NormalizeKey(text)
+    local key = tostring(text or ""):upper():gsub("%s+", "")
+    if key == "" or key:find("[^%w%-]") then return nil end
+    return key
+end
+
+function M:ApplyUnlockKey(off)
+    ns.Combat:Run("movers.key", function()
+        ClearOverrideBindings(keyOwner)
+        local key = not off and M:IsEnabled() and M.NormalizeKey(M.db.unlockKey)
+        if key then SetOverrideBindingClick(keyOwner, true, key, toggleButton:GetName(), "LeftButton") end
+    end)
+end
+
 ---------------------------------------------------------------- lifecycle
 function M:OnEnable()
     self:ApplyAll()
+    self:ApplyWindowScale()
+    self:ApplyUnlockKey()
     ns.Events:On("PLAYER_REGEN_DISABLED", self, function()
         if unlocked then
             self:SetUnlocked(false)
             ns:Print(L.MOVERS_COMBAT_LOCKED)
         end
     end)
-    ns.Events:On("ADDON_LOADED", self, function() self:ApplyAll() end) -- frames from load-on-demand addons
+    ns.Events:On("ADDON_LOADED", self, function() self:ApplyAll(); self:ApplyWindowScale() end) -- load-on-demand frames
     ns.Events:On("UI_SCALE_CHANGED", self, function() if grid and grid:IsShown() then grid:Layout() end end)
     ns.Events:On("DISPLAY_SIZE_CHANGED", self, function() if grid and grid:IsShown() then grid:Layout() end end)
     EventRegistry:RegisterCallback("EditMode.Enter", function() if unlocked then self:SetUnlocked(false) end end, self)
@@ -436,12 +544,15 @@ end
 
 function M:OnDisable()
     self:SetUnlocked(false)
+    self:ApplyUnlockKey(true)
     EventRegistry:UnregisterCallback("EditMode.Enter", self)
     for _, e in ipairs(entries) do if not e.store then restore(e) end end
 end
 
 function M:Refresh()
     self:ApplyAll()
+    self:ApplyWindowScale()
+    self:ApplyUnlockKey()
     if unlocked then
         if self.db.grid then grid:Layout(); grid:Show() else grid:Hide() end
         for _, o in pairs(overlays) do syncOverlay(o) end

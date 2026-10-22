@@ -923,6 +923,35 @@ search for Mythic+ groups.
 - [ ] **13m.12 WoW Forever.** **Expect:** no Group Finder page (Content shows Quests, Encounters, PvP); the game's
   own group finder works unchanged.
 
+## 13n. Remaining modules (2.0 S16)
+
+Start with `/console taintLog 1` and an empty `/pui bugs`.
+
+- [ ] **13n.1 Damage Meter.** Open Blizzard's meter, change bar texture, reverse fill, shading, fonts, background
+  and border (shadow size). **Expect:** bars and window follow live; Edit Mode still sizes the meter.
+- [ ] **13n.2 Combat Text.** Turn on the scroll areas, press *Test*, then fight a dummy. **Expect:** incoming,
+  target and notification lines in their areas, rapid hits merge (×N), crits grow or flash; no Lua error with
+  secret amounts in instances. *Damage number font* applies after a relog.
+- [ ] **13n.3 Spell History / Item Level.** **Expect:** border, zoom and failed marks on the cast strip; item levels
+  on character, inspect, bags, flyout, loot and roll windows and merchants with track, enchant and socket notes.
+- [ ] **13n.4 Mythic+.** In a key: chest timers, affix icons, deaths by player, timer look. Open the dungeon list.
+  **Expect:** the party keystones window beside it.
+- [ ] **13n.5 Movers.** `/pui move`: drag near another frame, nudge with arrows (Shift = 10 px), watch the
+  coordinates; set an unlock key and a window scale. **Expect:** snaps, nudges, key toggles; Character, Group Finder
+  and other windows open at the chosen scale; nothing in combat.
+- [ ] **13n.6 Quality of Life.** Hide zone text and boss banner (change zone, kill a boss), the markers bar in a
+  group (place markers, clear), cursor ring, combat alert, merchant known-item tint, each game setting.
+  **Expect:** each works and reverts when switched off; markers bar hidden solo and in pet battles.
+- [ ] **13n.7 Automation.** Fast loot (and with the auto-loot modifier), a bind-on-pickup item solo, an NPC with
+  one gossip option (Shift pauses), a pet-battle duel and a guild invite, low health. **Expect:** each fires once.
+- [ ] **13n.8 AFK, PvP, Sim, General.** `/afk` (model, stats line, dim, not in instances); a battleground queue (countdown
+  font, sound); Sim with bank and vault items; General UI scale, outline, class colour override (tooltips, chat
+  and frames follow), sound channel, mute list. **Expect:** all live; class colours revert with *Reset*.
+- [ ] **13n.9 Settings window.** Search for *countdown*, *cooldown manager*, *shadow size*, *markers*. **Expect:** one
+  owner row per game setting with links elsewhere; Content has three sub-headings; every page shows its target met.
+- [ ] **13n.10 Taint and Forever.** After 13n.1–13n.9 no blocked-action or taint entry naming Phoenix_UI. On WoW
+  Forever: no Mythic+, Sim or Group Finder pages; Great Vault rows hidden; everything else works.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

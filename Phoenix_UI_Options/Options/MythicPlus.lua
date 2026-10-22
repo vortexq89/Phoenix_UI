@@ -1,7 +1,11 @@
 local _, ns = ...
+local Opt = ns.Opt
+
+local function noTimer(m) return not m.db.timer end
+local function timer(row) return Opt.With(row, { disabled = row.disabled or noTimer }) end
 
 ns:RegisterOptions("MythicPlus", {
-    { type = "preview", kind = "keystones" },
+    { type = "preview", kind = "mplustimer" },
     { type = "header", label = "MPLUS_TIMER", icon = "clock" },
     { type = "toggle", key = "timer", label = "MPLUS_TIMER_SHOW", desc = "MPLUS_TIMER_SHOW_DESC",
       keywords = "timer chest upgrade clock overlay" },
@@ -17,8 +21,30 @@ ns:RegisterOptions("MythicPlus", {
       keywords = "best splits ahead behind compare warpdeplete", disabled = function(m) return not m.db.timer end },
     { type = "toggle", key = "timerPull", label = "MPLUS_TIMER_PULL", desc = "MPLUS_TIMER_PULL_DESC",
       keywords = "pull forces current percent nameplates", disabled = function(m) return not (m.db.timer and m.db.timerForces) end },
+    timer({ type = "toggle", key = "timerChests", label = "MPLUS_TIMER_CHESTS", desc = "MPLUS_TIMER_CHESTS_DESC",
+      keywords = "chest +2 +3 upgrade timers ticks" }),
+    timer({ type = "toggle", key = "timerAffixIcons", label = "MPLUS_TIMER_AFFIXES", desc = "MPLUS_TIMER_AFFIXES_DESC",
+      keywords = "affix icons tooltip" }),
+    timer({ type = "toggle", key = "timerDeathLog", label = "MPLUS_TIMER_DEATHLOG", desc = "MPLUS_TIMER_DEATHLOG_DESC",
+      keywords = "death penalty breakdown who died" }),
     { type = "button", label = "MPLUS_TIMER_PLACE", desc = "MPLUS_TIMER_PLACE_DESC", button = "OPEN_EDIT_MODE",
       icon = "editmode", combat = true, func = function() ns.EditMode:Open() end },
+    { type = "header", label = "MPLUS_TIMER_LOOK", icon = "theme" },
+    timer({ type = "range", key = "width", label = "MPLUS_TIMER_WIDTH", min = 200, max = 400, step = 4, keywords = "size wide" }),
+    timer({ type = "texture", key = "bar.texture", label = "MPLUS_TIMER_BAR", allowDefault = true, keywords = "bar texture" }),
+    timer({ type = "toggle", key = "bar.reverse", label = "CB_REVERSE", desc = "MPLUS_TIMER_REVERSE_DESC", keywords = "fill direction" }),
+    timer({ type = "toggle", key = "bar.smooth", label = "UF_SMOOTH", desc = "MPLUS_TIMER_SMOOTH_DESC" }),
+    timer({ type = "range", key = "bar.shade", label = "UF_SHADE", desc = "UF_SHADE_DESC", min = 0, max = 0.8, step = 0.05,
+      keywords = "gradient shade" }),
+    timer({ type = "colors", keys = { "colors.plus3", "colors.plus2", "colors.onTime", "colors.over" },
+      tokens = { "accent.primary", "accent.secondary", "state.warning", "state.danger" }, label = "MPLUS_TIMER_COLORS",
+      labels = { "MPLUS_COLOR_PLUS3", "MPLUS_COLOR_PLUS2", "MPLUS_COLOR_ONTIME", "MPLUS_COLOR_OVER" },
+      keywords = "colour color chest over time" }),
+    timer(Opt.Text("clock", "MPLUS_TIMER_CLOCK_FONT", { min = 14, max = 40 })),
+    timer(Opt.Text("lines", "MPLUS_TIMER_LINES_FONT", { min = 8, max = 20 })),
+    { type = "button", label = "MPLUS_TRACKER_LINK", desc = "MPLUS_TRACKER_LINK_DESC", button = "MPLUS_TRACKER_LINK_BUTTON",
+      icon = "tracker", func = function() ns.Config:Show("Quests") end,
+      keywords = "hide objective tracker quest list collapse dungeon" },
     { type = "header", label = "MPLUS_KEYSTONE", icon = "mythicplus" },
     { type = "toggle", key = "autoInsert", label = "MPLUS_AUTO_INSERT", desc = "MPLUS_AUTO_INSERT_DESC",
       keywords = "keystone font of power" },
@@ -26,6 +52,8 @@ ns:RegisterOptions("MythicPlus", {
     { type = "header", label = "MPLUS_KEYS", icon = "groupframes", wide = true },
     { type = "toggle", key = "partyKeys", label = "MPLUS_KEYS_SHARE", desc = "MPLUS_KEYS_SHARE_DESC",
       keywords = "keystone party keys libkeystone bigwigs dbm" },
+    { type = "toggle", key = "keysWindow", label = "MPLUS_KEYS_WINDOW", desc = "MPLUS_KEYS_WINDOW_DESC",
+      disabled = function(m) return not m.db.partyKeys end, keywords = "party keys window dungeon list challenges" },
     { type = "custom", label = "MPLUS_KEYS_LIST", fullWidth = true, height = 150, get = function() return true end,
       hidden = function(m) return not m.db.partyKeys end, build = function(row) return ns.modules.MythicPlus.Keystones.BuildRow(row) end },
     { type = "button", label = "MPLUS_KEYS_REQUEST", desc = "MPLUS_KEYS_REQUEST_DESC", button = "MPLUS_KEYS_REFRESH",

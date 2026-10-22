@@ -9,7 +9,6 @@ local function noGrid(_, bar) return bar == "pet" or bar == "stance" or bar == "
 local function noBars(m) return blizzard(m) end
 
 local lockGet, lockSet = ns.Combat.CVarAccessors("lockActionBars")
-local cdGet, cdSet = ns.Combat.CVarAccessors("countdownForCooldowns")
 
 local MODE = { { value = "phoenix", label = "AB_MODE_PHOENIX" }, { value = "blizzard", label = "AB_MODE_BLIZZARD" } }
 local ORDER = { { value = "normal", label = "AB_ORDER_NORMAL" }, { value = "reversed", label = "AB_ORDER_REVERSED" } }
@@ -160,8 +159,8 @@ ns:RegisterOptions("ActionBars", {
     { type = "header", label = "AB_COUNT_HEADER", icon = "fonts" },
     Opt.Text("count", "AB_COUNT_FONT", { place = true, max = 40 }),
     { type = "header", label = "AB_CD_HEADER", icon = "cooldowntext" },
-    { type = "toggle", label = "CD_NUMBERS", desc = "CD_NUMBERS_DESC", get = cdGet, set = cdSet, combat = true,
-      keywords = "countdown omnicc timer" },
+    { type = "button", label = "CD_NUMBERS", desc = "AB_CD_LINK_DESC", button = "AUTO_OPEN_PAGE", icon = "link",
+      keywords = "countdown omnicc timer", func = function() ns.Config:Show("CooldownText") end },
     { type = "range", key = "cooldown.size", label = "AB_CD_SIZE", desc = "AB_CD_SIZE_DESC", min = 0, max = 30, step = 1 },
     { type = "toggle", key = "cooldown.charges", label = "AB_CD_CHARGES", desc = "AB_CD_CHARGES_DESC" },
     ------------------------------------------------------------ extra bars

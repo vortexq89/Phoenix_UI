@@ -135,8 +135,7 @@ local function addTargetedBy(tt, unit)
             local name = UnitName(member)
             local _, classFile = UnitClass(member)
             if plain(name, classFile) and name then
-                local c = classFile and C_ClassColor.GetClassColor(classFile)
-                names[#names + 1] = c and c:WrapTextInColorCode(name) or name
+                names[#names + 1] = classFile and ns.Util.WrapClass(classFile, name) or name
             end
         end
     end

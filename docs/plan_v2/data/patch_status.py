@@ -64,7 +64,62 @@ S15 = {"GroupFinder": {"Filter panel next to the group list":"has", "Min / max m
        "Dungeon / difficulty / key level":"part", "Advanced expression (Phoenix syntax)":"has", "Sort":"has",
        "One-click sign up (double click)":"has", "Role / class icons on list entries":"has",
        "Leader score + best key in tooltip":"has", "Raid lockout hint":"has", "Auto queue (role check) accept":"part"}}
-NOW = {"Chat": 58, "Minimap": 47, "Tooltip": 54, "Bags": 53, "DataTexts": 67, "Skins": 34, "Quests": 38, "GroupFinder": 57}
+# S16 (2026-10-22): every module re-audited against the shipped option pages (tools/smoke/harness.lua PUI_LABELS_OUT
+# dump). Per module: the status for rows not yet "has" (None = keep), then per-row overrides. Two new statuses leave
+# the target: "link" = owned by another Phoenix page or Edit Mode (a link row points there), "api" = not possible
+# with the 12.x API (secret values, protected frames, no data source).
+S16 = {
+ "ActionBars": ("has", {"Hide charge count at 0":"new", "Cooldown numbers (Blizzard countdown)":"link",
+   "Cooldown number size":"link"}),
+ "CooldownText": ("has", {}),
+ "Tracker": ("has", {"Glow colour / lines / speed / thickness":"part", "Buff bar fill direction":"part",
+   "Bar background texture":"part", "Buff bar smooth fill":"new", "Buff bar gradient":"new", "Stack-based fill":"new"}),
+ "UnitFrames": ("has", {"Frame background texture":"part", "Click casting (Blizzard Click Cast bindings)":"new",
+   "Health bar height share":"part", "Over-absorb glow line":"part", "Overheal shown":"new",
+   "Prediction colours (mine / others)":"part", "Detached width":"part", "Power fill direction":"part",
+   "Power gradient":"part", "Spell cost prediction":"new", "Mana regen spark":"new", "Pip shape":"new",
+   "Stagger / Soul fragments / Ebon Might extras":"part", "Fade out of combat":"part",
+   "Level text (difficulty colour)":"part", "Portrait size":"new", "Threat % text":"part",
+   "Ready check / summon / resurrect":"part", "Arena: trinket / racial / DR tracker":"part"}),
+ "GroupFrames": ("has", {"Self position":"part", "Dispel colours":"new", "Missing raid buff icon":"link"}),
+ "NamePlates": ("has", {"Health background texture":"part", "NPC title / guild on friendly":"new",
+   "Preview eye toggles (marker, quest, target, absorb)":"part"}),
+ "CastBars": ("has", {"Background texture":"part", "Hide Blizzard player cast bar":"part"}),
+ "Auras": ("has", {}),
+ "CombatText": ("has", {"Area position / size / direction":"part"}),
+ "DamageMeter": ("has", {"Bar height / spacing":"link", "Class colours":"link", "Value format":"link",
+   "Show rank numbers / spec icons":"link", "Auto-show in combat, hide after":"link", "Second window":"link",
+   "Meter bar smooth fill":"api", "Meter bar fill direction":"part", "Window background texture":"part"}),
+ "SpellHistory": ("has", {}),
+ "ItemLevel": ("has", {"Loot / roll / great vault / merchant":"part", "Character sheet: stats panel restyle":"new"}),
+ "General": ("has", {"Replace Blizzard fonts (damage, names, chat)":"part", "Default glow style":"part",
+   "Glow colour / lines / speed / thickness":"part", "Reaction colours":"link", "Dispel colours":"link",
+   "Power colours override":"new"}),
+ "Profiles": ("has", {"Per-character overrides":"new", "Import with preview of changes":"part"}),
+ "Movers": ("has", {}),
+ "Quality": ("has", {"Hide boss banner / zone text / level-up":"part", "CVar browser (common safe CVars)":"part"}),
+ "Automation": ("has", {"Auto role check accept":"link"}),
+ "AFK": ("has", {}),
+ "Bugs": ("has", {}),
+ "MythicPlus": ("has", {"Hide Blizzard objective tracker in M+":"link", "Teleport buttons on dungeon list":"new"}),
+ "Encounters": ("has", {"Per-spell colour override":"api", "Private aura sounds":"api"}),
+ "PvP": ("has", {"Battleground score on top bar":"link", "Healer marker on enemy plates":"api",
+   "Arena prep: enemy specs":"link", "Dampening display":"api"}),
+ "Sim": ("has", {"Include bags / bank / vault / catalyst options":"part"}),
+ "Chat": (None, {"Chat border shadow size":"has"}),
+ "Minimap": (None, {"Border shadow size":"has"}),
+ "Tooltip": (None, {"Border shadow size":"has"}),
+ "Bags": (None, {"Slot border shadow size":"has", "Window border shadow size":"has", "Item level font":"link",
+   "Item level size":"link", "Item level outline":"link", "Item level shadow":"link", "Item level colour":"link"}),
+ "DataTexts": (None, {"Panel border shadow size":"has"}),
+ "Skins": (None, {"Window border shadow size":"has"}),
+ "GroupFinder": (None, {"Remember sign-up note":"api"}),
+}
+
+
+
+NOW = {"ActionBars": 117, "CooldownText": 15, "Tracker": 92, "UnitFrames": 205, "GroupFrames": 194, "NamePlates": 276, "CastBars": 103, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 59, "Minimap": 48, "Tooltip": 55, "Bags": 55, "ItemLevel": 19, "DataTexts": 68, "Skins": 35, "General": 31, "Profiles": 15, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 38, "GroupFinder": 58, "MythicPlus": 34, "Encounters": 64, "PvP": 10, "Sim": 11, "Diagnostics": 9}
+NOW_FOREVER = {"ActionBars": 116, "CooldownText": 15, "Tracker": 88, "UnitFrames": 205, "GroupFrames": 193, "NamePlates": 270, "CastBars": 113, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 59, "Minimap": 46, "Tooltip": 53, "Bags": 54, "ItemLevel": 19, "DataTexts": 67, "Skins": 33, "General": 31, "Profiles": 11, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 36, "GroupFinder": None, "MythicPlus": None, "Encounters": 9, "PvP": 10, "Sim": None, "Diagnostics": 9}
 
 def apply():
     for m, fx in FIX.items():
@@ -75,7 +130,14 @@ def apply():
         assert set(fx) <= names, (m, set(fx) - names)
         for row in MOD[m]["rows"]:
             if row["name"] in fx: row["status"] = fx[row["name"]]
+    for m, (default, fx) in S16.items():
+        names = {row["name"] for row in MOD[m]["rows"]}
+        assert set(fx) <= names, (m, set(fx) - names)
+        for row in MOD[m]["rows"]:
+            if row["name"] in fx: row["status"] = fx[row["name"]]
+            elif default and row["status"] != "has": row["status"] = default
     for m, n in NOW.items(): MOD[m]["now"] = n
+    for m, n in NOW_FOREVER.items(): MOD[m]["nowF"] = n
 
 TYPES = {"Sim": {"Fight style":"D","Targets":"S","Fight length (seconds)":"S","Use results for (days)":"S"},
          "Bugs": {"Reports kept":"S","Sound":"D","Minimap indicator":"D"}}

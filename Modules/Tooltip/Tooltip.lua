@@ -117,8 +117,8 @@ local function addTarget(tt, unit)
     local name = UnitName(target)
     if not (plain(name) and name) then return end
     local _, classFile = UnitClass(target)
-    local color = (plain(classFile) and classFile) and C_ClassColor.GetClassColor(classFile)
-    GameTooltip_AddNormalLine(tt, L.TOOLTIP_TARGET_LINE:format(color and color:WrapTextInColorCode(name) or name))
+    local shown = (plain(classFile) and classFile) and ns.Util.WrapClass(classFile, name) or name
+    GameTooltip_AddNormalLine(tt, L.TOOLTIP_TARGET_LINE:format(shown))
 end
 
 -- Post-calls run for every tooltip that shows unit/item/spell data, including embedded and third-party

@@ -79,12 +79,12 @@ P:Register("spellhistory", {
                 local f = icons[i]
                 if not f then
                     f = P.Icon(strip, size, i + 2)
-                    Skin:Icon(f.tex)
-                    Skin:Border(f, "border.black")
-                    Skin:Shadow(f, 4, nil, 0.45)
                     icons[i] = f
                 end
                 f:SetSize(size, size)
+                m:StyleIcon(f)
+                -- the third cast was interrupted (shown when marking is on)
+                m.MarkIcon(f, db.markFailed and i == 3)
                 f:ClearAllPoints()
                 local offset = (i - 1) * (size + db.spacing) * sign
                 local anchor = sign > 0 and (horiz and "LEFT" or "BOTTOM") or (horiz and "RIGHT" or "TOP")
@@ -126,18 +126,22 @@ P:Register("damagemeter", {
         end
         return function()
             local skin = m.db.skin
-            Skin:Panel(frame, "base", { border = skin and "border.subtle" or "border.black" })
+            if skin then
+                Skin:Panel(frame, "base", { border = false })
+                m:StyleWindow(frame)
+            else
+                Skin:Panel(frame, "base", { border = "border.black" })
+            end
             for i, bar in ipairs(rows) do
                 local r, g, b = ns.Util.ClassColor(METER[i][3])
                 if skin then
-                    Skin:StatusBar(bar)
+                    m:StyleBar(bar, bar.name, bar.value)
                     bar.bg:SetTexture(Media.textures.WHITE)
                     bar.bg:SetVertexColor(ns.Theme:Color("bg.sunken"))
-                    Skin:Text(bar.name, "unit", "text.primary", 12)
-                    Skin:Text(bar.value, "number", "text.primary", 12)
                 else
                     -- the stock look: Blizzard's bar art and font, shown here as a plain fill
                     bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+                    bar:SetReverseFill(false)
                     bar.bg:SetTexture(Media.textures.WHITE)
                     bar.bg:SetVertexColor(0, 0, 0, 0.5)
                     bar.name:SetFontObject(GameFontHighlightSmall)
@@ -161,30 +165,121 @@ local FCT = {
     { "enableFloatingCombatText", "-2 960", { 1, 0.25, 0.2 }, 1 },
 }
 
+-- Phoenix scroll areas: sample lines per area, in the area's font and crit style (CombatText:StyleLine).
+local AREA_SAMPLE = {
+    incoming = { { "-12 846", { 1, 0.3, 0.25 } }, { "+8 230", { 0.3, 1, 0.35 }, true }, { "COMBAT_TEXT_DODGE", { 1, 1, 1 } } },
+    target = { { "31 044", { 1, 0.95, 0.85 }, true }, { "4 112 ×3", { 1, 0.95, 0.85 } } },
+    notify = { { "+FCT_SAMPLE_AURA", { 1, 0.85, 0.4 } } },
+}
+
+local function sampleText(t)
+    local word = t:gsub("^%+", "")
+    if L[word] and word ~= t then return "+" .. L[word] end
+    return _G[t] or L[t] or t
+end
+
 P:Register("combattext", {
     module = "CombatText",
-    height = 120,
-    build = function(stage)
+    height = 150,
+    build = function(stage, m)
         local texts = {}
         for i = 1, #FCT do texts[i] = P.Text(stage, "OVERLAY") end
+        local areas = {}
+        for _, key in ipairs({ "incoming", "target", "notify" }) do
+            local box = CreateFrame("Frame", nil, stage)
+            box.caption = P.Caption(box, L["FCT_AREA_" .. key:upper()])
+            box.caption:SetPoint("BOTTOM", box, "TOP", 0, 2)
+            box.lines = {}
+            for i = 1, #AREA_SAMPLE[key] do box.lines[i] = P.Text(box, "OVERLAY") end
+            areas[key] = box
+        end
         return function(self)
+            local scroll = m.db.scroll
             local scale = tonumber(GetCVar("WorldTextScale_v2")) or 1
             local mode = tonumber(GetCVar("floatingCombatTextFloatMode_v2")) or 1
             local w, h = self:GetWidth(), self:GetHeight()
             local font = (ns.Theme:Font("combat"))
+            if m.db.damageFont ~= "" then font = Media:Font(m.db.damageFont) end
             for i, s in ipairs(FCT) do
                 local fs = texts[i]
                 local on = GetCVar(s[1]) == "1"
                 fs:SetFont(font, math.floor(15 * s[4] * math.min(scale, 1.6) + 0.5), "OUTLINE")
                 fs:SetTextColor(s[3][1], s[3][2], s[3][3])
                 fs:SetText(s[2])
-                fs:SetAlpha(on and 1 or 0.18)
+                fs:SetAlpha((on and 1 or 0.18) * (scroll.enabled and 0.35 or 1))
                 fs:ClearAllPoints()
                 local t = (i - 1) / (#FCT - 1)
                 local y = (mode == 2) and (h * 0.32 - t * h * 0.64) or (-h * 0.32 + t * h * 0.64)
                 local x = (mode == 3) and (math.sin(t * math.pi) * w * 0.18) or ((i % 2 == 0) and 40 or -40)
                 fs:SetPoint("CENTER", self, "CENTER", x, y)
             end
+            -- the three areas, laid out left / right / top like their default places
+            local slots = { incoming = { -0.33, -10 }, target = { 0.33, -10 }, notify = { 0, 34 } }
+            for key, box in pairs(areas) do
+                local a = scroll.areas[key]
+                box:SetShown(scroll.enabled and a.show)
+                box:SetSize(w * 0.28, key == "notify" and 40 or 86)
+                box:ClearAllPoints()
+                box:SetPoint("CENTER", self, "CENTER", w * slots[key][1], slots[key][2])
+                for i, fs in ipairs(box.lines) do
+                    local sample = AREA_SAMPLE[key][i]
+                    m:StyleLine(fs, sample[3])
+                    local r, g, b = sample[2][1], sample[2][2], sample[2][3]
+                    if sample[3] and scroll.crit == "flash" then r, g, b = ns.Theme:Color("accent.primary") end
+                    fs:SetTextColor(r, g, b)
+                    fs:SetText(sampleText(sample[1]))
+                    fs:ClearAllPoints()
+                    local step = (i - 1) * 24
+                    if a.dir == "DOWN" then fs:SetPoint("TOP", box, "TOP", 0, -step) else fs:SetPoint("BOTTOM", box, "BOTTOM", 0, step) end
+                end
+            end
+        end
+    end,
+})
+
+---------------------------------------------------------------- PvP queue pop (S16)
+-- A drawn copy of the ready dialog: Enter centred with "Leave Queue" gone under safe queue, and the countdown.
+P:Register("pvp", {
+    module = "PvP",
+    height = 130,
+    build = function(stage, m)
+        local d = CreateFrame("Frame", nil, stage)
+        d:SetSize(260, 84)
+        d:SetPoint("TOP", 0, -10)
+        d.title = P.Text(d, "OVERLAY")
+        d.title:SetPoint("TOP", 0, -10)
+        local function fake(text)
+            local b = CreateFrame("Frame", nil, d)
+            b:SetSize(100, 22)
+            b.text = P.Text(b, "OVERLAY")
+            b.text:SetPoint("CENTER")
+            b.text:SetText(text)
+            return b
+        end
+        d.enter, d.leave = fake(ENTER_BATTLE), fake(LEAVE_QUEUE)
+        local timer = P.Text(stage, "OVERLAY")
+        timer:SetPoint("TOP", d, "BOTTOM", 0, -6)
+        return function()
+            local db = m.db
+            Skin:Panel(d, "raised", { border = "border.default" })
+            Skin:Text(d.title, "title", "text.primary", 12)
+            d.title:SetText(L.PREVIEW_PVP_READY)
+            for _, b in ipairs({ d.enter, d.leave }) do
+                Skin:Panel(b, "sunken", { border = "border.subtle" })
+                Skin:Text(b.text, "body", "text.primary", 11)
+            end
+            d.enter:ClearAllPoints(); d.leave:ClearAllPoints()
+            if db.safeQueue then
+                d.enter:SetPoint("BOTTOM", 0, 12)
+                d.leave:Hide()
+            else
+                d.enter:SetPoint("BOTTOMRIGHT", d, "BOTTOM", -4, 12)
+                d.leave:SetPoint("BOTTOMLEFT", d, "BOTTOM", 4, 12)
+                d.leave:Show()
+            end
+            m:StyleTimer(timer)
+            timer:SetFormattedText(L.PVP_TIME_LEFT, 37)
+            timer:SetShown(db.showTimer)
         end
     end,
 })

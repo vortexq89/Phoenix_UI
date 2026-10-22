@@ -90,7 +90,7 @@ end
 
 function M:PlaySound(key, channel)
     local path = self:Sound(key)
-    if path then PlaySoundFile(path, channel or "Master") end
+    if path then PlaySoundFile(path, channel or ns.Theme.settings.soundChannel or "Master") end
 end
 
 -- key may be one of ours or any LibSharedMedia name. latinOnly: the text is always Latin (the "PHOENIX" brand).

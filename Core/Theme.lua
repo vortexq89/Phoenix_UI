@@ -57,6 +57,7 @@ T.settings = {
     preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
     uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false,
     borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
+    surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = {},
 }
 
 local function lighten(r, g, b, f) return r + (1 - r) * f, g + (1 - g) * f, b + (1 - b) * f end
@@ -80,8 +81,16 @@ function T:PresetColors(key)
     return { primary = { r, g, b }, secondary = { lighten(r, g, b, 0.45) }, glow = { r * 0.8, g * 0.8, b * 0.8 } }
 end
 
+-- Classes for the class colour overrides (General); "class.<FILE>" tokens hold the game's own colour.
+T.CLASSES = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "MONK", "PRIEST", "SHAMAN", "DRUID", "ROGUE", "MAGE", "WARLOCK",
+    "HUNTER", "DEMONHUNTER", "EVOKER" }
+
 function T:Rebuild()
     for k, v in pairs(self.base) do tokens[k] = v end
+    for _, cf in ipairs(T.CLASSES) do
+        local cc = C_ClassColor and C_ClassColor.GetClassColor(cf)
+        tokens["class." .. cf] = cc and { cc.r, cc.g, cc.b, 1 } or { 1, 1, 1, 1 }
+    end
     local p = self:PresetColors(self.settings.preset)
     local r, g, b = p.primary[1], p.primary[2], p.primary[3]
     tokens["accent.primary"] = { r, g, b, 1 }
@@ -108,6 +117,14 @@ function T:Rebuild()
     if type(gc) == "table" then
         local gr, gg, gb = rgb(gc)
         tokens["accent.glow"] = { gr, gg, gb, 0.35 }
+    end
+    -- window surface opacity: every Phoenix panel background (base, raised, sunken) scales with it
+    local sa = s.surfaceAlpha or 1
+    if sa < 1 then
+        for _, key in ipairs({ "bg.base", "bg.raised", "bg.sunken" }) do
+            local t = tokens[key]
+            tokens[key] = { t[1], t[2], t[3], t[4] * sa }
+        end
     end
 end
 
@@ -137,7 +154,10 @@ function T:Font(role, sizeOverride)
     if (role == "unit" or role == "combat") and s.unitFont ~= "" then key = s.unitFont end
     if (role == "body" or role == "desc") and s.uiFont ~= "" then key = s.uiFont end
     local size = sizeOverride or math.floor(r.size * (role ~= "unit" and role ~= "combat" and s.fontScale or 1) + 0.5)
-    return ns.Media:Font(key, role == "brand"), size, r.flags
+    -- the global outline (Appearance & General) applies to every role drawn without one of its own
+    local flags = r.flags
+    if flags == "" and s.outline and s.outline ~= "NONE" then flags = ns.Skin and ns.Skin.OUTLINES[s.outline] or "" end
+    return ns.Media:Font(key, role == "brand"), size, flags
 end
 
 function T:Bar()

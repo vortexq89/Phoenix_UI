@@ -19,7 +19,7 @@ end
 
 -- style "theme" follows Appearance & General (theme.borderStyle / borderSize), so one change there restyles every
 -- module that kept the default; shadow "auto" lets the style decide (only "shadow" draws one).
-function Style.Border(extra) return with({ style = "theme", size = 1, color = false, shadow = "auto" }, extra) end
+function Style.Border(extra) return with({ style = "theme", size = 1, color = false, shadow = "auto", shadowSize = 0 }, extra) end
 function Style.Background(extra) return with({ alpha = 0.6, color = false, style = "solid" }, extra) end
 function Style.Icons(size, extra) return with({ size = size or 32, spacing = 4, zoom = 0.08, growth = "RIGHT" }, extra) end
 
@@ -96,6 +96,8 @@ function Opt.Border(path, label, token)
             { type = "color", key = path .. ".color", label = "BORDER_COLOR", token = token or "border.black", alpha = true,
               reset = true, classToken = true },
             { type = "style", kind = "shadow", key = path .. ".shadow", label = "SHADOW", values = Opt.SHADOW },
+            -- 0 = sized from the border (the default look)
+            { type = "range", key = path .. ".shadowSize", label = "SHADOW_SIZE", min = 0, max = 16, step = 1 },
         } }
 end
 

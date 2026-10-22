@@ -514,6 +514,30 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   (`Secret.IsSecret`) first; NPC IDs come from `UnitCreatureID`, never a GUID; inspect is throttled (1.5 s), never in
   combat or with the Inspect window open, cached per GUID for 5 minutes, and refreshes the open tooltip with
   `RefreshData` on `INSPECT_READY`.
+* **Remaining modules (2.0 S16).** `Modules/DamageMeter` dresses Blizzard's own meter windows from a
+  `hooksecurefunc(window, "InitEntry")` post-hook (recycled entries are styled once and kept themed through
+  `Skin:Register`); bar size, class colours, value format and the second window stay in Edit Mode and are linked
+  from the page. `Modules/CombatText/Scroll.lua` adds Phoenix scroll areas fed by `COMBAT_TEXT_UPDATE` and
+  `UNIT_COMBAT` on the target; amounts may be secret and only ever reach `SetFormattedText` (merge counts its own
+  lines, never the amount). `DAMAGE_TEXT_FONT` (and General's `UNIT_NAME_FONT`) are the only globals written, at load; only C reads them. Item Level
+  post-hooks `InspectPaperDollItemSlotButton_Update`, `EquipmentFlyout_DisplayButton`,
+  `MerchantFrame_UpdateMerchantInfo`, `LootFrame.Open`, the group-loot frames' `OnShow` and
+  `PaperDollFrame_SetItemLevel`; upgrade track, enchant and socket text come from `C_Item.GetItemUpgradeInfo`,
+  `C_TooltipInfo.GetInventoryItem` and `C_Item.GetItemNumSockets`/`GetItemGem`. Movers adds edge snapping
+  (`M.SnapToEdges`, pure), arrow-key nudge on the selected mover, an unlock key (`SetOverrideBindingClick` to our
+  own button, out of combat) and one scale for Blizzard's UI panel windows (`M.WINDOWS`, `OnShow` post-hook,
+  `SetScale` only, out of combat, skipped for frames Edit Mode manages). Quality of Life hides zone text and boss
+  banners by unregistering those frames' own events (the UIErrorsFrame precedent) and registers them back when
+  off; its raid markers bar is our own `SecureActionButtonTemplate` macro buttons (`/tm`, `/wm`, `/cwm`) under a
+  `[petbattle] hide; [group] show; hide` state driver, changed out of combat only; the cursor ring, combat banner
+  and the merchant known-item tint (`C_TooltipInfo.GetMerchantItem`, `ITEM_SPELL_KNOWN`, post-hook) are our own
+  textures. Game settings on that page are CVar rows through `ns.Combat.CVarAccessors`; each CVar has one owner
+  page (the smoke harness checks it) and other pages link to it. Automation adds `LOOT_READY` fast looting,
+  `LOOT_BIND_CONFIRM` (solo only), single gossip options (`C_GossipInfo`), pet-battle duel and guild invite
+  declines and a `LowHealthFrame` `OnShow` post-hook sound. General adds class colour overrides
+  (`theme.classColors`, read by `ns.Util.ClassColor`/`WrapClass` everywhere), surface opacity, a global outline,
+  the sound channel (`ns.Media:PlaySound`) and `MuteSoundFile` lists. The style library's border spec gains
+  `shadowSize` (0 = sized from the border), so every border row has a shadow size.
 * **Group Finder (2.0 S15).** `Modules/GroupFinder` (retail; feature `lfgList`, because Blizzard_GroupFinder's TOC
   excludes the Forever game type): `Expression.lua` is our own tokenizer, parser and evaluator for the filter
   language (no `loadstring`, rule 4; unknown or secret fields compare as "unknown" and pass). `GroupFinder.lua`

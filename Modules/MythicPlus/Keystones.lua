@@ -211,3 +211,67 @@ function K.BuildRow(row)
     K:Paint(list, K:Rows())
     return list
 end
+
+---------------------------------------------------------------- party keys window (S16)
+-- A small Phoenix window beside Blizzard's Mythic+ dungeon list (ChallengesFrame, Blizzard_ChallengesUI, load on
+-- demand): our own frame anchored to it, shown from post-hooks; nothing is written onto Blizzard's frame.
+local keysWindow, hookedChallenges
+local loader = {} -- waits for Blizzard_ChallengesUI
+
+local function buildKeysWindow()
+    local f = CreateFrame("Frame", nil, UIParent)
+    f:SetSize(380, 5 * ROW_H + 44)
+    f:SetFrameStrata("HIGH")
+    f.title = W.Text(f, "heading", "text.secondary")
+    f.title:SetPoint("TOPLEFT", 12, -10)
+    f.title:SetText(L.MPLUS_KEYS_LIST:upper())
+    f.list = K:NewList(f)
+    f.list:SetPoint("TOPLEFT", 12, -30)
+    f.list:SetPoint("RIGHT", -12, 0)
+    f.list:SetHeight(f.list.height)
+    Skin:Register(f, function(self)
+        Skin:Panel(self, "base", { border = "border.subtle", shadow = 10 })
+        Skin:Text(self.title, "heading", "text.secondary")
+    end)
+    ns.Events:Listen("PUI_KEYSTONES_CHANGED", f, function() if f:IsShown() then K:Paint(f.list, K:Rows()) end end)
+    f:Hide()
+    return f
+end
+
+local function showKeysWindow()
+    local challenges = rawget(_G, "ChallengesFrame") -- Blizzard_ChallengesUI (retail, load on demand)
+    if not (M:IsEnabled() and M.db.partyKeys and M.db.keysWindow and challenges and challenges:IsVisible()) then
+        if keysWindow then keysWindow:Hide() end
+        return
+    end
+    keysWindow = keysWindow or buildKeysWindow()
+    keysWindow:ClearAllPoints()
+    keysWindow:SetPoint("TOPLEFT", challenges, "TOPRIGHT", 8, 0)
+    keysWindow:Show()
+    K:Request()
+    K:Paint(keysWindow.list, K:Rows())
+end
+
+local function hookChallenges()
+    local challenges = rawget(_G, "ChallengesFrame")
+    if hookedChallenges or not challenges then return end
+    hookedChallenges = true
+    challenges:HookScript("OnShow", showKeysWindow)
+    challenges:HookScript("OnHide", function() if keysWindow then keysWindow:Hide() end end)
+end
+
+function M:RefreshKeysWindow()
+    if self.db.keysWindow then
+        hookChallenges()
+        if not hookedChallenges then
+            ns.Events:On("ADDON_LOADED", loader, function()
+                hookChallenges()
+                if hookedChallenges then ns.Events:OffAll(loader) end
+            end)
+        end
+    end
+    showKeysWindow()
+end
+
+-- The preview of the window (same list painter, sample rows).
+K.BuildKeysWindow = buildKeysWindow

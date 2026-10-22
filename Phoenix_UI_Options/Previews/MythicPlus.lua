@@ -27,3 +27,28 @@ P:Register("keystones", {
         return function() K:Paint(list, rows) end
     end,
 })
+
+-- The run timer, drawn by MythicPlus:StyleTimer and its renderer on a sample run.
+P:Register("mplustimer", {
+    module = "MythicPlus",
+    width = 460,
+    height = 260,
+    build = function(stage, m)
+        local f, redraw = m:BuildTimerPreview(stage)
+        local keys = m.Keystones:NewList(stage)
+        keys:SetSize(170, keys.height)
+        local rows = {}
+        for i, s in ipairs(SAMPLE) do
+            rows[i] = { name = L[s.sample], class = s.class, level = s.level, rating = s.rating, dungeon = s.dungeon }
+        end
+        return function(self)
+            f:ClearAllPoints()
+            f:SetPoint("TOPLEFT", self, "TOPLEFT", 12, -8)
+            redraw()
+            keys:ClearAllPoints()
+            keys:SetPoint("TOPLEFT", f, "TOPRIGHT", 14, -4)
+            keys:SetShown(m.db.partyKeys and m.db.keysWindow)
+            if keys:IsShown() then m.Keystones:Paint(keys, rows) end
+        end
+    end,
+})

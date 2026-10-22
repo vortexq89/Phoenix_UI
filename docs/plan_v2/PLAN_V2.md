@@ -197,6 +197,13 @@ addons) and role checks are accepted by a key press, never on their own. Needs a
 
 ### S16 — Remaining modules (~11 days)
 
+*Shipped 22 Oct 2026: every page meets its target on retail (gap matrix re-audited against the shipped pages: 1,160
+target rows, 1,065 has, 57 part, 38 new; 26 rows left the targets as `link`, owned by another page or Edit Mode, or
+`api`, impossible in 12.x; 1,820 settings on retail, 1,646 on Forever). Damage Meter keeps bar size, class colours, value format and the second window in Edit Mode (linked); auto
+release stays in Automation with a link from PvP; Mythic+ teleport buttons are not built (no verifiable,
+licence-clean spell list). Settings window consistency pass: one owner per CVar, shadow size on every border, Content
+sub-headings. Needs an in-game test (TESTING §13n).*
+
 - Damage Meter restyle depth (bars, fonts, formats, second window) — 2 d
 - Combat Text: Phoenix scroll areas for own events — 1.5 d
 - Mythic+: chest timers, affixes, death breakdown, party keys window, teleports — 2 d

@@ -54,6 +54,7 @@
     <Script file="Encounters\Warnings.lua"/>
     <Script file="Encounters\BigWigs.lua"/>
     <Script file="CombatText\CombatText.lua"/>
+    <Script file="CombatText\Scroll.lua"/>
     <Script file="DamageMeter\DamageMeter.lua"/>
     <Script file="SpellHistory\SpellHistory.lua"/>
     <Script file="PvP\PvP.lua"/>

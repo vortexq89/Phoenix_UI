@@ -44,8 +44,7 @@ P:Register("tooltip", {
             else tt.header:SetTextColor(Theme:Color("text.primary")) end
             local guild = L.PREVIEW_TT_GUILD
             if db.guildRank then guild = guild .. " " .. Theme:Wrap("(" .. L.PREVIEW_TT_RANK .. ")", "text.muted") end
-            local priest = C_ClassColor.GetClassColor("PRIEST")
-            local targeters = priest:WrapTextInColorCode(L.PREVIEW_TT_HEALER) .. ", " .. L.PREVIEW_TT_TARGETERS
+            local targeters = ns.Util.WrapClass("PRIEST", L.PREVIEW_TT_HEALER) .. ", " .. L.PREVIEW_TT_TARGETERS
             local lines = {
                 { guild, "state.success" }, { L.PREVIEW_TT_LEVEL, "text.primary" },
                 db.realm and { L.TOOLTIP_REALM_LINE:format(L.PREVIEW_TT_REALM), "text.primary" } or false,

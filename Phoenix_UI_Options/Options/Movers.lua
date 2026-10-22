@@ -37,6 +37,15 @@ local schema = {
     { type = "toggle", key = "grid", label = "MOVERS_GRID", desc = "MOVERS_GRID_DESC" },
     { type = "range", key = "gridSize", label = "MOVERS_GRID_SIZE", min = 8, max = 128, step = 8 },
     { type = "toggle", key = "snap", label = "MOVERS_SNAP", desc = "MOVERS_SNAP_DESC" },
+    { type = "toggle", key = "snapFrames", label = "MOVERS_SNAP_FRAMES", desc = "MOVERS_SNAP_FRAMES_DESC",
+      keywords = "snap edges align magnet" },
+    { type = "toggle", key = "arrows", label = "MOVERS_ARROWS", desc = "MOVERS_ARROWS_DESC", keywords = "arrow keys nudge pixel" },
+    { type = "toggle", key = "coords", label = "MOVERS_COORDS", desc = "MOVERS_COORDS_DESC", keywords = "coordinates position x y" },
+    { type = "input", key = "unlockKey", label = "MOVERS_KEY", desc = "MOVERS_KEY_DESC", combat = true,
+      keywords = "keybind hotkey shortcut unlock" },
+    { type = "header", label = "MOVERS_WINDOWS", icon = "skins" },
+    { type = "range", key = "windowScale", label = "MOVERS_WINDOW_SCALE", desc = "MOVERS_WINDOW_SCALE_DESC", min = 0.6, max = 1.5,
+      step = 0.05, percent = true, combat = true, keywords = "scale blizzard windows character bags collections size" },
     { type = "header", label = "MOVERS_FRAMES", icon = "editmode" },
 }
 for _, e in ipairs(ns:GetModule("Movers").BLIZZARD) do

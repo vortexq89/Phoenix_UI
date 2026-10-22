@@ -22,6 +22,7 @@ local M = ns:NewModule("Sim", {
         fight = { style = "Patchwerk", length = 300, targets = 1 },
         tooltip = true,
         maxAge = 14,
+        bank = false, vault = false,
     },
 })
 
@@ -41,7 +42,7 @@ local function bind()
     if db then return db end
     local sv = type(PhoenixUISimDB) == "table" and PhoenixUISimDB or {}
     if sv.schema ~= SCHEMA then sv = { schema = SCHEMA } end
-    for _, k in ipairs({ "requests", "results", "imported" }) do
+    for _, k in ipairs({ "requests", "results", "imported", "bank" }) do
         if type(sv[k]) ~= "table" then sv[k] = {} end
     end
     PhoenixUISimDB = sv
@@ -287,11 +288,76 @@ function M:BagItems()
             end
         end
     end
+    for _, it in ipairs(self:ExtraItems()) do out[#out + 1] = it end
     table.sort(out, function(a, b)
         if a.slot ~= b.slot then return (tIndexOf(GROUP_ORDER, a.slot) or 99) < (tIndexOf(GROUP_ORDER, b.slot) or 99) end
         if a.level ~= b.level then return a.level > b.level end
         return a.name < b.name
     end)
+    return out
+end
+
+---------------------------------------------------------------- bank and Great Vault (S16)
+-- The bank is only readable while it is open: its wearable gear is remembered per character (links and item
+-- levels; saved with the sim data) and offered when "Include bank" is on. Vault picks are read live from
+-- C_WeeklyRewards once rewards are ready to claim.
+local function bankBags()
+    local ids = C_Bank and C_Bank.FetchPurchasedBankTabIDs and Enum.BankType
+        and C_Bank.FetchPurchasedBankTabIDs(Enum.BankType.Character)
+    return type(ids) == "table" and ids or {}
+end
+
+function M:ScanBank()
+    local list = {}
+    for _, bag in ipairs(bankBags()) do
+        for slot = 1, C_Container.GetContainerNumSlots(bag) do
+            local info = C_Container.GetContainerItemInfo(bag, slot)
+            local link = info and info.hyperlink
+            if link and not Secret.IsSecret(link) and info.itemID and C_Item.IsEquippableItem(link) then
+                local level = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromBagAndSlot(bag, slot))
+                list[#list + 1] = { link = link, level = level or 0 }
+            end
+        end
+    end
+    bind().bank[self:CharKey()] = { scanned = time(), items = list }
+    ns.Events:Fire("PUI_SIM_CHANGED")
+end
+
+-- Cached entries -> picker items (same shape as bag items, plus source = "bank" | "vault").
+function M.FromLinks(entries, source)
+    local out = {}
+    for _, e in ipairs(entries or {}) do
+        local it = describeItem(e.link, e.level, { source = source })
+        if it then out[#out + 1] = it end
+    end
+    return out
+end
+
+function M:VaultLinks()
+    local out = {}
+    if not (C_WeeklyRewards and C_WeeklyRewards.HasAvailableRewards and C_WeeklyRewards.HasAvailableRewards()) then
+        return out
+    end
+    for _, a in ipairs(C_WeeklyRewards.GetActivities() or {}) do
+        for _, r in ipairs(a.rewards or {}) do
+            local link = r.itemDBID and C_WeeklyRewards.GetItemHyperlink(r.itemDBID)
+            if type(link) == "string" and not Secret.IsSecret(link) and C_Item.IsEquippableItem(link) then
+                out[#out + 1] = { link = link, level = C_Item.GetDetailedItemLevelInfo(link) or 0 }
+            end
+        end
+    end
+    return out
+end
+
+function M:ExtraItems()
+    local out = {}
+    if self.db.bank then
+        local cache = bind().bank[self:CharKey()]
+        for _, it in ipairs(M.FromLinks(cache and cache.items, "bank")) do out[#out + 1] = it end
+    end
+    if self.db.vault then
+        for _, it in ipairs(M.FromLinks(self:VaultLinks(), "vault")) do out[#out + 1] = it end
+    end
     return out
 end
 
@@ -454,7 +520,12 @@ function M:OnEnable()
         if latest then ns:Print(L.SIM_ARRIVED, latest.state == "done" and L.SIM_DONE or L.SIM_FAILED) end
     end
     ns.Events:On("PLAYER_EQUIPMENT_CHANGED", self, function() ns.Events:Fire("PUI_SIM_CHANGED") end)
-    ns.Events:On("BAG_UPDATE_DELAYED", self, function() ns.Events:Fire("PUI_SIM_CHANGED") end)
+    ns.Events:On("BAG_UPDATE_DELAYED", self, function()
+        if self.bankOpen then self:ScanBank() else ns.Events:Fire("PUI_SIM_CHANGED") end
+    end)
+    ns.Events:On("BANKFRAME_OPENED", self, function() self.bankOpen = true; self:ScanBank() end)
+    ns.Events:On("BANKFRAME_CLOSED", self, function() self.bankOpen = false end)
+    ns.Events:On("WEEKLY_REWARDS_UPDATE", self, function() ns.Events:Fire("PUI_SIM_CHANGED") end)
 end
 
 -- Settings changed (the age limit): tooltips and bag arrows read the index again.

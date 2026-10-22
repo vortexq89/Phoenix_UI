@@ -93,10 +93,19 @@ function U.FormatClock(seconds)
     return ("%d:%02d"):format(m, s)
 end
 
+-- A class colour: General's override when one is set, else the game's.
 function U.ClassColor(classFile)
+    local over = classFile and ns.Theme and ns.Theme.settings.classColors
+    over = type(over) == "table" and over[classFile]
+    if type(over) == "table" then return over.r or 1, over.g or 1, over.b or 1 end
     local c = classFile and C_ClassColor.GetClassColor(classFile)
     if c then return c.r, c.g, c.b end
     return 1, 1, 1
+end
+
+-- text in a class colour (|cffRRGGBB…|r)
+function U.WrapClass(classFile, text)
+    return "|cff" .. U.Hex(U.ClassColor(classFile)) .. tostring(text) .. "|r"
 end
 
 -- The player's position on the current map as 0..1 fractions, or nil (no map, instance, or secret values).

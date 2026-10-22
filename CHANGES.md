@@ -3,6 +3,38 @@
 ## 2.0.0-beta1
 
 ### New
+- **Remaining modules** (plan v2 stage S16): every page now reaches its plan v2 target.
+  - *Damage Meter*: bar texture, reverse fill, shading, name and value fonts, window background and border (style
+    library, with shadow size) for Blizzard's meter; what Edit Mode already owns (bar size, class colours, value
+    format, rank/spec icons, auto show, second window) is linked, not duplicated.
+  - *Combat Text*: Phoenix scroll areas for your own events (incoming, target, notifications) with font, merge of
+    rapid hits (×N), crit grow/flash, position, height and direction, a test button; amounts stay secret-safe; the
+    damage-number font.
+  - *Spell History*: icon border and zoom, interrupted/failed casts marked.
+  - *Item Level*: inspect window, equipment flyout, loot and roll windows, merchants; font, quality colour, place;
+    upgrade track, enchant and empty-socket notes; average item level decimals.
+  - *Mythic+*: +2/+3 chest timers, affix icons, deaths by player, timer width, bar texture/fill/smoothing/shading,
+    colours, a party keystones window beside the dungeon list.
+  - *Movers*: snap to other frames, arrow-key nudge (Shift = 10 px), coordinates while dragging, an unlock key, one
+    scale for Blizzard windows.
+  - *Quality of Life*: hide zone text and boss banners, a raid markers bar (movable), a cursor ring, a combat
+    enter/leave alert with sound, known items tinted at merchants, camera distance and turn speed, and a curated
+    list of safe game settings (spell queue window, auto dismount, compare items, clear AFK, error speech, glow and
+    death effects, screenshot quality).
+  - *Automation*: faster auto loot, confirm bind-on-pickup loot when solo, pick a single gossip option (Shift
+    pauses), decline pet-battle duels and guild invites, a low-health sound.
+  - *AFK screen*: model on/off and spin, guild, a stats line (item level, Mythic+ rating, vault), dimming, timer
+    font, off in instances. *PvP*: a styled queue countdown and a queue sound, links to arena frames, objective
+    movers and auto release. *Sim*: bank and Great Vault items can join the picker.
+  - *General*: UI scale with pixel perfect, window surface opacity, a global outline, theme fonts on Blizzard
+    text, default border style/colour/shadow, class colour overrides (used by every page), sound channel and a
+    mute list.
+- **Settings window consistency pass** (S16): one owner per game setting (the countdown-numbers and Cooldown
+  Manager switches now live only on Cooldown Text and Cooldown Manager; Action Bars and Quality of Life link to
+  them), every border row gains a *shadow size*, Content gets sub-headings (Questing & groups / Dungeons, raids &
+  PvP / Gear), Cooldown Text sits next to Action Bars, refreshed page descriptions and search words on every new
+  row. Gap matrix re-audited against the shipped pages, with rows owned elsewhere (`link`) or impossible in 12.x
+  (`api`) listed but no longer counted in a target.
 - **Group Finder** (plan v2 stage S15, new page under Content, retail): a Phoenix filter panel beside the premade
   group list. Presets (push score, relaxed keys, needs my role, fresh or in-progress raid, friends and guild,
   rated PvP); the game's own filters (difficulty, needs my role, has tank/healer, minimum rating) written to
