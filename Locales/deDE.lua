@@ -1079,6 +1079,22 @@ local T = {
     MINIMAP_BIN_OPEN = "Sammler öffnen",
     MINIMAP_BIN_OPEN_DESC = "Zeigt das Ausklappfeld jetzt, um zu sehen, welche Buttons es enthält.",
     MINIMAP_BIN_SHOW = "Zeigen",
+    ---------------------------------------------------------------- Bags
+    BAGS = "Taschen",
+    BAGS_DESC = "Phoenix-Look für die Taschenfenster, Qualitätsrahmen und Upgrade-Pfeile auf besserer Ausrüstung.",
+    BAGS_LOOK = "Aussehen",
+    BAGS_SKIN = "Phoenix-Taschenfenster",
+    BAGS_SKIN_DESC = "Thematisches Panel hinter den Taschen, zugeschnittene Symbole mit feinen Rahmen und dunklem Platzhintergrund.",
+    BAGS_QUALITY = "Qualitätsrahmen",
+    BAGS_QUALITY_DESC = "Rahmen von ungewöhnlichen und besseren Gegenständen nach Qualität färben.",
+    BAGS_COUNT = "Größe der Stapelzahl",
+    BAGS_COUNT_DESC = "Schriftgröße der Stapelzahl in der Ecke.",
+    BAGS_INFO = "Auf den Gegenständen",
+    BAGS_UPGRADE = "Upgrade-Pfeile",
+    BAGS_UPGRADE_DESC = "Ein grüner Pfeil auf nutzbarer Ausrüstung mit höherer Gegenstandsstufe als im jeweiligen Platz getragen (oder für einen leeren Platz).",
+    BAGS_ILVL = "Gegenstandsstufe auf Ausrüstung",
+    BAGS_ILVL_DESC = "Derselbe Schalter wie Gegenstandsstufe › Taschen; Größe und Farbe stellst du dort ein.",
+    BAGS_PREVIEW_TITLE = "Rucksack",
 }
 
 ns.RegisterLocale("deDE", T)

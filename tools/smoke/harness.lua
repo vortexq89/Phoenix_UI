@@ -719,7 +719,7 @@ try("cogs and tabs", function()
     for _, m in ipairs(ns.moduleList) do
         local page = ns.Config:Show(m.key)
         for _, r in ipairs(page.rows or {}) do
-            if r.cog then
+            if r.cog and r.item.cog then -- (link rows reuse the cog slot for their chevron)
                 r.cog.onClick(r.cog)
                 assert(r.cogContent and #r.cogContent.rows == #r.item.cog, m.key .. ": cog rows missing")
                 opened = opened + 1
@@ -1038,6 +1038,30 @@ try("minimap bin", function()
     assert(MM:BinCount() == 3, "late button not collected")
     MM:OpenBin()
     libs["LibDBIcon-1.0"] = nil
+end)
+-- bags: upgrade rule (slot minimum, armour type, usability) and dressing a stub item button
+try("bags", function()
+    local B = ns.modules.Bags
+    local eq = B.equipped
+    local saved = {}
+    for k, v in pairs(eq) do saved[k] = v end
+    eq[1], eq[11], eq[12], eq[16], eq[15] = 680, 690, 670, 700, 0
+    local PLATE, CLOTH = 4, 1
+    local ARMOR = env.Enum.ItemClass.Armor
+    assert(B:IsUpgrade(685, "INVTYPE_HEAD", ARMOR, PLATE, nil, "WARRIOR"), "higher plate helm for a warrior")
+    assert(not B:IsUpgrade(685, "INVTYPE_HEAD", ARMOR, CLOTH, nil, "WARRIOR"), "cloth helm is no warrior upgrade")
+    assert(not B:IsUpgrade(675, "INVTYPE_HEAD", ARMOR, PLATE, nil, "WARRIOR"), "lower helm")
+    assert(B:IsUpgrade(675, "INVTYPE_FINGER", ARMOR, 0, nil, "MAGE"), "ring beats the weaker of two rings")
+    assert(B:IsUpgrade(600, "INVTYPE_CLOAK", ARMOR, CLOTH, nil, "WARRIOR"), "any cloak fills an empty back")
+    assert(not B:IsUpgrade(800, "INVTYPE_BAG", nil, nil, nil, "MAGE"), "bags are never upgrades")
+    for k in pairs(eq) do eq[k] = saved[k] end
+    local b = env.CreateFrame("Button")
+    b.icon = b:CreateTexture()
+    b.Count = b:CreateFontString()
+    b.IconBorder = b:CreateTexture()
+    B.StyleButton(b, nil)
+    B.StyleButton(b, {})
+    B:Refresh()
 end)
 -- presets: one click writes only existing keys, Undo restores them; the picker opens only on a fresh install
 try("presets", function()

@@ -52,6 +52,7 @@ Options\Auras.lua
 Options\NamePlates.lua
 Options\Tooltip.lua
 Options\ItemLevel.lua
+Options\Bags.lua
 Options\Minimap.lua
 Options\DataTexts.lua
 Options\Movers.lua

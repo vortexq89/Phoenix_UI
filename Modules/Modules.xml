@@ -13,6 +13,7 @@
     <Script file="NamePlates\NamePlates.lua"/>
     <Script file="Tooltip\Tooltip.lua"/>
     <Script file="ItemLevel\ItemLevel.lua"/>
+    <Script file="Bags\Bags.lua"/>
     <Script file="Minimap\Minimap.lua"/>
     <Script file="DataTexts\DataTexts.lua"/>
     <Script file="Movers\Movers.lua"/>

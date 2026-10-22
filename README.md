@@ -33,8 +33,9 @@ Mode cannot reach.
 | | **Nameplates** | Bar texture, a health percent that works in restricted content, Mythic+ enemy forces per mob; nameplate visibility toggles |
 | | **Tooltip** | Dark style, class and quality borders, health bar, target, role and IDs, Mythic+ rating, cursor anchor, hide in combat |
 | | **Item Level** | Item levels on the character sheet and bags |
-| | **Minimap** | Square minimap, zone text style, coordinates; size stays in Edit Mode |
-| | **Data Bar** | FPS, latency, speed, durability, gold, clock and bug count, movable in Edit Mode |
+| | **Bags** | Phoenix bag windows, quality borders, stack-count font, upgrade arrows on better gear; item levels from Item Level |
+| | **Minimap** | Square minimap, zone text style, coordinates, a button bin for addon minimap buttons; size stays in Edit Mode |
+| | **Data Bar** | FPS, latency, speed, durability, gold, clock, bug count, free bag slots, item level, friends, guild and mail, in the order you drag them to; movable in Edit Mode |
 | | **Movers** | Move, scale and fade frames Edit Mode does not manage: zone text, error messages, alerts, top-center widgets, boss banner, event toasts, ready check |
 | Combat | **Cooldown Text** | Blizzard's countdown numbers in the Phoenix font |
 | | **Combat Text** | Every floating combat text option in one page |

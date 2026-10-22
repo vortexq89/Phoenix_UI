@@ -77,7 +77,7 @@ the step number.
 ## 3. Every module page
 
 For **each** module in the sidebar (General, Action Bars, Unit Frames, Group Frames, Name Plates, Cast Bars, Auras,
-Auras & Cooldowns, Cooldown Text, Combat Text, Damage Meter, Tooltip, Chat, Minimap, Data Texts, Item Level, Spell History, Mythic+,
+Auras & Cooldowns, Cooldown Text, Combat Text, Damage Meter, Tooltip, Chat, Minimap, Data Texts, Item Level, Bags, Spell History, Mythic+,
 PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 
 - [ ] **3.1 Preview.** The live preview at the top of the page reacts at once to every option you change.
@@ -126,6 +126,23 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Open** on the Presets page.
   **Expect:** about four seconds after the first login a window offers the three looks and **Skip**; picking or
   skipping closes it for good. Existing users never see it on their own.
+- [ ] **3.5i Bags.** Open your bags (separate and combined: Bag options → Combine bags).
+  **Expect:** a Phoenix panel behind each bag window, cropped icons with thin borders (green/blue/purple for
+  uncommon and better when **Quality borders** is on), a dark empty-slot background and the stack-count size you
+  chose. Gear you can use with a higher item level than what you wear in that slot shows a **green arrow** at top
+  left (a cloth helm on a warrior does not). Equip it: the arrow goes away. Using, dragging and selling items works
+  in and out of combat with no "blocked action" message. **If not:** name the item and send `/pui bugs`.
+- [ ] **3.5j Data bar order and new segments.** On Data Bar turn on Free bag slots, Item level, Friends online,
+  Guild online and Mail, then drag the chips in **Order**.
+  **Expect:** an accent marker shows where a chip will land; the bar and the preview follow at once and keep the
+  order after `/reload`; the ↺ on the row restores the default order. Clicking a segment out of combat opens bags,
+  the character pane, friends or guild; in combat nothing opens. The values update when you loot, equip or a friend
+  logs in.
+- [ ] **3.5k Minimap button bin.** With an addon that has a minimap button (most use LibDBIcon: DBM, BigWigs,
+  Details!, …), look at the minimap's top-right corner.
+  **Expect:** one Phoenix glyph; clicking it opens a panel with the addon buttons in a grid (Columns slider); each
+  button still works; Escape closes it. Buttons an addon hides stay hidden. With **Collect addon buttons** off and
+  `/reload`, the buttons are back on the minimap edge.
 - [ ] **3.6 Tooltip page.** It has two tabs, **Appearance** and **Content**. The preview tooltip changes with every option.
 - [ ] **3.7 Chat page.** Turn on **Flashing tabs in the accent colour** and **Coloured whisper tabs**. Ask someone to whisper you while another
   tab is selected.

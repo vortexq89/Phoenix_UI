@@ -1079,6 +1079,22 @@ local T = {
     MINIMAP_BIN_OPEN = "Apri il raccoglitore",
     MINIMAP_BIN_OPEN_DESC = "Mostra ora il pannello per vedere quali pulsanti contiene.",
     MINIMAP_BIN_SHOW = "Mostra",
+    ---------------------------------------------------------------- Bags
+    BAGS = "Borse",
+    BAGS_DESC = "Stile Phoenix per le finestre delle borse, bordi per qualità e frecce di miglioramento sull'equipaggiamento migliore.",
+    BAGS_LOOK = "Aspetto",
+    BAGS_SKIN = "Finestre borse Phoenix",
+    BAGS_SKIN_DESC = "Pannello a tema dietro le borse, icone ritagliate con bordi sottili e sfondo scuro degli spazi.",
+    BAGS_QUALITY = "Bordi per qualità",
+    BAGS_QUALITY_DESC = "Colora il bordo degli oggetti non comuni e superiori in base alla qualità.",
+    BAGS_COUNT = "Dimensione del numero in pila",
+    BAGS_COUNT_DESC = "Dimensione del carattere del numero nell'angolo.",
+    BAGS_INFO = "Sugli oggetti",
+    BAGS_UPGRADE = "Frecce di miglioramento",
+    BAGS_UPGRADE_DESC = "Una freccia verde sull'equipaggiamento utilizzabile con livello oggetto superiore a quello indossato in quello spazio (o per uno spazio vuoto).",
+    BAGS_ILVL = "Livello oggetto sull'equipaggiamento",
+    BAGS_ILVL_DESC = "Lo stesso interruttore di Livello oggetti › Borse; dimensione e colore si impostano lì.",
+    BAGS_PREVIEW_TITLE = "Zaino",
 }
 
 ns.RegisterLocale("itIT", T)

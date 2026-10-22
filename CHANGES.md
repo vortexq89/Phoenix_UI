@@ -35,6 +35,14 @@
   BigWigs and DBM users show up too. Sent only outside instances, never during chat lockdown.
 - **This week** on Home: Great Vault progress for dungeons, raid and world, Mythic+ rating, runs and best key.
 - **Chat**: unread tabs glow in the accent colour; whisper tabs use the whisper colour.
+- **Bags** (Tooltips & Items): Phoenix bag windows (separate and combined), cropped icons with quality-coloured
+  borders, a stack-count size, and a green arrow on gear you can use that beats what you wear in that slot.
+- **Data bar**: drag the segments into any order; new free bag slots, item level, friends online, guild online and
+  mail segments (off by default) with tooltips and click-to-open out of combat.
+- **Minimap button bin**: addon minimap buttons (LibDBIcon) gathered into one Phoenix flyout on the minimap corner.
+- **Settings load on demand**: the settings window is a second folder, `Phoenix_UI_Options`, loaded the first time
+  you open it (`/pui`, the minimap/compartment entry or the game's AddOns settings), so it costs no memory or load
+  time until then. Install both folders.
 - **Translations**: deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW, for every string.
 - `/phoenix testerror` raises a harmless, clearly labelled error to try the bug catcher and the uploader.
 - `docs/TESTING.md`: the in-game checklist for this beta.

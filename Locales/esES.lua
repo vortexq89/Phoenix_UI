@@ -1079,6 +1079,22 @@ local T = {
     MINIMAP_BIN_OPEN = "Abrir el contenedor",
     MINIMAP_BIN_OPEN_DESC = "Muestra el panel ahora para ver qué botones contiene.",
     MINIMAP_BIN_SHOW = "Mostrar",
+    ---------------------------------------------------------------- Bags
+    BAGS = "Bolsas",
+    BAGS_DESC = "Aspecto Phoenix para las ventanas de bolsas, bordes por calidad y flechas de mejora en equipo superior.",
+    BAGS_LOOK = "Aspecto",
+    BAGS_SKIN = "Ventanas de bolsas Phoenix",
+    BAGS_SKIN_DESC = "Panel temático tras las bolsas, iconos recortados con bordes finos y fondo de hueco oscuro.",
+    BAGS_QUALITY = "Bordes por calidad",
+    BAGS_QUALITY_DESC = "Colorea el borde de los objetos poco comunes o mejores según su calidad.",
+    BAGS_COUNT = "Tamaño del número de pila",
+    BAGS_COUNT_DESC = "Tamaño de fuente del número de pila en la esquina.",
+    BAGS_INFO = "Sobre los objetos",
+    BAGS_UPGRADE = "Flechas de mejora",
+    BAGS_UPGRADE_DESC = "Una flecha verde en el equipo utilizable con mayor nivel de objeto que el que llevas en esa ranura (o para una ranura vacía).",
+    BAGS_ILVL = "Nivel de objeto en el equipo",
+    BAGS_ILVL_DESC = "El mismo interruptor que Nivel de objeto › Bolsas; el tamaño y el color se ajustan allí.",
+    BAGS_PREVIEW_TITLE = "Mochila",
 }
 
 ns.RegisterLocale("esES", T)

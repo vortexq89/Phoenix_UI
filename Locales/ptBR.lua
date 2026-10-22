@@ -1079,6 +1079,22 @@ local T = {
     MINIMAP_BIN_OPEN = "Abrir o coletor",
     MINIMAP_BIN_OPEN_DESC = "Mostra o painel agora para ver quais botões ele contém.",
     MINIMAP_BIN_SHOW = "Mostrar",
+    ---------------------------------------------------------------- Bags
+    BAGS = "Bolsas",
+    BAGS_DESC = "Visual Phoenix para as janelas de bolsas, bordas por qualidade e setas de melhoria em equipamentos melhores.",
+    BAGS_LOOK = "Aparência",
+    BAGS_SKIN = "Janelas de bolsas Phoenix",
+    BAGS_SKIN_DESC = "Painel temático atrás das bolsas, ícones recortados com bordas finas e fundo escuro nos espaços.",
+    BAGS_QUALITY = "Bordas por qualidade",
+    BAGS_QUALITY_DESC = "Colore a borda de itens incomuns ou melhores conforme a qualidade.",
+    BAGS_COUNT = "Tamanho do número da pilha",
+    BAGS_COUNT_DESC = "Tamanho da fonte do número no canto.",
+    BAGS_INFO = "Nos itens",
+    BAGS_UPGRADE = "Setas de melhoria",
+    BAGS_UPGRADE_DESC = "Uma seta verde no equipamento utilizável com nível de item maior do que o usado naquele espaço (ou para um espaço vazio).",
+    BAGS_ILVL = "Nível de item no equipamento",
+    BAGS_ILVL_DESC = "O mesmo interruptor de Nível de item › Bolsas; tamanho e cor são ajustados lá.",
+    BAGS_PREVIEW_TITLE = "Mochila",
 }
 
 ns.RegisterLocale("ptBR", T)

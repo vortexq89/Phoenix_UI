@@ -88,9 +88,10 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `NamePlates` | NamePlates | Bar texture, secret-safe health percent, Mythic+ enemy forces per mob (`C_ScenarioInfo.GetUnitCriteriaProgressValues`, shown through `C_StringUtil`) |
 | `Tooltip` | Tooltip, idTip | Skin, cursor anchor, class/quality borders, target/role/ID lines, Mythic+ rating |
 | `Chat` | Chat | Clickable URLs with a copy popup, copy-chat window, typed-line history (arrow keys, kept across reloads in `global.history`), Shift/Ctrl wheel scrolling |
-| `Minimap` | Maps | Square mask, zone text, coordinates; shows the Edit Mode size and opens Edit Mode (size is never written by Phoenix) |
-| `DataTexts` | General/_Stats | Edit Mode movable bar: FPS, latency, speed, durability, gold, clock, bug count |
+| `Minimap` | Maps | Square mask, zone text, coordinates; LibDBIcon button bin (addon-owned buttons only); shows the Edit Mode size and opens Edit Mode (size is never written by Phoenix) |
+| `DataTexts` | General/_Stats | Edit Mode movable bar: FPS, latency, speed, durability, gold, clock, bug count, bag space, item level, friends, guild, mail; `order` is a comma list normalised by `M:Order()` |
 | `ItemLevel` | _Itemlevel, _BagIlvl | Item level on the character sheet and bags |
+| `Bags` | (new) | Bag window skin, quality borders, count font, upgrade arrows; post-hooks `UpdateItems`, own regions in weak side tables |
 | `Automation` | General automation | Repair, sell junk, invites, duels, resurrections, BG release, DELETE fill, cinematics |
 | `AFK` | _AfkCam | AFK screen |
 | `MythicPlus` | Mythic+ | Run timer overlay (`Timer.lua`: chest thresholds, forces, boss splits, deaths, personal bests in `global.best`; Edit Mode frame), auto-insert keystone, new-key report |

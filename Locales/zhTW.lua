@@ -1079,6 +1079,22 @@ local T = {
     MINIMAP_BIN_OPEN = "開啟收納",
     MINIMAP_BIN_OPEN_DESC = "立即顯示彈出面板，查看其中的按鈕。",
     MINIMAP_BIN_SHOW = "顯示",
+    ---------------------------------------------------------------- Bags
+    BAGS = "背包",
+    BAGS_DESC = "為背包視窗套用 Phoenix 外觀，依品質著色邊框，並為更好的裝備顯示提升箭頭。",
+    BAGS_LOOK = "外觀",
+    BAGS_SKIN = "Phoenix 背包視窗",
+    BAGS_SKIN_DESC = "背包後方的主題面板，裁切圖示、細邊框與深色格子背景。",
+    BAGS_QUALITY = "品質邊框",
+    BAGS_QUALITY_DESC = "依品質為優良及以上物品的邊框著色。",
+    BAGS_COUNT = "堆疊數字大小",
+    BAGS_COUNT_DESC = "角落堆疊數字的字級。",
+    BAGS_INFO = "物品上",
+    BAGS_UPGRADE = "提升箭頭",
+    BAGS_UPGRADE_DESC = "可用裝備的物品等級高於該部位目前裝備（或該部位為空）時顯示綠色箭頭。",
+    BAGS_ILVL = "裝備上顯示物品等級",
+    BAGS_ILVL_DESC = "與「物品等級 › 背包」為同一開關；大小與顏色在那裡設定。",
+    BAGS_PREVIEW_TITLE = "背包",
 }
 
 ns.RegisterLocale("zhTW", T)

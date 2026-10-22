@@ -57,7 +57,7 @@ item levels and movers. The first four were missing or partial in 2.0.0.
 | C2 | **Timer: death log** | Who died, and when | `UNIT_DIED`-style data is not available without the combat log. Only the total death count is non-secret. Feasible only as "time of each death" | S |
 | C3 | **Timer: reskin Blizzard's challenge block instead of a separate frame** | Some users prefer one tracker | The Objective Tracker is an Edit Mode system. Restyling (not moving) is allowed, but the block is rebuilt often | M |
 | C4 | **PvP: dampening from the arena widget** | Dampening was a popular arena readout | Only if Blizzard exposes it as a UI widget (`C_UIWidgetManager`). Estimating it from time drifts when Blizzard tunes it | S if a widget exists |
-| C5 | **Minimap: button bin** | Collects LibDBIcon buttons | `LibDBIcon` callbacks. Phoenix avoids library dependencies, so it would need a small in-house collector | M |
+| C5 | **Minimap: button bin** | Collects LibDBIcon buttons | Optional `LibStub("LibDBIcon-1.0", true)` (embedded by other addons) plus its `LibDBIcon_IconCreated` callback; no new dependency | M | Done (2.0 P2) |
 
 ## Not doing, and why
 

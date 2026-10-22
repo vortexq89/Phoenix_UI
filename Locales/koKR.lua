@@ -1079,6 +1079,22 @@ local T = {
     MINIMAP_BIN_OPEN = "보관함 열기",
     MINIMAP_BIN_OPEN_DESC = "지금 펼침 창을 열어 담긴 버튼을 확인합니다.",
     MINIMAP_BIN_SHOW = "보기",
+    ---------------------------------------------------------------- Bags
+    BAGS = "가방",
+    BAGS_DESC = "가방 창에 Phoenix 디자인, 품질 테두리, 더 좋은 장비의 업그레이드 화살표를 적용합니다.",
+    BAGS_LOOK = "모양",
+    BAGS_SKIN = "Phoenix 가방 창",
+    BAGS_SKIN_DESC = "가방 뒤에 테마 패널을 두고, 아이콘을 잘라 얇은 테두리와 어두운 칸 배경을 씁니다.",
+    BAGS_QUALITY = "품질 테두리",
+    BAGS_QUALITY_DESC = "고급 이상 아이템의 테두리를 품질 색으로 칠합니다.",
+    BAGS_COUNT = "중첩 수 크기",
+    BAGS_COUNT_DESC = "모서리에 있는 중첩 수의 글꼴 크기입니다.",
+    BAGS_INFO = "아이템 표시",
+    BAGS_UPGRADE = "업그레이드 화살표",
+    BAGS_UPGRADE_DESC = "해당 부위에 착용한 것보다 아이템 레벨이 높은(또는 빈 부위용) 사용 가능한 장비에 녹색 화살표를 표시합니다.",
+    BAGS_ILVL = "장비에 아이템 레벨",
+    BAGS_ILVL_DESC = "아이템 레벨 › 가방과 같은 스위치입니다. 크기와 색은 그곳에서 설정합니다.",
+    BAGS_PREVIEW_TITLE = "배낭",
 }
 
 ns.RegisterLocale("koKR", T)

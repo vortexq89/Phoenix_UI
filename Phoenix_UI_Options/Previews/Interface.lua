@@ -150,6 +150,82 @@ P:Register("itemlevel", {
     end,
 })
 
+---------------------------------------------------------------- bags
+-- { icon index, item level (nil = no level), quality, count, upgrade }; one empty slot at the end.
+local BAG_ITEMS = { { 2, 701, 4, nil, true }, { 6, 0, 1, 20 }, { 9, 688, 3 }, { 3, 0, 2, 5 }, { 11, 714, 4, nil, true },
+    { 5, 0, 1, 200 }, { 8, 672, 2 }, { 1, 0, 3, 3 }, { 12, 695, 4 }, { 4, 0, 1, 12 }, { 7, 0, 0, 8 }, false }
+
+P:Register("bags", {
+    module = "Bags",
+    height = 170,
+    build = function(stage, m)
+        local il = ns.modules.ItemLevel
+        local win = CreateFrame("Frame", nil, stage)
+        win:SetSize(6 * 40 + 22, 2 * 40 + 52)
+        win:SetPoint("CENTER")
+        win.title = P.Text(win, "OVERLAY")
+        win.title:SetPoint("TOPLEFT", 12, -10)
+        win.title:SetText(L.BAGS_PREVIEW_TITLE)
+        win.items = {}
+        for i, s in ipairs(BAG_ITEMS) do
+            local b = CreateFrame("Frame", nil, win)
+            b:SetSize(36, 36)
+            b:SetPoint("TOPLEFT", 12 + ((i - 1) % 6) * 40, -32 - math.floor((i - 1) / 6) * 40)
+            b.bg = b:CreateTexture(nil, "BACKGROUND")
+            b.bg:SetAllPoints()
+            b.bg:SetTexture(Media.textures.WHITE)
+            if s then
+                b.tex = b:CreateTexture(nil, "ARTWORK")
+                b.tex:SetAllPoints()
+                b.tex:SetTexture(P.SAMPLE.icons[(s[1] - 1) % #P.SAMPLE.icons + 1])
+                b.level = P.Text(b, "OVERLAY")
+                b.level:SetPoint("TOPRIGHT", -1, -2)
+                b.count = P.Text(b, "OVERLAY")
+                b.count:SetPoint("BOTTOMRIGHT", -2, 2)
+                b.arrow = ns.Icons:Create(b, "arrow-up", 14, "state.success")
+                b.arrow:SetPoint("TOPLEFT", 1, -1)
+            end
+            b.sample = s
+            win.items[i] = b
+        end
+        return function()
+            local db = m.db
+            if db.skin then
+                Skin:Panel(win, "base", { border = "border.strong", shadow = 10, sheen = 22 })
+                Skin:Text(win.title, "heading", "accent.primary", 12)
+            else
+                Skin:Panel(win, "raised", { border = "border.default" })
+                Skin:Text(win.title, "body", "text.secondary", 12)
+            end
+            for _, b in ipairs(win.items) do
+                local s = b.sample
+                W.Color(b.bg, db.skin and "bg.sunken" or "bg.raised")
+                if s then
+                    if db.skin then Skin:IconZoom(b.tex, 0.08) else b.tex:SetTexCoord(0, 1, 0, 1) end
+                    local r, g, bl = C_Item.GetItemQualityColor(s[3])
+                    local colored = db.skin and db.quality and s[3] >= 2 and r
+                    if colored then
+                        Skin:BorderSpec(b, { style = "solid", size = 1, color = { r = r, g = g, b = bl } })
+                    else
+                        Skin:BorderSpec(b, { style = "solid", size = 1 }, "border.black")
+                    end
+                    local showLevel = il and il.db.bags and s[2] > 0
+                    if showLevel then
+                        Skin:Text(b.level, "number", nil, il.db.size)
+                        if il.db.qualityColor and r then b.level:SetTextColor(r, g, bl) else b.level:SetTextColor(1, 1, 1) end
+                    end
+                    b.level:SetText(showLevel and s[2] or "")
+                    Skin:Text(b.count, "number", "text.primary", db.skin and db.countSize or 12, "OUTLINE")
+                    b.count:SetText(s[4] or "")
+                    b.arrow:SetShown(db.upgrade and s[5] or false)
+                else
+                    Skin:BorderSpec(b, { style = "solid", size = 1 }, "border.subtle")
+                end
+            end
+        end
+    end,
+})
+
 ---------------------------------------------------------------- window skins
 P:Register("skins", {
     module = "Skins",

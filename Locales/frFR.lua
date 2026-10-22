@@ -1079,6 +1079,22 @@ local T = {
     MINIMAP_BIN_OPEN = "Ouvrir le bac",
     MINIMAP_BIN_OPEN_DESC = "Affiche le volet maintenant pour voir les boutons qu'il contient.",
     MINIMAP_BIN_SHOW = "Afficher",
+    ---------------------------------------------------------------- Bags
+    BAGS = "Sacs",
+    BAGS_DESC = "Style Phoenix pour les fenêtres de sacs, bordures de qualité et flèches d'amélioration sur le meilleur équipement.",
+    BAGS_LOOK = "Apparence",
+    BAGS_SKIN = "Fenêtres de sacs Phoenix",
+    BAGS_SKIN_DESC = "Panneau thématique derrière les sacs, icônes recadrées à bordure fine et fond d'emplacement sombre.",
+    BAGS_QUALITY = "Bordures de qualité",
+    BAGS_QUALITY_DESC = "Colore la bordure des objets inhabituels et supérieurs selon leur qualité.",
+    BAGS_COUNT = "Taille du nombre d'objets",
+    BAGS_COUNT_DESC = "Taille de police du nombre dans le coin.",
+    BAGS_INFO = "Sur les objets",
+    BAGS_UPGRADE = "Flèches d'amélioration",
+    BAGS_UPGRADE_DESC = "Une flèche verte sur l'équipement utilisable d'un niveau d'objet supérieur à celui porté à cet emplacement (ou pour un emplacement vide).",
+    BAGS_ILVL = "Niveau d'objet sur l'équipement",
+    BAGS_ILVL_DESC = "Même interrupteur que Niveau d'objet › Sacs ; la taille et la couleur se règlent là-bas.",
+    BAGS_PREVIEW_TITLE = "Sac à dos",
 }
 
 ns.RegisterLocale("frFR", T)
