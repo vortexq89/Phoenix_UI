@@ -3,6 +3,21 @@
 ## 2.0.0-beta1
 
 ### New
+- **Cooldown Manager** (plan v2 stage S12; was *Auras & Cooldowns*, settings kept): Blizzard's Cooldown Manager in
+  Phoenix style **and layout**. Per viewer (*Essential*, *Utility*, *Buff icons*, *Buff bars*): icon size, icons per
+  row, rows, a size step for later rows, spacing, growth and wrap, centred short rows, *Keep places*, extra icons
+  hidden, moved in front of Utility or added as rows; bars with width, height, wrap, icon left/right/off and reverse
+  fill; placed by Edit Mode or by a Phoenix mover with scale (Layout mode). Proc glows (Blizzard's, pixel, autocast,
+  button, with colour) and a ready glow when a real cooldown ends; grey-out on cooldown, no GCD swipe, swipe
+  darkness, out-of-range tint, **keybinds** from your action bars. Countdown numbers stay Cooldown Text's (one owner)
+  unless a viewer takes them with its own font. Visibility: always, in combat, with a target, either or never, hide
+  mounted or in vehicles, per specialization, plus the out-of-combat fade and a link to per-spec profiles. **Three
+  custom bars** for spells the Cooldown Manager cannot show, items and on-use trinkets (IDs or names), secret-safe in
+  combat: cooldown and charge rings, charge counts, grey-out, *show always / on cooldown / when ready*, ready and
+  proc glows, tooltips. **Reminders** out of combat: flask, food, augment rune, your raid buff (retail), weapon oil,
+  pet, healthstone and low mana on ready checks, with a sound. **Test** shows samples where everything sits; the page
+  has a live pinned preview. Buffs & Debuffs stays the separate page for every aura on you. 91 settings on retail,
+  87 on WoW Forever (target 59).
 - **Group frames** (plan v2 stage S11): Phoenix now draws its own party, raid, main tank/assist and pet frames from
   secure group headers (Group Frames → *Group frames*: *Phoenix frames*, the default; *Blizzard frames, restyled*
   keeps the game's compact frames with the 1.x style). Three layouts that switch by group size: *Party (5)*,

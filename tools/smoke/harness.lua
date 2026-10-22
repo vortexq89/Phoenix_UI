@@ -2358,6 +2358,262 @@ try("group frames depth (S11)", function()
     print(("  GroupFrames settings: %d"):format(n))
 end)
 
+-- cooldown manager (S12): pure layout helpers, the viewers re-laid on Phoenix's grid, custom bars (secret-safe),
+-- reminders, Test samples, movers, the Cooldown Text claim, depth
+try("cooldown manager helpers", function()
+    local M = ns.modules.Tracker
+    local L = { size = 40, perRow = 4, rows = 2, rowDelta = 0, spacing = 2, growth = "RIGHT", wrap = "DOWN", center = false,
+        overflow = "hide" }
+    local pos, w, h, left = M.Grid(10, L)
+    assert(#pos == 8 and left == 2 and w == 4 * 40 + 3 * 2 and h == 2 * 40 + 2, "grid with a cap")
+    assert(pos[1].x == 0 and pos[1].y == 0 and pos[5].x == 0 and pos[5].y == 42 and pos[4].x == 126, "grid positions")
+    L.overflow = "row"
+    pos, w, h, left = M.Grid(10, L)
+    assert(#pos == 10 and left == 0 and h == 3 * 40 + 2 * 2, "overflow adds rows")
+    L.center, L.rowDelta = true, -10
+    pos = M.Grid(6, L)
+    assert(pos[5].size == 30 and pos[5].x == (166 - (2 * 30 + 2)) / 2, "short later rows centre and shrink")
+    L.growth, L.wrap, L.center, L.rowDelta = "LEFT", "UP", false, 0
+    pos, w, h = M.Grid(5, L)
+    assert(pos[1].x == w - 40 and pos[1].y == h - 40 and pos[5].y == 0, "left and up")
+    L.growth, L.wrap = "DOWN", "DOWN"
+    pos = M.Grid(5, L)
+    assert(M.WrapFor("DOWN", "DOWN") == "RIGHT" and pos[2].y == 42 and pos[5].x == 42, "vertical growth wraps right")
+    local ys, total = M.Stack(3, { height = 20, spacing = 2, wrap = "UP" })
+    assert(total == 64 and ys[1] == 44 and ys[3] == 0, "bars stack up")
+    local list = M.ParseList(" 133, Fireball ;item:5512\ntrinket2,, ")
+    assert(#list == 4 and list[1].kind == "spell" and list[1].id == 133 and list[2].kind == "name"
+        and list[3].kind == "item" and list[3].id == 5512 and list[4].kind == "slot" and list[4].id == 14, "custom list")
+    local vis = { mode = "combat", mounted = true, vehicle = true, spec1 = true, spec2 = false, spec3 = true, spec4 = true }
+    assert(M.Visible(vis, { combat = true, spec = 1 }) and not M.Visible(vis, { combat = false, spec = 1 }), "combat only")
+    assert(not M.Visible(vis, { combat = true, spec = 2 }) and M.Visible(vis, { combat = true }), "spec filter")
+    assert(not M.Visible(vis, { combat = true, mounted = true }), "hidden while mounted")
+    vis.mode = "combatOrTarget"
+    assert(M.Visible(vis, { target = true }) and not M.Visible({ mode = "never" }, {}), "either / never")
+    M.db.fade.enabled = true
+    assert(M:AlphaFor("essential", { combat = false }) == M.db.fade.alpha and M:AlphaFor("essential", { combat = true }) == 1,
+        "fade out of combat")
+    M.db.viewers.utility.visibility.mode = "target"
+    assert(M:AlphaFor("utility", { combat = true }) == 0, "visibility hides")
+    M.db.viewers.utility.visibility.mode, M.db.fade.enabled = "always", false
+end)
+try("cooldown manager viewers", function()
+    local M, CT = ns.modules.Tracker, ns.modules.CooldownText
+    local function item(i, bars)
+        local f = env.CreateFrame("Frame")
+        if bars then -- BuffBar items: an icon frame holding the texture, a status bar with name and duration
+            f.Icon = env.CreateFrame("Frame", nil, f)
+            f.Icon.Icon = f.Icon:CreateTexture()
+            f.Bar = env.CreateFrame("StatusBar", nil, f)
+            f.Bar.Name, f.Bar.Duration = f.Bar:CreateFontString(), f.Bar:CreateFontString()
+        else
+            f.Icon = f:CreateTexture()
+        end
+        f.Cooldown = env.CreateFrame("Cooldown", nil, f)
+        f.layoutIndex = 20 - i
+        rawset(f, "SetPoint", function(self, _, _, _, x, y) self.at = { x, y } end)
+        rawset(f, "SetAlpha", function(self, a) self.alpha = a end)
+        f.RefreshIconDesaturation = function() end
+        f.RefreshSpellCooldownInfo = function() end
+        f.RefreshIconColor = function() end
+        return f
+    end
+    local made = {}
+    for _, def in ipairs(M.VIEWERS) do
+        if def.frame then
+            local v = env.CreateFrame("Frame", def.frame, env.UIParent)
+            rawset(env, def.frame, v)
+            v.items = {}
+            for i = 1, 10 do v.items[i] = item(i, def.bars) end
+            v.itemFramePool = { EnumerateActive = function()
+                local i = 0
+                return function() i = i + 1; return v.items[i] end
+            end }
+            v.OnAcquireItemFrame = function() end
+            v.Layout = function() end
+            made[def.key] = v
+        end
+    end
+    fire("ADDON_LOADED", "Blizzard_CooldownViewer")
+    local ess = made.essential
+    assert(M.viewerFrames.essential == ess and M.viewerFrames.bars == made.bars, "viewers not hooked")
+    for key, v in pairs(made) do for _, f in ipairs(v.items) do v:OnAcquireItemFrame(f) end; v:Layout(); M:LayoutViewer(key) end
+    local L = M.db.viewers.essential.layout
+    L.perRow, L.rows, L.overflow, L.center = 4, 2, "hide", false
+    M:LayoutViewer("essential")
+    -- sorted by layoutIndex: item 10 (index 10) first; the two last (items 1, 2) are left over
+    assert(ess.items[10].at[1] == 0 and ess.items[10].at[2] == 0, "first icon at the grid's corner")
+    assert(ess.items[1].alpha == 0 and ess.items[2].alpha == 0 and ess.items[3].alpha == 1, "overflow hidden")
+    L.overflow = "utility"
+    M:LayoutViewer("essential")
+    assert(#M.essentialOverflow == 2, "overflow handed to Utility")
+    L.perRow, L.rows, L.overflow, L.center = 8, 2, "row", true
+    -- Edit Mode viewers keep their place; mover mode anchors at the saved point
+    M.db.viewers.utility.position.mode = "mover"
+    M:LayoutViewer("utility")
+    local movers = ns:GetModule("Movers")
+    local e = movers and movers:GetEntry("cdm.utility")
+    assert(e and e.store.active(), "utility mover")
+    e.store.set({ point = "TOP", x = 5, y = -60 })
+    assert(M.db.viewers.utility.position.x == 5, "mover set")
+    e.store.reset()
+    assert(M.db.viewers.utility.position.mode == "mover" and M.db.viewers.utility.position.y == -200, "mover reset")
+    M.db.viewers.utility.position.mode = "editmode"
+    assert(movers:GetEntry("cdm.custom1") and movers:GetEntry("cdm.reminders"), "custom bar and reminder movers")
+    -- countdown numbers: one owner. Cooldown Text by default, the viewer's own font when it claims them
+    local cd = ess.items[3].Cooldown
+    M.db.viewers.essential.timerSource = "own"
+    M.StyleItem("essential", ess.items[3])
+    M.db.viewers.essential.timerSource = "cooldowntext"
+    M.StyleItem("essential", ess.items[3])
+    assert(CT.Claim and cd, "Cooldown Text claim API")
+    -- behaviour hooks: GCD swipe, ready glow after a real cooldown, proc glows in every style
+    M.db.viewers.essential.hideGCD, M.db.viewers.essential.readyGlow = true, "pixel"
+    local f = ess.items[4]
+    f.isOnGCD, f.isOnActualCooldown = true, true
+    f:RefreshSpellCooldownInfo()
+    assert(f.phoenixReal, "real cooldown not noted")
+    local done = env.C_Timer
+    rawset(env, "C_Timer", { After = function() end, NewTimer = function() return { Cancel = function() end } end,
+        NewTicker = function() return { Cancel = function() end } end })
+    local script = f.Cooldown:GetScript("OnCooldownDone")
+    if script then script(f.Cooldown) end
+    rawset(env, "C_Timer", done)
+    for _, style in ipairs({ "pixel", "autocast", "button", "none", "blizzard" }) do
+        M.db.viewers.essential.procGlow = style
+        if env.ActionButtonSpellAlertManager.ShowAlert then env.ActionButtonSpellAlertManager:ShowAlert(f) end
+    end
+    M.db.viewers.essential.hideGCD, M.db.viewers.essential.readyGlow = false, "none"
+    -- every look the pages offer
+    for _, key in ipairs({ "essential", "buffs", "bars" }) do
+        local v = M.db.viewers[key]
+        v.square, v.keybinds = false, true; M:Refresh()
+        v.square, v.keybinds = true, false
+        v.layout.enabled = false; M:Refresh(); v.layout.enabled = true
+    end
+    M.db.viewers.bars.layout.iconSide = "RIGHT"; M:LayoutViewer("bars")
+    M.db.viewers.bars.layout.iconSide = "OFF"; M:LayoutViewer("bars")
+    M.db.viewers.bars.layout.iconSide = "LEFT"; M:Refresh()
+end)
+try("cooldown manager custom bars", function()
+    local M = ns.modules.Tracker
+    local SECRET = setmetatable({}, { __tostring = function() return "<secret>" end })
+    local desat, alphaBool, texts = {}, 0, {}
+    local saved = {}
+    for _, k in ipairs({ "C_Spell", "C_SpellBook", "C_Item", "C_CurveUtil", "C_SpellActivationOverlay", "GetInventoryItemID",
+        "issecretvalue", "CooldownFrame_Set" }) do saved[k] = rawget(env, k) end
+    local duration = { IsZero = function() return SECRET end }
+    rawset(env, "C_Spell", setmetatable({
+        GetSpellIDForSpellIdentifier = function(name) return name == "Fireball" and 133 or nil end,
+        GetSpellCooldownDuration = function() return duration end,
+        GetSpellChargeDuration = function() return duration end,
+        GetSpellDisplayCount = function() return SECRET end,
+        GetSpellCooldown = function() return { isOnGCD = SECRET } end,
+        GetSpellTexture = function() return 135812 end,
+        GetSpellName = function() return "Well Fed" end,
+    }, { __index = saved.C_Spell }))
+    rawset(env, "C_SpellBook", { IsSpellKnown = function() return true end })
+    rawset(env, "C_Item", setmetatable({ GetItemCount = function() return 3 end, GetItemSpell = function() return "Use" end,
+        GetItemCooldown = function() return 0, 0, 1 end, GetItemIconByID = function() return 134400 end },
+        { __index = saved.C_Item }))
+    rawset(env, "C_CurveUtil", { EvaluateColorValueFromBoolean = function(b, t, f)
+        assert(b == SECRET or type(b) == "boolean", "curve input"); return b == true and t or f end })
+    rawset(env, "C_SpellActivationOverlay", { IsSpellOverlayed = function() return SECRET end })
+    rawset(env, "GetInventoryItemID", function(_, slot) return slot == 13 and 1234 or nil end)
+    rawset(env, "issecretvalue", function(v) return v == SECRET end)
+    rawset(env, "CooldownFrame_Set", function() end)
+    local Secret = ns.Secret
+    local oldIs = Secret.IsSecret
+    Secret.IsSecret = env.issecretvalue
+    local v = M.db.viewers.custom1
+    v.enabled, v.list, v.trinkets, v.readyGlow, v.show, v.keybinds = true, "133, Fireball, item:5512, 99999", true, "pixel",
+        "cooldown", true
+    M:BuildCustom("custom1")
+    local bar = M.customBars.custom1
+    -- 133, Fireball (133), item:5512, spell 99999 (known in this stub), trinket 1 (has a use); trinket 2 is empty
+    assert(#bar.entries == 5 and bar.entries[2].id == 133 and bar.entries[3].kind == "item" and bar.entries[5].slot == 13,
+        "custom entries: " .. #bar.entries)
+    local f = bar.icons[1]
+    rawset(f.Icon, "SetDesaturation", function(_, d) desat[#desat + 1] = d end)
+    rawset(f, "SetAlphaFromBoolean", function(_, b) assert(b == SECRET or type(b) == "boolean"); alphaBool = alphaBool + 1 end)
+    rawset(f.Count, "SetText", function(_, t) texts[#texts + 1] = t end)
+    M:UpdateCustom()
+    assert(#desat >= 1 and alphaBool >= 1 and texts[#texts] == SECRET, "secret readiness reached its sinks only")
+    for _, show in ipairs({ "ready", "always" }) do v.show = show; M:UpdateCustom() end
+    v.procGlow = "pixel"; M:UpdateCustom()
+    v.procGlow = "blizzard"; M:UpdateCustom()
+    -- a plain answer: off cooldown, no GCD
+    duration.IsZero = function() return true end
+    M:UpdateCustom()
+    v.list, v.trinkets = "", false
+    M:BuildCustom("custom1")
+    assert(#M.customBars.custom1.entries == 0 and not bar.icons[1]:IsShown(), "emptied bar")
+    v.list, v.trinkets, v.show, v.readyGlow, v.keybinds = "", true, "always", "none", false
+    Secret.IsSecret = oldIs
+    for k, val in pairs(saved) do rawset(env, k, val) end
+    M:RefreshCustom()
+    M:ApplyVisibility()
+end)
+try("cooldown manager reminders", function()
+    local M = ns.modules.Tracker
+    local r = M.db.reminders
+    local saved = { IsInInstance = rawget(env, "IsInInstance"), C_UnitAuras = rawget(env, "C_UnitAuras"),
+        UnitClass = rawget(env, "UnitClass"), C_SpellBook = rawget(env, "C_SpellBook"), C_Item = rawget(env, "C_Item"),
+        UnitExists = rawget(env, "UnitExists"), InCombatLockdown = rawget(env, "InCombatLockdown"),
+        IsMounted = rawget(env, "IsMounted"), UnitInVehicle = rawget(env, "UnitInVehicle") }
+    rawset(env, "IsMounted", function() return false end)
+    rawset(env, "UnitInVehicle", function() return false end)
+    rawset(env, "IsInInstance", function() return true, "party" end)
+    rawset(env, "C_UnitAuras", { GetPlayerAuraBySpellID = function() return nil end, GetAuraDataBySpellName = function() return nil end })
+    rawset(env, "UnitClass", function() return "Mage", "MAGE", 8 end)
+    rawset(env, "C_SpellBook", { IsSpellKnown = function() return true end })
+    rawset(env, "C_Item", setmetatable({ GetItemCount = function() return 0 end }, { __index = saved.C_Item }))
+    rawset(env, "InCombatLockdown", function() return false end)
+    local missing = {}
+    for _, name in ipairs(M:MissingReminders()) do missing[name] = true end
+    if RETAIL then
+        assert(missing.flask and missing.food and missing.raidBuff and not missing.rune, "retail reminders")
+    else
+        assert(not missing.flask and not missing.raidBuff, "spell-ID reminders are retail-only")
+    end
+    assert(not missing.pet and not missing.healthstone, "a mage needs no pet and no warlock is near")
+    rawset(env, "UnitClass", function() return "Warlock", "WARLOCK", 9 end)
+    rawset(env, "UnitExists", function() return false end)
+    missing = {}
+    for _, name in ipairs(M:MissingReminders()) do missing[name] = true end
+    assert(missing.pet and missing.healthstone, "warlock: pet and healthstone")
+    rawset(env, "IsInInstance", function() return false, "none" end)
+    assert(#M:MissingReminders() == 0, "instances only")
+    r.instancesOnly = false
+    M:RefreshReminders()
+    r.sound = "AlertOnYou"; M:RefreshReminders(); r.sound = ""
+    fire("READY_CHECK")
+    r.instancesOnly = true
+    for k, val in pairs(saved) do rawset(env, k, val) end
+    M:RefreshReminders()
+end)
+try("cooldown manager test and preview", function()
+    local M = ns.modules.Tracker
+    M.db.viewers.custom2.enabled = true
+    assert(M:ShowTest(true) and M.testShown, "Test samples")
+    M.db.viewers.essential.procGlow = "autocast"; M:Refresh()
+    assert(M:ShowTest(false) and not M.testShown, "Test hides")
+    M.db.viewers.custom2.enabled, M.db.viewers.essential.procGlow = false, "blizzard"
+    for _, key in ipairs({ "essential", "utility", "buffs", "bars", "custom1", "custom3" }) do
+        local stage = ns.Previews:Create("tracker", env.CreateFrame("Frame"), M, { scope = { unit = key } })
+        M.db.viewers[key].readyGlow, M.db.viewers[key].keybinds = "pixel", true
+        stage:Redraw()
+        M.db.viewers[key].readyGlow, M.db.viewers[key].keybinds = "none", false
+    end
+    fire("PLAYER_REGEN_DISABLED"); fire("PLAYER_REGEN_ENABLED"); fire("PLAYER_TARGET_CHANGED")
+    fire("PLAYER_SPECIALIZATION_CHANGED", "player"); fire("SPELL_UPDATE_COOLDOWN"); fire("UPDATE_BINDINGS")
+end)
+try("cooldown manager depth (S12)", function()
+    local n = ns.Config.CountSettings(ns.options.Tracker)
+    assert(n >= 59 and ns.Config.DEPTH.Tracker == 59, ("Tracker has %d of 59 settings"):format(n))
+    print(("  Tracker settings: %d"):format(n))
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

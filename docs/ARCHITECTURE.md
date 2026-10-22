@@ -102,7 +102,8 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `AFK` | _AfkCam | AFK screen |
 | `MythicPlus` | Mythic+ | Run timer overlay (`Timer.lua`: chest thresholds, forces, boss splits, deaths, personal bests in `global.best`; Edit Mode frame), auto-insert keystone, new-key report |
 | `PvP` | Misc PvP | Safe queue, TAB targets players, `/gg` |
-| `CooldownText` | CooldownTracker CooldownText | Phoenix font and color on Blizzard countdown numbers |
+| `Tracker` | Auras & Cooldowns (1.x skin; key kept for saved settings) (`Tracker.lua` defaults/pure grid, stack, list and visibility helpers/state/event fan-out/Test, `Viewers.lua` Blizzard viewer items re-laid on Phoenix anchors, styling, glows, keybinds, claims, movers, `Custom.lua` three custom bars and the Test samples, `Reminders.lua` pre-pull reminders) | Cooldown Manager: Blizzard's Essential/Utility/Buff icon/Buff bar viewers in Phoenix style and layout (grid, overflow, keep-in-place, Edit Mode or mover placement), proc and ready glows, desaturation, GCD swipe, keybinds, visibility and spec rules; three secret-safe custom bars for spells, items and trinkets; out-of-combat reminders. Separate from `Auras` (every buff and debuff on you) |
+| `CooldownText` | CooldownTracker CooldownText | Phoenix font and color on Blizzard countdown numbers; `M:Claim(cooldown, on)` hands a countdown to another module (one owner per number) |
 | `SpellHistory` | CooldownTracker SpellTracker | Player-only recent casts strip |
 | `Encounters` | (new, 2.0 S1) | `C_EncounterTimeline` events as Phoenix bars (`Bars.lua`), `ENCOUNTER_WARNING` as a Phoenix banner (`Warnings.lua`), pull (`C_PartyInfo.DoCountdown`) and break (DBM/BigWigs "D5" BT message) timers, countdown voice, BigWigs bar style (`BigWigs.lua`, public `BigWigsAPI:RegisterBarStyle`). Owns `encounterTimelineEnabled`/`encounterWarningsEnabled` while it draws (player's values kept in `global.cvars`, restored on hand-back); stands down when BigWigs or DBM is loaded. Secret event fields only reach SetText/SetTexture |
 | `Sim` | (new, 2.0 S2; export format after simc-addon, Unlicense) | SimulationCraft through the Phoenix app. `Export.lua` (`ns.SimExport`): profile header (DB2 spec/profession tokens, `C_Traits.GenerateImportString`, omnium system 48) and SimC item options from plain links; item key = itemID + sorted bonus IDs. `Sim.lua`: paperdoll/bag gear, selection, `Prepare` writes one request per character into SV `PhoenixUISimDB`; the app answers in `Sim\Results.lua` (`PhoenixUISimResults`, data only), imported on login into SV (last 10 per character). `ItemResult(link)` feeds the Tooltip line and the Bags arrow (`PUI_SIM_RESULTS`). Contract fixtures shared with `uploader/` tests |
@@ -475,6 +476,25 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   `PartyFrame`, `CompactRaidFrameContainer` (and `CompactRaidFrameManager` on request) are reparented to a hidden
   frame out of combat and re-parked on zone/difficulty changes. Not built: placing yourself first/last (only show or
   hide yourself), per-member custom indicator slots.
+* **Cooldown Manager (2.0 S12).** `Modules/Tracker` builds on Blizzard's `Blizzard_CooldownViewer` (loaded on
+  "standard, camelot", so retail and WoW Forever): the four viewers are `GridLayoutFrame` Edit Mode systems whose
+  items come from `itemFramePool`. Phoenix never moves, sizes or reparents a viewer (Edit Mode owns it, and the
+  managed container also holds the action bars); it post-hooks `OnAcquireItemFrame` (style the item) and `Layout`
+  (queue a re-layout for the next frame) and re-anchors the plain item frames onto its own anchor frame
+  `PhoenixUI_CDM_<key>` (pure `M.Grid`/`M.Stack`), which sits on the viewer's edge (*Edit Mode*) or at a Layout-mode
+  mover (*Phoenix mover*). Essential's overflow can hide or run in front of Utility. Behaviour post-hooks on each
+  item: `RefreshIconDesaturation`, `RefreshSpellCooldownInfo` (swipe darkness, GCD swipe off only on a plain
+  `isOnGCD`), `RefreshIconColor` (range tint), `OnCooldownDone` (`HookScript`; the ready glow only after a plain
+  `isOnActualCooldown`), and `ActionButtonSpellAlertManager` `ShowAlert`/`HideAlert` (proc glow: Blizzard's or a
+  Phoenix glow). Keybinds come from `C_ActionBar.FindSpellActionButtons` and the bound keys of the buttons showing
+  those slots. Countdown numbers: Cooldown Text styles them unless a viewer claims them (`CooldownText:Claim`).
+  Custom bars are Phoenix frames fed only through sinks: `C_Spell.GetSpellCooldownDuration`/`GetSpellChargeDuration`
+  → `SetCooldownFromDurationObject`, `C_Spell.GetSpellDisplayCount` → `SetText`, `duration:IsZero()` →
+  `C_CurveUtil.EvaluateColorValueFromBoolean` → `SetDesaturation` and `SetAlphaFromBoolean` (show modes, ready
+  glow); items use plain `C_Item.GetItemCooldown`. Visibility (always/combat/target/either/never, mounted, vehicle,
+  spec 1-4) and the fade set viewer and anchor alpha only. Reminders run out of combat; the aura-ID ones (flask,
+  food, rune, raid buff) are behind `ns:Supports("cdmReminders")` (retail); oil, pet, healthstone and ready-check
+  mana work on both clients.
 * **Nameplates (2.0 S10).** `Modules/NamePlates` builds one plain plate per Blizzard base plate (kept in a weak
   side table, nothing written onto Blizzard frames), parented to the base and only for plates
   `C_NamePlate.GetNamePlateForUnit(unit, false)` returns (forbidden plates are never asked for); widget-only plates

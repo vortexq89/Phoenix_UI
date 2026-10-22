@@ -153,6 +153,8 @@ Already in flight and not re-planned here: Bugs rebuild (other worker), Sim uplo
 
 ### S12 — Cooldown Manager depth + reminders (~4 days)
 
+*Shipped 22 Oct 2026: 91 settings on retail, 87 on Forever (target 59); needs an in-game test (TESTING §13i).*
+
 - Per-viewer rows/sizes/overflow, keep-in-place, glow styles, keybinds, buff bars — 2.5 d
 - Out-of-combat reminders (consumables, raid buffs, pet, healthstone) — 1.5 d
 

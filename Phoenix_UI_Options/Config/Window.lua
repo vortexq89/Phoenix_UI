@@ -57,8 +57,8 @@ local function profileItems()
     return out
 end
 
--- Test frames: unit frames, cast bars and auras together; the unit frames' state leads (one button, one state).
-local TEST_MODULES = { "UnitFrames", "CastBars", "Auras" }
+-- Test frames: unit frames, cast bars, auras and the Cooldown Manager together; the unit frames' state leads (one button, one state).
+local TEST_MODULES = { "UnitFrames", "CastBars", "Auras", "Tracker" }
 local function toggleTestFrames()
     local live = {}
     for _, name in ipairs(TEST_MODULES) do

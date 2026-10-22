@@ -38,7 +38,8 @@ Mode cannot reach.
 | | **Minimap** | Square minimap, zone text style, coordinates, a button bin for addon minimap buttons; size stays in Edit Mode |
 | | **Data Bar** | FPS, latency, speed, durability, gold, clock, bug count, free bag slots, item level, friends, guild and mail, in the order you drag them to; movable in Edit Mode |
 | | **Movers** | Move, scale and fade frames Edit Mode does not manage: zone text, error messages, alerts, top-center widgets, boss banner, event toasts, ready check |
-| Combat | **Cooldown Text** | Blizzard's countdown numbers in your font, scaled to the icon, with tenths, a minimum duration, hiding on aura icons and optional colour by time left on action buttons |
+| Combat | **Cooldown Manager** | Blizzard's Cooldown Manager in Phoenix style and layout: icon grids with rows, sizes, spacing, growth, overflow and keep-in-place, proc and ready glows, grey-out on cooldown, keybinds, visibility and per-spec rules, three custom bars for other spells, items and trinkets, and pre-pull reminders (flask, food, rune, oil, raid buff, pet, healthstone, mana on ready check) |
+| | **Cooldown Text** | Blizzard's countdown numbers in your font, scaled to the icon, with tenths, a minimum duration, hiding on aura icons and optional colour by time left on action buttons |
 | | **Encounters** | Boss timers as Phoenix bars and boss warnings in a Phoenix banner (from the game's own encounter timeline), every Blizzard boss-warning setting, a Test button, pull and break timers shared with DBM/BigWigs users, the countdown voice, and a Phoenix bar style for BigWigs/LittleWigs |
 | | **Combat Text** | Every floating combat text option in one page |
 | | **Damage Meter** | Skin for Blizzard's built-in meter; optional one-click Details! style |
@@ -200,7 +201,7 @@ follows that. It skins and configures the Blizzard features and no longer bundle
 | Scrolling combat text (MikScrollingBattleText) | Phoenix **Combat Text** page (Blizzard floating combat text), or [MikScrollingBattleText](https://www.curseforge.com/wow/addons/mikscrollingbattletext) (the 12.x rewrite) |
 | Group finder filters (Premade Groups Filter) | [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) |
 | Buff overlays on raid frames (BuffOverlay) | Blizzard raid frame aura settings. BuffOverlay does not work in 12.x, where aura data is secret in restricted content |
-| Cooldown tracker / spell notifications | Blizzard **Cooldown Manager** (Quality of Life page) for your own cooldowns. Party cooldown tracking relied on the combat log and was dropped |
+| Cooldown tracker / spell notifications | Phoenix **Cooldown Manager** page on top of Blizzard's Cooldown Manager for your own cooldowns, plus custom bars. Party cooldown tracking relied on the combat log and was dropped |
 | Details! skin | Phoenix **Damage Meter** page (Blizzard meter skin + one-click Details! style) |
 
 ## Development

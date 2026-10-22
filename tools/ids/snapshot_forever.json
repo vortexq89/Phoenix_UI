@@ -191,6 +191,9 @@
   "Interface\\DialogFrame\\UI-DialogBox-Background-Dark": {
    "fileDataID": 312922
   },
+  "Interface\\Icons\\Ability_Hunter_BeastCall": {
+   "fileDataID": 132161
+  },
   "Interface\\Icons\\Ability_Hunter_MarkedForDeath": {
    "fileDataID": 236188
   },
@@ -260,6 +263,9 @@
   "Interface\\Icons\\INV_Misc_EngGizmos_30": {
    "fileDataID": 237293
   },
+  "Interface\\Icons\\INV_Misc_Food_15": {
+   "fileDataID": 133971
+  },
   "Interface\\Icons\\INV_Misc_Gear_01": {
    "fileDataID": 134063
   },
@@ -290,8 +296,20 @@
   "Interface\\Icons\\INV_Misc_Spyglass_03": {
    "fileDataID": 134442
   },
+  "Interface\\Icons\\INV_Potion_100": {
+   "fileDataID": 134722
+  },
+  "Interface\\Icons\\INV_Potion_76": {
+   "fileDataID": 134856
+  },
+  "Interface\\Icons\\INV_Potion_97": {
+   "fileDataID": 134877
+  },
   "Interface\\Icons\\INV_Relics_Hourglass": {
    "fileDataID": 525134
+  },
+  "Interface\\Icons\\INV_Stone_04": {
+   "fileDataID": 135230
   },
   "Interface\\Icons\\Spell_Arcane_TeleportDalaran": {
    "fileDataID": 237509

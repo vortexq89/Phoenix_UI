@@ -132,12 +132,12 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Expect:** every font/texture setting of every module listed on one page; changing one here changes it on the
   module page too (the → arrow jumps there). **Apply to all** sets every row at once; **Use theme** returns them to
   Default. Sounds: each **Play** button plays the alert or the 5→1 countdown.
-- [ ] **3.5c Auras & Cooldowns (Combat group).** First turn on Blizzard's Cooldown Manager (Options → Gameplay →
-  Advanced Options → Cooldown Manager) and press **Open** on the **Choose spells** row (Behaviour tab) to pick a few spells.
-  **Expect:** the Essential, Utility, Buffs and Bars viewers show square, cropped icons with a border and Phoenix
-  timer/stack fonts; **Square icons** off gives Blizzard's round icons back; the Bars viewer uses your bar texture
-  and colour. Timers and swipes keep counting **in combat** (they are Blizzard's). **Fade out of combat** dims the
-  viewers until you pull. **If not:** name the viewer and the option, and send `/pui bugs`.
+- [ ] **3.5c Cooldown Manager (Combat group; formerly Auras & Cooldowns).** First turn on Blizzard's Cooldown
+  Manager (the *Cooldown Manager* row on the Layout tab mirrors Quality of Life's switch) and press **Open** on the
+  **Choose spells** row to pick a few spells. **Expect:** the Essential, Utility, Buffs and Bars viewers show square,
+  cropped icons with a border and Phoenix fonts on the Phoenix grid; **Square icons** off gives Blizzard's round
+  icons back; the Bars viewer uses your bar texture and colour. Full checklist: §13i. **If not:** name the viewer and
+  the option, and send `/pui bugs`.
 - [ ] **3.5d Countdown voice (now on Encounters → Sounds).** After updating from an older build your voice, start
   number and switches are still as you left them (they moved from Auras & Cooldowns). Press **Try it**: you hear
   5 → 1 in the chosen voice. Then in a group type `/countdown 10` (without DBM or BigWigs loaded).
@@ -707,6 +707,52 @@ party or follower dungeon; *raid* needs a raid (LFR, a world boss or a custom ra
 Known limits: you can show or hide yourself but not place yourself first or last. Size and position changes made in
 combat wait for combat to end (a game rule).
   **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13h.12).
+
+## 13i. Cooldown Manager (2.0 S12)
+
+Turn on Blizzard's Cooldown Manager and pick a few spells and buffs (**Choose spells**). Start with
+`/console taintLog 1` and an empty `/pui bugs`.
+
+- [ ] **13i.1 Grid.** Cooldown Manager → scope *Essential*: icon size 44, 6 per row, 2 rows, spacing 4, growth
+  *Left*, wrap *Up*, *Later rows size* -8, centre on and off. **Expect:** the icons re-lay at once (also in combat,
+  when Blizzard adds or removes one); the viewer can still be moved in Edit Mode and the icons follow it.
+- [ ] **13i.2 Overflow and keep in place.** Essential 4 per row x 1 row with more spells chosen: *Extra icons* →
+  *Hide them*, then *Move to Utility*, then *Add rows*. Buffs: *Keep places* on. **Expect:** hidden extras / extras
+  in front of Utility / more rows; with *Keep places* buff icons no longer shift as buffs come and go.
+- [ ] **13i.3 Phoenix mover.** *Placed by* → *Phoenix mover* on Utility, scale 1.2; Layout mode → drag *Utility*,
+  *Custom bar 1* and *Reminders*. **Expect:** they move and stay after a reload; Edit Mode no longer moves Utility's
+  icons (back to *Edit Mode* restores it).
+- [ ] **13i.4 Glows (combat).** Proc glow *Blizzard*, then *Pixel*, *Autocast*, *Button* with a colour; ready glow
+  *Pixel* for 2 s. **Expect:** a proc (Hot Streak, Sudden Death …) lights the icon in the chosen style; a spell
+  coming off a real cooldown glows for 2 s (not after the global cooldown). Known limit: in content where the game
+  hides cooldown state the viewers' ready glow is skipped.
+- [ ] **13i.5 Cooldown state.** *Grey out on cooldown* on/off, *Hide the global cooldown*, swipe darkness 30 %,
+  *Out-of-range tint* off. **Expect:** grey icons only on real cooldowns; no GCD swipe; lighter swipe; no red tint.
+- [ ] **13i.6 Keybinds.** *Keybinds* on (Essential, Utility). **Expect:** each icon shows the key of an action
+  button holding the spell (short form, e.g. `S1`, `M4`); rebinding updates them.
+- [ ] **13i.7 Countdown numbers.** Text tab: *Countdown numbers* → *Cooldown Text*, then *This viewer's font* with
+  size 20. **Expect:** first Cooldown Text's font and colours (as on action bars), then the viewer's own font; never
+  two numbers on one icon.
+- [ ] **13i.8 Custom bars (combat).** Scope *Custom bar 1*: list `1953, item:5512, trinket1` (Blink, Healthstone,
+  your top trinket; or your own spells), *Show icons* *Always*, then *On cooldown*, then *When ready*; ready glow *Pixel*;
+  *Charges* on a spell with charges. **Expect:** icons for known spells, carried items and on-use trinkets; the
+  cooldown swipe, charge count and recharge ring keep working in combat and in Mythic+; grey-out and the show modes
+  follow readiness; tooltips on mouseover.
+- [ ] **13i.9 Visibility and specs.** *Show* → *In combat*, *With a target*, *Never*; *Hide while mounted*; untick
+  your current specialization. **Expect:** the viewer/bar appears only as chosen, hides mounted and when the spec is
+  unticked. **Per-spec profiles** opens the Profiles page.
+- [ ] **13i.10 Reminders (dungeon).** Enter a dungeon without flask, food or rune; a hunter/warlock without a pet; a
+  warlock in the group and no healthstone; a ready check below 90 % mana. **Expect:** the matching icons above the
+  screen centre out of combat only, with the sound if set; they go away once fixed; nothing in the open world while
+  *Only in dungeons and raids* is on.
+- [ ] **13i.11 Test.** **Test** on the Layout tab (or the window's test-frames button). **Expect:** sample icons and
+  bars at every viewer, enabled custom bar and the reminders, following every setting; combat ends the test.
+- [ ] **13i.12 Combat and taint.** Change layout settings in combat, swap specs, open Edit Mode after a fight.
+  **Expect:** no `ADDON_ACTION_BLOCKED`, nothing in `Logs\taint.log` from Phoenix_UI.
+- [ ] **13i.13 WoW Forever.** Repeat 13i.1-13i.9 on Forever. **Expect:** the same viewers and custom bars; the
+  flask, food, rune and raid-buff reminder rows are hidden; oil, pet, healthstone and mana remain.
+
+**If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13i.12).
 
 ## 14. Other client languages
 

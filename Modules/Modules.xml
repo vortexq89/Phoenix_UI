@@ -43,6 +43,9 @@
     <!-- combat -->
     <Script file="CooldownText\CooldownText.lua"/>
     <Script file="Tracker\Tracker.lua"/>
+    <Script file="Tracker\Viewers.lua"/>
+    <Script file="Tracker\Custom.lua"/>
+    <Script file="Tracker\Reminders.lua"/>
     <Script file="Encounters\Encounters.lua"/>
     <Script file="Encounters\Bars.lua"/>
     <Script file="Encounters\Warnings.lua"/>

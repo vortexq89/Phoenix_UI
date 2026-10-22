@@ -61,8 +61,10 @@ local function barSize(cd)
     end
 end
 
+local claimed = setmetatable({}, weak) -- cooldown -> true: another module paints these numbers (Cooldown Manager)
+
 local function style(cd)
-    if not cd or cd:IsForbidden() or not cd.GetCountdownFontString then return end
+    if not cd or claimed[cd] or cd:IsForbidden() or not cd.GetCountdownFontString then return end
     local fs = cd:GetCountdownFontString()
     if not fs then return end
     local db = M.db
@@ -83,6 +85,24 @@ local function style(cd)
     cd:SetMinimumCountdownDuration(math.floor(db.minDuration * 1000 + 0.5))
 end
 M.Style = style
+
+-- One owner per number: a module that paints a cooldown's countdown itself claims it (on = true) and Cooldown Text
+-- leaves it alone (restoring Blizzard's font if it had styled it); releasing it hands it back.
+function M:Claim(cd, on)
+    if not cd then return end
+    if on then
+        if claimed[cd] then return end
+        claimed[cd] = true
+        local fs = styled[cd]
+        if fs then Skin:Restore(fs); styled[cd] = nil end
+        if hidden[cd] ~= nil then cd:SetHideCountdownNumbers(hidden[cd]); hidden[cd] = nil end
+    elseif claimed[cd] then
+        claimed[cd] = nil
+        if self:IsEnabled() then style(cd) end
+    elseif self:IsEnabled() and not styled[cd] then
+        style(cd)
+    end
+end
 
 ---------------------------------------------------------------- colour by remaining (action buttons)
 local curve, formatter

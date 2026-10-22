@@ -191,6 +191,9 @@
   "Interface\\DialogFrame\\UI-DialogBox-Background-Dark": {
    "fileDataID": 312922
   },
+  "Interface\\Icons\\Ability_Hunter_BeastCall": {
+   "fileDataID": 132161
+  },
   "Interface\\Icons\\Ability_Hunter_MarkedForDeath": {
    "fileDataID": 236188
   },
@@ -260,6 +263,9 @@
   "Interface\\Icons\\INV_Misc_EngGizmos_30": {
    "fileDataID": 237293
   },
+  "Interface\\Icons\\INV_Misc_Food_15": {
+   "fileDataID": 133971
+  },
   "Interface\\Icons\\INV_Misc_Gear_01": {
    "fileDataID": 134063
   },
@@ -290,8 +296,20 @@
   "Interface\\Icons\\INV_Misc_Spyglass_03": {
    "fileDataID": 134442
   },
+  "Interface\\Icons\\INV_Potion_100": {
+   "fileDataID": 134722
+  },
+  "Interface\\Icons\\INV_Potion_76": {
+   "fileDataID": 134856
+  },
+  "Interface\\Icons\\INV_Potion_97": {
+   "fileDataID": 134877
+  },
   "Interface\\Icons\\INV_Relics_Hourglass": {
    "fileDataID": 525134
+  },
+  "Interface\\Icons\\INV_Stone_04": {
+   "fileDataID": 135230
   },
   "Interface\\Icons\\Spell_Arcane_TeleportDalaran": {
    "fileDataID": 237509
@@ -381,6 +399,9 @@
   "106839": {
    "name": "Skull Bash"
   },
+  "1126": {
+   "name": "Mark of the Wild"
+  },
   "113656": {
    "name": "Fists of Fury"
   },
@@ -395,6 +416,51 @@
   },
   "119910": {
    "name": "Spell Lock"
+  },
+  "1230875": {
+   "name": "Flask of Thalassian Resistance"
+  },
+  "1230876": {
+   "name": "Flask of the Magisters"
+  },
+  "1230877": {
+   "name": "Flask of the Blood Knights"
+  },
+  "1230878": {
+   "name": "Flask of the Shattered Sun"
+  },
+  "1234969": {
+   "name": "Ethereal Augmentation"
+  },
+  "1235057": {
+   "name": "Flask of Thalassian Resistance"
+  },
+  "1235108": {
+   "name": "Flask of the Magisters"
+  },
+  "1235110": {
+   "name": "Flask of the Blood Knights"
+  },
+  "1235111": {
+   "name": "Flask of the Shattered Sun"
+  },
+  "1242347": {
+   "name": "Soulgorged Augmentation"
+  },
+  "1248840": {
+   "name": "Flask of the Shattered Sun"
+  },
+  "1248842": {
+   "name": "Flask of the Blood Knights"
+  },
+  "1248845": {
+   "name": "Flask of the Magisters"
+  },
+  "1295329": {
+   "name": "Tidesworn Augment Rune"
+  },
+  "1459": {
+   "name": "Arcane Intellect"
   },
   "147362": {
    "name": "Counter Shot"
@@ -414,8 +480,14 @@
   "187707": {
    "name": "Muzzle"
   },
+  "19705": {
+   "name": "Well Fed"
+  },
   "2139": {
    "name": "Counterspell"
+  },
+  "21562": {
+   "name": "Power Word: Fortitude"
   },
   "234153": {
    "name": "Drain Life"
@@ -428,6 +500,33 @@
   },
   "356995": {
    "name": "Disintegrate"
+  },
+  "364342": {
+   "name": "Blessing of the Bronze"
+  },
+  "381748": {
+   "name": "Blessing of the Bronze"
+  },
+  "393438": {
+   "name": "Draconic Augmentation"
+  },
+  "431971": {
+   "name": "Flask of Tempered Aggression"
+  },
+  "431972": {
+   "name": "Flask of Tempered Swiftness"
+  },
+  "431973": {
+   "name": "Flask of Tempered Versatility"
+  },
+  "431974": {
+   "name": "Flask of Tempered Mastery"
+  },
+  "432021": {
+   "name": "Flask of Alchemical Chaos"
+  },
+  "462854": {
+   "name": "Skyfury"
   },
   "47528": {
    "name": "Mind Freeze"
@@ -449,6 +548,9 @@
   },
   "6603": {
    "name": "Auto Attack"
+  },
+  "6673": {
+   "name": "Battle Shout"
   },
   "75": {
    "name": "Auto Shot"
