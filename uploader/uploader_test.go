@@ -207,6 +207,14 @@ func TestShareFlag(t *testing.T) {
 	_ = os.MkdirAll(sv, 0o755)
 	file := filepath.Join(sv, "Phoenix_UI.lua")
 	_ = os.WriteFile(file, []byte(off), 0o644)
+	dry := t.TempDir()
+	probe, err := NewApp(dry, NewLogger(dry, nil), []string{filepath.Join(root, "_retail_")}, srv.URL, "k", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s := probe.Cycle(true); s.OptedOut != 1 || len(probe.state.Pending(probe.mustRead(t, file))) != 5 {
+		t.Fatalf("--dry-run must report the opt-out without marking anything: %+v", s)
+	}
 	data := t.TempDir()
 	app, err := NewApp(data, NewLogger(data, nil), []string{filepath.Join(root, "_retail_")}, srv.URL, "k", false)
 	if err != nil {
@@ -251,4 +259,12 @@ func TestScrubber(t *testing.T) {
 	if r.Locals != want {
 		t.Fatalf("locals:\n%s", r.Locals)
 	}
+}
+
+func (a *App) mustRead(t *testing.T, path string) []Report {
+	db, err := ReadBugsDB(path)
+	if err != nil || db == nil {
+		t.Fatalf("read %s: %v", path, err)
+	}
+	return db.Reports
 }

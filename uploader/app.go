@@ -156,7 +156,7 @@ func (a *App) file(path string, s *Summary) bool {
 	if !db.Share {
 		// The player turned "Send error reports to the author" off. What was caught meanwhile is marked as handled
 		// so that switching it back on later sends only reports that are new from then on.
-		if p := a.state.Pending(db.Reports); len(p) > 0 {
+		if p := a.state.Pending(db.Reports); len(p) > 0 && !a.dryRun { // --dry-run changes nothing
 			a.state.MarkSkipped(p)
 		}
 		s.OptedOut++
