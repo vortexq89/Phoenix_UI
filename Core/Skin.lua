@@ -267,6 +267,22 @@ function Sk:IconZoom(tex, zoom)
     tex:SetTexCoord(z, 1 - z, z, 1 - z)
 end
 
+-- Zoom plus a border for an icon owned by someone else (Blizzard aura buttons): the border lives on a
+-- child frame of ours laid over the icon, so the owner's own regions and sizes are never changed.
+local iconFrames = setmetatable({}, { __mode = "k" })
+function Sk:IconFrame(owner, icon, spec, zoom, token)
+    self:IconZoom(icon, zoom)
+    local h = iconFrames[icon]
+    if not h then
+        h = CreateFrame("Frame", nil, owner)
+        h:SetAllPoints(icon)
+        h:SetFrameLevel(owner:GetFrameLevel() + 2)
+        iconFrames[icon] = h
+    end
+    self:BorderSpec(h, spec, token or "border.black")
+    return h
+end
+
 ---------------------------------------------------------------- status bars
 function Sk:StatusBar(bar, opts)
     opts = opts or {}

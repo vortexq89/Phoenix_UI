@@ -3,6 +3,7 @@ local Opt = ns.Opt
 
 local function noFonts(m) return not m.db.fonts end
 local function isPet(_, unit) return unit == "pet" end
+local function noAuras(m) return not m.db.auras.style end
 
 local PORTRAIT = {
     { value = "game", label = "UF_PORTRAIT_GAME" }, { value = "class", label = "UF_PORTRAIT_CLASS" },
@@ -43,12 +44,18 @@ ns:RegisterOptions("UnitFrames", {
     { type = "header", label = "UF_RANGE" },
     { type = "toggle", key = "range.enabled", label = "UF_RANGE_FADE", desc = "UF_RANGE_FADE_DESC", keywords = "out of range alpha fade",
       cog = { { type = "range", key = "range.alpha", label = "UF_RANGE_ALPHA", min = 0.1, max = 0.9, step = 0.05, percent = true } } },
+    { type = "header", label = "UF_AURAS" },
+    { type = "toggle", key = "auras.style", label = "UF_AURAS_STYLE", desc = "UF_AURAS_STYLE_DESC",
+      keywords = "buffs debuffs aura icons", reload = true,
+      cog = { { type = "range", key = "auras.zoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01 } } },
+    Opt.With(Opt.Border("auras.border"), { disabled = noAuras }),
     { type = "tab", label = "TAB_TEXT" },
     { type = "header", label = "UF_TEXT", wide = true },
     { type = "toggle", key = "fonts", label = "UF_FONTS", desc = "UF_FONTS_DESC", reload = true },
     Opt.Text("units.@.name", "UF_NAME_FONT", { row = { disabled = noFonts } }),
     Opt.Text("units.@.health", "UF_HEALTH_FONT", { row = { disabled = noFonts } }),
     Opt.Text("units.@.power", "UF_POWER_FONT", { row = { disabled = noFonts } }),
+    Opt.Text("auras.count", "UF_AURA_COUNT_FONT", { max = 20, row = { disabled = noAuras } }),
     { type = "description", text = "UF_EDITMODE_NOTE" },
     { type = "description", text = "UF_ARENA_NOTE" },
 })

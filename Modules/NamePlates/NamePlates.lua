@@ -9,7 +9,8 @@ local Theme, Skin, Secret, Media, Style = ns.Theme, ns.Skin, ns.Secret, ns.Media
     FontString:SetText, so mobs that give nothing show nothing without the value being tested.
     Target, focus and threat colours run after Blizzard's own health colour (CompactUnitFrame_UpdateHealthColor)
     and only when UnitIsUnit / UnitThreatSituation answer with plain values; otherwise Blizzard's colour stays.
-    The plate cast bar gets the Phoenix texture and font after every UpdateBarFillTexture. ]]
+    The plate cast bar gets the Phoenix texture and font after every UpdateBarFillTexture, and the aura rows
+    (debuffs, buffs, crowd control) get icon zoom, a border and fonts after every RefreshList. ]]
 local M = ns:NewModule("NamePlates", {
     label = "NAMEPLATES", desc = "NAMEPLATES_DESC", category = "interface", order = 55, reloadOnToggle = true,
     defaults = {
@@ -23,6 +24,9 @@ local M = ns:NewModule("NamePlates", {
         highlight = { target = false, targetColor = false, focus = false, focusColor = false },
         threat = { enabled = false, aggro = false, warning = false, safe = false },
         castbar = { style = true, texture = "", color = false, text = Style.Text(9, { outline = "OUTLINE", shadow = false }) },
+        auras = { style = true, zoom = 0.08, border = Style.Border({ style = "solid" }),
+            count = Style.Text(9, { outline = "OUTLINE", shadow = false }),
+            timer = Style.Text(9, { outline = "OUTLINE", shadow = false }) },
     },
 })
 
@@ -214,6 +218,41 @@ local function hookCastBar(plate)
     castFill(bar)
 end
 
+---------------------------------------------------------------- plate auras (debuff row, buffs, crowd control)
+-- Blizzard fills the rows from secret aura data; we only dress the item frames after each RefreshList:
+-- icon zoom, a border on our own child frame, and the stack and timer fonts. Sizes and layout stay Blizzard's.
+local auraHosts = setmetatable({}, { __mode = "k" })
+local styledAura = setmetatable({}, { __mode = "k" }) -- item frame -> generation it was styled for
+local auraGen = 1
+
+function M:StyleAuraIcon(item, icon, count, timer)
+    local a = self.db.auras
+    Skin:IconFrame(item, icon, a.border, a.zoom)
+    if count then Skin:TextSpec(count, a.count, "number", "text.primary") end
+    if timer then Skin:TextSpec(timer, a.timer, "number", "text.primary") end
+end
+
+local function styleAuraItem(item)
+    if styledAura[item] == auraGen or item:IsForbidden() or not item.Icon then return end
+    styledAura[item] = auraGen
+    local cd = item.Cooldown
+    local timer = cd and cd.GetCountdownFontString and cd:GetCountdownFontString()
+    M:StyleAuraIcon(item, item.Icon, item.CountFrame and item.CountFrame.Count, timer)
+end
+
+local function afterRefreshList(auras)
+    if not (M:IsEnabled() and M.db.auras.style) or not auras.auraItemFramePool then return end
+    for item in auras.auraItemFramePool:EnumerateActive() do ns.SafeCall(styleAuraItem, item) end
+end
+
+local function hookAuras(plate)
+    local auras = plate.UnitFrame and plate.UnitFrame.AurasFrame
+    if not auras or auraHosts[auras] or not auras.RefreshList then return end
+    auraHosts[auras] = true
+    hooksecurefunc(auras, "RefreshList", afterRefreshList)
+    afterRefreshList(auras)
+end
+
 local function onAdded(_, _, unit)
     if Secret.IsSecret(unit) then return end
     local plate = C_NamePlate.GetNamePlateForUnit(unit)
@@ -223,6 +262,7 @@ local function onAdded(_, _, unit)
     nameOf[bar] = plate.UnitFrame.name
     apply(unit, bar)
     hookCastBar(plate)
+    hookAuras(plate)
     recolor(unit, bar)
 end
 
@@ -260,5 +300,7 @@ function M:Refresh()
     for _, fs in pairs(forcesTexts) do styleForces(fs) end
     for unit, bar in pairs(plates) do apply(unit, bar) end
     for bar in pairs(castBars) do castFill(bar) end
+    auraGen = auraGen + 1
+    for auras in pairs(auraHosts) do afterRefreshList(auras) end
     recolorAll()
 end

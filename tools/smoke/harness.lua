@@ -122,7 +122,13 @@ local api = {
         return unpack(out)
     end,
     tinsert = table.insert, tremove = table.remove, format = string.format,
-    hooksecurefunc = function() end,
+    -- instance hooks on plain fields run after the original (enough to test our post-hooks); others are ignored
+    hooksecurefunc = function(t, name, fn)
+        if type(t) == "table" and type(name) == "string" and type(rawget(t, name)) == "function" then
+            local orig = rawget(t, name)
+            rawset(t, name, function(...) local r = { orig(...) }; fn(...); return unpack(r) end)
+        end
+    end,
     bit = { band = band, bor = bor },
     NUM_CONTAINER_FRAMES = 6, NUM_BAG_SLOTS = 4, BACKPACK_CONTAINER = 0, INVSLOT_HEAD = 1, INVSLOT_LAST_EQUIPPED = 19,
     -- WoW's xpcall forwards extra arguments (Lua 5.1's does not).
@@ -913,6 +919,47 @@ try("nameplate colours", function()
     db.threat.enabled = false
     assert(rgb({ threat = 3 }) == "", "threat colours while switched off")
     db.threat.enabled, db.highlight.target, db.highlight.focus = was[1], was[2], was[3]
+end)
+-- aura rows: Blizzard's nameplate and target-frame aura buttons are dressed after Blizzard lays them out
+try("aura rows", function()
+    local function pool(items)
+        return { EnumerateActive = function() local i = 0; return function() i = i + 1; return items[i] end end }
+    end
+    local function button()
+        local b = env.CreateFrame("Frame")
+        b.Icon = b:CreateTexture()
+        b.Count = b:CreateFontString()
+        b.CountFrame = { Count = b.Count }
+        b.Cooldown = env.CreateFrame("Cooldown")
+        return b
+    end
+    -- nameplates
+    local NP = ns.modules.NamePlates
+    local plate = env.CreateFrame("Frame")
+    plate.UnitFrame = env.CreateFrame("Frame")
+    plate.UnitFrame.healthBar = env.CreateFrame("StatusBar")
+    local auras = env.CreateFrame("Frame")
+    rawset(auras, "RefreshList", function() end)
+    auras.auraItemFramePool = pool({ button(), button() })
+    plate.UnitFrame.AurasFrame = auras
+    local saved = rawget(env, "C_NamePlate")
+    rawset(env, "C_NamePlate", { GetNamePlateForUnit = function() return plate end })
+    local styled = 0
+    local orig = NP.StyleAuraIcon
+    NP.StyleAuraIcon = function(...) styled = styled + 1; return orig(...) end
+    fire("NAME_PLATE_UNIT_ADDED", "nameplate9")
+    auras:RefreshList()
+    auras:RefreshList()
+    NP.StyleAuraIcon = orig
+    rawset(env, "C_NamePlate", saved or nil)
+    fire("NAME_PLATE_UNIT_REMOVED", "nameplate9")
+    assert(styled == 2, "nameplate aura items styled " .. styled .. " times (each once expected)")
+    assert(NP.db.auras.style and NP.db.auras.count and NP.db.auras.timer, "nameplate aura defaults")
+    -- unit frames: the container's ApplyLayout post-hook (installed at enable) styles each button once
+    local UF = ns.modules.UnitFrames
+    assert(UF.db.auras.style and UF.db.auras.count, "unit frame aura defaults")
+    local b = button()
+    UF:StyleAuraIcon(b, b.Icon, b.Count)
 end)
 -- presets: one click writes only existing keys, Undo restores them; the picker opens only on a fresh install
 try("presets", function()

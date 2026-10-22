@@ -1037,6 +1037,16 @@ local T = {
     STYLE_PICKER_TITLE = "欢迎使用 Phoenix UI",
     STYLE_PICKER_INTRO = "先选一种外观开始。之后可随意修改，或在“工具 → 预设”（/pui）中换一种。",
     STYLE_PICKER_SKIP = "保持默认",
+    ---------------------------------------------------------------- aura rows on unit frames and nameplates
+    NP_AURAS = "姓名板光环",
+    NP_AURAS_STYLE = "Phoenix 光环图标",
+    NP_AURAS_STYLE_DESC = "裁切姓名板上的减益、增益与控制图标，并加上边框与 Phoenix 字体。显示哪些光环仍由游戏决定。",
+    NP_AURA_COUNT_FONT = "光环层数",
+    NP_AURA_TIMER_FONT = "光环计时",
+    UF_AURAS = "光环",
+    UF_AURAS_STYLE = "Phoenix 光环图标",
+    UF_AURAS_STYLE_DESC = "裁切目标、焦点与首领框体下方的增益和减益图标，可选边框并使用 Phoenix 层数字体。大小与顺序保持暴雪原样。",
+    UF_AURA_COUNT_FONT = "光环层数",
 }
 
 ns.RegisterLocale("zhCN", T)

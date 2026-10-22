@@ -1037,6 +1037,16 @@ local T = {
     STYLE_PICKER_TITLE = "Bienvenido a Phoenix UI",
     STYLE_PICKER_INTRO = "Elige un estilo para empezar. Podrás cambiar cualquier parte luego o elegir otro en Herramientas → Preajustes (/pui).",
     STYLE_PICKER_SKIP = "Mantener predeterminado",
+    ---------------------------------------------------------------- aura rows on unit frames and nameplates
+    NP_AURAS = "Auras en placas",
+    NP_AURAS_STYLE = "Iconos de aura Phoenix",
+    NP_AURAS_STYLE_DESC = "Recorta los iconos de perjuicios, beneficios y control de las placas de nombre y añade un borde y fuentes Phoenix. Qué auras se muestran lo sigue decidiendo el juego.",
+    NP_AURA_COUNT_FONT = "Acumulaciones",
+    NP_AURA_TIMER_FONT = "Temporizador de aura",
+    UF_AURAS = "Auras",
+    UF_AURAS_STYLE = "Iconos de aura Phoenix",
+    UF_AURAS_STYLE_DESC = "Recorta los iconos de beneficios y perjuicios bajo los marcos de objetivo, foco y jefe, con borde opcional y la fuente de acumulaciones Phoenix. Su tamaño y orden siguen siendo los de Blizzard.",
+    UF_AURA_COUNT_FONT = "Acumulaciones",
 }
 
 ns.RegisterLocale("esES", T)

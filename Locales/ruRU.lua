@@ -1037,6 +1037,16 @@ local T = {
     STYLE_PICKER_TITLE = "Добро пожаловать в Phoenix UI",
     STYLE_PICKER_INTRO = "Выберите облик для начала. Позже можно изменить что угодно или выбрать другой в разделе «Инструменты → Пресеты» (/pui).",
     STYLE_PICKER_SKIP = "Оставить как есть",
+    ---------------------------------------------------------------- aura rows on unit frames and nameplates
+    NP_AURAS = "Ауры на табличках",
+    NP_AURAS_STYLE = "Значки аур Phoenix",
+    NP_AURAS_STYLE_DESC = "Обрезает значки отрицательных, положительных эффектов и контроля на табличках и добавляет рамку и шрифты Phoenix. Какие ауры показывать, по-прежнему решает игра.",
+    NP_AURA_COUNT_FONT = "Стаки аур",
+    NP_AURA_TIMER_FONT = "Таймер аур",
+    UF_AURAS = "Ауры",
+    UF_AURAS_STYLE = "Значки аур Phoenix",
+    UF_AURAS_STYLE_DESC = "Обрезает значки эффектов под рамками цели, фокуса и босса, с необязательной рамкой и шрифтом стаков Phoenix. Размер и порядок остаются как у Blizzard.",
+    UF_AURA_COUNT_FONT = "Стаки аур",
 }
 
 ns.RegisterLocale("ruRU", T)

@@ -1037,6 +1037,16 @@ local T = {
     STYLE_PICKER_TITLE = "Phoenix UI에 오신 것을 환영합니다",
     STYLE_PICKER_INTRO = "시작할 스타일을 고르세요. 나중에 무엇이든 바꾸거나 도구 → 프리셋(/pui)에서 다른 스타일을 고를 수 있습니다.",
     STYLE_PICKER_SKIP = "기본값 유지",
+    ---------------------------------------------------------------- aura rows on unit frames and nameplates
+    NP_AURAS = "이름표 오라",
+    NP_AURAS_STYLE = "Phoenix 오라 아이콘",
+    NP_AURAS_STYLE_DESC = "이름표의 약화, 강화, 군중 제어 아이콘을 잘라 내고 테두리와 Phoenix 글꼴을 더합니다. 어떤 오라를 표시할지는 여전히 게임이 정합니다.",
+    NP_AURA_COUNT_FONT = "오라 중첩",
+    NP_AURA_TIMER_FONT = "오라 타이머",
+    UF_AURAS = "오라",
+    UF_AURAS_STYLE = "Phoenix 오라 아이콘",
+    UF_AURAS_STYLE_DESC = "대상, 주시 대상, 우두머리 프레임 아래의 강화·약화 아이콘을 잘라 내고, 선택적 테두리와 Phoenix 중첩 글꼴을 적용합니다. 크기와 순서는 블리자드 그대로입니다.",
+    UF_AURA_COUNT_FONT = "오라 중첩",
 }
 
 ns.RegisterLocale("koKR", T)

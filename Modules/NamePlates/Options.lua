@@ -8,6 +8,7 @@ local function noHealthText(m) return not m.db.healthText end
 local function nameUnstyled(m) return not m.db.name.styled end
 local function noCast(m) return not m.db.castbar.style end
 local function noThreat(m) return not m.db.threat.enabled end
+local function noAuras(m) return not m.db.auras.style end
 
 ns:RegisterOptions("NamePlates", {
     { type = "preview", kind = "nameplate" },
@@ -25,6 +26,11 @@ ns:RegisterOptions("NamePlates", {
     { type = "color", key = "castbar.color", label = "NP_CASTBAR_COLOR", desc = "NP_CASTBAR_COLOR_DESC", token = "accent.primary",
       reset = true, disabled = noCast },
     Opt.Text("castbar.text", "NP_CASTBAR_FONT", { max = 18, row = { disabled = noCast } }),
+    { type = "header", label = "NP_AURAS" },
+    { type = "toggle", key = "auras.style", label = "NP_AURAS_STYLE", desc = "NP_AURAS_STYLE_DESC",
+      keywords = "debuff buff aura icons row dots",
+      cog = { { type = "range", key = "auras.zoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01 } } },
+    Opt.With(Opt.Border("auras.border"), { disabled = noAuras }),
     { type = "tab", label = "TAB_COLORS" },
     { type = "header", label = "NP_HIGHLIGHT" },
     { type = "toggle", key = "highlight.target", label = "NP_TARGET_COLOR", desc = "NP_TARGET_COLOR_DESC", keywords = "target colour",
@@ -48,6 +54,9 @@ ns:RegisterOptions("NamePlates", {
       keywords = "mythic plus enemy forces count percent trash" },
     Opt.Text("forcesText", "NP_FORCES_FONT", { max = 20, token = "accent.secondary",
       row = { disabled = function(m) return not m.db.forces end } }),
+    { type = "header", label = "NP_AURAS" },
+    Opt.Text("auras.count", "NP_AURA_COUNT_FONT", { max = 18, row = { disabled = noAuras } }),
+    Opt.Text("auras.timer", "NP_AURA_TIMER_FONT", { max = 18, row = { disabled = noAuras } }),
     { type = "tab", label = "TAB_GAME" },
     { type = "header", label = "BLIZZARD_FEATURES" },
     { type = "toggle", label = "NP_SHOW_ALL", desc = "NP_SHOW_ALL_DESC", get = allGet, set = allSet, combat = true },

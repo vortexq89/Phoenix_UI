@@ -1063,4 +1063,14 @@ ns.RegisterLocale("enUS", {
     STYLE_PICKER_TITLE = "Welcome to Phoenix UI",
     STYLE_PICKER_INTRO = "Pick a look to start with. You can change any part of it later, or pick another under Tools → Presets (/pui).",
     STYLE_PICKER_SKIP = "Keep defaults",
+    ---------------------------------------------------------------- aura rows on unit frames and nameplates
+    NP_AURAS = "Auras on plates",
+    NP_AURAS_STYLE = "Phoenix aura icons",
+    NP_AURAS_STYLE_DESC = "Crops the debuff, buff and crowd-control icons on nameplates and adds a border and Phoenix fonts. Which auras show is still decided by the game.",
+    NP_AURA_COUNT_FONT = "Aura stacks",
+    NP_AURA_TIMER_FONT = "Aura timer",
+    UF_AURAS = "Auras",
+    UF_AURAS_STYLE = "Phoenix aura icons",
+    UF_AURAS_STYLE_DESC = "Crops the buff and debuff icons under the target, focus and boss frames, with an optional border and the Phoenix stack font. Their size and order stay Blizzard's.",
+    UF_AURA_COUNT_FONT = "Aura stacks",
 })

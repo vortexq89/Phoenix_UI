@@ -3,7 +3,8 @@ local Theme, Skin, Secret, Media, Style = ns.Theme, ns.Skin, ns.Secret, ns.Media
 
 --[[ UnitFrames: Phoenix bar textures, class-coloured health and themed text on Blizzard's
     Player/Target/Focus/Pet and Boss 1-5 frames, with per-frame texture, border, background and text styles,
-    portraits (game, class icon or hidden), status icons (leader, raid marker, PvP) and a range fade.
+    portraits (game, class icon or hidden), status icons (leader, raid marker, PvP), aura icon crop, border
+    and stack font, and a range fade.
     Values are never read: health may be secret, colours are not. The range fade hands UnitInRange's
     (secret) answer straight to Region:SetAlphaFromBoolean. Arena enemies are CompactUnitFrames and take
     the Group Frames style. Test frames are plain Phoenix frames drawn by the options preview code. ]]
@@ -33,6 +34,8 @@ local M = ns:NewModule("UnitFrames", {
         units = { player = unitDefaults(12), target = unitDefaults(12), focus = unitDefaults(12), pet = unitDefaults(11),
                   boss = unitDefaults(11) },
         range = { enabled = false, alpha = 0.45 },
+        auras = { style = true, zoom = 0.08, border = Style.Border({ style = "none" }),
+            count = Style.Text(10, { outline = "OUTLINE", shadow = false }) },
     },
 })
 M.UNITS = UNITS
@@ -144,6 +147,37 @@ local function onPortrait(frame)
     if atlas then tex:SetAtlas(atlas) end
 end
 
+---------------------------------------------------------------- aura rows (target, focus, boss)
+-- Blizzard's aura container lays out its buttons from secret aura data; after each ApplyLayout we only
+-- dress the buttons it holds: icon crop, an optional border on a child frame of ours, the stack font.
+local auraHosts = setmetatable({}, { __mode = "k" })
+local styledAura = setmetatable({}, { __mode = "k" })
+local auraGen = 1
+
+function M:StyleAuraIcon(button, icon, count)
+    local a = self.db.auras
+    Skin:IconFrame(button, icon, a.border, a.zoom)
+    if count then Skin:TextSpec(count, a.count, "number", "text.primary") end
+end
+
+local function afterAuraLayout(container)
+    if not (M:IsEnabled() and M.db.auras.style) or not container.auraPools then return end
+    for button in container.auraPools:EnumerateActive() do
+        if styledAura[button] ~= auraGen and button.Icon and not button:IsForbidden() then
+            styledAura[button] = auraGen
+            ns.SafeCall(M.StyleAuraIcon, M, button, button.Icon, button.Count)
+        end
+    end
+end
+
+local function hookAuras(frame)
+    local content = frame.TargetFrameContent
+    local container = content and content.TargetFrameContentContextual and content.TargetFrameContentContextual.Auras
+    if not container or auraHosts[container] or not container.ApplyLayout then return end
+    auraHosts[container] = true
+    hooksecurefunc(container, "ApplyLayout", afterAuraLayout)
+end
+
 ---------------------------------------------------------------- range fade (friendly group members only)
 local RANGED = { target = true, focus = true, pet = true }
 local rangeDriver
@@ -196,6 +230,7 @@ function M:OnEnable()
         if frame.healthbar then healthBars[frame.healthbar] = key end
         if frame.manabar then manaBars[frame.manabar] = key end
         Skin:Register(frame, function(f) M:StyleTexts(textsOf(f), key) end)
+        hookAuras(frame)
     end)
     hooksecurefunc("UnitFrameHealthBar_Update", onHealthUpdate)
     hooksecurefunc("UnitFrameManaBar_UpdateType", onManaType)
@@ -223,6 +258,8 @@ function M:Refresh()
         end
     end)
     self:UpdateRange()
+    auraGen = auraGen + 1
+    for container in pairs(auraHosts) do afterAuraLayout(container) end
     if self.testShown then self:ShowTest(true) end
 end
 

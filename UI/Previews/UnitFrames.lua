@@ -15,6 +15,8 @@ local SAMPLES = {
                portrait = "Interface\\Icons\\Spell_Frost_SummonWaterElemental_2" },
 }
 local SCALE = 1.35
+local AURAS = { { 3, "" }, { 7, "2" }, { 11, "" }, { 5, "4" } }
+local HAS_AURAS = { target = true, focus = true, boss = true }
 
 P:Register("unitframe", {
     module = "UnitFrames",
@@ -27,7 +29,7 @@ P:Register("unitframe", {
         local f = CreateFrame("Frame", nil, stage)
         f:SetSize(236, 62)
         f:SetScale(SCALE)
-        f:SetPoint("CENTER", 0, 0)
+        f:SetPoint("CENTER", 0, 5)
         f.portrait = f:CreateTexture(nil, "ARTWORK")
         f.portrait:SetSize(54, 54)
         f.portrait:SetPoint("LEFT", 4, 0)
@@ -45,6 +47,16 @@ P:Register("unitframe", {
         f.hpText:SetPoint("CENTER")
         f.ppText = P.Text(f.power)
         f.ppText:SetPoint("CENTER")
+        -- the aura row Blizzard shows under target, focus and boss frames
+        f.auras = {}
+        for i, def in ipairs(AURAS) do
+            local a = P.Icon(f, 17, def[1])
+            a:SetPoint("TOPLEFT", f.power, "BOTTOMLEFT", (i - 1) * 19, -4)
+            a.count = P.Text(a)
+            a.count:SetPoint("BOTTOMRIGHT", 1, 0)
+            a.def = def
+            f.auras[i] = a
+        end
         return function(view, unit)
             local key = SAMPLES[unit] and unit or "player"
             local st = view.states
@@ -91,6 +103,16 @@ P:Register("unitframe", {
             f.level:SetText(s.level)
             f.hpText:SetText(st.low and ("%d%%"):format(health * 100) or s.hp)
             f.ppText:SetText(("%d%%"):format(s.power * 100))
+            for _, a in ipairs(f.auras) do
+                a:SetShown(HAS_AURAS[key] or false)
+                if db.auras.style then
+                    m:StyleAuraIcon(a, a.tex, a.count)
+                else
+                    Skin:IconFrame(a, a.tex, { style = "none" }, 0)
+                    Skin:Text(a.count, "number", nil, 10)
+                end
+                a.count:SetText(a.def[2])
+            end
         end
     end,
 })

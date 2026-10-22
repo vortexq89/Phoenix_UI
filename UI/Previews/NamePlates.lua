@@ -3,15 +3,16 @@ local L, P = ns.L, ns.Previews
 
 -- Three sample plates (hostile, neutral, friendly) drawn by NamePlates' own style methods.
 local SAMPLES = {
-    { sample = "PREVIEW_MOB_HOSTILE", value = 0.72, token = "state.danger", forces = "+4", threat = 3, cast = 0.6 },
+    { sample = "PREVIEW_MOB_HOSTILE", value = 0.72, token = "state.danger", forces = "+4", threat = 3, cast = 0.6,
+      auras = { { 3, "8" }, { 7, "14", "2" }, { 11, "" } } },
     { sample = "PREVIEW_MOB_NEUTRAL", value = 1, token = "state.warning", threat = 1, focus = true },
     { sample = "PREVIEW_MOB_FRIENDLY", value = 0.46, token = "state.success" },
 }
-local PLATE_W, PLATE_H, SCALE = 150, 12, 1.25
+local PLATE_W, PLATE_H, SCALE, AURA = 150, 12, 1.25, 16
 
 P:Register("nameplate", {
     module = "NamePlates",
-    height = 110,
+    height = 128,
     states = {
         { key = "low", label = "PREVIEW_STATE_LOW", icon = "warning" },
         { key = "target", label = "PREVIEW_STATE_TARGET", icon = "nameplates" },
@@ -37,7 +38,23 @@ P:Register("nameplate", {
                 cast.text:SetPoint("CENTER", 0, -1)
                 holder:SetHeight(50)
             end
-            plates[i] = { holder = holder, bar = bar, name = name, health = health, forces = forces, sample = sample, cast = cast }
+            local auras
+            if sample.auras then
+                auras = {}
+                for k, def in ipairs(sample.auras) do
+                    local a = P.Icon(holder, AURA, def[1])
+                    a:SetPoint("BOTTOMLEFT", bar, "TOPLEFT", (k - 1) * (AURA + 2), 20)
+                    a.timer = P.Text(a)
+                    a.timer:SetPoint("CENTER", 0, 0)
+                    a.count = P.Text(a)
+                    a.count:SetPoint("BOTTOMRIGHT", 1, 0)
+                    a.def = def
+                    auras[k] = a
+                end
+                holder:SetHeight(holder:GetHeight() + AURA)
+            end
+            plates[i] = { holder = holder, bar = bar, name = name, health = health, forces = forces, sample = sample, cast = cast,
+                auras = auras }
         end
         return function(self)
             local w = self:GetWidth() / SCALE
@@ -69,6 +86,14 @@ P:Register("nameplate", {
                 p.bar:SetValue(value)
                 p.health:SetText(("%d%%"):format(value * 100))
                 p.health:SetShown(db.healthText)
+                for _, a in ipairs(p.auras or {}) do
+                    if db.auras.style then
+                        m:StyleAuraIcon(a, a.tex, a.count, a.timer)
+                    else
+                        ns.Skin:IconFrame(a, a.tex, { style = "none" }, 0.08)
+                    end
+                    a.timer:SetText(a.def[2]); a.count:SetText(a.def[3] or "")
+                end
                 m:StyleForces(p.forces)
                 p.forces:SetText(p.sample.forces or "")
                 p.forces:SetShown(db.forces)

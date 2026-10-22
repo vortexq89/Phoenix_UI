@@ -1037,6 +1037,16 @@ local T = {
     STYLE_PICKER_TITLE = "Willkommen bei Phoenix UI",
     STYLE_PICKER_INTRO = "Wähle einen Look für den Start. Du kannst später alles ändern oder unter Werkzeuge → Vorlagen (/pui) einen anderen wählen.",
     STYLE_PICKER_SKIP = "Standard behalten",
+    ---------------------------------------------------------------- aura rows on unit frames and nameplates
+    NP_AURAS = "Auren auf Plaketten",
+    NP_AURAS_STYLE = "Phoenix-Aurensymbole",
+    NP_AURAS_STYLE_DESC = "Beschneidet die Schwächungs-, Stärkungs- und Kontrollsymbole auf Namensplaketten und ergänzt Rahmen und Phoenix-Schriften. Welche Auren erscheinen, entscheidet weiterhin das Spiel.",
+    NP_AURA_COUNT_FONT = "Aurenstapel",
+    NP_AURA_TIMER_FONT = "Aurentimer",
+    UF_AURAS = "Auren",
+    UF_AURAS_STYLE = "Phoenix-Aurensymbole",
+    UF_AURAS_STYLE_DESC = "Beschneidet die Stärkungs- und Schwächungssymbole unter Ziel-, Fokus- und Bossrahmen, mit optionalem Rahmen und Phoenix-Stapelschrift. Größe und Reihenfolge bleiben Blizzards.",
+    UF_AURA_COUNT_FONT = "Aurenstapel",
 }
 
 ns.RegisterLocale("deDE", T)
