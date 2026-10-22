@@ -17,7 +17,7 @@ Config.GROUPS = {
     { key = "group",      label = "GROUP_MYTHIC",     icon = "mythicplus",  entries = { "MythicPlus", "PvP" } },
     { key = "social",     label = "GROUP_SOCIAL",     icon = "chat",        entries = { "Chat", "AFK" } },
     { key = "maps",       label = "GROUP_MAPS",       icon = "maps",        entries = { "Minimap", "DataTexts" } },
-    { key = "items",      label = "GROUP_TOOLTIPS",   icon = "items",       entries = { "Tooltip", "ItemLevel", "Bags" } },
+    { key = "items",      label = "GROUP_TOOLTIPS",   icon = "items",       entries = { "Tooltip", "ItemLevel", "Bags", "Sim" } },
     { key = "qol",        label = "GROUP_QOL",        icon = "quality",     entries = { "Quality", "Automation", "Skins" } },
     { key = "tools",      label = "GROUP_TOOLS",      icon = "cat-utility",
       entries = { "Movers", "profiles", "presets", "Bugs", "diagnostics", "about" } },
