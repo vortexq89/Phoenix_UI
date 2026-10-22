@@ -891,6 +891,38 @@ empty `/pui bugs`. Use a character with quests in Quel'Thalas (or Khaz Algar); o
 - [ ] **13l.10 WoW Forever.** Repeat 13l.1, 13l.2, 13l.6 and 13l.8 in Elwynn Forest. **Expect:** Azeroth data, no
   *Turn-in spots* or Midnight/TWW filter rows, no *Best Sim upgrade* reward option.
 
+## 13m. Group Finder (2.0 S15, retail)
+
+Start with `/console taintLog 1` and an empty `/pui bugs`. Open the Group Finder (I) → Premade Groups → Dungeons,
+search for Mythic+ groups.
+
+- [ ] **13m.1 Panel.** **Expect:** the Phoenix Filters panel to the right of the Group Finder while the list is shown,
+  gone when you leave the list or close the window; Ember background and border; *Show the filter panel* off hides it.
+- [ ] **13m.2 Game filters.** Tick Mythic+ and *Needs my role*, set a minimum rating. **Expect:** Blizzard's own filter
+  button shows the same picks; the list shrinks after the next search; dungeons picked in Blizzard's filter stay.
+- [ ] **13m.3 Phoenix filters.** Free healer place, leader score 2000, best key 10–15, age 30. **Expect:** groups that
+  fail are dimmed (not removed); the tooltip of a dimmed group says why; matches have an accent outline; the count
+  shows matches / total. *Only flag them in the tooltip* stops the dimming.
+- [ ] **13m.4 Expression.** Type `tankfree > 0 and score >= 2000` (count updates while typing), then `score >>`.
+  **Expect:** a live count, then a plain error; Enter saves a valid expression; Reset clears all Phoenix filters.
+- [ ] **13m.5 Best matches.** Sort by score, then by age, toggle the direction. Click a row. **Expect:** order follows,
+  the clicked group flashes in Blizzard's list; Blizzard's list order is unchanged.
+- [ ] **13m.6 Presets.** Pick each preset. **Expect:** filters change to the preset; later tweaks are kept.
+- [ ] **13m.7 Entries and tooltips.** **Expect:** leader score (rarity colour) and best key on entries, a class-colour
+  strip; tooltip lines for score, best key, Bloodlust / battle res; raid listings you are saved to say how many
+  bosses you would miss or have killed.
+- [ ] **13m.8 Quick sign-up.** Select a group, click it again; right-click it. **Expect:** Blizzard's sign-up dialog
+  opens on the second click; right-click opens Blizzard's menu; nothing in combat (the overlay hides).
+- [ ] **13m.9 Enter and role check.** *Enter signs up* on; select a group, press Enter, then Enter in the dialog.
+  Role-check key Space; queue with a party that starts a role check, press Space. **Expect:** sign-up and accept
+  happen only on your key press; chat opens with / meanwhile; nothing is accepted without a key press.
+- [ ] **13m.10 Applicants (leader).** List a Mythic+ key; wait for applicants. **Expect:** each applicant's best key
+  in your dungeon (green if timed), a spec icon, a class tint from your score line.
+- [ ] **13m.11 Taint.** After 13m.1–13m.10, open `/pui bugs` and the taint log. **Expect:** no blocked-action or taint
+  entry naming Phoenix_UI; Blizzard's sign-up, list and dialog keep working with the module off (reload).
+- [ ] **13m.12 WoW Forever.** **Expect:** no Group Finder page (Content shows Quests, Encounters, PvP); the game's
+  own group finder works unchanged.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

@@ -57,13 +57,20 @@ S13 = {
 # S14 (2026-10-22): the Quests page. Objective areas stay Blizzard's (turn-ins only); community positions come with S17.
 S14 = {"Quests": {"Restyle objective tracker":"has", "Width / max height":"has", "Header font":"has", "Header size":"has", "Header outline":"has", "Header shadow":"has", "Header colour":"has", "Objective font":"has", "Objective size":"has", "Objective outline":"has", "Objective shadow":"has", "Objective colour":"has", "Progress bars style":"has", "Colour by difficulty":"has", "Auto-collapse in instances / combat":"has", "Show quest level / tag (daily, campaign)":"has", "Click to super-track":"has", "Waypoint arrow":"has", "Arrow style / size":"has", "Distance + ETA text":"has", "Available quests on map (C_QuestLine)":"has", "Turn-in / objective areas from QuestPOI (DB2)":"part", "Quest NPC pins (ATT data + community)":"part", "Hide low-level / trivial":"has", "Auto accept / turn in (hold Shift to stop)":"has", "Auto pick quest reward (highest sell / sim upgrade)":"has", "Contribute positions to Phoenix data (opt-in)":"has"},
        "Automation": {"Auto accept / turn in quests (in Quests)":"has"}}
-NOW = {"Chat": 58, "Minimap": 47, "Tooltip": 54, "Bags": 53, "DataTexts": 67, "Skins": 34, "Quests": 38}
+# S15 (2026-10-22): the Group Finder page (retail). The sign-up note cannot be remembered (Blizzard's note box refuses
+# SetText from addons); role checks are accepted by a key press only; key level = the leader's best key there.
+S15 = {"GroupFinder": {"Filter panel next to the group list":"has", "Min / max members, tanks, healers, damage":"has",
+       "Has Bloodlust / Battle res":"has", "Min leader score / item level":"has", "Age (minutes)":"has",
+       "Dungeon / difficulty / key level":"part", "Advanced expression (Phoenix syntax)":"has", "Sort":"has",
+       "One-click sign up (double click)":"has", "Role / class icons on list entries":"has",
+       "Leader score + best key in tooltip":"has", "Raid lockout hint":"has", "Auto queue (role check) accept":"part"}}
+NOW = {"Chat": 58, "Minimap": 47, "Tooltip": 54, "Bags": 53, "DataTexts": 67, "Skins": 34, "Quests": 38, "GroupFinder": 57}
 
 def apply():
     for m, fx in FIX.items():
         for row in MOD[m]["rows"]:
             if row["name"] in fx: row["status"] = fx[row["name"]]
-    for m, fx in list(S13.items()) + list(S14.items()):
+    for m, fx in list(S13.items()) + list(S14.items()) + list(S15.items()):
         names = {row["name"] for row in MOD[m]["rows"]}
         assert set(fx) <= names, (m, set(fx) - names)
         for row in MOD[m]["rows"]:

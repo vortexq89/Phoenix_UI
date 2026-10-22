@@ -34,6 +34,7 @@ Previews\Tracker.lua
 Previews\Encounters.lua
 Previews\Sim.lua
 Previews\Quests.lua
+Previews\GroupFinder.lua
 Config\Window.lua
 Config\Groups.lua
 Config\Renderer.lua
@@ -73,3 +74,4 @@ Options\Quality.lua
 Options\Automation.lua
 Options\MythicPlus.lua
 Options\Quests.lua
+Options\GroupFinder.lua

@@ -3127,6 +3127,285 @@ try("quests depth (S14)", function()
     assert((found.turnins == true) == RETAIL and (found["slices.forever"] == true) == not RETAIL, "flavour-gated quest rows")
 end)
 
+-- S15: group finder: the filter language, records from a stub C_LFGList (secret fields read as unknown), Phoenix
+-- filters, sort and presets, the game's advanced filter, entry/tooltip/applicant decoration, the panel and its
+-- best matches, the secure sign-up helpers (never a sign-up call of ours), preview, depth; Forever: gated off
+try("group finder expression (S15)", function()
+    local X = ns.GroupFinderExpression
+    local W = { tanks = 1, score = 1, age = 1, myrole = 1, voice = 1, heals = 1 }
+    local function ev(text, r)
+        local fn, err = X.Compile(text, W)
+        assert(fn, text .. ": " .. tostring(err and err[1]))
+        return fn(r)
+    end
+    local r = { tanks = 0, score = 2100, age = 12, myrole = true, voice = false, heals = 1 }
+    assert(ev("tanks == 0 and score >= 2000", r) == true, "and/compare")
+    assert(ev("tanks > 0 or score < 2000", r) == false, "or")
+    assert(ev("not voice", r) == true and ev("!voice && myrole", r) == true, "not / && aliases")
+    assert(ev("tanks + heals >= 1", r) == true and ev("score / 100 > 20", r) == true, "arithmetic, booleans count 1/0")
+    assert(ev("-age < 0", r) == true and ev("(age = 12) ~= false", r) == true, "unary minus, = and ~=")
+    assert(ev("score > 9000", { tanks = 0 }) == true, "an unknown field never hides a group")
+    local fn, err = X.Compile("tanks == 0 and bogus > 1", W)
+    assert(not fn and err[1] == "word" and err[2] == "bogus", "unknown word")
+    fn, err = X.Compile("(tanks == 0", W)
+    assert(not fn and err[1] == "paren", "open paren")
+    fn, err = X.Compile("tanks ==", W)
+    assert(not fn and err[1] == "end", "early end")
+    fn, err = X.Compile("tanks == 0 0", W)
+    assert(not fn and err[1] == "token", "trailing token")
+    fn, err = X.Compile("tanks # 1", W)
+    assert(not fn and err, "bad character")
+    assert(X.Compile("   ", W) == nil, "blank is no filter")
+    local G = ns.modules.GroupFinder
+    for _, e in ipairs({ { "word", "x" }, { "end" }, { "paren" }, { "token", ")" } }) do
+        assert(type(G:ErrorText(e)) == "string", "error text " .. e[1])
+    end
+    for word in pairs(G.WORDS) do
+        assert(X.Compile(word .. " == 1 or true", G.WORDS), "word " .. word .. " does not compile")
+    end
+end)
+
+local function lfgStub(secret)
+    local SECRET = {}
+    local results = {
+        [11] = { info = { activityIDs = { 501 }, numMembers = 3, age = 240, requiredItemLevel = 690, numBNetFriends = 0,
+                 numCharFriends = 0, numGuildMates = 1, voiceChat = "Discord", leaderOverallDungeonScore = 2850,
+                 leaderDungeonScoreInfo = { { mapScore = 300, bestRunLevel = 14, finishedSuccess = true } },
+                 leaderPvpRatingInfo = {}, isDelisted = false, name = "push" },
+                 counts = { TANK = 1, HEALER = 0, DAMAGER = 2, TANK_REMAINING = 0, HEALER_REMAINING = 1, DAMAGER_REMAINING = 1 },
+                 players = { { classFilename = "WARRIOR", assignedRole = "TANK", isLeader = true }, { classFilename = "MAGE" },
+                             { classFilename = "ROGUE" } } },
+        [12] = { info = { activityIDs = { 501 }, numMembers = 4, age = 3000, requiredItemLevel = 0, numBNetFriends = 0,
+                 numCharFriends = 0, numGuildMates = 0, voiceChat = "", leaderOverallDungeonScore = 1500,
+                 leaderDungeonScoreInfo = { { mapScore = 100, bestRunLevel = 6, finishedSuccess = false } } },
+                 counts = { TANK = 1, HEALER = 1, DAMAGER = 2, TANK_REMAINING = 0, HEALER_REMAINING = 0, DAMAGER_REMAINING = 1 },
+                 players = { { classFilename = "PALADIN" }, { classFilename = "PRIEST" }, { classFilename = "DRUID" },
+                             { classFilename = "HUNTER", isLeaver = true } }, status = "declined" },
+        [13] = { info = { activityIDs = { 601 }, numMembers = 12, age = 600, requiredItemLevel = 0, numBNetFriends = 1,
+                 numCharFriends = 0, numGuildMates = 0, voiceChat = secret and SECRET or "x",
+                 leaderOverallDungeonScore = secret and SECRET or 0 },
+                 counts = { TANK = 2, HEALER = 2, DAMAGER = 8, TANK_REMAINING = 0, HEALER_REMAINING = 2, DAMAGER_REMAINING = 12 },
+                 players = {}, bosses = { "Boss A", "Boss B" } },
+    }
+    local activities = {
+        [501] = { fullName = "Magisters' Terrace (Mythic Keystone)", shortName = "MT", mapID = 2811, difficultyID = 8,
+                  isMythicPlusActivity = true, maxNumPlayers = 5 },
+        [601] = { fullName = "The Voidspire (Heroic)", shortName = "", mapID = 2900, difficultyID = 15, isHeroicActivity = true,
+                  maxNumPlayers = 30 },
+    }
+    local saved, applied = {}, {}
+    local api = {
+        HasSearchResultInfo = function(id) return results[id] ~= nil end,
+        GetSearchResultInfo = function(id) return results[id] and results[id].info end,
+        GetSearchResults = function() return 3, { 11, 12, 13 } end,
+        GetActivityInfoTable = function(id) return activities[id] end,
+        GetSearchResultMemberCounts = function(id) return results[id].counts end,
+        GetSearchResultPlayerInfo = function(id, i) return results[id].players[i] end,
+        GetSearchResultEncounterInfo = function(id) return results[id].bosses end,
+        GetApplicationInfo = function(id) return id, results[id].status or "none", false end,
+        GetAdvancedFilter = function() return { activities = { 501 }, generalPlaystyle1 = true, difficultyMythicPlus = false } end,
+        SaveAdvancedFilter = function(t) saved[#saved + 1] = t end,
+        ApplyToGroup = function(...) applied[#applied + 1] = { ... } end,
+        GetApplicantMemberInfo = function() return "Name-Realm", "SHAMAN", "Shaman", 90, 702, 0, false, true, true, "HEALER",
+            nil, 3100, 0, "Horde", 1, 264, false end,
+        GetApplicantDungeonScoreForListing = function() return { bestRunLevel = 16, finishedSuccess = true } end,
+        GetActiveEntryInfo = function() return { activityIDs = { 501 } } end,
+    }
+    return api, saved, applied, SECRET
+end
+
+try("group finder records, filters and sort (S15)", function()
+    local G = ns.modules.GroupFinder
+    assert(G, "GroupFinder module missing")
+    if not RETAIL then return end
+    assert(G:IsEnabled(), "GroupFinder is not enabled on retail")
+    local keep = { env.C_LFGList, rawget(env, "GetSpecializationRole") }
+    local api, saved, applied = lfgStub(false)
+    rawset(env, "C_LFGList", api)
+    rawset(env, "GetSpecializationRole", function() return "DAMAGER" end)
+    G:Forget()
+    local a = G:Record(11)
+    assert(a.members == 3 and a.age == 4 and a.ilvl == 690 and a.guild == 1 and a.friends == 0 and a.voice == true, "record basics")
+    assert(a.score == 2850 and a.bestkey == 14 and a.timed and a.mythicplus and a.dungeon and not a.raid, "record leader/activity")
+    assert(a.tankfree == 0 and a.healfree == 1 and a.dpsfree == 1 and a.slots == 2 and a.myrole == true, "record roles")
+    assert(a.lust and not a.brez and #a.classes == 3 and a.classes[1].leader, "record classes, lust/brez")
+    local b, c = G:Record(12), G:Record(13)
+    assert(b.declined and b.leavers == 1 and b.brez and b.voice == false and not b.timed, "record 12")
+    assert(c.raid and c.heroic and c.bosses == 2 and c.friends == 1 and c.max == 30, "record 13 (raid)")
+    -- secret fields: unknown, never a reason to hide
+    local sapi, _, _, SECRET = lfgStub(true)
+    rawset(env, "C_LFGList", sapi)
+    local isSecret = ns.Secret.IsSecret
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    G:Forget()
+    local s = G:Record(13)
+    assert(s.voice == nil and s.score == 0, "secret fields must read as unknown")
+    G.db.voice = "without"
+    G:BuildFilter()
+    assert(G:Match(s), "an unknown voice field hid a group")
+    G.db.voice = "any"
+    ns.Secret.IsSecret = isSecret
+    rawset(env, "C_LFGList", api)
+    G:Forget()
+    -- filters with reasons
+    G.db.hideDeclined = true
+    local ok, why = G:Match(G:Record(12))
+    assert(not ok and why == "LFG_WHY_DECLINED", "declined groups are dimmed")
+    G.db.hideDeclined = false
+    G.db.freeHealer = true
+    assert(G:Match(G:Record(11)) and not G:Match(G:Record(12)), "free healer place")
+    G.db.freeHealer = false
+    G.db.minScore = 2000
+    ok, why = G:Match(G:Record(12))
+    assert(not ok and why == "LFG_WHY_SCORE", "leader score")
+    G.db.minScore = 0
+    G.db.keyMin, G.db.keyMax = 10, 15
+    assert(G:Match(G:Record(11)) and not G:Match(G:Record(12)) and G:Match(G:Record(13)), "key range (raids pass)")
+    G.db.keyMin, G.db.keyMax = 0, 0
+    G.db.maxAge = 30
+    assert(G:Match(G:Record(11)) and not G:Match(G:Record(12)), "age")
+    G.db.maxAge = 0
+    G.db.bosses = "fresh"
+    assert(not G:Match(G:Record(13)) and G:Match(G:Record(11)), "fresh raid")
+    G.db.bosses = "progress"
+    assert(G:Match(G:Record(13)), "raid in progress")
+    G.db.bosses = "any"
+    G.db.hasLust, G.db.noLeavers = true, true
+    assert(G:Match(G:Record(11)) and not G:Match(G:Record(12)), "lust / leavers")
+    G.db.hasLust, G.db.noLeavers = false, false
+    G.db.friends = true
+    assert(G:Match(G:Record(11)) and G:Match(G:Record(13)) and not G:Match(G:Record(12)), "friends or guild")
+    G.db.friends = false
+    G.db.expression = "dpsfree > 0 and score >= 2000"
+    G:BuildFilter()
+    ok, why = G:Match(G:Record(12))
+    assert(G:Match(G:Record(11)) and not ok and why == "LFG_WHY_EXPRESSION", "expression filter")
+    G.db.expression = "score >>"
+    G:BuildFilter()
+    assert(G.filterError and G:ErrorText(), "a broken expression reports an error")
+    G.db.expression = ""
+    G:BuildFilter()
+    -- evaluate + sort
+    G.db.hideDeclined = true
+    local n, total = G:Evaluate()
+    assert(n == 2 and total == 3 and G.why[12] == "LFG_WHY_DECLINED", "evaluate")
+    G.db.sort, G.db.sortDesc = "score", true
+    G:Evaluate()
+    assert(G.matches[1].id == 11, "sort by score")
+    G.db.sort, G.db.sortDesc = "age", true
+    G:Evaluate()
+    assert(G.matches[1].id == 11 and G.matches[2].id == 13, "newest first")
+    G.db.sort = "fit"
+    -- presets reset Phoenix filters and set their own
+    G.db.minIlvl = 650
+    G:ApplyPreset("push")
+    assert(G.db.minScore == 2500 and G.db.hasLust and G.db.maxAge == 30 and G.db.minIlvl == 0, "push preset")
+    G:ApplyPreset("relaxed")
+    assert(G.db.minScore == 0 and G.db.keyMax == 10 and G.db.noLeavers, "relaxed preset resets push")
+    for _, p in ipairs(G.PRESETS) do G:ApplyPreset(p.value) end
+    G:ApplyPreset("relaxed"); G:ResetFilters()
+    assert(G.db.keyMax == 0 and G.db.preset == "none", "reset filters")
+    G:BuildFilter()
+    -- the game's advanced filter: written only on change, keeps the dungeon picks, needs* by role
+    assert(#saved == 0, "Phoenix wrote the game's filter without a change")
+    ns.DB:Set(G, "diffMythicPlus", true)
+    ns.DB:Set(G, "needsMyRole", true)
+    local f = saved[#saved]
+    assert(f and f.difficultyMythicPlus == true and f.activities[1] == 501 and f.generalPlaystyle1 == true, "advanced filter")
+    assert(f.needsDamage == true and f.needsTank == false and f.needsHealer == false, "needs my role (damage)")
+    ns.DB:Set(G, "diffMythicPlus", false); ns.DB:Set(G, "needsMyRole", false)
+    -- entries: dimmed, outlined, score/key text, class strip; never removed, reordered or signed up
+    local function entry(id)
+        local e = env.CreateFrame("Button")
+        e.resultID = id
+        return e
+    end
+    G:Evaluate()
+    local e11, e12 = entry(11), entry(12)
+    G:DecorateEntry(e11)
+    G:DecorateEntry(e12)
+    G.db.nonMatch = "mark"
+    G:DecorateEntry(e12)
+    G.db.nonMatch = "dim"
+    G.db.entryScore, G.db.classBars, G.db.skinEntries, G.db.highlight = false, false, false, false
+    G:DecorateEntry(e11)
+    G.db.entryScore, G.db.classBars, G.db.skinEntries, G.db.highlight = true, true, true, true
+    G:RefreshEntries()
+    local lines = {}
+    local tt = { AddLine = function(_, t) lines[#lines + 1] = t end, AddDoubleLine = function(_, l) lines[#lines + 1] = l end,
+        Show = function() end }
+    G:AddTooltipLines(tt, 12)
+    assert(#lines >= 3, "tooltip lines: " .. #lines)
+    G:AddMembers(tt, 11)
+    -- applicants (leader view)
+    local member = env.CreateFrame("Button")
+    G.db.applicantMinScore = 3000
+    G:DecorateApplicant(member, 1, 1)
+    G.db.applicantMinScore = 0
+    G:DecorateApplicant(member, 1, 1)
+    -- panel: opens beside the group finder, best matches, live expression count, reset
+    G:ShowPanel(true)
+    local P = G:Panel()
+    assert(P and P:IsShown(), "panel did not open")
+    G:RefreshPanel()
+    G:PreviewExpression("score >= 2000")
+    G:PreviewExpression("score >=")
+    G:PreviewExpression("")
+    G:StylePanel()
+    G:ShowPanel(false)
+    assert(not P:IsShown(), "panel did not close")
+    G:FlashEntry(11)
+    -- helpers: secure click delegates only
+    G:PlaceQuick(e11)
+    G:TrackSelection(e11)
+    G.db.enterSignUp, G.db.roleCheckKey = true, "SPACE"
+    fire("LFG_ROLE_CHECK_SHOW")
+    G:RefreshHelpers()
+    fire("LFG_ROLE_CHECK_HIDE")
+    G.db.enterSignUp, G.db.roleCheckKey = false, "off"
+    G:RefreshHelpers()
+    assert(#applied == 0, "Phoenix called C_LFGList.ApplyToGroup")
+    -- every setting round-trips
+    for _, item in ipairs(ns.options.GroupFinder) do
+        if item.key and not item.key:find("%.") and G.db[item.key] ~= nil then ns.DB:Set(G, item.key, G.db[item.key]) end
+    end
+    assert(#saved == 0 or saved[#saved].activities, "advanced filter lost its dungeons")
+    -- preview with filters on and off
+    for _, k in ipairs({ "none", "push", "fresh" }) do
+        G:ApplyPreset(k)
+        G:BuildFilter()
+        ns.Previews:Create("groupfinder", env.CreateFrame("Frame"), G, {}):Redraw()
+    end
+    G:ResetFilters()
+    G:BuildFilter()
+    G:Forget()
+    rawset(env, "C_LFGList", keep[1]); rawset(env, "GetSpecializationRole", keep[2])
+end)
+
+try("group finder depth and gating (S15)", function()
+    local G = ns.modules.GroupFinder
+    local inContent = false
+    for _, g in ipairs(ns.Config.GROUPS) do
+        if g.key == "content" then for _, e in ipairs(g.entries) do if e == "GroupFinder" then inContent = true end end end
+    end
+    assert(inContent and ns.Config.DEPTH.GroupFinder == 14, "Group Finder is not in the Content group with its target")
+    if RETAIL then
+        local n = ns.Config.CountSettings(ns.options.GroupFinder)
+        assert(n >= 14, ("GroupFinder has %d of 14 settings"):format(n))
+        print(("  GroupFinder settings: %d"):format(n))
+        assert(not G.unavailable and not G.hidden, "Group Finder is gated on retail")
+        return
+    end
+    -- Forever: Blizzard_GroupFinder (LFGListFrame) is not part of the client, so the page and module are gone
+    assert(G.unavailable and G.hidden and not G:IsEnabled() and not G:ShouldEnable(), "Group Finder is not gated on Forever")
+    ns:SetModuleEnabled("GroupFinder", true)
+    assert(not G:IsEnabled(), "Group Finder could be switched on on Forever")
+    for _, g in ipairs(ns.Config:Groups()) do
+        for _, e in ipairs(g.entries) do assert(e ~= "GroupFinder", "Group Finder is in the sidebar on Forever") end
+    end
+    assert(ns.Config:Show("GroupFinder") == ns.Config.pages.home, "opening Group Finder on Forever did not fall back to Home")
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

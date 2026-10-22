@@ -17,7 +17,8 @@ Config.GROUPS = {
       entries = { { heading = "SUB_CHAT_MAPS" }, "Chat", "Minimap", "DataTexts",
                   { heading = "SUB_ITEMS" }, "Tooltip", "Bags", "ItemLevel",
                   { heading = "SUB_WINDOWS" }, "Skins" } },
-    { key = "content", label = "RAIL_CONTENT", icon = "content", entries = { "Quests", "MythicPlus", "Encounters", "PvP", "Sim" } },
+    { key = "content", label = "RAIL_CONTENT", icon = "content",
+      entries = { "Quests", "GroupFinder", "MythicPlus", "Encounters", "PvP", "Sim" } },
     { key = "phoenix", label = "RAIL_PHOENIX", icon = "cat-phoenix",
       entries = { { heading = "SUB_LOOK" }, "General", "fonts", "textures", "sounds", "presets",
                   { heading = "SUB_SETUP" }, "profiles", "Movers",
@@ -32,7 +33,7 @@ Config.DEPTH = {
     CastBars = 55, Auras = 41, CombatText = 26, DamageMeter = 31, SpellHistory = 12, Chat = 51, Minimap = 41,
     Tooltip = 45, Bags = 47, ItemLevel = 19, DataTexts = 47, Skins = 28, General = 23, profiles = 8, Movers = 11,
     Quality = 11, Automation = 14, AFK = 4, Bugs = 12, MythicPlus = 32, Encounters = 65, PvP = 8, Sim = 8, Quests = 27,
-    diagnostics = 3,
+    GroupFinder = 14, diagnostics = 3,
 }
 
 -- Where an unlisted module goes.

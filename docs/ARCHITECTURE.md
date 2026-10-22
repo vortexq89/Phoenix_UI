@@ -514,6 +514,23 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   (`Secret.IsSecret`) first; NPC IDs come from `UnitCreatureID`, never a GUID; inspect is throttled (1.5 s), never in
   combat or with the Inspect window open, cached per GUID for 5 minutes, and refreshes the open tooltip with
   `RefreshData` on `INSPECT_READY`.
+* **Group Finder (2.0 S15).** `Modules/GroupFinder` (retail; feature `lfgList`, because Blizzard_GroupFinder's TOC
+  excludes the Forever game type): `Expression.lua` is our own tokenizer, parser and evaluator for the filter
+  language (no `loadstring`, rule 4; unknown or secret fields compare as "unknown" and pass). `GroupFinder.lua`
+  turns each result into a plain record (`M:Record`, cached until `LFG_LIST_SEARCH_RESULT_UPDATED`) from
+  `C_LFGList.GetSearchResultInfo` / `GetSearchResultMemberCounts` / `GetSearchResultPlayerInfo` /
+  `GetSearchResultEncounterInfo` / `GetApplicationInfo` and the saved-instance list; values that are secret read as
+  nil. `Filter.lua` holds the checks (each with its reason), the sorts, presets and `M:PushGameFilter`, which copies
+  `C_LFGList.GetAdvancedFilter()` and saves it back with our difficulty/role/rating fields only when one of those
+  settings changes. `List.lua` decorates from post-hooks only: `LFGListSearchEntry_Update` (alpha, outline,
+  score/key text, class strip on our own child frames), `LFGListUtil_SetSearchEntryTooltip` (extra lines) and
+  `LFGListApplicationViewer_UpdateApplicantMember` (best key, spec icon, tint). It never writes
+  `LFGListFrame.SearchPanel.results` or any Blizzard field, never reorders, removes or selects results and never
+  calls `C_LFGList.ApplyToGroup` (undocumented). `Panel.lua` is our own frame anchored to `PVEFrame` (not its
+  child), shown from `SearchPanel` OnShow/OnHide hooks. `Helpers.lua` uses `SecureActionButtonTemplate` buttons of
+  type `click` (delegate `clickbutton` = Blizzard's Sign Up, the dialog's Sign Up or `LFDRoleCheckPopupAcceptButton`)
+  under a `[combat] hide` state-driven holder, bound with `SetOverrideBindingClick` out of combat
+  (`ns.Combat:Run`), so every sign-up is a hardware click on Blizzard's own button (docs/GROUP_FINDER.md).
 * **Quests and Phoenix_UI_Data (2.0 S14).** `Modules/Quests`: `Quests.lua` loads the data addon on demand
   (`C_AddOns.LoadAddOn("Phoenix_UI_Data")`, global `PhoenixUI_QuestData`, only while a pin or tooltip option is on),
   decodes packed per-map records lazily (`M.Decode`, `M:QuestsOnMap`, `M:Record`, `M:QuestsFromNPC`) and filters

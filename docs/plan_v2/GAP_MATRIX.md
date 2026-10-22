@@ -38,13 +38,13 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | AFK screen | Phoenix | 1 | 4 | 1 | 0 | 3 | ElvUI AFK | AFK screen |
 | Bugs | Phoenix | 9 | 12 | 9 | 0 | 3 | BugSack-like · EUI none | Error catcher (being rebuilt by the other worker) |
 | Quests | Content | 38 | 27 | 25 | 2 | 0 | EUI QuestTracker ~30 · WindTools Quest 41 · Questie (ARR/GPL, learn only) | NEW: quest tracker restyle + quest helper (giver/turn-in pins from ATT MIT data, DB2 QuestPOI and runtime C_QuestLine; community data later) |
-| Group Finder | Content | 0 | 14 | 0 | 0 | 14 | PremadeGroupsFilter 105 variables (GPL-2, learn only) · EUI GroupFinder · WindTools LFG list | NEW: premade group list filters (PGF-style expressions re-implemented), sign-up helpers |
+| Group Finder | Content | 57 | 14 | 11 | 2 | 1 | PremadeGroupsFilter 105 variables (GPL-2, learn only) · EUI GroupFinder · WindTools LFG list | NEW: premade group list filters (PGF-style expressions re-implemented), sign-up helpers |
 | Mythic+ | Content | 10 | 32 | 10 | 0 | 22 | EUI MythicTimer 125 · WindTools keystone tooltips | Own M+ timer (Blizzard Challenge APIs) + keystone tools |
 | Encounters | Content | 61 | 65 | 61 | 0 | 4 | Phoenix S3 already deep · EUI none (EUI has no boss mod) | Restyles Blizzard Boss Timeline + warnings (C_EncounterTimeline), BigWigs bars style |
 | PvP | Content | 3 | 8 | 4 | 0 | 4 | sArena 416 (arena frames — goes to Unit Frames › Arena) · WindTools Combat 33 | Battleground / arena helpers; arena frames live in Unit Frames |
 | Sim | Content | 6 | 8 | 6 | 0 | 2 | simc addon (Unlicense) | Simulationcraft export + uploader results (S2) |
 | Diagnostics | Phoenix | 0 | 3 | 0 | 3 | 0 | — | Status page (secret state, conflicts, versions) — exists as a page, not settings |
-| **Total** | | **711** | **1186** | **565** | **51** | **570** | EllesmereUI 2,420 controls · WindTools 361 · sArena 416 · MoveAny ~150 | |
+| **Total** | | **768** | **1186** | **576** | **53** | **557** | EllesmereUI 2,420 controls · WindTools 361 · sArena 416 · MoveAny ~150 | |
 
 ## Action Bars  (`ActionBars`)
 
@@ -1390,7 +1390,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 ## Group Finder  (`GroupFinder`)
 
-*Now 0 → target 14* · has 0 · part 0 · new 14
+*Now 57 → target 14* · has 11 · part 2 · new 1
 
 **How:** NEW: premade group list filters (PGF-style expressions re-implemented), sign-up helpers
 
@@ -1398,20 +1398,20 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 | Group | Setting | Type | Range / choices | Default | Preview | Status |
 |---|---|---|---|---|---|---|
-| Filters | Filter panel next to the group list | toggle |  | On | live | new |
-| Filters | Min / max members, tanks, healers, damage | slider | 0–40 each | any | live | new |
-| Filters | Has Bloodlust / Battle res | toggle | 2 | Off | live | new |
-| Filters | Min leader score / item level | slider | 0–4000 / 0–700 | 0 | live | new |
-| Filters | Age (minutes) | slider | 0–180 | any | live | new |
-| Filters | Dungeon / difficulty / key level | list |  | any | live | new |
-| Filters | Advanced expression (Phoenix syntax) | input | e.g. tanks==0 and mprating>=2000 |  | live | new |
-| Filters | Sort | dropdown | Age / Score / Item level / Fit | Age | live | new |
-| Helpers | One-click sign up (double click) | toggle |  | On | none | new |
+| Filters | Filter panel next to the group list | toggle |  | On | live | has |
+| Filters | Min / max members, tanks, healers, damage | slider | 0–40 each | any | live | has |
+| Filters | Has Bloodlust / Battle res | toggle | 2 | Off | live | has |
+| Filters | Min leader score / item level | slider | 0–4000 / 0–700 | 0 | live | has |
+| Filters | Age (minutes) | slider | 0–180 | any | live | has |
+| Filters | Dungeon / difficulty / key level | list |  | any | live | part |
+| Filters | Advanced expression (Phoenix syntax) | input | e.g. tanks==0 and mprating>=2000 |  | live | has |
+| Filters | Sort | dropdown | Age / Score / Item level / Fit | Age | live | has |
+| Helpers | One-click sign up (double click) | toggle |  | On | none | has |
 | Helpers | Remember sign-up note | toggle |  | On | none | new |
-| Helpers | Role / class icons on list entries | toggle |  | On | live | new |
-| Helpers | Leader score + best key in tooltip | toggle |  | On | live | new |
-| Helpers | Raid lockout hint | toggle |  | On | live | new |
-| Helpers | Auto queue (role check) accept | toggle | (AutoQueue idea) | Off | none | new |
+| Helpers | Role / class icons on list entries | toggle |  | On | live | has |
+| Helpers | Leader score + best key in tooltip | toggle |  | On | live | has |
+| Helpers | Raid lockout hint | toggle |  | On | live | has |
+| Helpers | Auto queue (role check) accept | toggle | (AutoQueue idea) | Off | none | part |
 
 ## Mythic+  (`MythicPlus`)
 

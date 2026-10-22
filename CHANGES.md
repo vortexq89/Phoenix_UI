@@ -3,6 +3,22 @@
 ## 2.0.0-beta1
 
 ### New
+- **Group Finder** (plan v2 stage S15, new page under Content, retail): a Phoenix filter panel beside the premade
+  group list. Presets (push score, relaxed keys, needs my role, fresh or in-progress raid, friends and guild,
+  rated PvP); the game's own filters (difficulty, needs my role, has tank/healer, minimum rating) written to
+  Blizzard's advanced filter only when you change one; Phoenix filters for free tank/healer/damage places, leader
+  score, the leader's best key in that dungeon (min/max), members, age, required item level, PvP rating range,
+  friends or guild, voice chat, raid bosses defeated (fresh / in progress), Bloodlust, battle res, leavers and
+  groups that declined you; an advanced *filter expression* in Phoenix's own small language (`tankfree > 0 and
+  score >= 2000 and age < 15`, 39 words, live match count, errors explained). Groups that fail are dimmed (or only
+  flagged in the tooltip) — never removed from Blizzard's list, which would taint it; matches get an Ember
+  outline, and the panel lists the best matches sorted by fit, age, score, best key, item level, members or PvP
+  rating (click one to find it). Entries show the leader's score and best key and a class-colour strip; group
+  tooltips add score, best key, PvP rating, Bloodlust / battle res, your raid lockout and why a group is dimmed.
+  Leaders see each applicant's best key in the listed dungeon, a spec icon and a class tint from a score line.
+  Sign-up helpers that always start from your click or key: click a selected group again to sign up, Enter signs
+  up, and a key accepts role checks. Nothing signs up or accepts on its own. 57 settings (target 14). Not on
+  WoW Forever (its client has no premade group list).
 - **Quests** (plan v2 stage S14, new page under Content): the objective tracker restyled — header/title and
   objective fonts (size, outline, shadow, colour), progress-bar texture, titles coloured by difficulty, a level and
   tag prefix ([82+G]), width and maximum height (out of combat), collapse in instances and/or fade in combat, and a

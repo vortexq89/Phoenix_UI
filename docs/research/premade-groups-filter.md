@@ -21,6 +21,14 @@ GPL-2.0-or-later (file headers). Not compatible with Phoenix's MIT licence: **cl
   `SecretInChatMessagingLockdown`. `ApplyToGroup` is not in the public API docs; Blizzard calls it from its own
   sign-up dialog.
 
+## Implemented (S15)
+Phoenix's Group Finder module (docs/GROUP_FINDER.md) keeps Blizzard's list and dims what fails instead of an own
+results browser (an own browser would need its own sign-up path, and `ApplyToGroup` is undocumented); the panel's
+best-match list plays that role and points into Blizzard's list. Real removal is the game's advanced filter.
+The expression language is our own grammar (39 words, no `loadstring`). One-click sign-up and Enter are secure
+click delegates to Blizzard's own buttons. Not built: persist note (`SetSecurityDisableSetText`), skip dialog,
+cancel oldest application, per-class counts.
+
 ## How Phoenix does it better
 - **Own results browser** (Phoenix frame) fed by `C_LFGList.GetSearchResults/GetSearchResultInfo` after a Search
   started from a Phoenix button (hardware event); sign-up opens Blizzard's own dialog for the chosen result. No

@@ -187,6 +187,11 @@ QuestPOI data published). Needs an in-game test (TESTING §13l).*
 
 ### S15 — Group Finder (~4 days)
 
+*Shipped 22 Oct 2026: Group Finder 57 settings on retail (target 14); not on Forever (no Blizzard_GroupFinder
+list there). Filtering dims instead of removing (writing Blizzard's results taints the list); the game's advanced
+filter does the real removal. "Remember sign-up note" is not possible (Blizzard's note box refuses SetText from
+addons) and role checks are accepted by a key press, never on their own. Needs an in-game test (TESTING §13m).*
+
 - Filter panel + Phoenix expression syntax (re-implemented, not PGF code) — 2.5 d
 - Helpers: one-click sign up, remember note, role/class icons, score tooltip, lockout hint, role-check accept — 1.5 d
 
