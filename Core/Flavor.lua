@@ -40,6 +40,8 @@ ns.FEATURES = {
     swingTimer = { forever = true },
     -- GCD bar: the Global Cooldown spell (61304) is not in Forever's spell table.
     gcdBar = { retail = true },
+    -- Mythic raids (20 players, groups 1-4): Forever's raids have no Mythic difficulty.
+    mythicRaid = { retail = true },
     -- Boss timeline and warnings: Blizzard_EncounterTimeline / _EncounterWarnings load on "standard" only.
     encounterTimeline = available(C_EncounterTimeline),
     encounterWarnings = available(C_EncounterWarnings),

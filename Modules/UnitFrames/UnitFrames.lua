@@ -136,6 +136,8 @@ local M = ns:NewModule("UnitFrames", {
     defaults = DEFAULTS,
 })
 M.UNITS, M.TOKENS, M.GROUP, M.LEGACY, M.SMALL, M.DEFAULTS = UNITS, TOKENS, GROUP, LEGACY, SMALL, DEFAULTS
+-- other modules shape their own frames' settings like a unit's (Group Frames profiles)
+M.NewUnitSettings = unit
 
 local function plain(v) return not Secret.IsSecret(v) end
 M.plain = plain
@@ -143,7 +145,8 @@ M.plain = plain
 function M:IsPhoenix() return self.db.mode == "phoenix" end
 --[[ Unit settings sources: key -> function(key) returning a settings table shaped like a unit's (at least nameLength
     and auras.tooltips). Modules that draw with this module's tags and aura buttons register their keys here
-    (NamePlates: "plate.enemy", "plate.friendly"). ]]
+    (NamePlates: "plate.enemy", "plate.friendly"; Group Frames: "group.party", "group.raid", "group.large",
+    "group.tanks", "group.pets"). ]]
 M.UNIT_SOURCES = {}
 function M:Unit(key)
     local source = M.UNIT_SOURCES[key]

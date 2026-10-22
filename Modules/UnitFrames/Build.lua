@@ -72,18 +72,23 @@ function M.AuraButton(container, i)
 end
 
 ---------------------------------------------------------------- build
---[[ opts: { secure = bool, name = global name|nil, token = unit token (secure frames), sample = table (plain data) }
+--[[ opts: { secure = bool, name = global name|nil, token = unit token (secure frames), sample = table (plain data),
+    frame = an existing (header-made) button to dress instead of creating one }
     Returns the frame with its parts as fields (Health, Power, AltPower, Absorb …). ]]
 function M:Build(parent, key, opts)
     opts = opts or {}
     local f
-    if opts.secure then
+    if opts.frame then
+        f = opts.frame -- a button a secure group header made (Group Frames): dressed, never re-created
+    elseif opts.secure then
         f = CreateFrame("Button", opts.name, parent, "SecureUnitButtonTemplate,PingableUnitFrameTemplate")
     else
         f = CreateFrame("Button", opts.name, parent)
     end
     f.unitKey, f.token, f.unit, f.sample = key, opts.token, opts.token, opts.sample
-    f.secure = opts.secure and true or nil
+    f.secure = (opts.secure or opts.frame) and true or nil
+    -- header children: the header owns their size and place (protected), so Layout leaves both alone and may run in combat
+    f.headerChild = opts.frame and true or nil
 
     -- bars
     f.Health = statusBar(f, 1)
@@ -441,9 +446,11 @@ function M:Layout(f)
     local key = f.unitKey
     local u = self:Unit(key)
     local cp = key == "player" and self.db.classPower or nil
-    local g = M.Geometry(u, { classPower = cp and f.ClassPower and f.classPowerActive and cp or nil })
-    f:SetSize(u.width, u.height)
-    f:SetFrameStrata(u.strata)
+    local g = M.Geometry(u, { classPower = cp and f.ClassPower and f.classPowerActive and cp or nil, noPower = f.noPower })
+    if not f.headerChild then
+        f:SetSize(u.width, u.height)
+        f:SetFrameStrata(u.strata)
+    end
     Skin:Backdrop(f, u.background, "bg.sunken")
     Skin:BorderSpec(f, u.border, "border.black")
     layoutHealth(self, f, u, g, key)

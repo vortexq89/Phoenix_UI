@@ -3,6 +3,25 @@
 ## 2.0.0-beta1
 
 ### New
+- **Group frames** (plan v2 stage S11): Phoenix now draws its own party, raid, main tank/assist and pet frames from
+  secure group headers (Group Frames → *Group frames*: *Phoenix frames*, the default; *Blizzard frames, restyled*
+  keeps the game's compact frames with the 1.x style). Three layouts that switch by group size: *Party (5)*,
+  *Raid (10-20)* and *Large raid (25-40)* (chips with Shift multi-edit and *Apply to: All*), each with its own size,
+  scale, unit growth and spacing, group growth and spacing, units per column, sorting (group, role, class, name or
+  join order, ascending or descending, four role orders), show yourself, show when solo, groups shown and *Groups
+  1-4 in Mythic* (retail). Separate frames for main tanks (and main assists) and, opt-in, pets, each on its own
+  mover. Every frame is a Unit Frames button (no second copy): health with absorbs and incoming heals, class or
+  custom colours, range fade, dead/offline/ghost states, power bar **by role** (tanks, healers, damage dealers),
+  name/health/status tags from the Unit Frames tag engine, role icon (optionally hidden in combat), leader,
+  raid marker, ready check, incoming summons and resurrections, aggro border and a new **phase icon**. **Dispel
+  highlight** as border, overlay or gradient in the debuff type's colour (optionally only what you can dispel).
+  Auras asked of the game with filter words only: buffs in the corners or a row (my heals over time, buffs I can
+  cast, or all), debuffs in a row or the centre (all, dispellable by me, by the group, crowd control), a **big
+  defensive** icon and **private auras** drawn by the game in slots on each frame. Click-cast addons (Clique and
+  others) get every button through `ClickCastFrames`. **Test group** shows a fake party of 5 or raid of 20 or 40
+  where the frames sit (combat ends it); the page has a live pinned preview; Layout mode moves the party, raid,
+  main tank and pet frames. Blizzard's party and raid frames are parked out of combat (the raid manager only when
+  *Hide the raid manager* is on). 191 settings on retail, 190 on WoW Forever (target 68).
 - **Nameplates** (plan v2 stage S10): Phoenix now draws its own nameplates (Nameplates → *Plates drawn by*:
   *Phoenix*, the default; *Blizzard (restyled)* keeps the game's plates with the 2.0 restyle). Separate *Enemy* and
   *Friendly* styles (chips with Shift multi-edit and *Apply to: All*): size, names only (friendly), bar texture,

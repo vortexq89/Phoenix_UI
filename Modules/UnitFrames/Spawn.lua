@@ -227,17 +227,28 @@ local HANDLER = {
     threat = function(f) M:UpdateIndicators(f, M:SourceOf(f)) end,
 }
 
--- (Re)registers a frame's unit events for the unit it shows now (vehicles swap player and pet).
-local function watchUnit(f, unit)
+--[[ (Re)registers a frame's unit events for the unit it shows now (vehicles swap player and pet; group header
+    buttons change units with the roster). f.ev is the frame's event owner; f.onUnitEvent(f, group, event), when
+    set, runs after the shared handler (Group Frames: dispel highlight, aggro, states). `extra` adds more events
+    under the group "extra" (handled by f.onUnitEvent only). A nil unit only unregisters. ]]
+local function watchUnit(f, unit, extra)
+    f.ev = f.ev or {}
     ns.Events:OffAll(f.ev)
     f.unit = unit
-    for group, list in pairs(UNIT_EVENTS) do
-        local fn = HANDLER[group]
-        for _, ev in ipairs(list) do
-            ns.Events:OnUnit(ev, f.ev, function() if f:IsVisible() then ns.SafeCall(fn, f) end end, unit)
-        end
+    if not unit then return end
+    local function add(group, ev, fn)
+        ns.Events:OnUnit(ev, f.ev, function()
+            if not f:IsVisible() then return end
+            if fn then ns.SafeCall(fn, f) end
+            if f.onUnitEvent then ns.SafeCall(f.onUnitEvent, f, group, ev) end
+        end, unit)
     end
+    for group, list in pairs(UNIT_EVENTS) do
+        for _, ev in ipairs(list) do add(group, ev, HANDLER[group]) end
+    end
+    for _, ev in ipairs(extra or {}) do add("extra", ev) end
 end
+M.WatchUnit = watchUnit
 
 local function eachFrame(fn)
     for _, key in ipairs(M.UNITS) do

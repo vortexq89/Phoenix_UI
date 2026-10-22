@@ -144,6 +144,8 @@ Already in flight and not re-planned here: Bugs rebuild (other worker), Sim uplo
 
 ### S11 — Group Frames v2 (own party/raid headers) (~8 days)
 
+*Shipped 22 Oct 2026: 191 settings on retail, 190 on Forever (target 68); needs an in-game test (TESTING §13h).*
+
 - SecureGroupHeaderTemplate party/raid with 3 size profiles, sorting, role order, pets, MT/MA — 3 d
 - Indicators: dispel highlight (only mine), aggro, range, role/leader/ready/summon/res, private aura anchor — 2 d
 - Auras: HoT corners, debuff row, big defensive, filters; test raid 5/20/40 — 2 d

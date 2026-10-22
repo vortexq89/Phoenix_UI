@@ -891,7 +891,8 @@ try("cogs and tabs", function()
 end)
 -- search reaches cog sub-options and a result focuses the right tab
 try("search", function()
-    ns.Config:Search("outline")
+    -- (two words: every word must match, and the module name is part of each row's haystack)
+    ns.Config:Search("nameplates outline")
     local rows = ns.Config.results and ns.Config.results.rows or {}
     local hit
     for _, r in ipairs(rows) do
@@ -2263,6 +2264,98 @@ try("nameplates depth (S10)", function()
     local n = ns.Config.CountSettings(ns.options.NamePlates)
     assert(n >= 100 and ns.Config.DEPTH.NamePlates == 100, ("NamePlates has %d of 100 settings"):format(n))
     print(("  NamePlates settings: %d"):format(n))
+end)
+
+-- group frames (S11): pure layout helpers, secure headers and their buttons, samples and Test frames, depth
+try("group frame helpers", function()
+    local M = ns.modules.GroupFrames
+    local p = M:Profile("raid")
+    local a = M.HeaderAttributes(M:Profile("party"), "party")
+    assert(a.point == "TOP" and a.yOffset < 0 and a.xOffset == 0 and a.showParty and not a.showRaid, "party attributes")
+    assert(M.GroupGrowth("DOWN", "UP") == "RIGHT" and M.GroupGrowth("RIGHT", "RIGHT") == "DOWN", "group growth crosses units")
+    assert(M.Corner("DOWN", "RIGHT") == "TOPLEFT" and M.Corner("UP", "LEFT") == "BOTTOMRIGHT"
+        and M.Corner("RIGHT", "UP") == "BOTTOMLEFT" and M.Corner("LEFT", "DOWN") == "TOPRIGHT", "corners")
+    p.sortBy = "role"
+    local r = M.HeaderAttributes(p, "raid", nil, 4)
+    assert(r.groupFilter == "1,2,3,4" and r.groupBy == "ASSIGNEDROLE" and r.unitsPerColumn == 5 and r.maxColumns == 8
+        and r.showRaid and r.groupingOrder:find("^TANK"), "sorted raid attributes")
+    p.sortBy = "group"
+    assert(M.HeaderAttributes(p, "group", 3).groupFilter == "3" and M.SplitGroups(p), "group header")
+    p.growth = "RIGHT"
+    local h = M.HeaderAttributes(p, "group", 1)
+    assert(h.point == "LEFT" and h.xOffset > 0 and h.columnAnchorPoint == "TOP", "horizontal growth")
+    p.growth = "DOWN"
+    assert(M.ProfileFor(false, 3) == "party" and M.ProfileFor(true, 15) == "raid" and M.ProfileFor(true, 25) == "large",
+        "profile by roster size")
+    assert(M.GroupsShown(p, 16) == (RETAIL and 4 or 8) and M.GroupsShown(p, 14) == 8, "Mythic groups (retail only)")
+    assert(M.PowerFor(p, "HEALER") and M.PowerFor(p, "TANK") and not M.PowerFor(p, "DAMAGER") and not M.PowerFor(p, nil),
+        "power by role")
+    local slots = M.Slots(p, 10, 5)
+    assert(slots[2][1] == 0 and slots[2][2] == -(p.height + p.spacing) and slots[6][1] == p.width + p.groupSpacing
+        and slots[6][2] == 0, "slots")
+    local w, hh = M.GroupSize(p, 20, 5)
+    assert(w == 4 * p.width + 3 * p.groupSpacing and hh == 5 * p.height + 4 * p.spacing, "group size")
+    local g = M.SampleGroup(40)
+    assert(#g == 40 and g[1].role == "TANK" and g[3].role == "HEALER" and g[40].role == "DAMAGER", "sample raid")
+    assert(M.BUFF_FILTERS.mine:find("RAID_IN_COMBAT") and M.DispelFilter(false):find("RAID_PLAYER_DISPELLABLE"), "filters")
+end)
+try("group frames phoenix", function()
+    local M, UF = ns.modules.GroupFrames, ns.modules.UnitFrames
+    assert(M:IsPhoenix() and M:IsSpawned(), "Phoenix group frames are the default")
+    for _, k in ipairs({ "party", "g1", "g8", "raid", "tanks", "pets" }) do assert(M.headers[k], "no header " .. k) end
+    -- the header's restricted init calls PhoenixInit: a button gets Unit Frames' build plus the group parts
+    local h = M.headers.party
+    local b = env.CreateFrame("Button", "PhoenixUI_GF_partyUnitButton1", h)
+    h.PhoenixInit(h, "PhoenixUI_GF_partyUnitButton1")
+    assert(b.dressed and b.Health and b.DispelHL and b.HoTs and b.Private and h.buttons[1] == b, "the button was not dressed")
+    assert(rawget(env, "ClickCastFrames") and env.ClickCastFrames[b], "the button is not offered to click-cast addons")
+    M:SetButtonUnit(b, "party1")
+    assert(b.unit == "party1" and b.layoutDone and b.partsDone, "the button did not lay out for its unit")
+    for _, ev in ipairs({ "UNIT_AURA", "UNIT_PHASE", "UNIT_HEALTH", "UNIT_NAME_UPDATE", "UNIT_IN_RANGE_UPDATE",
+        "UNIT_THREAT_SITUATION_UPDATE" }) do fire(ev, "party1") end
+    for _, ev in ipairs({ "GROUP_ROSTER_UPDATE", "READY_CHECK", "PLAYER_ROLES_ASSIGNED", "PLAYER_REGEN_DISABLED",
+        "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD" }) do fire(ev) end
+    -- every look and layout switch re-lays the buttons out
+    local p = M:Profile("party")
+    for _, mode in ipairs({ "overlay", "gradient", "off", "border" }) do p.dispel.mode = mode; M:Refresh() end
+    for _, mode in ipairs({ "row", "off", "corners" }) do p.groupAuras.buffs.mode = mode; M:Refresh() end
+    for _, mode in ipairs({ "center", "off", "row" }) do p.groupAuras.debuffs.mode = mode; M:Refresh() end
+    for _, by in ipairs({ "class", "name", "index", "group", "role" }) do M:Profile("raid").sortBy = by; M:Refresh() end
+    p.roleCombat = true; M:UpdateButton(b); p.roleCombat = false
+    M.db.tanks.enabled, M.db.pets.enabled = true, true; M:Refresh(); M.db.pets.enabled = false
+    M:SetButtonUnit(b, nil)
+    assert(not b.unit, "the button kept its unit")
+    -- movers
+    local movers = ns:GetModule("Movers")
+    local e = movers and movers:GetEntry("gf.party")
+    assert(e and e.store and e.store.active(), "the party frames have no mover")
+    local st = e.store.get()
+    e.store.set({ point = st.point, x = st.x + 7, y = st.y }); assert(p.x == st.x + 7, "mover set")
+    e.store.reset(); assert(p.x == M.DEFAULTS.profiles.party.x, "mover reset")
+    -- samples: the preview / Test code draws every state, every profile
+    for _, key in ipairs(M.PROFILES) do
+        local pool = {}
+        local w, hh = M:DrawSampleGroup(env.UIParent, key, M.SIZE_OF[key], pool)
+        assert(#pool == M.SIZE_OF[key] and w > 0 and hh > 0 and pool[1].layoutDone and pool[1].partsDone, "samples " .. key)
+    end
+    for _, n in ipairs({ 5, 20, 40 }) do
+        assert(M:ShowTest(true, n) and M.testShown, "test group of " .. n)
+        assert(M:ShowTest(false) and not M.testShown, "the test group did not hide")
+    end
+    M.db.testSize = 20
+    assert(UF.UNIT_SOURCES["group.tanks"]().width == M.db.tanks.width, "tank frames read their own size")
+end)
+try("group frames blizzard fallback", function()
+    local M = ns.modules.GroupFrames
+    M.db.mode = "blizzard"
+    assert(M:ShowTest(true) and M:ShowTest(false), "Blizzard-mode test")
+    M:EnableBlizzard(); M:RefreshBlizzard()
+    M.db.mode = "phoenix"
+end)
+try("group frames depth (S11)", function()
+    local n = ns.Config.CountSettings(ns.options.GroupFrames)
+    assert(n >= 68 and ns.Config.DEPTH.GroupFrames == 68, ("GroupFrames has %d of 68 settings"):format(n))
+    print(("  GroupFrames settings: %d"):format(n))
 end)
 
 fire("PLAYER_LOGOUT")

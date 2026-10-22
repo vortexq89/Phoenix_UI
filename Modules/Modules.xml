@@ -15,6 +15,9 @@
     <Script file="UnitFrames\Update.lua"/>
     <Script file="UnitFrames\Spawn.lua"/>
     <Script file="GroupFrames\GroupFrames.lua"/>
+    <Script file="GroupFrames\Blizzard.lua"/>
+    <Script file="GroupFrames\Headers.lua"/>
+    <Script file="GroupFrames\Update.lua"/>
     <Script file="CastBars\CastBars.lua"/>
     <Script file="CastBars\Bar.lua"/>
     <Script file="CastBars\Update.lua"/>

@@ -197,6 +197,9 @@
   "Interface\\Icons\\Ability_Mage_LivingBomb": {
    "fileDataID": 236220
   },
+  "Interface\\Icons\\Ability_Rogue_DualWeild": {
+   "fileDataID": 132290
+  },
   "Interface\\Icons\\Ability_Rogue_Sprint": {
    "fileDataID": 132307
   },
@@ -205,6 +208,9 @@
   },
   "Interface\\Icons\\Ability_Warrior_Rampage": {
    "fileDataID": 132352
+  },
+  "Interface\\Icons\\Ability_Warrior_ShieldWall": {
+   "fileDataID": 132362
   },
   "Interface\\Icons\\Achievement_BG_winWSG": {
    "fileDataID": 236396
@@ -308,11 +314,23 @@
   "Interface\\Icons\\Spell_Holy_PowerWordShield": {
    "fileDataID": 135940
   },
+  "Interface\\Icons\\Spell_Holy_Renew": {
+   "fileDataID": 135953
+  },
   "Interface\\Icons\\Spell_Nature_Lightning": {
    "fileDataID": 136048
   },
+  "Interface\\Icons\\Spell_Nature_Rejuvenation": {
+   "fileDataID": 136081
+  },
   "Interface\\Icons\\Spell_Nature_Sleep": {
    "fileDataID": 136090
+  },
+  "Interface\\Icons\\Spell_Shadow_AbominationExplosion": {
+   "fileDataID": 136118
+  },
+  "Interface\\Icons\\Spell_Shadow_CurseOfTounges": {
+   "fileDataID": 136140
   },
   "Interface\\Icons\\Spell_Shadow_ShadowWordPain": {
    "fileDataID": 136207

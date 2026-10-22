@@ -657,6 +657,57 @@ Blizzard's plate (use *Class resource on the target*). The click area is one siz
 largest of enemy and friendly) with per-kind insets.
   **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13g.12).
 
+## 13h. Group frames (2.0 S11)
+
+Phoenix group frames are the default. Start with `/console taintLog 1` and an empty `/pui bugs`. *Group* needs a
+party or follower dungeon; *raid* needs a raid (LFR, a world boss or a custom raid of friends).
+
+- [ ] **13h.1 First login (group).** **Expect:** Phoenix party frames (class-coloured health, name, role icon,
+  power bar on healers) where the party mover sits; Blizzard's party and raid frames are gone; the raid manager
+  stays unless *Hide the raid manager* is on.
+- [ ] **13h.2 Test group and preview.** Group Frames → **Toggle test group** with sizes *Party of 5*, *Raid of 20*,
+  *Raid of 40*. **Expect:** a fake group in the matching layout with dispel highlight, heals over time, absorbs,
+  aggro, out-of-range fade, dead, offline, summon, res, ready check and phase states; the pinned preview follows
+  every setting; entering combat ends the test.
+- [ ] **13h.3 Layouts by size (raid).** Join or form a raid of 10, then above 20. **Expect:** the *Raid (10-20)*
+  layout, then the *Large raid (25-40)* layout (after combat if in combat). Change width, height, unit/group
+  growth, spacing and units per column out of combat: every header follows at once.
+- [ ] **13h.4 Sorting.** Sort by group, role (try each role order), class, name and join order; ascending and
+  descending; *Groups shown* 4; in a Mythic raid *Groups 1-4 in Mythic*. **Expect:** members move accordingly;
+  groups 5-8 are hidden as asked.
+- [ ] **13h.5 Main tanks and pets (raid).** Set a main tank and main assist (raid menu). **Expect:** the main tank
+  frames show them (assists only with *Include main assists*). *Show pet frames*: hunter/warlock pets appear on the
+  pet frames.
+- [ ] **13h.6 Indicators (group).** Ready check, a summon (warlock or meeting stone), a resurrection on a dead
+  member, a member in another phase or instance, someone going offline. **Expect:** the matching icon or state
+  text; leader and raid marker icons; role icons hidden in combat when *Hide role icon in combat* is on; the aggro
+  border on whoever has threat.
+- [ ] **13h.7 Range.** Walk away from a member. **Expect:** their frame fades to the range alpha and comes back.
+- [ ] **13h.8 Dispel highlight and auras (combat).** A debuff you can dispel (dungeon trash). **Expect:** the
+  border/overlay/gradient in the debuff type's colour; with *Only what I can dispel* only yours. Buffs: your heals
+  over time in the corners (or a row); debuffs row/centre per filter; a big defensive (Shield Wall, Pain
+  Suppression …) shows its icon.
+- [ ] **13h.9 Private auras (raid/dungeon boss).** A boss with private auras. **Expect:** the game draws them in
+  the private aura slots on the frame (swipe and numbers as set).
+- [ ] **13h.10 Power by role.** Toggle *Tanks*, *Healers*, *Damage dealers*. **Expect:** only those roles show a power
+  bar; frames re-lay out even in combat when a role changes.
+- [ ] **13h.11 Click casting.** With Clique (or another click-cast addon) bind a heal to a click. **Expect:** it
+  casts on the clicked member in and out of combat. Without one: left click targets, right click opens the menu;
+  Blizzard's own click-cast bindings (if set) work.
+- [ ] **13h.12 Combat and taint (raid).** Members join/leave and swap groups in combat; change settings in combat.
+  **Expect:** frames keep up through the secure headers; size/place changes apply after combat; no
+  `ADDON_ACTION_BLOCKED`, nothing in `Logs\taint.log` from Phoenix_UI.
+- [ ] **13h.13 Layout mode.** Layout mode → drag the party, raid, main tank and pet movers. **Expect:** they move and
+  stay after a reload.
+- [ ] **13h.14 Blizzard mode.** *Group frames* → *Blizzard frames, restyled*, reload. **Expect:** Blizzard's compact
+  frames with the Phoenix texture and fonts; switching back and reloading restores the Phoenix frames.
+- [ ] **13h.15 WoW Forever.** Repeat 13h.1-13h.8 on Forever. **Expect:** the same frames; *Groups 1-4 in Mythic* is
+  hidden.
+
+Known limits: you can show or hide yourself but not place yourself first or last. Size and position changes made in
+combat wait for combat to end (a game rule).
+  **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13h.12).
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

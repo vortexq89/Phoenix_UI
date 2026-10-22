@@ -586,6 +586,8 @@ local function dispelColors()
     return dispelCurve or nil
 end
 
+M.DispelCurve = dispelColors
+
 local function showAura(b, unit, aura, kind, a)
     b.unit, b.auraInstanceID = unit, aura.auraInstanceID
     b.Icon:SetTexture(aura.icon)
@@ -872,7 +874,7 @@ end
 ---------------------------------------------------------------- everything
 function M:UpdateAll(f)
     if not f.layoutDone then
-        if f.secure and InCombatLockdown() then return end
+        if f.secure and not f.headerChild and InCombatLockdown() then return end
         self:Layout(f)
     end
     local src = self:SourceOf(f)
