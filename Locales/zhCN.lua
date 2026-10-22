@@ -1344,6 +1344,25 @@ local T = {
     TOOLTIP_SIM_LINE = "模拟：%s · %s",
     BAGS_SIM_ARROW = "按模拟结果显示箭头",
     BAGS_SIM_ARROW_DESC = "对模拟过的物品由模拟结果决定：仅在 DPS 提升时以强调色显示箭头。",
+    ---------------------------------------------------------------- Bugs (capture sources, viewer actions)
+    BUGS_SESSION_PAST = "更早的会话",
+    BUGS_SESSION_N = "会话 %d · %s · %d",
+    BUGS_SOURCE_ALL = "所有插件",
+    BUGS_FIELD_REPORTED = "已标记为已报告",
+    BUGS_DELETE = "删除报告",
+    BUGS_DELETE_DESC = "删除此报告。如果错误再次发生，会作为新报告记录。",
+    BUGS_MARK = "标记为已报告",
+    BUGS_MARK_DESC = "当你已将报告转交插件作者后将其变暗。再次点击取消。",
+    BUGS_MODE_BUGGRABBER = "通过 BugGrabber 收集：它接管了游戏的错误处理器，Phoenix 读取它捕获的每个错误。",
+    BUGS_MODE_HANDLER = "使用 Phoenix 自己的错误处理器收集（暴雪的错误窗口仍然可用）。",
+    BUGS_MODE_LOST = "另一个插件在 Phoenix 之后替换了错误处理器：只能收到被阻止的操作和警告。请安装 BugGrabber 或禁用该插件。",
+    BUGS_STATUS_COUNTS = "本次会话：%d 种不同错误，共 %d 次。此账号保存的报告：%d 条。",
+    BUGS_SCOPE = "捕获以下来源的错误",
+    BUGS_SCOPE_DESC = "所有插件（类似 BugSack）或仅 Phoenix UI 自己的错误。若已安装 BugGrabber，它仍会捕获全部错误。",
+    BUGS_SCOPE_ALL = "所有插件",
+    BUGS_SCOPE_PHOENIX = "仅 Phoenix UI",
+    BUGS_SOUND_BELL = "通知铃声",
+    BUGS_SOUND_ALARM = "闹钟",
 }
 
 ns.RegisterLocale("zhCN", T)

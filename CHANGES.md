@@ -96,6 +96,23 @@
 - Texture pickers draw each texture in a neutral tint so its shading is visible; the chosen one keeps the accent.
 - The version no longer reads `@project-version@` in an unpackaged checkout: the source TOC carries `2.0.0-beta1`
   and only packaged builds use the packager token.
+- **Bugs caught nothing next to BugGrabber.** BugGrabber 12.x dropped CallbackHandler and announces captures through
+  `EventRegistry` (`BugGrabber.BugGrabbed`); Phoenix listened for the old callback, so with BugGrabber installed its
+  sack stayed empty. Phoenix now reads every BugGrabber capture (repeats count once each), imports what BugGrabber
+  caught before Phoenix loaded, and keeps errors, blocked actions and warnings apart. Without BugGrabber, errors from
+  addons that loaded before Phoenix are taken over from Blizzard's error window. The Bugs page and the viewer say
+  which way errors are being caught (and warn if another addon replaced the error handler).
+- **Bugs viewer**: filter by addon and by any past session, delete a report, mark one as reported; option to catch
+  only Phoenix UI's own errors; two more notification sounds; with BugGrabber but no BugSack, BugGrabber's own chat
+  line gives way to Phoenix's notice.
+- **No icons in game.** The icon atlases were RLE-compressed TGAs, the largest 1024×2048. They are now uncompressed
+  32-bit TGAs with no edge over 1024 px (tiers 24/48/64 px; brand art uncompressed too). New file names need a full
+  game restart once, not just `/reload`.
+- **`/pui diag` crashed** ("Diag.lua:54: attempt to call a nil value"): textures have no `GetEffectiveAlpha`. The
+  self-test now guards every probe, always saves its report and never throws, so the automatic game-icon fallback
+  can kick in when Phoenix's atlases do not load.
+- **Tooltip**: every hook is guarded (a fault is reported once, not on every hover) and target, rating and item
+  quality are checked for secret values before use.
 
 
 ## 2.0.0 — Midnight rebuild (Interface 120105, WoW 12.1.5)

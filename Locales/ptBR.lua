@@ -1344,6 +1344,25 @@ local T = {
     TOOLTIP_SIM_LINE = "Simulação: %s · %s",
     BAGS_SIM_ARROW = "Seta pelos resultados da simulação",
     BAGS_SIM_ARROW_DESC = "Nos itens simulados, a simulação decide: a seta só aparece, na cor de destaque, quando há ganho de DPS.",
+    ---------------------------------------------------------------- Bugs (capture sources, viewer actions)
+    BUGS_SESSION_PAST = "Sessões anteriores",
+    BUGS_SESSION_N = "Sessão %d · %s · %d",
+    BUGS_SOURCE_ALL = "Todos os addons",
+    BUGS_FIELD_REPORTED = "Marcado como relatado",
+    BUGS_DELETE = "Excluir relatório",
+    BUGS_DELETE_DESC = "Remove este relatório. Se o erro ocorrer de novo, ele é capturado como um novo.",
+    BUGS_MARK = "Marcar como relatado",
+    BUGS_MARK_DESC = "Esmaece o relatório depois de enviá-lo ao autor do addon. Clique de novo para desfazer.",
+    BUGS_MODE_BUGGRABBER = "Capturando pelo BugGrabber: ele controla o manipulador de erros do jogo e o Phoenix lê cada erro que ele pega.",
+    BUGS_MODE_HANDLER = "Capturando com o manipulador de erros do próprio Phoenix (a janela de erros da Blizzard continua funcionando).",
+    BUGS_MODE_LOST = "Outro addon substituiu o manipulador de erros depois do Phoenix: só chegam ações bloqueadas e avisos. Instale o BugGrabber ou desative esse addon.",
+    BUGS_STATUS_COUNTS = "Esta sessão: %d erros diferentes, %d no total. Guardados nesta conta: %d relatórios.",
+    BUGS_SCOPE = "Capturar erros de",
+    BUGS_SCOPE_DESC = "Todos os addons (como o BugSack) ou só os erros do próprio Phoenix UI. Se instalado, o BugGrabber continua capturando tudo.",
+    BUGS_SCOPE_ALL = "Todos os addons",
+    BUGS_SCOPE_PHOENIX = "Só Phoenix UI",
+    BUGS_SOUND_BELL = "Sino de notificação",
+    BUGS_SOUND_ALARM = "Despertador",
 }
 
 ns.RegisterLocale("ptBR", T)

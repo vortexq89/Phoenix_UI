@@ -1344,6 +1344,25 @@ local T = {
     TOOLTIP_SIM_LINE = "시뮬레이션: %s · %s",
     BAGS_SIM_ARROW = "시뮬레이션 결과로 화살표",
     BAGS_SIM_ARROW_DESC = "시뮬레이션한 아이템은 결과를 따릅니다. DPS가 오를 때만 강조 색 화살표를 표시합니다.",
+    ---------------------------------------------------------------- Bugs (capture sources, viewer actions)
+    BUGS_SESSION_PAST = "이전 세션",
+    BUGS_SESSION_N = "세션 %d · %s · %d",
+    BUGS_SOURCE_ALL = "모든 애드온",
+    BUGS_FIELD_REPORTED = "보고됨으로 표시",
+    BUGS_DELETE = "보고서 삭제",
+    BUGS_DELETE_DESC = "이 보고서를 삭제합니다. 오류가 다시 발생하면 새 보고서로 기록됩니다.",
+    BUGS_MARK = "보고됨으로 표시",
+    BUGS_MARK_DESC = "애드온 제작자에게 전달한 보고서를 흐리게 표시합니다. 다시 클릭하면 해제됩니다.",
+    BUGS_MODE_BUGGRABBER = "BugGrabber로 수집 중: 게임 오류 처리기를 BugGrabber가 맡고, Phoenix는 그가 잡은 모든 오류를 읽습니다.",
+    BUGS_MODE_HANDLER = "Phoenix 자체 오류 처리기로 수집 중 (블리자드 오류 창도 계속 작동합니다).",
+    BUGS_MODE_LOST = "Phoenix 이후에 다른 애드온이 오류 처리기를 교체했습니다: 차단된 동작과 경고만 수집됩니다. BugGrabber를 설치하거나 그 애드온을 끄세요.",
+    BUGS_STATUS_COUNTS = "이번 세션: 서로 다른 오류 %d개, 총 %d회. 이 계정에 보관된 보고서: %d개.",
+    BUGS_SCOPE = "오류 수집 대상",
+    BUGS_SCOPE_DESC = "모든 애드온(BugSack처럼) 또는 Phoenix UI 자체 오류만. BugGrabber가 설치되어 있으면 어느 쪽이든 모든 오류를 계속 수집합니다.",
+    BUGS_SCOPE_ALL = "모든 애드온",
+    BUGS_SCOPE_PHOENIX = "Phoenix UI만",
+    BUGS_SOUND_BELL = "알림 종소리",
+    BUGS_SOUND_ALARM = "알람 시계",
 }
 
 ns.RegisterLocale("koKR", T)

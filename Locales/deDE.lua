@@ -1344,6 +1344,25 @@ local T = {
     TOOLTIP_SIM_LINE = "Sim: %s · %s",
     BAGS_SIM_ARROW = "Pfeil aus Sim-Ergebnissen",
     BAGS_SIM_ARROW_DESC = "Bei simulierten Gegenständen entscheidet die Sim: Der Pfeil erscheint nur bei DPS-Gewinn, in der Akzentfarbe.",
+    ---------------------------------------------------------------- Bugs (capture sources, viewer actions)
+    BUGS_SESSION_PAST = "Frühere Sitzungen",
+    BUGS_SESSION_N = "Sitzung %d · %s · %d",
+    BUGS_SOURCE_ALL = "Alle Addons",
+    BUGS_FIELD_REPORTED = "Als gemeldet markiert",
+    BUGS_DELETE = "Bericht löschen",
+    BUGS_DELETE_DESC = "Entfernt diesen Bericht. Tritt der Fehler erneut auf, wird er neu erfasst.",
+    BUGS_MARK = "Als gemeldet markieren",
+    BUGS_MARK_DESC = "Blendet den Bericht ab, sobald du ihn an den Autor des Addons weitergegeben hast. Erneut klicken zum Zurücksetzen.",
+    BUGS_MODE_BUGGRABBER = "Erfassung über BugGrabber: Es besitzt den Fehler-Handler des Spiels, Phoenix liest jeden Fehler mit, den es fängt.",
+    BUGS_MODE_HANDLER = "Erfassung mit Phoenix' eigenem Fehler-Handler (Blizzards Fehlerfenster funktioniert weiterhin).",
+    BUGS_MODE_LOST = "Ein anderes Addon hat nach Phoenix den Fehler-Handler ersetzt: Es kommen nur blockierte Aktionen und Warnungen an. Installiere BugGrabber oder deaktiviere dieses Addon.",
+    BUGS_STATUS_COUNTS = "Diese Sitzung: %d verschiedene Fehler, insgesamt %d. Auf diesem Account gespeichert: %d Berichte.",
+    BUGS_SCOPE = "Fehler erfassen von",
+    BUGS_SCOPE_DESC = "Jedes Addon (wie BugSack) oder nur Fehler von Phoenix UI selbst. Ein installiertes BugGrabber erfasst in jedem Fall alles.",
+    BUGS_SCOPE_ALL = "Allen Addons",
+    BUGS_SCOPE_PHOENIX = "Nur Phoenix UI",
+    BUGS_SOUND_BELL = "Benachrichtigungston",
+    BUGS_SOUND_ALARM = "Wecker",
 }
 
 ns.RegisterLocale("deDE", T)

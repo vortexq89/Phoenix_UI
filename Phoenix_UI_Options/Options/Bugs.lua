@@ -7,9 +7,22 @@ local popupGet, popupSet = ns.Combat.CVarAccessors("scriptErrors")
 local WEBSITE = "https://vq8s.com/phoenix-ui"
 
 local function openViewer(m) ns.Config.frame:Hide(); m:OpenViewer() end
+local MODE_TEXT = { buggrabber = L.BUGS_MODE_BUGGRABBER, handler = L.BUGS_MODE_HANDLER, lost = L.BUGS_MODE_LOST }
+
+-- Where captures come from right now, and what is in the sack.
+local function captureStatus()
+    local m = ns.modules.Bugs
+    local unique, total = m:Counts()
+    return MODE_TEXT[m:CaptureState()] .. "\n" .. L.BUGS_STATUS_COUNTS:format(unique, total, #Errors:GetReports())
+end
 
 ns:RegisterOptions("Bugs", {
     { type = "header", label = "BUGS_CAPTURE", icon = "bugs" },
+    { type = "description", text = captureStatus },
+    { type = "select", key = "scope", label = "BUGS_SCOPE", desc = "BUGS_SCOPE_DESC", keywords = "filter addons own only", values = {
+        { value = "all", label = "BUGS_SCOPE_ALL", icon = "addon" },
+        { value = "phoenix", label = "BUGS_SCOPE_PHOENIX", icon = "home" },
+    } },
     { type = "toggle", key = "warnings", label = "BUGS_WARNINGS", desc = "BUGS_WARNINGS_DESC", keywords = "lua warning" },
     { type = "toggle", key = "taint", label = "BUGS_TAINT", desc = "BUGS_TAINT_DESC",
       keywords = "addon_action_blocked forbidden protected" },
@@ -24,6 +37,8 @@ ns:RegisterOptions("Bugs", {
         { value = "none", label = "BUGS_SOUND_NONE" },
         { value = "chime", label = "BUGS_SOUND_CHIME", icon = "sound" },
         { value = "alert", label = "BUGS_SOUND_ALERT", icon = "sound" },
+        { value = "bell", label = "BUGS_SOUND_BELL", icon = "sound" },
+        { value = "alarm", label = "BUGS_SOUND_ALARM", icon = "sound" },
     } },
     { type = "toggle", key = "flash", label = "BUGS_FLASH", desc = "BUGS_FLASH_DESC" },
     { type = "select", key = "indicator", label = "BUGS_INDICATOR", desc = "BUGS_INDICATOR_DESC", values = {

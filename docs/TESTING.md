@@ -309,6 +309,34 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Expect:** the full stack and locals are readable. `/pui bugs clear` clears them after confirmation.
 - [ ] **12.4 With your addons.** Enable your usual addons and `/reload`.
   **Expect:** other addons' errors are captured with their folder as the source, and Phoenix causes no new errors.
+- [ ] **12.5 With BugGrabber and BugSack.** Keep both enabled, `/reload`, then `/phoenix testerror`.
+  **Expect:** the Bugs page says *Capturing through BugGrabber*; the test error is in BugSack **and** in `/pui bugs`
+  (same count after running it 3 more times). Errors BugSack shows for this session from addons that load before
+  Phoenix are in `/pui bugs` too.
+- [ ] **12.6 BugGrabber without BugSack.** Disable BugSack, `/reload`, `/phoenix testerror`.
+  **Expect:** one Phoenix chat notice with a link, no extra "captured, click the link" line from BugGrabber.
+- [ ] **12.7 Without BugGrabber.** Disable BugGrabber and BugSack, `/reload`.
+  **Expect:** the Bugs page says *Capturing with Phoenix's own error handler*; `/phoenix testerror` is caught.
+- [ ] **12.8 Viewer filters.** In `/pui bugs`, pick an addon in the addon menu and an earlier session in the session
+  menu; search for part of a message.
+  **Expect:** the list shows only matching reports; Clear removes only what is listed.
+- [ ] **12.9 Delete and mark.** Select a report; click the check (Mark as reported), then the bin (Delete).
+  **Expect:** the marked report dims with a check in the list and its copy text says *Marked as reported*; the deleted
+  one is gone, and comes back as a new report if the error happens again.
+- [ ] **12.10 Scope.** On the Bugs page set **Catch errors from** to *Phoenix UI only*, cause an error in another addon.
+  **Expect:** it is not added; `/phoenix testerror` still is. Set it back to *All addons*.
+- [ ] **12.11 Sounds.** Pick each notification sound and run `/phoenix testerror` (10 s apart).
+  **Expect:** the chosen sound plays once per new error.
+
+## 12b. Icons and self-test
+
+- [ ] **12b.1 Restart.** After installing this build, quit the game completely and start it again (new icon files are
+  only found at game start; `/reload` is not enough).
+- [ ] **12b.2 Icons.** Open `/pui`.
+  **Expect:** every sidebar entry, card header and button shows its glyph, sharp at your resolution.
+- [ ] **12b.3 Self-test.** Type `/pui diag`.
+  **Expect:** `diag: N/N media files loaded …`, no Lua error. If any file is listed as FAILED, Phoenix switches to game
+  icons by itself; `/reload` and send the `diag` block of `Phoenix_UI.lua`.
 
 ## 13. Uploader to the dashboard
 

@@ -485,10 +485,109 @@ try("bugs contract", function()
     E.cap = cap
     local bugs = ns.modules.Bugs
     bugs:OpenViewer()
-    bugs:GetViewer():Select(2)
+    local v = bugs:GetViewer()
+    v:Select(2)
+    assert(#v.header.session:GetItems() >= 3, "session menu")
+    v.header.source.onChange(v.header.source, "all")
+    local sources = v.header.source:GetItems()
+    assert(sources[1].value == "all" and #sources >= 2, "addon menu lists the sources")
+    -- open both menus so every item icon is requested (unknown glyph names fail the run)
+    E:Record("error", "Interface/AddOns/Blizzard_UIPanels/x.lua:1: y")
+    for _, d in ipairs({ v.header.session, v.header.source }) do d:GetScript("OnClick")(d); ns.Widgets.HideDropdownList() end
+    local newest = db.reports[#db.reports]
+    v.header.source.onChange(v.header.source, newest.source)
+    v.detail.mark.onClick(v.detail.mark)
+    assert(newest.reported == true, "viewer: mark as reported")
+    local n = #db.reports
+    v.detail.delete.onClick(v.detail.delete)
+    assert(#db.reports == n - 1, "viewer: delete")
+    v.header.source.onChange(v.header.source, "all")
     ns.Events:Fire("PUI_BUG", db.reports[1], true)
     E:Clear("all")
     assert(#db.reports == 0, "clear all failed")
+end)
+-- BugGrabber 12.x owns the handler and announces captures through EventRegistry; Phoenix must import what it
+-- caught before we loaded, count every announcement once and keep kinds apart. (In game, the 2.0 build listened
+-- for the CallbackHandler event that BugGrabber 12.x no longer has, so PhoenixUIBugsDB stayed empty.)
+try("bugs buggrabber", function()
+    local saved = { BugGrabber = rawget(env, "BugGrabber"), EventRegistry = rawget(env, "EventRegistry"),
+        PhoenixUIBugsDB = rawget(env, "PhoenixUIBugsDB") }
+    local callbacks = {}
+    rawset(env, "EventRegistry", {
+        RegisterCallback = function(_, event, fn, owner) callbacks[event] = function(...) return fn(owner, ...) end end,
+        UnregisterCallback = function() end, TriggerEvent = function() end,
+    })
+    local early = { message = "Interface/AddOns/Early/Early.lua:5: attempt to index a nil value", session = 7, counter = 9,
+        stack = "[Interface/AddOns/Early/Early.lua]:5: in main chunk", locals = "debuglocals() returned secrets." }
+    local old = { message = "Interface/AddOns/Old/Old.lua:1: from yesterday", session = 6, counter = 1 }
+    local db = { old, early }
+    local addon = {}
+    function addon:GetDB() return db end
+    function addon:GetSessionId() return 7 end
+    function addon:GetErrorByID(id) for _, e in ipairs(db) do if tostring(e) == id then return e end end end
+    rawset(env, "BugGrabber", setmetatable({}, { __index = addon, __newindex = function() end, __metatable = false }))
+    rawset(env, "PhoenixUIBugsDB", nil)
+    local ns2 = setmetatable({}, { __index = ns })
+    local chunk = assert(loadfile(ROOT .. "/Core/Errors.lua"))
+    setfenv(chunk, env)
+    chunk("Phoenix_UI", ns2)
+    local E = ns2.Errors
+    assert(E.mode == "buggrabber" and E:GetMode() == "buggrabber", "BugGrabber not detected")
+    assert(callbacks["BugGrabber.BugGrabbed"], "not subscribed to BugGrabber.BugGrabbed (EventRegistry)")
+    E:Open(true)
+    local reports = env.PhoenixUIBugsDB.reports
+    assert(#reports == 1 and reports[1].source == "Early" and reports[1].count == 1 and E.imported == 1,
+        "this session's BugGrabber errors were not imported (" .. #reports .. ")")
+    assert(reports[1].locals == "debuglocals() returned secrets.", "BugGrabber's secret placeholder must be kept as text")
+    -- a repeat of a known error, then a new error, a warning and a blocked action, each announced once
+    local announce = callbacks["BugGrabber.BugGrabbed"]
+    announce(tostring(early))
+    assert(#reports == 1 and reports[1].count == 2, "a repeat must count, not add a report")
+    local new = { message = "Interface/AddOns/New/New.lua:2: boom", session = 7, counter = 1 }
+    local warn = { message = "LUA_WARNING: Interface/AddOns/Warn/Warn.lua:1: deprecated", session = 7, counter = 1 }
+    local taint = { message = "[ADDON_ACTION_BLOCKED] AddOn 'Bar' tried to call the protected function 'CastSpellByName'.",
+        session = 7, counter = 1 }
+    for _, e in ipairs({ new, warn, taint }) do db[#db + 1] = e; announce(tostring(e)) end
+    assert(#reports == 4, "new BugGrabber errors were not recorded (" .. #reports .. ")")
+    assert(reports[2].kind == "error" and reports[2].source == "New", "error kind/source")
+    assert(reports[3].kind == "warning" and not reports[3].message:find("LUA_WARNING", 1, true), "warning kind")
+    assert(reports[4].kind == "taint", "blocked-action kind")
+    announce("table: nothing") -- unknown id: ignored
+    -- scope "phoenix": other addons' errors are skipped, ours kept
+    E:SetScope("phoenix")
+    local mine = { message = "Interface/AddOns/Phoenix_UI/Core/X.lua:1: ours", session = 7, counter = 1 }
+    local theirs = { message = "Interface/AddOns/Other/O.lua:1: theirs", session = 7, counter = 1 }
+    db[#db + 1] = mine; announce(tostring(mine))
+    db[#db + 1] = theirs; announce(tostring(theirs))
+    assert(#reports == 5 and reports[5].source == "Phoenix_UI", "the Phoenix-only scope let another addon through")
+    E:SetScope("all")
+    -- viewer actions on the core: delete, mark, sessions
+    E:SetReported(reports[2], true)
+    assert(reports[2].reported == true, "mark as reported")
+    local victim = reports[3]
+    E:Delete(victim)
+    assert(#reports == 4 and reports[3] ~= victim, "delete")
+    assert(#E:Sessions() == 1 and E:Sessions()[1].count == 4, "sessions summary")
+    for _, k in ipairs({ "BugGrabber", "EventRegistry", "PhoenixUIBugsDB" }) do rawset(env, k, saved[k]) end
+end)
+-- without BugGrabber, errors Blizzard's handler kept before Phoenix loaded are taken over once
+try("bugs early errors", function()
+    local E, db = ns.Errors, env.PhoenixUIBugsDB
+    local saved = rawget(env, "ScriptErrorsFrame")
+    rawset(env, "ScriptErrorsFrame", { errorData = {
+        { message = "Interface/AddOns/Zed/Zed.lua:3: early", stack = "[Interface/AddOns/Zed/Zed.lua]:3: in main chunk",
+          locals = "", count = 3, messageType = 0 },
+        { message = "Interface/AddOns/Zed/Zed.lua:9: old api", stack = "", locals = "", count = 1, messageType = 1 },
+    } })
+    local before, imported = #db.reports, E.imported
+    E.ImportBlizzard()
+    rawset(env, "ScriptErrorsFrame", saved)
+    assert(#db.reports == before + 2 and E.imported == imported + 2, "Blizzard's early errors were not imported")
+    local r = db.reports[before + 1]
+    assert(r.source == "Zed" and r.count == 3 and r.kind == "error", "early error fields")
+    assert(db.reports[before + 2].kind == "warning", "early warning kind")
+    assert(E:OwnsHandler() and ns.modules.Bugs:CaptureState() == "handler", "capture state should be handler")
+    E:Clear("all")
 end)
 -- "Send error reports to the author": account-wide in PhoenixUIBugsDB, on by default, one notice, slash + option
 try("bugs share", function()
