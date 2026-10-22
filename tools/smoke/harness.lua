@@ -111,6 +111,7 @@ end
 -- Globals that must start out nil (libraries create them; SavedVariables start empty).
 local NIL = { PhoenixUIDB = true, PhoenixUIBugsDB = true, Phoenix_UIDB = true, Phoenix_UIPerCharDB = true, BugGrabber = true,
     PhoenixUISimDB = true, PhoenixUISimResults = true }
+local postCalls = {} -- TooltipDataProcessor.AddTooltipPostCall registrations
 local env_cbor -- last payload given to the CBOR stub, so export -> decode round-trips
 local env = setmetatable({}, { __index = function(t, k)
     local v = _G[k]
@@ -160,6 +161,7 @@ local api = {
         return xpcall(function() return fn(unpack(args, 1, n)) end, handler)
     end,
     issecretvalue = function() return false end, canaccessvalue = function() return true end,
+    TooltipDataProcessor = { AddTooltipPostCall = function(_, fn) postCalls[#postCalls + 1] = fn end },
     issecure = function() return false end, InCombatLockdown = function() return false end,
     GetLocale = function() return "enUS" end, GetTime = function() return os.clock() end,
     GetBuildInfo = RETAIL and function() return "12.1.5", "70448", "Oct 2026", 120105 end
@@ -1534,6 +1536,26 @@ fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels
 for name in pairs(ns.Icons and ns.Icons.missing or {}) do errors[#errors + 1] = "unknown icon: " .. name end
+-- tooltip post-calls run for every tooltip in the game: non-GameTooltips, forbidden ones and secret data are skipped
+try("tooltip hooks", function()
+    assert(#postCalls >= 3, "tooltip post-calls not registered (" .. #postCalls .. ")")
+    local faults = {}
+    local handler = env.geterrorhandler
+    rawset(env, "geterrorhandler", function() return function(e) faults[#faults + 1] = tostring(e) end end)
+    local plainFrame = { IsForbidden = function() return false end } -- e.g. an embedded or third-party tooltip
+    local forbidden = { IsForbidden = function() return true end }
+    local SECRET = {}
+    local secretTip = setmetatable({ IsForbidden = function() return false end, AddLine = function() end,
+        GetUnit = function() return "Tester", SECRET end, GetItem = function() return "x", SECRET end }, { __index = magic })
+    local isSecret = ns.Secret.IsSecret
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    for _, fn in ipairs(postCalls) do
+        fn(plainFrame, {}); fn(forbidden, {}); fn(secretTip, { id = SECRET, hyperlink = SECRET })
+    end
+    ns.Secret.IsSecret = isSecret
+    rawset(env, "geterrorhandler", handler)
+    assert(#faults == 0, "a tooltip hook failed: " .. tostring(faults[1]))
+end)
 try("icon fallback", function()
     local I = ns.Icons
     -- the stub client "fails" every probe, so the automatic source must switch to game icons

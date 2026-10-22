@@ -89,15 +89,18 @@ end
 -- C_PlayerInfo.GetPlayerMythicPlusRatingSummary carries no Secret* return flags; guarded all the same.
 local function addRating(tt, unit)
     local summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary(unit)
-    local score = summary and summary.currentSeasonScore
-    if not (plain(score) and score and score > 0) then return end
+    if not (plain(summary) and type(summary) == "table") then return end
+    local score = summary.currentSeasonScore
+    if not (plain(score) and type(score) == "number" and score > 0) then return end
     local color = C_ChallengeMode.GetDungeonScoreRarityColor(score) or HIGHLIGHT_FONT_COLOR
     GameTooltip_AddNormalLine(tt, L.TOOLTIP_MPLUS_LINE:format(color:WrapTextInColorCode(BreakUpLargeNumbers(score))))
 end
 
 local function addTarget(tt, unit)
     local target = unit .. "target"
-    local name = UnitExists(target) and UnitName(target)
+    local exists = UnitExists(target)
+    if not (plain(exists) and exists) then return end
+    local name = UnitName(target)
     if not (plain(name) and name) then return end
     local _, classFile = UnitClass(target)
     local color = (plain(classFile) and classFile) and C_ClassColor.GetClassColor(classFile)
@@ -152,8 +155,10 @@ local function onItem(tt, data)
         local link = data and data.hyperlink
         if not (plain(link) and link) then link = select(2, tt:GetItem()) end
         local quality = plain(link) and link and C_Item.GetItemQualityByID(link)
-        local color = quality and ITEM_QUALITY_COLORS[quality]
-        if color and quality > 1 then border(tt, color.r, color.g, color.b) end
+        if plain(quality) and type(quality) == "number" and quality > 1 then
+            local color = ITEM_QUALITY_COLORS[quality]
+            if color then border(tt, color.r, color.g, color.b) end
+        end
     end
     if M.db.simLine then addSim(tt, data) end
     if M.db.ids and data and plain(data.id) and data.id then
@@ -168,18 +173,32 @@ local function onSpell(tt, data)
 end
 
 local function onAnchor(tt, parent)
-    if M:IsEnabled() and M.db.anchor == "CURSOR" and not tt:IsForbidden() then
+    if M:IsEnabled() and M.db.anchor == "CURSOR" and tt and tt.IsForbidden and not tt:IsForbidden() and tt.SetOwner then
         tt:SetOwner(parent, "ANCHOR_CURSOR_RIGHT", 16, 16)
+    end
+end
+
+-- Hooks run inside Blizzard's tooltip code for every tooltip in the game. A fault in one must not break the
+-- tooltip or repeat on every hover: it is reported once per session (to the bug catcher) and then skipped.
+local function guarded(fn)
+    local reported = false
+    return function(...)
+        local ok, err = pcall(fn, ...)
+        if not ok and not reported then
+            reported = true
+            local handler = geterrorhandler()
+            if handler then handler(err) end
+        end
     end
 end
 
 -- reloadOnToggle: OnEnable runs at most once per session, so the hooks are installed once.
 function M:OnEnable()
-    hooksecurefunc("SharedTooltip_SetBackdropStyle", onBackdrop)
-    hooksecurefunc("GameTooltip_SetDefaultAnchor", onAnchor)
-    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, onUnit)
-    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, onItem)
-    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, onSpell)
+    hooksecurefunc("SharedTooltip_SetBackdropStyle", guarded(onBackdrop))
+    hooksecurefunc("GameTooltip_SetDefaultAnchor", guarded(onAnchor))
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, guarded(onUnit))
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, guarded(onItem))
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, guarded(onSpell))
     for _, name in ipairs(TOOLTIPS) do
         local tt = _G[name]
         if tt then
