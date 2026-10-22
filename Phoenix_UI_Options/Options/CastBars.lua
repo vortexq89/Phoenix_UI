@@ -62,6 +62,8 @@ local function bz(row, perBar)
     return Opt.With(row, { hidden = perBar and function(m, u) return phoenix(m) or not LEGACY[u or "player"] end or phoenix })
 end
 
+local GCD_ATTACH = { { value = "castbar", label = "CB_GCD_ON_CASTBAR" }, { value = "free", label = "CB_GCD_FREE" } }
+
 ns:RegisterOptions("CastBars", {
     { type = "scope", key = "bars", label = "CB_BAR", values = BARS },
     { type = "preview", kind = "castbar" },
@@ -166,12 +168,16 @@ ns:RegisterOptions("CastBars", {
       feature = "gcdBar", keywords = "global cooldown gcd",
       cog = { { type = "range", key = "gcd.height", label = "UF_HEIGHT", min = 1, max = 12, step = 1 },
               { type = "range", key = "gcd.gap", label = "UF_CAST_GAP", min = 0, max = 10, step = 1 },
+              { type = "select", key = "gcd.attach", label = "CB_GCD_ATTACH", desc = "CB_GCD_ATTACH_DESC", values = GCD_ATTACH },
+              { type = "range", key = "gcd.width", label = "UF_WIDTH", min = 40, max = 600, step = 1 },
               { type = "color", key = "colors.gcd", label = "CB_GCD_COLOR", token = "text.secondary", reset = true } } },
     { type = "toggle", key = "swing.enabled", label = "CB_SWING", desc = "CB_SWING_DESC", hidden = notPlayer, disabled = blizzard,
       feature = "swingTimer", keywords = "swing timer auto attack melee",
       cog = { { type = "range", key = "swing.width", label = "UF_WIDTH", min = 60, max = 600, step = 1 },
               { type = "range", key = "swing.height", label = "UF_HEIGHT", min = 2, max = 30, step = 1 },
               { type = "toggle", key = "swing.offhand", label = "CB_SWING_OFFHAND" },
+              { type = "toggle", key = "swing.labels", label = "CB_SWING_LABELS", desc = "CB_SWING_LABELS_DESC" },
+              { type = "toggle", key = "swing.rangeCue", label = "CB_SWING_RANGE", desc = "CB_SWING_RANGE_DESC" },
               { type = "color", key = "colors.swing", label = "CB_SWING_COLOR", token = "accent.primary", reset = true } } },
     Opt.With(Opt.Text("swing.text", "CB_SWING_FONT", { place = true, show = true }),
       { hidden = notPlayer, disabled = blizzard, feature = "swingTimer" }),

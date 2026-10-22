@@ -578,8 +578,10 @@ function M:Refresh()
     if self.testShown then self:ShowTest(true) end
 end
 
-function M:OnSettingChanged(path)
+function M:OnSettingChanged(path, value)
     if type(path) == "string" and path:find("^colors") then self:ResetCurves() end
+    -- an arena layout preset writes its size, power, portrait and icon crop
+    if path == "units.arena.layout" then M.ApplyArenaLayout(self.db.units.arena, value or self.db.units.arena.layout) end
     self:Refresh()
 end
 
