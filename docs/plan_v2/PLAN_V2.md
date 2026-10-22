@@ -245,6 +245,15 @@ real frame, so what you see is exactly what you get (100% accurate). Behaviour-o
 
 ### S18 — Unit Frames II + arena (sArena parity), resource bars, totems, quick focus (~8 days)
 
+*Shipped 23 Oct 2026: Unit Frames 359 settings on retail, 314 on Forever (no arenas there); Cast Bars 105 / 115;
+PvP 18 / 10. Arena frames with 9 layouts, 2–5 test frames, DR and PvP trinket taken from the game's own trackers
+(Blizzard's DR tray fed by the secret DR events, `CcRemoverFrame`) and restyled, racials on seen casts, class icon
+auras, widgets, secure click actions and arena pets; a detached resource block with spec bars; a Phoenix totem bar with
+secure right-click destroy; quick focus, nicknames, frame look rows; standalone GCD bar, swing labels and range cue;
+Shadowsight timer. No sArena code (no licence file). Of the 29 S18 parity features 25 are done and 4 partial (3D
+portraits, regen spark, gladiator tracker, Masque for arena). Gap matrix: 1,297 target rows, 1,100 has,
+120 part, 77 new, 49 link/api; 2,029 settings on retail, 1,800 on Forever. Needs an in-game test (TESTING §13p).*
+
 - Arena frames: 9 layout presets, class icon with CC / defensive auras, DR tracker from the game's DR events (look: borders, text, size), trinkets and racials, arena pet frames, widgets (healer / target / focus), range, click actions (secure), cast bar extras — 4 d
 - Resource bars: detached player health / power (personal resource display), class power look (orientation, separators, pip borders, charged colour, thresholds), spec bars (Ironfur, Ignore Pain, Sweeping Strikes), totem bar with click-to-destroy (secure) — 2.5 d
 - Frame look: nicknames, fade, threat %, portraits (2D / 3D / class, rings), text bar strip; modifier-click focus with marker; GCD bar and swing timer as standalone bars; Shadowsight / dampening on PvP — 1.5 d

@@ -441,6 +441,18 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   curve; counts from `GetAuraApplicationDisplayCount`; durations from `GetAuraDuration` duration objects. Class
   pips fall back to one bar when the count is secret. Not built: arena diminishing returns (secret payloads), spell
   cost prediction.
+* **Unit Frames II (2.0 S18).** `Modules/UnitFrames/Arena.lua` owns arena clicks, quick focus and the game's DR and
+  trinket parts; `Resources.lua` the detached resource block and the totem bar. Diminishing returns are never computed
+  by Phoenix: when Blizzard builds `CompactArenaFrame` (`CompactArenaFrame_Generate`, post-hooked) Phoenix parks it and,
+  out of combat, re-parents each member's `SpellDiminishStatusTray` into the Phoenix frame's DR holder and its
+  `CcRemoverFrame` into the trinket slot. The tray keeps its own events and secret state; Phoenix post-hooks
+  `RefreshTrayLayout` and the items' `UpdateState` only to place and style the items and to drive its own immune edge
+  with `SetAlphaFromBoolean(state.isImmune)`. Nothing is written into Blizzard tables (Phoenix keeps weak lookup
+  tables). The CVars `spellDiminishPVPEnemiesEnabled` / `spellDiminishPVPOnlyTriggerableByMe` follow the DR rows.
+  Click actions and quick focus are `*typeN` / `*spellN` / `*macrotextN` and `<mod>-type1` attributes on Phoenix
+  buttons, set through `ns.Combat:Run`. Totem buttons are `SecureActionButtonTemplate` with `type2=destroytotem` and
+  `totem-slot`; Blizzard's `TotemFrame` is faded (alpha) when Phoenix or no totems are picked. Forever: features
+  `arena` and `specBars` are retail-only.
 * **Cast bars (2.0 S9).** `Modules/CastBars` builds plain StatusBars (no secure template: cast bars are never
   clicked) per unit key, on the unit frame's `CastBarAnchor` or a free holder (`Movers:Register`, `cb.<key>`).
   `PlayerCastingBarFrame`, and in Phoenix mode the spell bars S8 lent to the anchors, are parked out of combat.

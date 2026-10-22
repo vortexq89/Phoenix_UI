@@ -979,6 +979,40 @@ Start with `/console taintLog 1` and an empty `/pui bugs`.
 - [ ] **13o.8 Taint and Forever.** No blocked-action or taint entry naming Phoenix_UI. On WoW Forever: no keystone
   tooltip or world map scale row; NPC pins and the collector work.
 
+## 13p. Unit Frames II, arena and resource bars (2.0 S18)
+
+Start with `/console taintLog 1` and an empty `/pui bugs`. Arena items need retail and a skirmish or rated arena.
+
+- [ ] **13p.1 Arena test frames.** Unit Frames › Arena: enable, *Test frames* 3 then 5, try every *Arena layout* and
+  *Mirrored*. **Expect:** the preview and the Test frames match: class icon, trinket and racial on one side, DR icons on
+  the other, spec text in the strip, healer badge, focus mark and targeted-by pips.
+- [ ] **13p.2 Diminishing returns in a match.** Enter a skirmish, CC a foe twice (stun, then a second stun).
+  **Expect:** the DR icons sit beside the Phoenix arena frame with the Phoenix look and a countdown; the red edge on
+  immune; *Only what I can apply* hides categories you cannot cause; Blizzard's arena frames stay hidden.
+- [ ] **13p.3 Trinket, racial, auras.** A foe uses their PvP trinket and a racial; you CC them. **Expect:** the trinket
+  cooldown shows on the Phoenix trinket slot; the racial starts its cooldown (when the cast is not secret); the CC aura
+  covers the class icon with its time and a red glow.
+- [ ] **13p.4 Clicks and quick focus.** Set middle click to *Cast a spell* (your interrupt) and right click to a macro
+  with `@unit`; set quick focus to Shift with a skull. **Expect:** each acts on the clicked foe; Shift-click focuses and
+  marks; changes made in combat apply when combat ends.
+- [ ] **13p.5 Arena pets, stealth, range.** Turn on arena pets. **Expect:** pet frames beside their owners; a stealthed
+  rogue's frame fades to *Unseen opacity*; with a *Range spell* set, out-of-range foes fade.
+- [ ] **13p.6 Shadowsight.** PvP › Shadowsight timer on. **Expect:** after the gates open it counts down the 90 seconds, then
+  shows *Shadowsight up* for the set seconds.
+- [ ] **13p.7 Resource bars.** Unit Frames › Resources: enable on a druid (cat form: combo points and the mana row), a
+  Guardian (Ironfur bar), a Protection warrior (Ignore Pain with absorb text), a death knight (runes). **Expect:** rows
+  appear and close up as you change form or spec; *Fade out of combat* works; Layout mode moves the block.
+- [ ] **13p.8 Totems.** On a shaman, *Totems* → Phoenix buttons; drop totems. **Expect:** icons with time left in the
+  chosen growth; right-click destroys one; Blizzard's totem frame is hidden; out of combat only for moving.
+- [ ] **13p.9 Frame look.** Try background texture, health share, power width / direction / gradient, class ring and
+  elite art (target an elite / rare), the text strip, nicknames, `[threat]` on target in a group. **Expect:** all
+  live, the preview matches.
+- [ ] **13p.10 GCD and swing.** Cast Bars: GCD standalone (move it in Layout mode); on Forever swing labels and the
+  range cue (step out of melee). **Expect:** both behave; the preview shows them.
+- [ ] **13p.11 Taint and Forever.** No blocked-action or taint entry naming Phoenix_UI after an arena (check that the
+  game's DR tray still updates after `/reload` inside the arena). On WoW Forever: no arena, spec bar or Shadowsight
+  rows; resource bars, totems, quick focus and swing extras work.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

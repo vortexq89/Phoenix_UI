@@ -2001,7 +2001,7 @@ try("unit frames blizzard fallback", function()
 end)
 try("unit frames depth (S8)", function()
     local n = ns.Config.CountSettings(ns.options.UnitFrames)
-    assert(n >= 359 and ns.Config.DEPTH.UnitFrames == 359, ("UnitFrames has %d of 359 settings"):format(n))
+    assert((n >= 359 or not RETAIL) and ns.Config.DEPTH.UnitFrames == 359, ("UnitFrames has %d of 359 settings"):format(n))
     print(("  UnitFrames settings: %d"):format(n))
 end)
 
@@ -4169,7 +4169,11 @@ try("arena II frames, previews and adoption (S18)", function()
     remover.Icon = remover:CreateTexture()
     rawset(env, "CompactArenaFrame", { memberUnitFrames = { { SpellDiminishStatusTray = tray, CcRemoverFrame = remover } } })
     M.AdoptArenaParts()
-    assert(M.adoptedTrays[1] == tray and M.adoptedRemovers[1] == remover and f.trinketAdopted, "tray / trinket not adopted")
+    if RETAIL then
+        assert(M.adoptedTrays[1] == tray and M.adoptedRemovers[1] == remover and f.trinketAdopted, "tray / trinket not adopted")
+    else
+        assert(not M.adoptedTrays[1], "Forever has no arenas: nothing to adopt")
+    end
     tray:RefreshTrayLayout()
     item:UpdateState({ isImmune = true })
     M.RelayoutTray(tray)
@@ -4221,7 +4225,8 @@ end)
 try("arena II depth and Forever gating (S18)", function()
     for key, target in pairs({ UnitFrames = 359, CastBars = 105, PvP = 18 }) do
         local n = ns.Config.CountSettings(ns.options[key])
-        assert(n >= target and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
+        -- targets are retail counts; Forever hides the arena-only rows
+        assert((n >= target or not RETAIL) and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
     end
     -- arena-only rows carry the arena feature (hidden on Forever, which has no arenas)
     local gated = 0
@@ -4234,7 +4239,8 @@ try("arena II depth and Forever gating (S18)", function()
         end
     end
     walk(ns.options.UnitFrames); walk(ns.options.PvP)
-    assert(gated >= 10, "too few arena-gated rows: " .. gated)
+    -- Forever drops feature-gated rows from the schema, so none are left to find there
+    assert(gated >= 10 == RETAIL, "arena-gated rows: " .. gated)
     assert(ns.FEATURES.arena and ns.FEATURES.arena.retail and not ns.FEATURES.arena.forever, "arena feature")
     assert(ns.FEATURES.specBars and ns.FEATURES.specBars.retail and not ns.FEATURES.specBars.forever, "specBars feature")
 end)

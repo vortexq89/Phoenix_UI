@@ -256,30 +256,30 @@ F(A, ["EUI_RaidFrames_BuffManager::", "EUI_RaidFrames_BuffManager::CORE", "EUI_R
       "EUI_RaidFrames_BuffManager::THRESHOLD TEXT"], "Buff manager: own-only, pandemic border, threshold text, dashes", "GroupFrames", "part", "Buff icons exist; pandemic border and threshold text do not", "S19")
 
 A = "EllesmereUI ResourceBars"
-F(A, "BarDisplayPage::BAR DISPLAY", "Detached resource bars: texture, backgrounds, strata, borders", "UnitFrames", "miss", "Phoenix has no detached player resource bars", "S18")
+F(A, "BarDisplayPage::BAR DISPLAY", "Detached resource bars: texture, backgrounds, strata, borders", "UnitFrames", "done", "S18: detached resource block (texture, border, background, strata, scale, mover)", "S18")
 F(A, "BarDisplayPage::BAR SHIFTING~Mana Regen", "Mana regen spark", "UnitFrames", "imp", "Retail has no five-second rule or mana tick to mark, and GetManaRegen is secret while unit stats are restricted; the open gap row closes as api")
 F(A, "BarDisplayPage::BAR SHIFTING~Spell Cost", "Spell cost prediction on the power bar", "UnitFrames", "done",
   "UNIT_SPELLCAST_START + C_Spell.GetSpellPowerCost for the player; power values may be secret in combat (verify)", "S17")
-F(A, "BarDisplayPage::BAR SHIFTING", "Shift / expand bars when a resource is missing, mana bar while shapeshifted", "UnitFrames", "part", "", "S18")
+F(A, "BarDisplayPage::BAR SHIFTING", "Shift / expand bars when a resource is missing, mana bar while shapeshifted", "UnitFrames", "done", "S18: empty rows collapse; druid mana row while shapeshifted", "S18")
 F(A, "BarDisplayPage::ARCANE SOUL (SUNFURY)", "Spec helper: Arcane Soul countdown", "Tracker", "miss", "", "S20")
 F(A, "CastBarPage::", "Player cast bar: layout, gradient, ticks, latency, empowered stages", "CastBars", "done")
-F(A, "ClassResourceSection::CLASS RESOURCE BAR~Ironfur|Ignore Pain|Sweeping", "Spec bars: Ironfur, Ignore Pain, Sweeping Strikes", "UnitFrames", "miss", "", "S18")
-F(A, "ClassResourceSection::CLASS RESOURCE BAR", "Class resource bar: orientation, separators, pip borders, charged colour, thresholds, text", "UnitFrames", "part",
-  "Pips, borders, charged points exist; thresholds, separators and orientation do not", "S18")
-F(A, ["GCDBarPage::LAYOUT", "GCDBarPage::DISPLAY"], "GCD bar", "CastBars", "part", "GCD bar under the cast bar exists; standalone bar options do not", "S18")
-F(A, ["HealthSection::HEALTH BAR", "PowerSection::POWER BAR"], "Detached player health and power bars (personal resource display)", "UnitFrames", "miss", "", "S18")
-F(A, ["SwingTimerPage::LAYOUT", "SwingTimerPage::DISPLAY"], "Swing timer", "CastBars", "part", "Swing timer exists where the client allows (feature swingTimer); weapon labels and range cues do not", "S18")
-F(A, "TotemBarPage::", "Totem bar", "UnitFrames", "miss", "GetTotemInfo is readable; destroying needs a secure button", "S18")
+F(A, "ClassResourceSection::CLASS RESOURCE BAR~Ironfur|Ignore Pain|Sweeping", "Spec bars: Ironfur, Ignore Pain, Sweeping Strikes", "UnitFrames", "done", "S18: spec bar for Ironfur, Ignore Pain, Sweeping Strikes, Soul Fragments, Ebon Might (retail)", "S18")
+F(A, "ClassResourceSection::CLASS RESOURCE BAR", "Class resource bar: orientation, separators, pip borders, charged colour, thresholds, text", "UnitFrames", "done",
+  "S18: orientation, separators, threshold colour, fade, count text", "S18")
+F(A, ["GCDBarPage::LAYOUT", "GCDBarPage::DISPLAY"], "GCD bar", "CastBars", "done", "S18: standalone GCD bar with its own width and mover", "S18")
+F(A, ["HealthSection::HEALTH BAR", "PowerSection::POWER BAR"], "Detached player health and power bars (personal resource display)", "UnitFrames", "done", "S18: health and power rows of the detached resource block", "S18")
+F(A, ["SwingTimerPage::LAYOUT", "SwingTimerPage::DISPLAY"], "Swing timer", "CastBars", "done", "S18: MH / OH labels and an out-of-melee range cue", "S18")
+F(A, "TotemBarPage::", "Totem bar", "UnitFrames", "done", "S18: Phoenix totem buttons (size, spacing, growth, border, time text, mover)", "S18")
 F(A, ["EUI_ResourceBars::", "EUI_ResourceBars::POSITIONING", "EUI_ResourceBars::RESET"], "Resource bar positioning / reset", "Movers", "done")
 
 A = "EllesmereUI UnitFrames"
 F(A, ["MiniFrames::DISPLAY", "MiniFrames::HEALTH BAR", "MiniFrames::POWER BAR", "MiniFrames::BUFFS AND DEBUFFS"], "Target-of-target, focus, pet and boss frames with their bars, auras and cast bars", "UnitFrames", "done")
-F(A, "SharedAppearance::DISPLAY", "Frame look: nicknames, fade, dark mode, borders, detached bars, threat %", "UnitFrames", "part", "Threat % on target and detached power / text bars are missing", "S18")
-F(A, "SharedAppearance::PORTRAIT", "Portraits: 2D / 3D / class, shape, rings, dragon art", "UnitFrames", "part", "2D / class portraits exist; 3D model, rings and dragon art do not; size is an open gap row", "S18")
-F(A, "SharedAppearance::TEXT BAR", "Separate text bar strip under the frame", "UnitFrames", "miss", "", "S18")
+F(A, "SharedAppearance::DISPLAY", "Frame look: nicknames, fade, dark mode, borders, detached bars, threat %", "UnitFrames", "done", "S18: nicknames, threat % tag, detached power width, text strip", "S18")
+F(A, "SharedAppearance::PORTRAIT", "Portraits: 2D / 3D / class, shape, rings, dragon art", "UnitFrames", "part", "S18: class-colour ring and elite / rare art; 3D model stays the game's portrait", "S18")
+F(A, "SharedAppearance::TEXT BAR", "Separate text bar strip under the frame", "UnitFrames", "done", "S18: text strip with its own tag, height and font", "S18")
 F(A, "SharedAppearance::EXTRAS", "Combat, marker, leader, elite, faction and PvP indicators", "UnitFrames", "done")
 F(A, ["SharedBars::HEALTH BAR", "SharedBars::CLASS RESOURCE"], "Health bar and class resource on frames", "UnitFrames", "done")
-F(A, "SharedBars::POWER BAR", "Power bar: position, gradient, text, cost prediction, regen spark", "UnitFrames", "part", "S17: cost prediction; regen spark still open", "S18")
+F(A, "SharedBars::POWER BAR", "Power bar: position, gradient, text, cost prediction, regen spark", "UnitFrames", "part", "S17: cost prediction; S18: fill direction and gradient; regen spark still open", "S18")
 F(A, "SharedBars::ABSORBS AND HEALS", "Absorbs and heals: overshield, glow line, heal prediction, overheal", "UnitFrames", "done", "S17: overheal past the frame end", "S17")
 F(A, ["SharedCastAuras::CAST BAR", "SharedCastAuras::BUFFS AND DEBUFFS"], "Cast bar and auras on unit frames", "UnitFrames", "done")
 F(A, ["EUI_UnitFrames::", "TextSlots::"], "Name format, borders, corners, text slots", "UnitFrames", "done")
@@ -294,7 +294,7 @@ F(A, ["Announcement::General", "Announcement::Quest", "Announcement::Utility", "
       "Announcement::Keystone"], "Chat announcements (quests, interrupts, goodbye, reset, keystone)", "Automation", "skip", "Chat announcements are a recorded scope cut (spam risk)")
 F(A, "Combat::Raid Markers", "Raid marker bar with countdown and ready-check buttons", "Quality", "part", "Marker bar exists; countdown / ready-check buttons and inverse mode do not", "S26")
 F(A, "Combat::Combat Alert", "Combat alert animation", "Quality", "done")
-F(A, "Combat::Destroy Totem", "Click to destroy totems", "UnitFrames", "miss", "Secure button (DestroyTotem is protected)", "S18")
+F(A, "Combat::Destroy Totem", "Click to destroy totems", "UnitFrames", "done", "S18: right-click destroys (SecureActionButton destroytotem)", "S18")
 F(A, "Combat::Quick Keystone", "Quick keystone insert", "MythicPlus", "done")
 F(A, "Combat::Damage Meter Layout", "Damage meter layout tweaks", "DamageMeter", "done")
 F(A, ["ExtraItemBar::General", "ExtraItemBar::Layout", "ExtraItemBar::Visibility", "ExtraItemBar::Text & Fonts"], "Extra item bars (custom items, groups, visibility, texts)", "ActionBars", "part",
@@ -342,7 +342,7 @@ F(A, "Tooltips::Keystone", "Keystone tooltip (affixes)", "Tooltip", "done", "S17
 F(A, "Tooltips::Group Info", "Group info in tooltips", "GroupFinder", "done")
 F(A, "Tooltips::ElvUI Tooltip Tweaks", "ElvUI tooltip tweaks", "Tooltip", "skip", "ElvUI-only")
 F(A, "Tooltips::Objective Progress", "Objective progress in tooltips", "Quests", "done")
-F(A, "UnitFrames::Quick Focus", "Modifier-click to set focus (with marker)", "UnitFrames", "miss", "Secure attribute on frames, out of combat", "S18")
+F(A, "UnitFrames::Quick Focus", "Modifier-click to set focus (with marker)", "UnitFrames", "done", "S18: modifier-click focus with an optional raid marker (secure macro)", "S18")
 F(A, "UnitFrames::Friendly Nameplate Outline", "Friendly plate outline", "NamePlates", "done")
 F(A, "UnitFrames::Absorb", "Absorb texture", "UnitFrames", "done")
 F(A, "UnitFrames::Role Icon", "Role icon set", "UnitFrames", "done")
@@ -350,26 +350,26 @@ F(A, "SilverDragon::", "SilverDragon skin", "Skins", "part", "", "S24")
 
 A = "sArena Reloaded"
 F(A, ["BlizzArena::", "BlizzCompact::", "BlizzRaid::", "BlizzRetail::", "BlizzTarget::", "BlizzTourney::", "Gladiuish::", "Pixelated::", "Xaryu::"],
-  "Arena frame layouts (9 presets: mirrored, sizes, power height, crop)", "UnitFrames", "miss", "Phoenix arena frames have one layout", "S18")
-F(A, "Config::~^Castbar_", "Arena cast bars: modern look, shield, spark, colours, highlight casts on me / CC", "UnitFrames", "part", "Arena frames reuse Phoenix cast bars; highlight-on-me / CC colours do not exist", "S18")
-F(A, "Config::~^DR_|DRPixel", "DR tracker look (borders, text, size)", "UnitFrames", "miss", "", "S18")
+  "Arena frame layouts (9 presets: mirrored, sizes, power height, crop)", "UnitFrames", "done", "S18: 9 presets that write size, power height, portrait, mirroring and crop", "S18")
+F(A, "Config::~^Castbar_", "Arena cast bars: modern look, shield, spark, colours, highlight casts on me / CC", "UnitFrames", "done", "S18: arena bars use CastBars targeted / important highlights", "S18")
+F(A, "Config::~^DR_|DRPixel", "DR tracker look (borders, text, size)", "UnitFrames", "done", "S18: the game's DR tray restyled: size, spacing, zoom, border, text, immune edge", "S18")
 F(A, "Config::Category_PetFrames~^Option_DR|Option_HideDRs|Option_OnlyTriggerable|Option_PerClass|Option_PerSpec|Option_EnableStatic|Option_NewMidnight|Option_ShowDecimalsOnDR|Option_ColorDR|Option_DisableInstantDR",
-  "Diminishing returns tracking (per class / spec, reset time, 12.x DR handling)", "UnitFrames", "miss",
-  "12.x sends DR state in UNIT_SPELL_DIMINISH_CATEGORY_STATE_UPDATED (secret payloads) and C_SpellDiminish; Phoenix can show it through display sinks or restyle Blizzard's own DR tray, never from the combat log", "S18")
-F(A, "Config::~^Widget_", "Arena widgets: combat / healer / target / focus indicators, party ↔ arena targets", "UnitFrames", "miss", "", "S18")
-F(A, "Config::~^Text_", "Arena fonts and text placement", "UnitFrames", "part", "", "S18")
-F(A, "Config::Category_PetFrames~^Racial_|Trinket|Racial", "Trinket and racial tracking", "UnitFrames", "part", "PvP trinket exists; racials and swap rules do not", "S18")
-F(A, "Config::Category_PetFrames~^ClickAction_", "Click actions on arena frames (spell / macro per button, Clique)", "UnitFrames", "miss", "Secure attributes set out of combat", "S18")
-F(A, "Config::Category_PetFrames~^AuraHighlight_|AuraSort|OnlyShowCCAuras|HideClassIconShowAuras|DisableAurasOnClassIcon", "Auras on the class icon (CC / defensive / important) and aura highlight", "UnitFrames", "miss",
-  "Arena unit auras are readable through C_UnitAuras with AuraUtil filters; some are secret in combat (display sinks)", "S18")
-F(A, "Config::Category_PetFrames~^Option_Pet|PetEnabled|PetClass|PetCustom|ShowPetName|ShowPetNumber|PetNumberIdOnly|PetBorder", "Arena pet frames", "UnitFrames", "miss", "", "S18")
+  "Diminishing returns tracking (per class / spec, reset time, 12.x DR handling)", "UnitFrames", "done",
+  "S18: Blizzard's SpellDiminishStatusTray adopted into the Phoenix frame (secret payload stays in the game's code)", "S18")
+F(A, "Config::~^Widget_", "Arena widgets: combat / healer / target / focus indicators, party ↔ arena targets", "UnitFrames", "done", "S18: healer badge, focus mark, targeted-by pips", "S18")
+F(A, "Config::~^Text_", "Arena fonts and text placement", "UnitFrames", "done", "S18: strip, DR and existing text rows", "S18")
+F(A, "Config::Category_PetFrames~^Racial_|Trinket|Racial", "Trinket and racial tracking", "UnitFrames", "done", "S18: trinket from the game's CcRemoverFrame; racials with cooldown on seen casts", "S18")
+F(A, "Config::Category_PetFrames~^ClickAction_", "Click actions on arena frames (spell / macro per button, Clique)", "UnitFrames", "done", "S18: left / right / middle: target, focus, menu, spell or macro (@unit)", "S18")
+F(A, "Config::Category_PetFrames~^AuraHighlight_|AuraSort|OnlyShowCCAuras|HideClassIconShowAuras|DisableAurasOnClassIcon", "Auras on the class icon (CC / defensive / important) and aura highlight", "UnitFrames", "done",
+  "S18: CC / defensive / important auras replace the class icon, coloured glow", "S18")
+F(A, "Config::Category_PetFrames~^Option_Pet|PetEnabled|PetClass|PetCustom|ShowPetName|ShowPetNumber|PetNumberIdOnly|PetBorder", "Arena pet frames", "UnitFrames", "done", "S18: arena pet frames, beside their owner or on their own", "S18")
 F(A, "Config::Category_PetFrames~ShowDispels|DesaturateDispel", "Enemy dispel cooldown tracking", "UnitFrames", "imp",
   "Enemy dispels are only visible in the combat log, which Phoenix never reads on 12.x, and spell IDs from arena units' cast events are secret in arenas")
-F(A, "Config::Category_PetFrames~ShadowsightTimer|Dampening|GladTracker", "Shadowsight timer and gladiator tracker", "PvP", "miss", "Dampening % stays impossible (the gap row Dampening display is api since S16)", "S18")
-F(A, "Config::Category_PetFrames~RangeCheck", "Range check on arena frames", "UnitFrames", "part", "", "S18")
+F(A, "Config::Category_PetFrames~ShadowsightTimer|Dampening|GladTracker", "Shadowsight timer and gladiator tracker", "PvP", "part", "S18: Shadowsight timer; gladiator tracker not built", "S18")
+F(A, "Config::Category_PetFrames~RangeCheck", "Range check on arena frames", "UnitFrames", "done", "S18: optional range spell; unseen foes fade (stealth alpha)", "S18")
 F(A, "Config::Category_PetFrames", "Arena frame options: layout test, colours, numbers, swipes, Masque, stealth alpha", "UnitFrames", "part",
-  "Test frames, class colours and swipe exist; most per-element switches do not", "S18")
-F(A, "Config::", "Arena frame general (class icon, spec text, manabars, growth, scale, sizes)", "UnitFrames", "part", "", "S18")
+  "S18: layouts, test count, stealth alpha, colours; no Masque", "S18")
+F(A, "Config::", "Arena frame general (class icon, spec text, manabars, growth, scale, sizes)", "UnitFrames", "done", "S18: class icon, spec badge and strip text, power bar, growth, sizes", "S18")
 F(A, ["AceDBOptions-3.0::", "Profiles::", "SettingsSearch::", "Functions::"], "Profiles, settings search, reload", "Profiles", "done")
 
 A = "BigWigs"
@@ -449,7 +449,7 @@ F(A, "settings::checkbox~^(ACTIONBAR|ACTIONBARS|ACTIONBAR\\d+|PETBAR|STANCEBARAN
 F(A, "settings::checkbox~^(PLAYERFRAME|PLAYERFRAMEGROUPINDICATOR|PLAYERFRAMEBACKGROUND|PLAYERLEVELTEXT|MAPETFRAME|PETFRAMEHAPPINESS|TARGETFRAME|TARGETFRAMEBUFFMOVER|TARGETFRAMEDEBUFFMOVER|TARGETFRAMESPELLBAR|TargetFrameNumericalThreat|TARGETFRAMENAMEBACKGROUND|TARGETOFTARGETFRAME|TARGETFRAMETOT\\w+|FOCUSFRAME\\w*|TARGETOFFOCUSFRAME|FOCUSFRAMETOT\\w+|PARTYFRAME|PARTYMEMBERFRAMES|COMPACTRAIDFRAMECONTAINER|COMPACTRAIDFRAMEMANAGER|BOSSTARGETFRAMECONTAINER|ARENAENEMYFRAMESCONTAINER|ARENAENEMYFRAMES|ARENAPREPFRAMES|COMPACTARENAFRAME)$",
   "Move unit, party, raid, boss and arena frames", "UnitFrames", "done", "Phoenix frames have movers; Blizzard's are Edit Mode")
 F(A, "settings::checkbox~^(RUNEFRAME|TOTEMBAR|TOTEMFRAME|WARLOCKPOWERFRAME|SHARDBARFRAME|MONKHARMONYBARFRAME|MONKSTAGGERBAR|MAGEARCANECHARGESFRAME|PRIESTBARFRAME|COMBOPOINTPLAYERFRAME|COMBOFRAME|EclipseBarFrame|ESSENCEPLAYERFRAME|PALADINPOWERBARFRAME|PALADINPOWERBAR|POWERBAR)$",
-  "Move class power bars", "UnitFrames", "part", "Class resource sits on the player frame; a detached class bar is S18", "S18")
+  "Move class power bars", "UnitFrames", "done", "S18: class resource row in the detached resource block", "S18")
 F(A, "settings::checkbox~^(EssentialCooldownViewer|BuffIconCooldownViewer|BuffBarCooldownViewer|UtilityCooldownViewer)$", "Move Cooldown Manager viewers", "Tracker", "done")
 F(A, "settings::checkbox~^(BUFFS|DEBUFFS|CASTINGBAR|CASTINGBARTIMER|GAMETOOLTIP|GAMETOOLTIP_ONCURSOR|GAMETOOLTIP_ONCURSOR_NOTINCOMBAT|CHAT|CHATBUTTONFRAME|CHATEDITBOX|CHATTAB|CHATQUICKJOIN|MINIMAP|MINIMAPZONETEXT|MINIMAPFLAG|MINIMAPLFGFRAME|LFGMINIMAPFRAME|MINIMAPTRACKINGBUTTON|MINIMAPTRACKING|ExpansionLandingPageMinimapButton|QUESTTRACKER|QUESTITEMSANCHOR|MainStatusTrackingBarContainer|SecondaryStatusTrackingBarContainer|STATUSTRACKINGBARMANAGER|MAINMENUEXPBAR|REPUTATIONWATCHBAR|MAFPSFrame)$",
   "Move auras, cast bar, tooltip, chat, minimap and its buttons, tracker, status bars", "Movers", "done", "Owned by the matching Phoenix page or Edit Mode")

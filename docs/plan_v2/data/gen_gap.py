@@ -57,7 +57,7 @@ def fold(f):
     return False
 PARITY_ROWS = 0
 for f in parity.FEATURES:
-    if f["status"] in STMAP and fold(f):
+    if (f["status"] in STMAP or f["status"] == "done") and fold(f):  # done ones still lend the spec row their source
         continue
     if f["status"] in STMAP and f["stage"] != "S17":
         m = MOD[f["owner"]]

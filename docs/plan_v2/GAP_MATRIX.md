@@ -17,10 +17,10 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Action Bars | Action Bars & Cooldowns | 117 | 116 | 117 | 111 | 3 | 3 | 3 | EUI ActionBars 136 controls (BarVisibilityLayout, BarAppearance, Animations, XP/Rep, Menu/Bags) · WindTools ExtraItemBar 27 · MoveAny bar toggles | Own secure bar containers holding Blizzard's action buttons (EUI pattern); Edit Mode bars stay as fallback |
 | Cooldown Text | Action Bars & Cooldowns | 15 | 15 | 12 | 12 | 0 | 0 | 0 | EUI cooldown numbers settings | Blizzard countdown numbers on all cooldown frames (C_DurationUtil text bindings) |
 | Cooldown Manager | Action Bars & Cooldowns | 93 | 89 | 68 | 54 | 9 | 5 | 2 | EUI CooldownManager 152 controls (Bars, BuffBars, SpellPicker, glow conditions) · EUI AuraBuffReminders 49 | Skins and extends Blizzard's Cooldown Manager viewers (Essential, Utility, Buff icons, Buff bars); the only legal 'WeakAuras' in Midnight |
-| Unit Frames | Unit Frames | 209 | 209 | 175 | 135 | 25 | 15 | 3 | EUI UnitFrames 356 controls (SharedBars, SharedAppearance, SharedCastAuras, MiniFrames, TextSlots) + ResourceBars 247 · sArena 416 (arena) · WindTools Quick Focus, Absorb, Role icon | Own secure unit frames (SecureUnitButtonTemplate) for player, target, target-of-target, focus, focus-target, pet, boss 1–5, arena 1–5; Blizzard skin kept as a 'Blizzard frames' mode |
+| Unit Frames | Unit Frames | 359 | 314 | 153 | 147 | 5 | 1 | 3 | EUI UnitFrames 356 controls (SharedBars, SharedAppearance, SharedCastAuras, MiniFrames, TextSlots) + ResourceBars 247 · sArena 416 (arena) · WindTools Quick Focus, Absorb, Role icon | Own secure unit frames (SecureUnitButtonTemplate) for player, target, target-of-target, focus, focus-target, pet, boss 1–5, arena 1–5; Blizzard skin kept as a 'Blizzard frames' mode |
 | Group Frames | Unit Frames | 194 | 193 | 77 | 66 | 5 | 6 | 1 | EUI RaidFrames 247 controls (Frames, VisualBars, VisualIndicators, aura managers) · Blizzard compact raid frame options | Own secure party and raid headers (SecureGroupHeaderTemplate), Blizzard compact frames as fallback |
 | Nameplates | Nameplates | 276 | 270 | 103 | 98 | 5 | 0 | 1 | EUI Nameplates 176 controls (General, DisplayLayout, DisplayBars, Colors, TextColoring) · WindTools friendly outline | Restyles Blizzard's nameplates (they stay Blizzard's secure frames) |
-| Cast Bars | Combat | 103 | 113 | 59 | 53 | 5 | 1 | 0 | EUI ResourceBars CastBarPage 41 + UnitFrames cast section 32 + MythicTimer targeted spell bars 21 | Own cast bars for player, target, focus, pet, boss (UnitCastingInfo is secret only where restricted; text through display sinks) |
+| Cast Bars | Combat | 105 | 115 | 57 | 53 | 3 | 1 | 0 | EUI ResourceBars CastBarPage 41 + UnitFrames cast section 32 + MythicTimer targeted spell bars 21 | Own cast bars for player, target, focus, pet, boss (UnitCastingInfo is secret only where restricted; text through display sinks) |
 | Buffs & Debuffs | Combat | 64 | 64 | 42 | 41 | 0 | 1 | 0 | EUI PlayerAuraBars 43 + BlizzardSkin aura bits · ElvUI-style aura headers | Restyles Blizzard's player buff and debuff frames (BuffFrame/DebuffFrame); own aura bars optional |
 | Combat Text | Combat | 30 | 30 | 26 | 25 | 1 | 0 | 0 | Blizzard FCT CVars · MSBT-like | Configures Blizzard floating combat text (CVars) + optional Phoenix scrolling areas |
 | Damage Meter | Combat | 24 | 24 | 29 | 22 | 4 | 3 | 7 | EUI DamageMeters 82 | Restyles Blizzard's built-in damage meter (C_DamageMeter, 12.0) |
@@ -43,23 +43,23 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Group Finder | Content | 58 | — | 18 | 11 | 4 | 3 | 6 | PremadeGroupsFilter 105 variables (GPL-2, learn only) · EUI GroupFinder · WindTools LFG list | NEW: premade group list filters (PGF-style expressions re-implemented), sign-up helpers |
 | Mythic+ | Content | 34 | — | 32 | 30 | 0 | 2 | 1 | EUI MythicTimer 125 · WindTools keystone tooltips | Own M+ timer (Blizzard Challenge APIs) + keystone tools |
 | Encounters | Content | 64 | 9 | 77 | 63 | 7 | 7 | 5 | Phoenix S3 already deep · EUI none (EUI has no boss mod) | Restyles Blizzard Boss Timeline + warnings (C_EncounterTimeline), BigWigs bars style |
-| PvP | Content | 10 | 10 | 5 | 4 | 0 | 1 | 4 | sArena 416 (arena frames — goes to Unit Frames › Arena) · WindTools Combat 33 | Battleground / arena helpers; arena frames live in Unit Frames |
+| PvP | Content | 18 | 10 | 5 | 4 | 1 | 0 | 4 | sArena 416 (arena frames — goes to Unit Frames › Arena) · WindTools Combat 33 | Battleground / arena helpers; arena frames live in Unit Frames |
 | Sim | Content | 11 | — | 8 | 7 | 1 | 0 | 0 | simc addon (Unlicense) | Simulationcraft export + uploader results (S2) |
 | Diagnostics | Phoenix | 9 | 9 | 3 | 0 | 3 | 0 | 0 | — | Status page (secret state, conflicts, versions) — exists as a page, not settings |
 | Auction House | Items | 0 | 0 | 4 | 0 | 0 | 4 | 0 | Auctionator | New page (S22): shopping lists, price history from ReplicateItems, undercut and cancel lists; every search, post and cancel is your click |
 | Loadouts | Profiles | 0 | 0 | 1 | 0 | 0 | 1 | 0 | EllesmereUI LoadoutManager | New page (S28): per-spec / per-instance loadouts that switch profile, talents and gear set (out of combat, your confirmation) |
-| **Total** | | **1869** | **1693** | **1321** | **1088** | **141** | **92** | **49** | every addon on I:\ (see PARITY.md) | |
+| **Total** | | **2029** | **1800** | **1297** | **1100** | **120** | **77** | **49** | every addon on I:\ (see PARITY.md) | |
 
 ## Rows by source addon
 
 | Source addon | Rows | has | part | new | link | api |
 |---|---:|---:|---:|---:|---:|---:|
 | EllesmereUI ActionBars | 118 | 111 | 3 | 1 | 2 | 1 |
-| EllesmereUI WindTools | 112 | 82 | 16 | 12 | 1 | 1 |
-| EllesmereUI ResourceBars | 91 | 74 | 11 | 5 | 0 | 1 |
+| EllesmereUI WindTools | 110 | 82 | 16 | 10 | 1 | 1 |
 | EllesmereUI Nameplates | 84 | 80 | 3 | 0 | 0 | 1 |
+| EllesmereUI ResourceBars | 83 | 80 | 1 | 1 | 0 | 1 |
 | BigWigs | 83 | 63 | 8 | 8 | 0 | 4 |
-| EllesmereUI UnitFrames | 79 | 69 | 8 | 1 | 1 | 0 |
+| EllesmereUI UnitFrames | 77 | 73 | 3 | 0 | 1 | 0 |
 | EllesmereUI CooldownManager | 76 | 63 | 8 | 3 | 0 | 2 |
 | EllesmereUI RaidFrames | 66 | 55 | 5 | 5 | 1 | 0 |
 | EllesmereUI QoL | 58 | 43 | 4 | 10 | 0 | 1 |
@@ -71,10 +71,10 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | EllesmereUI ForeverEssentials | 48 | 36 | 1 | 11 | 0 | 0 |
 | EllesmereUI DamageMeters | 47 | 34 | 4 | 2 | 6 | 1 |
 | EllesmereUI PlayerAuraBars | 42 | 41 | 0 | 1 | 0 | 0 |
-| sArena Reloaded | 40 | 18 | 8 | 8 | 3 | 3 |
 | EllesmereUI DataBars | 32 | 22 | 10 | 0 | 0 | 0 |
 | EllesmereUI Minimap | 30 | 27 | 1 | 0 | 1 | 1 |
-| MoveAny | 18 | 15 | 2 | 1 | 0 | 0 |
+| sArena Reloaded | 29 | 20 | 3 | 0 | 3 | 3 |
+| MoveAny | 17 | 15 | 1 | 1 | 0 | 0 |
 | EllesmereUI | 16 | 16 | 0 | 0 | 0 | 0 |
 | Questie | 11 | 1 | 6 | 2 | 0 | 2 |
 | PremadeGroupsFilter | 10 | 6 | 1 | 1 | 0 | 2 |
@@ -329,7 +329,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Unit Frames  (`UnitFrames`)
 
-*Now 209 (Forever 209) → target 175* · has 135 · part 25 · new 15 · link/api 3
+*Now 359 (Forever 314) → target 153* · has 147 · part 5 · new 1 · link/api 3
 
 **How:** Own secure unit frames (SecureUnitButtonTemplate) for player, target, target-of-target, focus, focus-target, pet, boss 1–5, arena 1–5; Blizzard skin kept as a 'Blizzard frames' mode
 
@@ -347,7 +347,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Frame (per unit, with Copy from / Apply to all) | Frame strata | dropdown | BACKGROUND … TOOLTIP | MEDIUM | none | has | EllesmereUI ResourceBars |  |
 | Frame (per unit, with Copy from / Apply to all) | Scale | slider | 50–200 % | 100 | world | has | EllesmereUI UnitFrames |  |
 | Frame (per unit, with Copy from / Apply to all) | Frame background | toggle |  | On | live | has | EllesmereUI UnitFrames |  |
-| Frame (per unit, with Copy from / Apply to all) | Frame background texture | texture | Phoenix surfaces + LSM | Solid | hover | part | EllesmereUI ResourceBars | S18 |
+| Frame (per unit, with Copy from / Apply to all) | Frame background texture | texture | Phoenix surfaces + LSM | Solid | hover | has | EllesmereUI ResourceBars |  |
 | Frame (per unit, with Copy from / Apply to all) | Frame background colour | colour | colour + theme token | #0B0C0F | live | has | EllesmereUI UnitFrames |  |
 | Frame (per unit, with Copy from / Apply to all) | Frame background opacity | slider | 0–100 % | 80 | live | has | EllesmereUI UnitFrames |  |
 | Frame (per unit, with Copy from / Apply to all) | Frame border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has | EllesmereUI UnitFrames |  |
@@ -362,7 +362,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Frame (per unit, with Copy from / Apply to all) | Out-of-combat opacity | slider | 0–100 % | 100 | world | has | EllesmereUI UnitFrames |  |
 | Frame (per unit, with Copy from / Apply to all) | Show tooltip on hover | dropdown | Always / Out of combat / Never | Out of combat | none | has | EllesmereUI UnitFrames |  |
 | Frame (per unit, with Copy from / Apply to all) | Click casting (Blizzard Click Cast bindings) | toggle |  | On | none | link | EllesmereUI UnitFrames |  |
-| Health bar | Health bar height share | slider | 40–100 % | 80 | live | part | EllesmereUI ResourceBars | S18 |
+| Health bar | Health bar height share | slider | 40–100 % | 80 | live | has | EllesmereUI ResourceBars |  |
 | Health bar | Health texture | texture | Phoenix bars + LSM, cards with samples | Phoenix Satin | hover | has | EllesmereUI ResourceBars |  |
 | Health bar | Health fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | has | EllesmereUI ResourceBars |  |
 | Health bar | Health smooth fill | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
@@ -378,19 +378,19 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Health bar | Reverse fill | toggle |  | Off | live | has | EllesmereUI ResourceBars |  |
 | Absorbs and heal prediction | Absorb shield | dropdown | Off / Overlay / Stacked bar / Striped | Striped | hover | has | EllesmereUI UnitFrames |  |
 | Absorbs and heal prediction | Absorb opacity | slider | 5–100 % | 60 | live | has | EllesmereUI UnitFrames |  |
-| Absorbs and heal prediction | Over-absorb glow line | toggle |  | On | live | part | EllesmereUI UnitFrames | S18 |
+| Absorbs and heal prediction | Over-absorb glow line | toggle |  | On | live | part | EllesmereUI UnitFrames | S19 |
 | Absorbs and heal prediction | Heal absorb | dropdown | Off / Overlay / Striped | Overlay | hover | has | EllesmereUI UnitFrames |  |
 | Absorbs and heal prediction | Heal prediction | toggle |  | On | live | has | EllesmereUI UnitFrames |  |
 | Absorbs and heal prediction | Overheal shown | slider | 0–50 % | 10 | live | has | EllesmereUI UnitFrames |  |
-| Absorbs and heal prediction | Prediction colours (mine / others) | colour | 2 colours | green / light green | live | part | EllesmereUI UnitFrames | S18 |
+| Absorbs and heal prediction | Prediction colours (mine / others) | colour | 2 colours | green / light green | live | has | EllesmereUI UnitFrames |  |
 | Power bar | Show power bar | dropdown | Always / Mana users / Never | Always | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Power bar height | slider | 0–40 px | 6 | live | has | sArena Reloaded |  |
 | Power bar | Position | dropdown | Below / Above / Inside bottom / Detached | Below | live | has | EllesmereUI UnitFrames |  |
-| Power bar | Detached width | slider | 0–400 px | 0 (= frame) | live | part | EllesmereUI ResourceBars | S18 |
+| Power bar | Detached width | slider | 0–400 px | 0 (= frame) | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Power texture | texture | Phoenix bars + LSM, cards with samples | Phoenix Satin | hover | has | EllesmereUI ResourceBars |  |
-| Power bar | Power fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | part | EllesmereUI ResourceBars | S18 |
+| Power bar | Power fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Power smooth fill | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
-| Power bar | Power gradient | dropdown | None / Horizontal / Vertical | None | live | part | EllesmereUI UnitFrames | S18 |
+| Power bar | Power gradient | dropdown | None / Horizontal / Vertical | None | live | has | EllesmereUI UnitFrames |  |
 | Power bar | Colour by power type | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Custom power colours | colour | per power type | Blizzard | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Spell cost prediction | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
@@ -403,8 +403,8 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Class power (player) | Charged colour | colour |  | #4FC3F7 | live | has | EllesmereUI ResourceBars |  |
 | Class power (player) | Empty pip opacity | slider | 0–100 % | 25 | live | has | EllesmereUI ResourceBars |  |
 | Class power (player) | Runes sorted by ready time | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
-| Class power (player) | Stagger / Soul fragments / Ebon Might extras | toggle |  | On | live | part | EllesmereUI ResourceBars | S18 |
-| Class power (player) | Fade out of combat | toggle |  | Off | world | part | EllesmereUI ResourceBars | S18 |
+| Class power (player) | Stagger / Soul fragments / Ebon Might extras | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
+| Class power (player) | Fade out of combat | toggle |  | Off | world | has | EllesmereUI ResourceBars |  |
 | Text tags (left / center / right / top) | Tag system | input | [name] [health:current] [health:percent] [power:current] [level] [classification] [status] [group] … | Left: [name]  Right: [health:percent] | live | has | sArena Reloaded |  |
 | Text tags (left / center / right / top) | Health text format | dropdown | Current / Percent / Current / Percent / Deficit / Current / Max | Current | Percent | hover | has | EllesmereUI ForeverEssentials |  |
 | Text tags (left / center / right / top) | Abbreviate numbers | dropdown | Blizzard (K/M) / Full / Asian (萬/億) | Blizzard | live | has | sArena Reloaded |  |
@@ -436,7 +436,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Text tags (left / center / right / top) | Power text anchor | dropdown | 9 points | Center | live | has | EllesmereUI ResourceBars |  |
 | Text tags (left / center / right / top) | Power text X offset | slider | -200–200 | 0 | live | has | EllesmereUI ResourceBars |  |
 | Text tags (left / center / right / top) | Power text Y offset | slider | -200–200 | 0 | live | has | EllesmereUI ResourceBars |  |
-| Text tags (left / center / right / top) | Level text (difficulty colour) | toggle |  | On (target) | live | part | sArena Reloaded | S18 |
+| Text tags (left / center / right / top) | Level text (difficulty colour) | toggle |  | On (target) | live | has | sArena Reloaded |  |
 | Portrait | Portrait | dropdown | Off / 3D model / 2D / Class icon | Off | hover | has | EllesmereUI UnitFrames |  |
 | Portrait | Portrait position | dropdown | Left / Right / Inside bar (overlay) | Left | live | has | EllesmereUI UnitFrames |  |
 | Portrait | Portrait size | slider | -50–100 % of height | 100 | live | has | EllesmereUI UnitFrames |  |
@@ -479,42 +479,20 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Indicators | PvP / prestige icon | toggle |  | Off | live | has | EllesmereUI UnitFrames |  |
 | Indicators | Elite / rare dragon | dropdown | Off / Phoenix / Blizzard | Phoenix | hover | has | EllesmereUI UnitFrames |  |
 | Indicators | Threat border on target | toggle |  | On | live | has | sArena Reloaded |  |
-| Indicators | Threat % text | toggle |  | Off | live | part | EllesmereUI UnitFrames | S18 |
-| Indicators | Ready check / summon / resurrect | toggle |  | On | live | part | EllesmereUI UnitFrames | S18 |
+| Indicators | Threat % text | toggle |  | Off | live | has | EllesmereUI UnitFrames |  |
+| Indicators | Ready check / summon / resurrect | toggle |  | On | live | has | EllesmereUI UnitFrames |  |
 | Boss and arena frames | Boss frames (1–5) | toggle |  | On | world | has | MoveAny |  |
 | Boss and arena frames | Arena frames (1–5) | toggle |  | On | world | has | MoveAny |  |
 | Boss and arena frames | Spacing / growth | slider | 0–60 px + Up/Down | 28, Down | world | has | sArena Reloaded |  |
-| Boss and arena frames | Arena: trinket / racial / DR tracker | toggle |  | On | world | part | sArena Reloaded | S18 |
+| Boss and arena frames | Arena: trinket / racial / DR tracker | toggle |  | On | world | has | sArena Reloaded | S18 |
 | Boss and arena frames | Arena: spec icon | toggle |  | On | world | has | sArena Reloaded |  |
 | Boss and arena frames | Test frames | button | show sample boss/arena frames |  | world | has | sArena Reloaded |  |
 | Parity: EllesmereUI ForeverEssentials | Icon for the active stance / form / aspect | — |  |  | live | new | EllesmereUI ForeverEssentials | S27 |
-| Parity: EllesmereUI ResourceBars | Detached resource bars: texture, backgrounds, strata, borders | — | Phoenix has no detached player resource bars |  | live | new | EllesmereUI ResourceBars | S18 |
-| Parity: EllesmereUI ResourceBars | Shift / expand bars when a resource is missing, mana bar while shapeshifted | — |  |  | live | part | EllesmereUI ResourceBars | S18 |
-| Parity: EllesmereUI ResourceBars | Spec bars: Ironfur, Ignore Pain, Sweeping Strikes | — |  |  | live | new | EllesmereUI ResourceBars | S18 |
-| Parity: EllesmereUI ResourceBars | Class resource bar: orientation, separators, pip borders, charged colour, thresholds, text | — | Pips, borders, charged points exist; thresholds, separators and orientation do not |  | live | part | EllesmereUI ResourceBars | S18 |
-| Parity: EllesmereUI ResourceBars | Detached player health and power bars (personal resource display) | — |  |  | live | new | EllesmereUI ResourceBars | S18 |
-| Parity: EllesmereUI ResourceBars | Totem bar | — | GetTotemInfo is readable; destroying needs a secure button |  | live | new | EllesmereUI ResourceBars | S18 |
-| Parity: EllesmereUI UnitFrames | Frame look: nicknames, fade, dark mode, borders, detached bars, threat % | — | Threat % on target and detached power / text bars are missing |  | live | part | EllesmereUI UnitFrames | S18 |
-| Parity: EllesmereUI UnitFrames | Portraits: 2D / 3D / class, shape, rings, dragon art | — | 2D / class portraits exist; 3D model, rings and dragon art do not; size is an open gap row |  | live | part | EllesmereUI UnitFrames | S18 |
-| Parity: EllesmereUI UnitFrames | Separate text bar strip under the frame | — |  |  | live | new | EllesmereUI UnitFrames | S18 |
-| Parity: EllesmereUI UnitFrames | Power bar: position, gradient, text, cost prediction, regen spark | — | S17: cost prediction; regen spark still open |  | live | part | EllesmereUI UnitFrames | S18 |
-| Parity: EllesmereUI WindTools | Click to destroy totems | — | Secure button (DestroyTotem is protected) |  | live | new | EllesmereUI WindTools | S18 |
-| Parity: EllesmereUI WindTools | Modifier-click to set focus (with marker) | — | Secure attribute on frames, out of combat |  | live | new | EllesmereUI WindTools | S18 |
-| Parity: sArena Reloaded | Arena frame layouts (9 presets: mirrored, sizes, power height, crop) | — | Phoenix arena frames have one layout |  | live | new | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Arena cast bars: modern look, shield, spark, colours, highlight casts on me / CC | — | Arena frames reuse Phoenix cast bars; highlight-on-me / CC colours do not exist |  | live | part | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | DR tracker look (borders, text, size) | — |  |  | live | new | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Diminishing returns tracking (per class / spec, reset time, 12.x DR handling) | — | 12.x sends DR state in UNIT_SPELL_DIMINISH_CATEGORY_STATE_UPDATED (secret payloads) and C_SpellDiminish; Phoenix can show it through display sinks or restyle Blizzard's own DR tray, never from the combat log |  | live | new | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Arena widgets: combat / healer / target / focus indicators, party ↔ arena targets | — |  |  | live | new | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Arena fonts and text placement | — |  |  | live | part | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Click actions on arena frames (spell / macro per button, Clique) | — | Secure attributes set out of combat |  | live | new | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Auras on the class icon (CC / defensive / important) and aura highlight | — | Arena unit auras are readable through C_UnitAuras with AuraUtil filters; some are secret in combat (display sinks) |  | live | new | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Arena pet frames | — |  |  | live | new | sArena Reloaded | S18 |
+| Parity: EllesmereUI UnitFrames | Portraits: 2D / 3D / class, shape, rings, dragon art | — | S18: class-colour ring and elite / rare art; 3D model stays the game's portrait |  | live | part | EllesmereUI UnitFrames | S18 |
+| Parity: EllesmereUI UnitFrames | Power bar: position, gradient, text, cost prediction, regen spark | — | S17: cost prediction; S18: fill direction and gradient; regen spark still open |  | live | part | EllesmereUI UnitFrames | S18 |
 | Parity: sArena Reloaded | Enemy dispel cooldown tracking | — | Enemy dispels are only visible in the combat log, which Phoenix never reads on 12.x, and spell IDs from arena units' cast events are secret in arenas |  | — | api | sArena Reloaded |  |
-| Parity: sArena Reloaded | Range check on arena frames | — |  |  | live | part | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Arena frame options: layout test, colours, numbers, swipes, Masque, stealth alpha | — | Test frames, class colours and swipe exist; most per-element switches do not |  | live | part | sArena Reloaded | S18 |
-| Parity: sArena Reloaded | Arena frame general (class icon, spec text, manabars, growth, scale, sizes) | — |  |  | live | part | sArena Reloaded | S18 |
+| Parity: sArena Reloaded | Arena frame options: layout test, colours, numbers, swipes, Masque, stealth alpha | — | S18: layouts, test count, stealth alpha, colours; no Masque |  | live | part | sArena Reloaded | S18 |
 | Parity: BigWigs | Alternate (encounter) power display | — | Encounter power bar on the player frame exists; the group list does not |  | live | part | BigWigs | S21 |
-| Parity: MoveAny | Move class power bars | — | Class resource sits on the player frame; a detached class bar is S18 |  | live | part | MoveAny | S18 |
 
 ## Group Frames  (`GroupFrames`)
 
@@ -722,7 +700,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Cast Bars  (`CastBars`)
 
-*Now 103 (Forever 113) → target 59* · has 53 · part 5 · new 1 · link/api 0
+*Now 105 (Forever 115) → target 57* · has 53 · part 3 · new 1 · link/api 0
 
 **How:** Own cast bars for player, target, focus, pet, boss (UnitCastingInfo is secret only where restricted; text through display sinks)
 
@@ -787,8 +765,6 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Interrupt helpers | Test casts | button |  |  | world | has | EllesmereUI MythicTimer |  |
 | Parity: EllesmereUI MythicTimer | Bars for enemy casts aimed at you / your group | — | UnitSpellTargetName / Class return secrets, so the target name can be shown but Phoenix cannot filter 'aimed at me' by comparing it; S28 checks in game what UnitIsUnit allows (secret when unit comparison is restricted) and may close this as impossible |  | live | new | EllesmereUI MythicTimer | S28 |
 | Parity: EllesmereUI MythicTimer | Focus / enemy cast bar extras: kick-ready hint, raid marker, interrupt range fade | — |  |  | live | part | EllesmereUI MythicTimer | S28 |
-| Parity: EllesmereUI ResourceBars | GCD bar | — | GCD bar under the cast bar exists; standalone bar options do not |  | live | part | EllesmereUI ResourceBars | S18 |
-| Parity: EllesmereUI ResourceBars | Swing timer | — | Swing timer exists where the client allows (feature swingTimer); weapon labels and range cues do not |  | live | part | EllesmereUI ResourceBars | S18 |
 
 ## Buffs & Debuffs  (`Auras`)
 
@@ -1698,7 +1674,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## PvP  (`PvP`)
 
-*Now 10 (Forever 10) → target 5* · has 4 · part 0 · new 1 · link/api 4
+*Now 18 (Forever 10) → target 5* · has 4 · part 1 · new 0 · link/api 4
 
 **How:** Battleground / arena helpers; arena frames live in Unit Frames
 
@@ -1714,7 +1690,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | PvP | Healer marker on enemy plates | toggle |  | On | live | api | sArena Reloaded |  |
 | PvP | Arena prep: enemy specs | toggle |  | On | live | link | sArena Reloaded |  |
 | PvP | Dampening display | toggle |  | On | live | api | sArena Reloaded |  |
-| Parity: sArena Reloaded | Shadowsight timer and gladiator tracker | — | Dampening % stays impossible (the gap row Dampening display is api since S16) |  | live | new | sArena Reloaded | S18 |
+| Parity: sArena Reloaded | Shadowsight timer and gladiator tracker | — | S18: Shadowsight timer; gladiator tracker not built |  | live | part | sArena Reloaded | S18 |
 
 ## Sim  (`Sim`)
 

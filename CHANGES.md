@@ -3,6 +3,31 @@
 ## 2.0.0-beta1
 
 ### New
+- **Unit Frames II, arena and resource bars** (plan v2 stage S18).
+  - *Arena frames* (retail, off by default): 9 layout presets (Phoenix, mirrored, compact, tall, wide, slim, class
+    portrait, gladiator, cropped icons) that set size, power height, portrait, mirroring and icon crop; 2–5 Test
+    frames. Diminishing returns come from the game itself: Phoenix takes Blizzard's own DR tray for each foe
+    (`SpellDiminishStatusTray`, fed by the secret `UNIT_SPELL_DIMINISH_CATEGORY_STATE_UPDATED`) onto its frame and
+    restyles it (size, spacing, zoom, border, countdown text, red immune edge, *only what I can apply*). The PvP
+    trinket comes from the game's `CcRemoverFrame` the same way; racials (14 races) show with a cooldown on seen casts.
+    Class icon with crowd-control / big-defensive / important auras over it and a coloured glow; healer badge, focus
+    mark, targeted-by pips; unseen-foe opacity, an optional range spell; left / right / middle click actions (target,
+    focus, menu, a spell or a macro with `@unit`); arena pet frames beside their owner. No sArena code is used
+    (sArena Reloaded has no licence file); only its feature list was compared.
+  - *Resource bars*: a detached block for the player with health, power, druid mana while shapeshifted, the class
+    resource and a spec bar (Ironfur, Ignore Pain, Sweeping Strikes, Soul Fragments, Ebon Might; retail); rows close
+    up when unused; texture, border, background, strata, scale, out-of-combat fade, Layout-mode mover. Class power:
+    orientation, separators, highlight from N points, fade when idle, count text.
+  - *Totem bar*: Phoenix buttons (size, spacing, growth, zoom, border, time text, mover); right-click destroys a
+    totem through a secure button. Blizzard's totem frame or none are the other choices.
+  - *Frame look*: frame background texture, health share of the frame, power bar width / fill direction / gradient,
+    own and others' incoming heals in two colours, class ring and elite / rare art on portraits, a text strip under the
+    frame, nicknames, `[threat]`, `[level:color]`, `[spec]` and `[target]` tags; modifier-click quick focus with an
+    optional raid marker.
+  - *Cast Bars*: a standalone GCD bar (own width and mover); swing timer hand labels and an out-of-melee range cue.
+  - *PvP*: arena Shadowsight timer from the match clock (retail), with its own font and mover.
+  - Previews: the whole arena stack (2–5) with sample DR, trinket, racial and class-icon auras; the resource block
+    and totems for any class you pick; GCD and swing samples; the Shadowsight line.
 - **NPC locations and the open gap rows** (plan v2 stage S17).
   - *Quests › NPCs*: where quest givers, vendors, profession NPCs / trainers, flight masters and rares stand, from
     AllTheThings (MIT) facts in Phoenix_UI_Data (712 Midnight, 987 War Within, 2,113 WoW Forever NPC spots). One NPC

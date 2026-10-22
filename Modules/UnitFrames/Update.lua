@@ -1225,9 +1225,9 @@ local function widgets(f, u, src)
 end
 
 -- The sample DR tray (Test frames and the preview): plain icons in the real tray's place and look.
-local DR_SAMPLE = { { icon = "Interface\\Icons\\Spell_Nature_Polymorph", elapsed = 4, duration = 18 },
-    { icon = "Interface\\Icons\\Ability_Rogue_KidneyShot", elapsed = 11, duration = 18, immune = true },
-    { icon = "Interface\\Icons\\Spell_Shadow_Possession", elapsed = 15, duration = 18 } }
+local DR_SAMPLE = { { tex = "Interface\\Icons\\Spell_Nature_Polymorph", elapsed = 4, duration = 18 },
+    { tex = "Interface\\Icons\\Ability_Rogue_KidneyShot", elapsed = 11, duration = 18, immune = true },
+    { tex = "Interface\\Icons\\Spell_Shadow_Possession", elapsed = 15, duration = 18 } }
 M.DR_SAMPLE = DR_SAMPLE
 
 function M.DrawSampleDR(f, u)
@@ -1252,7 +1252,7 @@ function M.DrawSampleDR(f, u)
             end
             local s = DR_SAMPLE[(i - 1) % #DR_SAMPLE + 1]
             M.PlaceDRItem(b, box, i, dr)
-            b.Icon:SetTexture(s.icon)
+            b.Icon:SetTexture(s.tex)
             M.StyleDRItem(b, dr)
             b.Cooldown:SetCooldown(GetTime() - s.elapsed, s.duration)
             b.Immune:SetShown(dr.immune and s.immune or false)

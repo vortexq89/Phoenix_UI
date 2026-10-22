@@ -138,8 +138,15 @@ S17 = {
  "MythicPlus": {"Teleport buttons on dungeon list":("new", "S28")},
 }
 
-NOW = {"ActionBars": 117, "CooldownText": 15, "Tracker": 93, "UnitFrames": 209, "GroupFrames": 194, "NamePlates": 276, "CastBars": 103, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 61, "Minimap": 49, "Tooltip": 58, "Bags": 56, "ItemLevel": 20, "DataTexts": 77, "Skins": 36, "General": 52, "Profiles": 15, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 43, "GroupFinder": 58, "MythicPlus": 34, "Encounters": 64, "PvP": 10, "Sim": 11, "Diagnostics": 9}
-NOW_FOREVER = {"ActionBars": 116, "CooldownText": 15, "Tracker": 89, "UnitFrames": 209, "GroupFrames": 193, "NamePlates": 270, "CastBars": 113, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 61, "Minimap": 46, "Tooltip": 55, "Bags": 55, "ItemLevel": 20, "DataTexts": 76, "Skins": 34, "General": 52, "Profiles": 11, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 41, "GroupFinder": None, "MythicPlus": None, "Encounters": 9, "PvP": 10, "Sim": None, "Diagnostics": 9}
+S18 = {
+ "UnitFrames": {"Frame background texture":"has", "Health bar height share":"has", "Over-absorb glow line":("part", "S19"),
+   "Prediction colours (mine / others)":"has", "Detached width":"has", "Power fill direction":"has", "Power gradient":"has",
+   "Stagger / Soul fragments / Ebon Might extras":"has", "Fade out of combat":"has", "Level text (difficulty colour)":"has",
+   "Threat % text":"has", "Ready check / summon / resurrect":"has", "Arena: trinket / racial / DR tracker":"has"},
+}
+
+NOW = {"ActionBars": 117, "CooldownText": 15, "Tracker": 93, "UnitFrames": 359, "GroupFrames": 194, "NamePlates": 276, "CastBars": 105, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 61, "Minimap": 49, "Tooltip": 58, "Bags": 56, "ItemLevel": 20, "DataTexts": 77, "Skins": 36, "General": 52, "Profiles": 15, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 43, "GroupFinder": 58, "MythicPlus": 34, "Encounters": 64, "PvP": 18, "Sim": 11, "Diagnostics": 9}
+NOW_FOREVER = {"ActionBars": 116, "CooldownText": 15, "Tracker": 89, "UnitFrames": 314, "GroupFrames": 193, "NamePlates": 270, "CastBars": 115, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 61, "Minimap": 46, "Tooltip": 55, "Bags": 55, "ItemLevel": 20, "DataTexts": 76, "Skins": 34, "General": 52, "Profiles": 11, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 41, "GroupFinder": None, "MythicPlus": None, "Encounters": 9, "PvP": 10, "Sim": None, "Diagnostics": 9}
 
 def apply():
     for m, fx in FIX.items():
@@ -156,7 +163,7 @@ def apply():
         for row in MOD[m]["rows"]:
             if row["name"] in fx: row["status"] = fx[row["name"]]
             elif default and row["status"] != "has": row["status"] = default
-    for m, fx in S17.items():
+    for m, fx in list(S17.items()) + list(S18.items()):
         names = {row["name"] for row in MOD[m]["rows"]}
         assert set(fx) <= names, (m, set(fx) - names)
         for row in MOD[m]["rows"]:
