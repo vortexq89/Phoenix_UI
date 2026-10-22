@@ -98,6 +98,7 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `PvP` | Misc PvP | Safe queue, TAB targets players, `/gg` |
 | `CooldownText` | CooldownTracker CooldownText | Phoenix font and color on Blizzard countdown numbers |
 | `SpellHistory` | CooldownTracker SpellTracker | Player-only recent casts strip |
+| `Encounters` | (new, 2.0 S1) | `C_EncounterTimeline` events as Phoenix bars (`Bars.lua`), `ENCOUNTER_WARNING` as a Phoenix banner (`Warnings.lua`), pull (`C_PartyInfo.DoCountdown`) and break (DBM/BigWigs "D5" BT message) timers, countdown voice, BigWigs bar style (`BigWigs.lua`, public `BigWigsAPI:RegisterBarStyle`). Owns `encounterTimelineEnabled`/`encounterWarningsEnabled` while it draws (player's values kept in `global.cvars`, restored on hand-back); stands down when BigWigs or DBM is loaded. Secret event fields only reach SetText/SetTexture |
 | `CombatText` | MSBT | Blizzard floating combat text settings in one page |
 | `DamageMeter` | Detail-Skin | Skin for `Blizzard_DamageMeter`, optional one-click Details! style |
 | `Quality` | Talkhead, Errors | Talking head, error filter, achievement screenshots, Cooldown Manager toggle |

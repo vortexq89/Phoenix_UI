@@ -121,7 +121,7 @@ Automation, not Quests; upgrade arrows stay in Bags and only gain the sim delta;
 | Stage | Content | Effort |
 |---|---|---|
 | S0 (done) | Icon/ID audit, `check_ids.py`, research notes, this plan | — |
-| S1 | Encounters module (#1, #2, #5), countdown move, module picker (#28) | M |
+| S1 (shipped 2026-10-22) | Encounters module (#1, #2, #5), countdown move, module picker (#28); journal card and stats moved to S3 | M |
 | S2 | Sim in game (#7) + Phoenix app sim runner (#8), tooltips (#9); measure sim times | L |
 | S3 | Data pipeline + journal card (#3, #4) + Quests (#11, #12, #14) | L |
 | S4 | Group Finder (#17, #18), Raid Tools (#19), WindTools QoL set (#20–24) | L |
@@ -140,7 +140,11 @@ Automation, not Quests; upgrade arrows stay in Bags and only gain the sim delta;
 - Licence: switching Phoenix to GPL would allow PGF/Questie code reuse but blocks some future options; the plan
   assumes Phoenix stays MIT.
 
-## 9. Decisions needed from the user
+## 9. Decisions (answered 2026-10-22)
+Order: Encounters → Sim → WoW Forever → Quests → Group Finder. simc download on first use with explicit consent: yes.
+Classic flavours: skipped. Licence: stays MIT, clean-room everything (only simc-addon export logic reused, Unlicense,
+with attribution). The original questions:
+
 1. Order of stages (proposed S1 → S2 → S3 → S4 → S5).
 2. Phoenix app: OK to download simc (115 MB) on first use with consent?
 3. Forever support before or after Group Finder (launch is 4 Nov)?

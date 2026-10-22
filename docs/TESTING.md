@@ -110,10 +110,12 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   timer/stack fonts; **Square icons** off gives Blizzard's round icons back; the Bars viewer uses your bar texture
   and colour. Timers and swipes keep counting **in combat** (they are Blizzard's). **Fade out of combat** dims the
   viewers until you pull. **If not:** name the viewer and the option, and send `/pui bugs`.
-- [ ] **3.5d Countdown voice.** Press **Try it** on the Behaviour tab: you hear 5 → 1 in the chosen voice. Then
-  in a group type `/countdown 10` (or let DBM/BigWigs start a pull).
-  **Expect:** the voice speaks the last five seconds; `/countdown 0` (cancel) stops it. Mythic+ key start and
-  arena/battleground gates count down too when **Mythic+, arena and battleground starts** is on. Nothing is spoken twice.
+- [ ] **3.5d Countdown voice (now on Encounters → Sounds).** After updating from an older build your voice, start
+  number and switches are still as you left them (they moved from Auras & Cooldowns). Press **Try it**: you hear
+  5 → 1 in the chosen voice. Then in a group type `/countdown 10` (without DBM or BigWigs loaded).
+  **Expect:** the voice speaks the last five seconds and a **Pull** bar runs; `/countdown 0` (cancel) stops both.
+  Mythic+ key start and arena/battleground gates count down too when **Mythic+, arena and battleground starts** is
+  on. With DBM or BigWigs loaded Phoenix stays quiet on pulls (their voice counts). Nothing is spoken twice.
 - [ ] **3.5e Unit Frames depth.** On the Unit Frames page pick **Boss** in the frame bar and press **Test** on the **Show test frames** row.
   **Expect:** sample Target, Focus and Boss 1–3 frames appear where the real ones sit, each tagged *TEST*, in your
   styles; pressing again hides them; entering combat hides them at once. Try **Portrait → Class icon / Hidden**,
@@ -132,6 +134,35 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Open** on the Presets page.
   **Expect:** about four seconds after the first login a window offers the three looks and **Skip**; picking or
   skipping closes it for good. Existing users never see it on their own.
+- [ ] **3.5h2 Module picker.** Right after the welcome picker (pick a look or Skip), or with **Choose modules** on
+  Tools → Presets.
+  **Expect:** a window lists every optional module with its icon, name and description, all switches matching their
+  current state. Turn two off: the button reads **Apply and reload** if one of them needs a reload, otherwise
+  **Apply**. Applying changes exactly those modules; **Keep all** changes nothing. It does not open again on its own.
+- [ ] **3.5h3 Encounters (Combat group) without a boss mod.** Disable DBM and BigWigs for this test. Open
+  Encounters and press **Run test**.
+  **Expect:** for about 30 s Phoenix bars count down the game's sample boss abilities (sorted, soonest at the
+  bottom, the last 5 s in the emphasis colour) and a banner shows a critical, a medium and a minor sample warning
+  with sounds. Change width, height, texture, fonts and border: the preview and the running bars follow. Edit Mode
+  (`/pui edit`) shows **Phoenix UI – Boss timeline** and **Phoenix UI – Boss warnings** to move. Switch **Show boss
+  timers as → Game default** and run the test again: Blizzard's own timeline is back (its option in Options →
+  Gameplay → Combat Warnings is on again). Switch back to Phoenix: Blizzard's timeline is off again.
+  **If not:** name the step and send `/pui bugs`.
+- [ ] **3.5h4 Encounters in a real fight.** Any dungeon or raid boss with boss warnings on (Normal is fine).
+  **Expect:** the boss abilities appear as Phoenix bars with names and icons, paused abilities fade, warnings show in
+  the Phoenix banner. **No Lua errors** and nothing in `Logs\taint.log` mentioning Phoenix (secret names are only
+  displayed, never read). After the kill, `/reload` and check the bars are gone.
+- [ ] **3.5h5 Pull and break.** As leader (or solo) press **Pull** on the Pull & break tab, then **Cancel the pull**;
+  type `/pui encounters pull 5`. Then **Break** (5 min) and **End the break**; `/pui encounters break 1`.
+  **Expect:** the game's countdown starts and stops for the whole group; the break bar appears. In a group with a DBM
+  or BigWigs user, they see your break and Phoenix shows theirs. As a plain member you get "You need to be group
+  leader or assistant". During a boss fight a break is refused.
+- [ ] **3.5h6 With BigWigs.** Enable BigWigs (and LittleWigs), `/reload`, open Encounters.
+  **Expect:** the overview says BigWigs draws the bars; Phoenix draws no second set and says nothing on pulls. On
+  the BigWigs tab the status reads "the Phoenix style is registered". In BigWigs → Bars → Style pick **Phoenix**
+  and run BigWigs' test bars: they wear the Phoenix texture, fonts and border. Pick BigWigs' default style again:
+  the bars look like BigWigs' own again.
+
 - [ ] **3.5i Bags.** Open your bags (separate and combined: Bag options → Combine bags).
   **Expect:** a Phoenix panel behind each bag window, cropped icons with thin borders (green/blue/purple for
   uncommon and better when **Quality borders** is on), a dark empty-slot background and the stack-count size you

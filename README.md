@@ -38,6 +38,7 @@ Mode cannot reach.
 | | **Data Bar** | FPS, latency, speed, durability, gold, clock, bug count, free bag slots, item level, friends, guild and mail, in the order you drag them to; movable in Edit Mode |
 | | **Movers** | Move, scale and fade frames Edit Mode does not manage: zone text, error messages, alerts, top-center widgets, boss banner, event toasts, ready check |
 | Combat | **Cooldown Text** | Blizzard's countdown numbers in the Phoenix font |
+| | **Encounters** | Boss timers as Phoenix bars and boss warnings in a Phoenix banner (from the game's own encounter timeline), every Blizzard boss-warning setting, a Test button, pull and break timers shared with DBM/BigWigs users, the countdown voice, and a Phoenix bar style for BigWigs/LittleWigs |
 | | **Combat Text** | Every floating combat text option in one page |
 | | **Damage Meter** | Skin for Blizzard's built-in meter; optional one-click Details! style |
 | | **Spell History** | A strip of your recent casts, movable in Edit Mode |
@@ -70,13 +71,15 @@ missing; Russian clients only offer bundled fonts that include Cyrillic.
 | ![This week: Great Vault and rating on Home](docs/screenshots/vault.png) | ![Mythic+ page with party keystones](docs/screenshots/keystones.png) |
 | ![Bags: quality borders and upgrade arrows](docs/screenshots/bags.png) | ![Data bar with drag ordering](docs/screenshots/databar.png) |
 | ![Minimap button bin](docs/screenshots/minimap.png) | ![Presets](docs/screenshots/presets.png) |
+| ![Encounters: boss timeline and warnings](docs/screenshots/encounters_timeline.png) | ![Encounters test mode in the world](docs/screenshots/encounters_test.png) |
+| ![Pull and break timers](docs/screenshots/encounters_timers.png) | ![Module picker for new installs](docs/screenshots/modpicker.png) |
 
 The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
 same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world timer at 150 % and sample nameplates.
 
 ### Icons
 
-Every icon in the window, the data bar and Phoenix's own frames comes from one set: 88
+Every icon in the window, the data bar and Phoenix's own frames comes from one set: 101
 [Phosphor](https://phosphoricons.com) duotone glyphs (MIT), packed into white atlases with 24, 48 and 96 px
 cells and tinted by the active theme. Each icon picks the atlas that matches its size in physical pixels,
 so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.

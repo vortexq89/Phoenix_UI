@@ -32,6 +32,7 @@ SIDEBAR = [
                                                              ("cooldowntext", "Cooldown Text", "cooldowntext", True)]),
     ("combat", "Combat", "cat-combat", [("castbars", "Cast Bars", "castbars", True), ("auras", "Buffs & Debuffs", "auras", True),
                                         ("tracker", "Auras & Cooldowns", "tracker", True),
+                                        ("encounters", "Encounters", "encounters", True),
                                         ("combattext", "Combat Text", "combattext", None),
                                         ("spellhistory", "Spell History", "spellhistory", False),
                                         ("damagemeter", "Damage Meter", "damagemeter", True)]),
@@ -818,7 +819,7 @@ def spell(i, size, timer="", count="", cd=0, square=True):
 
 def tracker_page():
     body = page_head("tracker", "Auras & Cooldowns",
-                     "Phoenix style for Blizzard's Cooldown Manager, fade out of combat and countdown voices for pull timers.")
+                     "Phoenix style for Blizzard's Cooldown Manager and fading out of combat.")
     scope = (f'<div class="scope"><div class="srow"><span class="slab">VIEWER</span>'
              f'{seg(["Essential", "Utility", "Buffs", "Bars"], 0)}</div></div>')
     essential = "".join(spell(i, 52, t, c, cd) for i, (t, c, cd) in enumerate(
@@ -838,12 +839,10 @@ def tracker_page():
         row("Border", dd2("Solid"), gear=cog(), reset=True),
         row("Hide debuff border", tog(False)),
     ], icon="tracker", reset=True)
-    right = card2("Countdown voice", [
-        row("Speak the countdown", tog(), "Counts down the last seconds of pull timers and start timers."),
-        row("Voice", dd2("Jim (CC0)")),
-        row("Start counting at", sl2(30, "5")),
-        row("Try it", btn("Play", "sound")),
-    ], icon="sound")
+    right = card2("Out of combat", [
+        row("Fade out of combat", tog(), "Dims the viewers until you enter combat."),
+        row("Faded opacity", sl2(35, "0.35")),
+    ], icon="tracker")
     body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
     return shell("tracker", body, head=faces(font_data()), status="Viewer skin applied live", status_icon="success", status_cls="ok")
 
@@ -907,7 +906,9 @@ def presets_page():
     looks = "".join(look_card(*l) for l in LOOKS)
     body += card2("Looks", [intro, f'<div class="looks">{looks}</div>'], wide=True, icon="presets")
     body += card2("Undo and welcome", [row("Undo the last preset", btn("Undo", "reset"), "Puts back every setting the last preset changed (this session)."),
-                       row("Welcome picker", btn("Open", "presets"), "Opens the window new users see on their first login.")], wide=True)
+                       row("Welcome picker", btn("Open", "presets"), "Opens the window new users see on their first login."),
+                       row("Module picker", btn("Choose modules", "presets"), "Opens the module list new users see after picking a look.")],
+                  wide=True)
     return shell("presets", body, head=faces(font_data()), status="Ember applied: 34 settings changed", status_icon="success",
                  status_cls="ok")
 
@@ -1005,6 +1006,151 @@ def minimap_page():
     return shell("minimap", body, head=faces(font_data()), status="6 addon buttons in the bin", status_icon="bin")
 
 
+# ---------------------------------------------------------------- Stage 1: Encounters, module picker
+ENC_CSS = """<style>
+.ebars{display:flex;flex-direction:column;gap:4px}
+.ebar{position:relative;display:flex;align-items:center;height:22px;background:rgba(10,11,14,.55);border:1px solid #000}
+.ebar .ei{width:22px;height:22px;flex:none;border-right:1px solid #000;display:flex;align-items:center;justify-content:center}
+.ebar .ef{position:relative;flex:1;height:100%}
+.ebar .ef>span{position:absolute;left:0;top:0;bottom:0;background-size:100% 100%;background-blend-mode:multiply}
+.ebar .en{position:absolute;left:6px;top:3px;font-family:F-InterSemiBold;font-size:12px;color:#fff;text-shadow:1px 1px 0 #000}
+.ebar .et{position:absolute;right:6px;top:3px;font-family:F-InterSemiBold;font-size:12px;color:#fff;text-shadow:1px 1px 0 #000}
+.ebar.dim{opacity:.55}
+.ewarn{font-family:F-InterBold;font-size:22px;text-align:center;text-shadow:2px 2px 0 #000,-1px -1px 0 #000;display:flex;align-items:center;justify-content:center;gap:8px}
+.ewarn .wi{width:26px;height:26px;border:1px solid #000;display:inline-flex;align-items:center;justify-content:center}
+.estage{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.encnote{margin:0 0 10px;padding:9px 12px;border:1px solid rgba(77,163,255,.35);background:rgba(77,163,255,.08);font-size:12px;color:var(--text2);border-radius:3px}
+.scene{position:absolute;left:1290px;top:0;width:270px;height:800px}
+.scene .lbl{font-family:CondBold;font-size:11px;letter-spacing:.08em;color:var(--warn);margin:0 0 4px}
+.mp{position:absolute;left:290px;top:120px;width:700px;background:#14161b;border:1px solid #2a2e37;box-shadow:0 18px 60px rgba(0,0,0,.7);border-radius:4px;z-index:5}
+.mp .mph{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid #2a2e37;font-family:F-InterBold;font-size:16px}
+.mp .mpi{padding:10px 16px;color:var(--text2);font-size:12px}
+.mp .mpg{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;padding:4px 16px 12px}
+.mp .mpr{display:flex;align-items:center;gap:8px;padding:6px 8px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.04);border-radius:3px}
+.mp .mpr b{font-family:F-InterSemiBold;font-size:12px;display:block}.mp .mpr i{font-style:normal;font-size:10.5px;color:var(--text3)}
+.mp .mpr .tx{flex:1;min-width:0}.mp .mpf{display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid #2a2e37}
+.dimall{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:4}
+</style>"""
+ENC_ICON = [("#ff6a1a", "#5a1500", "castbars"), ("#b46bff", "#250a45", "auras"), ("#ffc24b", "#3b2a00", "cat-combat"),
+            ("#3ddc97", "#063622", "encounters"), ("#4da3ff", "#06203f", "break")]
+
+
+def ebar(name, pct, left, i, color="#ff6a1a", dim=False, w=260):
+    c1, c2, g = ENC_ICON[i % len(ENC_ICON)]
+    return (f'<div class="ebar{" dim" if dim else ""}" style="width:{w}px"><span class="ei" style="background:radial-gradient(circle at 35% 30%, {c1}, {c2} 78%)">'
+            f'{ico(g, "", 13)}</span><span class="ef"><span style="width:{pct}%;background-color:{color};'
+            f'background-image:url(../assets/bars/BarSatin.png)"></span><b class="en">{name}</b><b class="et">{left}</b></span></div>')
+
+
+def ewarn(text, color, size=22, icon="castbars"):
+    return (f'<div class="ewarn" style="color:{color};font-size:{size}px"><span class="wi" style="background:radial-gradient(circle at 35% 30%, #ff6a1a, #5a1500 78%)">'
+            f'{ico(icon, "", 15)}</span>{text}</div>')
+
+
+def enc_sample_bars(w=260):
+    return ('<div class="ebars">' + ebar("Pull", 48, "6", 4, "#4da3ff", w=w) + ebar("Crushing Slam", 66, "21", 2, w=w)
+            + ebar("Shadow Volley", 30, "9.4", 1, w=w) + ebar("Searing Breath", 12, "3.2", 0, "#ff4d5e", w=w) + '</div>')
+
+
+def encounters_page(tab=None):
+    """tab None: top of the page (overview); otherwise scrolled to that tab with the preview pinned."""
+    body = page_head("encounters", "Encounters",
+                     "Boss timers and warnings in Phoenix style, pull and break timers, the countdown voice and a BigWigs bar style.")
+    stage = f'<div class="estage">{ewarn("Searing Breath on you!", "#ff4d5e")}{enc_sample_bars()}</div>'
+    body += preview_card(stage, 196, stuck=tab is not None)
+    if tab is None:
+        body += card2("Overview", [
+            row("Boss warnings and timeline", tog(), "The game's master switch for boss timers and boss warnings (Options → Gameplay → Combat Warnings). "
+            "Phoenix can only draw them while it is on."),
+            row("Test", btn("Run test", "test", "primary"), "Puts the game's sample boss timers and warnings on screen for about 30 seconds, "
+            "so you see your settings on the real bars."),
+            '<div class="encnote">Boss timers and alerts come from the game itself (the encounter timeline). Spell names stay hidden from '
+            'addons during a fight, so Phoenix shows them without reading them. Move the bars and the banner in Edit Mode.</div>',
+        ], wide=True, icon="encounters")
+    body += tabs(["Timeline", "Warnings", "Pull & break", "Sounds", "BigWigs"], tab or 0)
+    if tab in (None, 0):
+        left = card2("Boss timeline", [
+            row("Show boss timers as", dd2("Phoenix"), "Phoenix bars replace the game's timeline: it is switched off while Phoenix draws "
+                "and switched back on when you change this."),
+            row("Hide long countdowns", tog(False), "Leaves out abilities that are still far away. Phoenix bars follow it too."),
+            row("Hide queued abilities", tog(False), "Leaves out abilities whose timer ran out but which the boss has not cast yet."),
+            row("Show cast counts", tog()),
+            row("Role and effect icons", tog(), gear=cog()),
+        ], icon="encounters", reset=True)
+        right = card2("Phoenix bars", [
+            row("Width", sl2(52, "260")), row("Height", sl2(30, "22")), row("Most bars shown", sl2(40, "8")),
+            row("New bars", seg(["Grow up", "Grow down"], 0)),
+            row("Bar texture", dd2("Satin", tex="BarSatin"), reset=True),
+            row("Emphasise when close", tog(), "Recolours a bar in its last seconds.", gear=cog()),
+            row("Ability name", dd2("Inter SemiBold", "F-InterSemiBold"), gear=cog()),
+        ], icon="castbars", reset=True)
+        status = "Phoenix draws the timeline; Blizzard's is off until you hand it back"
+    else:
+        left = card2("Pull timer", [
+            row("Seconds", sl2(16, "10")),
+            row("Start a pull", btn("Pull", "encounters", "primary"), "Starts the game's group countdown, which everyone and every boss mod "
+                "sees. Needs leader or assist in a group. Also: /pui encounters pull 10"),
+            row("Cancel the pull", btn("Cancel", "close"), "Stops a running pull countdown for the whole group."),
+        ], icon="encounters")
+        left += card2("Countdown voice", [
+            row("Speak the countdown", tog(), "A voice counts the last seconds down to 1."),
+            row("Voice", dd2("Jim")), row("Start at", sl2(40, "5")),
+            row("Pull timers", tog(), "While DBM or BigWigs is loaded, their own voice counts instead."),
+        ], icon="sound")
+        right = card2("Break timer", [
+            row("Minutes", sl2(8, "5")),
+            row("Share with the group", tog(), "Sends the break so DBM, BigWigs and Phoenix users in your group see it too."),
+            row("Start a break", btn("Break", "break", "primary"), "Also: /pui encounters break 5"),
+            row("End the break", btn("Cancel", "close"), "Removes the break bar, and from the group when it was shared."),
+        ], icon="break")
+        status = "Pull and break timers reach DBM and BigWigs users too"
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    return shell("encounters", body, head=faces(font_data()) + ENC_CSS, status=status, status_icon="success", status_cls="ok")
+
+
+def encounters_test():
+    html = encounters_page()
+    scene = ('<div class="scene"><div style="position:absolute;top:150px;left:0;right:0">'
+             f'<div class="lbl">BOSS WARNINGS · TEST</div>{ewarn("Critical sample warning", "#ff4d5e", 20)}'
+             f'{ewarn("Medium sample warning", "#ffc24b", 17)}{ewarn("Minor sample warning", "#ffffff", 14)}</div>'
+             '<div style="position:absolute;top:470px;left:5px"><div class="lbl">BOSS TIMELINE · TEST</div><div class="ebars">'
+             + ebar("Test 4", 92, "24", 3, w=260) + ebar("Test 3", 70, "18", 2, w=260) + ebar("Test 2", 40, "9.8", 1, dim=True, w=260)
+             + ebar("Test 1", 14, "3.1", 0, "#ff4d5e", w=260) + '</div></div></div>')
+    html = html.replace("</body>", scene + "<style>body{width:1560px}</style></body>")
+    return html.replace("Phoenix draws the timeline; Blizzard's is off until you hand it back", "Test running: sample boss timers for about 30 seconds.")
+
+
+MODPICK = [("unitframes", "Unit Frames", True), ("groupframes", "Group Frames", True), ("castbars", "Cast Bars", True),
+           ("auras", "Buffs & Debuffs", True), ("nameplates", "Nameplates", True), ("tracker", "Auras & Cooldowns", True),
+           ("encounters", "Encounters", True), ("damagemeter", "Damage Meter", False), ("spellhistory", "Spell History", False),
+           ("items", "Bags", True), ("minimap", "Minimap", True), ("chat", "Chat", True), ("afk", "AFK Screen", False),
+           ("mythicplus", "Mythic+", True)]
+MODDESC = {"unitframes": "Textures, colors and fonts for player, target, focus and pet frames.",
+           "groupframes": "Party and raid frame styling.", "castbars": "Flat cast bars with icon, timer and latency.",
+           "auras": "Cropped icons, crisp borders and readable timers.",
+           "nameplates": "Bar texture, health percent and Mythic+ enemy forces on Blizzard nameplates.",
+           "tracker": "Phoenix style for Blizzard's Cooldown Manager and fading out of combat.",
+           "encounters": "Boss timers and warnings in Phoenix style, pull and break timers, the countdown voice and a BigWigs bar style.",
+           "damagemeter": "Phoenix skin for Blizzard's damage meter, plus an optional Details! style.",
+           "spellhistory": "A strip of your most recent casts.",
+           "items": "Phoenix look for the bag windows, quality borders and upgrade arrows on better gear.",
+           "minimap": "Square minimap, coordinates, a themed zone name and a bin for addon buttons.",
+           "chat": "Clickable links, copy, faster scrolling and an edit box history that survives a reload.",
+           "afk": "A calm full-screen view of your character while you're away.",
+           "mythicplus": "Run timer with chest limits, boss splits and enemy forces, plus keystone helpers."}
+
+
+def modpicker_page():
+    html = presets_page()
+    rows = "".join(f'<div class="mpr">{ico(k)}<span class="tx"><b>{n}</b><i>{MODDESC[k]}</i></span>{tog(on)}</div>'
+                   for k, n, on in MODPICK)
+    pop = (f'<div class="dimall"></div><div class="mp"><div class="mph">{ico("presets")}Choose your modules</div>'
+           '<div class="mpi">Everything is on by default. Switch off what you don\'t need; you can change it any time on the Home page '
+           'or under Tools → Presets.</div>'
+           f'<div class="mpg">{rows}</div><div class="mpf">{btn("Keep all", "close")}{btn("Apply and reload", "reload", "primary")}</div></div>')
+    html = html.replace("</head>", ENC_CSS + "</head>").replace("</body>", pop + "</body>")
+    return html.replace('row("Welcome picker"', 'row("Welcome picker"')
+
 
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
          "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page, "nameplates": nameplates_page,
@@ -1012,8 +1158,10 @@ PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": pro
          "textures": lambda: appearance_page("bar"), "media": media_sheet, "pinned": lambda: nameplates_page(True),
          "diagnostics": diagnostics_page, "sidebar": sidebar_shot,
          "vault": vault_page, "keystones": keystones_page, "tracker": tracker_page, "uftest": uf_test_page,
-         "presets": presets_page, "bags": bags_page, "databar": databar_page, "minimap": minimap_page}
-SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1"), "uftest": ("1560,800", "1")}
+         "presets": presets_page, "bags": bags_page, "databar": databar_page, "minimap": minimap_page,
+         "encounters": encounters_page, "encounters_timeline": lambda: encounters_page(0), "encounters_timers": lambda: encounters_page(2), "encounters_test": encounters_test,
+         "modpicker": modpicker_page}
+SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1"), "uftest": ("1560,800", "1"), "encounters_test": ("1560,800", "1")}
 
 if __name__ == "__main__":
     export_bars()

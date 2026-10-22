@@ -17,8 +17,19 @@
 - **Appearance & Media** pages: every font and texture setting of every module on one page, with Apply to all.
 - **Auras & Cooldowns** (Combat): the Phoenix take on WeakAuras within Midnight's rules. Blizzard's Cooldown
   Manager viewers get square cropped icons (or keep the round ones), borders, Phoenix fonts for timers, stacks and
-  bar names, your bar texture and colour, and an optional fade out of combat. A countdown voice (CC0) speaks the
-  last seconds of pull timers and of Mythic+, arena and battleground start timers.
+  bar names, your bar texture and colour, and an optional fade out of combat.
+- **Encounters** (Combat): Phoenix's boss-mod layer for Midnight, built on the game's own encounter timeline and
+  boss warnings. Boss abilities as Phoenix bars (sorted, emphasised in their last seconds, paused or blocked casts
+  faded, the game's "hide long/queued" settings followed) and boss alerts in a Phoenix banner with a sound per
+  severity, both movable in Edit Mode. Every Blizzard setting for them on one page (master switch, minimum level,
+  cast counts, role and effect icons by type). **Run test** plays the game's sample encounter on the real bars.
+  Pull timer (button or `/pui encounters pull 10`, the game's group countdown) and break timer
+  (`/pui encounters break 5`) that DBM and BigWigs users see and send; the countdown voice moved here from Auras &
+  Cooldowns (your settings come along). With BigWigs or DBM loaded Phoenix draws nothing twice, and BigWigs and
+  LittleWigs get a **Phoenix bar style** through BigWigs' public style API. Spell names, icons and texts stay
+  secret: they are only displayed, never read.
+- **Module picker**: after the welcome looks, new installs choose which modules to run (Apply, or Apply and reload
+  when one needs it); reopen it from Tools → Presets.
 - **Unit Frames**: Boss 1–5 frames, class-icon or hidden portraits, leader/raid-marker/PvP icon switches, a range
   fade for group members you target or focus, cropped aura icons, and **test frames** shown where the real frames
   sit (they close in combat).
