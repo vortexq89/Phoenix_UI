@@ -23,13 +23,19 @@ local INTERP = Enum_.StatusBarInterpolation or {}
 local PT = Enum_.PowerType or {}
 local plain = M.plain
 
+local IRONFUR, IGNORE_PAIN = 192081, 190456 -- spellIDs(retail): Ironfur, Ignore Pain
+local SWEEPING_STRIKES = 260708 -- spellIDs(retail): Sweeping Strikes
+local SOUL_FRAGMENTS = 203981 -- spellIDs(retail): Soul Fragments
+local EBON_MIGHT = 395296 -- spellIDs(retail): Ebon Might
+local GUARDIAN, PROTECTION_WARRIOR, ARMS, VENGEANCE, AUGMENTATION = 104, 73, 71, 581, 1473
+
 -- spec ID -> { spell, mode = "stacks"|"time", max = stacks, text = "stacks"|"absorb"|nil }
 M.SPEC_BARS = {
-    [104] = { spell = 192081, mode = "time", text = "stacks" }, -- spellIDs(retail): Ironfur
-    [73] = { spell = 190456, mode = "time", text = "absorb" }, -- spellIDs(retail): Ignore Pain
-    [71] = { spell = 260708, mode = "time" }, -- spellIDs(retail): Sweeping Strikes
-    [581] = { spell = 203981, mode = "stacks", max = 6, text = "stacks" }, -- spellIDs(retail): Soul Fragments
-    [1473] = { spell = 395296, mode = "time" }, -- spellIDs(retail): Ebon Might
+    [GUARDIAN] = { spell = IRONFUR, mode = "time", text = "stacks" },
+    [PROTECTION_WARRIOR] = { spell = IGNORE_PAIN, mode = "time", text = "absorb" },
+    [ARMS] = { spell = SWEEPING_STRIKES, mode = "time" },
+    [VENGEANCE] = { spell = SOUL_FRAGMENTS, mode = "stacks", max = 6, text = "stacks" },
+    [AUGMENTATION] = { spell = EBON_MIGHT, mode = "time" },
 }
 
 local function playerSpec()
@@ -99,7 +105,7 @@ end
 
 -- Sample data for the preview's resource block: one entry per class (power, class resource, spec bar, druid mana).
 local CLASS_SAMPLE = {
-    WARRIOR = { powerToken = "RAGE", power = 64, powerMax = 100, spec = 190456 }, -- spellIDs(retail): Ignore Pain
+    WARRIOR = { powerToken = "RAGE", power = 64, powerMax = 100, spec = IGNORE_PAIN },
     PALADIN = { powerToken = "MANA", classPowerKind = "HolyPower", classPower = 3, classPowerMax = 5 },
     HUNTER = { powerToken = "FOCUS", power = 72, powerMax = 100 },
     ROGUE = { powerToken = "ENERGY", power = 80, powerMax = 100, classPowerKind = "ComboPoints", classPower = 5, classPowerMax = 7 },
@@ -111,10 +117,9 @@ local CLASS_SAMPLE = {
     WARLOCK = { powerToken = "MANA", classPowerKind = "SoulShards", classPower = 3, classPowerMax = 5 },
     MONK = { powerToken = "ENERGY", power = 70, powerMax = 100, classPowerKind = "Chi", classPower = 4, classPowerMax = 6 },
     DRUID = { powerToken = "ENERGY", power = 66, powerMax = 100, classPowerKind = "ComboPoints", classPower = 3,
-              classPowerMax = 5, manaShift = true, spec = 192081 }, -- spellIDs(retail): Ironfur
-    DEMONHUNTER = { powerToken = "FOCUS", power = 90, powerMax = 120, spec = 203981 }, -- spellIDs(retail): Soul Fragments
-    EVOKER = { powerToken = "MANA", classPowerKind = "Essence", classPower = 4, classPowerMax = 6,
-               spec = 395296 }, -- spellIDs(retail): Ebon Might
+              classPowerMax = 5, manaShift = true, spec = IRONFUR },
+    DEMONHUNTER = { powerToken = "FOCUS", power = 90, powerMax = 120, spec = SOUL_FRAGMENTS },
+    EVOKER = { powerToken = "MANA", classPowerKind = "Essence", classPower = 4, classPowerMax = 6, spec = EBON_MIGHT },
 }
 M.RESOURCE_SAMPLE = CLASS_SAMPLE
 

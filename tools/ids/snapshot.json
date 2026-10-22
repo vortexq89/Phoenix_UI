@@ -215,6 +215,9 @@
   "Interface\\Icons\\Ability_Rogue_DualWeild": {
    "fileDataID": 132290
   },
+  "Interface\\Icons\\Ability_Rogue_KidneyShot": {
+   "fileDataID": 132298
+  },
   "Interface\\Icons\\Ability_Rogue_Sprint": {
    "fileDataID": 132307
   },
@@ -350,6 +353,9 @@
   "Interface\\Icons\\Spell_Nature_Lightning": {
    "fileDataID": 136048
   },
+  "Interface\\Icons\\Spell_Nature_Polymorph": {
+   "fileDataID": 136071
+  },
   "Interface\\Icons\\Spell_Nature_Rejuvenation": {
    "fileDataID": 136081
   },
@@ -361,6 +367,9 @@
   },
   "Interface\\Icons\\Spell_Shadow_CurseOfTounges": {
    "fileDataID": 136140
+  },
+  "Interface\\Icons\\Spell_Shadow_Possession": {
+   "fileDataID": 136183
   },
   "Interface\\Icons\\Spell_Shadow_ShadowWordPain": {
    "fileDataID": 136207
@@ -410,6 +419,9 @@
  "spells": {
   "106839": {
    "name": "Skull Bash"
+  },
+  "107079": {
+   "name": "Quaking Palm"
   },
   "1126": {
    "name": "Mark of the Wild"
@@ -492,8 +504,29 @@
   "187707": {
    "name": "Muzzle"
   },
+  "190456": {
+   "name": "Ignore Pain"
+  },
+  "192081": {
+   "name": "Ironfur"
+  },
   "19705": {
    "name": "Well Fed"
+  },
+  "203981": {
+   "name": "Soul Fragments"
+  },
+  "20549": {
+   "name": "War Stomp"
+  },
+  "20572": {
+   "name": "Blood Fury"
+  },
+  "20589": {
+   "name": "Escape Artist"
+  },
+  "20594": {
+   "name": "Stoneform"
   },
   "2139": {
    "name": "Counterspell"
@@ -507,6 +540,15 @@
   "257044": {
    "name": "Rapid Fire"
   },
+  "260708": {
+   "name": "Sweeping Strikes"
+  },
+  "26297": {
+   "name": "Berserking"
+  },
+  "28730": {
+   "name": "Arcane Torrent"
+  },
   "351338": {
    "name": "Quell"
   },
@@ -516,11 +558,17 @@
   "364342": {
    "name": "Blessing of the Bronze"
   },
+  "368970": {
+   "name": "Tail Swipe"
+  },
   "381748": {
    "name": "Blessing of the Bronze"
   },
   "393438": {
    "name": "Draconic Augmentation"
+  },
+  "395296": {
+   "name": "Ebon Might"
   },
   "431971": {
    "name": "Flask of Tempered Aggression"
@@ -552,6 +600,15 @@
   "57994": {
    "name": "Wind Shear"
   },
+  "58984": {
+   "name": "Shadowmeld"
+  },
+  "59542": {
+   "name": "Gift of the Naaru"
+  },
+  "59752": {
+   "name": "Will to Survive"
+  },
   "61304": {
    "name": "Global Cooldown"
   },
@@ -564,11 +621,20 @@
   "6673": {
    "name": "Battle Shout"
   },
+  "68992": {
+   "name": "Darkflight"
+  },
+  "69070": {
+   "name": "Rocket Jump"
+  },
   "75": {
    "name": "Auto Shot"
   },
   "755": {
    "name": "Health Funnel"
+  },
+  "7744": {
+   "name": "Will of the Forsaken"
   },
   "78675": {
    "name": "Solar Beam"

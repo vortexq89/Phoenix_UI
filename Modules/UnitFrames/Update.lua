@@ -1112,22 +1112,27 @@ end
 --[[ Racial abilities by race file: the spell whose icon the racial slot shows and its cooldown (seconds) once we see
     it used. Arena enemies' casts are often secret: then the icon stays without a cooldown. ]]
 local RACIALS = {
-    Human = { 59752, 180 }, -- spellIDs(retail): Will to Survive
-    Scourge = { 7744, 120 }, -- spellIDs(retail): Will of the Forsaken
-    Dwarf = { 20594, 120 }, -- spellIDs(retail): Stoneform
-    Gnome = { 20589, 60 }, -- spellIDs(retail): Escape Artist
-    NightElf = { 58984, 120 }, -- spellIDs(retail): Shadowmeld
-    Tauren = { 20549, 90 }, -- spellIDs(retail): War Stomp
-    Troll = { 26297, 180 }, -- spellIDs(retail): Berserking
-    Orc = { 20572, 120 }, -- spellIDs(retail): Blood Fury
-    BloodElf = { 28730, 120 }, -- spellIDs(retail): Arcane Torrent
-    Draenei = { 59542, 180 }, -- spellIDs(retail): Gift of the Naaru
-    Goblin = { 69070, 90 }, -- spellIDs(retail): Rocket Jump
-    Worgen = { 68992, 120 }, -- spellIDs(retail): Darkflight
-    Pandaren = { 107079, 120 }, -- spellIDs(retail): Quaking Palm
-    Dracthyr = { 368970, 90 }, -- spellIDs(retail): Tail Swipe
+    Human = 59752, -- spellIDs(retail): Will to Survive
+    Scourge = 7744, -- spellIDs(retail): Will of the Forsaken
+    Dwarf = 20594, -- spellIDs(retail): Stoneform
+    Gnome = 20589, -- spellIDs(retail): Escape Artist
+    NightElf = 58984, -- spellIDs(retail): Shadowmeld
+    Tauren = 20549, -- spellIDs(retail): War Stomp
+    Troll = 26297, -- spellIDs(retail): Berserking
+    Orc = 20572, -- spellIDs(retail): Blood Fury
+    BloodElf = 28730, -- spellIDs(retail): Arcane Torrent
+    Draenei = 59542, -- spellIDs(retail): Gift of the Naaru
+    Goblin = 69070, -- spellIDs(retail): Rocket Jump
+    Worgen = 68992, -- spellIDs(retail): Darkflight
+    Pandaren = 107079, -- spellIDs(retail): Quaking Palm
+    Dracthyr = 368970, -- spellIDs(retail): Tail Swipe
 }
-M.RACIALS = RACIALS
+-- seconds
+local RACIAL_COOLDOWN = {
+    Human = 180, Scourge = 120, Dwarf = 120, Gnome = 60, NightElf = 120, Tauren = 90, Troll = 180,
+    Orc = 120, BloodElf = 120, Draenei = 180, Goblin = 90, Worgen = 120, Pandaren = 120, Dracthyr = 90,
+}
+M.RACIALS, M.RACIAL_COOLDOWN = RACIALS, RACIAL_COOLDOWN
 
 --[[ The class icon's aura: crowd control on the enemy first, then its big defensive, then an important buff.
     Each kind is one filtered list (C_UnitAuras.GetUnitAuras); the first entry is drawn. ]]
@@ -1193,16 +1198,18 @@ local function racial(f, u)
     local entry = race and RACIALS[race]
     f.Racial:SetShown(entry ~= nil)
     if not entry then return end
-    local icon = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(entry[1])
+    local icon = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(entry)
     if icon then f.Racial.Icon:SetTexture(icon) end
-    if f.sample and f.sample.racialUsed then f.Racial.Cooldown:SetCooldown(GetTime() - f.sample.racialUsed, entry[2]) end
+    if f.sample and f.sample.racialUsed then
+        f.Racial.Cooldown:SetCooldown(GetTime() - f.sample.racialUsed, RACIAL_COOLDOWN[race] or 120)
+    end
 end
 
 -- A seen cast of an arena enemy's racial (plain spell IDs only) starts the racial's cooldown.
 function M:OnArenaCast(f, spellID)
     if not (f and f.Racial and plain(spellID)) then return end
-    for _, entry in pairs(RACIALS) do
-        if entry[1] == spellID then f.Racial.Cooldown:SetCooldown(GetTime(), entry[2]); return end
+    for race, id in pairs(RACIALS) do
+        if id == spellID then f.Racial.Cooldown:SetCooldown(GetTime(), RACIAL_COOLDOWN[race] or 120); return end
     end
 end
 

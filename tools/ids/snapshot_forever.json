@@ -215,6 +215,9 @@
   "Interface\\Icons\\Ability_Rogue_DualWeild": {
    "fileDataID": 132290
   },
+  "Interface\\Icons\\Ability_Rogue_KidneyShot": {
+   "fileDataID": 132298
+  },
   "Interface\\Icons\\Ability_Rogue_Sprint": {
    "fileDataID": 132307
   },
@@ -350,6 +353,9 @@
   "Interface\\Icons\\Spell_Nature_Lightning": {
    "fileDataID": 136048
   },
+  "Interface\\Icons\\Spell_Nature_Polymorph": {
+   "fileDataID": 136071
+  },
   "Interface\\Icons\\Spell_Nature_Rejuvenation": {
    "fileDataID": 136081
   },
@@ -361,6 +367,9 @@
   },
   "Interface\\Icons\\Spell_Shadow_CurseOfTounges": {
    "fileDataID": 136140
+  },
+  "Interface\\Icons\\Spell_Shadow_Possession": {
+   "fileDataID": 136183
   },
   "Interface\\Icons\\Spell_Shadow_ShadowWordPain": {
    "fileDataID": 136207

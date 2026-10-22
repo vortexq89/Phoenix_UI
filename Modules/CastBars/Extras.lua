@@ -13,7 +13,7 @@ local extras = M.extras
               melee reach (C_Spell.IsSpellInRange of Auto Attack; an unknown answer keeps them lit). ]]
 
 local GCD_SPELL = 61304 -- spellIDs(retail): Global Cooldown
-local AUTO_ATTACK = 6603 -- spellIDs: Auto Attack
+local AUTO_ATTACK = 6603 -- spellIDs: Auto Attack (Forever: Attack)
 local Enum_ = Enum or {}
 local TIMER = Enum_.StatusBarTimerDirection or {}
 local INTERP = Enum_.StatusBarInterpolation or {}
