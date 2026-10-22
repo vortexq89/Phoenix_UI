@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "Testo della Vista d'Ombra",
     PVP_SHADOWSIGHT_IN = "Vista d'Ombra tra %d:%02d",
     PVP_SHADOWSIGHT_UP = "Vista d'Ombra disponibile",
+    PREVIEW_STATE_RESOURCES = "Barre delle risorse",
 }
 
 ns.RegisterLocale("itIT", T)

@@ -4,7 +4,8 @@ local L, P, Skin, Theme = ns.L, ns.Previews, ns.Skin, ns.Theme
 --[[ The cast bar picked in the scope bar. Phoenix mode: three bars built by CastBars itself (M:BuildBar / LayoutBar /
     StartSample, the code that draws the real bars) fed frozen sample casts - a cast, a channel and a locked cast
     (an empowered cast for the player) - so latency, ticks, stages, the kick tick and the glows all show. Nothing
-    reads a unit. Blizzard mode: the 2.0 skin drawn on plain bars. State: the interrupted flash. ]]
+    reads a unit. For the player (S18) the GCD bar (on the cast bar or standalone) and the swing bar (with its hand
+    labels) show too, drawn by the same CastBars code. Blizzard mode: the 2.0 skin drawn on plain bars. State: the interrupted flash. ]]
 local STATES = {
     { sample = "PREVIEW_SPELL_CAST", barType = "standard", value = 0.62, time = "1.1", icon = 1 },
     { sample = "PREVIEW_SPELL_CHANNEL", barType = "channel", value = 0.4, time = "2.6", icon = 4 },
@@ -85,9 +86,46 @@ local function legacy(stage, m)
     end
 end
 
+-- The player's extras: a GCD sample under the first bar or on its own, and a frozen swing bar.
+local function drawExtras(stage, m, built, first, bottom)
+    local x = built.extras
+    if not x then
+        x = { gcd = P.Bar(stage, 0.45, 100, 4) }
+        if m.BuildSwingFrame then x.swing = m:BuildSwingFrame(stage) end
+        built.extras = x
+    end
+    local g, c = m.db.gcd, m.db.swing
+    local y = bottom
+    x.gcd:SetShown(g.enabled and ns:Supports("gcdBar") and first ~= nil)
+    if x.gcd:IsShown() then
+        m:StyleGCDSample(x.gcd)
+        x.gcd:ClearAllPoints()
+        if g.attach == "free" then
+            x.gcd:SetSize(math.min(g.width, MAX_W), g.height)
+            x.gcd:SetPoint("TOP", stage, "TOP", 0, y)
+            y = y - g.height - 8
+        else
+            x.gcd:SetPoint("TOPLEFT", first.Bar, "BOTTOMLEFT", 0, -g.gap)
+            x.gcd:SetPoint("TOPRIGHT", first.Bar, "BOTTOMRIGHT", 0, -g.gap)
+            x.gcd:SetHeight(g.height)
+        end
+    end
+    local s = x.swing
+    if not s then return end
+    s:SetShown(c.enabled and ns:Supports("swingTimer"))
+    if not s:IsShown() then return end
+    m:LayoutSwingFrame(s, true)
+    s:SetWidth(math.min(c.width, MAX_W))
+    s:ClearAllPoints()
+    s:SetPoint("TOP", stage, "TOP", 0, y)
+    s.main:SetMinMaxValues(0, 1); s.main:SetValue(0.55)
+    s.off:SetMinMaxValues(0, 1); s.off:SetValue(0.3)
+    s.text:SetText("1.2")
+end
+
 P:Register("castbar", {
     module = "CastBars",
-    height = 150,
+    height = 190,
     states = { { key = "interrupted", label = "PREVIEW_STATE_INTERRUPTED", icon = "error" } },
     build = function(stage, m)
         local old, drawOld = legacy(stage, m)
@@ -95,7 +133,11 @@ P:Register("castbar", {
         return function(view, unit)
             local phoenix = m.db.mode == "phoenix" and m.Bar ~= nil and m.BuildBar ~= nil
             old:SetShown(not phoenix)
-            for _, list in pairs(built) do for _, f in ipairs(list) do f:Hide() end end
+            for k, list in pairs(built) do if k ~= "extras" then for _, f in ipairs(list) do f:Hide() end end end
+            if built.extras then
+                built.extras.gcd:Hide()
+                if built.extras.swing then built.extras.swing:Hide() end
+            end
             if not phoenix then drawOld(view, unit); return end
             local key = m.TOKENS[unit] and unit or "player"
             local list = built[key]
@@ -130,6 +172,7 @@ P:Register("castbar", {
                 f:SetAlpha(1)
                 f:Show()
             end
+            if key == "player" then drawExtras(stage, m, built, list[1], -18 - #list * pitch) end
         end
     end,
 })

@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "Schattensicht-Text",
     PVP_SHADOWSIGHT_IN = "Schattensicht in %d:%02d",
     PVP_SHADOWSIGHT_UP = "Schattensicht bereit",
+    PREVIEW_STATE_RESOURCES = "Ressourcenleisten",
 }
 
 ns.RegisterLocale("deDE", T)

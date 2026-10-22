@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "暗影视界文字",
     PVP_SHADOWSIGHT_IN = "暗影视界：%d:%02d 后",
     PVP_SHADOWSIGHT_UP = "暗影视界已出现",
+    PREVIEW_STATE_RESOURCES = "资源条",
 }
 
 ns.RegisterLocale("zhCN", T)

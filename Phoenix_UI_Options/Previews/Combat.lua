@@ -238,10 +238,11 @@ P:Register("combattext", {
 })
 
 ---------------------------------------------------------------- PvP queue pop (S16)
--- A drawn copy of the ready dialog: Enter centred with "Leave Queue" gone under safe queue, and the countdown.
+-- A drawn copy of the ready dialog: Enter centred with "Leave Queue" gone under safe queue, and the countdown;
+-- (S18) the arena Shadowsight timer under it, 52 seconds into a match.
 P:Register("pvp", {
     module = "PvP",
-    height = 130,
+    height = 156,
     build = function(stage, m)
         local d = CreateFrame("Frame", nil, stage)
         d:SetSize(260, 84)
@@ -259,6 +260,8 @@ P:Register("pvp", {
         d.enter, d.leave = fake(ENTER_BATTLE), fake(LEAVE_QUEUE)
         local timer = P.Text(stage, "OVERLAY")
         timer:SetPoint("TOP", d, "BOTTOM", 0, -6)
+        local sight = P.Text(stage, "OVERLAY")
+        sight:SetPoint("TOP", timer, "BOTTOM", 0, -8)
         return function()
             local db = m.db
             Skin:Panel(d, "raised", { border = "border.default" })
@@ -280,6 +283,10 @@ P:Register("pvp", {
             m:StyleTimer(timer)
             timer:SetFormattedText(L.PVP_TIME_LEFT, 37)
             timer:SetShown(db.showTimer)
+            local ss = db.shadowsight
+            Skin:TextSpec(sight, ss.text, "number", "accent.primary")
+            sight:SetText(m.ShadowsightText(52, ss.delay, ss.shown) or "")
+            sight:SetShown(ss.enabled and ns:Supports("arena"))
         end
     end,
 })

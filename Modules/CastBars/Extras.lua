@@ -148,13 +148,22 @@ local function swingTick(self)
     if not any and not self.sample then self:Hide() end
 end
 
-local function buildSwing()
-    local s = CreateFrame("Frame", "PhoenixUI_CB_swing", UIParent)
+-- The swing bar's frame (the real one, or a plain preview copy drawn by the same layout code).
+function M:BuildSwingFrame(parent, name)
+    local s = CreateFrame("Frame", name, parent)
     s.main = statusBar(s)
     s.off = statusBar(s)
     s.text = s.main:CreateFontString(nil, "OVERLAY")
     s.mainLabel = s.main:CreateFontString(nil, "OVERLAY")
     s.offLabel = s.off:CreateFontString(nil, "OVERLAY")
+    return s
+end
+
+-- A plain bar in the GCD bar's look (the options preview).
+function M:StyleGCDSample(bar) look(bar, "text.secondary", "gcd") end
+
+local function buildSwing()
+    local s = M:BuildSwingFrame(UIParent, "PhoenixUI_CB_swing")
     s:SetScript("OnUpdate", swingTick)
     s:Hide()
     extras.swing = s
@@ -163,12 +172,13 @@ local function buildSwing()
     return s
 end
 
-local function layoutSwing()
-    local s = M.extras.swing
-    if not s then return end
+-- Sizes and styles a swing frame; `preview` leaves its position and visibility to the caller.
+function M:LayoutSwingFrame(s, preview)
     local c = M.db.swing
-    s:ClearAllPoints()
-    s:SetPoint(c.point, UIParent, c.point, c.x, c.y)
+    if not preview then
+        s:ClearAllPoints()
+        s:SetPoint(c.point, UIParent, c.point, c.x, c.y)
+    end
     s:SetSize(c.width, c.height + (c.offhand and (math.max(2, math.floor(c.height / 2)) + 2) or 0))
     s.main:ClearAllPoints()
     s.main:SetPoint("TOPLEFT"); s.main:SetPoint("TOPRIGHT")
@@ -189,7 +199,13 @@ local function layoutSwing()
         fs:SetText(label)
         fs:SetShown(c.labels and (b ~= s.off or c.offhand))
     end
-    if not (c.enabled and ns:Supports("swingTimer")) then s:Hide() end
+    s.off:SetShown(c.offhand)
+    if not preview and not (c.enabled and ns:Supports("swingTimer")) then s:Hide() end
+end
+
+local function layoutSwing()
+    local s = M.extras.swing
+    if s then M:LayoutSwingFrame(s) end
 end
 
 local function onSwing(_, _, duration, kind)

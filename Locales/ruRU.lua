@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "Текст Теневого зрения",
     PVP_SHADOWSIGHT_IN = "Теневое зрение через %d:%02d",
     PVP_SHADOWSIGHT_UP = "Теневое зрение доступно",
+    PREVIEW_STATE_RESOURCES = "Полосы ресурсов",
 }
 
 ns.RegisterLocale("ruRU", T)

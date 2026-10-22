@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "그림자 시야 글자",
     PVP_SHADOWSIGHT_IN = "그림자 시야까지 %d:%02d",
     PVP_SHADOWSIGHT_UP = "그림자 시야 등장",
+    PREVIEW_STATE_RESOURCES = "자원 바",
 }
 
 ns.RegisterLocale("koKR", T)

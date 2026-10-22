@@ -2001,7 +2001,7 @@ try("unit frames blizzard fallback", function()
 end)
 try("unit frames depth (S8)", function()
     local n = ns.Config.CountSettings(ns.options.UnitFrames)
-    assert(n >= 150 and ns.Config.DEPTH.UnitFrames == 150, ("UnitFrames has %d of 150 settings"):format(n))
+    assert(n >= 359 and ns.Config.DEPTH.UnitFrames == 359, ("UnitFrames has %d of 359 settings"):format(n))
     print(("  UnitFrames settings: %d"):format(n))
 end)
 
@@ -2087,7 +2087,7 @@ try("cast bars blizzard fallback", function()
 end)
 try("cast bars depth (S9)", function()
     local n = ns.Config.CountSettings(ns.options.CastBars)
-    assert(n >= 55 and ns.Config.DEPTH.CastBars == 55, ("CastBars has %d of 55 settings"):format(n))
+    assert(n >= 105 and ns.Config.DEPTH.CastBars == 105, ("CastBars has %d of 105 settings"):format(n))
     print(("  CastBars settings: %d"):format(n))
 end)
 -- auras (S9): header attributes, slots, time formats, headers and buttons, test auras, depth
@@ -4061,6 +4061,176 @@ try("gap rows: world map scale, bag bar, stats panel and alert skin (S17)", func
     end
     SK.db.alerts = false
 end)
+try("arena II helpers (S18)", function()
+    local M = ns.modules.UnitFrames
+    -- every layout preset writes a consistent shape; an unknown one changes nothing
+    for _, name in ipairs(M.ARENA_LAYOUT_ORDER) do
+        local u = { powerBar = {}, dr = { size = 24 } }
+        assert(M.ApplyArenaLayout(u, name), "preset " .. name)
+        local p = M.ARENA_LAYOUTS[name]
+        assert(u.width == p.width and u.height == p.height and u.layout == name and u.mirrored == p.mirrored, name)
+        assert((u.powerBar.show == "off") == (p.ph == 0), name .. " power")
+        assert(u.portraitPos == (p.mirrored and "right" or "left") and u.dr.size >= 16 and u.dr.size <= 36, name .. " sides")
+    end
+    assert(#M.ARENA_LAYOUT_ORDER == 9 and not M.ApplyArenaLayout({ powerBar = {} }, "nope"), "unknown preset")
+    -- the preset row writes through OnSettingChanged
+    local a = M.db.units.arena
+    local keep = { a.layout, a.width, a.height, a.spacing, a.powerBar.show, a.powerBar.height, a.portrait, a.portraitPos,
+                   a.mirrored, a.iconZoom, a.dr.zoom, a.dr.size }
+    ns.DB:Set(M, "units.arena.layout", "wide")
+    assert(a.width == 260 and a.height == 36, "the layout row did not apply its preset")
+    a.layout, a.width, a.height, a.spacing, a.powerBar.show, a.powerBar.height, a.portrait, a.portraitPos, a.mirrored,
+        a.iconZoom, a.dr.zoom, a.dr.size = unpack(keep, 1, 12)
+    -- sides: icons right of a mirrored frame's DR
+    assert(select(1, M.ArenaSides({ mirrored = false })) == "RIGHT" and select(1, M.ArenaSides({ mirrored = true })) == "LEFT", "sides")
+    assert(M.AuraReach({ auras = { buffs = "off", debuffs = "left", max = 4, perRow = 8, size = 20, spacing = 2, gap = 4 } }, "LEFT") == 90,
+        "aura reach")
+    -- clicks
+    local kind, k, v = M.ClickAttributes("spell", "Polymorph", "arena1")
+    assert(kind == "spell" and k == "spell" and v == "Polymorph", "spell click")
+    kind, k, v = M.ClickAttributes("macro", "/cast [@unit] Kick", "arena2")
+    assert(kind == "macro" and k == "macrotext" and v == "/cast [@arena2] Kick", "macro click: " .. tostring(v))
+    assert(M.ClickAttributes("spell", "", "arena1") == nil and M.ClickAttributes("none") == nil, "empty clicks")
+    assert(M.ClickAttributes("target") == "target" and M.ClickAttributes("togglemenu") == "togglemenu", "plain clicks")
+    assert(M.QuickFocusMacro("arena1", 8) == "/focus [@arena1]\n/tm [@arena1] 8" and M.QuickFocusMacro("focus", 0) == nil,
+        "quick focus macro")
+    -- nicknames, hanging parts, health share
+    local map = M.ParseNicknames(" Thrall = Go'el ; Jaina=Proud\nbad, =x, y= ")
+    assert(map.Thrall == "Go'el" and map.Jaina == "Proud" and map.bad == nil and map.y == nil, "nicknames")
+    assert(M.ParseNicknames(nil) and next(M.ParseNicknames(nil)) == nil, "no nicknames")
+    local u = { powerBar = { show = "always", position = "below", height = 6, gap = 1 }, strip = { show = true, height = 14, gap = 1 },
+                bar = { share = 0.7 } }
+    assert(M.Hanging(u) == 8 + 15, "hanging")
+    assert(M.SharedPowerHeight(u, 40, 6) == 11 and M.SharedPowerHeight({ bar = { share = 1 }, powerBar = {} }, 40, 6) == 6, "share")
+    -- totems, resource rows and samples
+    local s = M.TotemSlots(4, 28, 4, "LEFT")
+    assert(#s == 4 and s[2][1] == -32 and s[4][1] == -96, "totem slots left")
+    s = M.TotemSlots(2, 20, 2, "UP")
+    assert(s[2][2] == 22 and s[2][1] == 0, "totem slots up")
+    local r = M.db.resources
+    local rows, height = M.ResourceRows(r, { health = true, power = true })
+    assert(#rows == 2 and height == r.health.height + r.power.height + r.spacing, "collapsed resource rows")
+    r.collapse = false
+    rows = M.ResourceRows(r, { health = true, power = true })
+    r.collapse = true
+    assert(#rows >= 4 and rows[3].empty, "uncollapsed resource rows")
+    for class in pairs(M.RESOURCE_SAMPLE) do
+        local x = M.ResourceSample(class)
+        assert(x.class == class and x.hp and x.powerToken, "resource sample " .. class)
+    end
+    assert(M.ResourceSample("NOPE").class == "PALADIN", "unknown class sample")
+    -- Shadowsight countdown
+    local P = ns.modules.PvP
+    assert(P.ShadowsightText(52, 90, 15) == ns.L.PVP_SHADOWSIGHT_IN:format(0, 38), "shadowsight countdown")
+    assert(P.ShadowsightText(95, 90, 15) == ns.L.PVP_SHADOWSIGHT_UP and P.ShadowsightText(120, 90, 15) == nil, "shadowsight up")
+    assert(P.ShadowsightText(nil, 90, 15) == nil, "no match clock")
+    -- swing range cue: no target, no answer
+    assert(ns.modules.CastBars.SwingOutOfRange() == nil, "range cue without a target")
+end)
+
+try("arena II frames, previews and adoption (S18)", function()
+    local M = ns.modules.UnitFrames
+    local a = M.db.units.arena
+    local keep = { a.enabled, a.mirrored, a.testCount, M.db.units.arenapet.enabled, M.db.resources.enabled, M.db.totems.style,
+                   M.db.quickFocus.key, M.db.quickFocus.marker, M.db.nicknames }
+    a.enabled, M.db.units.arenapet.enabled, M.db.resources.enabled, M.db.totems.style = true, true, true, "phoenix"
+    M.db.quickFocus.key, M.db.quickFocus.marker, M.db.nicknames = "shift", 8, "Phoenix=Ash"
+    M:Refresh()
+    -- live Phoenix arena frames: widgets exist, test frames fill them, clicks are set
+    local f = M.frames.arena and M.frames.arena[1]
+    assert(f and f.ClassIcon and f.Racial and f.DR and f.FocusMark and f.Targets, "arena widgets missing")
+    for _, mirrored in ipairs({ false, true }) do
+        a.mirrored = mirrored
+        M:Refresh()
+        assert(M:ShowTest(true), "arena test frames")
+        assert(f.DR.side == (mirrored and "RIGHT" or "LEFT"), "DR side with mirrored=" .. tostring(mirrored))
+        M:ShowTest(false)
+    end
+    M.ApplyClicks(f)
+    -- the game's tray and trinket are taken over (a stand-in CompactArenaFrame)
+    local item = env.CreateFrame("Frame")
+    item.Icon = item:CreateTexture()
+    item.Cooldown = env.CreateFrame("Cooldown", nil, item)
+    item.ImmunityIndicator = item:CreateTexture()
+    item.UpdateState = function() end
+    item:Show()
+    local tray = env.CreateFrame("Frame")
+    rawset(tray, "GetChildren", function() return item end)
+    tray.RefreshTrayLayout = function() end
+    local remover = env.CreateFrame("Frame")
+    remover.Icon = remover:CreateTexture()
+    rawset(env, "CompactArenaFrame", { memberUnitFrames = { { SpellDiminishStatusTray = tray, CcRemoverFrame = remover } } })
+    M.AdoptArenaParts()
+    assert(M.adoptedTrays[1] == tray and M.adoptedRemovers[1] == remover and f.trinketAdopted, "tray / trinket not adopted")
+    tray:RefreshTrayLayout()
+    item:UpdateState({ isImmune = true })
+    M.RelayoutTray(tray)
+    rawset(env, "CompactArenaFrame", nil)
+    -- previews: arena stacks (2-5), arena pets, the resource block for every class, castbar extras, Shadowsight
+    local page = { scope = { unit = "arena" } }
+    local stage = ns.Previews:Create("unitframe", env.CreateFrame("Frame"), M, page)
+    for n = 2, 5 do
+        a.testCount = n
+        stage.states = { low = n == 3, range = n == 4, combat = n == 5 }
+        stage:Redraw()
+    end
+    page.scope.unit = "arenapet"; stage:Redraw()
+    page.scope.unit = "player"
+    for class in pairs(M.RESOURCE_SAMPLE) do
+        M.db.resources.previewClass = class
+        for _, growth in ipairs({ "RIGHT", "LEFT", "UP" }) do
+            M.db.totems.growth = growth
+            stage.states = { resources = true, low = growth == "LEFT" }
+            stage:Redraw()
+        end
+    end
+    M.db.resources.previewClass, M.db.totems.growth = "", "RIGHT"
+    stage.states = {}; stage:Redraw()
+    local CB = ns.modules.CastBars
+    local g, sw = CB.db.gcd, CB.db.swing
+    local keepCB = { g.enabled, g.attach, sw.enabled, sw.labels, sw.rangeCue }
+    for _, attach in ipairs({ "castbar", "free" }) do
+        g.enabled, g.attach, sw.enabled, sw.labels, sw.rangeCue = true, attach, true, attach == "free", true
+        CB:Refresh()
+        ns.Previews:Create("castbar", env.CreateFrame("Frame"), CB, { scope = { unit = "player" } }):Redraw()
+    end
+    g.enabled, g.attach, sw.enabled, sw.labels, sw.rangeCue = unpack(keepCB, 1, 5)
+    CB:Refresh()
+    local P = ns.modules.PvP
+    local wasSight = P.db.shadowsight.enabled
+    P.db.shadowsight.enabled = true
+    P:Refresh()
+    ns.Previews:Create("pvp", env.CreateFrame("Frame"), P, {}):Redraw()
+    P.db.shadowsight.enabled = wasSight
+    P:Refresh()
+    -- the resource block and totem bar update live
+    M:RefreshResources()
+    a.enabled, a.mirrored, a.testCount, M.db.units.arenapet.enabled, M.db.resources.enabled, M.db.totems.style,
+        M.db.quickFocus.key, M.db.quickFocus.marker, M.db.nicknames = unpack(keep, 1, 9)
+    M:Refresh()
+end)
+
+try("arena II depth and Forever gating (S18)", function()
+    for key, target in pairs({ UnitFrames = 359, CastBars = 105, PvP = 18 }) do
+        local n = ns.Config.CountSettings(ns.options[key])
+        assert(n >= target and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
+    end
+    -- arena-only rows carry the arena feature (hidden on Forever, which has no arenas)
+    local gated = 0
+    local function walk(rows)
+        for _, r in ipairs(rows) do
+            if type(r.key) == "string" and (r.key:find("%.dr%.") or r.key:find("%.click%.") or r.key:find("shadowsight")) then
+                assert(r.feature == "arena", r.key .. " is not gated to arenas")
+                gated = gated + 1
+            end
+        end
+    end
+    walk(ns.options.UnitFrames); walk(ns.options.PvP)
+    assert(gated >= 10, "too few arena-gated rows: " .. gated)
+    assert(ns.FEATURES.arena and ns.FEATURES.arena.retail and not ns.FEATURES.arena.forever, "arena feature")
+    assert(ns.FEATURES.specBars and ns.FEATURES.specBars.retail and not ns.FEATURES.specBars.forever, "specBars feature")
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

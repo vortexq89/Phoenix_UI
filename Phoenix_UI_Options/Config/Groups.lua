@@ -31,10 +31,10 @@ Config.GROUPS = {
 --[[ How deep each page is planned to go (plan v2 target rows, GAP_MATRIX.md). The module list and Home show
     the settings a page has now against this, so the depth still to build is visible, never hidden. ]]
 Config.DEPTH = {
-    ActionBars = 112, CooldownText = 12, Tracker = 59, UnitFrames = 150, GroupFrames = 67, NamePlates = 100,
-    CastBars = 55, Auras = 41, CombatText = 26, DamageMeter = 24, SpellHistory = 12, Chat = 51, Minimap = 41,
+    ActionBars = 112, CooldownText = 12, Tracker = 59, UnitFrames = 359, GroupFrames = 67, NamePlates = 100,
+    CastBars = 105, Auras = 41, CombatText = 26, DamageMeter = 24, SpellHistory = 12, Chat = 51, Minimap = 41,
     Tooltip = 45, Bags = 42, ItemLevel = 19, DataTexts = 47, Skins = 28, General = 21, profiles = 8, Movers = 11,
-    Quality = 11, Automation = 13, AFK = 4, Bugs = 12, MythicPlus = 31, Encounters = 63, PvP = 4, Sim = 8, Quests = 27,
+    Quality = 11, Automation = 13, AFK = 4, Bugs = 12, MythicPlus = 31, Encounters = 63, PvP = 18, Sim = 8, Quests = 27,
     GroupFinder = 13, diagnostics = 3,
 }
 

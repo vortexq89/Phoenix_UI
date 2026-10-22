@@ -3515,4 +3515,5 @@ ns.RegisterLocale("enUS", {
     PVP_SHADOWSIGHT_FONT = "Shadowsight text",
     PVP_SHADOWSIGHT_IN = "Shadowsight in %d:%02d",
     PVP_SHADOWSIGHT_UP = "Shadowsight up",
+    PREVIEW_STATE_RESOURCES = "Resource bars",
 })

@@ -97,6 +97,41 @@ function M:BuildResources(parent, opts)
     return f
 end
 
+-- Sample data for the preview's resource block: one entry per class (power, class resource, spec bar, druid mana).
+local CLASS_SAMPLE = {
+    WARRIOR = { powerToken = "RAGE", power = 64, powerMax = 100, spec = 190456 }, -- spellIDs(retail): Ignore Pain
+    PALADIN = { powerToken = "MANA", classPowerKind = "HolyPower", classPower = 3, classPowerMax = 5 },
+    HUNTER = { powerToken = "FOCUS", power = 72, powerMax = 100 },
+    ROGUE = { powerToken = "ENERGY", power = 80, powerMax = 100, classPowerKind = "ComboPoints", classPower = 5, classPowerMax = 7 },
+    PRIEST = { powerToken = "MANA" },
+    DEATHKNIGHT = { powerToken = "RUNIC_POWER", power = 55, powerMax = 125, classPowerKind = "Runes", classPower = 4,
+                    classPowerMax = 6 },
+    SHAMAN = { powerToken = "MANA" },
+    MAGE = { powerToken = "MANA", classPowerKind = "ArcaneCharges", classPower = 2, classPowerMax = 4 },
+    WARLOCK = { powerToken = "MANA", classPowerKind = "SoulShards", classPower = 3, classPowerMax = 5 },
+    MONK = { powerToken = "ENERGY", power = 70, powerMax = 100, classPowerKind = "Chi", classPower = 4, classPowerMax = 6 },
+    DRUID = { powerToken = "ENERGY", power = 66, powerMax = 100, classPowerKind = "ComboPoints", classPower = 3,
+              classPowerMax = 5, manaShift = true, spec = 192081 }, -- spellIDs(retail): Ironfur
+    DEMONHUNTER = { powerToken = "FOCUS", power = 90, powerMax = 120, spec = 203981 }, -- spellIDs(retail): Soul Fragments
+    EVOKER = { powerToken = "MANA", classPowerKind = "Essence", classPower = 4, classPowerMax = 6,
+               spec = 395296 }, -- spellIDs(retail): Ebon Might
+}
+M.RESOURCE_SAMPLE = CLASS_SAMPLE
+
+-- The preview's sample for a class (pure apart from the spell name lookup).
+function M.ResourceSample(classFile)
+    local c = CLASS_SAMPLE[classFile] or CLASS_SAMPLE.PALADIN
+    local s = { name = "", class = CLASS_SAMPLE[classFile] and classFile or "PALADIN", hp = 412000, hpMax = 520000,
+                power = c.power or 162000, powerMax = c.powerMax or 250000, powerToken = c.powerToken,
+                classPowerKind = c.classPowerKind, classPower = c.classPower, classPowerMax = c.classPowerMax,
+                manaShift = c.manaShift }
+    if c.spec then
+        local name = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(c.spec)
+        s.specBar = { value = 0.6, label = type(name) == "string" and name or "" }
+    end
+    return s
+end
+
 local function texture(r)
     return r.texture ~= "" and Media:Bar(r.texture) or Theme:Bar()
 end

@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "Texto da Visão Sombria",
     PVP_SHADOWSIGHT_IN = "Visão Sombria em %d:%02d",
     PVP_SHADOWSIGHT_UP = "Visão Sombria disponível",
+    PREVIEW_STATE_RESOURCES = "Barras de recursos",
 }
 
 ns.RegisterLocale("ptBR", T)

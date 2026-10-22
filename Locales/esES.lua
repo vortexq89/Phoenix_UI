@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "Texto de Vista de las sombras",
     PVP_SHADOWSIGHT_IN = "Vista de las sombras en %d:%02d",
     PVP_SHADOWSIGHT_UP = "Vista de las sombras disponible",
+    PREVIEW_STATE_RESOURCES = "Barras de recursos",
 }
 
 ns.RegisterLocale("esES", T)

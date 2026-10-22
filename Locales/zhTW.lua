@@ -3489,6 +3489,7 @@ local T = {
     PVP_SHADOWSIGHT_FONT = "暗影視界文字",
     PVP_SHADOWSIGHT_IN = "暗影視界：%d:%02d 後",
     PVP_SHADOWSIGHT_UP = "暗影視界已出現",
+    PREVIEW_STATE_RESOURCES = "資源條",
 }
 
 ns.RegisterLocale("zhTW", T)
