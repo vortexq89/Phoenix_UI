@@ -142,20 +142,27 @@ function buildRow(card, page, m, item)
     row.flash:SetAlpha(0)
     row.label = W.Text(row, "body", "text.primary")
     row.label:SetText(text(item.label))
+    -- A leading icon (toggle rows; on button rows item.icon belongs to the button)
+    local indent = 16
+    if item.icon and item.type == "toggle" then
+        row.icon = W.Icon(row, item.icon, 14, "accent.primary")
+        indent = 38
+    end
     row.control = makeControl(row, page, m, item)
     local cw = row.control and not item.fullWidth and row.control:GetWidth() or W.CONTROL_WIDTH
     local right = cw + 32 + (item.cog and 30 or 0)
     if hasDesc then
-        row.label:SetPoint("TOPLEFT", 16, -9)
+        row.label:SetPoint("TOPLEFT", indent, -9)
         row.desc = W.Text(row, "desc", "text.muted")
         row.desc:SetWordWrap(true)
         row.desc:SetPoint("TOPLEFT", row.label, "BOTTOMLEFT", 0, -4)
         row.desc:SetPoint("RIGHT", row, "RIGHT", -right, 0)
         row.desc:SetText(text(item.desc))
     else
-        row.label:SetPoint("LEFT", 16, 0)
+        row.label:SetPoint("LEFT", indent, 0)
     end
     row.label:SetPoint("RIGHT", row, "RIGHT", -right, 0)
+    if row.icon then row.icon:SetPoint("RIGHT", row.label, "LEFT", -8, 0) end
     if item.reload or item.combat then
         row.badge = W:Badge(row, item.reload and L.BADGE_RELOAD or L.BADGE_COMBAT,
             item.reload and "state.warning" or "state.info", item.reload and "reload" or "lock")
@@ -181,6 +188,7 @@ function buildRow(card, page, m, item)
         W.Color(self.hl, "bg.hover", 0)
         W.Color(self.flash, "accent.primary", 0.22)
         Skin:Text(self.label, "body", "text.primary")
+        if self.icon then ns.Icons:Tint(self.icon, "accent.primary") end
         if self.desc then Skin:Text(self.desc, "desc", "text.muted") end
     end)
     row:EnableMouse(true)
@@ -212,6 +220,7 @@ function buildRow(card, page, m, item)
         if c then (c.SetEnabledState or W.SetEnabledState)(c, enabled) end
         if self.cog then W.SetEnabledState(self.cog, enabled) end
         self.label:SetAlpha(enabled and 1 or 0.45)
+        if self.icon then self.icon:SetAlpha(enabled and 1 or 0.45) end
     end
 
     function row:Flash()

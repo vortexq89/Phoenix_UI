@@ -132,6 +132,57 @@ local function allow()
     return true
 end
 
+---------------------------------------------------------------- privacy
+-- Reports may leave the PC (PhoenixUploader), so identity is removed before anything is stored or hashed:
+-- this character's name and realm, player GUIDs, BattleTags, the Windows user and WoW account folders.
+-- Text-like string locals (anything with spaces or non-ASCII: chat lines, tooltips, names of others) are
+-- replaced by their length; short token-like values ("player", "BOTTOMLEFT", "Foo.lua") are kept.
+local identity -- { name, realm, realmNormalized } once the client knows them
+
+local function plain(v) return type(v) == "string" and v ~= "" and not Secret.IsSecret(v) and canaccessvalue(v) end
+local function esc(s) return (s:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")) end
+local WORD, NOTWORD = "%f[%w\128-\255]", "%f[^%w\128-\255]"
+
+local function loadIdentity()
+    if identity then return identity end
+    local okName, name = pcall(UnitName, "player")
+    local okRealm, realm = pcall(GetRealmName)
+    local okNorm, norm = pcall(GetNormalizedRealmName)
+    name = okName and plain(name) and name or nil
+    if not name then return nil end -- too early: try again on the next capture
+    identity = {}
+    for _, v in ipairs({ name, okRealm and realm, okNorm and norm }) do
+        if plain(v) then identity[#identity + 1] = WORD .. esc(v) .. NOTWORD end
+    end
+    return identity
+end
+E.ResetIdentity = function() identity = nil end -- smoke tests
+
+local function scrubLocal(line)
+    local head, value = line:match('^(%s*[^=]-=%s*)"(.*)"$')
+    if not head or value:match("^[%w_%.%-:/\\<>]*$") and #value <= 40 then return line end
+    return ('%s"<text, %d bytes>"'):format(head, #value)
+end
+
+local function scrub(s, isLocals)
+    if s == "" or s == SECRET_TEXT then return s end
+    s = s:gsub("Player%-%d+%-%x+", "Player-<guid>")
+    s = s:gsub("[%w\128-\255]+#%d%d%d%d+", "<battletag>")
+    s = s:gsub("([Uu]sers[/\\])[^/\\\n\"']+", "%1<user>")
+    s = s:gsub("([Aa]ccount[/\\])[^/\\\n\"']+", "%1<account>")
+    for _, pat in ipairs(loadIdentity() or {}) do s = s:gsub(pat, "<player>") end
+    if isLocals then
+        local out = {}
+        for line in (s .. "\n"):gmatch("(.-)\n") do out[#out + 1] = scrubLocal(line) end
+        if out[#out] == "" then out[#out] = nil end
+        s = table.concat(out, "\n")
+    end
+    return s
+end
+E.Scrub = scrub
+
+local function clean(s, max, isLocals) return scrub(readable(s, max), isLocals) end
+
 ---------------------------------------------------------------- storage
 local function build()
     local version, buildNumber, _, interface = GetBuildInfo()
@@ -192,9 +243,11 @@ end
 -- Public entry for already-captured text (events, BugGrabber, tests). Returns the report.
 function E:Record(kind, message, stack, locals, source, count)
     if not active or not kinds[kind] then return nil end
-    message, stack = readable(message, MAX_MESSAGE), readable(stack, MAX_STACK)
+    -- source is worked out before scrubbing: an addon folder is never personal, a "<player>" in its name would be wrong
+    source = source or E.Source(readable(message, MAX_MESSAGE), readable(stack, MAX_STACK))
+    message, stack = clean(message, MAX_MESSAGE), clean(stack, MAX_STACK)
     local h = E.Hash(message, stack)
-    return bump(h, count) or add(kind, h, message, stack, readable(locals, MAX_LOCALS), source, count)
+    return bump(h, count) or add(kind, h, message, stack, clean(locals, MAX_LOCALS, true), source, count)
 end
 
 ---------------------------------------------------------------- capture: Lua errors
@@ -205,12 +258,13 @@ local function capture(msg)
     -- Same arithmetic as Blizzard's GetErrorData: the erroring frame, wherever we sit above it.
     local errHeight = GetErrorCallstackHeight()
     local level = errHeight and (GetCallstackHeight() - (errHeight - 1)) or 4
-    local message = readable(msg, MAX_MESSAGE)
-    local stack = readable(debugstack(level), MAX_STACK)
+    local message, stack = readable(msg, MAX_MESSAGE), readable(debugstack(level), MAX_STACK)
+    local source = E.Source(message, stack)
+    message, stack = scrub(message), scrub(stack)
     local h = E.Hash(message, stack)
     if bump(h) then return end
-    local locals = inEncounter() and "" or readable(debuglocals(level), MAX_LOCALS)
-    add("error", h, message, stack, locals)
+    local locals = inEncounter() and "" or clean(debuglocals(level), MAX_LOCALS, true)
+    add("error", h, message, stack, locals, source)
 end
 
 local function handler(msg, ...)
@@ -294,6 +348,9 @@ function E:Open(enabled)
         sv.installId = newInstallId()
     end
     sv.reports = type(sv.reports) == "table" and sv.reports or {}
+    -- share: may PhoenixUploader send this account's reports to the author? On unless the player said no;
+    -- installs from before the setting existed get it too. The uploader treats a missing value as true.
+    if type(sv.share) ~= "boolean" then sv.share = true end
     sv.session = (tonumber(sv.session) or 0) + 1
     PhoenixUIBugsDB = sv
     db = sv
@@ -312,6 +369,14 @@ function E:SetKinds(t) kinds = t end
 function E:SetListener(fn) listener = fn end
 function E:GetSession() return db and db.session or 0 end
 function E:GetInstallId() return db and db.installId or "" end
+function E:GetShare() return not db or db.share ~= false end
+function E:SetShare(on) if db then db.share = on and true or false end end
+-- The one-time "reports are on by default" notice: true the first time it is asked for, then never again.
+function E:TakeShareNotice()
+    if not db or db.shareNotice then return false end
+    db.shareNotice = true
+    return true
+end
 
 function E:GetReports()
     return db and db.reports or buffer

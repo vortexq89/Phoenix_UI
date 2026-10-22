@@ -31,11 +31,25 @@ end
 
 function M:OnSlash(rest)
     if rest == "options" or rest == "settings" then return ns.Config:Show(self.key) end
+    local share = rest:match("^share%s*(%a*)$")
+    if share then
+        -- "share" toggles, "share on|off" sets; anything else just reports the current state
+        local on = Errors:GetShare()
+        if share == "" then on = not on elseif share == "on" then on = true elseif share == "off" then on = false end
+        self:SetShare(on)
+        return ns:Print(on and L.BUGS_SHARE_ON or L.BUGS_SHARE_OFF)
+    end
     if rest == "clear" then
         Errors:Clear("session")
         return self:Refresh()
     end
     self:OpenViewer()
+end
+
+-- "Send error reports to the author" lives in PhoenixUIBugsDB (account-wide), where PhoenixUploader reads it.
+function M:SetShare(on)
+    Errors:SetShare(on)
+    ns.Events:Fire("PUI_SETTING_CHANGED", self.key, "share", Errors:GetShare())
 end
 
 ---------------------------------------------------------------- minimap indicator
@@ -140,6 +154,7 @@ function M:OnEnable()
     local movers = ns:GetModule("Movers")
     if movers then movers:Register("BugIndicator", indicator, L.BUGS_INDICATOR) end
     EventRegistry:RegisterCallback("SetItemRef", onLink, self)
+    if Errors:TakeShareNotice() then ns:Print(L.BUGS_SHARE_NOTICE) end
     self:Refresh()
 end
 

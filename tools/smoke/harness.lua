@@ -380,6 +380,45 @@ try("bugs contract", function()
     E:Clear("all")
     assert(#db.reports == 0, "clear all failed")
 end)
+-- "Send error reports to the author": account-wide in PhoenixUIBugsDB, on by default, one notice, slash + option
+try("bugs share", function()
+    local E, db, bugs = ns.Errors, env.PhoenixUIBugsDB, ns.modules.Bugs
+    assert(db.share == true and E:GetShare(), "share must default to true")
+    assert(db.shareNotice == true and not E:TakeShareNotice(), "the share notice must show exactly once")
+    bugs:OnSlash("share off")
+    assert(db.share == false and not E:GetShare(), "/pui bugs share off")
+    bugs:OnSlash("share")
+    assert(db.share == true, "/pui bugs share toggles back on")
+    bugs:OnSlash("share maybe")
+    assert(db.share == true, "an unknown argument must not change the setting")
+    local row
+    for _, item in ipairs(ns.options.Bugs) do if item.label == "BUGS_SHARE" then row = item end end
+    assert(row and row.type == "toggle" and row.icon and row.get() == true, "share toggle row")
+    row.set(bugs, false)
+    assert(db.share == false and row.get() == false, "the option row writes PhoenixUIBugsDB.share")
+    row.set(bugs, true)
+    db.share = nil -- an install from before the setting: missing means on
+    assert(E:GetShare(), "a missing flag reads as on")
+    db.share = true
+end)
+-- privacy: what is stored (and so what the uploader can send) carries no identity
+try("bugs scrub", function()
+    local E, db = ns.Errors, env.PhoenixUIBugsDB
+    E.ResetIdentity()
+    local s = E.Scrub("Tester-Realm hit Player-1-0001ABCD; Vortex#21345 at C:\\Users\\Vorte\\WTF\\Account\\ACC123\\x.lua; Testers stays")
+    assert(not s:find("Tester%-") and not s:find("Realm") and s:find("<player>%-<player>"), "name/realm not scrubbed: " .. s)
+    assert(s:find("Player%-<guid>") and s:find("<battletag>") and s:find("Users\\<user>") and s:find("Account\\<account>"),
+        "guid/battletag/paths not scrubbed: " .. s)
+    assert(s:find("Testers stays", 1, true), "only whole-word names are scrubbed: " .. s)
+    local l = E.Scrub('unit = "player"\nmsg = "hello there, how are you"\n  name = "Tester"\nn = 4', true)
+    assert(l:find('unit = "player"', 1, true) and l:find('msg = "<text, 24 bytes>"', 1, true)
+        and l:find('name = "<player>"', 1, true) and l:find("n = 4", 1, true), "locals not scrubbed: " .. l)
+    E:Record("error", "Interface/AddOns/Foo/Foo.lua:1: Tester broke it", "Interface/AddOns/Foo/Foo.lua:1: in function", "who = \"Tester\"")
+    local r = db.reports[#db.reports]
+    assert(r.source == "Foo" and r.message:find("<player> broke it", 1, true) and r.locals == 'who = "<player>"',
+        "stored report not scrubbed")
+    E:Clear("all")
+end)
 -- movers: Edit Mode systems are refused, positions round-trip through the profile
 try("movers", function()
     local M = ns.modules.Movers
