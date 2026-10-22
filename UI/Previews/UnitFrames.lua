@@ -9,6 +9,8 @@ local SAMPLES = {
                portrait = "Interface\\Icons\\Spell_Fire_SelfDestruct" },
     focus  = { sample = "PREVIEW_MOB_NEUTRAL", token = "state.warning", health = 1, power = 1, hp = "410K", level = "90",
                portrait = "Interface\\Icons\\Spell_Fire_FlameBolt" },
+    boss   = { sample = "PREVIEW_MOB_BOSS", token = "state.danger", health = 0.72, power = 0.5, hp = "48.6M", level = "??",
+               portrait = "Interface\\Icons\\Achievement_Boss_Ragnaros" },
     pet    = { sample = "PREVIEW_UNIT_PET", token = "state.success", health = 0.74, power = 0.9, hp = "21.7K", level = "90",
                portrait = "Interface\\Icons\\Spell_Frost_SummonWaterElemental_2" },
 }
@@ -48,8 +50,16 @@ P:Register("unitframe", {
             local st = view.states
             local s = SAMPLES[key]
             local db = m.db
-            f.portrait:SetTexture(s.portrait)
-            Skin:IconZoom(f.portrait, 0.08)
+            local mode = m:Unit(key).portrait
+            if mode == "class" and s.class then
+                f.portrait:SetAtlas(GetClassAtlas(s.class))
+                f.portrait:SetTexCoord(0, 1, 0, 1)
+            else
+                f.portrait:SetTexture(s.portrait)
+                Skin:IconZoom(f.portrait, 0.08)
+            end
+            f.portrait:SetShown(mode ~= "hide")
+            f.portraitFrame:SetShown(mode ~= "hide")
             Skin:Border(f.portraitFrame, "border.black")
             if not db.texture then
                 f.health:SetStatusBarTexture(ns.Media.textures.WHITE)
@@ -60,7 +70,7 @@ P:Register("unitframe", {
             local health = st.low and 0.18 or s.health
             f.health:SetValue(health)
             -- out of range: the faded look of the real frames (Blizzard's own range alpha)
-            f:SetAlpha(st.range and 0.45 or 1)
+            f:SetAlpha(st.range and (db.range and db.range.alpha or 0.45) or 1)
             f.power:SetValue(s.power)
             if s.class and db.classColor then
                 f.health:SetStatusBarColor(ns.Util.ClassColor(s.class))

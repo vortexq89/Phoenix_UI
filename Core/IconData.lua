@@ -104,5 +104,6 @@ ns.IconData = {
         ["textures"] = 92,
         ["items"] = 93,
         ["tracker"] = 94,
+        ["test"] = 95,
     },
 }

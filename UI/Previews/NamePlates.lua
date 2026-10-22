@@ -3,8 +3,8 @@ local L, P = ns.L, ns.Previews
 
 -- Three sample plates (hostile, neutral, friendly) drawn by NamePlates' own style methods.
 local SAMPLES = {
-    { sample = "PREVIEW_MOB_HOSTILE", value = 0.72, token = "state.danger", forces = "+4" },
-    { sample = "PREVIEW_MOB_NEUTRAL", value = 1, token = "state.warning" },
+    { sample = "PREVIEW_MOB_HOSTILE", value = 0.72, token = "state.danger", forces = "+4", threat = 3, cast = 0.6 },
+    { sample = "PREVIEW_MOB_NEUTRAL", value = 1, token = "state.warning", threat = 1, focus = true },
     { sample = "PREVIEW_MOB_FRIENDLY", value = 0.46, token = "state.success" },
 }
 local PLATE_W, PLATE_H, SCALE = 150, 12, 1.25
@@ -29,7 +29,15 @@ P:Register("nameplate", {
             local health = P.Text(bar)
             local forces = P.Text(bar)
             forces:SetPoint("LEFT", bar, "RIGHT", 4, 0)
-            plates[i] = { holder = holder, bar = bar, name = name, health = health, forces = forces, sample = sample }
+            local cast
+            if sample.cast then
+                cast = P.Bar(holder, sample.cast, PLATE_W, 8)
+                cast:SetPoint("TOP", bar, "BOTTOM", 0, -2)
+                cast.text = P.Text(cast)
+                cast.text:SetPoint("CENTER", 0, -1)
+                holder:SetHeight(50)
+            end
+            plates[i] = { holder = holder, bar = bar, name = name, health = health, forces = forces, sample = sample, cast = cast }
         end
         return function(self)
             local w = self:GetWidth() / SCALE
@@ -40,11 +48,19 @@ P:Register("nameplate", {
                 p.holder:SetScale(st.target and i == 1 and SCALE * 1.12 or SCALE)
                 p.holder:SetAlpha(st.target and i ~= 1 and 0.55 or 1)
                 p.holder:ClearAllPoints()
-                p.holder:SetPoint("CENTER", self, "LEFT", (w * (i - 0.5) / #plates), -4 / SCALE)
+                p.holder:SetPoint("CENTER", self, "LEFT", (w * (i - 0.5) / #plates), (p.cast and -9 or -4) / SCALE)
                 -- with "Phoenix bar texture" off the real plates keep Blizzard's art; the sample shows a flat fill
                 if not db.texture then p.bar:SetStatusBarTexture(ns.Media.textures.WHITE) end
                 m:StyleBar(p.bar)
-                p.bar:SetStatusBarColor(P.Token(p.sample.token))
+                local s = p.sample
+                local r, g, b = m:PlateColor(nil, { target = st.target and i == 1, focus = s.focus, threat = s.threat })
+                if r then p.bar:SetStatusBarColor(r, g, b) else p.bar:SetStatusBarColor(P.Token(s.token)) end
+                if p.cast then
+                    p.cast:SetShown(db.castbar.style)
+                    m:StyleCastBar(p.cast, p.cast.text)
+                    if type(db.castbar.color) ~= "table" then p.cast:SetStatusBarColor(P.Token("accent.primary")) end
+                    p.cast.text:SetText(L.PREVIEW_CAST_SPELL)
+                end
                 ns.Skin:TextSpec(p.name, db.name.styled and db.name or ns.Style.Text(10), "unit")
                 p.name:SetTextColor(P.Token(p.sample.token))
                 p.name:SetText(L[p.sample.sample])

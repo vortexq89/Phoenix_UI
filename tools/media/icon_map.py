@@ -40,4 +40,5 @@ ICONS = [
     # 2.0 Phase 2: layout groups, previews, tools
     ("hide", "eye-slash"), ("diagnostics", "pulse"), ("maps", "map-trifold"),
     ("presets", "sparkle"), ("textures", "image-square"), ("items", "backpack"), ("tracker", "timer"),
+    ("test", "flask"),
 ]

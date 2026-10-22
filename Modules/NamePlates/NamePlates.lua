@@ -6,7 +6,10 @@ local Theme, Skin, Secret, Media, Style = ns.Theme, ns.Skin, ns.Secret, ns.Media
     content and is handed straight to FontString:SetFormattedText through a curve (display-only sink).
     The forces count (C_ScenarioInfo.GetUnitCriteriaProgressValues, 12.0.5) is secret while unit
     identity is restricted; it only flows through C_StringUtil.TruncateWhenZero / WrapString into
-    FontString:SetText, so mobs that give nothing show nothing without the value being tested. ]]
+    FontString:SetText, so mobs that give nothing show nothing without the value being tested.
+    Target, focus and threat colours run after Blizzard's own health colour (CompactUnitFrame_UpdateHealthColor)
+    and only when UnitIsUnit / UnitThreatSituation answer with plain values; otherwise Blizzard's colour stays.
+    The plate cast bar gets the Phoenix texture and font after every UpdateBarFillTexture. ]]
 local M = ns:NewModule("NamePlates", {
     label = "NAMEPLATES", desc = "NAMEPLATES_DESC", category = "interface", order = 55, reloadOnToggle = true,
     defaults = {
@@ -17,6 +20,9 @@ local M = ns:NewModule("NamePlates", {
         health = Style.Text(10, { outline = "OUTLINE", shadow = false }),
         name = Style.Text(10, { styled = true }),
         forcesText = Style.Text(10, { outline = "OUTLINE", shadow = false }),
+        highlight = { target = false, targetColor = false, focus = false, focusColor = false },
+        threat = { enabled = false, aggro = false, warning = false, safe = false },
+        castbar = { style = true, texture = "", color = false, text = Style.Text(9, { outline = "OUTLINE", shadow = false }) },
     },
 })
 
@@ -108,6 +114,106 @@ local function apply(unit, bar)
     updateForces(unit, bar)
 end
 
+---------------------------------------------------------------- colours: target, focus, threat
+local blizzColor = setmetatable({}, { __mode = "k" }) -- health bar -> { r, g, b } Blizzard last set
+
+local function plain(v) return not Secret.IsSecret(v) end
+local function isUnit(a, b)
+    local r = UnitIsUnit(a, b)
+    return plain(r) and r
+end
+
+local function isTank()
+    local spec = C_SpecializationInfo.GetSpecialization()
+    local role = spec and GetSpecializationRole(spec)
+    return role == "TANK"
+end
+
+-- The colour Phoenix wants for this plate, or nil to keep Blizzard's.
+function M:PlateColor(unit, sample)
+    local db, hl = self.db, self.db.highlight
+    local target, focus, status
+    if sample then
+        target, focus, status = sample.target, sample.focus, sample.threat
+    else
+        target, focus = hl.target and isUnit(unit, "target"), hl.focus and isUnit(unit, "focus")
+        if db.threat.enabled and not target and not focus then
+            status = UnitThreatSituation("player", unit)
+            if not plain(status) then status = nil end
+        end
+    end
+    if hl.target and target then return Skin:SpecColor(hl.targetColor, "accent.primary") end
+    if hl.focus and focus then return Skin:SpecColor(hl.focusColor, "state.info") end
+    if not (db.threat.enabled and status) then return nil end
+    local t = db.threat
+    local tank = sample and sample.tank or (not sample and isTank())
+    if tank then
+        if status == 3 then return Skin:SpecColor(t.safe, "state.success") end
+        if status == 0 then return Skin:SpecColor(t.aggro, "state.danger") end
+        return Skin:SpecColor(t.warning, "state.warning")
+    end
+    if status >= 2 then return Skin:SpecColor(t.aggro, "state.danger") end
+    if status == 1 then return Skin:SpecColor(t.warning, "state.warning") end
+    return nil
+end
+
+local function recolor(unit, bar)
+    local r, g, b = M:PlateColor(unit)
+    if r then
+        bar:SetStatusBarColor(r, g, b)
+    elseif blizzColor[bar] then
+        local c = blizzColor[bar]
+        bar:SetStatusBarColor(c[1], c[2], c[3])
+    end
+end
+
+local function onHealthColor(frame)
+    if not M:IsEnabled() or frame:IsForbidden() then return end
+    local unit = frame.unit
+    if not unit or not plain(unit) then return end
+    local bar = plates[unit]
+    if not bar or bar ~= frame.healthBar then return end
+    local r, g, b = bar:GetStatusBarColor()
+    if plain(r) and plain(g) and plain(b) then blizzColor[bar] = { r, g, b } end
+    recolor(unit, bar)
+end
+
+local function recolorAll()
+    for unit, bar in pairs(plates) do recolor(unit, bar) end
+end
+
+local function onThreat(_, _, unit)
+    if unit and plain(unit) and plates[unit] then recolor(unit, plates[unit]) end
+end
+
+---------------------------------------------------------------- plate cast bar
+local castBars = setmetatable({}, { __mode = "k" })
+
+function M:CastTexture()
+    local c = self.db.castbar
+    return c.texture ~= "" and Media:Bar(c.texture) or Theme:Bar()
+end
+
+function M:StyleCastBar(bar, text)
+    local c = self.db.castbar
+    bar:SetStatusBarTexture(self:CastTexture())
+    if type(c.color) == "table" then bar:SetStatusBarColor(Skin:SpecColor(c.color)) end
+    if text then Skin:TextSpec(text, c.text, "body", "text.primary") end
+end
+
+local function castFill(bar)
+    if M:IsEnabled() and M.db.castbar.style and castBars[bar] then M:StyleCastBar(bar, bar.Text) end
+end
+
+local function hookCastBar(plate)
+    local uf = plate.UnitFrame
+    local bar = uf and (uf.castBar or (uf.CastBarsContainer and uf.CastBarsContainer.castBar))
+    if not bar or castBars[bar] or not bar.UpdateBarFillTexture then return end
+    castBars[bar] = true
+    hooksecurefunc(bar, "UpdateBarFillTexture", castFill)
+    castFill(bar)
+end
+
 local function onAdded(_, _, unit)
     if Secret.IsSecret(unit) then return end
     local plate = C_NamePlate.GetNamePlateForUnit(unit)
@@ -116,6 +222,8 @@ local function onAdded(_, _, unit)
     plates[unit] = bar
     nameOf[bar] = plate.UnitFrame.name
     apply(unit, bar)
+    hookCastBar(plate)
+    recolor(unit, bar)
 end
 
 local function onRemoved(_, _, unit)
@@ -136,6 +244,11 @@ function M:OnEnable()
     ns.Events:On("NAME_PLATE_UNIT_ADDED", self, onAdded)
     ns.Events:On("NAME_PLATE_UNIT_REMOVED", self, onRemoved)
     ns.Events:On("UNIT_HEALTH", self, onHealth)
+    ns.Events:On("PLAYER_TARGET_CHANGED", self, recolorAll)
+    ns.Events:On("PLAYER_FOCUS_CHANGED", self, recolorAll)
+    ns.Events:On("UNIT_THREAT_SITUATION_UPDATE", self, onThreat)
+    ns.Events:On("UNIT_THREAT_LIST_UPDATE", self, onThreat)
+    hooksecurefunc("CompactUnitFrame_UpdateHealthColor", onHealthColor)
     ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
 end
 
@@ -146,4 +259,6 @@ function M:Refresh()
     end
     for _, fs in pairs(forcesTexts) do styleForces(fs) end
     for unit, bar in pairs(plates) do apply(unit, bar) end
+    for bar in pairs(castBars) do castFill(bar) end
+    recolorAll()
 end

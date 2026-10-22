@@ -6,6 +6,8 @@ local enemyGet, enemySet = ns.Combat.CVarAccessors("nameplateShowEnemies")
 
 local function noHealthText(m) return not m.db.healthText end
 local function nameUnstyled(m) return not m.db.name.styled end
+local function noCast(m) return not m.db.castbar.style end
+local function noThreat(m) return not m.db.threat.enabled end
 
 ns:RegisterOptions("NamePlates", {
     { type = "preview", kind = "nameplate" },
@@ -17,6 +19,25 @@ ns:RegisterOptions("NamePlates", {
     { type = "header", label = "NP_FRAME" },
     Opt.Border("border"),
     Opt.Background("background"),
+    { type = "header", label = "NP_CASTBAR" },
+    { type = "toggle", key = "castbar.style", label = "NP_CASTBAR_STYLE", desc = "NP_CASTBAR_STYLE_DESC", keywords = "cast bar plate" },
+    { type = "texture", key = "castbar.texture", label = "BAR_TEXTURE", allowDefault = true, disabled = noCast },
+    { type = "color", key = "castbar.color", label = "NP_CASTBAR_COLOR", desc = "NP_CASTBAR_COLOR_DESC", token = "accent.primary",
+      reset = true, disabled = noCast },
+    Opt.Text("castbar.text", "NP_CASTBAR_FONT", { max = 18, row = { disabled = noCast } }),
+    { type = "tab", label = "TAB_COLORS" },
+    { type = "header", label = "NP_HIGHLIGHT" },
+    { type = "toggle", key = "highlight.target", label = "NP_TARGET_COLOR", desc = "NP_TARGET_COLOR_DESC", keywords = "target colour",
+      cog = { { type = "color", key = "highlight.targetColor", label = "TEXT_COLOR", token = "accent.primary", reset = true } } },
+    { type = "toggle", key = "highlight.focus", label = "NP_FOCUS_COLOR", desc = "NP_FOCUS_COLOR_DESC", keywords = "focus colour",
+      cog = { { type = "color", key = "highlight.focusColor", label = "TEXT_COLOR", token = "state.info", reset = true } } },
+    { type = "header", label = "NP_THREAT" },
+    { type = "toggle", key = "threat.enabled", label = "NP_THREAT_COLORS", desc = "NP_THREAT_COLORS_DESC",
+      keywords = "threat aggro tank colour" },
+    { type = "colors", keys = { "threat.safe", "threat.warning", "threat.aggro" },
+      tokens = { "state.success", "state.warning", "state.danger" },
+      labels = { "NP_THREAT_SAFE", "NP_THREAT_WARNING", "NP_THREAT_AGGRO" }, label = "NP_THREAT_PICK", desc = "NP_THREAT_PICK_DESC",
+      disabled = noThreat },
     { type = "tab", label = "TAB_TEXT" },
     { type = "header", label = "NP_TEXT", wide = true },
     { type = "toggle", key = "healthText", label = "NP_HEALTH_TEXT", desc = "NP_HEALTH_TEXT_DESC", keywords = "percent hp" },

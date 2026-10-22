@@ -875,6 +875,45 @@ try("tracker", function()
     stage:Redraw()
     M.db.viewers.essential.square = true
 end)
+-- unit frames: boss scope, test frames (never in combat), portraits and range fade options exist
+try("unit frames depth", function()
+    local M = ns.modules.UnitFrames
+    assert(M.db.units.boss and M.db.units.target.portrait == "game" and M.db.range.alpha, "unit frame defaults")
+    assert(M:ShowTest(true) and M.testShown, "test frames did not show")
+    assert(M:ShowTest(false) and not M.testShown, "test frames did not hide")
+    local saved = env.InCombatLockdown
+    rawset(env, "InCombatLockdown", function() return true end)
+    local ok = M:ShowTest(true)
+    rawset(env, "InCombatLockdown", saved)
+    assert(ok == false and not M.testShown, "test frames must not open in combat")
+    for _, mode in ipairs({ "class", "hide", "game" }) do
+        M.db.units.target.portrait = mode
+        M:Refresh()
+    end
+    M.db.range.enabled = true; M:Refresh(); M.db.range.enabled = false; M:Refresh()
+end)
+-- nameplates: target/focus highlight wins, threat colours depend on the role
+try("nameplate colours", function()
+    local M = ns.modules.NamePlates
+    local db = M.db
+    local was = { db.threat.enabled, db.highlight.target, db.highlight.focus }
+    db.threat.enabled, db.highlight.target, db.highlight.focus = true, true, true
+    db.threat.aggro, db.threat.safe, db.threat.warning = { r = 1, g = 0, b = 0 }, { r = 0, g = 1, b = 0 }, { r = 1, g = 1, b = 0 }
+    db.highlight.targetColor = { r = 0, g = 0, b = 1 }
+    local function rgb(sample)
+        local r, g, b = M:PlateColor(nil, sample)
+        return r and table.concat({ r, g, b }, ",") or ""
+    end
+    assert(rgb({ target = true, threat = 3 }) == "0,0,1", "target highlight should win over threat")
+    assert(rgb({ threat = 3, tank = true }) == "0,1,0", "a tank holding aggro should be safe")
+    assert(rgb({ threat = 0, tank = true }) == "1,0,0", "a tank without aggro should be in danger")
+    assert(rgb({ threat = 3 }) == "1,0,0", "a damage dealer with aggro should be in danger")
+    assert(rgb({ threat = 1 }) == "1,1,0", "rising threat should warn")
+    assert(rgb({ threat = 0 }) == "", "no threat keeps Blizzard's colour")
+    db.threat.enabled = false
+    assert(rgb({ threat = 3 }) == "", "threat colours while switched off")
+    db.threat.enabled, db.highlight.target, db.highlight.focus = was[1], was[2], was[3]
+end)
 -- 2.0 -> 2.1: flat size keys move into the per-element style tables
 try("style keys move", function()
     local sv = { profiles = { P = { modules = { NamePlates = { textSize = 13 } } } } }
