@@ -15,7 +15,8 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FOREVER_INTERFACE = "16001"  # WoW Forever 1.60.1 (warcraft.wiki.gg/wiki/TOC_format; GetBuildInfo on the client)
-TOCS = [ROOT / "Phoenix_UI.toc", ROOT / "Phoenix_UI_Options" / "Phoenix_UI_Options.toc"]
+TOCS = [ROOT / "Phoenix_UI.toc", ROOT / "Phoenix_UI_Options" / "Phoenix_UI_Options.toc",
+        ROOT / "Phoenix_UI_Data" / "Phoenix_UI_Data.toc"]
 
 
 def forever_path(toc):

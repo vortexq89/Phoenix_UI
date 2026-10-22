@@ -49,6 +49,7 @@ Mode cannot reach.
 | | **AFK Screen** | A calm full-screen view of your character while away |
 | Utility | **Quality of Life** | Hide talking heads, quiet errors in combat, achievement screenshots, Cooldown Manager toggle |
 | | **Automation** | Repair, sell junk, fill "DELETE", decline duels, accept friend invites and resurrections, release in BGs, skip seen cinematics |
+| | **Quests** | Restyled objective tracker (fonts, colours by difficulty, level tags, bar texture, width, height, collapse in instances, fade in combat); a waypoint arrow with distance and ETA; Phoenix pins on the world map and minimap for quests you can take now, quest lines and turn-ins, filtered by expansion, from the load-on-demand **Phoenix_UI_Data** addon (AllTheThings facts, MIT); quest tooltips; auto accept/turn-in with Shift to pause and a reward picker (vendor value or Sim) |
 | | **Mythic+** | Run timer with chest thresholds, enemy forces, boss splits, deaths and personal bests; ahead/behind against your best run, the current pull on the forces line (when the game allows it); party keystones over LibKeystone (works with BigWigs and DBM users); auto-insert your keystone, report your new key |
 
 Every module can be switched off. Modules that hook Blizzard frames ask for a reload when you turn them off.

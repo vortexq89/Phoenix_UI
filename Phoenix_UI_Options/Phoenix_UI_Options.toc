@@ -33,6 +33,7 @@ Previews\Interface.lua
 Previews\Tracker.lua
 Previews\Encounters.lua
 Previews\Sim.lua
+Previews\Quests.lua
 Config\Window.lua
 Config\Groups.lua
 Config\Renderer.lua
@@ -71,3 +72,4 @@ Options\AFK.lua
 Options\Quality.lua
 Options\Automation.lua
 Options\MythicPlus.lua
+Options\Quests.lua

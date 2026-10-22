@@ -21,6 +21,7 @@ globals = {
   "Phoenix_UIDB", "Phoenix_UIPerCharDB", -- legacy, read once by the migration then set to nil
   "PhoenixUISimDB", -- sim requests and results (account-wide; read by the Phoenix app)
   "PhoenixUISimResults", -- written by the Phoenix app into Sim/Results.lua; imported and cleared at login
+  "PhoenixUI_QuestData", -- the load-on-demand Phoenix_UI_Data addon's tables (Phoenix_UI_Data/Data.lua)
   "PhoenixUI_Bridge", -- set only during Phoenix_UI's LoadAddOn("Phoenix_UI_Options") call (UI/Launcher.lua)
 }
 
@@ -47,3 +48,5 @@ exclude_files = {
 
 -- Locale files are prose; long string lines are expected there.
 files["Locales/*.lua"] = { max_line_length = false }
+-- Generated quest slices (tools/questdata/build_questdata.py): one packed string per map.
+files["Phoenix_UI_Data/Quests_*.lua"] = { max_line_length = false }

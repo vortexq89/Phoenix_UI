@@ -1,8 +1,20 @@
 {
  "atlases": {
+  "QuestDaily": {
+   "height": 32,
+   "width": 32
+  },
   "QuestNormal": {
    "height": 64,
    "width": 64
+  },
+  "QuestRepeatableTurnin": {
+   "height": 32,
+   "width": 32
+  },
+  "QuestTurnin": {
+   "height": 32,
+   "width": 32
   },
   "UI-HUD-CoolDownManager-IconOverlay": {
    "height": 86,

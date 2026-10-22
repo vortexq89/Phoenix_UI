@@ -301,20 +301,20 @@ for line in readAll("Phoenix_UI" .. TOC_SUFFIX .. ".toc"):gmatch("[^\r\n]+") do
     end
 end
 
--- Phoenix_UI_Options: the load-on-demand settings addon, loaded the way the client does it (its own private
--- table, files run in TOC order) when Phoenix_UI calls C_AddOns.LoadAddOn("Phoenix_UI_Options").
+-- Phoenix_UI_Options (settings) and Phoenix_UI_Data (quest data): load-on-demand addons, loaded the way the
+-- client does it (each its own private table, files run in TOC order) when Phoenix_UI calls C_AddOns.LoadAddOn.
 local OPTIONS = "Phoenix_UI_Options"
-local optionsLoads = 0
-local function loadOptions()
-    optionsLoads = optionsLoads + 1
+local LOD = { Phoenix_UI_Options = 0, Phoenix_UI_Data = 0 }
+local function loadLod(addon)
+    LOD[addon] = LOD[addon] + 1
     local private = {}
-    for line in readAll(OPTIONS .. "/" .. OPTIONS .. TOC_SUFFIX .. ".toc"):gmatch("[^\r\n]+") do
+    for line in readAll(addon .. "/" .. addon .. TOC_SUFFIX .. ".toc"):gmatch("[^\r\n]+") do
         if not line:match("^%s*#") and line:match("%S") then
-            local path = OPTIONS .. "/" .. line:gsub("\\", "/"):gsub("%s+$", "")
+            local path = addon .. "/" .. line:gsub("\\", "/"):gsub("%s+$", "")
             local chunk, err = loadfile(ROOT .. "/" .. path)
             if not chunk then errors[#errors + 1] = err else
                 setfenv(chunk, env)
-                local ok, e = pcall(chunk, OPTIONS, private)
+                local ok, e = pcall(chunk, addon, private)
                 if not ok then errors[#errors + 1] = path .. ": " .. tostring(e) end
                 loaded = loaded + 1
             end
@@ -323,10 +323,11 @@ local function loadOptions()
     return true
 end
 env.C_AddOns.LoadAddOn = function(name)
-    if name ~= OPTIONS then return false, "MISSING" end
-    if optionsLoads > 0 then return true end
-    return loadOptions()
+    if not LOD[name] then return false, "MISSING" end
+    if LOD[name] > 0 then return true end
+    return loadLod(name)
 end
+env.C_AddOns.IsAddOnLoaded = function(name) return LOD[name] ~= nil and LOD[name] > 0 end
 
 ---------------------------------------------------------------- boot + exercise
 local function fire(event, ...)
@@ -352,14 +353,14 @@ local function retailTry(label, fn, ...)
 end
 -- the settings window is not loaded at login; the first /pui loads Phoenix_UI_Options once
 try("load on demand", function()
-    assert(ns.Config and not ns.Config.loaded and optionsLoads == 0, "Phoenix_UI_Options loaded before it was asked for")
+    assert(ns.Config and not ns.Config.loaded and LOD[OPTIONS] == 0, "Phoenix_UI_Options loaded before it was asked for")
     assert(not ns.Previews and not next(ns.options), "option schemas or previews are in the main addon")
     slashes.pui("")
-    assert(ns.Config.loaded and optionsLoads == 1, "/pui did not load Phoenix_UI_Options")
+    assert(ns.Config.loaded and LOD[OPTIONS] == 1, "/pui did not load Phoenix_UI_Options")
     assert(rawget(env, "PhoenixUI_Bridge") == nil, "the bridge global outlived the load")
     assert(ns.options.NamePlates and ns.Previews, "options schemas did not register into the main namespace")
     ns.Config:Toggle()
-    assert(optionsLoads == 1, "Phoenix_UI_Options loaded twice")
+    assert(LOD[OPTIONS] == 1, "Phoenix_UI_Options loaded twice")
 end)
 if ns.Config then
     try("Config:Toggle", ns.Config.Toggle, ns.Config)
@@ -2946,6 +2947,184 @@ try("bags, data texts and skins depth (S13b)", function()
         assert(n >= target and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
         print(("  %s settings: %d"):format(key, n))
     end
+end)
+
+-- S14: quest data addon (load on demand, this client's slices only), record decode, availability filter,
+-- spot checks against the source data, pins, minimap/arrow maths, automation, tracker dressing, preview, depth
+try("quest data (S14)", function()
+    local Q = ns.modules.Quests
+    assert(Q and Q:IsEnabled(), "Quests module not enabled")
+    local D = Q:Data()
+    assert(D and env.C_AddOns.IsAddOnLoaded("Phoenix_UI_Data"), "Phoenix_UI_Data did not load on demand: " .. tostring(Q.dataError))
+    local keys = {}
+    for _, s in ipairs(D.slices) do keys[s.key] = true end
+    if RETAIL then
+        assert(keys.midnight and keys.tww and not keys.forever, "retail must load the Midnight and TWW slices only")
+    else
+        assert(keys.forever and not keys.midnight and not keys.tww, "Forever must load its own slice only")
+    end
+    assert(D.source and D.source.att and #D.manifest == 3, "manifest/provenance missing")
+    local q = Q.Decode("100,5,500,250,10,1,9,8/1,,200/201,1,23,739,536", "tww", 7)
+    assert(q.id == 100 and q.npc == 5 and q.x == 0.5 and q.y == 0.25 and q.minLevel == 10 and q.side == 1, "decode")
+    assert(q.daily and q.repeatable and not q.weekly and #q.classes == 2 and #q.pre == 2 and q.need == 1, "decode flags")
+    assert(q.turnMap == 23 and math.abs(q.turnX - 0.739) < 1e-9, "decode turn-in")
+    -- availability against stub quest state
+    local completed, logged = { [200] = true }, {}
+    local saved = { env.C_QuestLog, env.UnitFactionGroup, env.UnitRace }
+    rawset(env, "C_QuestLog", {
+        IsQuestFlaggedCompleted = function(id) return completed[id] == true end,
+        GetLogIndexForQuestID = function(id) return logged[id] end,
+        GetNumQuestLogEntries = function() return 1 end,
+        GetInfo = function() return { questID = 300, isHeader = false } end,
+        ReadyForTurnIn = function(id) return id == 300 end,
+        GetTitleForQuestID = function() return nil end,
+        GetQuestObjectives = function() return { { text = "3/4 Boars", numFulfilled = 3, numRequired = 4, finished = false },
+            { text = "Talk", finished = true } } end,
+        GetQuestDifficultyLevel = function() return 82 end,
+        GetQuestTagInfo = function() return { isElite = true } end,
+        GetNextWaypoint = function() return nil end, GetQuestsOnMap = function() return {} end,
+    })
+    rawset(env, "UnitFactionGroup", function() return "Alliance" end)
+    rawset(env, "UnitRace", function() return "Human", "Human", 1 end)
+    local ctx = Q.Context()
+    assert(ctx.side == 1 and ctx.race == 1 and ctx.class == 8 and ctx.level == 90, "context")
+    Q.db.hideTrivial = false
+    assert(Q:IsAvailable(q, ctx), "quest with one of two prerequisites done should be available")
+    q.need = nil
+    assert(not Q:IsAvailable(q, ctx), "both prerequisites needed")
+    completed[201] = true
+    assert(Q:IsAvailable(q, ctx), "prerequisites met")
+    q.classes = { 1 }
+    assert(select(2, Q:IsAvailable(q, ctx)) == "class", "class filter")
+    q.classes, q.side = nil, 2
+    assert(select(2, Q:IsAvailable(q, ctx)) == "side", "side filter")
+    q.side = 0
+    completed[100] = true
+    assert(select(2, Q:IsAvailable(q, ctx)) == "done", "completed quests drop off")
+    completed[100] = nil
+    Q.db.hideTrivial = true
+    assert(select(2, Q:IsAvailable(q, ctx)) == "trivial", "level 90 out-levels a TWW (cap 80) quest")
+    Q.db.hideTrivial = false
+    -- spot checks against the source data (ATT givers, QuestPOI turn-ins)
+    if RETAIL then
+        local r = Q:Record(86737)
+        assert(r and r.npc == 235787 and r.map == 2393 and r.turnMap == 2395, "86737 giver/turn-in")
+        assert(Q:NPCName(235787) == "Lor'themar Theron", "NPC names")
+        local all = #Q:QuestsOnMap(2393)
+        assert(all > 50, "Silvermoon quests")
+        Q.db.slices.midnight = false
+        assert(#Q:QuestsOnMap(2393) < all, "expansion filter")
+        Q.db.slices.tww = false
+        assert(#Q:QuestsOnMap(2393) == 0, "every expansion filtered")
+        Q.db.slices.midnight, Q.db.slices.tww = true, true
+    else
+        local r = Q:Record(783)
+        assert(r and r.npc == 823 and r.map == 1429 and r.side == 1, "783 giver in Elwynn")
+        assert(#Q:QuestsOnMap(1429) > 20, "Elwynn quests")
+    end
+    -- tooltip lines and progress
+    local lines, pct = Q.Progress(300)
+    assert(#lines == 2 and pct == 88, "progress percentage " .. tostring(pct))
+    local added = {}
+    local tt = { AddLine = function(_, text) added[#added + 1] = text end }
+    Q:AddQuestLines(tt, q, true)
+    assert(#added >= 4, "quest tooltip lines")
+    assert(Q.NPCFromGUID("Creature-0-1-2-3-235787-0000") == 235787 and Q.NPCFromGUID("Player-1-2") == nil, "NPC from GUID")
+    -- level tag
+    assert(Q.LevelTag(300) == "[82+] ", "level tag " .. tostring(Q.LevelTag(300)))
+    -- pins: the game's quest lines plus data givers not already listed
+    local savedLine = env.C_QuestLine
+    rawset(env, "C_QuestLine", { RequestQuestLinesForMap = function() end,
+        GetAvailableQuestLines = function() return { { questID = 1, x = 0.1, y = 0.2, questName = "Q", questLineName = "Line" } } end })
+    local mapID = RETAIL and 2393 or 1429
+    local pins = Q:PinsFor(mapID)
+    assert(pins[1].questID == 1 and #pins > 5, "pins for map " .. mapID .. ": " .. #pins)
+    Q:RefreshPins()
+    Q:DrawWorldMap()
+    rawset(env, "C_QuestLine", savedLine)
+    -- turn-ins come from the data (retail)
+    local turn = Q:TurnInsOnMap(23)
+    assert(type(turn) == "table", "turn-ins")
+    rawset(env, "C_QuestLog", saved[1]); rawset(env, "UnitFactionGroup", saved[2]); rawset(env, "UnitRace", saved[3])
+end)
+try("quest helper maths and automation (S14)", function()
+    local Q = ns.modules.Quests
+    local ox, oy = Q.MinimapOffset(0, 0, 50, 0, 100, 70)
+    assert(math.abs(ox) < 1e-9 and math.abs(oy - 35) < 1e-9, "north is up")
+    ox, oy = Q.MinimapOffset(0, 0, 50, 0, 100, 70, math.pi / 2)
+    assert(math.abs(ox - 35) < 1e-6 and math.abs(oy) < 1e-6, "facing west puts north on the right")
+    assert(Q.MinimapOffset(0, 0, 500, 0, 100, 70) == nil, "outside the minimap radius")
+    local d, b = Q.Bearing(0, 0, 0, 30)
+    assert(d == 30 and math.abs(b - math.pi / 2) < 1e-9, "west bearing")
+    assert(Q.FormatETA(75) == "1:15" and Q.FormatETA(-1) == nil, "ETA format")
+    -- reward picker: highest vendor value (price x count); off leaves it to the player
+    local saved = { env.GetNumQuestChoices, env.GetQuestItemLink, env.GetQuestItemInfo, env.C_Item }
+    rawset(env, "GetNumQuestChoices", function() return 3 end)
+    rawset(env, "GetQuestItemLink", function(_, i) return "item" .. i end)
+    rawset(env, "GetQuestItemInfo", function(_, i) return "n", 1, i == 3 and 5 or 1 end)
+    local prices = { item1 = 900, item2 = 2000, item3 = 500 }
+    rawset(env, "C_Item", { GetItemInfo = function(link) return link, nil, nil, nil, nil, nil, nil, nil, nil, nil, prices[link] end })
+    Q.db.reward = "off"
+    assert(Q:PickReward() == nil, "off leaves the choice")
+    Q.db.reward = "vendor"
+    assert(Q:PickReward() == 3, "vendor value x count")
+    Q.db.reward = "sim"
+    assert(Q:PickReward() == 3, "sim falls back to vendor value without results")
+    Q.db.reward = "off"
+    rawset(env, "GetNumQuestChoices", saved[1]); rawset(env, "GetQuestItemLink", saved[2])
+    rawset(env, "GetQuestItemInfo", saved[3]); rawset(env, "C_Item", saved[4])
+    -- gossip: hand in first, Shift pauses
+    local picked = {}
+    local savedG, savedShift = env.C_GossipInfo, rawget(env, "IsShiftKeyDown")
+    rawset(env, "C_GossipInfo", {
+        GetActiveQuests = function() return { { questID = 7, isComplete = true } } end,
+        GetAvailableQuests = function() return { { questID = 8 } } end,
+        SelectActiveQuest = function(id) picked[#picked + 1] = "turnin" .. id end,
+        SelectAvailableQuest = function(id) picked[#picked + 1] = "accept" .. id end,
+    })
+    Q.db.autoAccept, Q.db.autoTurnIn = true, true
+    rawset(env, "IsShiftKeyDown", function() return true end)
+    fire("GOSSIP_SHOW")
+    assert(#picked == 0, "Shift must pause automation")
+    rawset(env, "IsShiftKeyDown", function() return false end)
+    fire("GOSSIP_SHOW")
+    assert(picked[1] == "turnin7", "finished quest handed in first")
+    Q.db.autoTurnIn = false
+    fire("GOSSIP_SHOW")
+    assert(picked[2] == "accept8", "then quests accepted")
+    Q.db.autoAccept = false
+    rawset(env, "C_GossipInfo", savedG); rawset(env, "IsShiftKeyDown", savedShift)
+    -- tracker dressing on a stub module with one quest block and a progress bar
+    local fs = env.CreateFrame("Frame"):CreateFontString()
+    local line = { Text = env.CreateFrame("Frame"):CreateFontString(), progressBar = { Bar = env.CreateFrame("StatusBar") } }
+    local block = { id = 300, HeaderText = fs, ForEachUsedLine = function(_, fn) fn(line) end }
+    local module = { Header = { Text = env.CreateFrame("Frame"):CreateFontString() },
+        EnumerateActiveBlocks = function(_, fn) fn(block) end }
+    Q.DressModule(module)
+    Q:RefreshTracker()
+    Q:ApplyCollapse()
+    -- arrow and preview in every style
+    for _, style in ipairs({ "phoenix", "blizzard", "minimal" }) do
+        Q.db.arrowStyle, Q.db.restyle, Q.db.level = style, style ~= "minimal", style == "phoenix"
+        Q:SetTarget(2393, 0.5, 0.5, "T")
+        Q:RefreshArrow()
+        ns.Previews:Create("quests", env.CreateFrame("Frame"), Q, {}):Redraw()
+    end
+    Q:ClearTarget()
+    Q.db.arrowStyle, Q.db.restyle, Q.db.level = "phoenix", true, true
+end)
+try("quests depth (S14)", function()
+    local n = ns.Config.CountSettings(ns.options.Quests)
+    assert(n >= 27 and ns.Config.DEPTH.Quests == 27, ("Quests has %d of 27 settings"):format(n))
+    print(("  Quests settings: %d"):format(n))
+    local inContent = false
+    for _, g in ipairs(ns.Config.GROUPS) do
+        if g.key == "content" then for _, e in ipairs(g.entries) do if e == "Quests" then inContent = true end end end
+    end
+    assert(inContent, "Quests is not in the Content group")
+    local found = {}
+    for _, item in ipairs(ns.options.Quests) do if item.key then found[item.key] = true end end
+    assert((found.turnins == true) == RETAIL and (found["slices.forever"] == true) == not RETAIL, "flavour-gated quest rows")
 end)
 
 fire("PLAYER_LOGOUT")

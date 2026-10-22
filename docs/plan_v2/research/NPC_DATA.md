@@ -55,3 +55,10 @@ Yes, Phoenix can show quest givers, turn-ins and NPC locations for Midnight with
 2. `Phoenix_UI_Data` is a load-on-demand addon with its own LICENSE files (MIT for the ATT-derived part).
 3. In game, Quests module: runtime APIs first; static data fills in what the APIs don't expose (givers of quests not yet available, NPC locations, prerequisites).
 4. Later: the community collector updates the data between ATT releases.
+
+## Implemented (S14, 22 Oct 2026)
+The pipeline above shipped as `tools/questdata/build_questdata.py` + `tools/questdata/att_extract.lua` (Phoenix's
+own clean-room reader). The first slice is Midnight and The War Within for retail and ATT's Forever zones for WoW
+Forever; files are per slice (`Phoenix_UI_Data/Quests_<Slice>.lua`, ~525 KB together) rather than one
+`QuestData.lua`. TaxiNodes/AreaPOI and dungeon quests are the next slices. Sources, counts, the accuracy check and
+the remaining slices: `docs/QUEST_DATA.md`.

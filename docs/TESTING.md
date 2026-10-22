@@ -857,6 +857,40 @@ Start with `/console taintLog 1` and an empty `/pui bugs`.
 - [ ] **13k.11 WoW Forever.** Repeat 13k.1, 13k.7 and 13k.10 on WoW Forever. **Expect:** no Key text, no Great
   Vault/keystone skins, everything else as on retail.
 
+## 13l. Quests and Phoenix_UI_Data (2.0 S14)
+
+Install **Phoenix_UI_Data** next to Phoenix_UI and Phoenix_UI_Options. Start with `/console taintLog 1` and an
+empty `/pui bugs`. Use a character with quests in Quel'Thalas (or Khaz Algar); on WoW Forever, Elwynn Forest.
+
+- [ ] **13l.1 Data loads.** `/pui` → Content → Quests. **Expect:** no "Phoenix_UI_Data is missing" note; disable the
+  data addon in the AddOns list and reload: the note shows and pins from data vanish, nothing errors.
+- [ ] **13l.2 Tracker style.** Header font Cinzel 15 with outline, objective font 12, a bar texture, *Colour by
+  difficulty* and *Show level and tag* on. **Expect:** module headers and quest titles in the new font, titles
+  coloured by level with "[82+G]"-style prefixes, objectives in the objective font, bonus-objective bars in the
+  texture; layout spacing stays right after a quest updates.
+- [ ] **13l.3 Size and collapse.** Width 320, maximum height 400; *Auto-collapse* Both. Enter a dungeon, fight
+  outside. **Expect:** tracker wider and capped; collapsed inside the dungeon, expanded again outside; faded to
+  15 % in combat and back after; no blocked-action error while using a quest item from the tracker in combat.
+- [ ] **13l.4 Focus.** Left-click a quest title. **Expect:** the quest opens (Blizzard) and becomes the focused
+  quest; the arrow points to it.
+- [ ] **13l.5 Arrow.** Click a pin on the world map, walk towards it; move the arrow in Layout mode; try each style
+  and size; right-click it. **Expect:** arrow turns with you, yards count down, an ETA appears while you close in,
+  the target clears near the spot or on right-click; Blizzard's own map pin agrees; hidden in instances.
+- [ ] **13l.6 Map pins.** Open the world map on your zone. **Expect:** pins for quest lines the game offers and for
+  quests from data you can take now (none you finished, none whose prerequisites are open, none for the other
+  faction); ready-to-hand-in quests show a turn-in pin at the turn-in NPC (retail). Hover: title, giver, level,
+  progress. Zoom in/out: pins keep their size. Expansion filter off for the zone's expansion: its data pins go.
+- [ ] **13l.7 Minimap pins.** Stand near a giver. **Expect:** its pin on the minimap at the right bearing; with
+  *Rotate Minimap* on, pins turn with the minimap.
+- [ ] **13l.8 Automation.** Auto-accept and auto-turn-in on, reward *Highest vendor value*; talk to quest NPCs, then
+  again holding Shift. **Expect:** quests accepted and handed in, the dearest reward taken and printed in chat;
+  with Shift nothing happens automatically; a quest asking for gold is left to you. *Best Sim upgrade* (retail)
+  picks the item with the best recent Sim result.
+- [ ] **13l.9 Tooltips and items.** Hover a quest giver NPC; check the item bar mirror rows. **Expect:** "Quest: …"
+  lines for quests it offers you; the item bar rows change the Action Bars settings (link opens that page).
+- [ ] **13l.10 WoW Forever.** Repeat 13l.1, 13l.2, 13l.6 and 13l.8 in Elwynn Forest. **Expect:** Azeroth data, no
+  *Turn-in spots* or Midnight/TWW filter rows, no *Best Sim upgrade* reward option.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

@@ -49,6 +49,11 @@ ns.FEATURES = {
     -- Mythic raids (20 players, groups 1-4): Forever's raids have no Mythic difficulty.
     mythicRaid = { retail = true },
     -- Boss timeline and warnings: Blizzard_EncounterTimeline / _EncounterWarnings load on "standard" only.
+    -- Quest turn-in spots come from retail's QuestPOI tables; Forever's are not published (docs/QUEST_DATA.md).
+    questTurnins = { retail = true },
+    -- Quest data slices (Phoenix_UI_Data): each client lists only the expansions it has data for.
+    questSliceRetail = { retail = true },
+    questSliceForever = { forever = true },
     encounterTimeline = available(C_EncounterTimeline),
     encounterWarnings = available(C_EncounterWarnings),
 }

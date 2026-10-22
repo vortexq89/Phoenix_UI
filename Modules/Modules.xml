@@ -66,6 +66,11 @@
     <!-- utility -->
     <Script file="Quality\Quality.lua"/>
     <Script file="Automation\Automation.lua"/>
+    <Script file="Quests\Quests.lua"/>
+    <Script file="Quests\Tracker.lua"/>
+    <Script file="Quests\Pins.lua"/>
+    <Script file="Quests\Arrow.lua"/>
+    <Script file="Quests\Auto.lua"/>
     <Script file="MythicPlus\MythicPlus.lua"/>
     <Script file="MythicPlus\Timer.lua"/>
     <Script file="MythicPlus\Keystones.lua"/>

@@ -34,17 +34,17 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Profiles | Phoenix | 0 | 8 | 0 | 1 | 7 | EUI Profiles 4 pages (Profiles, Presets, Overrides, FullExport) | Profiles, per-spec switching, import/export strings, presets |
 | Layout (Movers) | Phoenix | 3 | 11 | 3 | 0 | 8 | MoveAny 150 frame toggles · EUI unlock mode (snap, grid, nudge, per-element) | Unlock mode for every Phoenix-owned frame + selected Blizzard frames (no Edit Mode conflicts) |
 | Quality of life | Phoenix | 4 | 11 | 4 | 0 | 7 | EUI QoL 75 · WindTools Misc 112 | Small UI tweaks |
-| Automation | Phoenix | 8 | 14 | 7 | 0 | 7 | EUI QoL 75 · WindTools Misc 112 | Small automations |
+| Automation | Phoenix | 8 | 14 | 8 | 0 | 6 | EUI QoL 75 · WindTools Misc 112 | Small automations |
 | AFK screen | Phoenix | 1 | 4 | 1 | 0 | 3 | ElvUI AFK | AFK screen |
 | Bugs | Phoenix | 9 | 12 | 9 | 0 | 3 | BugSack-like · EUI none | Error catcher (being rebuilt by the other worker) |
-| Quests | Content | 0 | 27 | 0 | 0 | 27 | EUI QuestTracker ~30 · WindTools Quest 41 · Questie (ARR/GPL, learn only) | NEW: quest tracker restyle + quest helper (giver/turn-in pins from ATT MIT data, DB2 QuestPOI and runtime C_QuestLine; community data later) |
+| Quests | Content | 38 | 27 | 25 | 2 | 0 | EUI QuestTracker ~30 · WindTools Quest 41 · Questie (ARR/GPL, learn only) | NEW: quest tracker restyle + quest helper (giver/turn-in pins from ATT MIT data, DB2 QuestPOI and runtime C_QuestLine; community data later) |
 | Group Finder | Content | 0 | 14 | 0 | 0 | 14 | PremadeGroupsFilter 105 variables (GPL-2, learn only) · EUI GroupFinder · WindTools LFG list | NEW: premade group list filters (PGF-style expressions re-implemented), sign-up helpers |
 | Mythic+ | Content | 10 | 32 | 10 | 0 | 22 | EUI MythicTimer 125 · WindTools keystone tooltips | Own M+ timer (Blizzard Challenge APIs) + keystone tools |
 | Encounters | Content | 61 | 65 | 61 | 0 | 4 | Phoenix S3 already deep · EUI none (EUI has no boss mod) | Restyles Blizzard Boss Timeline + warnings (C_EncounterTimeline), BigWigs bars style |
 | PvP | Content | 3 | 8 | 4 | 0 | 4 | sArena 416 (arena frames — goes to Unit Frames › Arena) · WindTools Combat 33 | Battleground / arena helpers; arena frames live in Unit Frames |
 | Sim | Content | 6 | 8 | 6 | 0 | 2 | simc addon (Unlicense) | Simulationcraft export + uploader results (S2) |
 | Diagnostics | Phoenix | 0 | 3 | 0 | 3 | 0 | — | Status page (secret state, conflicts, versions) — exists as a page, not settings |
-| **Total** | | **673** | **1186** | **539** | **49** | **598** | EllesmereUI 2,420 controls · WindTools 361 · sArena 416 · MoveAny ~150 | |
+| **Total** | | **711** | **1186** | **565** | **51** | **570** | EllesmereUI 2,420 controls · WindTools 361 · sArena 416 · MoveAny ~150 | |
 
 ## Action Bars  (`ActionBars`)
 
@@ -1289,7 +1289,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 ## Automation  (`Automation`)
 
-*Now 8 → target 14* · has 7 · part 0 · new 7
+*Now 8 → target 14* · has 8 · part 0 · new 6
 
 **How:** Small automations
 
@@ -1305,7 +1305,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Automation | Fill "DELETE" | toggle |  | On | none | has |
 | Automation | Skip cinematics | toggle |  | On | none | has |
 | Automation | Auto loot faster | toggle |  | On | none | new |
-| Automation | Auto accept / turn in quests (in Quests) | toggle | see Quests |  | none | new |
+| Automation | Auto accept / turn in quests (in Quests) | toggle | see Quests |  | none | has |
 | Automation | Auto gossip single option | toggle |  | Off | none | new |
 | Automation | Auto role check accept | toggle |  | On | none | new |
 | Automation | Auto confirm BoP loot solo | toggle |  | Off | none | new |
@@ -1352,7 +1352,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 ## Quests  (`Quests`)
 
-*Now 0 → target 27* · has 0 · part 0 · new 27
+*Now 38 → target 27* · has 25 · part 2 · new 0
 
 **How:** NEW: quest tracker restyle + quest helper (giver/turn-in pins from ATT MIT data, DB2 QuestPOI and runtime C_QuestLine; community data later)
 
@@ -1360,33 +1360,33 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 | Group | Setting | Type | Range / choices | Default | Preview | Status |
 |---|---|---|---|---|---|---|
-| Objective tracker | Restyle objective tracker | toggle |  | On | live | new |
-| Objective tracker | Width / max height | slider | 200–400 / 200–900 px | 260 / 600 | live | new |
-| Objective tracker | Header font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | new |
-| Objective tracker | Header size | slider | 6–40 | 13 | live | new |
-| Objective tracker | Header outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | new |
-| Objective tracker | Header shadow | toggle |  | Off | live | new |
-| Objective tracker | Header colour | colour | colour + class colour + theme token | #FFFFFF | live | new |
-| Objective tracker | Objective font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | new |
-| Objective tracker | Objective size | slider | 6–40 | 12 | live | new |
-| Objective tracker | Objective outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | new |
-| Objective tracker | Objective shadow | toggle |  | Off | live | new |
-| Objective tracker | Objective colour | colour | colour + class colour + theme token | #FFFFFF | live | new |
-| Objective tracker | Progress bars style | texture |  | theme | hover | new |
-| Objective tracker | Colour by difficulty | toggle |  | On | live | new |
-| Objective tracker | Auto-collapse in instances / combat | dropdown | Off / Instances / Combat / Both | Instances | none | new |
-| Objective tracker | Show quest level / tag (daily, campaign) | toggle |  | On | live | new |
-| Objective tracker | Click to super-track | toggle |  | On | none | new |
-| Quest helper | Waypoint arrow | toggle |  | On | world | new |
-| Quest helper | Arrow style / size | dropdown | Phoenix / TomTom-like · 24–96 px | Phoenix 48 | hover | new |
-| Quest helper | Distance + ETA text | toggle |  | On | world | new |
-| Quest helper | Available quests on map (C_QuestLine) | toggle |  | On | live | new |
-| Quest helper | Turn-in / objective areas from QuestPOI (DB2) | toggle |  | On | live | new |
-| Quest helper | Quest NPC pins (ATT data + community) | toggle |  | On | live | new |
-| Quest helper | Hide low-level / trivial | toggle |  | On | live | new |
-| Quest helper | Auto accept / turn in (hold Shift to stop) | toggle |  | Off | none | new |
-| Quest helper | Auto pick quest reward (highest sell / sim upgrade) | dropdown | Off / Vendor value / Sim upgrade | Off | none | new |
-| Quest helper | Contribute positions to Phoenix data (opt-in) | toggle |  | Off | none | new |
+| Objective tracker | Restyle objective tracker | toggle |  | On | live | has |
+| Objective tracker | Width / max height | slider | 200–400 / 200–900 px | 260 / 600 | live | has |
+| Objective tracker | Header font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
+| Objective tracker | Header size | slider | 6–40 | 13 | live | has |
+| Objective tracker | Header outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
+| Objective tracker | Header shadow | toggle |  | Off | live | has |
+| Objective tracker | Header colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
+| Objective tracker | Objective font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
+| Objective tracker | Objective size | slider | 6–40 | 12 | live | has |
+| Objective tracker | Objective outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
+| Objective tracker | Objective shadow | toggle |  | Off | live | has |
+| Objective tracker | Objective colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
+| Objective tracker | Progress bars style | texture |  | theme | hover | has |
+| Objective tracker | Colour by difficulty | toggle |  | On | live | has |
+| Objective tracker | Auto-collapse in instances / combat | dropdown | Off / Instances / Combat / Both | Instances | none | has |
+| Objective tracker | Show quest level / tag (daily, campaign) | toggle |  | On | live | has |
+| Objective tracker | Click to super-track | toggle |  | On | none | has |
+| Quest helper | Waypoint arrow | toggle |  | On | world | has |
+| Quest helper | Arrow style / size | dropdown | Phoenix / TomTom-like · 24–96 px | Phoenix 48 | hover | has |
+| Quest helper | Distance + ETA text | toggle |  | On | world | has |
+| Quest helper | Available quests on map (C_QuestLine) | toggle |  | On | live | has |
+| Quest helper | Turn-in / objective areas from QuestPOI (DB2) | toggle |  | On | live | part |
+| Quest helper | Quest NPC pins (ATT data + community) | toggle |  | On | live | part |
+| Quest helper | Hide low-level / trivial | toggle |  | On | live | has |
+| Quest helper | Auto accept / turn in (hold Shift to stop) | toggle |  | Off | none | has |
+| Quest helper | Auto pick quest reward (highest sell / sim upgrade) | dropdown | Off / Vendor value / Sim upgrade | Off | none | has |
+| Quest helper | Contribute positions to Phoenix data (opt-in) | toggle |  | Off | none | has |
 
 ## Group Finder  (`GroupFinder`)
 

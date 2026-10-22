@@ -3,6 +3,21 @@
 ## 2.0.0-beta1
 
 ### New
+- **Quests** (plan v2 stage S14, new page under Content): the objective tracker restyled — header/title and
+  objective fonts (size, outline, shadow, colour), progress-bar texture, titles coloured by difficulty, a level and
+  tag prefix ([82+G]), width and maximum height (out of combat), collapse in instances and/or fade in combat, and a
+  click on a quest title focuses it. Quest helper: a movable waypoint arrow (three styles, size, distance, ETA)
+  to a pin you clicked, your map pin or the focused quest; Phoenix pins on the world map and minimap for the
+  game's available quest lines, for every quest you can pick up now from the new data addon (not done,
+  prerequisites met, your side, race, class and level; low-level quests hidden if you like) and for turn-in spots
+  of finished quests (retail); an expansion filter; NPC tooltips list the quests they offer, pin tooltips show
+  giver, level and objective progress. Automation: auto-accept and auto-turn-in (Shift pauses, never pays gold),
+  reward choice off / highest vendor value / best Sim upgrade (retail). Quest item buttons stay the Action Bars
+  item bar (mirrored here). An opt-in *Contribute quest positions* switch (UI only; nothing is recorded yet).
+  38 settings on retail, 36 on WoW Forever (target 27).
+- **Phoenix_UI_Data** (S14): a new load-on-demand addon folder with quest givers, prerequisites and turn-ins —
+  facts from AllTheThings (MIT) and Blizzard's QuestPOI tables, built by `tools/questdata/build_questdata.py`.
+  First slice: Midnight and The War Within (retail), Azeroth (WoW Forever). Install it next to Phoenix_UI.
 - **Bags** (plan v2 stage S13b): an optional Phoenix bag window (*Bag window*: Blizzard's or Phoenix; Blizzard's stays
   the default). One combined grid or category sections (new, equipment, consumables, reagents, quest, junk, other)
   you reorder and hide by dragging chips, sorted by bag order, quality, item level or name; columns, slot size,
