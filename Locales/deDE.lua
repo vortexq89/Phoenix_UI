@@ -3299,6 +3299,18 @@ local T = {
     TOOLTIP_LFG_LINK_DESC = "Wertung, Schlüsselstufe und Rollen in Gruppensuche-Einträgen werden auf der Seite Gruppensuche eingestellt.",
     PREVIEW_TT_ITEM = "Glutgeschmiedete Klinge",
     PREVIEW_TT_ITEM_LEVEL = "Gegenstandsstufe 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "Weltkartenskalierung",
+    MINIMAP_MAP_SCALE_DESC = "Größe der Weltkarte im Fenstermodus (die Vollbildkarte bleibt wie im Spiel). Wird außerhalb des Kampfes angewendet.",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "Taschenleiste im Fenster",
+    BAGS_BAG_BAR_DESC = "Zeigt deine angelegten Taschen neben dem Titel mit dem Tooltip des Spiels; beim Überfahren werden die Plätze der anderen abgedunkelt.",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "Hinweise und Toasts",
+    SKINS_ALERTS_DESC = "Erfolgs-, Beute-, Geld- und andere Einblendungen erhalten das Phoenix-Panel hinter Symbol und Text.",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "Werte-Leiste gestalten",
+    ITEMLEVEL_STATS_DESC = "Die Werteliste im Charakterfenster nutzt Schriften, Farben und Zeilenstreifen des Themes.",
 }
 
 ns.RegisterLocale("deDE", T)

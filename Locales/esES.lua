@@ -3299,6 +3299,18 @@ local T = {
     TOOLTIP_LFG_LINK_DESC = "La puntuación, el nivel de piedra y los roles en las listas del buscador de grupos se ajustan en su página.",
     PREVIEW_TT_ITEM = "Hoja forjada en ascuas",
     PREVIEW_TT_ITEM_LEVEL = "Nivel de objeto 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "Escala del mapa del mundo",
+    MINIMAP_MAP_SCALE_DESC = "Tamaño del mapa del mundo en ventana (el mapa a pantalla completa queda como el del juego). Se aplica fuera de combate.",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "Barra de bolsas en la ventana",
+    BAGS_BAG_BAR_DESC = "Muestra tus bolsas equipadas junto al título con el tooltip del juego; al pasar el ratón por una se atenúan las casillas de las demás.",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "Alertas y avisos",
+    SKINS_ALERTS_DESC = "Los avisos de logros, botín, dinero y demás reciben el panel de Phoenix detrás de su icono y texto.",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "Aspecto del panel de atributos",
+    ITEMLEVEL_STATS_DESC = "La lista de atributos de la hoja de personaje usa las fuentes, colores y franjas del tema.",
 }
 
 ns.RegisterLocale("esES", T)

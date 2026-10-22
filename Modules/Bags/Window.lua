@@ -11,7 +11,9 @@ local L, W, Skin = ns.L, ns.Widgets, ns.Skin
     the bag ID, so clicks, drags, tooltips and item use run Blizzard's own item-button code. Blizzard's bag
     frames are tucked away by parenting ContainerFrameContainer (an unprotected holder) to a hidden frame
     of ours; they are never moved, hidden or written to, and the switch back to Blizzard's view is a reload.
-    Sorting is C_Container.SortBags; categories only change where buttons are drawn, never where items sit. ]]
+    Sorting is C_Container.SortBags; categories only change where buttons are drawn, never where items sit.
+    S17: an optional bag bar beside the title shows the equipped bags (icon, the game's item tooltip); hovering
+    one dims every slot of the other bags. It only reads the bag slots, it never equips or moves a bag. ]]
 local M = ns:GetModule("Bags")
 
 local CATEGORIES = { "new", "equipment", "consumables", "reagents", "quest", "junk", "other" }
@@ -258,6 +260,7 @@ function M:Layout()
     win.content:SetSize(width, math.max(size, y))
     win:SetSize(width + 2 * PAD, y + HEAD + FOOT + 2 * PAD)
     self:UpdateFooter()
+    self:UpdateBagBar()
 end
 
 function M:StyleWindow()
@@ -270,6 +273,7 @@ function M:StyleWindow()
     win.search:SetShown(db.search)
     win.sort:SetShown(db.sortButton)
     for _, fs in ipairs({ win.money, win.currencies, win.free }) do Skin:Text(fs, "small", "text.secondary", 11) end
+    self:UpdateBagBar()
 end
 
 local function iconButton(parent, icon, tip, onClick)
@@ -315,6 +319,75 @@ local function build()
     Skin:Register(win, function() M:StyleWindow() end)
     local movers = ns:GetModule("Movers")
     if movers then movers:Register("bags", win, L.BAGS) end
+end
+
+---------------------------------------------------------------- bag bar (S17)
+-- The equipped bag containers the bar shows (bags 1-4 and the reagent bag), without the backpack.
+function M.BarBags()
+    local out = {}
+    for bag = 1, NUM_TOTAL_EQUIPPED_BAG_SLOTS or 4 do out[#out + 1] = bag end
+    return out
+end
+
+-- Alpha of a slot of `bag` while `focus` is hovered (nil: no bag hovered; pure).
+function M.FocusAlpha(bag, focus)
+    if focus == nil or bag == focus then return 1 end
+    return 0.25
+end
+
+-- Inventory slot holding the bag container (nil when the client cannot say).
+function M.BagSlot(bag)
+    local toInv = C_Container and C_Container.ContainerIDToInventoryID
+    return toInv and toInv(bag) or nil
+end
+
+local function focusBag(bag)
+    M.focusBag = bag
+    for b, list in pairs(buttons) do
+        for _, btn in pairs(list) do btn:SetAlpha(M.FocusAlpha(b, bag)) end
+    end
+end
+
+local function buildBagBar()
+    local bar = CreateFrame("Frame", nil, win)
+    bar:SetPoint("LEFT", win.title, "RIGHT", 10, 0)
+    bar.buttons = {}
+    for i, bag in ipairs(M.BarBags()) do
+        local b = CreateFrame("Button", nil, bar)
+        b:SetSize(16, 16)
+        b:SetPoint("LEFT", (i - 1) * 19, 0)
+        b.bag = bag
+        b.icon = b:CreateTexture(nil, "ARTWORK")
+        b.icon:SetAllPoints()
+        b:SetScript("OnEnter", function(self)
+            focusBag(self.bag)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            local slot = M.BagSlot(self.bag)
+            local link = slot and GetInventoryItemLink("player", slot)
+            if link then GameTooltip:SetHyperlink(link) else GameTooltip:SetText(EQUIP_CONTAINER) end
+            GameTooltip:Show()
+        end)
+        b:SetScript("OnLeave", function() focusBag(nil); GameTooltip:Hide() end)
+        bar.buttons[i] = b
+    end
+    bar:SetSize(#bar.buttons * 19, 16)
+    win.bagBar = bar
+end
+
+function M:UpdateBagBar()
+    if not win then return end
+    if not self.db.bagBar then
+        if win.bagBar then win.bagBar:Hide() end
+        return
+    end
+    if not win.bagBar then buildBagBar() end
+    for _, b in ipairs(win.bagBar.buttons) do
+        local slot = M.BagSlot(b.bag)
+        local tex = slot and GetInventoryItemTexture("player", slot)
+        if tex then b.icon:SetTexture(tex); b.icon:SetAlpha(1) else ns.Icons:Apply(b.icon, "items", 16); b.icon:SetAlpha(0.4) end
+        Skin:BorderSpec(b, self.db.slotBorder, "border.default")
+    end
+    win.bagBar:Show()
 end
 
 ---------------------------------------------------------------- open / close follow Blizzard's bag frames

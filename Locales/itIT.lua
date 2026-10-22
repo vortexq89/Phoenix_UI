@@ -3299,6 +3299,18 @@ local T = {
     TOOLTIP_LFG_LINK_DESC = "Punteggio, livello chiave e ruoli negli annunci della ricerca gruppo si impostano nella sua pagina.",
     PREVIEW_TT_ITEM = "Lama forgiata nella brace",
     PREVIEW_TT_ITEM_LEVEL = "Livello oggetto 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "Scala mappa del mondo",
+    MINIMAP_MAP_SCALE_DESC = "Dimensione della mappa del mondo in finestra (quella a schermo intero resta del gioco). Applicata fuori combattimento.",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "Barra borse nella finestra",
+    BAGS_BAG_BAR_DESC = "Mostra le borse equipaggiate accanto al titolo con il tooltip del gioco; passandoci sopra si attenuano gli spazi delle altre.",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "Avvisi e notifiche",
+    SKINS_ALERTS_DESC = "Le notifiche di imprese, bottino, denaro e altre ricevono il pannello Phoenix dietro icona e testo.",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "Aspetto del pannello statistiche",
+    ITEMLEVEL_STATS_DESC = "L'elenco statistiche della scheda personaggio usa font, colori e righe alternate del tema.",
 }
 
 ns.RegisterLocale("itIT", T)

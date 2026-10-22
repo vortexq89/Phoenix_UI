@@ -139,9 +139,59 @@ P:Register("minimap", {
 local GEAR = { { 2, 684, 4 }, { 4, 678, 4 }, { 7, 671, 3 }, { 5, 688, 4 }, { 10, 665, 3 }, { 12, 691, 5 } }
 local BAGS = { { 1, 674, 3 }, { 8, 659, 2 }, { 11, 680, 4 }, { 6, 662, 3 } }
 
+-- Stats panel sample: { label, value } rows under two category titles.
+local STAT_ROWS = { { "STAT_CRITICAL_STRIKE", "24%" }, { "STAT_HASTE", "18%" }, { "STAT_MASTERY", "41%" },
+    { "STAT_VERSATILITY", "9%" } }
+
+local function statsSample(stage)
+    local f = CreateFrame("Frame", nil, stage)
+    f:SetSize(120, 22 + #STAT_ROWS * 15)
+    f.title = P.Text(f, "OVERLAY")
+    f.title:SetPoint("TOP", 0, -4)
+    f.title:SetText(_G.STAT_CATEGORY_ENHANCEMENTS or L.ITEMLEVEL_STATS)
+    f.titleBg = f:CreateTexture(nil, "BACKGROUND")
+    f.titleBg:SetPoint("TOPLEFT"); f.titleBg:SetPoint("TOPRIGHT"); f.titleBg:SetHeight(20)
+    f.rows = {}
+    for i, s in ipairs(STAT_ROWS) do
+        local r = CreateFrame("Frame", nil, f)
+        r:SetSize(120, 15)
+        r:SetPoint("TOP", 0, -20 - (i - 1) * 15)
+        r.bg = r:CreateTexture(nil, "BACKGROUND")
+        r.bg:SetAllPoints()
+        r.bg:SetTexture(Media.textures.WHITE)
+        r.label = P.Text(r, "OVERLAY"); r.label:SetPoint("LEFT", 4, 0)
+        r.label:SetText(tostring(_G[s[1]] or s[1]))
+        r.value = P.Text(r, "OVERLAY"); r.value:SetPoint("RIGHT", -4, 0)
+        r.value:SetText(s[2])
+        f.rows[i] = r
+    end
+    return f
+end
+
+local function paintStats(f, on)
+    if on then
+        f.titleBg:SetTexture(Media.textures.WHITE); f.titleBg:SetVertexColor(Theme:Color("bg.base"))
+        Skin:Text(f.title, "heading", "accent.primary", 12)
+    else
+        f.titleBg:SetTexture(Media.textures.WHITE); f.titleBg:SetVertexColor(0.25, 0.2, 0.1, 0.9)
+        f.title:SetFontObject(GameFontNormal)
+    end
+    for i, r in ipairs(f.rows) do
+        r.bg:SetShown(i % 2 == 0)
+        if on then
+            r.bg:SetVertexColor(Theme:Color("bg.raised"))
+            Skin:Text(r.label, "body", "text.secondary", 11); Skin:Text(r.value, "number", "text.primary", 11)
+        else
+            r.bg:SetVertexColor(0.3, 0.3, 0.3, 0.5)
+            r.label:SetFontObject(GameFontNormalSmall); r.value:SetFontObject(GameFontHighlightSmall)
+        end
+    end
+end
+
 P:Register("itemlevel", {
     module = "ItemLevel",
     height = 120,
+    width = 680,
     build = function(stage, m)
         local function slots(list, size)
             local holder = CreateFrame("Frame", nil, stage)
@@ -162,11 +212,15 @@ P:Register("itemlevel", {
         local gear, bags = slots(GEAR, 38), slots(BAGS, 34)
         gear.caption = caption(stage, gear, L.ITEMLEVEL_CHARACTER)
         bags.caption = caption(stage, bags, L.ITEMLEVEL_BAGS)
+        local stats = statsSample(stage)
+        stats.caption = caption(stage, stats, L.ITEMLEVEL_STATS)
         return function(self)
             local db = m.db
             local w = self:GetWidth()
-            gear:ClearAllPoints(); gear:SetPoint("CENTER", self, "LEFT", w * 0.36, 8)
-            bags:ClearAllPoints(); bags:SetPoint("CENTER", self, "LEFT", w * 0.8, 8)
+            gear:ClearAllPoints(); gear:SetPoint("CENTER", self, "LEFT", w * 0.27, 8)
+            bags:ClearAllPoints(); bags:SetPoint("CENTER", self, "LEFT", w * 0.6, 8)
+            stats:ClearAllPoints(); stats:SetPoint("CENTER", self, "LEFT", w * 0.88, 8)
+            paintStats(stats, db.statsPanel)
             for gi, group in ipairs({ { gear, db.character }, { bags, db.bags } }) do
                 local holder, on = group[1], group[2]
                 holder:SetAlpha(on and 1 or 0.35)
@@ -300,6 +354,15 @@ P:Register("bags", {
         win.free = P.Text(win, "OVERLAY")
         win.free:SetPoint("BOTTOMLEFT", 10, 8)
         win.free:SetText(L.BAGS_FREE:format(23))
+        -- the bag bar beside the title (the second bag "hovered": its slots stay bright)
+        win.bagBar = {}
+        for i = 1, 5 do
+            local t = win:CreateTexture(nil, "ARTWORK")
+            t:SetSize(16, 16)
+            t:SetPoint("LEFT", win.title, "RIGHT", 10 + (i - 1) * 19, 0)
+            t:SetTexture(P.SAMPLE.icons[(i + 2) % #P.SAMPLE.icons + 1])
+            win.bagBar[i] = t
+        end
         win.items, win.heads = {}, {}
         for i, s in ipairs(BAG_ITEMS) do
             local b = bagSlot(win)
@@ -358,6 +421,8 @@ P:Register("bags", {
             win.money:SetShown(not phoenix or db.footer)
             win.free:SetShown(phoenix and db.freeCount)
             for _, b in ipairs(win.items) do paintBagSlot(b, db, il) end
+            local bar = phoenix and db.bagBar
+            for _, t in ipairs(win.bagBar) do t:SetShown(bar) end
         end
     end,
 })
@@ -427,7 +492,12 @@ P:Register("skins", {
         local menu = skinSample(stage, L.SKINS_GAMEMENU, 4)
         local ready = skinSample(stage, L.SKINS_READYCHECK, 2)
         local popup = skinSample(stage, L.SKINS_POPUPS, 1)
-        local items = { { char, "character" }, { menu, "gameMenu" }, { ready, "readyCheck" }, { popup, "popups" } }
+        local alert = skinSample(stage, L.SKINS_ALERTS, 0, 110)
+        alert:SetHeight(44)
+        alert.icon = ns.Icons:Create(alert, "gold", 16, "accent.primary")
+        alert.icon:SetPoint("BOTTOM", 0, 6)
+        local items = { { char, "character" }, { menu, "gameMenu" }, { ready, "readyCheck" }, { popup, "popups" },
+            { alert, "alerts" } }
         return function(self)
             local db = m.db
             local w = self:GetWidth()

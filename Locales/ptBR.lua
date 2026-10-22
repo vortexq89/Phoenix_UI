@@ -3299,6 +3299,18 @@ local T = {
     TOOLTIP_LFG_LINK_DESC = "Pontuação, nível da chave e funções nos anúncios do localizador de grupos são definidos na página dele.",
     PREVIEW_TT_ITEM = "Lâmina Forjada em Brasa",
     PREVIEW_TT_ITEM_LEVEL = "Nível do item 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "Escala do mapa-múndi",
+    MINIMAP_MAP_SCALE_DESC = "Tamanho do mapa-múndi em janela (o de tela cheia fica como o do jogo). Aplicado fora de combate.",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "Barra de bolsas na janela",
+    BAGS_BAG_BAR_DESC = "Mostra suas bolsas equipadas ao lado do título com a dica do jogo; passar o mouse sobre uma escurece os espaços das outras.",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "Alertas e avisos",
+    SKINS_ALERTS_DESC = "Avisos de conquista, saque, dinheiro e outros ganham o painel do Phoenix atrás do ícone e do texto.",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "Visual do painel de atributos",
+    ITEMLEVEL_STATS_DESC = "A lista de atributos da ficha do personagem usa fontes, cores e faixas do tema.",
 }
 
 ns.RegisterLocale("ptBR", T)

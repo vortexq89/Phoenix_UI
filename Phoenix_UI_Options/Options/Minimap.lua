@@ -95,4 +95,6 @@ ns:RegisterOptions("Minimap", {
     { type = "toggle", key = "pingNames", label = "MINIMAP_PING_NAMES", desc = "MINIMAP_PING_NAMES_DESC", keywords = "ping who" },
     { type = "toggle", key = "worldMapCoords", label = "MINIMAP_MAP_COORDS", desc = "MINIMAP_MAP_COORDS_DESC",
       feature = "worldMapCoords", keywords = "world map cursor coordinates" },
+    { type = "range", key = "worldMapScale", label = "MINIMAP_MAP_SCALE", desc = "MINIMAP_MAP_SCALE_DESC", min = 0.5, max = 1.5,
+      step = 0.05, percent = true, feature = "worldMapCoords", keywords = "world map scale size smaller bigger" },
 })

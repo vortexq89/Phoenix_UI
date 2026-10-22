@@ -16,7 +16,7 @@ local M = ns:NewModule("Skins", {
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
-        trade = true, dressUp = true,
+        trade = true, dressUp = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
     },
@@ -166,8 +166,35 @@ local function apply(entry)
     for _, name in ipairs(entry.frames) do window(_G[name], entry.dialog) end
 end
 
-local tabHooked
+---------------------------------------------------------------- alerts and toasts (S17)
+--[[ Every toast the game shows (achievements, loot, money, garrison, new mounts …) goes through
+    AlertFrame:AddAlertFrame(frame); a post-hook fades the frame's own background art and puts a Phoenix panel
+    behind it on a child frame of ours. Icons, text and animations stay Blizzard's. ]]
+M.ALERT_ART = { "Background", "BG", "Background2", "Background3", "Border", "BackgroundFrame", "ToastBackground" }
+local alertPanels = setmetatable({}, { __mode = "k" })
+function M.SkinAlert(frame)
+    if not (frame and M:IsEnabled() and M.db.alerts) or alertPanels[frame] then return end
+    for _, key in ipairs(M.ALERT_ART) do
+        local r = frame[key]
+        if type(r) == "table" and r.SetAlpha and r.GetObjectType and r:GetObjectType() == "Texture" then Skin:HideRegion(r) end
+    end
+    local panel = CreateFrame("Frame", nil, frame)
+    panel:SetPoint("TOPLEFT", 6, -6)
+    panel:SetPoint("BOTTOMRIGHT", -6, 6)
+    panel:SetFrameLevel(math.max(0, frame:GetFrameLevel() - 1))
+    alertPanels[frame] = panel
+    Skin:Register(panel, function(self)
+        Skin:Backdrop(self, M.db.backdrop, "bg.base")
+        Skin:BorderSpec(self, M.db.border, "border.strong")
+    end)
+end
+
+local tabHooked, alertHooked
 function M:OnEnable()
+    if self.db.alerts and not alertHooked and AlertFrame and AlertFrame.AddAlertFrame then
+        alertHooked = true
+        hooksecurefunc(AlertFrame, "AddAlertFrame", function(_, frame) M.SkinAlert(frame) end)
+    end
     local byAddon = {}
     for _, entry in ipairs(self.WINDOWS) do
         if entry.addon and not C_AddOns.IsAddOnLoaded(entry.addon) then

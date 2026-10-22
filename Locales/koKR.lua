@@ -3299,6 +3299,18 @@ local T = {
     TOOLTIP_LFG_LINK_DESC = "파티 찾기 목록의 점수, 쐐기 단계, 역할 줄은 파티 찾기 페이지에서 설정합니다.",
     PREVIEW_TT_ITEM = "잉걸불 벼림 칼날",
     PREVIEW_TT_ITEM_LEVEL = "아이템 레벨 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "세계 지도 크기",
+    MINIMAP_MAP_SCALE_DESC = "창 모드 세계 지도의 크기입니다(전체 화면 지도는 게임 기본값 유지). 전투 중이 아닐 때 적용됩니다.",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "창 안의 가방 바",
+    BAGS_BAG_BAR_DESC = "장착한 가방을 제목 옆에 게임 툴팁과 함께 표시합니다. 하나에 마우스를 올리면 다른 가방의 칸이 어두워집니다.",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "알림 및 토스트",
+    SKINS_ALERTS_DESC = "업적, 전리품, 골드 등 팝업 알림의 아이콘과 글자 뒤에 Phoenix 패널을 깝니다.",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "능력치 창 모양",
+    ITEMLEVEL_STATS_DESC = "캐릭터 창 능력치 목록에 테마 글꼴, 색상, 줄무늬를 씁니다.",
 }
 
 ns.RegisterLocale("koKR", T)

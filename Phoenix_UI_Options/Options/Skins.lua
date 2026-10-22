@@ -11,6 +11,8 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "gameMenu", label = "SKINS_GAMEMENU", desc = "SKINS_GAMEMENU_DESC", reload = true, keywords = "escape menu" },
     { type = "toggle", key = "popups", label = "SKINS_POPUPS", desc = "SKINS_POPUPS_DESC", reload = true, keywords = "dialog" },
     { type = "toggle", key = "readyCheck", label = "SKINS_READYCHECK", desc = "SKINS_READYCHECK_DESC", reload = true },
+    { type = "toggle", key = "alerts", label = "SKINS_ALERTS", desc = "SKINS_ALERTS_DESC", reload = true,
+      keywords = "alerts toasts achievement loot popup banner" },
     { type = "header", label = "SKINS_WINDOWS", icon = "layout" },
     { type = "toggle", key = "character", label = "SKINS_CHARACTER", reload = true, keywords = "paper doll equipment reputation currency" },
     { type = "toggle", key = "inspect", label = "SKINS_INSPECT", reload = true, keywords = "inspect player gear" },

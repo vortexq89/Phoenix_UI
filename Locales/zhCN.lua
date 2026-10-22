@@ -3299,6 +3299,18 @@ local T = {
     TOOLTIP_LFG_LINK_DESC = "队伍查找器列表上的评分、钥石等级和职责行在队伍查找器页面中设置。",
     PREVIEW_TT_ITEM = "余烬锻造之刃",
     PREVIEW_TT_ITEM_LEVEL = "物品等级 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "世界地图缩放",
+    MINIMAP_MAP_SCALE_DESC = "窗口模式世界地图的大小（全屏地图保持游戏默认）。在非战斗状态下应用。",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "窗口内的背包栏",
+    BAGS_BAG_BAR_DESC = "在标题旁显示已装备的背包及游戏提示；悬停其中一个会使其他背包的格子变暗。",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "提示与通知",
+    SKINS_ALERTS_DESC = "成就、拾取、金币等弹出通知的图标和文字背后使用 Phoenix 面板。",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "属性面板外观",
+    ITEMLEVEL_STATS_DESC = "角色面板的属性列表使用主题字体、颜色和条纹。",
 }
 
 ns.RegisterLocale("zhCN", T)

@@ -2251,7 +2251,7 @@ try("nameplates phoenix", function()
     M.db.styles.friendly.nameOnly = true
     M:DrawSample(free, M.Samples()[3])
     M.db.styles.friendly.nameOnly = false
-    assert(M:ShowTest(true) and M.testShown and #M.testPlates == 3, "test plates")
+    assert(M:ShowTest(true) and M.testShown and #M.testPlates == #M.Samples(), "test plates")
     assert(M:ShowTest(false) and not M.testShown, "test plates did not hide")
     -- client-wide plate size and stacking go through the combat queue; nothing may error
     M.db.click.enabled = true; M:OnSettingChanged("click.enabled"); M.db.click.enabled = false
@@ -3957,6 +3957,110 @@ try("gap rows: NPC titles and tooltip item extras (S17)", function()
     T.db.vendorPrice, T.db.collected, T.db.keystone, T.db.itemCount = true, true, true, true
 end)
 
+
+try("gap rows: world map scale, bag bar, stats panel and alert skin (S17)", function()
+    local MM = ns.modules.Minimap
+    local saved = { WorldMapFrame = rawget(env, "WorldMapFrame") or false }
+    local scale, maxed = nil, false
+    rawset(env, "WorldMapFrame", { SetScale = function(_, s) scale = s end, IsMaximized = function() return maxed end })
+    MM.db.worldMapScale = 1.3
+    MM.ApplyMapScale()
+    if RETAIL then assert(scale == 1.3, "windowed map scaled") else assert(scale == nil, "Forever leaves the map alone") end
+    maxed = true
+    MM.ApplyMapScale()
+    if RETAIL then assert(scale == 1, "full-screen map back to 1") end
+    maxed = false
+    MM.ApplyMapScale()
+    if RETAIL then assert(scale == 1.3, "windowed again: scaled again") end
+    MM.db.worldMapScale = 1
+    MM.ApplyMapScale()
+    if RETAIL then assert(scale == 1, "reset to 1 once after scaling") end
+    scale = nil
+    MM.ApplyMapScale()
+    assert(scale == nil, "untouched when never scaled")
+    rawset(env, "WorldMapFrame", saved.WorldMapFrame or nil)
+    -- bag bar
+    local B = ns.modules.Bags
+    local oldN = rawget(env, "NUM_TOTAL_EQUIPPED_BAG_SLOTS") or false
+    rawset(env, "NUM_TOTAL_EQUIPPED_BAG_SLOTS", 5)
+    local bars = B.BarBags()
+    assert(#bars == 5 and bars[1] == 1 and bars[5] == 5, "bags 1-5 without the backpack")
+    rawset(env, "NUM_TOTAL_EQUIPPED_BAG_SLOTS", oldN or nil)
+    assert(B.FocusAlpha(2, nil) == 1 and B.FocusAlpha(2, 2) == 1 and B.FocusAlpha(3, 2) == 0.25, "focus dims other bags")
+    local win = B:GetWindow()
+    if win then
+        B.db.bagBar = true
+        B:UpdateBagBar()
+        assert(win.bagBar and win.bagBar:IsShown() and #win.bagBar.buttons >= 4, "bag bar shown")
+        B.db.bagBar = false
+        B:UpdateBagBar()
+        assert(not win.bagBar:IsShown(), "bag bar hidden")
+    end
+    local view = B.db.view
+    for _, v in ipairs({ "combined", "blizzard" }) do
+        for _, on in ipairs({ true, false }) do
+            B.db.view, B.db.bagBar = v, on
+            ns.Previews:Create("bags", env.CreateFrame("Frame"), B, {}):Redraw()
+        end
+    end
+    B.db.view, B.db.bagBar = view, false
+    -- character sheet stats panel
+    local IL = ns.modules.ItemLevel
+    local CF = env.CreateFrame
+    -- stub textures do not keep alpha; a small fake records it
+    local function tex(shown)
+        local t = { a = 1, shown = shown }
+        function t.SetAlpha(self, a) self.a = a end
+        function t.GetAlpha(self) return self.a end
+        function t.IsShown(self) return self.shown end
+        function t.GetObjectType() return "Texture" end
+        return t
+    end
+    local function row(shown)
+        local r = CF("Frame")
+        r.Background = tex(shown)
+        r.Label = r:CreateFontString(); r.Value = r:CreateFontString()
+        return r
+    end
+    local rows = { row(true), row(false) }
+    local cat = CF("Frame"); cat.Background = tex(true); cat.Title = cat:CreateFontString()
+    local oldPane = rawget(env, "CharacterStatsPane") or false
+    rawset(env, "CharacterStatsPane", { AttributesCategory = cat, ItemLevelFrame = row(true),
+        statsFramePool = { EnumerateActive = function()
+            local i = 0
+            return function() i = i + 1; return rows[i] end
+        end } })
+    IL.db.statsPanel = false
+    IL.StyleStats()
+    assert(rows[1].Background:GetAlpha() == 1, "stats panel untouched when off")
+    IL.db.statsPanel = true
+    IL.StyleStats()
+    assert(rows[1].Background:GetAlpha() == 0 and cat.Background:GetAlpha() == 0, "Blizzard row and category art faded")
+    IL.db.statsPanel = false
+    rawset(env, "CharacterStatsPane", oldPane or nil)
+    for _, on in ipairs({ true, false }) do
+        IL.db.statsPanel = on
+        ns.Previews:Create("itemlevel", CF("Frame"), IL, {}):Redraw()
+    end
+    IL.db.statsPanel = false
+    -- alert and toast skin
+    local SK = ns.modules.Skins
+    local toast = CF("Frame")
+    toast.Background = tex(true)
+    SK.db.alerts = false
+    SK.SkinAlert(toast)
+    assert(toast.Background:GetAlpha() == 1, "alerts off leaves toasts alone")
+    SK.db.alerts = true
+    SK.SkinAlert(toast)
+    SK.SkinAlert(toast)
+    assert(toast.Background:GetAlpha() == 0, "toast art faded")
+    SK.db.alerts = false
+    for _, on in ipairs({ true, false }) do
+        SK.db.alerts = on
+        ns.Previews:Create("skins", CF("Frame"), SK, {}):Redraw()
+    end
+    SK.db.alerts = false
+end)
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

@@ -3299,6 +3299,18 @@ local T = {
     TOOLTIP_LFG_LINK_DESC = "隊伍搜尋器列表上的評分、鑰石等級和職責行在隊伍搜尋器頁面中設定。",
     PREVIEW_TT_ITEM = "餘燼鍛造之刃",
     PREVIEW_TT_ITEM_LEVEL = "物品等級 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "世界地圖縮放",
+    MINIMAP_MAP_SCALE_DESC = "視窗模式世界地圖的大小（全螢幕地圖保持遊戲預設）。在非戰鬥狀態下套用。",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "視窗內的背包列",
+    BAGS_BAG_BAR_DESC = "在標題旁顯示已裝備的背包及遊戲提示；懸停其中一個會使其他背包的格子變暗。",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "提示與通知",
+    SKINS_ALERTS_DESC = "成就、拾取、金幣等彈出通知的圖示和文字背後使用 Phoenix 面板。",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "屬性面板外觀",
+    ITEMLEVEL_STATS_DESC = "角色面板的屬性列表使用主題字型、顏色和條紋。",
 }
 
 ns.RegisterLocale("zhTW", T)

@@ -554,9 +554,10 @@ function M:ShowPhoenixTest(show)
         holder:EnableMouse(false)
         self.testHolder = holder
         self.testPlates = {}
-        for i = 1, 3 do
+        local n = #M.Samples()
+        for i = 1, n do
             local p = self:BuildPlate(holder, { sample = true })
-            p:SetPoint("CENTER", holder, "CENTER", (i - 2) * 200, 0)
+            p:SetPoint("CENTER", holder, "CENTER", (i - (n + 1) / 2) * 200, 0)
             self.testPlates[i] = p
         end
     end

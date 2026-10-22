@@ -3325,4 +3325,16 @@ ns.RegisterLocale("enUS", {
     TOOLTIP_LFG_LINK_DESC = "Score, key level and role lines on group finder listings are set on the Group Finder page.",
     PREVIEW_TT_ITEM = "Ember-Forged Blade",
     PREVIEW_TT_ITEM_LEVEL = "Item Level 684",
+    -- S17: world map scale
+    MINIMAP_MAP_SCALE = "World map scale",
+    MINIMAP_MAP_SCALE_DESC = "The size of the windowed world map (the full-screen map keeps the game's). Applied out of combat.",
+    -- S17: bag bar in the bag window
+    BAGS_BAG_BAR = "Bag bar in the window",
+    BAGS_BAG_BAR_DESC = "Shows your equipped bags beside the title with the game's tooltip; hovering one dims the slots of the others.",
+    -- S17: alert and toast skin
+    SKINS_ALERTS = "Alerts and toasts",
+    SKINS_ALERTS_DESC = "Achievement, loot, money and other pop-up toasts get the Phoenix panel behind their icon and text.",
+    -- S17: character sheet stats panel
+    ITEMLEVEL_STATS = "Stats panel look",
+    ITEMLEVEL_STATS_DESC = "The character sheet's stat list uses theme fonts, colours and row stripes.",
 })

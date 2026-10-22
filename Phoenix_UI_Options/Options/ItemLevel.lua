@@ -32,6 +32,8 @@ ns:RegisterOptions("ItemLevel", {
     { type = "toggle", key = "enchant", label = "ITEMLEVEL_ENCHANT", desc = "ITEMLEVEL_ENCHANT_DESC", keywords = "enchant text slot" },
     { type = "toggle", key = "gems", label = "ITEMLEVEL_GEMS", desc = "ITEMLEVEL_GEMS_DESC",
       keywords = "gem socket empty missing warning" },
+    { type = "toggle", key = "statsPanel", label = "ITEMLEVEL_STATS", desc = "ITEMLEVEL_STATS_DESC", reload = true,
+      keywords = "character sheet stats panel attributes enhancements crit haste" },
     { type = "range", key = "decimals", label = "ITEMLEVEL_DECIMALS", desc = "ITEMLEVEL_DECIMALS_DESC", min = 0, max = 2, step = 1,
       keywords = "average item level decimals character sheet" },
 })

@@ -23,7 +23,7 @@ local M = ns:NewModule("Minimap", {
         calendar = true, tracking = true, mail = true, craftingOrder = true, difficulty = true, expansion = true,
         compartment = true,
         bin = true, binColumns = 4, binSize = 28, binIgnore = "", binMouseover = false,
-        pingNames = true, worldMapCoords = true,
+        pingNames = true, worldMapCoords = true, worldMapScale = 1,
     },
 })
 
@@ -287,6 +287,29 @@ local function setupMapCoords()
     mapCoords:SetShown(M:IsEnabled() and M.db.worldMapCoords and ns:Supports("worldMapCoords"))
 end
 
+---------------------------------------------------------------- world map scale (windowed map only)
+-- The windowed world map takes this scale; the maximized (full screen) map stays the game's. Out of combat.
+local mapScaled = false
+local function applyMapScale()
+    local map = WorldMapFrame
+    if not (map and map.SetScale) then return end
+    local want = (M:IsEnabled() and ns:Supports("worldMapCoords")) and (tonumber(M.db.worldMapScale) or 1) or 1
+    if map.IsMaximized and map:IsMaximized() then want = 1 end
+    if want == 1 and not mapScaled then return end
+    mapScaled = want ~= 1
+    ns.Combat:Run("minimap.mapScale", map.SetScale, map, want)
+end
+M.ApplyMapScale = applyMapScale
+
+local mapHooked = false
+local function hookMapScale()
+    if mapHooked or not WorldMapFrame then return end
+    mapHooked = true
+    WorldMapFrame:HookScript("OnShow", applyMapScale)
+    EventRegistry:RegisterCallback("WorldMapMinimized", applyMapScale, M)
+    EventRegistry:RegisterCallback("WorldMapMaximized", applyMapScale, M)
+end
+
 ---------------------------------------------------------------- button bin
 local PAD = 8
 local bin -- { toggle, flyout, buttons = { [button] = name }, list = { button } }
@@ -412,7 +435,7 @@ end
 local function onAddOn(_, name)
     if name == "Blizzard_HybridMinimap" then hybridMask()
     elseif name == "Blizzard_TimeManager" then styleClock()
-    elseif name == "Blizzard_WorldMap" then setupMapCoords() end
+    elseif name == "Blizzard_WorldMap" then setupMapCoords(); hookMapScale(); applyMapScale() end
     if M.db.bin then scanSoon() end
 end
 
@@ -444,6 +467,8 @@ function M:Refresh()
     styleZone()
     styleClock()
     setupMapCoords()
+    hookMapScale()
+    applyMapScale()
     self:ApplyElements()
     scheduleZoomOut()
     if bin then layoutBin() end
@@ -460,6 +485,7 @@ function M:OnDisable()
     if ticker then ticker:Cancel(); ticker = nil end
     if coords then coords:Hide() end
     if mapCoords then mapCoords:Hide() end
+    applyMapScale()
     for frame in pairs(tucked) do tuck(frame, true) end
     Minimap:EnableMouseWheel(true)
 end

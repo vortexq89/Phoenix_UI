@@ -57,8 +57,7 @@ F(A, "BuffBarsPage::GROUP SETTINGS", "Buff bar groups (named groups, auto-add, g
 F(A, "BuffBarsPage::BAR LAYOUT", "Buff bar size, texture, texts, timer decimals, reverse fill, charge hash lines, smooth bars", "Tracker", "part",
   "Smooth fill and gradient are open gap rows; hash lines and partial-charge shade are missing", "S20")
 F(A, "BuffBarsPage::Display", "Buff bar icon, opacity, colours, spark, border", "Tracker", "done")
-F(A, "BuffBarsPage::EXTRAS", "Stack-based bar fill with max / threshold", "Tracker", "miss",
-  "Needs plain stack counts; the viewer's aura applications are secret in restricted content, so this may end as api after the in-game check", "S17")
+F(A, "BuffBarsPage::EXTRAS", "Stack-based bar fill with max / threshold", "Tracker", "imp", "The viewer's aura applications are secret; Blizzard's Cooldown Manager owns the bar timer", None)
 
 A = "EllesmereUI AuraBuffReminders"
 F(A, "EUI_AuraBuffReminders::", "Missing-buff reminders: custom spells, sounds, where shown, scale, cursor attach, M+ beacon, well fed / camp", "Tracker", "part",
@@ -92,7 +91,7 @@ F(A, "EUI_BlizzardSkin::THIRD-PARTY ADDONS", "Skin third-party addons", "Skins",
 F(A, "EUI_BlizzardSkin::GLOBAL OPTIONS", "Accent bar, bar fill opacity, link colour", "General", "done")
 F(A, ["EUI_BlizzardSkin::DISPLAY", "EUI_BlizzardSkin::APPEARANCE"], "Chat bubble skin (font, border, padding, speaker name)", "Skins", "part",
   "Open world only: chat bubbles inside instances are forbidden frames in 12.x (C_ChatBubbles returns none, GetChildren of WorldFrame is blocked), so 'in instances' is impossible", "S24")
-F(A, ["EUI_BlizzardSkin::GENERAL", "EUI_BlizzardSkin::LAYOUT", "EUI_BlizzardSkin::SPEED BAR"], "Skyriding vigor and speed bar (charges, second wind, whirling surge, thrill colour, sound on full)", "Skins", "miss", "", "S17")
+F(A, ["EUI_BlizzardSkin::GENERAL", "EUI_BlizzardSkin::LAYOUT", "EUI_BlizzardSkin::SPEED BAR"], "Skyriding vigor and speed bar (charges, second wind, whirling surge, thrill colour, sound on full)", "Skins", "miss", "", "S24")
 
 A = "EllesmereUI Chat"
 F(A, ["EUI_Chat::DISPLAY", "EUI_Chat::TYPOGRAPHY", "EUI_Chat::BORDER", "EUI_Chat::INPUT FIELD"], "Chat panel look, fonts, border, edit box", "Chat", "done")
@@ -184,7 +183,7 @@ F(A, ["ColorsPage::", "CoreTextColoring::CORE TEXT COLORING"], "Threat text and 
 F(A, ["DisplayBars::HEALTH AND CAST BAR", "DisplayBars::TARGET, FOCUS & HOVER EFFECTS", "DisplayBars::GENERAL TEXT"], "Plate health and cast bar, target / focus / hover effects, text", "NamePlates", "done")
 F(A, "DisplayBars::CLASS RESOURCE", "Class resource on the target plate (shape, colours)", "NamePlates", "done")
 F(A, ["DisplayLayout::STYLE", "DisplayLayout::CORE POSITIONS", "DisplayLayout::CORE TEXT POSITIONS"], "Plate style (border, corners, separators, level box) and element positions", "NamePlates", "done")
-F(A, "GeneralPage::~NPC Title|Title Size|Title Color|Subtitle|Guild", "NPC titles and guild text on friendly plates", "NamePlates", "miss", "Open gap row (friendly NPC titles)", "S17")
+F(A, "GeneralPage::~NPC Title|Title Size|Title Color|Subtitle|Guild", "NPC titles and guild text on friendly plates", "NamePlates", "done", "S17: [guild:title] / [npctitle] tags, friendly default", "S17")
 F(A, "GeneralPage::", "Friendly name-only plates, stacking, hitbox, max debuffs, enemy pets", "NamePlates", "done")
 F(A, "GeneralPage::TARGET AND FOCUS EFFECTS~Line of Sight", "Fade plates out of line of sight", "NamePlates", "imp",
   "No line-of-sight API for units; addons cannot test LoS in 12.x")
@@ -203,7 +202,7 @@ F(A, "EUI_QoL_Alerts::ALERTS", "Potion-ready and unspent-talent alerts, group de
 F(A, "EUI_QoL_AutoLogging::AUTO COMBAT LOGGING", "Auto combat logging in chosen content", "Quality", "miss", "LoggingCombat() is allowed", "S26")
 F(A, "EUI_QoL_AutoLogging::KEYSTONE CHECK POPUP", "/keys pop-up of party keystones", "MythicPlus", "done")
 F(A, "EUI_QoL_AutoLogging::LFG REMINDER", "Reminder when you are not queued", "GroupFinder", "miss", "", "S28")
-F(A, "EUI_QoL_AutoLogging::WAYPOINT COMMAND", "/way command and arrival with hand-placed pins", "Quests", "miss", "Builds on the S17 NPC search and the S14 arrow", "S17")
+F(A, "EUI_QoL_AutoLogging::WAYPOINT COMMAND", "/way command and arrival with hand-placed pins", "Quests", "done", "S17: /way (TomTom-aware) on the S14 arrow", "S17")
 F(A, ["EUI_QoL_BattleRes::", "EUI_QoL_BattleRes::BATTLE RES", "EUI_QoL_BattleRes::BLOODLUST TRACKER"], "Battle-res charges and bloodlust / sated tracker icons", "Encounters", "miss",
   "C_Spell.GetSpellCharges(20484) gives the shared battle-res pool in encounters", "S21")
 F(A, "EUI_QoL_Cursor::", "Cursor ring, trail, GCD and cast circles, reticle", "Quality", "part", "Ring exists; trail, GCD / cast circles and reticle do not", "S26")
@@ -243,7 +242,7 @@ F(A, "VisualBars::ABSORBS", "Absorbs: overshield, glow line, absorb bar, heal ab
   "Shields and heal absorbs exist; max-health reduction style and overshield glow do not", "S19")
 F(A, "VisualIndicators::INDICATORS", "Indicators: missing buffs, role, marker, ready check / summon / rez, status, leader, combat, group numbers, ping", "GroupFrames", "part",
   "Role, marker, leader, ready check exist; missing-buff, summon / rez, group numbers and ping markers do not", "S19")
-F(A, "VisualIndicators::DISPELS", "Dispel overlay, type icon, per-type dispel colours", "GroupFrames", "part", "Open gap row (dispel colours)", "S17")
+F(A, "VisualIndicators::DISPELS", "Dispel overlay, type icon, per-type dispel colours", "GroupFrames", "done", "S17: per-type dispel colours (General) on group frames", "S17")
 F(A, ["VisualIndicators::TOP NAME BAR"], "Top name bar strip", "GroupFrames", "miss", "", "S19")
 F(A, "VisualIndicators::FRIENDLY BOSS FRAMES", "Friendly boss frames group", "GroupFrames", "miss", "", "S19")
 F(A, ["VisualIndicators::EXTRA FRAMES", "VisualIndicators::PET FRAMES"], "Tank / extra group and pet frames", "GroupFrames", "done")
@@ -259,7 +258,7 @@ F(A, ["EUI_RaidFrames_BuffManager::", "EUI_RaidFrames_BuffManager::CORE", "EUI_R
 A = "EllesmereUI ResourceBars"
 F(A, "BarDisplayPage::BAR DISPLAY", "Detached resource bars: texture, backgrounds, strata, borders", "UnitFrames", "miss", "Phoenix has no detached player resource bars", "S18")
 F(A, "BarDisplayPage::BAR SHIFTING~Mana Regen", "Mana regen spark", "UnitFrames", "imp", "Retail has no five-second rule or mana tick to mark, and GetManaRegen is secret while unit stats are restricted; the open gap row closes as api")
-F(A, "BarDisplayPage::BAR SHIFTING~Spell Cost", "Spell cost prediction on the power bar", "UnitFrames", "miss",
+F(A, "BarDisplayPage::BAR SHIFTING~Spell Cost", "Spell cost prediction on the power bar", "UnitFrames", "done",
   "UNIT_SPELLCAST_START + C_Spell.GetSpellPowerCost for the player; power values may be secret in combat (verify)", "S17")
 F(A, "BarDisplayPage::BAR SHIFTING", "Shift / expand bars when a resource is missing, mana bar while shapeshifted", "UnitFrames", "part", "", "S18")
 F(A, "BarDisplayPage::ARCANE SOUL (SUNFURY)", "Spec helper: Arcane Soul countdown", "Tracker", "miss", "", "S20")
@@ -280,13 +279,13 @@ F(A, "SharedAppearance::PORTRAIT", "Portraits: 2D / 3D / class, shape, rings, dr
 F(A, "SharedAppearance::TEXT BAR", "Separate text bar strip under the frame", "UnitFrames", "miss", "", "S18")
 F(A, "SharedAppearance::EXTRAS", "Combat, marker, leader, elite, faction and PvP indicators", "UnitFrames", "done")
 F(A, ["SharedBars::HEALTH BAR", "SharedBars::CLASS RESOURCE"], "Health bar and class resource on frames", "UnitFrames", "done")
-F(A, "SharedBars::POWER BAR", "Power bar: position, gradient, text, cost prediction, regen spark", "UnitFrames", "part", "Cost prediction / regen spark are open gap rows", "S17")
-F(A, "SharedBars::ABSORBS AND HEALS", "Absorbs and heals: overshield, glow line, heal prediction, overheal", "UnitFrames", "part", "Overheal is an open gap row", "S17")
+F(A, "SharedBars::POWER BAR", "Power bar: position, gradient, text, cost prediction, regen spark", "UnitFrames", "part", "S17: cost prediction; regen spark still open", "S18")
+F(A, "SharedBars::ABSORBS AND HEALS", "Absorbs and heals: overshield, glow line, heal prediction, overheal", "UnitFrames", "done", "S17: overheal past the frame end", "S17")
 F(A, ["SharedCastAuras::CAST BAR", "SharedCastAuras::BUFFS AND DEBUFFS"], "Cast bar and auras on unit frames", "UnitFrames", "done")
 F(A, ["EUI_UnitFrames::", "TextSlots::"], "Name format, borders, corners, text slots", "UnitFrames", "done")
 
 A = "EllesmereUI DataBars"
-F(A, "EllesmereUIDataBars::BAR SETTINGS~Currency|Crests|Portals|Audio|Menu|Plugin", "Data bar blocks: currency picker, crests, M+ portals, audio channel, menu, plugins", "DataTexts", "miss", "Currency picker is an open gap row", "S17")
+F(A, "EllesmereUIDataBars::BAR SETTINGS~Currency|Crests|Portals|Audio|Menu|Plugin", "Data bar blocks: currency picker, crests, M+ portals, audio channel, menu, plugins", "DataTexts", "part", "S17: currency picker; crests, portals, audio, menu still open", "S28")
 F(A, "EllesmereUIDataBars::BAR SETTINGS", "Data bar layout: blocks, full-screen extent, snap, text, tooltips, clock, gold", "DataTexts", "part", "Panels and segments exist; block layout and screen-edge bars do not", "S28")
 
 A = "EllesmereUI WindTools"
@@ -308,10 +307,10 @@ F(A, "Item::Contacts", "Mail contacts (alts)", "Skins", "miss", "", "S24")
 F(A, "Item::Inspect", "Inspect: item icons, quality borders, sockets", "ItemLevel", "part", "", "S23")
 F(A, "Item::Item Level", "Item level on items", "ItemLevel", "done")
 F(A, "Item::Extend Merchant Pages", "Wider merchant window", "Skins", "miss", "", "S24")
-F(A, "Maps::Super Tracker", "Super tracker: auto-track waypoints, middle-click clear, no distance limit, /way box", "Quests", "part", "Super-track on click and the arrow exist; /way box is S17", "S17")
+F(A, "Maps::Super Tracker", "Super tracker: auto-track waypoints, middle-click clear, no distance limit, /way box", "Quests", "part", "S17: /way and NPC map search; auto-track and middle-click clear still open", "S25")
 F(A, "Maps::Rectangle Minimap", "Rectangle minimap", "Minimap", "done")
 F(A, "Maps::Minimap Buttons", "Minimap button bar", "Minimap", "done")
-F(A, "Maps::World Map", "World map reveal with coloured fog, map scale", "Minimap", "miss", "Open gap rows (reveal, scale)", "S17")
+F(A, "Maps::World Map", "World map reveal with coloured fog, map scale", "Minimap", "part", "S17: windowed map scale; reveal needs DB2 overlay data (S25)", "S25")
 F(A, "Maps::Instance Difficulty", "Instance difficulty text", "Minimap", "done")
 F(A, "Maps::Event Tracker", "World event timer tracker", "Minimap", "miss", "Needs event schedule data (DB2 / runtime C_AreaPoiInfo timers)", "S25")
 F(A, "Misc::General", "Misc tweaks (talking head, cut scenes, loot panel, chat bubble toggle)", "Quality", "part", "", "S26")
@@ -336,10 +335,10 @@ F(A, "Quest::Turn In", "Auto turn-in with modes", "Quests", "done")
 F(A, "Quest::Prey Hunt", "Prey hunt helper", "Quests", "miss", "", "S25")
 F(A, "Quest::Achievement Screenshot", "Achievement screenshots", "Quality", "done")
 F(A, "Quest::Achievement Tracker", "Achievement tracker window", "Quests", "miss", "", "S25")
-F(A, "Social::", "Chat bar, smart tab, emote picker", "Chat", "part", "Chat bar exists; emote picker is an open gap row", "S17")
+F(A, "Social::", "Chat bar, smart tab, emote picker", "Chat", "done", "S17: emote picker on the chat bar", "S17")
 F(A, "Tooltips::General", "Tooltip icons, faction / pet icons, pet ID, tier set count", "Tooltip", "part", "", "S24")
-F(A, "Tooltips::Progression", "Raid / M+ progression in tooltips", "Tooltip", "part", "Mythic+ rating exists; raid progression is an open gap row", "S17")
-F(A, "Tooltips::Keystone", "Keystone tooltip (affixes)", "Tooltip", "miss", "Open gap row", "S17")
+F(A, "Tooltips::Progression", "Raid / M+ progression in tooltips", "Tooltip", "part", "Mythic+ rating exists; raid progression needs achievement statistics (S24)", "S24")
+F(A, "Tooltips::Keystone", "Keystone tooltip (affixes)", "Tooltip", "done", "S17: keystone timer and season best", "S17")
 F(A, "Tooltips::Group Info", "Group info in tooltips", "GroupFinder", "done")
 F(A, "Tooltips::ElvUI Tooltip Tweaks", "ElvUI tooltip tweaks", "Tooltip", "skip", "ElvUI-only")
 F(A, "Tooltips::Objective Progress", "Objective progress in tooltips", "Quests", "done")
@@ -415,7 +414,7 @@ A = "Questie"
 F(A, "QuestieOptionsTracker::Tracker Options", "Questie tracker (sorting, minimise, fonts, sizer, TomTom)", "Quests", "part", "Phoenix restyles Blizzard's tracker; its own sorting / sizer options do not exist", "S25")
 F(A, ["QuestieOptionsIcons::Icon Options", "QuestieOptionsIcons::Quests", "QuestieOptionsIcons::Objectives"], "Quest and objective icons on maps by type", "Quests", "part",
   "Givers, turn-ins and quest lines exist; objective icons come from the game's own map", "S25")
-F(A, "QuestieOptionsIcons::Other Icons", "Townsfolk, trainer and vendor icons; icon glow, fade, minimap", "Quests", "miss", "S17 NPC data (vendors / trainers from ATT) feeds this", "S17")
+F(A, "QuestieOptionsIcons::Other Icons", "Townsfolk, trainer and vendor icons; icon glow, fade, minimap", "Quests", "done", "S17: townsfolk / vendor / trainer / rare pins from ATT data", "S17")
 F(A, "QuestieOptionsIcons::Season of Discovery Runes", "Season of Discovery runes", "Quests", "skip", "Classic Season of Discovery only")
 F(A, "QuestieOptionsMap::Waypoints", "NPC patrol paths on the map", "Quests", "imp", "No licence-clean source of NPC waypoints: DB2 has no creature spawns, Questie's data is GPL-3.0 and Wowhead forbids scraping")
 F(A, ["QuestieOptionsNameplate::Nameplate Icon Options", "QuestieOptionsNameplate::Target Frame Icon Options"], "Quest-objective icons on plates and target frame", "NamePlates", "done")
@@ -431,8 +430,7 @@ F(A, ["QuestieOptionsDBM::DBM HUD", "QuestieOptionsDBM::Size & Scale Options", "
 F(A, "", "My Journey (quest history log)", "Quests", "miss", "", "S25", n=1)
 F("QuestieDB", "", "Shared quest / NPC / object database library", "Quests", "skip",
   "Classic-era data under ARR/GPL-3; Phoenix uses ATT (MIT) + DB2 + runtime APIs (docs/QUEST_DATA.md)", n=1)
-F("QuestieTrace", "", "Opt-in session recorder with privacy filter and export string", "Quests", "part",
-  "Phoenix S17 collector: opt-in, NPC IDs + map positions only, merged by tools/; no uploader yet", "S17", n=1)
+F("QuestieTrace", "", "Opt-in session recorder with privacy filter and export string", "Quests", "part", "Phoenix S17 collector: opt-in, NPC IDs + map positions only, merged by tools/; no export string or uploader", "S28", n=1)
 
 A = "PremadeGroupsFilter"
 F(A, "Settings::~oneClick|signupOnEnter|signUpDeclined", "One-click / Enter sign-up, declined dimming", "GroupFinder", "done")

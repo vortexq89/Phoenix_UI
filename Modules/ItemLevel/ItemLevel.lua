@@ -14,7 +14,7 @@ local M = ns:NewModule("ItemLevel", {
         enabled = true, character = true, bags = true, inspect = true, flyout = true, loot = true, merchant = true,
         qualityColor = true, size = 12,
         text = Style.Text(12, { anchor = "TOPRIGHT", x = -1, y = -2, outline = "OUTLINE", shadow = false }),
-        track = false, enchant = false, gems = true, decimals = 1,
+        track = false, enchant = false, gems = true, decimals = 1, statsPanel = false,
     },
 })
 
@@ -236,6 +236,49 @@ local function onAverage(statFrame, unit)
     statFrame.Value:SetText(("%." .. M.db.decimals .. "f"):format(math.max(floor_, equipped or 0)))
 end
 
+---------------------------------------------------------------- stats panel (S17)
+--[[ The character sheet's stat list: a post-hook of PaperDollFrame_UpdateStats fades Blizzard's row and
+    category art, lays a theme stripe of ours behind every row Blizzard would stripe, and sets theme fonts and
+    colours on the labels. The pane is not secure; nothing is moved or resized. ]]
+M.STAT_CATEGORIES = { "ItemLevelCategory", "AttributesCategory", "EnhancementsCategory" }
+local stripes = setmetatable({}, { __mode = "k" })
+
+function M.StyleStatRow(row)
+    if not row then return end
+    local bg = row.Background
+    local stripe = stripes[row]
+    if not stripe then
+        stripe = row:CreateTexture(nil, "BACKGROUND", nil, -7)
+        stripe:SetTexture(ns.Media.textures.WHITE)
+        stripe:SetAllPoints()
+        stripes[row] = stripe
+    end
+    if bg then Skin:HideRegion(bg) end
+    stripe:SetVertexColor(Theme:Color("bg.raised"))
+    stripe:SetShown(bg == nil or bg:IsShown())
+    if row.Label then Skin:Text(row.Label, "body", "text.secondary", 11) end
+    if row.Value and row ~= (CharacterStatsPane and CharacterStatsPane.ItemLevelFrame) then
+        Skin:Text(row.Value, "number", "text.primary", 11)
+    end
+end
+
+function M.StyleStatCategory(cat)
+    if not cat then return end
+    if cat.Background then Skin:HideRegion(cat.Background) end
+    if cat.Title then Skin:Text(cat.Title, "heading", "accent.primary", 12) end
+end
+
+function M.StyleStats()
+    local pane = CharacterStatsPane
+    if not (pane and M:IsEnabled() and M.db.statsPanel) then return end
+    for _, key in ipairs(M.STAT_CATEGORIES) do M.StyleStatCategory(pane[key]) end
+    M.StyleStatRow(pane.ItemLevelFrame)
+    local pool = pane.statsFramePool
+    if pool and pool.EnumerateActive then
+        for row in pool:EnumerateActive() do M.StyleStatRow(row) end
+    end
+end
+
 local hookedInspect
 local function hookInspect()
     if hookedInspect or type(InspectPaperDollItemSlotButton_Update) ~= "function" then return end
@@ -254,6 +297,7 @@ local function hookOptional()
         if f and f.HookScript then f:HookScript("OnShow", onRoll) end
     end
     if type(PaperDollFrame_SetItemLevel) == "function" then hooksecurefunc("PaperDollFrame_SetItemLevel", onAverage) end
+    if type(PaperDollFrame_UpdateStats) == "function" then hooksecurefunc("PaperDollFrame_UpdateStats", M.StyleStats) end
     hookInspect()
 end
 

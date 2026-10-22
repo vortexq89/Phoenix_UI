@@ -21,6 +21,7 @@ local M = ns:NewModule("Bags", {
         view = "blizzard", columns = 12, slotSize = 36, spacing = 3, scale = 1, reagents = true,
         categories = "new,equipment,consumables,reagents,quest,junk,other", hiddenCats = "", catSort = "quality",
         emptySlots = true, search = true, sortButton = true, footer = true, currencies = true, freeCount = true,
+        bagBar = false,                                    -- S17: the equipped bags beside the title
         backdrop = Style.Background({ alpha = 0.92 }), border = Style.Border(), title = Style.Text(13),
         slotBorder = Style.Border({ style = "solid" }),
         count = Style.Text(12, { outline = "OUTLINE", anchor = "BOTTOMRIGHT", x = -2, y = 2 }),

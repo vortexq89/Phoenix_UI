@@ -90,6 +90,8 @@ ns:RegisterOptions("Bags", {
     { type = "toggle", key = "footer", label = "BAGS_FOOTER", desc = "BAGS_FOOTER_DESC", keywords = "gold money", disabled = phoenixOff },
     { type = "toggle", key = "currencies", label = "BAGS_CURRENCIES", desc = "BAGS_CURRENCIES_DESC", disabled = phoenixOff },
     { type = "toggle", key = "freeCount", label = "BAGS_FREE_COUNT", disabled = phoenixOff },
+    { type = "toggle", key = "bagBar", label = "BAGS_BAG_BAR", desc = "BAGS_BAG_BAR_DESC", disabled = phoenixOff,
+      keywords = "bag bar equipped bags containers highlight" },
     { type = "button", label = "UF_LAYOUT_MODE", desc = "BAGS_MOVE_DESC", button = "AB_LAYOUT_MODE_BUTTON", icon = "movers",
       combat = true, func = openLayout, disabled = phoenixOff, keywords = "move drag unlock position" },
     { type = "header", label = "BAGS_SLOTS", icon = "border" },
