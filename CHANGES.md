@@ -3,6 +3,17 @@
 ## 2.0.0-beta1
 
 ### New
+- **Settings window 2.0**: the sidebar is 13 folding groups (Appearance & Media, Combat, Group & Mythic+, Tools …);
+  every module and option kept its place in your saved settings, only the menu moved. Search covers every page and
+  shows the full path. Reset any setting (right-click or ↺), any card, or a whole module.
+- **Previews**: every visual module has one; it stays pinned while you scroll, folds away, and Unit Frames,
+  Nameplates and Cast Bars can show low health, out of range, targeted or interrupted. Hovering a font, texture or
+  dropdown choice previews it before you pick.
+- **Card pickers** for fonts, textures and sounds, with search and style filters; 100 fonts (SIL OFL), new bar
+  textures, alert sounds and a countdown voice (CC0) — credits in `Media/*/*.md`.
+- **Appearance & Media** pages: every font and texture setting of every module on one page, with Apply to all.
+- **Tools → Diagnostics**: the media check, icon source (falls back to Blizzard icons if the Phoenix sheet fails)
+  and a copyable report.
 - `/pui diag`: checks that every Phoenix texture and icon atlas loads in your client and records what the
   settings window's icons look like to the game; the result is kept in the SavedVariables for support. It also
   runs quietly once per version after login and only speaks up if something failed.

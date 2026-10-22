@@ -271,3 +271,51 @@ body.media { height: 1420px; }
 .bsb { position: relative; height: 32px; border: 1px solid #000; background-color: #ff6a1a; background-size: 100% 100%; background-blend-mode: multiply; display: flex; align-items: center; padding-left: 8px; }
 .bsb b { font-weight: normal; font-size: 12px; text-shadow: 1px 1px 0 #000; }
 .bst { font-family: Cond; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+/* 2.0 Phase 2: grouped sidebar (UI/Config/Groups.lua) */
+.gh { position: relative; height: 32px; margin-top: 2px; display: flex; align-items: center; gap: 10px; padding: 0 16px 0 20px;
+  font-family: CondBold; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; color: var(--text2); white-space: nowrap; }
+.gh .ico { --s: 16px; color: var(--muted); } .gh .ico.chev { --s: 10px; margin-left: auto; }
+.gh .dot { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); opacity: .8; }
+.gh.open .ico:first-child, .gh.lit .ico:first-child { color: var(--accent); } .gh.open { color: var(--text); }
+.gh.active { color: var(--text); background: linear-gradient(90deg, rgba(255,106,26,.16), rgba(255,106,26,0) 85%); }
+.gh.active::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--accent2), var(--accent)); }
+.gh.active .ico { color: var(--accent); }
+.nav.sub { padding-left: 40px; height: 30px; } .nav.sub .ico { --s: 14px; }
+/* sticky preview card, fold button, sample-state chips, reset arrows */
+.pv.stuck { position: sticky; top: 0; z-index: 4; box-shadow: 0 14px 18px -6px rgba(0,0,0,.85); }
+.pv .tools { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.chips { display: inline-flex; border: 1px solid var(--border); transform: scale(.92); transform-origin: right center; }
+.chips > span { height: 22px; padding: 0 10px; display: inline-flex; align-items: center; gap: 5px; font-family: Cond; font-size: 11px;
+  letter-spacing: .8px; color: var(--text2); background: var(--bg-sunken); border-left: 1px solid var(--border); text-transform: uppercase; }
+.chips > span:first-child { border-left: 0; } .chips > span .ico { --s: 11px; }
+.chips > span.on { color: #0e0f13; background: linear-gradient(90deg, var(--accent), var(--accent2)); } .chips > span.on .ico { color: #0e0f13; }
+.fold { width: 22px; height: 22px; display: grid; place-items: center; color: var(--text2); } .fold .ico { --s: 12px; }
+.rst { width: 20px; height: 20px; display: grid; place-items: center; color: var(--accent); } .rst .ico { --s: 11px; }
+.lnk { width: 22px; height: 22px; display: grid; place-items: center; color: var(--text2); border: 1px solid var(--border); background: var(--bg-sunken); }
+.lnk .ico { --s: 11px; }
+.secr { position: absolute; right: 10px; top: 9px; color: var(--text2); } .secr .ico { --s: 13px; }
+/* card pickers (UI/Widgets/MediaPicker.lua) */
+.mp { position: absolute; z-index: 8; width: 600px; background: #16181e; border: 1px solid var(--border-strong);
+  box-shadow: 0 18px 44px rgba(0,0,0,.8); padding: 12px 18px 12px 12px; }
+.mp::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(90deg, var(--accent), var(--accent2) 40%, transparent); }
+.mph { display: flex; align-items: center; gap: 8px; height: 26px; margin-bottom: 8px; }
+.mph .input { width: 240px; } .mph .dd { width: 170px; } .mph .cnt { margin-left: auto; font-family: Cond; font-size: 11px; color: var(--muted); }
+.mpg { display: grid; gap: 8px; } .mpg.c3 { grid-template-columns: repeat(3, 1fr); } .mpg.c2 { grid-template-columns: repeat(2, 1fr); }
+.mc { position: relative; background: var(--bg-sunken); border: 1px solid var(--border); }
+.mc.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(255,106,26,.25); } .mc.hov { background: var(--bg-hover); border-color: var(--border-strong); }
+.mc .ok { position: absolute; right: 7px; top: 6px; color: var(--accent); } .mc .ok .ico { --s: 12px; }
+.mc.bar { height: 52px; } .mc.bar .strip { position: absolute; left: 8px; right: 8px; top: 8px; height: 20px; background-color: #a3a9b6;
+  background-size: 100% 100%; background-blend-mode: multiply; }
+.mc.bar .nm { position: absolute; left: 9px; bottom: 6px; font-family: Cond; font-size: 11px; color: var(--text2); }
+.mc.on .nm { color: var(--accent2); }
+.mc.font { height: 60px; } .mc.font .nm { position: absolute; left: 10px; top: 7px; font-family: Cond; font-size: 11px; color: var(--text2); }
+.mc.font .smp { position: absolute; left: 10px; right: 10px; bottom: 9px; font-size: 16px; color: var(--text); white-space: nowrap; overflow: hidden; }
+.mpthumb { position: absolute; right: 6px; top: 46px; width: 3px; height: 90px; background: var(--accent); opacity: .8; }
+.spec { margin: 4px 16px 10px; height: 92px; background: var(--bg-sunken); border: 1px solid var(--border); position: relative; padding: 12px 14px; }
+.spec .big { font-size: 26px; } .spec .small { font-size: 13px; color: var(--text2); margin-top: 8px; }
+.spec .nm { position: absolute; right: 12px; bottom: 8px; font-family: Cond; font-size: 10.5px; letter-spacing: 1px; color: var(--muted); }
+/* diagnostics */
+.val2 { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text); }
+.val2 .d { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); } .val2 .d.w { background: var(--warn); }
+.ta { margin: 2px 16px 14px; height: 120px; background: var(--bg-sunken); border: 1px solid var(--border); padding: 9px 11px;
+  font-family: Cond; font-size: 11.5px; line-height: 1.5; color: var(--text2); white-space: pre-wrap; overflow: hidden; }

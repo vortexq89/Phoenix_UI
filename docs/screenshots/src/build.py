@@ -18,27 +18,34 @@ from icon_map import ICONS  # noqa: E402
 INDEX = {name: i for i, (name, _) in enumerate(ICONS)}
 COLS, CELL, GUTTER = 10, 96, 3
 
-NAV = [
-    (None, [("home", "Home", "home", None)]),
-    ("System", [("general", "General", "general", True), ("bugs", "Bugs", "bugs", True)]),
-    ("Interface", [("skins", "Skins", "skins", True), ("actionbars", "Action Bars", "actionbars", True),
-                   ("unitframes", "Unit Frames", "unitframes", True), ("groupframes", "Group Frames", "groupframes", True),
-                   ("castbars", "Cast Bars", "castbars", True), ("auras", "Buffs & Debuffs", "auras", True),
-                   ("nameplates", "Nameplates", "nameplates", True), ("tooltip", "Tooltip", "tooltip", True),
-                   ("itemlevel", "Item Level", "itemlevel", True), ("minimap", "Minimap", "minimap", True),
-                   ("datatexts", "Data Bar", "datatexts", True), ("movers", "Movers", "movers", True)]),
-    ("Combat", [("cooldowntext", "Cooldown Text", "cooldowntext", True), ("combattext", "Combat Text", "combattext", None),
-                ("damagemeter", "Damage Meter", "damagemeter", True), ("spellhistory", "Spell History", "spellhistory", False),
-                ("pvp", "PvP", "pvp", True)]),
-    ("Social", [("chat", "Chat", "chat", True), ("afk", "AFK Screen", "afk", True)]),
-    ("Utility", [("quality", "Quality of Life", "quality", True), ("automation", "Automation", "automation", True),
-                 ("mythicplus", "Mythic+", "mythicplus", True)]),
-    ("Phoenix", [("profiles", "Profiles", "profiles", None), ("about", "About", "about", None)]),
+# The 13 sidebar groups of UI/Config/Groups.lua: (key, label, icon, entries); entries are (key, label, icon, on)
+# with on = None for pages without an enable switch. P1 pages (tracker, presets) are listed when they ship.
+SIDEBAR = [
+    ("home", "Home", "home", [("home", "Home", "home", None)]),
+    ("general", "General", "general", [("general", "General", "general", None)]),
+    ("appearance", "Appearance & Media", "theme", [("fonts", "Fonts", "fonts", None), ("textures", "Textures", "textures", None),
+                                                   ("sounds", "Sounds", "sound", None)]),
+    ("unitframes", "Unit Frames", "unitframes", [("unitframes", "Unit Frames", "unitframes", True),
+                                                 ("groupframes", "Group Frames", "groupframes", True)]),
+    ("nameplates", "Nameplates", "nameplates", [("nameplates", "Nameplates", "nameplates", True)]),
+    ("actionbars", "Action Bars & Cooldowns", "actionbars", [("actionbars", "Action Bars", "actionbars", True),
+                                                             ("cooldowntext", "Cooldown Text", "cooldowntext", True)]),
+    ("combat", "Combat", "cat-combat", [("castbars", "Cast Bars", "castbars", True), ("auras", "Buffs & Debuffs", "auras", True),
+                                        ("tracker", "Auras & Cooldowns", "tracker", True),
+                                        ("combattext", "Combat Text", "combattext", None),
+                                        ("spellhistory", "Spell History", "spellhistory", False),
+                                        ("damagemeter", "Damage Meter", "damagemeter", True)]),
+    ("group", "Group & Mythic+", "mythicplus", [("mythicplus", "Mythic+", "mythicplus", True), ("pvp", "PvP", "pvp", True)]),
+    ("social", "Chat & Social", "chat", [("chat", "Chat", "chat", True), ("afk", "AFK Screen", "afk", True)]),
+    ("maps", "Maps, Minimap & Data", "maps", [("minimap", "Minimap", "minimap", True), ("datatexts", "Data Bar", "datatexts", True)]),
+    ("items", "Tooltips & Items", "items", [("tooltip", "Tooltip", "tooltip", True), ("itemlevel", "Item Level", "itemlevel", True)]),
+    ("qol", "Quality of Life", "quality", [("quality", "Quality of Life", "quality", True),
+                                           ("automation", "Automation", "automation", True), ("skins", "Skins", "skins", True)]),
+    ("tools", "Tools", "cat-utility", [("movers", "Movers", "movers", True), ("profiles", "Profiles", "profiles", None),
+                                       ("presets", "Presets", "presets", None), ("bugs", "Bugs", "bugs", True),
+                                       ("diagnostics", "Diagnostics", "diagnostics", None), ("about", "About", "about", None)]),
 ]
-
-
-CATEGORY_ICON = {"System": "cat-system", "Interface": "cat-interface", "Combat": "cat-combat", "Social": "cat-social",
-                 "Utility": "cat-utility", "Phoenix": "cat-phoenix"}
+HIDDEN = {"tracker", "presets"}  # entries not shipped yet
 
 
 def ico(name, cls="", size=None):
@@ -50,27 +57,37 @@ def ico(name, cls="", size=None):
     return f'<span class="ico {cls}" style="--x:{x:.5f};--y:{y:.5f}{s}"></span>'
 
 
-def sidebar(active, scroll=0):
+def sidebar(active, scroll=0, expand=()):
     rows = []
-    for group, items in NAV:
-        if group:
-            rows.append(f'<div class="grp">{ico(CATEGORY_ICON[group])}{group}</div>')
-        for key, label, icon, on in items:
+    for gkey, glabel, gicon, entries in SIDEBAR:
+        entries = [e for e in entries if e[0] not in HIDDEN]
+        if len(entries) == 1:
+            key, _, _, on = entries[0]
             dot = "" if on is None else f'<span class="dot{"" if on else " off"}"></span>'
-            rows.append(f'<div class="nav{" active" if key == active else ""}">{ico(icon)}{label}{dot}</div>')
+            rows.append(f'<div class="gh single{" active" if key == active else ""}">{ico(gicon)}{glabel}{dot}</div>')
+            continue
+        has = any(e[0] == active for e in entries)
+        open_ = has or gkey in expand
+        rows.append(f'<div class="gh{" open" if open_ else ""}{" lit" if has else ""}">{ico(gicon)}{glabel}'
+                    f'{ico("chevron-down" if open_ else "chevron-right", "chev")}</div>')
+        if open_:
+            for key, label, icon, on in entries:
+                dot = "" if on is None else f'<span class="dot{"" if on else " off"}"></span>'
+                rows.append(f'<div class="nav sub{" active" if key == active else ""}">{ico(icon)}{label}{dot}</div>')
+            rows.append('<div style="height:4px"></div>')
     return (f'<div class="side"><div style="margin-top:-{scroll}px">{"".join(rows)}</div>'
             '<div style="position:absolute;right:3px;top:12px;width:3px;height:180px;background:#2a2e37"></div></div>')
 
 
 def shell(active, body, search="Search settings…", focus=False, status="Changes apply instantly", scroll=0, overlay="",
-          status_icon="preview", status_cls="", head="", above=""):
+          status_icon="preview", status_cls="", head="", above="", expand=()):
     return f'''<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css">{head}</head>
 <body><div class="world"></div><div class="win">
 <div class="hdr"><div class="emblem"></div><div class="brand">PHOENIX</div><div class="brand-ui">UI</div>
 <span class="badge">v2.0.0-beta1</span>
 <div class="search{" focus" if focus else ""}">{ico("search")}{search}</div>
 <div class="ibtn">{ico("editmode")}</div><div class="ibtn">{ico("reload")}</div><div class="ibtn">{ico("close")}</div></div>
-{sidebar(active, scroll)}
+{sidebar(active, scroll, expand)}
 <div class="content">{body}</div>{overlay}
 <div class="ftr">{ico("profiles", "pico")}Profile: Default &nbsp;·&nbsp; 20 modules active<span class="mid {status_cls}">{ico(status_icon)}{status}</span>
 <span class="scl">WINDOW SCALE</span><span class="sl"><span style="width:43%"></span></span><span class="val">1.00</span>
@@ -263,12 +280,13 @@ def profiles():
 
 # ---------------------------------------------------------------- icon close-up
 GROUPS = [
-    ("Pages & modules", lambda n: INDEX[n] < INDEX["cat-system"]),
-    ("Categories", lambda n: n.startswith("cat-")),
+    ("Pages & modules", lambda n: INDEX[n] < INDEX["cat-combat"]),
+    ("Groups & brand", lambda n: n.startswith("cat-")),
     ("Actions & controls", lambda n: INDEX["search"] <= INDEX[n] < INDEX["fps"]),
     ("Data bar & fallback", lambda n: INDEX["fps"] <= INDEX[n] <= INDEX["question"]),
     ("Bugs", lambda n: INDEX["bugs"] <= INDEX[n] < INDEX["movers"]),
-    ("Movers", lambda n: INDEX[n] >= INDEX["movers"]),
+    ("Movers & Mythic+", lambda n: INDEX["movers"] <= INDEX[n] < INDEX["cog"]),
+    ("Options 2.0", lambda n: INDEX[n] >= INDEX["cog"]),
 ]
 STATES = [("Normal", "var(--text2)"), ("Hover", "var(--text)"), ("Active", "var(--accent)"),
           ("Danger", "var(--danger)"), ("Disabled", "rgba(107,113,128,.6)")]
@@ -485,19 +503,27 @@ def seg(items, active, multi=()):
         f'<span class="{"on" if i == active or i in multi else ""}">{t}</span>' for i, t in enumerate(items)) + "</span>"
 
 
-def preview_card(stage, h):
-    return (f'<div class="sec pv"><div class="sech i">{ico("preview")}Live preview<span class="hint">Sample data, redrawn as you change settings</span></div>'
+def preview_card(stage, h, chips=None, stuck=False):
+    if chips:
+        tools = '<span class="chips">' + "".join(f'<span class="{"on" if on else ""}">{ico(i)}{t}</span>' for t, i, on in chips) + "</span>"
+    else:
+        tools = '<span class="hint">Sample data, redrawn as you change settings</span>'
+    return (f'<div class="sec pv{" stuck" if stuck else ""}"><div class="sech i">{ico("preview")}Live preview'
+            f'<span class="tools">{tools}<span class="fold">{ico("hide")}</span></span></div>'
             f'<div class="stage" style="height:{h}px">{stage}</div></div>')
 
 
-def card2(title, rows, wide=False):
-    return f'<div class="sec c2{" wide" if wide else ""}"><div class="sech">{title}</div>{"".join(rows)}</div>'
+def card2(title, rows, wide=False, icon=None, reset=False):
+    head = f'<div class="sech i">{ico(icon)}{title}</div>' if icon else f'<div class="sech">{title}</div>'
+    r = f'<span class="secr">{ico("reset")}</span>' if reset else ""
+    return f'<div class="sec c2{" wide" if wide else ""}">{head}{r}{"".join(rows)}</div>'
 
 
-def row(label, ctl, desc=None, gear=None, hl=False):
+def row(label, ctl, desc=None, gear=None, hl=False, reset=False):
     d = f"<i>{desc}</i>" if desc else ""
+    r = f'<span class="rst">{ico("reset")}</span>' if reset else ""
     return (f'<div class="opt{" d" if desc else ""}{" hl" if hl else ""}"><div class="l"><b>{label}</b>{d}</div>'
-            f'<div class="ctl c2">{ctl}{gear or ""}</div></div>')
+            f'<div class="ctl c2">{r}{gear or ""}{ctl}</div></div>')
 
 
 def dd2(text, face=None, tex=None):
@@ -526,12 +552,21 @@ def plate(name, pct, color, forces="", tex="BarEmber"):
             f'<div style="position:relative">{bar(pct, color, tex, 15, 187, "1px solid #000", f"{pct}%")}{f}</div></div>')
 
 
-def nameplates_page():
+def nameplates_page(pinned=False):
     stage = (plate("Ashen Brute", 72, "#ff4d5e", "+4") + plate("Ember Wisp", 100, "#ffc24b")
              + plate("Phoenix Guard", 46, "#3ddc97"))
     body = page_head("nameplates", "Nameplates", "Bar texture, health percent and Mythic+ enemy forces on Blizzard nameplates.")
-    body += tabs(["Appearance", "Text", "Game settings"], 1)
-    body += preview_card(f'<div class="plates">{stage}</div>', 110)
+    chips = [("Low health", "warning", True), ("Targeted", "nameplates", True)] if pinned else None
+    if pinned:
+        body = preview_card(f'<div class="plates">{stage}</div>', 110, chips, stuck=True)
+        body += card2("Bar", [
+            row("Bar texture", dd2("Ember", tex="BarEmber"), reset=True),
+            row("Health bar height", sl2(55, "12"), reset=True),
+            row("Target highlight", dd2("Glow")),
+        ], wide=True, reset=True)
+    else:
+        body += tabs(["Appearance", "Text", "Game settings"], 1)
+        body += preview_card(f'<div class="plates">{stage}</div>', 110)
     body += card2("Text", [
         row("Health percent", tog(), "Show health percent on the bar."),
         row("Health text font", dd2("Barlow Condensed SemiBold", "F-BarlowCondSemiBold"), gear=cog(True)),
@@ -540,6 +575,8 @@ def nameplates_page():
         row("Enemy forces", tog(), "In Mythic+, how much enemy forces each mob is worth (+4) beside its health bar."),
         row("Enemy forces font", dd2("Default"), gear=cog()),
     ], wide=True)
+    if pinned:
+        return shell("nameplates", body, head=faces(font_data()), status="Preview pinned while you scroll", status_icon="preview")
     pop = popover("Health text font", [
         ("Font size", sl2(45, "11")), ("Outline", dd2("Outline")), ("Drop shadow", tog()),
         ("Text colour", sw("#eceef2") + btn("Reset", None, "ghost")), ("Position", dd2("Center")),
@@ -586,48 +623,113 @@ def unitframes_page():
                  head=faces(font_data()))
 
 
-def general_page(picker):
+def mlink():
+    return f'<span class="lnk">{ico("arrow-right")}</span>'
+
+
+def font_cards(fonts, sel, hover, n=12):
+    cards = []
+    for f in fonts[:n]:
+        cls = " on" if f["key"] == sel else (" hov" if f["key"] == hover else "")
+        ok = f'<span class="ok">{ico("check")}</span>' if f["key"] == sel else ""
+        cards.append(f'<div class="mc font{cls}"><span class="nm">{f["name"]}</span>{ok}'
+                     f'<span class="smp" style="font-family:F-{f["key"]}">Pyroblast 1.24M  87%  +4</span></div>')
+    return "".join(cards)
+
+
+def bar_cards(bars, sel, hover, n=18):
+    cards = []
+    for b in bars[:n]:
+        cls = " on" if b["key"] == sel else (" hov" if b["key"] == hover else "")
+        ok = f'<span class="ok">{ico("check")}</span>' if b["key"] == sel else ""
+        cards.append(f'<div class="mc bar{cls}"><span class="strip" style="background-image:url(../assets/bars/{b["file"]}.png)"></span>'
+                     f'<span class="nm">{b["name"]}</span>{ok}</div>')
+    return "".join(cards)
+
+
+def appearance_page(kind):
     fonts, bars = font_data(), bar_data()
-    body = page_head("general", "General", "Theme, fonts and textures shared by every module.")
-    sample = (f'<div class="tpv"><div class="tph">SECTION HEADING</div><div class="tpb">Option label in the interface font</div>'
-              f'<div class="tpd">Descriptions and hints use the lighter weight.</div></div><div class="tpbars">'
-              + bar(82, "#ff6a1a", "BarSatin", 16, 300, text="82%") + bar(64, "#3ddc97", "BarSatin", 16, 300, text="64%")
-              + bar(40, "#4da3ff", "BarSatin", 16, 300, text="40%") + "</div>")
-    body += preview_card(f'<div class="theme">{sample}</div>', 120)
-    left = card2("Appearance", [
-        row("Theme", dd2("Phoenix Ember"), "Accent colour for every Phoenix element."),
-        row("Bar texture", dd2("Satin", tex="BarSatin"), "Status bar texture for unit frames, cast bars, nameplates and meters.",
-            hl=picker == "bar"),
-    ])
-    right = card2("Typography", [
-        row("UI font", dd2("Inter Medium", "F-InterMedium"), "Font used for labels and text Phoenix draws."),
-        row("Unit font", dd2("Barlow Condensed SemiBold", "F-BarlowCondSemiBold"), "Font used for names and numbers on frames.",
-            hl=picker == "font"),
-        row("Font scale", sl2(33, "100%"), "Scales every Phoenix font."),
-    ])
-    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
-    if picker == "font":
-        # type-to-filter, a heading per family, every name drawn in its own face (UI/Widgets/Dropdown.lua, preview = "font")
-        items, last = [], None
-        for f in fonts:
-            if "cond" not in f["name"].lower():
-                continue
-            if f["family"] != last:
-                items.append(f'<div class="ph">{f["family"].upper()}</div>')
-                last = f["family"]
-            on = f["key"] == "BarlowCondSemiBold"
-            items.append(f'<div class="pi{" on" if on else ""}" style="font-family:F-{f["key"]}">{f["name"]}'
-                         f'{ico("check", "xs") if on else ""}</div>')
-        pop = (f'<div class="pick" style="left:944px;top:507px;width:240px"><div class="pin focus">{ico("search", "xs")}cond<span class="caret"></span></div>'
-               + "".join(items[:11]) + '<div class="pthumb"></div></div>')
-    else:
-        # the shipped statusbars as accent-tinted strips with the name on top (preview = "bar")
-        rows = "".join(f'<div class="pb{" on" if b["key"] == "Satin" else ""}"><span class="pbs" style="background-image:url(../assets/bars/{b["file"]}.png)"></span>'
-                       f'<span class="pbl">{b["name"]}</span>{ico("check", "xs") if b["key"] == "Satin" else ""}</div>' for b in bars[:11])
-        pop = (f'<div class="pick bars" style="left:528px;top:513px;width:210px"><div class="pin">{ico("search", "xs")}Filter</div>'
-               f'<div class="ph">PHOENIX</div>{rows}<div class="pthumb"></div></div>')
-    # dropdown popups are parented to UIParent, so they may hang below the settings window
-    return shell("general", body, above=pop, head=faces(fonts))
+    if kind == "font":
+        body = page_head("fonts", "Fonts", "Every font Phoenix draws, gathered in one place.", toggle=False, state="")
+        spec = ('<div class="spec"><div class="big" style="font-family:F-InterSemiBold">Phoenixia  55.2K  86%</div>'
+                '<div class="small" style="font-family:F-InterSemiBold">The quick ember fox jumps over the lazy wyrm. 0123456789</div>'
+                '<span class="nm">INTER SEMIBOLD</span></div>')
+        top = card2("Everywhere at once", [spec, row("Font for every element", dd2("Inter SemiBold", "F-InterSemiBold")
+                                                    + btn("Apply to all", "check") + btn("Use theme", "theme", "ghost"))],
+                    wide=True, icon="fonts")
+        mods = [("Unit Frames", "unitframes", [("Name font", "Inter SemiBold", "F-InterSemiBold", "Applies to Player, Target, Focus, Pet"),
+                                              ("Health text font", "Barlow Condensed Bold", "F-BarlowCondBold", None)]),
+                ("Nameplates", "nameplates", [("Health text font", "Barlow Condensed SemiBold", "F-BarlowCondSemiBold", None),
+                                              ("Name font", "Default", None, None)]),
+                ("Cast Bars", "castbars", [("Spell name font", "Default", None, None), ("Timer font", "Default", None, None)])]
+        cards = "".join(card2(t, [row(l, dd2(v, face), desc=d, gear=mlink(), reset=v != "Default") for l, v, face, d in rs], icon=i)
+                        for t, i, rs in mods)
+        grid = font_cards(fonts, "InterSemiBold", "BarlowCondSemiBold")
+        pop = (f'<div class="mp" style="left:520px;top:300px"><div class="mph"><span class="input">{ico("search", "xs")}&nbsp;Filter fonts</span>'
+               f'{dd2("All styles")}<span class="cnt">{len(fonts)} fonts</span></div><div class="mpg c2">{grid}</div><div class="mpthumb"></div></div>')
+        return shell("fonts", body + top + cards, above=pop, head=faces(fonts),
+                     status="Hover a font to try it on every element", status_icon="preview")
+    body = page_head("textures", "Textures", "Every bar texture Phoenix uses, gathered in one place.", toggle=False, state="")
+    sample = ('<div class="tpbars" style="padding:14px 24px">' + bar(82, "#ff6a1a", "BarGlass", 18, 520, text="Health 82%")
+              + bar(64, "#4da3ff", "BarGlass", 18, 520, text="Mana 64%") + bar(40, "#ffc24b", "BarGlass", 18, 520, text="Cast 1.2s") + "</div>")
+    top = card2("Everywhere at once", [sample, row("Texture for every bar", dd2("Glass", tex="BarGlass")
+                                                  + btn("Apply to all", "check") + btn("Use theme", "theme", "ghost"))],
+                wide=True, icon="textures")
+    mods = [("Unit Frames", "unitframes", [("Bar texture", "Smooth", "BarSmooth"), ("Power bar texture", "Default", None)]),
+            ("Nameplates", "nameplates", [("Bar texture", "Ember", "BarEmber")])]
+    cards = "".join(card2(t, [row(l, dd2(v, tex=tx), gear=mlink(), reset=tx is not None) for l, v, tx in rs], icon=i) for t, i, rs in mods)
+    sel = next((b["key"] for b in bars if b["file"] == "BarSmooth"), "Smooth")
+    hov = next((b["key"] for b in bars if b["file"] == "BarGlass"), "")
+    pop = (f'<div class="mp" style="left:520px;top:330px"><div class="mph"><span class="input">{ico("search", "xs")}&nbsp;Filter textures</span>'
+           f'{dd2("All styles")}<span class="cnt">{len(bars)} textures</span></div><div class="mpg c3">{bar_cards(bars, sel, hov)}</div>'
+           '<div class="mpthumb"></div></div>')
+    return shell("textures", body + top + cards, above=pop, head=faces(fonts), status="Glass previewed on the sample bars",
+                 status_icon="preview")
+
+
+def sidebar_shot():
+    body = page_head("castbars", "Cast Bars", "Player, target and focus cast bars with latency and interrupt markers.")
+    cast = ('<div class="tpbars" style="padding:30px 120px">' + bar(62, "#ffc24b", "BarSatin", 22, 520, text="Pyroblast  1.4 / 3.5")
+            + bar(100, "#ff4d5e", "BarSatin", 22, 520, text="Interrupted") + "</div>")
+    chips = [("Interrupted", "error", False)]
+    body += tabs(["Player", "Target", "Focus"], 0) + preview_card(cast, 120, chips)
+    body += card2("Bar", [row("Bar texture", dd2("Satin", tex="BarSatin")), row("Width", sl2(60, "260"), reset=True),
+                          row("Latency marker", tog(), "Shades the part of the cast that your latency eats.")], wide=True)
+    return shell("castbars", body, expand=("tools",), head=faces(font_data()))
+
+
+def diagnostics_page():
+    # mirrors UI/Config/Diagnostics.lua; the counts are what Core/Diag.lua checks (Core/TextureData.lua, icon tiers)
+    import re
+    tex = (ROOT / "Core" / "TextureData.lua").read_text(encoding="utf-8")
+    n = {k: len(re.findall(r'file = "', tex.split(k + " = {")[1].split("\n    }")[0])) for k in ("bars", "glows", "borders")}
+    kinds = [("icons", 3), ("brand", 5), ("bar", n["bars"]), ("glow", n["glows"]), ("border", n["borders"]), ("shape", 4)]
+    total = sum(c for _, c in kinds)
+    summary = "  ·  ".join(f"{k} {c}/{c}" for k, c in kinds)
+    body = page_head("diagnostics", "Diagnostics", "Checks that every Phoenix file loaded, and builds a report for bug reports.",
+                     toggle=False, state="")
+    v = lambda t, w=False: f'<span class="val2"><span class="d{" w" if w else ""}"></span>{t}</span>'
+    left = card2("Last check", [
+        row("Last run", '<span class="val2">2026-10-22 14:05</span>'),
+        row("Media files", v(f"{total} of {total} loaded")),
+        row("Game client", '<span class="val2">12.1.5  ·  120105  ·  enUS</span>'),
+        row("Display", '<span class="val2">2560x1440  ·  UI scale 0.71</span>'),
+        row("Run the check", btn("Run", "diagnostics", "primary"), "Loads every Phoenix texture and compares its size with the file."),
+    ], icon="diagnostics")
+    right = card2("Icons", [
+        row("Icon source", dd2("Automatic"), "Automatic uses the game's own icons only when the check finds that the Phoenix icon sheet did not load."),
+        row("In use now", v("Phoenix icons")),
+    ], icon="preview") + card2("Files by kind", [
+        f'<div class="opt d"><div class="l"><b>Loaded</b><i>{summary}</i></div></div>',
+    ], icon="textures")
+    report = (f"Phoenix UI 2.0.0-beta1 · WoW 12.1.5 (120105) · enUS\nScreen 2560x1440 · UI scale 0.71 · icons: auto\n"
+              f"Media {total}/{total} loaded · {summary.replace('  ·  ', ' · ')}\n"
+              "glyph home Icons24 16x16 loaded=true visible=true alpha=1\nglyph general Icons24 16x16 loaded=true visible=true alpha=1")
+    rep = card2("Report", ['<div class="opt"><div class="l"><i>Click in the box, select all and copy it into your bug report. '
+                           'It holds no character or account names.</i></div></div>', f'<div class="ta">{report}</div>'],
+                wide=True, icon="copy")
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>' + rep
+    return shell("diagnostics", body, status="Check finished: everything loaded", status_icon="success", status_cls="ok")
 
 
 def media_sheet():
@@ -697,8 +799,9 @@ def keystones_page():
 
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
          "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page, "nameplates": nameplates_page,
-         "unitframes": unitframes_page, "fonts": lambda: general_page("font"),
-         "textures": lambda: general_page("bar"), "media": media_sheet,
+         "unitframes": unitframes_page, "fonts": lambda: appearance_page("font"),
+         "textures": lambda: appearance_page("bar"), "media": media_sheet, "pinned": lambda: nameplates_page(True),
+         "diagnostics": diagnostics_page, "sidebar": sidebar_shot,
          "vault": vault_page, "keystones": keystones_page}
 SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1")}
 

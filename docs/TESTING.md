@@ -55,6 +55,20 @@ the step number.
   **Expect:** the window scales smoothly, text stays sharp, and the size is kept after `/reload`. `/pui reset` puts the window back in the middle.
 - [ ] **2.5 Dragging.** Move the window by its title bar.
   **Expect:** it moves, and the position is kept after `/reload`.
+- [ ] **2.6 Sidebar groups.** The sidebar has 13 headings (Home, General, Appearance & Media, Unit Frames, Nameplates,
+  Action Bars & Cooldowns, Combat, Group & Mythic+, Chat & Social, Maps, Minimap & Data, Tooltips & Items,
+  Quality of Life, Tools). Click a heading with an arrow to fold or unfold it.
+  **Expect:** the group with the open page is unfolded, the open/closed state is kept after `/reload`, no label is
+  cut off or wraps, and every module you used before is still there with the same settings.
+- [ ] **2.7 Search jumps.** Search `texture`, then click a result in another group.
+  **Expect:** that group unfolds, the page opens on the right tab and the row flashes. Results show the path
+  (group › module › tab › section).
+- [ ] **2.8 Reset.** Change a slider, then right-click its row (or click the orange ↺ arrow beside it).
+  **Expect:** that one setting goes back to its default. The ↺ on a card's header asks for a second click, then
+  resets the card; the ↺ beside a module's Enabled switch resets the whole module but keeps it on.
+- [ ] **2.9 Diagnostics.** Tools → Diagnostics → **Run**.
+  **Expect:** "N of N loaded" in green and a report you can copy. If anything failed, screenshot this page.
+  Set **Icon source** to Game icons: every sidebar icon turns into a Blizzard icon; set it back to Automatic.
 
 ## 3. Every module page
 
@@ -63,16 +77,23 @@ Cooldown Text, Combat Text, Damage Meter, Tooltip, Chat, Minimap, Data Texts, It
 PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 
 - [ ] **3.1 Preview.** The live preview at the top of the page reacts at once to every option you change.
+  Scroll down: the preview stays stuck at the top while the options scroll under it. The eye button folds it away
+  (kept after `/reload`). On Unit Frames, Nameplates and Cast Bars, the chips (Low health, Out of range, Targeted,
+  Interrupted) switch the sample state.
   **If not:** name the module and the option.
 - [ ] **3.2 Cogs.** Every ⚙ cog opens its popover, the popover settings work, and clicking outside closes it.
 - [ ] **3.3 Enable toggle.** Turn the module off and on.
   **Expect:** off reverts to the Blizzard look (some modules ask for `/reload`, and that's fine); on restores it.
   No Lua error either way.
 - [ ] **3.4 Fonts.** Open any font picker.
-  **Expect:** every font renders in its own face in the list, and typing filters the list. Choosing one applies it to the
-  preview and in game.
+  **Expect:** a grid of cards, each with a sample line in its own face; typing and the style filter narrow it.
+  Pointing at a card shows it on the preview at once; moving away puts the old font back; clicking keeps it.
 - [ ] **3.5 Textures.** Open any bar texture picker.
-  **Expect:** a preview strip for each texture, and the choice applies to bars in game.
+  **Expect:** a grid of neutral-tinted strips (about 36), the same hover-to-try behaviour, and the choice applies to bars in game.
+- [ ] **3.5b Appearance & Media.** Open Fonts, then Textures.
+  **Expect:** every font/texture setting of every module listed on one page; changing one here changes it on the
+  module page too (the → arrow jumps there). **Apply to all** sets every row at once; **Use theme** returns them to
+  Default. Sounds: each **Play** button plays the alert or the 5→1 countdown.
 - [ ] **3.6 Tooltip page.** It has two tabs, **Appearance** and **Content**. The preview tooltip changes with every option.
 - [ ] **3.7 Chat page.** Turn on **Flashing tabs in the accent colour** and **Coloured whisper tabs**. Ask someone to whisper you while another
   tab is selected.

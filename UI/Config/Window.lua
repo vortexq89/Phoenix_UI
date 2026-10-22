@@ -117,6 +117,7 @@ local function navRow(parent, key, label, icon, kind)
     r.label:SetPoint("LEFT", r.icon, "RIGHT", entry and 9 or 10, 0)
     r.label:SetPoint("RIGHT", -30, 0)
     r.label:SetText(entry and label or label:upper())
+    r.label:SetWordWrap(false)
     r.dot = W:Dot(r, 6)
     r.dot:SetPoint("RIGHT", -20, 0)
     if kind == "group" then
