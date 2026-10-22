@@ -3701,6 +3701,189 @@ try("local NPC collector (S17)", function()
     ns.Secret.IsSecret = oldIs
     for k, val in pairs(saved) do rawset(env, k, val) end
 end)
+-- S17: open gap rows (fill gradients, data bar look, honor, currencies, unit frame extras, power / dispel colours)
+try("gap rows: bars, data texts and colours (S17)", function()
+    -- fill gradient overlay follows the mode and hides again
+    local sb = env.CreateFrame("StatusBar")
+    ns.Skin:FillGradient(sb, "HORIZONTAL")
+    ns.Skin:FillGradient(sb, "VERTICAL", 0.3)
+    ns.Skin:FillGradient(sb, "none")
+    -- tracker bars viewer gradient reaches its preview
+    local T = ns.modules.Tracker
+    if T and T.db and T.db.viewers then
+        for _, v in pairs(T.db.viewers) do if v.gradient ~= nil then v.gradient = "VERTICAL" end end
+        ns.Previews:Create("tracker", env.CreateFrame("Frame"), T, {}):Redraw()
+        for _, v in pairs(T.db.viewers) do if v.gradient ~= nil then v.gradient = "none" end end
+    end
+    -- data bar: honor at the cap, texture / reverse / smooth / gradient, currencies
+    local DT = ns.modules.DataTexts
+    local db = DT.db
+    local saved = {}
+    for _, k in ipairs({ "UnitHonor", "UnitHonorMax", "UnitHonorLevel", "UnitLevel", "GetMaxLevelForPlayerExpansion",
+        "IsXPUserDisabled", "C_CurrencyInfo" }) do saved[k] = rawget(env, k) end
+    rawset(env, "IsXPUserDisabled", function() return true end)
+    rawset(env, "UnitHonor", function() return 300 end)
+    rawset(env, "UnitHonorMax", function() return 1200 end)
+    rawset(env, "UnitHonorLevel", function() return 42 end)
+    db.barHonor = true
+    local d = DT:BarData()
+    assert(d and d.kind == "honor" and d.cur == 300 and d.max == 1200 and d.name:find("42"), "honor bar data")
+    db.barHonor = false
+    assert(not DT:BarData() or DT:BarData().kind ~= "honor", "honor bar off")
+    local bar = DT:NewDataBar(env.UIParent)
+    for _, combo in ipairs({ { "Satin", true, true, "HORIZONTAL" }, { "", false, false, "none" } }) do
+        db.barTexture, db.barReverse, db.barSmooth, db.barGradient = combo[1], combo[2], combo[3], combo[4]
+        DT:PaintDataBar(bar, { kind = "xp", cur = 10, max = 100, rested = 5 }, false, false)
+        DT:PaintDataBar(bar, { kind = "honor", cur = 1, max = 2 }, true, true)
+    end
+    local list = { { name = "Head", isHeader = true }, { name = "Valorstones" }, { name = "Bronze" } }
+    rawset(env, "C_CurrencyInfo", setmetatable({
+        GetCurrencyListSize = function() return #list end,
+        GetCurrencyListInfo = function(i) return list[i] end,
+        GetCurrencyListLink = function(i) return "currency:" .. (3000 + i) end,
+        GetCurrencyIDFromLink = function(link) return tonumber(link:match("(%d+)")) end,
+        GetCurrencyInfo = function(id) return id == 3002 and { name = "Valorstones", quantity = 1450, maxQuantity = 2000,
+            iconFileID = 1 } or nil end,
+    }, { __index = saved.C_CurrencyInfo }))
+    local choices = DT.CurrencyChoices()
+    assert(#choices == 2 and choices[1].name == "Bronze" and choices[2].id == 3002, "currency choices")
+    db.currency1, db.currency2, db.currency3 = 3002, 0, 9999
+    local picked = DT:PickedCurrencies()
+    assert(#picked == 1 and picked[1].quantity == 1450, "picked currencies")
+    for _, on in ipairs({ true, false }) do
+        db.currency, db.barHonor = on, on
+        ns.Previews:Create("datatexts", env.CreateFrame("Frame"), DT, {}):Redraw()
+    end
+    db.currency1, db.currency2, db.currency3, db.barTexture, db.barGradient = 0, 0, 0, "", "none"
+    db.barReverse, db.barSmooth = false, true
+    for k, v in pairs(saved) do rawset(env, k, v) end
+    -- power and dispel colour overrides (General) with the game's colours behind them
+    local th = ns.Theme.settings
+    th.powerColors.MANA = { r = 0.1, g = 0.2, b = 0.3 }
+    local r, g, b = ns.Util.PowerColor("MANA")
+    assert(math.abs(r - 0.1) < 1e-6 and math.abs(g - 0.2) < 1e-6 and math.abs(b - 0.3) < 1e-6, "power colour override")
+    r = ns.modules.UnitFrames.PowerColor("MANA", 0)
+    assert(math.abs(r - 0.1) < 1e-6, "unit frames use the power colour override")
+    th.powerColors.MANA = nil
+    assert(ns.Util.PowerColor(nil) == nil and ns.Util.PowerColor(42) == nil, "power colour of nothing")
+    th.dispelColors.Magic = { r = 0.9, g = 0.1, b = 0.5 }
+    r = ns.Util.DispelColor("Magic")
+    assert(math.abs(r - 0.9) < 1e-6, "dispel colour override")
+    th.dispelColors.Magic = nil
+    ns.modules.UnitFrames.ResetDispelCurve()
+    ns.Previews:Create("theme", env.CreateFrame("Frame"), ns.modules.General, {}):Redraw()
+    for _, p in ipairs(ns.Theme.POWERS) do assert(ns.Theme.tokens["power." .. p], "power token " .. p) end
+    for _, k in ipairs(ns.Theme.DISPELS) do assert(ns.Theme.tokens["dispel." .. k], "dispel token " .. k) end
+end)
+
+try("gap rows: unit frame extras (S17)", function()
+    local M = ns.modules.UnitFrames
+    -- portrait size scales the side square (centred), clamped to half the width
+    local base = { width = 200, height = 40, portrait = "game", portraitPos = "left", powerBar = { show = "off", height = 8 } }
+    local g = M.Geometry(base)
+    assert(g.portrait[3] == 40 and g.portrait[2] == 0, "default portrait")
+    base.portraitSize = 1.5
+    g = M.Geometry(base)
+    assert(g.portrait[3] == 60 and g.portrait[2] == -10 and g.health[1] == 61, "larger portrait")
+    base.portraitSize = 0.5
+    g = M.Geometry(base)
+    assert(g.portrait[3] == 20 and g.portrait[2] == 10, "smaller portrait")
+    base.portraitSize, base.width = 2, 100
+    assert(M.Geometry(base).portrait[3] == 50, "portrait clamped to half the width")
+    -- overheal: only for left-to-right bars, capped at 50 %
+    local u = { absorb = { overheal = 0.2 }, bar = {} }
+    assert(M.OverhealWidth(u, 200) == 40, "overheal width")
+    u.absorb.overheal = 0.9
+    assert(M.OverhealWidth(u, 200) == 100, "overheal cap")
+    u.bar.reverse = true
+    assert(M.OverhealWidth(u, 200) == 0, "overheal on reversed bars")
+    assert(M.OverhealWidth({ absorb = {}, bar = {} }, 200) == 0, "no overheal by default")
+    -- pip shapes: bars fill the slot, squares / circles centre in it
+    local x, y, w, h = M.PipRect("bar", 10, 30, 8)
+    assert(x == 10 and y == 0 and w == 30 and h == 8, "bar pip")
+    x, y, w, h = M.PipRect("round", 10, 30, 8)
+    assert(x == 21 and y == 0 and w == 8 and h == 8, "round pip")
+    x, y, w, h = M.PipRect("square", 0, 6, 10)
+    assert(x == 0 and y == -2 and w == 6 and h == 6, "square pip")
+    -- live frames: overheal, spell cost and pip shapes build and update with sample data
+    local pu = M.db.units.player
+    local keep = { pu.absorb.overheal, pu.powerBar.cost, pu.portraitSize, M.db.classPower.shape }
+    for _, combo in ipairs({ { 0.3, true, 1.4, "round" }, { 0, false, 1, "square" }, { 0.1, true, 0.6, "bar" } }) do
+        pu.absorb.overheal, pu.powerBar.cost, pu.portraitSize, M.db.classPower.shape = combo[1], combo[2], combo[3], combo[4]
+        local p = M:Build(env.UIParent, "player", { sample = M.SampleData("player", 1) })
+        M:Layout(p); M:UpdateAll(p)
+        ns.Previews:Create("unitframe", env.CreateFrame("Frame"), M, {}):Redraw()
+    end
+    -- spell cost from the live source: the cast's cost in the current power, nothing for channels / secrets
+    local saved = { UnitCastingInfo = rawget(env, "UnitCastingInfo"), C_Spell = rawget(env, "C_Spell") }
+    rawset(env, "UnitCastingInfo", function() return "Flash Heal", "", 1, 0, 1, false, "x", false, 2061 end)
+    rawset(env, "C_Spell", setmetatable({ GetSpellPowerCost = function(id)
+        return id == 2061 and { { type = 3, cost = 99 }, { type = 0, cost = 1200 } } or nil end }, { __index = saved.C_Spell }))
+    local f = { unit = "player" }
+    assert(M.Live:SpellCost(f, 0) == 1200 and M.Live:SpellCost(f, 3) == 99, "spell cost per power type")
+    assert(M.Live:SpellCost(f, 1) == nil, "no cost in another power")
+    assert(M.Live:SpellCost({ unit = "target" }, 0) == nil, "cost only for the player")
+    rawset(env, "UnitCastingInfo", function() return nil end)
+    assert(M.Live:SpellCost(f, 0) == nil, "no cast, no cost")
+    for k, v in pairs(saved) do rawset(env, k, v) end
+    pu.absorb.overheal, pu.powerBar.cost, pu.portraitSize, M.db.classPower.shape = keep[1], keep[2], keep[3], keep[4]
+    -- the click casting link opens the game's window when it exists
+    local opened = false
+    local savedT = rawget(env, "ToggleClickBindingFrame")
+    rawset(env, "ToggleClickBindingFrame", function() opened = true end)
+    for _, row in ipairs(ns.options.UnitFrames) do
+        if row.label == "UF_CLICK_CAST" then row.func() end
+    end
+    rawset(env, "ToggleClickBindingFrame", savedT)
+    assert(opened, "click casting button")
+end)
+
+try("gap rows: chat timestamp colour and emotes (S17)", function()
+    local C = ns.modules.Chat
+    assert(C.TimestampFormat("|cff808080%H:%M |r") == "%H:%M " and C.TimestampFormat("%H:%M ") == "%H:%M ", "strip colour")
+    assert(C.ColorTimestamp("%H:%M ", { r = 1, g = 0, b = 0 }) == "|cffff0000%H:%M |r", "colour a format")
+    assert(C.ColorTimestamp("|cff00ff00%H:%M |r", { r = 1, g = 0, b = 0 }) == "|cffff0000%H:%M |r", "recolour")
+    assert(C.ColorTimestamp("none", { r = 1, g = 0, b = 0 }) == "none" and C.ColorTimestamp("%H ", false) == "%H ", "no colour")
+    local cv = { showTimestamps = "%H:%M " }
+    local savedCV = rawget(env, "C_CVar")
+    rawset(env, "C_CVar", setmetatable({ GetCVar = function(k) return cv[k] end, SetCVar = function(k, v) cv[k] = v end },
+        { __index = savedCV }))
+    C.db.timestampColor = { r = 0, g = 0.5, b = 1 }
+    C:ApplyTimestampColor()
+    assert(cv.showTimestamps:find("^|cff0080ff") and cv.showTimestamps:find("|r$"), "timestamp coloured " .. cv.showTimestamps)
+    ns.Previews:Create("chat", env.CreateFrame("Frame"), C, {}):Redraw()
+    C:ApplyTimestampColor(true)
+    assert(cv.showTimestamps == "%H:%M ", "colour removed when off")
+    C.db.timestampColor = false
+    C:ApplyTimestampColor()
+    assert(cv.showTimestamps == "%H:%M ", "no colour, no change")
+    rawset(env, "C_CVar", savedCV)
+    -- emotes from the game's lists, labelled with their slash command
+    local saved = {}
+    for _, k in ipairs({ "EmoteList", "TextEmoteSpeechList", "MAXEMOTEINDEX", "EMOTE1_TOKEN", "EMOTE1_CMD1", "EMOTE2_TOKEN",
+        "C_ChatInfo" }) do saved[k] = rawget(env, k) end
+    rawset(env, "EmoteList", { "WAVE", "DANCE" }); rawset(env, "TextEmoteSpeechList", { "HELPME", "WAVE" })
+    rawset(env, "MAXEMOTEINDEX", 3); rawset(env, "EMOTE1_TOKEN", "WAVE"); rawset(env, "EMOTE1_CMD1", "/wave")
+    rawset(env, "EMOTE2_TOKEN", "DANCE")
+    local done
+    rawset(env, "C_ChatInfo", setmetatable({ PerformEmote = function(t) done = t end }, { __index = saved.C_ChatInfo }))
+    local list = C.EmoteChoices()
+    assert(#list == 3 and list[1].label == "/wave" and list[2].label == "/dance" and list[3].token == "HELPME", "emote list")
+    assert(C.PerformEmote("DANCE") and done == "DANCE", "perform emote")
+    assert(not C.PerformEmote(nil), "no emote")
+    local pts, w, h = C.EmoteGrid(5)
+    assert(#pts == 5 and pts[5][1] == pts[1][1] and pts[5][2] < pts[1][2] and w > 0 and h > 0, "emote grid")
+    for _, on in ipairs({ true, false }) do
+        C.db.chatBar, C.db.emotes = on, on
+        C:RefreshBar()
+        ns.Previews:Create("chat", env.CreateFrame("Frame"), C, {}):Redraw()
+    end
+    C.ShowEmotes(env.UIParent)
+    for k, v in pairs(saved) do rawset(env, k, v) end
+    C.db.chatBar, C.db.emotes = false, false
+    C:RefreshBar()
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

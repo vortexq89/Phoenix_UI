@@ -213,6 +213,8 @@ local UNIT_EVENTS = {
     portrait = { "UNIT_PORTRAIT_UPDATE", "UNIT_MODEL_CHANGED" },
     auras = { "UNIT_AURA" },
     threat = { "UNIT_THREAT_SITUATION_UPDATE" },
+    cast = { "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_INTERRUPTED",
+             "UNIT_SPELLCAST_SUCCEEDED" },
 }
 local HANDLER = {
     health = function(f) local s = M:SourceOf(f); M:UpdateHealth(f, s); M:UpdateTexts(f, s); M:UpdateIndicators(f, s) end,
@@ -225,6 +227,12 @@ local HANDLER = {
     portrait = function(f) M:UpdatePortrait(f, M:SourceOf(f)) end,
     auras = function(f) M:UpdateAuras(f) end,
     threat = function(f) M:UpdateIndicators(f, M:SourceOf(f)) end,
+    -- spell cost prediction: only the player frame with the option on listens further
+    cast = function(f)
+        if f.unit ~= "player" or not M:Unit(f.unitKey).powerBar.cost then return end
+        local s = M:SourceOf(f)
+        M:UpdateCost(f, s, (s:PowerType(f)))
+    end,
 }
 
 --[[ (Re)registers a frame's unit events for the unit it shows now (vehicles swap player and pet; group header
@@ -244,7 +252,9 @@ local function watchUnit(f, unit, extra)
         end, unit)
     end
     for group, list in pairs(UNIT_EVENTS) do
-        for _, ev in ipairs(list) do add(group, ev, HANDLER[group]) end
+        if group ~= "cast" or unit == "player" then
+            for _, ev in ipairs(list) do add(group, ev, HANDLER[group]) end
+        end
     end
     for _, ev in ipairs(extra or {}) do add("extra", ev) end
 end
@@ -308,7 +318,7 @@ local function registerEvents()
     E:On("PLAYER_SPECIALIZATION_CHANGED", M, function() updateKey("player") end)
     E:On("UNIT_ENTERED_VEHICLE", M, function(_, _, unit) if unit == "player" then vehicleSwap() end end)
     E:On("UNIT_EXITED_VEHICLE", M, function(_, _, unit) if unit == "player" then vehicleSwap() end end)
-    E:Listen("PUI_THEME_CHANGED", M, function() M:RefreshPhoenix() end)
+    E:Listen("PUI_THEME_CHANGED", M, function() M.ResetDispelCurve(); M:RefreshPhoenix() end)
     if not tickers then tickers = C_Timer.NewTicker(0.2, function() ns.SafeCall(tick) end) end
 end
 
@@ -377,7 +387,7 @@ local function sample(key, i)
     local _, class = UnitClass("player")
     local base = {
         player = { name = UnitName("player") or "Phoenix", level = 90, class = class, hp = 412000, hpMax = 520000,
-                   absorb = 60000, heal = 30000, power = 162000, powerMax = 250000, powerToken = "MANA", leader = true,
+                   absorb = 60000, heal = 140000, power = 162000, cost = 40000, powerMax = 250000, powerToken = "MANA", leader = true,
                    role = "HEALER", combat = true, classPowerKind = "HolyPower", classPower = 3, classPowerMax = 5, marker = 8 },
         target = { name = L.PREVIEW_MOB_HOSTILE, level = 92, classification = "elite", reaction = 2, hp = 1830000,
                    hpMax = 3200000, healAbsorb = 120000, power = 80, powerMax = 100, powerToken = "RAGE", threat = 3, marker = 7,

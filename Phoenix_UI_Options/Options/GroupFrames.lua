@@ -252,6 +252,8 @@ ns:RegisterOptions("GroupFrames", {
     px({ type = "select", key = P .. "dispel.mode", label = "GF_DISPEL_MODE", desc = "GF_DISPEL_MODE_DESC", values = DISPEL,
       keywords = "dispel highlight magic curse poison disease" }),
     px({ type = "toggle", key = P .. "dispel.mine", label = "GF_DISPEL_MINE", desc = "GF_DISPEL_MINE_DESC", disabled = dispelOff }),
+    { type = "button", label = "GEN_DISPEL_COLORS", desc = "GF_DISPEL_COLORS_DESC", button = "AUTO_OPEN_PAGE", icon = "link",
+      keywords = "dispel colour color magic curse poison disease", func = function() ns.Config:Show("General") end },
     px({ type = "range", key = P .. "dispel.size", label = "BORDER_SIZE", min = 1, max = 6, step = 1, disabled = dispelOff }),
     px({ type = "range", key = P .. "dispel.alpha", label = "GF_DISPEL_ALPHA", min = 0.1, max = 1, step = 0.05, percent = true,
       disabled = dispelOff }),

@@ -25,11 +25,15 @@ local function channelColor(kind)
     return Theme:Color("text.primary")
 end
 
-local function timestamp()
-    local fmt = C_CVar and C_CVar.GetCVar("showTimestamps")
+-- the game's timestamp format with this page's colour (none: the muted text colour the preview always used)
+local function timestamp(m)
+    local fmt = m.TimestampFormat(C_CVar and C_CVar.GetCVar("showTimestamps"))
     if type(fmt) ~= "string" or fmt == "none" or fmt == "" then return "" end
     local ok, text = pcall(date, fmt, SAMPLE_TIME)
-    return ok and type(text) == "string" and Theme:Wrap(text, "text.muted") or ""
+    if not ok or type(text) ~= "string" then return "" end
+    local c = m.db.timestampColor
+    if type(c) == "table" then return "|cff" .. ns.Util.Hex(c.r or 1, c.g or 1, c.b or 1) .. text .. "|r" end
+    return Theme:Wrap(text, "text.muted")
 end
 
 local function lineText(m, line)
@@ -59,7 +63,7 @@ local function lineText(m, line)
     if db.roleIcons and line.role and CreateAtlasMarkup then
         text = CreateAtlasMarkup(ROLE_ATLAS[line.role], 12, 12) .. text
     end
-    local ts = timestamp()
+    local ts = timestamp(m)
     return ts ~= "" and (ts .. " " .. text) or text
 end
 
@@ -112,6 +116,20 @@ P:Register("chat", {
             b.chatType = chatType
             bar.buttons[i] = b
         end
+        -- the emote picker button and its open grid (a few of the game's emotes)
+        local emote = CreateFrame("Frame", nil, bar)
+        emote:SetSize(20, 20)
+        emote.icon = ns.Icons:Create(emote, "user", 12)
+        emote.icon:SetPoint("CENTER")
+        local grid = CreateFrame("Frame", nil, stage)
+        grid.cells = {}
+        for i = 1, 8 do
+            local c = CreateFrame("Frame", nil, grid)
+            c:SetSize(56, 16)
+            c.text = P.Text(c)
+            c.text:SetPoint("LEFT", 4, 0)
+            grid.cells[i] = c
+        end
         return function()
             local db = m.db
             if db.skinWindows then
@@ -154,7 +172,8 @@ P:Register("chat", {
             if db.styleText then Skin:TextSpec(box.text, db.editBox, "body") else Skin:Text(box.text, "body") end
             box.text:SetText(L.PREVIEW_CHAT_EDITBOX)
             bar:SetShown(db.chatBar)
-            local pts, w, h = m.BarLayout(#bar.buttons, db.chatBarSide)
+            local n = #bar.buttons + (db.emotes and 1 or 0)
+            local pts, w, h = m.BarLayout(n, db.chatBarSide)
             bar:SetSize(w, h)
             bar:ClearAllPoints()
             if db.chatBarSide == "LEFT" then bar:SetPoint("TOPRIGHT", win, "TOPLEFT", -6, 0)
@@ -166,6 +185,31 @@ P:Register("chat", {
                 Skin:Text(b.text, "small")
                 b.text:SetText(m.Initial(_G[b.chatType] or b.chatType))
                 b.text:SetTextColor(channelColor(b.chatType))
+            end
+            emote:SetShown(db.emotes)
+            grid:SetShown(db.chatBar and db.emotes)
+            if db.emotes then
+                local p = pts[n]
+                emote:ClearAllPoints()
+                emote:SetPoint("TOPLEFT", p[1], p[2])
+                Skin:Panel(emote, "raised", { border = "border.default" })
+                ns.Icons:Tint(emote.icon, "text.primary")
+                local list = m.EmoteChoices()
+                local gp, gw, gh = m.EmoteGrid(math.min(#list, #grid.cells))
+                grid:SetSize(math.min(gw, 240), gh)
+                grid:ClearAllPoints()
+                grid:SetPoint("BOTTOMLEFT", emote, "TOPLEFT", 0, 4)
+                Skin:Panel(grid, "raised", { border = "border.default", shadow = true })
+                for i, c in ipairs(grid.cells) do
+                    local e = list[i]
+                    c:SetShown(e ~= nil)
+                    if e then
+                        c:ClearAllPoints()
+                        c:SetPoint("TOPLEFT", 6 + ((i - 1) % 4) * 58, gp[i][2])
+                        Skin:Text(c.text, "small", "text.primary", 10)
+                        c.text:SetText(e.label)
+                    end
+                end
             end
         end
     end,

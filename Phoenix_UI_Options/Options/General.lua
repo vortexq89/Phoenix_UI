@@ -36,6 +36,33 @@ local function classColors(first, last)
     return { type = "colors", keys = keys, tokens = tokens, labels = labels, keywords = "class colour color override custom" }
 end
 
+-- Power and dispel colour overrides: swatch rows like the class colours (right-click returns to the game's colour).
+local POWER_LABEL = { MAELSTROM = "MAELSTROM_POWER", INSANITY = "INSANITY_POWER", CHI = "CHI_POWER", SOUL_SHARDS = "SOUL_SHARDS_POWER",
+    ARCANE_CHARGES = "ARCANE_CHARGES_POWER", ESSENCE = "POWER_TYPE_ESSENCE" }
+local function powerColors(first, last)
+    local keys, tokens, labels = {}, {}, {}
+    for i = first, last do
+        local p = ns.Theme.POWERS[i]
+        keys[#keys + 1] = "theme.powerColors." .. p
+        tokens[#tokens + 1] = "power." .. p
+        local g = rawget(_G, POWER_LABEL[p] or p)
+        labels[#labels + 1] = type(g) == "string" and g or p
+    end
+    return { type = "colors", keys = keys, tokens = tokens, labels = labels, keywords = "power colour color mana rage energy override" }
+end
+local DISPEL_LABEL = { Magic = ns.L.GEN_DISPEL_MAGIC, Curse = ns.L.GEN_DISPEL_CURSE, Disease = ns.L.GEN_DISPEL_DISEASE,
+    Poison = ns.L.GEN_DISPEL_POISON, Bleed = ns.L.GEN_DISPEL_BLEED }
+local function dispelColors()
+    local keys, tokens, labels = {}, {}, {}
+    for _, d in ipairs(ns.Theme.DISPELS) do
+        keys[#keys + 1] = "theme.dispelColors." .. d
+        tokens[#tokens + 1] = "dispel." .. d
+        labels[#labels + 1] = DISPEL_LABEL[d]
+    end
+    return { type = "colors", keys = keys, tokens = tokens, labels = labels, label = "GEN_DISPEL_COLORS",
+      desc = "GEN_DISPEL_COLORS_DESC", keywords = "dispel debuff colour color magic curse poison disease bleed" }
+end
+
 ns:RegisterOptions("General", {
     { type = "preview", kind = "theme" },
     { type = "header", label = "APPEARANCE", icon = "theme" },
@@ -75,6 +102,11 @@ ns:RegisterOptions("General", {
     { type = "header", label = "GEN_CLASS_COLORS", icon = "palette", desc = "GEN_CLASS_COLORS_DESC" },
     Opt.With(classColors(1, 7), { label = "GEN_CLASS_COLORS_A" }),
     Opt.With(classColors(8, 13), { label = "GEN_CLASS_COLORS_B" }),
+    { type = "header", label = "GEN_POWER_COLORS", icon = "palette", desc = "GEN_POWER_COLORS_DESC" },
+    Opt.With(powerColors(1, 5), { label = "GEN_POWER_COLORS_A" }),
+    Opt.With(powerColors(6, 10), { label = "GEN_POWER_COLORS_B" }),
+    Opt.With(powerColors(11, 16), { label = "GEN_POWER_COLORS_C" }),
+    dispelColors(),
     { type = "header", label = "GEN_SOUND", icon = "sound" },
     { type = "select", key = "theme.soundChannel", label = "GEN_CHANNEL", desc = "GEN_CHANNEL_DESC", values = CHANNELS,
       keywords = "sound channel master sfx volume" },

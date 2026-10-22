@@ -166,6 +166,8 @@ ns:RegisterOptions("Tracker", {
     { type = "texture", key = "viewers.@.texture", label = "BAR_TEXTURE", allowDefault = true, hidden = notBars, disabled = unstyled },
     { type = "color", key = "viewers.@.barColor", label = "TRACKER_BAR_COLOR", token = "accent.primary", reset = true,
       hidden = notBars, disabled = unstyled },
+    { type = "select", key = "viewers.@.gradient", label = "TRACKER_GRADIENT", desc = "TRACKER_GRADIENT_DESC", values = Opt.GRADIENT,
+      hidden = notBars, disabled = unstyled, keywords = "gradient shade shading fill" },
     Opt.With(Opt.Background("viewers.@.background"), { hidden = notBars, disabled = unstyled }),
     { type = "header", label = "TRACKER_STATE", icon = "cooldowntext", hidden = notIcons },
     { type = "toggle", key = "viewers.@.desaturate", label = "TRACKER_DESAT", desc = "TRACKER_DESAT_DESC", disabled = unstyled,

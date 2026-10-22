@@ -70,8 +70,9 @@ local function onManaType(bar)
     M:StylePowerBar(bar, key)
     if M.db.powerColor and bar.unit and plain(bar.unit) then
         local _, token = UnitPowerType(bar.unit)
-        local info = plain(token) and token and PowerBarColor[token]
-        if info and info.r then bar:SetStatusBarColor(info.r, info.g, info.b) end
+        local r, g, b
+        if plain(token) then r, g, b = ns.Util.PowerColor(token) end
+        if r then bar:SetStatusBarColor(r, g, b) end
     end
 end
 

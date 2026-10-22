@@ -220,6 +220,26 @@ function M:DisableMessages()
 end
 
 ---------------------------------------------------------------- the game's chat settings (CVars, shown on this page)
+-- Timestamp colour: the game prints the showTimestamps CVar through date(), so a colour wrapped around the format
+-- ("|cffRRGGBB%H:%M |r") colours every timestamp without touching a message. These two keep the CVar's format
+-- and the colour apart (pure).
+function M.TimestampFormat(value)
+    if type(value) ~= "string" then return value end
+    return value:match("^|c%x%x%x%x%x%x%x%x(.*)|r$") or value
+end
+function M.ColorTimestamp(fmt, color)
+    fmt = M.TimestampFormat(fmt)
+    if type(fmt) ~= "string" or fmt == "" or fmt == "none" or type(color) ~= "table" then return fmt end
+    return "|cff" .. ns.Util.Hex(color.r or 1, color.g or 1, color.b or 1) .. fmt .. "|r"
+end
+-- Puts the chosen colour into the CVar (or takes it out: off = true, the module switched off). Out of combat.
+function M:ApplyTimestampColor(off)
+    local cur = C_CVar.GetCVar("showTimestamps")
+    if type(cur) ~= "string" then return end
+    local want = off and M.TimestampFormat(cur) or M.ColorTimestamp(cur, self.db.timestampColor)
+    if want ~= cur then ns.Combat:Run("cvar.showTimestamps", C_CVar.SetCVar, "showTimestamps", want) end
+end
+
 -- Timestamp formats: Blizzard's list (Settings > Social), labelled with an example time like the game does.
 function M.TimestampValues()
     local out = { { value = "none", label = "CHAT_TIMESTAMP_NONE" } }

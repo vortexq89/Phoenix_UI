@@ -158,6 +158,31 @@ function Sk:HideGlow(frame) hideSlices(frame, "glow") end
 function Sk:HideShadow(frame) hideSlices(frame, "shadow") end
 
 ---------------------------------------------------------------- gradients
+--[[ A shading gradient over a status bar's fill: an overlay pinned to the fill texture, black at one end and
+    clear at the other, so it follows the fill and works whatever colour (even a secret one) the bar carries.
+    mode: "none" | "HORIZONTAL" (darker at the start of the fill) | "VERTICAL" (darker at the bottom). ]]
+function Sk:FillGradient(bar, mode, strength)
+    local s = st(bar)
+    if mode ~= "HORIZONTAL" and mode ~= "VERTICAL" then
+        if s.fillShade then s.fillShade:Hide() end
+        return
+    end
+    if not s.fillShade then
+        s.fillShade = bar:CreateTexture(nil, "ARTWORK", nil, 7)
+        s.fillShade:SetTexture(WHITE)
+    end
+    local fill = bar:GetStatusBarTexture()
+    s.fillShade:ClearAllPoints()
+    if fill then s.fillShade:SetAllPoints(fill) else s.fillShade:SetAllPoints(bar) end
+    local a = strength or 0.45
+    if mode == "HORIZONTAL" then
+        s.fillShade:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, a), CreateColor(0, 0, 0, 0))
+    else
+        s.fillShade:SetGradient("VERTICAL", CreateColor(0, 0, 0, a), CreateColor(0, 0, 0, 0))
+    end
+    s.fillShade:Show()
+end
+
 function Sk:Gradient(tex, orientation, tokenA, tokenB, alphaA, alphaB)
     local r1, g1, b1, a1 = Theme:Color(tokenA)
     local r2, g2, b2, a2 = Theme:Color(tokenB)
@@ -424,6 +449,7 @@ function Sk:Restore(obj)
         if s.bg then s.bg:Hide() end
         if s.sheen then s.sheen:Hide() end
         if s.barbg then s.barbg:Hide() end
+        if s.fillShade then s.fillShade:Hide() end
         if s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
         if s.backdrop then s.backdrop:Hide() end
         if s.glass then s.glass:Hide() end

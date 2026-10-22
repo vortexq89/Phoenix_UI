@@ -1,7 +1,7 @@
 local _, ns = ...
 local L, P, Skin, Theme, W = ns.L, ns.Previews, ns.Skin, ns.Theme, ns.Widgets
 
--- Theme sampler: the interface font roles, the unit font and three bars in the chosen texture.
+-- Theme sampler: the interface font roles, the unit font, three bars in the chosen texture and power / dispel colour chips.
 P:Register("theme", {
     module = "General",
     height = 128,
@@ -29,7 +29,22 @@ P:Register("theme", {
             b.token = TOKENS[i]
             bars[i] = b
         end
+        -- power and dispel colour chips (General's overrides, else the game's colours)
+        local chips = {}
+        local CHIPS = { "MANA", "RAGE", "ENERGY", "FOCUS", "RUNIC_POWER", "Magic", "Curse", "Disease", "Poison", "Bleed" }
+        for i = 1, #CHIPS do
+            local c = W.Texture(stage, "ARTWORK")
+            c:SetSize(14, 14)
+            c:SetPoint("TOPRIGHT", stage, "TOPRIGHT", -24 - (#CHIPS - i) * 20 - (i <= 5 and 8 or 0), -104)
+            c.key = CHIPS[i]
+            chips[i] = c
+        end
         return function()
+            for i, c in ipairs(chips) do
+                local r, g, b
+                if i <= 5 then r, g, b = ns.Util.PowerColor(c.key) else r, g, b = ns.Util.DispelColor(c.key) end
+                c:SetColorTexture(r or 0.5, g or 0.5, b or 0.5, 1)
+            end
             Skin:Panel(card, "raised", { border = "border.subtle", sheen = 28 })
             Skin:Text(card.heading, "heading", "text.secondary")
             Skin:Text(card.body, "body", "text.primary")

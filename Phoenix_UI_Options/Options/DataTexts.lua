@@ -8,7 +8,22 @@ local Opt = ns.Opt
 local LABEL = { fps = "DT_FPS", latency = "DT_LATENCY", speed = "DT_SPEED", durability = "DT_DURABILITY", gold = "DT_GOLD",
     clock = "DT_CLOCK", bugs = "DT_BUGS", bags = "DT_BAGS", itemlevel = "DT_ITEMLEVEL", friends = "DT_FRIENDS",
     guild = "DT_GUILD", mail = "DT_MAIL", spec = "DT_SPEC", keystone = "DT_KEYSTONE", coords = "DT_COORDS",
-    volume = "DT_VOLUME" }
+    volume = "DT_VOLUME", currency = "DT_CURRENCY" }
+
+-- The currency picker: every currency in your currency list, plus "none".
+local function currencyValues(m)
+    local out = { { value = 0, label = "NONE" } }
+    for _, c in ipairs(m.CurrencyChoices()) do out[#out + 1] = { value = c.id, label = c.name } end
+    -- a picked currency that is not in the list right now (collapsed header, other character) stays selectable
+    for i = 1, m.CURRENCY_SLOTS do
+        local id = m.db["currency" .. i]
+        local known = id == 0
+        for _, v in ipairs(out) do if v.value == id then known = true end end
+        if not known then out[#out + 1] = { value = id, label = "#" .. tostring(id) } end
+    end
+    return out
+end
+local function noCurrency(m) return not m.db.currency end
 
 local function panelRow(panel)
     return function(row, m)
@@ -80,6 +95,11 @@ ns:RegisterOptions("DataTexts", {
       keywords = "mythic plus key dungeon rating" },
     { type = "toggle", key = "coords", label = "DT_COORDS", desc = "DT_COORDS_DESC", keywords = "coordinates position map" },
     { type = "toggle", key = "volume", label = "DT_VOLUME", desc = "DT_VOLUME_DESC", keywords = "sound master audio" },
+    { type = "toggle", key = "currency", label = "DT_CURRENCY", desc = "DT_CURRENCY_DESC",
+      keywords = "currency currencies crests valorstones tokens picker" },
+    { type = "select", key = "currency1", label = "DT_CURRENCY_1", values = currencyValues, disabled = noCurrency },
+    { type = "select", key = "currency2", label = "DT_CURRENCY_2", values = currencyValues, disabled = noCurrency },
+    { type = "select", key = "currency3", label = "DT_CURRENCY_3", values = currencyValues, disabled = noCurrency },
     { type = "header", label = "DT_PANELS", icon = "layout" },
     { type = "custom", key = "order", label = "DT_ORDER", desc = "DT_ORDER_DESC", fullWidth = true, height = 112, resettable = true,
       keywords = "drag reorder arrange sort", build = panelRow(1) },
@@ -107,6 +127,15 @@ ns:RegisterOptions("DataTexts", {
     { type = "toggle", key = "xpBar", label = "DT_XP_BAR_SHOW", desc = "DT_XP_BAR_DESC", keywords = "experience reputation rep xp" },
     { type = "toggle", key = "xpRep", label = "DT_XP_REP", desc = "DT_XP_REP_DESC", disabled = noBar },
     { type = "toggle", key = "rested", label = "DT_RESTED", desc = "DT_RESTED_DESC", disabled = noBar },
+    { type = "toggle", key = "barHonor", label = "DT_BAR_HONOR", desc = "DT_BAR_HONOR_DESC", disabled = noBar,
+      keywords = "honor pvp level bar" },
+    { type = "texture", key = "barTexture", label = "BAR_TEXTURE", allowDefault = true, disabled = noBar },
+    { type = "toggle", key = "barReverse", label = "DT_BAR_REVERSE", desc = "DT_BAR_REVERSE_DESC", disabled = noBar,
+      keywords = "fill direction right to left reverse" },
+    { type = "toggle", key = "barSmooth", label = "DT_BAR_SMOOTH", desc = "DT_BAR_SMOOTH_DESC", disabled = noBar,
+      keywords = "smooth animate fill" },
+    { type = "select", key = "barGradient", label = "DT_BAR_GRADIENT", values = Opt.GRADIENT, disabled = noBar,
+      keywords = "gradient shade shading" },
     { type = "range", key = "barWidth", label = "DT_BAR_WIDTH", min = 100, max = 1600, step = 10, disabled = noBar },
     { type = "range", key = "barHeight", label = "DT_BAR_HEIGHT", min = 4, max = 30, step = 1, disabled = noBar },
     { type = "select", key = "barTextMode", label = "DT_BAR_TEXT", values = BAR_TEXT, disabled = noBar },

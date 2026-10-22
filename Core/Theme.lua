@@ -58,6 +58,7 @@ T.settings = {
     uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false,
     borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
     surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = {},
+    powerColors = {}, dispelColors = {},
 }
 
 local function lighten(r, g, b, f) return r + (1 - r) * f, g + (1 - g) * f, b + (1 - b) * f end
@@ -85,8 +86,23 @@ end
 T.CLASSES = { "WARRIOR", "DEATHKNIGHT", "PALADIN", "MONK", "PRIEST", "SHAMAN", "DRUID", "ROGUE", "MAGE", "WARLOCK",
     "HUNTER", "DEMONHUNTER", "EVOKER" }
 
+-- Power types and dispel types for General's colour overrides; "power.<TOKEN>" / "dispel.<Type>" tokens hold the
+-- game's own colour (PowerBarColor / DEBUFF_TYPE_*_COLOR, read only).
+T.POWERS = { "MANA", "RAGE", "FOCUS", "ENERGY", "RUNIC_POWER", "LUNAR_POWER", "MAELSTROM", "INSANITY", "FURY", "PAIN",
+    "COMBO_POINTS", "HOLY_POWER", "CHI", "SOUL_SHARDS", "ARCANE_CHARGES", "ESSENCE" }
+T.DISPELS = { "Magic", "Curse", "Disease", "Poison", "Bleed" }
+
 function T:Rebuild()
     for k, v in pairs(self.base) do tokens[k] = v end
+    local pbc = rawget(_G, "PowerBarColor")
+    for _, p in ipairs(T.POWERS) do
+        local col = type(pbc) == "table" and pbc[p]
+        tokens["power." .. p] = (type(col) == "table" and col.r) and { col.r, col.g, col.b, 1 } or { 1, 1, 1, 1 }
+    end
+    for _, d in ipairs(T.DISPELS) do
+        local col = rawget(_G, "DEBUFF_TYPE_" .. d:upper() .. "_COLOR")
+        tokens["dispel." .. d] = (type(col) == "table" and col.r) and { col.r, col.g, col.b, 1 } or { 0.8, 0.8, 0.8, 1 }
+    end
     for _, cf in ipairs(T.CLASSES) do
         local cc = C_ClassColor and C_ClassColor.GetClassColor(cf)
         tokens["class." .. cf] = cc and { cc.r, cc.g, cc.b, 1 } or { 1, 1, 1, 1 }

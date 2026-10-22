@@ -105,6 +105,19 @@ function Live:IncomingHeals(f)
     if plain(v) and v == nil then return 0 end
     return v
 end
+-- The cost, in the unit's current power, of the spell the player is casting now; nil when there is none or a value
+-- is secret. Channels are left out: their cost is already paid when the channel starts.
+function Live:SpellCost(f, kind)
+    if f.unit ~= "player" or not (C_Spell and C_Spell.GetSpellPowerCost) then return nil end
+    local spellID = select(9, UnitCastingInfo("player"))
+    if not plain(spellID) or type(spellID) ~= "number" then return nil end
+    local ok, costs = pcall(C_Spell.GetSpellPowerCost, spellID)
+    if not ok or not plain(costs) or type(costs) ~= "table" then return nil end
+    for _, c in ipairs(costs) do
+        if plain(c.type) and c.type == kind and plain(c.cost) and type(c.cost) == "number" and c.cost > 0 then return c.cost end
+    end
+    return nil
+end
 function Live:PowerType(f)
     local kind, token = UnitPowerType(f.unit)
     return plain(kind) and kind or 0, plain(token) and token or nil
@@ -212,6 +225,7 @@ function Sample:AbsorbText(f) return M:Number(sv(f).absorb or 0) end
 function Sample:Absorbs(f) return sv(f).absorb or 0 end
 function Sample:HealAbsorbs(f) return sv(f).healAbsorb or 0 end
 function Sample:IncomingHeals(f) return sv(f).heal or 0 end
+function Sample:SpellCost(f) return sv(f).cost end
 function Sample:PowerType(f)
     local t = sv(f).powerToken or "MANA"
     return PT[({ MANA = "Mana", RAGE = "Rage", ENERGY = "Energy", FOCUS = "Focus", RUNIC_POWER = "RunicPower" })[t] or "Mana"] or 0, t
@@ -357,7 +371,18 @@ function M:UpdatePower(f, src)
     end
     f.Power:SetStatusBarColor(r, g, b)
     f.Power.bg:SetVertexColor(r * 0.25, g * 0.25, b * 0.25, 0.9)
+    self:UpdateCost(f, src, kind)
     self:UpdateAltPower(f, src)
+end
+
+function M:UpdateCost(f, src, kind)
+    local pb = self:Unit(f.unitKey).powerBar
+    local cost = pb.cost and f.Power:IsShown() and src:SpellCost(f, kind) or nil
+    f.CostPred:SetShown(cost ~= nil)
+    if cost then
+        f.CostPred:SetMinMaxValues(0, src:PowerMax(f))
+        f.CostPred:SetValue(cost)
+    end
 end
 
 function M:UpdateAltPower(f, src)
@@ -577,8 +602,13 @@ local function dispelColors()
         local function add(i, col)
             if col then curve:AddPoint(i, CreateColor(col.r, col.g, col.b, 1)) else curve:AddPoint(i, CreateColor(0, 0, 0, 0)) end
         end
-        add(0); add(1, DEBUFF_TYPE_MAGIC_COLOR); add(2, DEBUFF_TYPE_CURSE_COLOR); add(3, DEBUFF_TYPE_DISEASE_COLOR)
-        add(4, DEBUFF_TYPE_POISON_COLOR); add(5); add(9, DEBUFF_TYPE_BLEED_COLOR); add(10); add(11, DEBUFF_TYPE_BLEED_COLOR)
+        -- General's dispel colour overrides, else the game's colours
+        local function col(kind)
+            local r, g, b = ns.Util.DispelColor(kind)
+            return r and { r = r, g = g, b = b } or nil
+        end
+        add(0); add(1, col("Magic")); add(2, col("Curse")); add(3, col("Disease"))
+        add(4, col("Poison")); add(5); add(9, col("Bleed")); add(10); add(11, col("Bleed"))
         add(12)
         return curve
     end)
@@ -587,6 +617,8 @@ local function dispelColors()
 end
 
 M.DispelCurve = dispelColors
+-- rebuilt on the next use after a dispel colour changes (theme change)
+function M.ResetDispelCurve() dispelCurve = nil end
 
 local function showAura(b, unit, aura, kind, a)
     b.unit, b.auraInstanceID = unit, aura.auraInstanceID
@@ -626,17 +658,15 @@ end
 
 M.ShowAura = showAura
 
-local SAMPLE_DISPEL = { Magic = DEBUFF_TYPE_MAGIC_COLOR, Curse = DEBUFF_TYPE_CURSE_COLOR,
-    Disease = DEBUFF_TYPE_DISEASE_COLOR, Poison = DEBUFF_TYPE_POISON_COLOR }
-
 local function showSample(b, s, kind, a, i)
     b.unit, b.auraInstanceID = nil, nil
     b.Icon:SetTexture(s.icon or M.SAMPLE_ICONS.fireball)
     b.Count:SetText((s.count or 0) > 1 and s.count or "")
     b.Cooldown:Clear()
     if s.duration then b.Cooldown:SetCooldown(GetTime() - (s.elapsed or 0), s.duration) end
-    local col = kind == "debuffs" and a.dispel and s.dispel and SAMPLE_DISPEL[s.dispel]
-    if col then b.Dispel:SetVertexColor(col.r, col.g, col.b, 1); b.Dispel:Show() else b.Dispel:Hide() end
+    local r, g, bl
+    if kind == "debuffs" and a.dispel and s.dispel then r, g, bl = ns.Util.DispelColor(s.dispel) end
+    if r then b.Dispel:SetVertexColor(r, g, bl, 1); b.Dispel:Show() else b.Dispel:Hide() end
     b.Icon:SetDesaturated(kind == "debuffs" and a.desat and s.notMine or false)
     b.index = i
     b:Show()
@@ -705,6 +735,33 @@ local function pip(cp, i)
     return p
 end
 
+-- Round pips mask their fill and background with a circle (once made, added or removed as the shape changes).
+local NO_PIP_BORDER = { style = "none", shadow = "none" }
+local function pipMask(p, round)
+    if round and not p.mask then
+        p.mask = p:CreateMaskTexture()
+        p.mask:SetAllPoints()
+        p.mask:SetTexture(ns.Media.textures.MASK_CIRCLE, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+    end
+    if (p.masked or false) == round then return end
+    local fill = p:GetStatusBarTexture()
+    if round then
+        fill:AddMaskTexture(p.mask); p.bg:AddMaskTexture(p.mask)
+    else
+        fill:RemoveMaskTexture(p.mask); p.bg:RemoveMaskTexture(p.mask)
+    end
+    p.masked = round
+end
+
+-- Where pip i sits in its slot for a shape: bars fill the slot, squares and circles are as big as the slot and
+-- the bar height allow, centred in the slot. Returns x, y, w, h (pure).
+function M.PipRect(shape, slotX, slotW, height)
+    slotW, height = math.max(1, slotW), math.max(1, height)
+    if shape ~= "square" and shape ~= "round" then return slotX, 0, slotW, height end
+    local size = math.min(slotW, height)
+    return slotX + math.floor((slotW - size) / 2 + 0.5), -math.floor((height - size) / 2 + 0.5), size, size
+end
+
 local CP_TOKEN = { ComboPoints = "COMBO_POINTS", HolyPower = "HOLY_POWER", SoulShards = "SOUL_SHARDS",
     Essence = "ESSENCE", Runes = "RUNES", Chi = "CHI", ArcaneCharges = "ARCANE_CHARGES" }
 local function cpColor(kind, charged)
@@ -716,8 +773,8 @@ local function cpColor(kind, charged)
     elseif db.color == "theme" then
         return Theme:Color("accent.primary")
     end
-    local c = CP_TOKEN[kind] and PowerBarColor and PowerBarColor[CP_TOKEN[kind]]
-    if c and c.r then return c.r, c.g, c.b end
+    local r, g, b = ns.Util.PowerColor(CP_TOKEN[kind])
+    if r then return r, g, b end
     return Theme:Color("accent.primary")
 end
 
@@ -799,13 +856,16 @@ local function drawPips(cp, info)
     local now, height = GetTime(), cp:GetHeight()
     for i = 1, n do
         local p = pip(cp, i)
+        local x, y, w, h = M.PipRect(db.shape, slots[i][1], slots[i][2], height)
         p:ClearAllPoints()
-        p:SetPoint("TOPLEFT", cp, "TOPLEFT", slots[i][1], 0)
-        p:SetSize(math.max(1, slots[i][2]), math.max(1, height))
+        p:SetPoint("TOPLEFT", cp, "TOPLEFT", x, y)
+        p:SetSize(w, h)
+        local round = db.shape == "round"
+        pipMask(p, round)
         local r, g, b = cpColor(info.kind, chargedSet[i])
         p:SetStatusBarColor(r, g, b)
         p.bg:SetVertexColor(r * 0.2, g * 0.2, b * 0.2, 0.85)
-        Skin:BorderSpec(p, db.border, "border.black")
+        Skin:BorderSpec(p, round and NO_PIP_BORDER or db.border, "border.black")
         local value = pipValue(info, i, order, now)
         p:SetValue(value)
         p:SetAlpha(value >= 1 and 1 or (value > 0 and 0.6 or db.emptyAlpha))

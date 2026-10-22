@@ -4,7 +4,10 @@ local L, Opt, W = ns.L, ns.Opt, ns.Widgets
 local function unstyled(m) return not m.db.styleText end
 local function plainWindows(m) return not m.db.skinWindows end
 -- The game's own chat settings (Options > Social), shown here so chat is set up in one place.
-local tsGet, tsSet = ns.Combat.CVarAccessors("showTimestamps", "string")
+local cvarTsGet, cvarTsSet = ns.Combat.CVarAccessors("showTimestamps", "string")
+-- the format without Phoenix's colour (the select lists the game's formats), written back with it
+local function tsGet() return ns.modules.Chat.TimestampFormat(cvarTsGet()) end
+local function tsSet(m, value) cvarTsSet(m, ns.modules.Chat.ColorTimestamp(value, m.db.timestampColor)) end
 local classGet, classSet = ns.Combat.CVarAccessors("chatClassColorOverride", "string")
 local whisperGet, whisperSet = ns.Combat.CVarAccessors("whisperMode", "string")
 
@@ -72,6 +75,9 @@ ns:RegisterOptions("Chat", {
       } },
     { type = "select", label = "CHAT_TIMESTAMPS", desc = "CHAT_TIMESTAMPS_DESC", get = tsGet, set = tsSet,
       values = function() return ns.modules.Chat.TimestampValues() end, keywords = "time clock stamp" },
+    { type = "color", key = "timestampColor", label = "CHAT_TIMESTAMP_COLOR", desc = "CHAT_TIMESTAMP_COLOR_DESC",
+      token = "text.muted", reset = true, keywords = "timestamp time colour color",
+      disabled = function() return tsGet() == "none" end },
     { type = "select", label = "CHAT_CLASS_NAMES", desc = "CHAT_CLASS_NAMES_DESC", get = classGet, set = classSet,
       keywords = "class colour color names", values = {
         { value = "2", label = "CHAT_CLASS_GAME" }, { value = "0", label = "CHAT_CLASS_ALWAYS" },
@@ -118,6 +124,8 @@ ns:RegisterOptions("Chat", {
       } } } },
     { type = "toggle", key = "raidIcons", label = "CHAT_RAID_ICONS", desc = "CHAT_RAID_ICONS_DESC",
       keywords = "raid target marker star skull emote picker" },
+    { type = "toggle", key = "emotes", label = "CHAT_EMOTES", desc = "CHAT_EMOTES_DESC", keywords = "emote picker dance wave bow",
+      disabled = function(m) return not m.db.chatBar end },
     { type = "select", label = "CHAT_WHISPER_MODE", desc = "CHAT_WHISPER_MODE_DESC", get = whisperGet, set = whisperSet,
       keywords = "whisper new tab window popout inline", values = {
         { value = "inline", label = "CHAT_WHISPER_INLINE" }, { value = "popout", label = "CHAT_WHISPER_POPOUT" },

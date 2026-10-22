@@ -39,6 +39,8 @@ local M = ns:NewModule("Chat", {
         editBox = Style.Text(14, { outline = "NONE", shadow = true }),
         -- tools
         chatBar = false, chatBarSide = "TOP", raidIcons = true, whisperSound = "",
+        emotes = false,                                    -- emote picker button on the chat bar (S17)
+        timestampColor = false,                            -- false = the game's uncoloured timestamps (S17)
     },
     globalDefaults = { history = {} },
 })
@@ -219,6 +221,7 @@ end
 
 function M:OnDisable()
     self:DisableMessages()
+    self:ApplyTimestampColor(true)
     EventRegistry:UnregisterCallback("SetItemRef", self)
     for _, b in pairs(buttons) do b:Hide() end
     for box, saved in pairs(editBoxes) do box:SetAltArrowKeyMode(saved.altArrows) end
@@ -227,6 +230,7 @@ function M:OnDisable()
 end
 
 function M:Refresh()
+    self:ApplyTimestampColor()
     ChatFrameUtil.ForEachChatFrame(function(chatFrame)
         copyButton(chatFrame):SetShown(self.db.copyButton)
         setupEditBox(chatFrame)

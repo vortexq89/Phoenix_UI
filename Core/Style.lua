@@ -59,6 +59,11 @@ Opt.GROWTH = {
     { value = "RIGHT", label = "GROW_RIGHT" }, { value = "LEFT", label = "GROW_LEFT" },
     { value = "UP", label = "GROW_UP" }, { value = "DOWN", label = "GROW_DOWN" },
 }
+-- Fill gradient over a status bar's fill (Skin:FillGradient): none, darker toward the end, darker toward the bottom.
+Opt.GRADIENT = {
+    { value = "none", label = "GRADIENT_NONE" }, { value = "HORIZONTAL", label = "GRADIENT_HORIZONTAL" },
+    { value = "VERTICAL", label = "GRADIENT_VERTICAL" },
+}
 Opt.STRATA = {
     { value = "BACKGROUND", label = "STRATA_BACKGROUND" }, { value = "LOW", label = "STRATA_LOW" },
     { value = "MEDIUM", label = "STRATA_MEDIUM" }, { value = "HIGH", label = "STRATA_HIGH" },

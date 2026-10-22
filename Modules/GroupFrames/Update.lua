@@ -169,8 +169,6 @@ function M:AnchorPrivate(b)
 end
 
 ---------------------------------------------------------------- drawing
-local SAMPLE_DISPEL = { Magic = "DEBUFF_TYPE_MAGIC_COLOR", Curse = "DEBUFF_TYPE_CURSE_COLOR",
-    Disease = "DEBUFF_TYPE_DISEASE_COLOR", Poison = "DEBUFF_TYPE_POISON_COLOR" }
 
 -- r, g, b, a may be secret (from the dispel colour curve): they only reach SetVertexColor
 local function paint(b, r, g, bl, a)
@@ -185,8 +183,8 @@ local function dispel(b, p)
     local hl = b.DispelHL
     if p.dispel.mode == "off" then hl:Hide(); return end
     if b.sample then
-        local c = b.sample.dispel and rawget(_G, SAMPLE_DISPEL[b.sample.dispel] or "")
-        if type(c) == "table" and c.r then paint(b, c.r, c.g, c.b, 1) else hl:Hide() end
+        local r, g, bl = ns.Util.DispelColor(b.sample.dispel)
+        if r then paint(b, r, g, bl, 1) else hl:Hide() end
         return
     end
     local api = C_UnitAuras

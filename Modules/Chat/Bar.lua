@@ -86,6 +86,96 @@ local function editBoxPicker(box)
     b:SetShown(M:IsEnabled() and M.db.raidIcons)
 end
 
+---------------------------------------------------------------- emote picker
+--[[ The game's own emote lists (EmoteList: emotes with an animation, TextEmoteSpeechList: voice emotes), labelled
+    with each emote's slash command (EMOTE<n>_TOKEN / EMOTE<n>_CMD1). A click performs it (C_ChatInfo.PerformEmote,
+    the call Blizzard's chat menu makes). ]]
+local emoteIndex
+local function emoteLabel(token)
+    if not emoteIndex then
+        emoteIndex = {}
+        local max = tonumber(rawget(_G, "MAXEMOTEINDEX")) or 1000
+        for i = 1, max do
+            local t = rawget(_G, "EMOTE" .. i .. "_TOKEN")
+            if type(t) == "string" and not emoteIndex[t] then emoteIndex[t] = i end
+        end
+    end
+    local i = emoteIndex[token]
+    local cmd = i and rawget(_G, "EMOTE" .. i .. "_CMD1")
+    if type(cmd) == "string" and cmd ~= "" then return cmd end
+    return "/" .. token:lower()
+end
+
+-- { { token, label } … } for the picker: animated emotes, then voice emotes (pure but for the game's globals).
+function M.EmoteChoices()
+    local out, seen = {}, {}
+    for _, list in ipairs({ rawget(_G, "EmoteList") or {}, rawget(_G, "TextEmoteSpeechList") or {} }) do
+        for _, token in ipairs(list) do
+            if type(token) == "string" and not seen[token] then
+                seen[token] = true
+                out[#out + 1] = { token = token, label = emoteLabel(token) }
+            end
+        end
+    end
+    return out
+end
+
+function M.PerformEmote(token)
+    if type(token) ~= "string" or not (C_ChatInfo and C_ChatInfo.PerformEmote) then return false end
+    -- the faction battle cry has one token per faction
+    if token == rawget(_G, "EMOTE454_TOKEN") or token == rawget(_G, "EMOTE455_TOKEN") then
+        token = UnitFactionGroup("player") == "Horde" and rawget(_G, "EMOTE455_TOKEN") or rawget(_G, "EMOTE454_TOKEN")
+    end
+    C_ChatInfo.PerformEmote(token)
+    return true
+end
+
+local EMOTE_COLS, EMOTE_W, EMOTE_H = 4, 78, 18
+-- Cell positions of n emotes in the picker grid: { {x, y} }, width, height (pure).
+function M.EmoteGrid(n)
+    local pts = {}
+    for i = 1, n do
+        local col, row = (i - 1) % EMOTE_COLS, math.floor((i - 1) / EMOTE_COLS)
+        pts[i] = { 6 + col * (EMOTE_W + 2), -6 - row * (EMOTE_H + 2) }
+    end
+    local rows = math.max(1, math.ceil(n / EMOTE_COLS))
+    return pts, 12 + EMOTE_COLS * EMOTE_W + (EMOTE_COLS - 1) * 2, 12 + rows * EMOTE_H + (rows - 1) * 2
+end
+
+local emotes
+local function showEmotes(anchor)
+    if not emotes then
+        emotes = CreateFrame("Frame", "PhoenixUIChatEmotes", UIParent)
+        emotes:SetFrameStrata("DIALOG")
+        emotes:SetClampedToScreen(true)
+        Skin:Register(emotes, function(self) Skin:Panel(self, "raised", { border = "border.default", shadow = true }) end)
+        local list = M.EmoteChoices()
+        local pts, w, h = M.EmoteGrid(#list)
+        emotes:SetSize(w, h)
+        for i, e in ipairs(list) do
+            local b = CreateFrame("Button", nil, emotes)
+            b:SetSize(EMOTE_W, EMOTE_H)
+            b:SetPoint("TOPLEFT", pts[i][1], pts[i][2])
+            b.label = b:CreateFontString(nil, "OVERLAY")
+            b.label:SetPoint("LEFT", 4, 0)
+            b.label:SetPoint("RIGHT", -4, 0)
+            b.label:SetJustifyH("LEFT")
+            Skin:Text(b.label, "small", "text.primary", 11)
+            b.label:SetText(e.label)
+            b.hl = b:CreateTexture(nil, "HIGHLIGHT")
+            b.hl:SetAllPoints()
+            b.hl:SetColorTexture(Theme:Color("accent.soft"))
+            b:SetScript("OnClick", function() M.PerformEmote(e.token); emotes:Hide() end)
+        end
+        tinsert(UISpecialFrames, "PhoenixUIChatEmotes")
+        emotes:Hide()
+    end
+    emotes:ClearAllPoints()
+    emotes:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 4)
+    emotes:SetShown(not emotes:IsShown())
+end
+M.ShowEmotes = showEmotes
+
 ---------------------------------------------------------------- the bar
 local bar
 local function button(parent, onClick, tip)
@@ -118,7 +208,10 @@ local function buildBar()
     icons.tex:SetSize(14, 14)
     icons.tex:SetPoint("CENTER")
     setMarker(icons.tex, 1)
-    for _, b in ipairs({ roll, ready, pull, icons }) do bar.buttons[#bar.buttons + 1] = b end
+    local emote = button(bar, function(self) showEmotes(self) end, L.CHAT_EMOTES)
+    emote.icon = W.Icon(emote, "user", 12)
+    emote.emotes = true
+    for _, b in ipairs({ roll, ready, pull, icons, emote }) do bar.buttons[#bar.buttons + 1] = b end
     for _, b in ipairs(bar.buttons) do if b.icon then b.icon:SetPoint("CENTER") end end
 end
 
@@ -142,7 +235,13 @@ function M:RefreshBar()
     end
     if not bar then buildBar() end
     local side = self.db.chatBarSide == "LEFT" and "LEFT" or "TOP"
-    local pts, w, h = M.BarLayout(#bar.buttons, side)
+    local shown = {}
+    for _, b in ipairs(bar.buttons) do
+        local show = not b.emotes or self.db.emotes
+        b:SetShown(show)
+        if show then shown[#shown + 1] = b end
+    end
+    local pts, w, h = M.BarLayout(#shown, side)
     bar:SetSize(w, h)
     bar:ClearAllPoints()
     local cf = DEFAULT_CHAT_FRAME
@@ -151,7 +250,7 @@ function M:RefreshBar()
     else
         bar:SetPoint("BOTTOMLEFT", cf, "TOPLEFT", 0, self.db.editBoxTop and 60 or 28)
     end
-    for i, b in ipairs(bar.buttons) do
+    for i, b in ipairs(shown) do
         b:ClearAllPoints()
         b:SetPoint("TOPLEFT", bar, "TOPLEFT", pts[i][1], pts[i][2])
         if b.chatType then
@@ -169,5 +268,6 @@ end
 function M:HideBar()
     if bar then bar:Hide() end
     if picker then picker:Hide() end
+    if emotes then emotes:Hide() end
     for _, b in pairs(iconButtons) do b:Hide() end
 end

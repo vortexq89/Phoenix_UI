@@ -58,6 +58,7 @@ function M:StyleBar(key, bar, name, duration)
     bar:SetStatusBarTexture(self:BarTexture(key))
     bar:SetStatusBarColor(self:BarColor(key))
     if bar.SetReverseFill then bar:SetReverseFill(v.layout.reverse and true or false) end
+    Skin:FillGradient(bar, v.gradient)
     Skin:Backdrop(bar, v.background or { alpha = 0 }, "bg.sunken")
     if name then Skin:TextSpec(name, v.name or v.timer, "unit", "text.primary") end
     if duration then Skin:TextSpec(duration, v.timer, "number", "text.primary") end

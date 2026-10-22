@@ -1,10 +1,12 @@
 local _, ns = ...
 local L, Skin = ns.L, ns.Skin
 
---[[ Data bar: experience below the level cap (with rested XP as a second fill), the watched reputation at the
-    cap (or when you choose it), as a slim Edit Mode movable bar under the data text panel. Text: percent,
-    current / max, remaining, only on mouseover, or none. Values are plain numbers from UnitXP / UnitXPMax /
-    GetXPExhaustion and C_Reputation.GetWatchedFactionData; nothing here is secret. ]]
+--[[ Data bar: experience below the level cap (with rested XP as a second fill); at the cap your honor level
+    progress (when chosen) or the watched reputation, as a slim Edit Mode movable bar under the data text panel.
+    Text: percent, current / max, remaining, only on mouseover, or none. Texture, fill direction, smooth fill and
+    a shading gradient are the page's. Values are plain numbers from UnitXP / UnitXPMax / GetXPExhaustion,
+    UnitHonor / UnitHonorMax and C_Reputation.GetWatchedFactionData; nothing here is secret. ]]
+local INTERP = Enum.StatusBarInterpolation and Enum.StatusBarInterpolation.ExponentialEaseOut
 local M = ns:GetModule("DataTexts")
 
 local bar
@@ -16,6 +18,12 @@ function M:BarData()
     if not atCap then
         local max = UnitXPMax("player") or 0
         if max > 0 then return { kind = "xp", cur = UnitXP("player") or 0, max = max, rested = GetXPExhaustion() or 0 } end
+    end
+    if db.barHonor then
+        local cur, max = UnitHonor("player"), UnitHonorMax("player")
+        if type(cur) == "number" and type(max) == "number" and max > 0 then
+            return { kind = "honor", cur = cur, max = max, name = L.DT_HONOR_LEVEL:format(UnitHonorLevel("player") or 0) }
+        end
     end
     if db.xpRep then
         local f = C_Reputation.GetWatchedFactionData()
@@ -53,19 +61,27 @@ function M:NewDataBar(parent)
     return f
 end
 
--- d: BarData() or a preview sample; hovered: show the mouseover text.
-function M:PaintDataBar(f, d, hovered)
+M.BAR_TOKENS = { xp = "accent.primary", rep = "state.success", honor = "state.warning" }
+
+-- d: BarData() or a preview sample; hovered: show the mouseover text; sample: the preview (never animates).
+function M:PaintDataBar(f, d, hovered, sample)
     local db = self.db
     f:SetSize(db.barWidth, db.barHeight)
-    Skin:StatusBar(f.fill, { border = "border.black" })
-    Skin:StatusBar(f.rested, { background = false })
-    local token = d and d.kind == "rep" and "state.success" or "accent.primary"
+    local texture = db.barTexture ~= "" and ns.Media:Bar(db.barTexture) or nil
+    Skin:StatusBar(f.fill, { border = "border.black", texture = texture })
+    Skin:StatusBar(f.rested, { background = false, texture = texture })
+    f.fill:SetReverseFill(db.barReverse and true or false)
+    f.rested:SetReverseFill(db.barReverse and true or false)
+    Skin:FillGradient(f.fill, db.barGradient)
+    local token = M.BAR_TOKENS[d and d.kind or "xp"] or "accent.primary"
     f.fill:GetStatusBarTexture():SetVertexColor(ns.Theme:Color(token))
     f.rested:GetStatusBarTexture():SetVertexColor(ns.Theme:Color("accent.secondary"))
     f.rested:SetAlpha(0.45)
     local max = d and d.max or 1
     f.fill:SetMinMaxValues(0, max)
-    f.fill:SetValue(d and d.cur or 0)
+    local smooth = db.barSmooth and INTERP and not sample and f.kind == (d and d.kind)
+    if smooth then f.fill:SetValue(d and d.cur or 0, INTERP) else f.fill:SetValue(d and d.cur or 0) end
+    f.kind = d and d.kind
     f.rested:SetMinMaxValues(0, max)
     f.rested:SetValue(d and db.rested and d.rested and math.min(max, d.cur + d.rested) or 0)
     Skin:TextSpec(f.text, db.barText, "number")
@@ -91,7 +107,8 @@ function M:EnableBar()
         ns.EditMode:Register(bar, { key = "DataTextsXP", name = ns.title .. " – " .. L.DT_XP_BAR,
             default = { point = "BOTTOM", x = 0, y = 64 } })
     end
-    for _, event in ipairs({ "PLAYER_XP_UPDATE", "UPDATE_EXHAUSTION", "PLAYER_LEVEL_UP", "UPDATE_FACTION" }) do
+    for _, event in ipairs({ "PLAYER_XP_UPDATE", "UPDATE_EXHAUSTION", "PLAYER_LEVEL_UP", "UPDATE_FACTION", "HONOR_XP_UPDATE",
+        "HONOR_LEVEL_UPDATE" }) do
         ns.Events:On(event, bar, update)
     end
     update()

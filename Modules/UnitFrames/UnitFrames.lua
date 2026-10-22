@@ -56,10 +56,11 @@ local function unit(o)
             color = o.color or "class", fixed = false, dark = false, gradient = 0.2, smooth = true,
             reverse = false, vertical = false, bg = "dark", bgAlpha = 0.8, bgColor = false,
         },
-        absorb = { show = true, style = "striped", alpha = 0.6, position = "attached", healAbsorb = true, prediction = true },
+        absorb = { show = true, style = "striped", alpha = 0.6, position = "attached", healAbsorb = true, prediction = true,
+                   overheal = 0 },
         powerBar = {
             show = o.power or "always", height = o.ph or 7, position = "inside", texture = "", smooth = true,
-            color = "type", fixed = false, gap = 1, alt = o.alt ~= false,
+            color = "type", fixed = false, gap = 1, alt = o.alt ~= false, cost = o.cost or false,
         },
         tags = { name = o.nameTag or "[name]", health = o.healthTag or "[health:percent]",
                  power = o.powerTag or "", info = o.infoTag or "" },
@@ -70,6 +71,7 @@ local function unit(o)
         info = Style.Text(ns_ - 2, { anchor = "TOPLEFT", outline = "OUTLINE", shadow = false, y = 10, show = o.infoTag ~= nil }),
         portrait = o.portrait or "hide",                -- game (2D) | model (3D) | class | hide
         portraitPos = o.portraitPos or "left", portraitShape = "square", portraitZoom = 0.08, portraitAlpha = 1,
+        portraitSize = 1,
         portraitBorder = Style.Border({ style = "pixel" }),
         icons = {
             leader = o.leader ~= false, marker = true, pvp = false, markerSize = 16, markerAnchor = "TOP",
@@ -92,7 +94,7 @@ end
 local DEFAULTS = {
     mode = "phoenix",
     units = {
-        player = unit({ w = 236, h = 46, x = -290, y = -190, portrait = "game", text = 13, combat = true, resting = true,
+        player = unit({ w = 236, h = 46, x = -290, y = -190, portrait = "game", text = 13, combat = true, resting = true, cost = true,
                         role = true, infoTag = "[level]", healthTag = "[health:current-percent]", powerTag = "[power:current]" }),
         target = unit({ w = 236, h = 46, x = 290, y = -190, portrait = "game", portraitPos = "right", text = 13, range = true,
                         elite = true, threat = true, cast = "below", buffs = "above", debuffs = "below",
@@ -123,7 +125,7 @@ local DEFAULTS = {
     -- class resource (player only): combo points, holy power, chi, soul shards, arcane charges, essence, runes …
     classPower = {
         show = "attached", height = 6, spacing = 2, color = "power", emptyAlpha = 0.25, runesSorted = true,
-        stagger = true, hideFull = false, border = Style.Border({ style = "pixel" }),
+        stagger = true, hideFull = false, shape = "bar", border = Style.Border({ style = "pixel" }),
     },
     -- Blizzard mode (Blizzard.lua): the 2.0 skin of Blizzard's own frames
     texture = true, classColor = true, powerColor = true, fonts = true,
@@ -294,8 +296,12 @@ function M.ReactionColor(reaction)
 end
 
 function M.PowerColor(token, kind)
-    if plain(token) and token and PowerBarColor then
-        local c = PowerBarColor[token] or (plain(kind) and PowerBarColor[kind])
+    if plain(token) and token then
+        local r, g, b = ns.Util.PowerColor(token)
+        if r then return r, g, b end
+    end
+    if plain(kind) and kind and PowerBarColor then
+        local c = PowerBarColor[kind]
         if c and c.r then return c.r, c.g, c.b end
     end
     return 0.31, 0.45, 0.85
@@ -364,11 +370,13 @@ function M.Geometry(u, opts)
     local g = {}
     local x0, w = 0, W
     if u.portrait ~= "hide" and u.portraitPos ~= "overlay" then
-        local size = H
+        -- portraitSize scales the square against the frame height (centred on it), never past half the width
+        local size = math.max(8, math.min(math.floor(H * (u.portraitSize or 1) + 0.5), math.floor(W / 2)))
+        local py = math.floor((H - size) / 2 + 0.5)
         if u.portraitPos == "right" then
-            g.portrait = { W - size, 0, size, size }
+            g.portrait = { W - size, py, size, size }
         else
-            g.portrait = { 0, 0, size, size }
+            g.portrait = { 0, py, size, size }
             x0 = size + 1
         end
         w = W - size - 1

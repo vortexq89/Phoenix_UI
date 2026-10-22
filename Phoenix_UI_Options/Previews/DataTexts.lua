@@ -13,6 +13,7 @@ P:Register("datatexts", {
         local xp = m:NewDataBar(stage)
         xp:SetPoint("BOTTOM", 0, 10)
         local XP = { kind = "xp", cur = 61250, max = 98000, rested = 21000 }
+        local HONOR = { kind = "honor", cur = 1450, max = 2800, name = L.DT_HONOR_LEVEL:format(42) }
         local SAMPLE = {
             fps = { 144, "FPS", "state.success" }, latency = { 38, "ms", "state.success" }, speed = { 100, "%" },
             durability = { 42, L.DT_DURABILITY_UNIT, "state.warning" }, gold = { "18,240", L.DT_GOLD_UNIT },
@@ -20,6 +21,7 @@ P:Register("datatexts", {
             itemlevel = { "712.4", L.DT_ITEMLEVEL_UNIT }, friends = { 7, L.DT_ONLINE_UNIT }, guild = { 31, L.DT_ONLINE_UNIT },
             mail = { L.DT_MAIL_NEW, "", "state.success" }, spec = { L.DT_SAMPLE_SPEC, "" },
             keystone = { "+12", L.DT_SAMPLE_KEY }, coords = { "45.2, 61.8", "" }, volume = { 80, "%" },
+            currency = { ns.Icons:Markup("gold", 12) .. " 1,250  " .. ns.Icons:Markup("mythicplus", 12) .. " 34", "" },
         }
         return function()
             local db = m.db
@@ -44,7 +46,7 @@ P:Register("datatexts", {
             end
             xp:SetShown(db.xpBar)
             if db.xpBar then
-                m:PaintDataBar(xp, XP, true)
+                m:PaintDataBar(xp, db.barHonor and HONOR or XP, true, true)
                 xp:SetWidth(math.min(db.barWidth, 560))
             end
         end

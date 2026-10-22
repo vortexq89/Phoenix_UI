@@ -95,7 +95,13 @@ function M:Build(parent, key, opts)
     f.Health.bg = texture(f.Health, "BACKGROUND")
     f.Health.bg:SetAllPoints()
     f.Health:SetClipsChildren(true)
-    f.HealPred = statusBar(f.Health)
+    -- incoming heals live in their own clip frame: it matches the health bar, or runs past its end by the
+    -- "overheal shown" share so heals beyond full health stay visible (the health bar clips its children)
+    f.PredClip = CreateFrame("Frame", nil, f)
+    f.PredClip:SetFrameLevel(f.Health:GetFrameLevel() + 1)
+    f.PredClip:SetClipsChildren(true)
+    f.PredClip:SetAllPoints(f.Health)
+    f.HealPred = statusBar(f.PredClip)
     f.HealPred:SetPoint("TOPLEFT", f.Health:GetStatusBarTexture(), "TOPRIGHT")
     f.HealPred:SetPoint("BOTTOMLEFT", f.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
     f.Absorb = statusBar(f.Health)
@@ -113,6 +119,12 @@ function M:Build(parent, key, opts)
     f.Power = statusBar(f, 1)
     f.Power.bg = texture(f.Power, "BACKGROUND")
     f.Power.bg:SetAllPoints()
+    -- spell cost prediction: the share of the fill the spell being cast will spend, drawn back from the fill's end
+    f.CostPred = statusBar(f.Power)
+    f.CostPred:SetReverseFill(true)
+    f.CostPred:SetPoint("TOPRIGHT", f.Power:GetStatusBarTexture(), "TOPRIGHT")
+    f.CostPred:SetPoint("BOTTOMRIGHT", f.Power:GetStatusBarTexture(), "BOTTOMRIGHT")
+    f.CostPred:Hide()
     f.AltPower = statusBar(f, 1)
     f.AltPower.bg = texture(f.AltPower, "BACKGROUND")
     f.AltPower.bg:SetAllPoints()
@@ -324,6 +336,14 @@ local function layoutHealth(self, f, u, g, key)
     f.Highlight:SetVertexColor(1, 1, 1, 0.12)
 end
 
+-- How far (px) incoming heals may draw past the end of a health bar w wide: the "overheal shown" share, only for
+-- left-to-right bars (the prediction follows the fill's right edge).
+function M.OverhealWidth(u, w)
+    local share = u.absorb and tonumber(u.absorb.overheal) or 0
+    if share <= 0 or u.bar.vertical or u.bar.reverse then return 0 end
+    return math.floor(w * math.min(share, 0.5) + 0.5)
+end
+
 -- prediction and absorbs follow the health bar's own fill texture (no maths on health)
 local function layoutPrediction(self, f, u, g, key)
     local hw, hh = g.health[3], g.health[4]
@@ -332,8 +352,12 @@ local function layoutPrediction(self, f, u, g, key)
     f.HealPred:SetStatusBarTexture(fillTex)
     f.HealPred:SetStatusBarColor(self:Color("myHeal"))
     f.HealPred:SetAlpha(0.5)
-    f.Absorb:ClearAllPoints()
     local ab = u.absorb
+    local over = M.OverhealWidth(u, hw)
+    f.PredClip:ClearAllPoints()
+    f.PredClip:SetPoint("TOPLEFT", f.Health, "TOPLEFT")
+    f.PredClip:SetPoint("BOTTOMRIGHT", f.Health, "BOTTOMRIGHT", over, 0)
+    f.Absorb:ClearAllPoints()
     if ab.position == "reverse" then
         f.Absorb:SetAllPoints(f.Health)
         f.Absorb:SetReverseFill(true)
@@ -364,6 +388,10 @@ local function layoutPower(self, f, u, g, key)
         f.Power:SetFrameLevel(f:GetFrameLevel() + (inside and 1 or 3))
         Skin:BorderSpec(f.Power, inside and NO_BORDER or u.border, "border.black")
         Skin:Backdrop(f.Power, { alpha = inside and 0 or 0.9, color = false, style = "solid" }, "bg.sunken")
+        f.CostPred:SetWidth(g.power[3])
+        f.CostPred:SetStatusBarTexture(self:BarTexture(key, "power"))
+        f.CostPred:SetStatusBarColor(1, 1, 1)
+        f.CostPred:SetAlpha(0.45)
     end
     f.AltPower:ClearAllPoints()
     f.AltPower:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -((g.power and not inside) and (pb.height + 4) or 2))

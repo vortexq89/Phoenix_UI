@@ -103,6 +103,27 @@ function U.ClassColor(classFile)
     return 1, 1, 1
 end
 
+-- A power type's colour (token like "MANA"): General's override when one is set, else the game's; nil when unknown.
+function U.PowerColor(token)
+    if type(token) ~= "string" then return nil end
+    local over = ns.Theme and ns.Theme.settings.powerColors
+    over = type(over) == "table" and over[token]
+    if type(over) == "table" then return over.r or 1, over.g or 1, over.b or 1 end
+    local c = PowerBarColor and PowerBarColor[token]
+    if type(c) == "table" and c.r then return c.r, c.g, c.b end
+    return nil
+end
+
+-- A dispel type's colour ("Magic", "Curse", "Disease", "Poison", "Bleed"): General's override, else the game's.
+function U.DispelColor(kind)
+    local over = kind and ns.Theme and ns.Theme.settings.dispelColors
+    over = type(over) == "table" and over[kind]
+    if type(over) == "table" then return over.r or 1, over.g or 1, over.b or 1 end
+    local c = kind and rawget(_G, "DEBUFF_TYPE_" .. tostring(kind):upper() .. "_COLOR")
+    if type(c) == "table" and c.r then return c.r, c.g, c.b end
+    return nil
+end
+
 -- text in a class colour (|cffRRGGBB…|r)
 function U.WrapClass(classFile, text)
     return "|cff" .. U.Hex(U.ClassColor(classFile)) .. tostring(text) .. "|r"

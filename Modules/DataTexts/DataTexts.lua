@@ -18,12 +18,14 @@ local M = ns:NewModule("DataTexts", {
     defaults = {
         fps = true, latency = true, speed = false, durability = true, gold = false, clock = true, bugs = true,
         bags = false, itemlevel = false, friends = false, guild = false, mail = false,
-        spec = false, keystone = false, coords = false, volume = false,
-        order = "fps,latency,speed,durability,gold,bags,itemlevel,friends,guild,mail,spec,keystone,coords,volume,clock,bugs",
+        spec = false, keystone = false, coords = false, volume = false, currency = false,
+        currency1 = 0, currency2 = 0, currency3 = 0,
+        order = "fps,latency,speed,durability,gold,currency,bags,itemlevel,friends,guild,mail,spec,keystone,coords,volume,clock,bugs",
         order2 = "", panel2 = false, width = 0, justify = "LEFT", mouseover = false,
         clock24 = true, clockRealm = false, goldCopper = false, goldAccount = true, durabilityWarn = 25,
         tooltips = true, combatTips = true,
         xpBar = false, xpRep = true, rested = true, barWidth = 520, barHeight = 10, barTextMode = "mouseover",
+        barHonor = false, barTexture = "", barReverse = false, barSmooth = true, barGradient = "none",
         barText = Style.Text(10, { outline = "OUTLINE" }),
         background = true, scale = 1,
         backdrop = Style.Background({ alpha = 0.94 }),
@@ -33,13 +35,13 @@ local M = ns:NewModule("DataTexts", {
     },
 })
 
-local ORDER = { "fps", "latency", "speed", "durability", "gold", "bags", "itemlevel", "friends", "guild", "mail", "spec",
+local ORDER = { "fps", "latency", "speed", "durability", "gold", "currency", "bags", "itemlevel", "friends", "guild", "mail", "spec",
     "keystone", "coords", "volume", "clock", "bugs" }
 M.ORDER = ORDER
 local KNOWN = {}
 for i, key in ipairs(ORDER) do KNOWN[key] = i end
 -- Segment glyphs whose icon name differs from the key.
-local ICON = { bags = "items", spec = "spec", keystone = "mythicplus", coords = "maps", volume = "sound" }
+local ICON = { bags = "items", spec = "spec", keystone = "mythicplus", coords = "maps", volume = "sound", currency = "gold" }
 -- Segments that need a client feature (ns:Supports).
 local FEATURE = { keystone = "mythicplus" }
 M.FEATURE = FEATURE
@@ -175,7 +177,47 @@ local PROVIDERS = {
         local has = HasNewMail()
         return has and L.DT_MAIL_NEW or L.DT_MAIL_NONE, "", has and "state.success" or "text.muted"
     end,
+    currency = function()
+        local parts = {}
+        for _, c in ipairs(M:PickedCurrencies()) do
+            parts[#parts + 1] = ("|T%s:12:12:0:0:64:64:5:59:5:59|t %s"):format(tostring(c.icon), BreakUpLargeNumbers(c.quantity))
+        end
+        if #parts == 0 then return "—", "" end
+        return table.concat(parts, "  "), ""
+    end,
 }
+
+---------------------------------------------------------------- currencies (picker on the options page)
+M.CURRENCY_SLOTS = 3
+-- The currencies picked in the three slots that the client knows: { id, name, quantity, max, icon }.
+function M:PickedCurrencies()
+    local out = {}
+    for i = 1, M.CURRENCY_SLOTS do
+        local id = tonumber(self.db["currency" .. i])
+        local info = id and id > 0 and C_CurrencyInfo.GetCurrencyInfo(id)
+        if info and info.name then
+            out[#out + 1] = { id = id, name = info.name, quantity = tonumber(info.quantity) or 0,
+                max = tonumber(info.maxQuantity) or 0, icon = info.iconFileID }
+        end
+    end
+    return out
+end
+
+-- Every currency in your currency list (headers expanded as the game has them), for the picker: { id, name }.
+function M.CurrencyChoices()
+    local out = {}
+    local n = tonumber(C_CurrencyInfo.GetCurrencyListSize()) or 0
+    for i = 1, n do
+        local info = C_CurrencyInfo.GetCurrencyListInfo(i)
+        if info and not info.isHeader and info.name then
+            local link = C_CurrencyInfo.GetCurrencyListLink(i)
+            local id = link and C_CurrencyInfo.GetCurrencyIDFromLink(link)
+            if type(id) == "number" and id > 0 then out[#out + 1] = { id = id, name = info.name } end
+        end
+    end
+    table.sort(out, function(a, b) return a.name < b.name end)
+    return out
+end
 
 -- "14:05" / "2:05" + "PM", local or realm time.
 function M.ClockText(realm, h24)
@@ -208,11 +250,13 @@ local OPEN = {
     gold = function() ToggleAllBags() end,
     spec = function() PlayerSpellsUtil.ToggleClassTalentOrSpecFrame() end,
     keystone = function() PVEFrame_ToggleFrame("ChallengesFrame") end,
+    currency = function() ToggleCharacter("TokenFrame") end,
     coords = function() ToggleWorldMap() end,
 }
 local TIP = { fps = "DT_FPS", latency = "DT_LATENCY", speed = "DT_SPEED", durability = "DT_DURABILITY", gold = "DT_GOLD",
     clock = "DT_CLOCK", bags = "DT_BAGS", itemlevel = "DT_ITEMLEVEL", friends = "DT_FRIENDS", guild = "DT_GUILD",
-    mail = "DT_MAIL", spec = "DT_SPEC", keystone = "DT_KEYSTONE", coords = "DT_COORDS", volume = "DT_VOLUME" }
+    mail = "DT_MAIL", spec = "DT_SPEC", keystone = "DT_KEYSTONE", coords = "DT_COORDS", volume = "DT_VOLUME",
+    currency = "DT_CURRENCY" }
 M.TIP = TIP
 
 -- A segment is shown when enabled here, when its client feature exists and, for bugs, when Bugs is running.
@@ -341,6 +385,15 @@ local TIPS = {
         return sub ~= "" and sub ~= zone and (zone .. " · " .. sub) or zone
     end,
     volume = function() return L.DT_VOLUME_TIP end,
+    currency = function()
+        local out = {}
+        for _, c in ipairs(M:PickedCurrencies()) do
+            local amount = c.max > 0 and ("%s / %s"):format(BreakUpLargeNumbers(c.quantity), BreakUpLargeNumbers(c.max))
+                or BreakUpLargeNumbers(c.quantity)
+            out[#out + 1] = line(c.name, amount)
+        end
+        return #out > 0 and table.concat(out, "\n") or L.DT_CURRENCY_NONE
+    end,
 }
 M.TIPS = TIPS
 

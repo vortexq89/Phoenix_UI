@@ -4,10 +4,14 @@ local _, ns = ...
     Locked (always on). Its db.theme table *is* ns.Theme.settings.
     S16 adds the account-wide extras of Appearance & General: Blizzard's own fonts (font objects, never the
     STANDARD_TEXT_FONT global, which secure code reads) and the sound mute list. The floating damage font is
-    the Combat Text page's, the chat font the Chat page's. ]]
+    the Combat Text page's, the chat font the Chat page's. S17 adds power and dispel colour overrides. ]]
 -- false = the game's colour for that class
 local CLASS_DEFAULTS = {}
 for _, cf in ipairs(ns.Theme.CLASSES) do CLASS_DEFAULTS[cf] = false end
+-- false = the game's colour for that power type / dispel type (S17)
+local POWER_DEFAULTS, DISPEL_DEFAULTS = {}, {}
+for _, p in ipairs(ns.Theme.POWERS) do POWER_DEFAULTS[p] = false end
+for _, d in ipairs(ns.Theme.DISPELS) do DISPEL_DEFAULTS[d] = false end
 
 local M = ns:NewModule("General", {
     label = "GENERAL", desc = "GENERAL_DESC", category = "system", order = 1, icon = "general", locked = true,
@@ -18,6 +22,7 @@ local M = ns:NewModule("General", {
             -- the style library defaults every module border set to "Follow Appearance" uses (Core/Style.lua)
             borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
             surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = CLASS_DEFAULTS,
+            powerColors = POWER_DEFAULTS, dispelColors = DISPEL_DEFAULTS,
         },
         blizzardFonts = false, mute = "",
     },

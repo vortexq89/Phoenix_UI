@@ -59,7 +59,7 @@ local M = ns:NewModule("Tracker", {
             utility = viewer(13, 30, -200),
             buffs = viewer(13, 34, -100, { layout = grid(34, { perRow = 12, rows = 1, keepInPlace = false }) }),
             bars = viewer(12, 30, -40, {
-                texture = "", barColor = false, readyGlow = "none",
+                texture = "", barColor = false, readyGlow = "none", gradient = "none",
                 background = Style.Background({ alpha = 0.7 }),
                 name = Style.Text(12, { shadow = true }),
                 layout = { enabled = true, width = 220, height = 22, spacing = 2, wrap = "DOWN", iconSide = "LEFT",
