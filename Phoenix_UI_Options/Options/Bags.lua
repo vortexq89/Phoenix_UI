@@ -21,7 +21,7 @@ ns:RegisterOptions("Bags", {
     { type = "header", label = "BAGS_INFO", icon = "itemlevel" },
     { type = "toggle", key = "upgrade", label = "BAGS_UPGRADE", desc = "BAGS_UPGRADE_DESC", icon = "arrow-up",
       keywords = "better gear arrow green" },
-    { type = "toggle", key = "simArrow", label = "BAGS_SIM_ARROW", desc = "BAGS_SIM_ARROW_DESC", icon = "sim",
+    { type = "toggle", key = "simArrow", label = "BAGS_SIM_ARROW", desc = "BAGS_SIM_ARROW_DESC", icon = "sim", feature = "sim",
       keywords = "simulationcraft simc dps upgrade", disabled = function(m) return not m.db.upgrade end },
     ilvlRow(),
 })

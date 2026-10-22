@@ -246,10 +246,13 @@ local function build(parent)
     page.hero:SetPoint("TOPLEFT", PAD, -PAD)
     page.hero:SetPoint("TOPRIGHT", -PAD, -PAD)
     page.stats = { statChip(child, "addon"), statChip(child, "profiles"), statChip(child, "theme") }
-    page.week = weekCard(child)
-    local function weekly() if page:IsVisible() then page.week:Update() end end
-    ns.Events:On("WEEKLY_REWARDS_UPDATE", page.week, weekly)
-    ns.Events:On("CHALLENGE_MODE_MAPS_UPDATE", page.week, weekly)
+    -- Great Vault and Mythic+ only exist on retail (ns.FEATURES); elsewhere the module grid moves up.
+    if ns:Supports("vault") then
+        page.week = weekCard(child)
+        local function weekly() if page:IsVisible() then page.week:Update() end end
+        ns.Events:On("WEEKLY_REWARDS_UPDATE", page.week, weekly)
+        ns.Events:On("CHALLENGE_MODE_MAPS_UPDATE", page.week, weekly)
+    end
 
     page.gridTitle = W.Text(child, "heading", "text.muted")
     page.gridTitle:SetText(L.MODULES:upper())
@@ -270,10 +273,13 @@ local function build(parent)
             s:SetWidth(sw)
         end
         y = y + 54 + GAP
-        self.week:ClearAllPoints()
-        self.week:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
-        self.week:SetWidth(w)
-        y = y + WEEK_H + 22
+        if self.week then
+            self.week:ClearAllPoints()
+            self.week:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
+            self.week:SetWidth(w)
+            y = y + WEEK_H + GAP
+        end
+        y = y + 22 - GAP
         self.gridTitle:ClearAllPoints()
         self.gridTitle:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
         y = y + 22
@@ -293,7 +299,7 @@ local function build(parent)
     function page:Refresh()
         local on, total = 0, 0
         for _, m in ipairs(ns.moduleList) do
-            if not m.locked then
+            if not m.locked and not m.hidden then
                 total = total + 1
                 if m:IsEnabled() then on = on + 1 end
             end
@@ -302,8 +308,10 @@ local function build(parent)
         self.stats[2]:Set(ns.DB:GetProfileName(), L.ACTIVE_PROFILE)
         self.stats[3]:Set(L["THEME_" .. Theme.settings.preset:upper()], L.THEME)
         for _, c in ipairs(self.cards) do c:Paint() end
-        ns.Weekly:Request()
-        self.week:Update()
+        if self.week then
+            ns.Weekly:Request()
+            self.week:Update()
+        end
         for _, s in ipairs(self.hero.swatches) do s:Paint() end
     end
     ns.Events:Listen("PUI_THEME_CHANGED", page, function() if page:IsShown() then page:Refresh() end end)

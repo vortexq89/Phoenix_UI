@@ -4,7 +4,8 @@ local Config = ns.Config
 --[[ The options layout: 13 sidebar groups (docs/REDESIGN.md §3). Entries are module keys or page keys
     registered with Config:RegisterPage. This is menu-only: it never touches saved settings, and a module that
     is missing here (a new one, or a third-party plug-in) falls into the group for its category, so every page
-    stays reachable. ]]
+    stays reachable. A group's `without` names a feature (ns:Supports) and the label and icon to use on a
+    client that lacks it, so a group never advertises a page that is not there. ]]
 Config.GROUPS = {
     { key = "home",       label = "HOME",             icon = "home",        entries = { "home" } },
     { key = "general",    label = "GENERAL",          icon = "general",     entries = { "General" } },
@@ -14,7 +15,8 @@ Config.GROUPS = {
     { key = "actionbars", label = "GROUP_ACTIONBARS", icon = "actionbars",  entries = { "ActionBars", "CooldownText" } },
     { key = "combat",     label = "CAT_COMBAT",       icon = "cat-combat",
       entries = { "CastBars", "Auras", "Tracker", "Encounters", "CombatText", "SpellHistory", "DamageMeter" } },
-    { key = "group",      label = "GROUP_MYTHIC",     icon = "mythicplus",  entries = { "MythicPlus", "PvP" } },
+    { key = "group",      label = "GROUP_MYTHIC",     icon = "mythicplus",  entries = { "MythicPlus", "PvP" },
+      without = { feature = "mythicplus", label = "PVP", icon = "pvp" } },
     { key = "social",     label = "GROUP_SOCIAL",     icon = "chat",        entries = { "Chat", "AFK" } },
     { key = "maps",       label = "GROUP_MAPS",       icon = "maps",        entries = { "Minimap", "DataTexts" } },
     { key = "items",      label = "GROUP_TOOLTIPS",   icon = "items",       entries = { "Tooltip", "ItemLevel", "Bags", "Sim" } },
@@ -57,7 +59,9 @@ function Config:Groups()
         end
         for _, key in ipairs(extra[g.key] or {}) do entries[#entries + 1] = key end
         if #entries > 0 then
-            out[#out + 1] = { key = g.key, label = g.label, icon = g.icon, entries = entries }
+            local alt = g.without and not ns:Supports(g.without.feature) and g.without
+            out[#out + 1] = { key = g.key, label = alt and alt.label or g.label, icon = alt and alt.icon or g.icon,
+                entries = entries }
             for _, key in ipairs(entries) do groupOf[key] = out[#out] end
         end
     end

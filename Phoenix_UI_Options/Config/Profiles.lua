@@ -100,14 +100,17 @@ local function buildSchema()
                 end
             end, "delete")
         end },
-
-        { type = "header", label = "SPEC_PROFILES", icon = "spec" },
-        { type = "toggle", label = "SPEC_PROFILES_ENABLE", desc = "SPEC_PROFILES_ENABLE_DESC",
-          get = function() return DB:GetSpecProfiles().enabled end, set = function(_, v) DB:GetSpecProfiles().enabled = v end },
     }
 
+    -- per-spec profiles, where this character can choose a specialization (ns.FEATURES.specSelection)
     local _, _, classID = UnitClass("player")
-    for spec = 1, (classID and C_SpecializationInfo.GetNumSpecializationsForClassID(classID) or 0) do
+    local specs = ns:Supports("specSelection") and classID and C_SpecializationInfo.GetNumSpecializationsForClassID(classID) or 0
+    if specs > 0 then
+        schema[#schema + 1] = { type = "header", label = "SPEC_PROFILES", icon = "spec" }
+        schema[#schema + 1] = { type = "toggle", label = "SPEC_PROFILES_ENABLE", desc = "SPEC_PROFILES_ENABLE_DESC",
+            get = function() return DB:GetSpecProfiles().enabled end, set = function(_, v) DB:GetSpecProfiles().enabled = v end }
+    end
+    for spec = 1, specs do
         local _, specName = C_SpecializationInfo.GetSpecializationInfo(spec)
         schema[#schema + 1] = {
             type = "select", label = specName or ("#" .. spec),

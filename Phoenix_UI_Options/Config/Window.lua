@@ -427,7 +427,7 @@ end
 function Config:Show(key)
     local f = self:Build()
     key = key or self.current or "home"
-    if not self.builders[key] and not ns.modules[key] then key = "home" end
+    if not self:EntryExists(key) then key = "home" end
     if self.current and self.pages[self.current] then self.pages[self.current]:Hide() end
     local page = self.pages[key]
     if not page then

@@ -91,7 +91,8 @@ local schema = {
     { type = "custom", label = "DIAG_CLIENT", build = valueRow(function()
         local d = last()
         local build, _, _, toc = GetBuildInfo()
-        return ("%s  ·  %s  ·  %s"):format(d and d.build or build, d and d.toc or toc, d and d.locale or GetLocale())
+        return ("%s  ·  %s  ·  %s  ·  %s"):format(ns.gameName, d and d.build or build, d and d.toc or toc,
+            d and d.locale or GetLocale())
     end) },
     { type = "custom", label = "DIAG_OPTIONS", build = valueRow(function()
         local mine, theirs = ns.Launcher:Versions()

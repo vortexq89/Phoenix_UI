@@ -41,23 +41,32 @@ end
 local function status()
     local mod = M and M:BossMod()
     if mod then return L.ENC_BOSSMOD_NOTE:format(mod) end
+    if M and not M:HasFeature("timeline") then return L.ENC_NOTE_TIMERS end
     return L.ENC_NOTE
 end
 
 local ICON_SETS = Enum.EncounterTimelineIconSet
 
+-- The test button; what it shows depends on whether this client has the game's timeline (M:Test).
+-- t = { desc, status (shown while it runs), feature }
+local function testRow(t)
+    return { type = "button", label = "ENC_TEST", desc = t.desc, feature = t.feature, button = "ENC_TEST_BUTTON",
+        icon = "test", variant = "primary", keywords = "test preview sample boss", func = function(m)
+            if m:Test() then ns.Config:SetStatus(L[t.status], "state.success", "test") end
+        end }
+end
+
 ns:RegisterOptions("Encounters", {
     { type = "preview", kind = "encounters" },
     { type = "header", label = "ENC_START", icon = "encounters" },
     { type = "toggle", label = "ENC_MASTER", desc = "ENC_MASTER_DESC", get = masterGet, set = masterSet, combat = true,
-      keywords = "boss warnings timeline combat warnings blizzard" },
-    { type = "button", label = "ENC_TEST", desc = "ENC_TEST_DESC", button = "ENC_TEST_BUTTON", icon = "test",
-      variant = "primary", keywords = "test preview sample boss", func = function(m)
-          if m:Test() then ns.Config:SetStatus(L.ENC_TEST_RUNNING, "state.success", "test") end
-      end },
+      feature = "encounterAlerts", keywords = "boss warnings timeline combat warnings blizzard" },
+    testRow({ desc = "ENC_TEST_DESC", status = "ENC_TEST_RUNNING", feature = "encounterTimeline" }),
+    -- no game timeline (WoW Forever): the test is a pull bar
+    testRow({ desc = "ENC_TEST_TIMERS_DESC", status = "ENC_TEST_PULL_RUNNING", feature = "!encounterTimeline" }),
     { type = "description", text = status },
 
-    { type = "tab", label = "ENC_TAB_TIMELINE" },
+    { type = "tab", label = "ENC_TAB_TIMELINE", feature = "encounterTimeline" },
     { type = "header", label = "ENC_TIMELINE", icon = "encounters" },
     { type = "select", key = "timeline.display", label = "ENC_TIMELINE_DISPLAY", desc = "ENC_TIMELINE_DISPLAY_DESC",
       keywords = "boss timers bars timeline bigwigs dbm", values = {
@@ -94,7 +103,7 @@ ns:RegisterOptions("Encounters", {
     Opt.Text("timeline.name", "ENC_NAME_FONT", { max = 24, row = { disabled = notBars } }),
     Opt.Text("timeline.time", "ENC_TIME_FONT", { max = 24, row = { disabled = notBars } }),
 
-    { type = "tab", label = "ENC_TAB_WARNINGS" },
+    { type = "tab", label = "ENC_TAB_WARNINGS", feature = "encounterWarnings" },
     { type = "header", label = "ENC_WARNINGS", icon = "warning" },
     { type = "select", key = "warnings.display", label = "ENC_WARN_DISPLAY", desc = "ENC_WARN_DISPLAY_DESC",
       keywords = "boss alerts raid warning banner text", values = {
@@ -136,12 +145,15 @@ ns:RegisterOptions("Encounters", {
     { type = "toggle", key = "countdown.timers", label = "ENC_VOICE_TIMERS", desc = "ENC_VOICE_TIMERS_DESC", disabled = noVoice },
     { type = "button", label = "ENC_VOICE_TEST", desc = "ENC_VOICE_TEST_DESC", button = "MEDIA_PLAY", icon = "sound",
       func = function(m) m:TestCountdown() end },
-    { type = "header", label = "ENC_WARN_SOUNDS", icon = "bell" },
-    { type = "select", key = "warnings.sounds.high", label = "ENC_SEV_HIGH", values = sounds, disabled = notBanner },
-    { type = "select", key = "warnings.sounds.medium", label = "ENC_SEV_MEDIUM", values = sounds, disabled = notBanner },
-    { type = "select", key = "warnings.sounds.low", label = "ENC_SEV_LOW", values = sounds, disabled = notBanner },
+    { type = "header", label = "ENC_WARN_SOUNDS", icon = "bell", feature = "encounterWarnings" },
+    { type = "select", key = "warnings.sounds.high", label = "ENC_SEV_HIGH", values = sounds, disabled = notBanner,
+      feature = "encounterWarnings" },
+    { type = "select", key = "warnings.sounds.medium", label = "ENC_SEV_MEDIUM", values = sounds, disabled = notBanner,
+      feature = "encounterWarnings" },
+    { type = "select", key = "warnings.sounds.low", label = "ENC_SEV_LOW", values = sounds, disabled = notBanner,
+      feature = "encounterWarnings" },
     { type = "button", label = "ENC_SOUND_TEST", desc = "ENC_SOUND_TEST_DESC", button = "MEDIA_PLAY", icon = "sound",
-      func = function(m) m:PlayWarningSound(2) end },
+      feature = "encounterWarnings", func = function(m) m:PlayWarningSound(2) end },
 
     { type = "tab", label = "ENC_TAB_BIGWIGS" },
     { type = "header", label = "ENC_BIGWIGS", icon = "addon" },

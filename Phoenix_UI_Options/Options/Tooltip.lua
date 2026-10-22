@@ -31,9 +31,9 @@ ns:RegisterOptions("Tooltip", {
     { type = "header", label = "TOOLTIP_LINES", icon = "tooltip" },
     { type = "toggle", key = "target", label = "TOOLTIP_TARGET", desc = "TOOLTIP_TARGET_DESC" },
     { type = "toggle", key = "role", label = "TOOLTIP_ROLE", desc = "TOOLTIP_ROLE_DESC" },
-    { type = "toggle", key = "mplusRating", label = "TOOLTIP_MPLUS", desc = "TOOLTIP_MPLUS_DESC",
+    { type = "toggle", key = "mplusRating", label = "TOOLTIP_MPLUS", desc = "TOOLTIP_MPLUS_DESC", feature = "mythicplus",
       keywords = "mythic plus score rating io keystone" },
-    { type = "toggle", key = "simLine", label = "TOOLTIP_SIM", desc = "TOOLTIP_SIM_DESC",
+    { type = "toggle", key = "simLine", label = "TOOLTIP_SIM", desc = "TOOLTIP_SIM_DESC", feature = "sim",
       keywords = "simulationcraft simc dps upgrade sim" },
     { type = "toggle", key = "ids", label = "TOOLTIP_IDS", desc = "TOOLTIP_IDS_DESC", keywords = "spellid itemid idtip" },
 })
