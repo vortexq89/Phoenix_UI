@@ -1049,6 +1049,36 @@ local T = {
     UF_AURA_COUNT_FONT = "Cumuls d'aura",
     ---------------------------------------------------------------- load-on-demand settings
     OPTIONS_MISSING = "La fenêtre des options n'a pas pu se charger (%s). Installez et activez le dossier Phoenix_UI_Options à côté de Phoenix_UI.",
+    ---------------------------------------------------------------- Data texts: segments and order
+    DT_BAGS = "Emplacements de sac libres",
+    DT_BAGS_DESC = "Emplacements libres dans vos sacs ; ambre sous 10, rouge sous 3. Cliquez pour ouvrir vos sacs.",
+    DT_BAGS_UNIT = "libres",
+    DT_ITEMLEVEL = "Niveau d'objet",
+    DT_ITEMLEVEL_DESC = "Votre niveau d'objet moyen équipé. Cliquez pour ouvrir la fiche de personnage.",
+    DT_ITEMLEVEL_UNIT = "niv.",
+    DT_FRIENDS = "Amis en ligne",
+    DT_FRIENDS_DESC = "Amis et amis Battle.net en ligne. Cliquez pour ouvrir la liste d'amis.",
+    DT_GUILD = "Guilde en ligne",
+    DT_GUILD_DESC = "Membres de la guilde en ligne. Cliquez pour ouvrir la fenêtre de guilde.",
+    DT_ONLINE_UNIT = "en ligne",
+    DT_MAIL = "Courrier",
+    DT_MAIL_DESC = "S'allume quand du nouveau courrier vous attend.",
+    DT_MAIL_NEW = "Nouveau",
+    DT_MAIL_NONE = "Aucun",
+    DT_CLICK_TIP = "Cliquez pour ouvrir (hors combat).",
+    DT_ORDER = "Ordre",
+    DT_ORDER_DESC = "Faites glisser les segments dans l'ordre d'affichage de la barre. Les segments estompés sont désactivés.",
+    DT_ORDER_TIP = "Faites glisser pour déplacer ; déposez à l'emplacement du repère.",
+    ---------------------------------------------------------------- Minimap: button bin
+    MINIMAP_BIN = "Bac à boutons",
+    MINIMAP_BIN_ENABLE = "Regrouper les boutons d'addons",
+    MINIMAP_BIN_DESC = "Regroupe les boutons de minicarte des autres addons (LibDBIcon) dans un volet ouvert depuis l'icône du coin.",
+    MINIMAP_BIN_TIP = "Boutons d'addons. Échap ferme le bac.",
+    MINIMAP_BIN_COLUMNS = "Colonnes",
+    MINIMAP_BIN_COLUMNS_DESC = "Boutons par ligne dans le volet.",
+    MINIMAP_BIN_OPEN = "Ouvrir le bac",
+    MINIMAP_BIN_OPEN_DESC = "Affiche le volet maintenant pour voir les boutons qu'il contient.",
+    MINIMAP_BIN_SHOW = "Afficher",
 }
 
 ns.RegisterLocale("frFR", T)

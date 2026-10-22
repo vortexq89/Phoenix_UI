@@ -70,7 +70,8 @@ local function resettable(page, m, item)
         for _, key in ipairs(item.keys) do if defaultOf(page, m, item, key) ~= nil then return true end end
         return false
     end
-    if item.type == "button" or item.type == "custom" or item.type == "description" then return false end
+    if item.type == "button" or item.type == "description" then return false end
+    if item.type == "custom" and not item.resettable then return false end
     return defaultOf(page, m, item) ~= nil
 end
 

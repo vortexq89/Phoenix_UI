@@ -1049,6 +1049,36 @@ local T = {
     UF_AURA_COUNT_FONT = "Acumulaciones",
     ---------------------------------------------------------------- load-on-demand settings
     OPTIONS_MISSING = "No se pudo cargar la ventana de opciones (%s). Instala y activa la carpeta Phoenix_UI_Options junto a Phoenix_UI.",
+    ---------------------------------------------------------------- Data texts: segments and order
+    DT_BAGS = "Huecos libres en bolsas",
+    DT_BAGS_DESC = "Huecos libres en todas tus bolsas; ámbar por debajo de 10, rojo por debajo de 3. Haz clic para abrir las bolsas.",
+    DT_BAGS_UNIT = "libres",
+    DT_ITEMLEVEL = "Nivel de objeto",
+    DT_ITEMLEVEL_DESC = "Tu nivel de objeto medio equipado. Haz clic para abrir el panel de personaje.",
+    DT_ITEMLEVEL_UNIT = "nv.",
+    DT_FRIENDS = "Amigos conectados",
+    DT_FRIENDS_DESC = "Amigos y amigos de Battle.net conectados. Haz clic para abrir la lista de amigos.",
+    DT_GUILD = "Hermandad conectada",
+    DT_GUILD_DESC = "Miembros de la hermandad conectados. Haz clic para abrir la ventana de hermandad.",
+    DT_ONLINE_UNIT = "conect.",
+    DT_MAIL = "Correo",
+    DT_MAIL_DESC = "Se ilumina cuando hay correo nuevo.",
+    DT_MAIL_NEW = "Nuevo",
+    DT_MAIL_NONE = "Ninguno",
+    DT_CLICK_TIP = "Haz clic para abrir (fuera de combate).",
+    DT_ORDER = "Orden",
+    DT_ORDER_DESC = "Arrastra los segmentos al orden en que la barra los muestra. Los atenuados están desactivados.",
+    DT_ORDER_TIP = "Arrastra para mover; suelta donde aparece el marcador.",
+    ---------------------------------------------------------------- Minimap: button bin
+    MINIMAP_BIN = "Contenedor de botones",
+    MINIMAP_BIN_ENABLE = "Agrupar botones de addons",
+    MINIMAP_BIN_DESC = "Agrupa los botones del minimapa de otros addons (LibDBIcon) en un panel desplegable que se abre desde el icono de la esquina.",
+    MINIMAP_BIN_TIP = "Botones de addons. Escape cierra el contenedor.",
+    MINIMAP_BIN_COLUMNS = "Columnas",
+    MINIMAP_BIN_COLUMNS_DESC = "Botones por fila en el panel.",
+    MINIMAP_BIN_OPEN = "Abrir el contenedor",
+    MINIMAP_BIN_OPEN_DESC = "Muestra el panel ahora para ver qué botones contiene.",
+    MINIMAP_BIN_SHOW = "Mostrar",
 }
 
 ns.RegisterLocale("esES", T)

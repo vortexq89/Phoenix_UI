@@ -32,7 +32,8 @@ LUA_METHODS = {"byte", "find", "format", "gmatch", "gsub", "len", "lower", "matc
 # constructors in Blizzard_ObjectAPI (verified in wow-ui-source 12.1.5).
 CLIENT_EXTRA = {"AddDoubleLine", "AddLine", "NumLines", "SetOwner", "CreateFromEquipmentSlot", "CreateFromBagAndSlot"}
 # Public API of optional third-party addons we integrate with (Details! "API UI.txt"); always pcall'd.
-THIRD_PARTY = {"GetInstance", "SetBarSettings", "SetBarTextSettings", "InstanceColor", "AttributeMenu"}
+THIRD_PARTY = {"GetInstance", "SetBarSettings", "SetBarTextSettings", "InstanceColor", "AttributeMenu",
+               "GetButtonList", "GetMinimapButton"}  # LibDBIcon-1.0 (embedded by other addons)
 EXTRA_METHODS = LUA_METHODS | CLIENT_EXTRA | THIRD_PARTY
 # Phoenix-internal messages travel through Events:Fire/Listen, never through the client.
 INTERNAL_EVENT = re.compile(r"^PUI_")

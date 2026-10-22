@@ -41,4 +41,6 @@ ICONS = [
     ("hide", "eye-slash"), ("diagnostics", "pulse"), ("maps", "map-trifold"),
     ("presets", "sparkle"), ("textures", "image-square"), ("items", "backpack"), ("tracker", "timer"),
     ("test", "flask"),
+    # 2.0 P2: data texts and the minimap button bin
+    ("mail", "envelope-simple"), ("friends", "users"), ("guild", "users-three"), ("bin", "squares-four"),
 ]

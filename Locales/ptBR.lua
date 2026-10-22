@@ -1049,6 +1049,36 @@ local T = {
     UF_AURA_COUNT_FONT = "Acúmulos de aura",
     ---------------------------------------------------------------- load-on-demand settings
     OPTIONS_MISSING = "Não foi possível carregar a janela de opções (%s). Instale e ative a pasta Phoenix_UI_Options ao lado de Phoenix_UI.",
+    ---------------------------------------------------------------- Data texts: segments and order
+    DT_BAGS = "Espaços livres nas bolsas",
+    DT_BAGS_DESC = "Espaços livres em todas as bolsas; âmbar abaixo de 10, vermelho abaixo de 3. Clique para abrir as bolsas.",
+    DT_BAGS_UNIT = "livres",
+    DT_ITEMLEVEL = "Nível de item",
+    DT_ITEMLEVEL_DESC = "Seu nível de item médio equipado. Clique para abrir o painel do personagem.",
+    DT_ITEMLEVEL_UNIT = "nív.",
+    DT_FRIENDS = "Amigos on-line",
+    DT_FRIENDS_DESC = "Amigos e amigos da Battle.net on-line. Clique para abrir a lista de amigos.",
+    DT_GUILD = "Guilda on-line",
+    DT_GUILD_DESC = "Membros da guilda on-line. Clique para abrir a janela da guilda.",
+    DT_ONLINE_UNIT = "on-line",
+    DT_MAIL = "Correio",
+    DT_MAIL_DESC = "Acende quando há correio novo.",
+    DT_MAIL_NEW = "Novo",
+    DT_MAIL_NONE = "Nenhum",
+    DT_CLICK_TIP = "Clique para abrir (fora de combate).",
+    DT_ORDER = "Ordem",
+    DT_ORDER_DESC = "Arraste os segmentos para a ordem em que a barra os mostra. Os esmaecidos estão desligados.",
+    DT_ORDER_TIP = "Arraste para mover; solte onde o marcador aparecer.",
+    ---------------------------------------------------------------- Minimap: button bin
+    MINIMAP_BIN = "Coletor de botões",
+    MINIMAP_BIN_ENABLE = "Agrupar botões de addons",
+    MINIMAP_BIN_DESC = "Reúne os botões do minimapa de outros addons (LibDBIcon) em um painel aberto pelo ícone do canto.",
+    MINIMAP_BIN_TIP = "Botões de addons. Esc fecha o coletor.",
+    MINIMAP_BIN_COLUMNS = "Colunas",
+    MINIMAP_BIN_COLUMNS_DESC = "Botões por linha no painel.",
+    MINIMAP_BIN_OPEN = "Abrir o coletor",
+    MINIMAP_BIN_OPEN_DESC = "Mostra o painel agora para ver quais botões ele contém.",
+    MINIMAP_BIN_SHOW = "Mostrar",
 }
 
 ns.RegisterLocale("ptBR", T)

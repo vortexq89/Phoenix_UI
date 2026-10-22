@@ -30,4 +30,12 @@ ns:RegisterOptions("Minimap", {
     { type = "toggle", key = "zoneText", label = "MINIMAP_ZONE_TEXT", desc = "MINIMAP_ZONE_TEXT_DESC", reload = true },
     { type = "header", label = "MINIMAP_INFO", icon = "clock" },
     { type = "toggle", key = "coords", label = "MINIMAP_COORDS", desc = "MINIMAP_COORDS_DESC", keywords = "coordinates position" },
+    { type = "header", label = "MINIMAP_BIN", icon = "bin" },
+    { type = "toggle", key = "bin", label = "MINIMAP_BIN_ENABLE", desc = "MINIMAP_BIN_DESC", reload = true,
+      keywords = "addon buttons libdbicon collect hide clutter" },
+    { type = "range", key = "binColumns", label = "MINIMAP_BIN_COLUMNS", desc = "MINIMAP_BIN_COLUMNS_DESC", min = 1, max = 8, step = 1,
+      disabled = function(m) return not m.db.bin end },
+    { type = "button", label = "MINIMAP_BIN_OPEN", desc = "MINIMAP_BIN_OPEN_DESC", button = "MINIMAP_BIN_SHOW", icon = "bin",
+      disabled = function(m) return not (m.db.bin and m:BinCount() > 0) end,
+      func = function(m) m:OpenBin() end },
 })

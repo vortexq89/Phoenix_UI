@@ -2,13 +2,19 @@ local _, ns = ...
 local L = ns.L
 local Skin, Secret, W, Style = ns.Skin, ns.Secret, ns.Widgets, ns.Style
 
---[[ DataTexts: one slim, Edit Mode movable info bar (FPS, latency, speed, durability, gold, clock, bugs).
-    Each segment is an accent glyph + value + muted unit label. The bugs segment shows this session's
-    error count (Bugs module), flashes on a new one and opens the bug viewer on click. ]]
+--[[ DataTexts: one slim, Edit Mode movable info bar (FPS, latency, speed, durability, gold, clock, bugs, free bag
+    slots, equipped item level, friends and guild online, new mail). Each segment is an accent glyph + value +
+    muted unit label, in the order you drag them to on the settings page (db.order, a comma list so saved
+    profiles stay plain strings). Segments with a window behind them open it on click, out of combat only.
+    The bugs segment shows this session's error count (Bugs module), flashes on a new one and opens the bug
+    viewer. Slow-changing segments (bags, item level, friends, guild, mail) refresh on their events; the
+    1 s ticker only redraws the bar and is stopped while the bar is hidden. ]]
 local M = ns:NewModule("DataTexts", {
     label = "DATATEXTS", desc = "DATATEXTS_DESC", category = "interface", order = 90,
     defaults = {
         fps = true, latency = true, speed = false, durability = true, gold = false, clock = true, bugs = true,
+        bags = false, itemlevel = false, friends = false, guild = false, mail = false,
+        order = "fps,latency,speed,durability,gold,bags,itemlevel,friends,guild,mail,clock,bugs",
         clock24 = true, background = true, scale = 1,
         backdrop = Style.Background({ alpha = 0.94 }),
         border = Style.Border({ style = "shadow" }),
@@ -17,8 +23,23 @@ local M = ns:NewModule("DataTexts", {
     },
 })
 
-local ORDER = { "fps", "latency", "speed", "durability", "gold", "clock", "bugs" }
+local ORDER = { "fps", "latency", "speed", "durability", "gold", "bags", "itemlevel", "friends", "guild", "mail", "clock", "bugs" }
 M.ORDER = ORDER
+local KNOWN = {}
+for i, key in ipairs(ORDER) do KNOWN[key] = i end
+-- Segment glyphs whose icon name differs from the key.
+local ICON = { bags = "items" }
+M.ICON = ICON
+
+-- The saved order with unknown keys dropped and any segment it does not name yet appended in default order.
+function M:Order(list)
+    local out, seen = {}, {}
+    for key in tostring(list or self.db.order or ""):gmatch("[^,%s]+") do
+        if KNOWN[key] and not seen[key] then out[#out + 1] = key; seen[key] = true end
+    end
+    for _, key in ipairs(ORDER) do if not seen[key] then out[#out + 1] = key end end
+    return out
+end
 local bar           -- the live bar object (see M:NewBar)
 local ICON_SIZE = 12
 
@@ -67,7 +88,45 @@ local PROVIDERS = {
         local unique = bugsModule():Counts()
         return unique, L.DT_BUGS_UNIT, unique > 0 and "state.danger" or "state.success"
     end,
+    bags = function()
+        local free = 0
+        for bag = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+            free = free + (C_Container.GetContainerNumFreeSlots(bag) or 0)
+        end
+        return free, L.DT_BAGS_UNIT, colorFor(10, 3, free)
+    end,
+    itemlevel = function()
+        local _, equipped = GetAverageItemLevel()
+        return equipped and ("%.1f"):format(equipped) or "—", L.DT_ITEMLEVEL_UNIT
+    end,
+    friends = function()
+        local n = C_FriendList.GetNumOnlineFriends() or 0
+        local _, bnOnline = BNGetNumFriends()
+        return n + (bnOnline or 0), L.DT_ONLINE_UNIT
+    end,
+    guild = function()
+        if not IsInGuild() then return "—", "" end
+        local _, online = GetNumGuildMembers()
+        return online or 0, L.DT_ONLINE_UNIT
+    end,
+    mail = function()
+        local has = HasNewMail()
+        return has and L.DT_MAIL_NEW or L.DT_MAIL_NONE, "", has and "state.success" or "text.muted"
+    end,
 }
+
+-- Windows a click opens (never in combat: opening protected panels from addon code there is blocked).
+local OPEN = {
+    bags = function() ToggleAllBags() end,
+    itemlevel = function() ToggleCharacter("PaperDollFrame") end,
+    friends = function() ToggleFriendsFrame(FRIEND_TAB_FRIENDS) end,
+    guild = function() if IsInGuild() then ToggleGuildFrame() end end,
+    durability = function() ToggleCharacter("PaperDollFrame") end,
+    gold = function() ToggleAllBags() end,
+}
+local TIP = { fps = "DT_FPS", latency = "DT_LATENCY", speed = "DT_SPEED", durability = "DT_DURABILITY", gold = "DT_GOLD",
+    clock = "DT_CLOCK", bags = "DT_BAGS", itemlevel = "DT_ITEMLEVEL", friends = "DT_FRIENDS", guild = "DT_GUILD",
+    mail = "DT_MAIL" }
 
 -- A segment is shown when enabled here and, for bugs, when the Bugs module is running.
 local function wanted(key)
@@ -90,7 +149,7 @@ local function segment(o, key)
     if s then return s end
     s = CreateFrame("Frame", nil, o.frame)
     s:SetHeight(22)
-    s.icon = ns.Icons:Create(s, key, ICON_SIZE, "accent.primary")
+    s.icon = ns.Icons:Create(s, ICON[key] or key, ICON_SIZE, "accent.primary")
     s.icon:SetPoint("LEFT")
     s.value = s:CreateFontString(nil, "OVERLAY")
     s.value:SetPoint("LEFT", s.icon, "RIGHT", 5, 0)
@@ -109,6 +168,15 @@ local function segment(o, key)
             W.ShowTooltip(self, L.BUGS, L.BUGS_INDICATOR_TIP:format(unique, total))
         end)
         s:SetScript("OnLeave", W.HideTooltip)
+    elseif o.live then
+        s:EnableMouse(true)
+        s:SetScript("OnEnter", function(self)
+            W.ShowTooltip(self, L[TIP[key]], OPEN[key] and L.DT_CLICK_TIP or nil)
+        end)
+        s:SetScript("OnLeave", W.HideTooltip)
+        if OPEN[key] then
+            s:SetScript("OnMouseUp", function() if not InCombatLockdown() then OPEN[key]() end end)
+        end
     end
     o.segments[key] = s
     return s
@@ -123,16 +191,16 @@ function M:StyleBar(o)
     for key, s in pairs(o.segments) do
         Skin:TextSpec(s.value, db.value, "number")
         Skin:TextSpec(s.unit, db.unitText, "small", "text.muted")
-        ns.Icons:Apply(s.icon, key, ICON_SIZE) -- re-pick the atlas tier for the current scale
+        ns.Icons:Apply(s.icon, ICON[key] or key, ICON_SIZE) -- re-pick the atlas tier for the current scale
         s.icon:SetShown(db.icons)
     end
 end
 
--- values: { [key] = { value, unit, token } } for the keys to show, laid out in ORDER.
+-- values: { [key] = { value, unit, token } } for the keys to show, laid out in the saved order.
 function M:FillBar(o, values)
     local db = self.db
     local x = 10
-    for _, key in ipairs(ORDER) do
+    for _, key in ipairs(self:Order()) do
         local v = values[key]
         local s = o.segments[key]
         if v then
@@ -171,13 +239,36 @@ local function build()
         default = { point = "BOTTOM", x = 0, y = 4 } })
 end
 
+local function startTicker()
+    if not M.ticker then M.ticker = C_Timer.NewTicker(1, update) end
+end
+local function stopTicker()
+    if M.ticker then M.ticker:Cancel(); M.ticker = nil end
+end
+
+-- Coalesces bursts of bag/roster events into one redraw on the next frame.
+local pending
+local function soon()
+    if pending then return end
+    pending = true
+    C_Timer.After(0.2, function() pending = nil; if bar and bar.frame:IsShown() then update() end end)
+end
+
 function M:OnEnable()
-    if not bar then build() end
+    if not bar then
+        build()
+        bar.frame:HookScript("OnShow", startTicker)
+        bar.frame:HookScript("OnHide", stopTicker)
+    end
     bar.frame:Show()
     self:Refresh()
-    self.ticker = C_Timer.NewTicker(1, update)
+    startTicker()
     ns.Events:On("PLAYER_MONEY", self, update)
     ns.Events:On("UPDATE_INVENTORY_DURABILITY", self, update)
+    for _, event in ipairs({ "BAG_UPDATE_DELAYED", "PLAYER_EQUIPMENT_CHANGED", "FRIENDLIST_UPDATE", "BN_FRIEND_INFO_CHANGED",
+        "GUILD_ROSTER_UPDATE", "UPDATE_PENDING_MAIL" }) do
+        ns.Events:On(event, self, soon)
+    end
     ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
     ns.Events:Listen("PUI_BUG", self, function(_, _, _report, isNew)
         update()
@@ -188,7 +279,7 @@ function M:OnEnable()
 end
 
 function M:OnDisable()
-    if self.ticker then self.ticker:Cancel(); self.ticker = nil end
+    stopTicker()
     if bar then bar.frame:Hide() end
 end
 

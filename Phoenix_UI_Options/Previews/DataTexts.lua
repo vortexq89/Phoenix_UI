@@ -11,7 +11,9 @@ P:Register("datatexts", {
         local SAMPLE = {
             fps = { 144, "FPS", "state.success" }, latency = { 38, "ms", "state.success" }, speed = { 100, "%" },
             durability = { 42, L.DT_DURABILITY_UNIT, "state.warning" }, gold = { "18,240", L.DT_GOLD_UNIT },
-            bugs = { 0, L.DT_BUGS_UNIT, "state.success" },
+            bugs = { 0, L.DT_BUGS_UNIT, "state.success" }, bags = { 24, L.DT_BAGS_UNIT, "state.success" },
+            itemlevel = { "712.4", L.DT_ITEMLEVEL_UNIT }, friends = { 7, L.DT_ONLINE_UNIT }, guild = { 31, L.DT_ONLINE_UNIT },
+            mail = { L.DT_MAIL_NEW, "", "state.success" },
         }
         return function()
             local db = m.db

@@ -1049,6 +1049,36 @@ local T = {
     UF_AURA_COUNT_FONT = "Cumuli aura",
     ---------------------------------------------------------------- load-on-demand settings
     OPTIONS_MISSING = "Impossibile caricare la finestra delle impostazioni (%s). Installa e attiva la cartella Phoenix_UI_Options accanto a Phoenix_UI.",
+    ---------------------------------------------------------------- Data texts: segments and order
+    DT_BAGS = "Spazi liberi nelle borse",
+    DT_BAGS_DESC = "Spazi liberi in tutte le borse; ambra sotto 10, rosso sotto 3. Clicca per aprire le borse.",
+    DT_BAGS_UNIT = "liberi",
+    DT_ITEMLEVEL = "Livello oggetti",
+    DT_ITEMLEVEL_DESC = "Il tuo livello oggetti medio equipaggiato. Clicca per aprire la scheda personaggio.",
+    DT_ITEMLEVEL_UNIT = "liv.",
+    DT_FRIENDS = "Amici online",
+    DT_FRIENDS_DESC = "Amici e amici Battle.net online. Clicca per aprire l'elenco amici.",
+    DT_GUILD = "Gilda online",
+    DT_GUILD_DESC = "Membri della gilda online. Clicca per aprire la finestra della gilda.",
+    DT_ONLINE_UNIT = "online",
+    DT_MAIL = "Posta",
+    DT_MAIL_DESC = "Si illumina quando c'è nuova posta.",
+    DT_MAIL_NEW = "Nuova",
+    DT_MAIL_NONE = "Nessuna",
+    DT_CLICK_TIP = "Clicca per aprire (fuori combattimento).",
+    DT_ORDER = "Ordine",
+    DT_ORDER_DESC = "Trascina i segmenti nell'ordine in cui la barra li mostra. Quelli attenuati sono disattivati.",
+    DT_ORDER_TIP = "Trascina per spostare; rilascia dove appare l'indicatore.",
+    ---------------------------------------------------------------- Minimap: button bin
+    MINIMAP_BIN = "Raccoglitore pulsanti",
+    MINIMAP_BIN_ENABLE = "Raccogli i pulsanti degli addon",
+    MINIMAP_BIN_DESC = "Raccoglie i pulsanti della minimappa degli altri addon (LibDBIcon) in un pannello che si apre dall'icona nell'angolo.",
+    MINIMAP_BIN_TIP = "Pulsanti degli addon. Esc chiude il raccoglitore.",
+    MINIMAP_BIN_COLUMNS = "Colonne",
+    MINIMAP_BIN_COLUMNS_DESC = "Pulsanti per riga nel pannello.",
+    MINIMAP_BIN_OPEN = "Apri il raccoglitore",
+    MINIMAP_BIN_OPEN_DESC = "Mostra ora il pannello per vedere quali pulsanti contiene.",
+    MINIMAP_BIN_SHOW = "Mostra",
 }
 
 ns.RegisterLocale("itIT", T)

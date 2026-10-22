@@ -1049,6 +1049,36 @@ local T = {
     UF_AURA_COUNT_FONT = "오라 중첩",
     ---------------------------------------------------------------- load-on-demand settings
     OPTIONS_MISSING = "설정 창을 불러오지 못했습니다(%s). Phoenix_UI 옆에 Phoenix_UI_Options 폴더를 설치하고 활성화하세요.",
+    ---------------------------------------------------------------- Data texts: segments and order
+    DT_BAGS = "빈 가방 칸",
+    DT_BAGS_DESC = "모든 가방의 빈 칸 수입니다. 10칸 미만은 주황, 3칸 미만은 빨강. 클릭하면 가방을 엽니다.",
+    DT_BAGS_UNIT = "칸",
+    DT_ITEMLEVEL = "아이템 레벨",
+    DT_ITEMLEVEL_DESC = "착용 중인 평균 아이템 레벨입니다. 클릭하면 캐릭터 창을 엽니다.",
+    DT_ITEMLEVEL_UNIT = "레벨",
+    DT_FRIENDS = "접속 중인 친구",
+    DT_FRIENDS_DESC = "접속 중인 친구와 Battle.net 친구 수입니다. 클릭하면 친구 목록을 엽니다.",
+    DT_GUILD = "접속 중인 길드원",
+    DT_GUILD_DESC = "접속 중인 길드원 수입니다. 클릭하면 길드 창을 엽니다.",
+    DT_ONLINE_UNIT = "접속",
+    DT_MAIL = "우편",
+    DT_MAIL_DESC = "새 우편이 있으면 강조됩니다.",
+    DT_MAIL_NEW = "새 우편",
+    DT_MAIL_NONE = "없음",
+    DT_CLICK_TIP = "클릭하여 열기 (전투 중 제외).",
+    DT_ORDER = "순서",
+    DT_ORDER_DESC = "막대에 표시할 순서대로 항목을 끌어 놓으세요. 흐린 항목은 꺼져 있습니다.",
+    DT_ORDER_TIP = "끌어서 옮기고 표시선 위치에 놓으세요.",
+    ---------------------------------------------------------------- Minimap: button bin
+    MINIMAP_BIN = "버튼 보관함",
+    MINIMAP_BIN_ENABLE = "애드온 버튼 모으기",
+    MINIMAP_BIN_DESC = "다른 애드온이 추가한 미니맵 버튼(LibDBIcon)을 모서리 아이콘으로 여는 펼침 창 하나에 모읍니다.",
+    MINIMAP_BIN_TIP = "애드온 버튼. Esc 키로 닫습니다.",
+    MINIMAP_BIN_COLUMNS = "열 수",
+    MINIMAP_BIN_COLUMNS_DESC = "펼침 창의 한 줄당 버튼 수입니다.",
+    MINIMAP_BIN_OPEN = "보관함 열기",
+    MINIMAP_BIN_OPEN_DESC = "지금 펼침 창을 열어 담긴 버튼을 확인합니다.",
+    MINIMAP_BIN_SHOW = "보기",
 }
 
 ns.RegisterLocale("koKR", T)

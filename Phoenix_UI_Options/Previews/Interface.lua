@@ -15,7 +15,7 @@ end
 ---------------------------------------------------------------- minimap
 P:Register("minimap", {
     module = "Minimap",
-    height = 150,
+    height = 170,
     build = function(stage, m)
         local map = CreateFrame("Frame", nil, stage)
         map:SetSize(116, 116)
@@ -47,6 +47,24 @@ P:Register("minimap", {
         map.coords:SetPoint("BOTTOM", 0, 8)
         map.zone = P.Text(stage, "OVERLAY")
         map.zone:SetPoint("BOTTOM", map, "TOP", 0, 6)
+        -- the button bin: its corner glyph and the open flyout with a few sample addon buttons
+        local binBtn = CreateFrame("Frame", nil, map)
+        binBtn:SetSize(18, 18)
+        binBtn:SetPoint("TOPRIGHT", -4, -4)
+        binBtn:SetFrameLevel(map:GetFrameLevel() + 4)
+        binBtn.icon = ns.Icons:Create(binBtn, "bin", 11, "accent.primary")
+        binBtn.icon:SetPoint("CENTER")
+        local fly = CreateFrame("Frame", nil, stage)
+        fly:SetPoint("TOPLEFT", map, "TOPRIGHT", 14, 0)
+        fly.cells = {}
+        local SAMPLE = { "items", "maps", "chat", "bugs", "tracker", "sound" }
+        for i, icon in ipairs(SAMPLE) do
+            local c = CreateFrame("Frame", nil, fly)
+            c:SetSize(22, 22)
+            c.icon = ns.Icons:Create(c, icon, 12, "text.secondary")
+            c.icon:SetPoint("CENTER")
+            fly.cells[i] = c
+        end
         return function()
             local db = m.db
             for _, t in ipairs(layers) do
@@ -65,6 +83,17 @@ P:Register("minimap", {
             Skin:Text(map.zone, "body", "accent.primary", 12, "OUTLINE")
             map.zone:SetText(L.PREVIEW_ZONE)
             map.zone:SetShown(db.zoneText)
+            binBtn:SetShown(db.bin)
+            fly:SetShown(db.bin)
+            Skin:Panel(binBtn, "raised", { border = "border.default" })
+            Skin:Panel(fly, "raised", { border = "border.default" })
+            local cols = math.max(1, db.binColumns or 4)
+            for i, c in ipairs(fly.cells) do
+                c:ClearAllPoints()
+                c:SetPoint("TOPLEFT", 6 + ((i - 1) % cols) * 24, -6 - math.floor((i - 1) / cols) * 24)
+                Skin:Panel(c, "sunken", { border = "border.subtle" })
+            end
+            fly:SetSize(12 + math.min(#fly.cells, cols) * 24 - 2, 12 + math.ceil(#fly.cells / cols) * 24 - 2)
         end
     end,
 })

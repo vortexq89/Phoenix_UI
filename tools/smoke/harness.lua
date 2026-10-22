@@ -999,6 +999,46 @@ try("aura rows", function()
     local b = button()
     UF:StyleAuraIcon(b, b.Icon, b.Count)
 end)
+-- data texts: the saved order is normalised (unknown dropped, new segments appended) and drives the bar
+try("data text order", function()
+    local DT = ns.modules.DataTexts
+    local order = DT:Order("clock,nope,fps,clock")
+    assert(order[1] == "clock" and order[2] == "fps" and order[3] == "latency", "order normalisation")
+    assert(#order == #DT.ORDER, "every segment appears once")
+    for _, key in ipairs(DT.ORDER) do assert(DT.db[key] ~= nil, "no default for segment " .. key) end
+    assert(DT:Order(DT.defaults.order)[1] == "fps", "default order")
+    local was = DT.db.order
+    ns.DB:Set(DT, "order", "mail,bags")
+    assert(DT:Order()[1] == "mail" and DT:Order()[2] == "bags", "saved order not used")
+    ns.DB:Set(DT, "order", was)
+end)
+-- minimap bin: LibDBIcon buttons (present now or created later) are collected; hidden ones are skipped
+try("minimap bin", function()
+    local MM = ns.modules.Minimap
+    local buttons, names, cb = {}, {}, nil
+    local function make(name, hidden)
+        local b = env.CreateFrame("Button")
+        b.db = { hide = hidden }
+        buttons[name] = b
+        names[#names + 1] = name
+        return b
+    end
+    make("Alpha"); make("Beta"); make("Gamma", true)
+    libs["LibDBIcon-1.0"] = {
+        GetButtonList = function() return names end,
+        GetMinimapButton = function(_, name) return buttons[name] end,
+        RegisterCallback = function(_, event, fn) if event == "LibDBIcon_IconCreated" then cb = fn end end,
+    }
+    MM.ScanBin()
+    assert(MM:BinCount() == 2, "bin holds " .. MM:BinCount() .. " buttons (2 expected)")
+    assert(cb, "no LibDBIcon_IconCreated callback")
+    local late = make("Delta")
+    cb("LibDBIcon_IconCreated", late, "Delta")
+    MM.ScanBin()
+    assert(MM:BinCount() == 3, "late button not collected")
+    MM:OpenBin()
+    libs["LibDBIcon-1.0"] = nil
+end)
 -- presets: one click writes only existing keys, Undo restores them; the picker opens only on a fresh install
 try("presets", function()
     local C = ns.Config

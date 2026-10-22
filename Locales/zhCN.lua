@@ -1049,6 +1049,36 @@ local T = {
     UF_AURA_COUNT_FONT = "光环层数",
     ---------------------------------------------------------------- load-on-demand settings
     OPTIONS_MISSING = "设置窗口无法加载（%s）。请在 Phoenix_UI 旁安装并启用 Phoenix_UI_Options 文件夹。",
+    ---------------------------------------------------------------- Data texts: segments and order
+    DT_BAGS = "背包空位",
+    DT_BAGS_DESC = "所有背包的空位；少于 10 为琥珀色，少于 3 为红色。点击打开背包。",
+    DT_BAGS_UNIT = "空位",
+    DT_ITEMLEVEL = "物品等级",
+    DT_ITEMLEVEL_DESC = "已装备的平均物品等级。点击打开角色面板。",
+    DT_ITEMLEVEL_UNIT = "装等",
+    DT_FRIENDS = "在线好友",
+    DT_FRIENDS_DESC = "在线的好友与战网好友。点击打开好友列表。",
+    DT_GUILD = "在线公会成员",
+    DT_GUILD_DESC = "在线的公会成员。点击打开公会窗口。",
+    DT_ONLINE_UNIT = "在线",
+    DT_MAIL = "邮件",
+    DT_MAIL_DESC = "有新邮件时点亮。",
+    DT_MAIL_NEW = "新邮件",
+    DT_MAIL_NONE = "无",
+    DT_CLICK_TIP = "点击打开（非战斗中）。",
+    DT_ORDER = "顺序",
+    DT_ORDER_DESC = "拖动各项以设定数据条中的显示顺序。变暗的项目已关闭。",
+    DT_ORDER_TIP = "拖动以移动；在标记处松开。",
+    ---------------------------------------------------------------- Minimap: button bin
+    MINIMAP_BIN = "按钮收纳",
+    MINIMAP_BIN_ENABLE = "收纳插件按钮",
+    MINIMAP_BIN_DESC = "将其他插件添加的小地图按钮（LibDBIcon）收进一个从角落图标打开的弹出面板。",
+    MINIMAP_BIN_TIP = "插件按钮。按 Esc 关闭。",
+    MINIMAP_BIN_COLUMNS = "列数",
+    MINIMAP_BIN_COLUMNS_DESC = "弹出面板每行的按钮数。",
+    MINIMAP_BIN_OPEN = "打开收纳",
+    MINIMAP_BIN_OPEN_DESC = "立即显示弹出面板，查看其中的按钮。",
+    MINIMAP_BIN_SHOW = "显示",
 }
 
 ns.RegisterLocale("zhCN", T)

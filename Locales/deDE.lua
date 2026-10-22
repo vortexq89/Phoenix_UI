@@ -1049,6 +1049,36 @@ local T = {
     UF_AURA_COUNT_FONT = "Aurenstapel",
     ---------------------------------------------------------------- load-on-demand settings
     OPTIONS_MISSING = "Das Einstellungsfenster konnte nicht geladen werden (%s). Installiere und aktiviere den Ordner Phoenix_UI_Options neben Phoenix_UI.",
+    ---------------------------------------------------------------- Data texts: segments and order
+    DT_BAGS = "Freie Taschenplätze",
+    DT_BAGS_DESC = "Freie Plätze in allen Taschen; gelb unter 10, rot unter 3. Klicken öffnet die Taschen.",
+    DT_BAGS_UNIT = "frei",
+    DT_ITEMLEVEL = "Gegenstandsstufe",
+    DT_ITEMLEVEL_DESC = "Deine durchschnittliche angelegte Gegenstandsstufe. Klicken öffnet das Charakterfenster.",
+    DT_ITEMLEVEL_UNIT = "iLvl",
+    DT_FRIENDS = "Freunde online",
+    DT_FRIENDS_DESC = "Freunde und Battle.net-Freunde online. Klicken öffnet die Freundesliste.",
+    DT_GUILD = "Gilde online",
+    DT_GUILD_DESC = "Gildenmitglieder online. Klicken öffnet das Gildenfenster.",
+    DT_ONLINE_UNIT = "online",
+    DT_MAIL = "Post",
+    DT_MAIL_DESC = "Leuchtet auf, wenn neue Post wartet.",
+    DT_MAIL_NEW = "Neu",
+    DT_MAIL_NONE = "Keine",
+    DT_CLICK_TIP = "Klicken zum Öffnen (außerhalb des Kampfes).",
+    DT_ORDER = "Reihenfolge",
+    DT_ORDER_DESC = "Ziehe die Segmente in die Reihenfolge, in der die Leiste sie zeigt. Abgeblendete sind ausgeschaltet.",
+    DT_ORDER_TIP = "Ziehen zum Verschieben; dort ablegen, wo die Markierung erscheint.",
+    ---------------------------------------------------------------- Minimap: button bin
+    MINIMAP_BIN = "Button-Sammler",
+    MINIMAP_BIN_ENABLE = "Addon-Buttons sammeln",
+    MINIMAP_BIN_DESC = "Sammelt die Minikarten-Buttons anderer Addons (LibDBIcon) in einem Ausklappfeld, das sich über das Eck-Symbol öffnet.",
+    MINIMAP_BIN_TIP = "Addon-Buttons. Escape schließt den Sammler.",
+    MINIMAP_BIN_COLUMNS = "Spalten",
+    MINIMAP_BIN_COLUMNS_DESC = "Buttons pro Reihe im Ausklappfeld.",
+    MINIMAP_BIN_OPEN = "Sammler öffnen",
+    MINIMAP_BIN_OPEN_DESC = "Zeigt das Ausklappfeld jetzt, um zu sehen, welche Buttons es enthält.",
+    MINIMAP_BIN_SHOW = "Zeigen",
 }
 
 ns.RegisterLocale("deDE", T)
