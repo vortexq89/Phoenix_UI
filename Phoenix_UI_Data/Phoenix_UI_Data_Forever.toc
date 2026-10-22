@@ -1,0 +1,27 @@
+# WoW Forever. Generated from Phoenix_UI_Data.toc by tools/gen_tocs.py; edit that file instead.
+## Interface: 16001
+## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r Data
+## Notes: Quest giver, turn-in and NPC locations for Phoenix UI's Quests page. Loads only when quest pins, NPC pins or the NPC search are on.
+## Author: VortexQ8
+#@debug@
+## Version: 2.0.0-beta1
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
+## Category: User Interface
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
+## Dependencies: Phoenix_UI
+## LoadOnDemand: 1
+## X-License: MIT (code); quest facts from AllTheThings (MIT, see LICENSE-ATT.txt)
+## X-Website: https://github.com/vortexq89/Phoenix_UI
+
+Data.lua
+Manifest.lua
+Quests_Midnight.lua
+Quests_WarWithin.lua
+Quests_Forever.lua
+NPCs_Midnight.lua
+NPCs_WarWithin.lua
+NPCs_Forever.lua
+NPCs_Collected.lua

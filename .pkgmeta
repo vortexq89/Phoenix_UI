@@ -1,0 +1,22 @@
+package-as: Phoenix_UI
+
+# The settings window and the quest data are load-on-demand addons shipped next to Phoenix_UI in the same zip.
+move-folders:
+  Phoenix_UI/Phoenix_UI_Options: Phoenix_UI_Options
+  Phoenix_UI/Phoenix_UI_Data: Phoenix_UI_Data
+
+manual-changelog:
+  filename: CHANGES.md
+  markup-type: markdown
+
+ignore:
+  - .github
+  - .cursor
+  - .luacheck
+  - .luacheckrc
+  - .gitignore
+  - docs
+  - tools
+  - AGENTS.md
+  - README.md
+  - uploader

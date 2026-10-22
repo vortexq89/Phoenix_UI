@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="Anim.lua"/>
+    <Script file="Glow.lua"/>
+    <Script file="Widgets\Core.lua"/>
+    <Script file="Widgets\Button.lua"/>
+    <Script file="Widgets\Toggle.lua"/>
+    <Script file="Widgets\Slider.lua"/>
+    <Script file="Widgets\Dropdown.lua"/>
+    <Script file="Widgets\MediaPicker.lua"/>
+    <Script file="Widgets\ColorSwatch.lua"/>
+    <Script file="Widgets\Input.lua"/>
+    <Script file="Widgets\Scroll.lua"/>
+    <Script file="Widgets\Section.lua"/>
+    <Script file="Widgets\Controls.lua"/>
+    <Script file="Widgets\Chips.lua"/>
+    <Script file="Widgets\StylePicker.lua"/>
+    <Script file="Widgets\Popup.lua"/>
+    <Script file="Launcher.lua"/>
+</Ui>

@@ -1,0 +1,646 @@
+{
+ "atlases": {
+  "QuestDaily": {
+   "height": 32,
+   "width": 32
+  },
+  "QuestNormal": {
+   "height": 64,
+   "width": 64
+  },
+  "QuestRepeatableTurnin": {
+   "height": 32,
+   "width": 32
+  },
+  "QuestTurnin": {
+   "height": 32,
+   "width": 32
+  },
+  "UI-HUD-CoolDownManager-IconOverlay": {
+   "height": 86,
+   "width": 86
+  },
+  "UI-HUD-CoolDownManager-Mask": {
+   "height": 64,
+   "width": 64
+  },
+  "UI-HUD-UnitFrame-Player-CombatIcon": {
+   "height": 16,
+   "width": 16
+  },
+  "UI-HUD-UnitFrame-Player-Group-LeaderIcon": {
+   "height": 16,
+   "width": 16
+  },
+  "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star": {
+   "height": 26,
+   "width": 26
+  },
+  "classicon-deathknight": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-demonhunter": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-druid": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-evoker": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-hunter": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-mage": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-monk": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-paladin": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-priest": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-rogue": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-shaman": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-warlock": {
+   "height": 128,
+   "width": 128
+  },
+  "classicon-warrior": {
+   "height": 128,
+   "width": 128
+  },
+  "roleicon-tiny-dps": {
+   "height": 16,
+   "width": 16
+  },
+  "roleicon-tiny-healer": {
+   "height": 16,
+   "width": 16
+  },
+  "roleicon-tiny-tank": {
+   "height": 16,
+   "width": 16
+  }
+ },
+ "build": "12.1.5.70448",
+ "enums": {
+  "WeeklyRewardChestThresholdType.Activities": {
+   "value": 1
+  },
+  "WeeklyRewardChestThresholdType.Raid": {
+   "value": 3
+  },
+  "WeeklyRewardChestThresholdType.World": {
+   "value": 6
+  }
+ },
+ "fileids": {
+  "132337": {
+   "path": "interface\\icons\\ability_warrior_charge"
+  },
+  "134376": {
+   "path": "interface\\icons\\inv_misc_pocketwatch_01"
+  },
+  "136512": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-chest"
+  },
+  "136513": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-feet"
+  },
+  "136514": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-finger"
+  },
+  "136515": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-hands"
+  },
+  "136516": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-head"
+  },
+  "136517": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-legs"
+  },
+  "136518": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-mainhand"
+  },
+  "136519": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-neck"
+  },
+  "136524": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-secondaryhand"
+  },
+  "136526": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-shoulder"
+  },
+  "136528": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-trinket"
+  },
+  "136529": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-waist"
+  },
+  "136530": {
+   "path": "interface\\paperdoll\\ui-paperdoll-slot-wrists"
+  }
+ },
+ "files": {
+  "Interface\\Buttons\\LockButton-Locked-Up": {
+   "fileDataID": 525906
+  },
+  "Interface\\Buttons\\UI-CheckBox-Check": {
+   "fileDataID": 130751
+  },
+  "Interface\\Buttons\\UI-MinusButton-Up": {
+   "fileDataID": 130821
+  },
+  "Interface\\Buttons\\UI-PlusButton-Up": {
+   "fileDataID": 130838
+  },
+  "Interface\\Buttons\\UI-RefreshButton": {
+   "fileDataID": 851904
+  },
+  "Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up": {
+   "fileDataID": 130866
+  },
+  "Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up": {
+   "fileDataID": 130869
+  },
+  "Interface\\Buttons\\UI-StopButton": {
+   "fileDataID": 851905
+  },
+  "Interface\\Buttons\\WHITE8X8": {
+   "fileDataID": 130871
+  },
+  "Interface\\Common\\Indicator-Gray": {
+   "fileDataID": 518448
+  },
+  "Interface\\Common\\UI-Searchbox-Icon": {
+   "fileDataID": 374210
+  },
+  "Interface\\Common\\help-i": {
+   "fileDataID": 616343
+  },
+  "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew": {
+   "fileDataID": 357854
+  },
+  "Interface\\DialogFrame\\UI-DialogBox-Background-Dark": {
+   "fileDataID": 312922
+  },
+  "Interface\\Icons\\Ability_Hunter_BeastCall": {
+   "fileDataID": 132161
+  },
+  "Interface\\Icons\\Ability_Hunter_MarkedForDeath": {
+   "fileDataID": 236188
+  },
+  "Interface\\Icons\\Ability_Mage_LivingBomb": {
+   "fileDataID": 236220
+  },
+  "Interface\\Icons\\Ability_Rogue_DualWeild": {
+   "fileDataID": 132290
+  },
+  "Interface\\Icons\\Ability_Rogue_KidneyShot": {
+   "fileDataID": 132298
+  },
+  "Interface\\Icons\\Ability_Rogue_Sprint": {
+   "fileDataID": 132307
+  },
+  "Interface\\Icons\\Ability_Warrior_BattleShout": {
+   "fileDataID": 132333
+  },
+  "Interface\\Icons\\Ability_Warrior_Rampage": {
+   "fileDataID": 132352
+  },
+  "Interface\\Icons\\Ability_Warrior_ShieldWall": {
+   "fileDataID": 132362
+  },
+  "Interface\\Icons\\Achievement_BG_winWSG": {
+   "fileDataID": 236396
+  },
+  "Interface\\Icons\\Achievement_Character_Human_Male": {
+   "fileDataID": 236448
+  },
+  "Interface\\Icons\\Achievement_GuildPerk_EverybodysFriend": {
+   "fileDataID": 442272
+  },
+  "Interface\\Icons\\INV_Chest_Plate04": {
+   "fileDataID": 132739
+  },
+  "Interface\\Icons\\INV_Enchant_ShardBrilliantLarge": {
+   "fileDataID": 132873
+  },
+  "Interface\\Icons\\INV_Fabric_Linen_01": {
+   "fileDataID": 132889
+  },
+  "Interface\\Icons\\INV_Fabric_Silk_02": {
+   "fileDataID": 132906
+  },
+  "Interface\\Icons\\INV_Gizmo_02": {
+   "fileDataID": 132996
+  },
+  "Interface\\Icons\\INV_Inscription_Scroll": {
+   "fileDataID": 237162
+  },
+  "Interface\\Icons\\INV_Letter_15": {
+   "fileDataID": 133471
+  },
+  "Interface\\Icons\\INV_Misc_Bell_01": {
+   "fileDataID": 133706
+  },
+  "Interface\\Icons\\INV_Misc_Book_07": {
+   "fileDataID": 133739
+  },
+  "Interface\\Icons\\INV_Misc_Book_09": {
+   "fileDataID": 133741
+  },
+  "Interface\\Icons\\INV_Misc_Book_11": {
+   "fileDataID": 133743
+  },
+  "Interface\\Icons\\INV_Misc_Bugsprayer": {
+   "fileDataID": 609616
+  },
+  "Interface\\Icons\\INV_Misc_EngGizmos_30": {
+   "fileDataID": 237293
+  },
+  "Interface\\Icons\\INV_Misc_Food_15": {
+   "fileDataID": 133971
+  },
+  "Interface\\Icons\\INV_Misc_Gear_01": {
+   "fileDataID": 134063
+  },
+  "Interface\\Icons\\INV_Misc_Gem_Variety_01": {
+   "fileDataID": 134138
+  },
+  "Interface\\Icons\\INV_Misc_Map02": {
+   "fileDataID": 237381
+  },
+  "Interface\\Icons\\INV_Misc_Map_01": {
+   "fileDataID": 134269
+  },
+  "Interface\\Icons\\INV_Misc_Note_01": {
+   "fileDataID": 134327
+  },
+  "Interface\\Icons\\INV_Misc_Note_05": {
+   "fileDataID": 134331
+  },
+  "Interface\\Icons\\INV_Misc_PocketWatch_01": {
+   "fileDataID": 134376
+  },
+  "Interface\\Icons\\INV_Misc_PocketWatch_02": {
+   "fileDataID": 134377
+  },
+  "Interface\\Icons\\INV_Misc_Rune_01": {
+   "fileDataID": 134414
+  },
+  "Interface\\Icons\\INV_Misc_Spyglass_03": {
+   "fileDataID": 134442
+  },
+  "Interface\\Icons\\INV_Potion_100": {
+   "fileDataID": 134722
+  },
+  "Interface\\Icons\\INV_Potion_76": {
+   "fileDataID": 134856
+  },
+  "Interface\\Icons\\INV_Potion_97": {
+   "fileDataID": 134877
+  },
+  "Interface\\Icons\\INV_Relics_Hourglass": {
+   "fileDataID": 525134
+  },
+  "Interface\\Icons\\INV_Stone_04": {
+   "fileDataID": 135230
+  },
+  "Interface\\Icons\\Spell_Arcane_TeleportDalaran": {
+   "fileDataID": 237509
+  },
+  "Interface\\Icons\\Spell_Fire_Fireball02": {
+   "fileDataID": 135808
+  },
+  "Interface\\Icons\\Spell_Fire_FlameBolt": {
+   "fileDataID": 135812
+  },
+  "Interface\\Icons\\Spell_Fire_SelfDestruct": {
+   "fileDataID": 135826
+  },
+  "Interface\\Icons\\Spell_Frost_IceStorm": {
+   "fileDataID": 135857
+  },
+  "Interface\\Icons\\Spell_Holy_MagicalSentry": {
+   "fileDataID": 135932
+  },
+  "Interface\\Icons\\Spell_Holy_PowerWordShield": {
+   "fileDataID": 135940
+  },
+  "Interface\\Icons\\Spell_Holy_Renew": {
+   "fileDataID": 135953
+  },
+  "Interface\\Icons\\Spell_Nature_Lightning": {
+   "fileDataID": 136048
+  },
+  "Interface\\Icons\\Spell_Nature_Polymorph": {
+   "fileDataID": 136071
+  },
+  "Interface\\Icons\\Spell_Nature_Rejuvenation": {
+   "fileDataID": 136081
+  },
+  "Interface\\Icons\\Spell_Nature_Sleep": {
+   "fileDataID": 136090
+  },
+  "Interface\\Icons\\Spell_Shadow_AbominationExplosion": {
+   "fileDataID": 136118
+  },
+  "Interface\\Icons\\Spell_Shadow_CurseOfTounges": {
+   "fileDataID": 136140
+  },
+  "Interface\\Icons\\Spell_Shadow_Possession": {
+   "fileDataID": 136183
+  },
+  "Interface\\Icons\\Spell_Shadow_ShadowWordPain": {
+   "fileDataID": 136207
+  },
+  "Interface\\Icons\\Trade_Engineering": {
+   "fileDataID": 136243
+  },
+  "Interface\\Minimap\\MinimapArrow": {
+   "fileDataID": 136431
+  },
+  "Interface\\TargetingFrame\\UI-RaidTargetingIcons": {
+   "fileDataID": 137009
+  },
+  "Interface\\TargetingFrame\\UI-StatusBar": {
+   "fileDataID": 137012
+  }
+ },
+ "soundkits": {
+  "ALARM_CLOCK_WARNING_3": {
+   "id": 12889
+  },
+  "IG_CHARACTER_INFO_CLOSE": {
+   "id": 840
+  },
+  "IG_CHARACTER_INFO_OPEN": {
+   "id": 839
+  },
+  "IG_MAINMENU_OPTION_CHECKBOX_OFF": {
+   "id": 857
+  },
+  "IG_MAINMENU_OPTION_CHECKBOX_ON": {
+   "id": 856
+  },
+  "RAID_WARNING": {
+   "id": 8959
+  },
+  "TELL_MESSAGE": {
+   "id": 3081
+  },
+  "UI_BNET_TOAST": {
+   "id": 18019
+  },
+  "U_CHAT_SCROLL_BUTTON": {
+   "id": 1115
+  }
+ },
+ "spells": {
+  "106839": {
+   "name": "Skull Bash"
+  },
+  "107079": {
+   "name": "Quaking Palm"
+  },
+  "1126": {
+   "name": "Mark of the Wild"
+  },
+  "113656": {
+   "name": "Fists of Fury"
+  },
+  "115175": {
+   "name": "Soothing Mist"
+  },
+  "116705": {
+   "name": "Spear Hand Strike"
+  },
+  "117952": {
+   "name": "Crackling Jade Lightning"
+  },
+  "119910": {
+   "name": "Spell Lock"
+  },
+  "1230875": {
+   "name": "Flask of Thalassian Resistance"
+  },
+  "1230876": {
+   "name": "Flask of the Magisters"
+  },
+  "1230877": {
+   "name": "Flask of the Blood Knights"
+  },
+  "1230878": {
+   "name": "Flask of the Shattered Sun"
+  },
+  "1234969": {
+   "name": "Ethereal Augmentation"
+  },
+  "1235057": {
+   "name": "Flask of Thalassian Resistance"
+  },
+  "1235108": {
+   "name": "Flask of the Magisters"
+  },
+  "1235110": {
+   "name": "Flask of the Blood Knights"
+  },
+  "1235111": {
+   "name": "Flask of the Shattered Sun"
+  },
+  "1242347": {
+   "name": "Soulgorged Augmentation"
+  },
+  "1248840": {
+   "name": "Flask of the Shattered Sun"
+  },
+  "1248842": {
+   "name": "Flask of the Blood Knights"
+  },
+  "1248845": {
+   "name": "Flask of the Magisters"
+  },
+  "1295329": {
+   "name": "Tidesworn Augment Rune"
+  },
+  "1459": {
+   "name": "Arcane Intellect"
+  },
+  "147362": {
+   "name": "Counter Shot"
+  },
+  "15407": {
+   "name": "Mind Flay"
+  },
+  "15487": {
+   "name": "Silence"
+  },
+  "1766": {
+   "name": "Kick"
+  },
+  "183752": {
+   "name": "Disrupt"
+  },
+  "187707": {
+   "name": "Muzzle"
+  },
+  "190456": {
+   "name": "Ignore Pain"
+  },
+  "192081": {
+   "name": "Ironfur"
+  },
+  "19705": {
+   "name": "Well Fed"
+  },
+  "203981": {
+   "name": "Soul Fragments"
+  },
+  "20549": {
+   "name": "War Stomp"
+  },
+  "20572": {
+   "name": "Blood Fury"
+  },
+  "20589": {
+   "name": "Escape Artist"
+  },
+  "20594": {
+   "name": "Stoneform"
+  },
+  "2139": {
+   "name": "Counterspell"
+  },
+  "21562": {
+   "name": "Power Word: Fortitude"
+  },
+  "234153": {
+   "name": "Drain Life"
+  },
+  "257044": {
+   "name": "Rapid Fire"
+  },
+  "260708": {
+   "name": "Sweeping Strikes"
+  },
+  "26297": {
+   "name": "Berserking"
+  },
+  "28730": {
+   "name": "Arcane Torrent"
+  },
+  "351338": {
+   "name": "Quell"
+  },
+  "356995": {
+   "name": "Disintegrate"
+  },
+  "364342": {
+   "name": "Blessing of the Bronze"
+  },
+  "368970": {
+   "name": "Tail Swipe"
+  },
+  "381748": {
+   "name": "Blessing of the Bronze"
+  },
+  "393438": {
+   "name": "Draconic Augmentation"
+  },
+  "395296": {
+   "name": "Ebon Might"
+  },
+  "431971": {
+   "name": "Flask of Tempered Aggression"
+  },
+  "431972": {
+   "name": "Flask of Tempered Swiftness"
+  },
+  "431973": {
+   "name": "Flask of Tempered Versatility"
+  },
+  "431974": {
+   "name": "Flask of Tempered Mastery"
+  },
+  "432021": {
+   "name": "Flask of Alchemical Chaos"
+  },
+  "462854": {
+   "name": "Skyfury"
+  },
+  "47528": {
+   "name": "Mind Freeze"
+  },
+  "47540": {
+   "name": "Penance"
+  },
+  "5143": {
+   "name": "Arcane Missiles"
+  },
+  "57994": {
+   "name": "Wind Shear"
+  },
+  "58984": {
+   "name": "Shadowmeld"
+  },
+  "59542": {
+   "name": "Gift of the Naaru"
+  },
+  "59752": {
+   "name": "Will to Survive"
+  },
+  "61304": {
+   "name": "Global Cooldown"
+  },
+  "6552": {
+   "name": "Pummel"
+  },
+  "6603": {
+   "name": "Auto Attack"
+  },
+  "6673": {
+   "name": "Battle Shout"
+  },
+  "68992": {
+   "name": "Darkflight"
+  },
+  "69070": {
+   "name": "Rocket Jump"
+  },
+  "75": {
+   "name": "Auto Shot"
+  },
+  "755": {
+   "name": "Health Funnel"
+  },
+  "7744": {
+   "name": "Will of the Forsaken"
+  },
+  "78675": {
+   "name": "Solar Beam"
+  },
+  "96231": {
+   "name": "Rebuke"
+  }
+ }
+}

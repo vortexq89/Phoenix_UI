@@ -1,0 +1,39 @@
+{
+ "version": "1210-01",
+ "git_revision": "7bc1071",
+ "sim": {
+  "players": [
+   {
+    "name": "MID2_Mage_Fire_Sunfury",
+    "specialization": "Fire Mage",
+    "scale_factors": {
+     "Int": 65.13398939818892,
+     "SP": 0.0,
+     "Crit": 14.50279206712579,
+     "Haste": 32.85566220198593,
+     "Mastery": 35.761677965198835,
+     "Vers": 36.37340731514306
+    },
+    "collected_data": {
+     "dps": {
+      "mean": 229348.06717877337,
+      "mean_std_dev": 225.6760113990132
+     }
+    }
+   }
+  ],
+  "profilesets": {
+   "results": []
+  },
+  "statistics": {
+   "elapsed_time_seconds": 0.3603888
+  },
+  "options": {
+   "dbc": {
+    "Live": {
+     "wow_version": "12.1.5.70448"
+    }
+   }
+  }
+ }
+}

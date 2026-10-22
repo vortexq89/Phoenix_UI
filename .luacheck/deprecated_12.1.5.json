@@ -1,0 +1,1486 @@
+{
+ "C_SpellBook.IsSpellDisabled": [
+  "C_Spell.IsSpellDisabled",
+  "Blizzard_Deprecated"
+ ],
+ "C_SpellBook.GetSpellInfo": [
+  "C_Spell.GetSpellInfo",
+  "Blizzard_Deprecated"
+ ],
+ "C_SpellBook.GetSpellLinkFromSpellID": [
+  "C_Spell.GetSpellLink",
+  "Blizzard_Deprecated"
+ ],
+ "C_SpellBook.GetDeadlyDebuffInfo": [
+  "C_Spell.GetDeadlyDebuffInfo",
+  "Blizzard_Deprecated"
+ ],
+ "C_SpellBook.GetOverrideSpell": [
+  "C_Spell.GetOverrideSpell",
+  "Blizzard_Deprecated"
+ ],
+ "GetBattlefieldScore": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "GetBattlefieldStatData": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "UnitIsSpellTarget": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "C_SpellBook.GetSpellBookItemLossOfControlCooldown": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "Enum.HousingCatalogEntrySubtype": [
+  "{",
+  "Blizzard_Deprecated"
+ ],
+ "Invalid": [
+  "0,",
+  "Blizzard_Deprecated"
+ ],
+ "Unowned": [
+  "1,",
+  "Blizzard_Deprecated"
+ ],
+ "OwnedModifiedStack": [
+  "2,",
+  "Blizzard_Deprecated"
+ ],
+ "OwnedUnmodifiedStack": [
+  "3,",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.GetCatalogEntryInfoByRecordID": [
+  "function(entryType, recordID, _tryGetOwnedInfo)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.GetCatalogEntryInfoByItem": [
+  "function(itemInfo, _tryGetOwnedInfo)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.GetCatalogEntryInfo": [
+  "function(entryID)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.CanDestroyEntry": [
+  "function(entryIDOrVariantID)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.DestroyEntry": [
+  "function(entryIDOrVariantID, destroyAll)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.GetFeaturedDecor": [
+  "function()",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.GetCatalogCategoryInfo": [
+  "function(categoryID)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.GetCatalogSubcategoryInfo": [
+  "function(subcategoryID)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.SearchCatalogCategories": [
+  "function(searchParams)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.SearchCatalogSubcategories": [
+  "function(searchParams)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingBasicMode.StartPlacingNewDecor": [
+  "function(catalogEntryIDOrVariantID)",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingCatalog.CreateCatalogSearcher": [
+  "function()",
+  "Blizzard_Deprecated"
+ ],
+ "MenuUtil.ShowTooltip": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "MenuUtil.HideTooltip": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "C_ClickBindings.MakeModifiers": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "C_ClickBindings.GetStringFromModifiers": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "C_Spell.GetMawPowerBorderAtlasBySpellID": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "GetMerchantCurrencies": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "C_SuperTrack.GetNextWaypointForMap": [
+  "C_Navigation.GetNextWaypointForMap",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingDecor.GetSpentPlacementBudget": [
+  "function()",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingDecor.GetMaxPlacementBudget": [
+  "function()",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingLayout.GetSpentPlacementBudget": [
+  "function()",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingLayout.GetRoomPlacementBudget": [
+  "function()",
+  "Blizzard_Deprecated"
+ ],
+ "C_DyeColor.GetDyeColorForItem": [
+  "function(itemLinkOrID)",
+  "Blizzard_Deprecated"
+ ],
+ "C_DyeColor.GetDyeColorForItemLocation": [
+  "function(itemLocation)",
+  "Blizzard_Deprecated"
+ ],
+ "C_Housing.IsInsideOwnHouse": [
+  "C_Housing.IsInsideOwnedHouse",
+  "Blizzard_Deprecated"
+ ],
+ "C_HousingLayout.GetNumFloors": [
+  "function()",
+  "Blizzard_Deprecated"
+ ],
+ "C_UnitAuras.AddPrivateAuraAppliedSound": [
+  "function(sound)",
+  "Blizzard_Deprecated"
+ ],
+ "C_UnitAuras.RemovePrivateAuraAppliedSound": [
+  "C_UnitAuras.RemoveAuraSound",
+  "Blizzard_Deprecated"
+ ],
+ "AuraButtonBorderStyle": [
+  "{",
+  "Blizzard_Deprecated"
+ ],
+ "Atlas": [
+  "Enum.CustomAuraButtonDispelTypeTextureStyle.BorderWithIcon,",
+  "Blizzard_Deprecated"
+ ],
+ "Color": [
+  "Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,",
+  "Blizzard_Deprecated"
+ ],
+ "GetInspectSpecialization": [
+  "C_SpecializationInfo.GetInspectSpecialization",
+  "Blizzard_Deprecated"
+ ],
+ "getglobal": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "setglobal": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "CancelItemTempEnchantment": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "GetWeaponEnchantInfo": [
+  "(Lua shim function, see Blizzard_Deprecated)",
+  "Blizzard_Deprecated"
+ ],
+ "GetActionAutocast": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetActionText": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetActionTexture": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetActionCount": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetActionCooldown": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetActionCharges": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetActionLossOfControlCooldown": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "HasAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsAttackAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsCurrentAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsAutoRepeatAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsUsableAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsConsumableAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsStackableAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsItemAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsEquippedAction": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "ActionHasRange": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsActionInRange": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "SetActionUIButton": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetBonusBarIndex": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetBonusBarOffset": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetExtraBarIndex": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetMultiCastBarIndex": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetOverrideBarIndex": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetOverrideBarSkin": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetTempShapeshiftBarIndex": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetVehicleBarIndex": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "HasBonusActionBar": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "HasExtraActionBar": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "HasOverrideActionBar": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "HasTempShapeshiftActionBar": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "HasVehicleActionBar": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "IsPossessBarVisible": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "ChangeActionBarPage": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "GetActionBarPage": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "C_ActionBar.GetActionLossOfControlCooldown": [
+  "(Lua shim function, see Blizzard_DeprecatedActionBar)",
+  "Blizzard_DeprecatedActionBar"
+ ],
+ "AuraUtil.AuraFilters.NotCancelable": [
+  "AuraUtil.AuraFilterNegationPrefix .. AuraUtil.AuraFilters.Cancelable",
+  "Blizzard_DeprecatedAuraFilters"
+ ],
+ "AUTOCOMPLETE_FLAG_IN_GROUP": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.InGroup)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTOCOMPLETE_FLAG_IN_GUILD": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.InGuild)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTOCOMPLETE_FLAG_FRIEND": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.Friend)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTOCOMPLETE_FLAG_BNET": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.Bnet)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTOCOMPLETE_FLAG_INTERACTED_WITH": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.InteractedWith)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTOCOMPLETE_FLAG_ONLINE": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.Online)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTO_COMPLETE_IN_AOI": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.InAOI)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTO_COMPLETE_ACCOUNT_CHARACTER": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.AccountCharacter)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "AUTO_COMPLETE_RECENT_PLAYER": [
+  "assertsafe(Enum.AutoCompleteEntryFlag.RecentPlayer)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "LE_AUTOCOMPLETE_PRIORITY_OTHER": [
+  "assertsafe(Enum.AutoCompletePriority.Other)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "LE_AUTOCOMPLETE_PRIORITY_INTERACTED": [
+  "assertsafe(Enum.AutoCompletePriority.Interacted)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "LE_AUTOCOMPLETE_PRIORITY_IN_GROUP": [
+  "assertsafe(Enum.AutoCompletePriority.InGroup)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "LE_AUTOCOMPLETE_PRIORITY_GUILD": [
+  "assertsafe(Enum.AutoCompletePriority.Guild)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "LE_AUTOCOMPLETE_PRIORITY_FRIEND": [
+  "assertsafe(Enum.AutoCompletePriority.Friend)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "LE_AUTOCOMPLETE_PRIORITY_ACCOUNT_CHARACTER": [
+  "assertsafe(Enum.AutoCompletePriority.AccountCharacter)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "LE_AUTOCOMPLETE_PRIORITY_ACCOUNT_CHARACTER_SAME_REALM": [
+  "assertsafe(Enum.AutoCompletePriority.AccountCharacterSameRealm)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "GetAutoCompletePresenceID": [
+  "(Lua shim function, see Blizzard_DeprecatedAutoComplete)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "GetAutoCompleteResults": [
+  "(Lua shim function, see Blizzard_DeprecatedAutoComplete)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "GetAutoCompleteRealms": [
+  "(Lua shim function, see Blizzard_DeprecatedAutoComplete)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "IsRecognizedName": [
+  "(Lua shim function, see Blizzard_DeprecatedAutoComplete)",
+  "Blizzard_DeprecatedAutoComplete"
+ ],
+ "BNSendGameData": [
+  "function(gameAccountID, prefix, data)",
+  "Blizzard_DeprecatedBattleNet"
+ ],
+ "BNSendWhisper": [
+  "function(bnetAccountID, text)",
+  "Blizzard_DeprecatedBattleNet"
+ ],
+ "BNSetCustomMessage": [
+  "function(text)",
+  "Blizzard_DeprecatedBattleNet"
+ ],
+ "BNInviteFriend": [
+  "function(gameAccountID)",
+  "Blizzard_DeprecatedBattleNet"
+ ],
+ "BNSendVerifiedBattleTagInvite": [
+  "function()",
+  "Blizzard_DeprecatedBattleNet"
+ ],
+ "BNGetFriendInviteInfo": [
+  "function(inviteIndex)",
+  "Blizzard_DeprecatedBattleNet"
+ ],
+ "CHAT_BUTTON_FLASH_TIME": [
+  "ChatFrameConstants.ScrollToBottomFlashInterval",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "CHAT_TELL_ALERT_TIME": [
+  "ChatFrameConstants.WhisperSoundAlertCooldown",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MAX_COMMUNITY_NAME_LENGTH": [
+  "ChatFrameConstants.TruncatedCommunityNameLength",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MAX_COMMUNITY_NAME_LENGTH_NO_CHANNEL": [
+  "ChatFrameConstants.TruncatedCommunityNameWithoutChannelLength",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MAX_REMEMBERED_TELLS": [
+  "ChatFrameConstants.MaxRememberedWhisperTargets",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MESSAGE_SCROLLBUTTON_INITIAL_DELAY": [
+  "MessageFrameScrollButtonConstants.InitialScrollDelay",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MESSAGE_SCROLLBUTTON_SCROLL_DELAY": [
+  "MessageFrameScrollButtonConstants.HeldScrollDelay",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MAX_WOW_CHAT_CHANNELS": [
+  "Constants.ChatFrameConstants.MaxChatChannels",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MAX_CHARACTER_NAME_BYTES": [
+  "Constants.ChatFrameConstants.MaxCharacterNameBytes",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "NUM_CHAT_WINDOWS": [
+  "Constants.ChatFrameConstants.MaxChatWindows",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "MAX_COUNTDOWN_SECONDS": [
+  "Constants.PartyCountdownConstants.MaxCountdownSeconds",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_AddSystemMessage": [
+  "ChatFrameUtil.AddSystemMessage",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetChannelColor": [
+  "ChatFrameUtil.GetChannelColor",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetChannelShortcutName": [
+  "ChatFrameUtil.GetChannelShortcutName",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetChatCategory": [
+  "ChatFrameUtil.GetChatCategory",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetChatFrame": [
+  "ChatFrameUtil.GetChatFrame",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetColoredChatName": [
+  "ChatFrameUtil.GetColoredChatName",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetCommunitiesChannel": [
+  "ChatFrameUtil.GetCommunitiesChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetCommunitiesChannelColor": [
+  "ChatFrameUtil.GetCommunitiesChannelColor",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_GetCommunitiesChannelName": [
+  "ChatFrameUtil.GetCommunitiesChannelName",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "Chat_ShouldColorChatByClass": [
+  "ChatFrameUtil.ShouldColorChatByClass",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ActivateChat": [
+  "ChatFrameUtil.ActivateChat",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ChooseBoxForSend": [
+  "ChatFrameUtil.ChooseBoxForSend",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_DeactivateChat": [
+  "ChatFrameUtil.DeactivateChat",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_FocusActiveWindow": [
+  "ChatFrameUtil.FocusActiveWindow",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_GetActiveChatType": [
+  "ChatFrameUtil.GetActiveChatType",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_GetActiveWindow": [
+  "ChatFrameUtil.GetActiveWindow",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_GetLastActiveWindow": [
+  "ChatFrameUtil.GetLastActiveWindow",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_GetLastTellTarget": [
+  "ChatFrameUtil.GetLastTellTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_GetLastToldTarget": [
+  "ChatFrameUtil.GetLastToldTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_GetNextTellTarget": [
+  "ChatFrameUtil.GetNextTellTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_HasStickyFocus": [
+  "ChatFrameUtil.HasStickyFocus",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_InsertLink": [
+  "ChatFrameUtil.InsertLink",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_LinkItem": [
+  "ChatFrameUtil.LinkItem",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_SetLastActiveWindow": [
+  "ChatFrameUtil.SetLastActiveWindow",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_SetLastTellTarget": [
+  "ChatFrameUtil.SetLastTellTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_SetLastToldTarget": [
+  "ChatFrameUtil.SetLastToldTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_TryInsertChatLink": [
+  "ChatFrameUtil.TryInsertChatLink",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_TryInsertQuestLinkForQuestID": [
+  "ChatFrameUtil.TryInsertQuestLinkForQuestID",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_AddCommunitiesChannel": [
+  "ChatFrameUtil.AddCommunitiesChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_AddMessageEventFilter": [
+  "ChatFrameUtil.AddMessageEventFilter",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_CanAddChannel": [
+  "ChatFrameUtil.CanAddChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_CanChatGroupPerformExpressionExpansion": [
+  "ChatFrameUtil.CanChatGroupPerformExpressionExpansion",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ChatPageDown": [
+  "ChatFrameUtil.ChatPageDown",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ChatPageUp": [
+  "ChatFrameUtil.ChatPageUp",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ClearChatFocusOverride": [
+  "ChatFrameUtil.ClearChatFocusOverride",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayChatHelp": [
+  "ChatFrameUtil.DisplayChatHelp",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayGameTime": [
+  "ChatFrameUtil.DisplayGameTime",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayGMOTD": [
+  "ChatFrameUtil.DisplayGMOTD",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayHelpText": [
+  "ChatFrameUtil.DisplayHelpText",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayHelpTextSimple": [
+  "ChatFrameUtil.DisplayHelpTextSimple",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayMacroHelpText": [
+  "ChatFrameUtil.DisplayMacroHelpText",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplaySystemMessage": [
+  "ChatFrameUtil.DisplaySystemMessage",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplaySystemMessageInCurrent": [
+  "ChatFrameUtil.DisplaySystemMessageInCurrent",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplaySystemMessageInPrimary": [
+  "ChatFrameUtil.DisplaySystemMessageInPrimary",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayTimePlayed": [
+  "ChatFrameUtil.DisplayTimePlayed",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_DisplayUsageError": [
+  "ChatFrameUtil.DisplayUsageError",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_GetChatFocusOverride": [
+  "ChatFrameUtil.GetChatFocusOverride",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_GetCommunitiesChannelLocalID": [
+  "ChatFrameUtil.GetCommunitiesChannelLocalID",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_GetCommunityAndStreamFromChannel": [
+  "ChatFrameUtil.GetCommunityAndStreamFromChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_GetCommunityAndStreamName": [
+  "ChatFrameUtil.GetCommunityAndStreamName",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_GetFullChannelInfo": [
+  "ChatFrameUtil.GetFullChannelInfo",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_GetMobileEmbeddedTexture": [
+  "ChatFrameUtil.GetMobileEmbeddedTexture",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_OpenChat": [
+  "ChatFrameUtil.OpenChat",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemoveCommunitiesChannel": [
+  "ChatFrameUtil.RemoveCommunitiesChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemoveMessageEventFilter": [
+  "ChatFrameUtil.RemoveMessageEventFilter",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ReplyTell": [
+  "ChatFrameUtil.ReplyTell",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ReplyTell2": [
+  "ChatFrameUtil.ReplyTell2",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ResolveChannelName": [
+  "ChatFrameUtil.ResolveChannelName",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ResolvePrefixedChannelName": [
+  "ChatFrameUtil.ResolvePrefixedChannelName",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ScrollDown": [
+  "ChatFrameUtil.ScrollDown",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ScrollToBottom": [
+  "ChatFrameUtil.ScrollToBottom",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ScrollUp": [
+  "ChatFrameUtil.ScrollUp",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_SendTell": [
+  "ChatFrameUtil.SendTell",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_SendTellWithMessage": [
+  "ChatFrameUtil.SendTellWithMessage",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_SetChatFocusOverride": [
+  "ChatFrameUtil.SetChatFocusOverride",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_TimeBreakDown": [
+  "ChatFrameUtil.TimeBreakDown",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_TruncateToMaxLength": [
+  "ChatFrameUtil.TruncateToMaxLength",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_UpdateChatFrames": [
+  "ChatFrameUtil.UpdateChatFrames",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "GetChatTimestampFormat": [
+  "ChatFrameUtil.GetTimestampFormat",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "SubstituteChatMessageBeforeSend": [
+  "ChatFrameUtil.SubstituteChatMessageBeforeSend",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_AddMessage": [
+  "ChatFrameMixin.AddMessage",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_AddMessageGroup": [
+  "ChatFrameMixin.AddMessageGroup",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_AddPrivateMessageTarget": [
+  "ChatFrameMixin.AddPrivateMessageTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_AddSingleMessageType": [
+  "ChatFrameMixin.AddSingleMessageType",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ContainsChannel": [
+  "ChatFrameMixin.ContainsChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ContainsMessageGroup": [
+  "ChatFrameMixin.ContainsMessageGroup",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ExcludePrivateMessageTarget": [
+  "ChatFrameMixin.ExcludePrivateMessageTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_GetDefaultChatTarget": [
+  "ChatFrameMixin.GetDefaultChatTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_ReceiveAllPrivateMessages": [
+  "ChatFrameMixin.ReceiveAllPrivateMessages",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RegisterForChannels": [
+  "ChatFrameMixin.RegisterForChannels",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RegisterForMessages": [
+  "ChatFrameMixin.RegisterForMessages",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemoveAllChannels": [
+  "ChatFrameMixin.RemoveAllChannels",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemoveAllMessageGroups": [
+  "ChatFrameMixin.RemoveAllMessageGroups",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemoveChannel": [
+  "ChatFrameMixin.RemoveChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemoveExcludePrivateMessageTarget": [
+  "ChatFrameMixin.RemoveExcludePrivateMessageTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemoveMessageGroup": [
+  "ChatFrameMixin.RemoveMessageGroup",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_RemovePrivateMessageTarget": [
+  "ChatFrameMixin.RemovePrivateMessageTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_UnregisterAllMessageGroups": [
+  "ChatFrameMixin.UnregisterAllMessageGroups",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_UpdateColorByID": [
+  "ChatFrameMixin.UpdateColorByID",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatFrame_UpdateDefaultChatTarget": [
+  "ChatFrameMixin.UpdateDefaultChatTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_AddHistory": [
+  "ChatFrameEditBoxMixin.AddHistory",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ClearChat": [
+  "ChatFrameEditBoxMixin.ClearChat",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_DoesCurrentChannelTargetMatch": [
+  "ChatFrameEditBoxMixin.DoesCurrentChannelTargetMatch",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ExtractChannel": [
+  "ChatFrameEditBoxMixin.ExtractChannel",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ExtractTellTarget": [
+  "ChatFrameEditBoxMixin.ExtractTellTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_GetChannelTarget": [
+  "ChatFrameEditBoxMixin.GetChannelTarget",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_HandleChatType": [
+  "ChatFrameEditBoxMixin.HandleChatType",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ParseText": [
+  "ChatFrameEditBoxMixin.ParseText",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ResetChatType": [
+  "ChatFrameEditBoxMixin.ResetChatType",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_ResetChatTypeToSticky": [
+  "ChatFrameEditBoxMixin.ResetChatTypeToSticky",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_SendText": [
+  "ChatFrameEditBoxMixin.SendText",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_SetDeactivated": [
+  "ChatFrameEditBoxMixin.Deactivate",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "ChatEdit_UpdateHeader": [
+  "ChatFrameEditBoxMixin.UpdateHeader",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "SendChatMessage": [
+  "function(message, chatType, languageID, target)",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "DoEmote": [
+  "function(emoteName, targetName, suppressMoveError)",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "CancelEmote": [
+  "function()",
+  "Blizzard_DeprecatedChatInfo"
+ ],
+ "CombatLog_Object_IsA": [
+  "C_CombatLog.DoesObjectMatchFilter",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogAddFilter": [
+  "C_CombatLog.AddEventFilter",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogClearEntries": [
+  "C_CombatLog.ClearEntries",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogGetCurrentEntry": [
+  "C_CombatLog.GetCurrentEntryInfo",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogGetCurrentEventInfo": [
+  "C_CombatLog.GetCurrentEventInfo",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogGetNumEntries": [
+  "C_CombatLog.GetEntryCount",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogGetRetentionTime": [
+  "C_CombatLog.GetEntryRetentionTime",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogResetFilter": [
+  "C_CombatLog.ClearEventFilters",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogSetRetentionTime": [
+  "C_CombatLog.SetEntryRetentionTime",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLogShowCurrentEntry": [
+  "C_CombatLog.ShouldShowCurrentEntry",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatTextSetActiveUnit": [
+  "C_CombatText.SetActiveUnit",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "GetCurrentCombatTextEventInfo": [
+  "C_CombatText.GetCurrentEventInfo",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "DeathRecap_GetEvents": [
+  "C_DeathRecap.GetRecapEvents",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "DeathRecap_HasEvents": [
+  "C_DeathRecap.HasRecapEvents",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "GetDeathRecapLink": [
+  "C_DeathRecap.GetRecapLink",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_AFFILIATION_MINE": [
+  "Enum.CombatLogObject.AffiliationMine",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_AFFILIATION_PARTY": [
+  "Enum.CombatLogObject.AffiliationParty",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_AFFILIATION_RAID": [
+  "Enum.CombatLogObject.AffiliationRaid",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_AFFILIATION_OUTSIDER": [
+  "Enum.CombatLogObject.AffiliationOutsider",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_REACTION_FRIENDLY": [
+  "Enum.CombatLogObject.ReactionFriendly",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_REACTION_NEUTRAL": [
+  "Enum.CombatLogObject.ReactionNeutral",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_REACTION_HOSTILE": [
+  "Enum.CombatLogObject.ReactionHostile",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_CONTROL_PLAYER": [
+  "Enum.CombatLogObject.ControlPlayer",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_CONTROL_NPC": [
+  "Enum.CombatLogObject.ControlNpc",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_TYPE_PLAYER": [
+  "Enum.CombatLogObject.TypePlayer",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_TYPE_NPC": [
+  "Enum.CombatLogObject.TypeNpc",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_TYPE_PET": [
+  "Enum.CombatLogObject.TypePet",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_TYPE_GUARDIAN": [
+  "Enum.CombatLogObject.TypeGuardian",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_TYPE_OBJECT": [
+  "Enum.CombatLogObject.TypeObject",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_TARGET": [
+  "Enum.CombatLogObject.Target",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_FOCUS": [
+  "Enum.CombatLogObject.Focus",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_MAINTANK": [
+  "Enum.CombatLogObject.Maintank",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_MAINASSIST": [
+  "Enum.CombatLogObject.Mainassist",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_NONE": [
+  "Enum.CombatLogObject.None",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_AFFILIATION_MASK": [
+  "Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_AFFILIATION_MASK",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_REACTION_MASK": [
+  "Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_REACTION_MASK",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_CONTROL_MASK": [
+  "Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_CONTROL_MASK",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_TYPE_MASK": [
+  "Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_TYPE_MASK",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_SPECIAL_MASK": [
+  "Constants.CombatLogObjectMasks.COMBATLOG_OBJECT_SPECIAL_MASK",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET1": [
+  "Enum.CombatLogObjectTarget.Raidtarget1",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET2": [
+  "Enum.CombatLogObjectTarget.Raidtarget2",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET3": [
+  "Enum.CombatLogObjectTarget.Raidtarget3",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET4": [
+  "Enum.CombatLogObjectTarget.Raidtarget4",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET5": [
+  "Enum.CombatLogObjectTarget.Raidtarget5",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET6": [
+  "Enum.CombatLogObjectTarget.Raidtarget6",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET7": [
+  "Enum.CombatLogObjectTarget.Raidtarget7",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET8": [
+  "Enum.CombatLogObjectTarget.Raidtarget8",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAID_NONE": [
+  "Enum.CombatLogObjectTarget.RaidNone",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAIDTARGET_MASK": [
+  "Constants.CombatLogObjectTargetMasks.COMBATLOG_OBJECT_RAID_TARGET_MASK",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_OBJECT_RAID_MASK": [
+  "Constants.CombatLogObjectTargetMasks.COMBATLOG_OBJECT_RAID_MASK",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "AURA_TYPE_BUFF": [
+  "\"BUFF\"",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "AURA_TYPE_DEBUFF": [
+  "\"DEBUFF\"",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_HIGHLIGHT_MULTIPLIER": [
+  "1.5",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET1": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget1)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET2": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget2)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET3": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget3)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET4": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget4)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET5": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget5)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET6": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget6)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET7": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget7)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "COMBATLOG_ICON_RAIDTARGET8": [
+  "CombatLogUtil.GetRaidTargetIcon(Enum.CombatLogObjectTarget.Raidtarget8)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "Blizzard_CombatLog_BitToBraceCode": [
+  "CombatLogUtil.GetRaidTargetBraceCode",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_ColorArrayByEventType": [
+  "CombatLogUtil.GetColorByEventType",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_ColorArrayBySchool": [
+  "CombatLogUtil.GetColorBySchool",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_ColorArrayByUnitType": [
+  "CombatLogUtil.GetColorByUnitType",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_HighlightColorArray": [
+  "CombatLogUtil.HighlightColor",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_String_DamageResultString": [
+  "CombatLogUtil.GenerateDamageResultString",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_String_GetIcon": [
+  "CombatLogUtil.GetUnitIcon",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_String_PowerType": [
+  "CombatLogUtil.GetPowerTypeString",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_String_SchoolString": [
+  "CombatLogUtil.GetSpellSchoolString",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_FloatToText": [
+  "(Lua shim function, see Blizzard_DeprecatedCombatLog)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_ColorStringByEventType": [
+  "(Lua shim function, see Blizzard_DeprecatedCombatLog)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_ColorStringBySchool": [
+  "(Lua shim function, see Blizzard_DeprecatedCombatLog)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "CombatLog_Color_ColorStringByUnitType": [
+  "(Lua shim function, see Blizzard_DeprecatedCombatLog)",
+  "Blizzard_DeprecatedCombatLog"
+ ],
+ "GuildInvite": [
+  "C_GuildInfo.Invite",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GuildUninvite": [
+  "C_GuildInfo.Uninvite",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GuildPromote": [
+  "C_GuildInfo.Promote",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GuildDemote": [
+  "C_GuildInfo.Demote",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GuildSetLeader": [
+  "C_GuildInfo.SetLeader",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GuildSetMOTD": [
+  "C_GuildInfo.SetMOTD",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GuildLeave": [
+  "C_GuildInfo.Leave",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GuildDisband": [
+  "C_GuildInfo.Disband",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GetGuildRosterMOTD": [
+  "C_GuildInfo.GetMOTD",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "GetGuildInfoText": [
+  "C_GuildInfo.GetInfoText",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "SetGuildInfoText": [
+  "C_GuildInfo.SetInfoText",
+  "Blizzard_DeprecatedGuildScript"
+ ],
+ "IsEncounterInProgress": [
+  "function()",
+  "Blizzard_DeprecatedInstanceEncounter"
+ ],
+ "IsEncounterSuppressingRelease": [
+  "function()",
+  "Blizzard_DeprecatedInstanceEncounter"
+ ],
+ "IsEncounterLimitingResurrections": [
+  "function()",
+  "Blizzard_DeprecatedInstanceEncounter"
+ ],
+ "ConfirmReadyCheck": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "DemoteAssistant": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "DoReadyCheck": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "PromoteToAssistant": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "PromoteToLeader": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "SetEveryoneIsAssistant": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "UninviteUnit": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "IsGUIDInGroup": [
+  "(Lua shim function, see Blizzard_DeprecatedPartyInfo)",
+  "Blizzard_DeprecatedPartyInfo"
+ ],
+ "RaidNotice_AddMessage": [
+  "function(_noticeFrame, textString, colorInfo, displayTime)",
+  "Blizzard_DeprecatedRaidWarning"
+ ],
+ "RaidNotice_Clear": [
+  "function(noticeFrame)",
+  "Blizzard_DeprecatedRaidWarning"
+ ],
+ "RaidNotice_UpdateSlot": [
+  "function(slotFrame, timings, elapsedTime, hasFading)",
+  "Blizzard_DeprecatedRaidWarning"
+ ],
+ "RaidNotice_FadeInit": [
+  "function(slotFrame)",
+  "Blizzard_DeprecatedRaidWarning"
+ ],
+ "SetActiveTalentGroup": [
+  "C_SpecializationInfo.SetActiveSpecGroup",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetTalentTabInfo": [
+  "function(specializationIndex, isInspect, isPet, groupIndex)",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetPrimaryTalentTree": [
+  "C_SpecializationInfo.GetSpecialization",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetActiveTalentGroup": [
+  "C_SpecializationInfo.GetActiveSpecGroup",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetTalentTreeMasterySpells": [
+  "function(specIndex, isInspect, isPet)",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetTalentInfo": [
+  "function(tabIndex, talentIndex, isInspect, isPet, groupIndex)",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetNumSpecializationsForClassID": [
+  "C_SpecializationInfo.GetNumSpecializationsForClassID",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetSpecializationInfo": [
+  "C_SpecializationInfo.GetSpecializationInfo",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetSpecialization": [
+  "C_SpecializationInfo.GetSpecialization",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetActiveSpecGroup": [
+  "C_SpecializationInfo.GetActiveSpecGroup",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "GetSpecializationMasterySpells": [
+  "function(specIndex, isInspect, isPet)",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "MAX_TALENT_TIERS": [
+  "Constants.TalentTierConstants.MAX_TALENT_TIERS",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "NUM_TALENT_COLUMNS": [
+  "Constants.TalentConsts.NumTalentColumns",
+  "Blizzard_DeprecatedSpecialization"
+ ],
+ "HUNTER_DISMISS_PET": [
+  "Constants.SpellBookSpellIDs.SPELL_ID_DISMISS_PET",
+  "Blizzard_DeprecatedSpellBook"
+ ],
+ "IsPlayerSpell": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellBook)",
+  "Blizzard_DeprecatedSpellBook"
+ ],
+ "IsSpellKnown": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellBook)",
+  "Blizzard_DeprecatedSpellBook"
+ ],
+ "IsSpellKnownOrOverridesKnown": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellBook)",
+  "Blizzard_DeprecatedSpellBook"
+ ],
+ "FindFlyoutSlotBySpellID": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellBook)",
+  "Blizzard_DeprecatedSpellBook"
+ ],
+ "FindSpellOverrideByID": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellBook)",
+  "Blizzard_DeprecatedSpellBook"
+ ],
+ "FindBaseSpellByID": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellBook)",
+  "Blizzard_DeprecatedSpellBook"
+ ],
+ "TargetSpellReplacesBonusTree": [
+  "C_Spell.TargetSpellReplacesBonusTree",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "GetMaxSpellStartRecoveryOffset": [
+  "C_Spell.GetSpellQueueWindow",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "GetSpellQueueWindow": [
+  "C_Spell.GetSpellQueueWindow",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "GetSchoolString": [
+  "C_Spell.GetSchoolString",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "RAID_INCOMBAT": [
+  "Enum.SpellAuraVisibilityType.RaidInCombat,",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "RAID_OUTOFCOMBAT": [
+  "Enum.SpellAuraVisibilityType.RaidOutOfCombat,",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "ENEMY_TARGET": [
+  "Enum.SpellAuraVisibilityType.EnemyTarget,",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "SpellIsPriorityAura": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellScript)",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "SpellIsSelfBuff": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellScript)",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "SpellGetVisibilityInfo": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellScript)",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "C_Spell.GetSpellLossOfControlCooldown": [
+  "(Lua shim function, see Blizzard_DeprecatedSpellScript)",
+  "Blizzard_DeprecatedSpellScript"
+ ],
+ "ShowBossFrameWhenUninteractable": [
+  "(Lua shim function, see Blizzard_DeprecatedUnitScript)",
+  "Blizzard_DeprecatedUnitScript"
+ ],
+ "MAX_ARENA_ENEMIES": [
+  "5",
+  "Blizzard_Deprecated_ArenaUI"
+ ],
+ "ArenaEnemyFramesContainerMixin": [
+  "{}",
+  "Blizzard_Deprecated_ArenaUI"
+ ],
+ "ArenaEnemyMatchFramesContainerMixin": [
+  "{}",
+  "Blizzard_Deprecated_ArenaUI"
+ ],
+ "ArenaEnemyMatchFrameMixin": [
+  "{}",
+  "Blizzard_Deprecated_ArenaUI"
+ ],
+ "ArenaEnemyPrepFrameMixin": [
+  "{}",
+  "Blizzard_Deprecated_ArenaUI"
+ ],
+ "ArenaEnemyPetFrameMixin": [
+  "{}",
+  "Blizzard_Deprecated_ArenaUI"
+ ],
+ "ArenaEnemyPrepFramesContainerMixin": [
+  "{}",
+  "Blizzard_Deprecated_ArenaUI"
+ ],
+ "GetInventorySlotInfo": [
+  "C_PaperDollInfo.GetInventorySlotInfo",
+  "Deprecated_PaperDoll"
+ ]
+}

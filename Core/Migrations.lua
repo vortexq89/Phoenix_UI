@@ -1,0 +1,186 @@
+local _, ns = ...
+
+--[[ ns.Migrations — ordered schema upgrades of PhoenixUIDB (ARCHITECTURE §5.4).
+    Each step runs at most once, inside SafeCall, and must tolerate any shape of old data. ]]
+local Mg = {}
+ns.Migrations = Mg
+
+-- legacy (Phoenix_UI 11.x AceDB profile) path -> { module, key, transform? }
+local THEMES = { PhoenixFlame = "ember", Dark = "ember", Blizzard = "ember", Class = "class", Custom = "custom" }
+local function bool(v) if type(v) == "boolean" then return v end end
+
+local LEGACY_MAP = {
+    { "general.theme", "General", "theme.preset", function(v) return THEMES[v] end },
+    { "general.automation.delete", "Automation", "fillDelete", bool },
+    { "general.automation.decline", "Automation", "declineDuels", bool },
+    { "general.automation.repair", "Automation", "repair", function(v)
+        if v == false then return "off" elseif v == "Guild" then return "guild" elseif v ~= nil then return "player" end
+    end },
+    { "general.automation.sell", "Automation", "sellJunk", bool },
+    { "general.automation.invite", "Automation", "acceptInvites", bool },
+    { "general.automation.release", "Automation", "autoRelease", bool },
+    { "general.automation.resurrect", "Automation", "acceptResurrect", bool },
+    { "general.automation.cinematic", "Automation", "skipCinematics", bool },
+    { "general.cosmetic.afkscreen", "AFK", "enabled", bool },
+    { "general.cosmetic.talkhead", "Quality", "hideTalkingHead", bool },
+    { "general.cosmetic.errors", "Quality", "filterErrors", bool },
+    { "general.display.ilvl", "ItemLevel", "enabled", bool },
+    { "general.display.fps", "DataTexts", "fps", bool },
+    { "general.display.ms", "DataTexts", "latency", bool },
+    { "general.display.movementSpeed", "DataTexts", "speed", bool },
+    { "unitframes.classcolor", "UnitFrames", "classColor", bool },
+    { "nameplates.healthtext", "NamePlates", "healthText", bool },
+    { "actionbar.buttons.key", "ActionBars", "hotkeys", bool },
+    { "actionbar.buttons.macro", "ActionBars", "macroText", bool },
+    { "actionbar.buttons.range", "ActionBars", "rangeTint", bool },
+    { "castbars.icon", "CastBars", "icon", bool },
+    { "castbars.timer", "CastBars", "timer", bool },
+    { "castbars.showLatency", "CastBars", "latency", bool },
+    { "tooltip.mouseanchor", "Tooltip", "anchor", function(v) if v == true then return "CURSOR" end end },
+    { "tooltip.hideincombat", "Tooltip", "hideInCombat", bool },
+    { "tooltip.targetOfTarget", "Tooltip", "target", bool },
+    { "tooltip.roleIcons", "Tooltip", "role", bool },
+    { "chat.link", "Chat", "urls", bool },
+    { "chat.copy", "Chat", "copyButton", bool },
+    -- 11.x "Save chat history" kept received lines across sessions; 2.0 keeps what you typed (secret message text
+    -- can no longer be stored). The switch carries over; the old stored lines do not.
+    { "chat.history.enabled", "Chat", "keepHistory", bool },
+    -- 11.x Mythic+ panel. Timer scale/position/colours have no counterpart: Edit Mode places the timer, the theme
+    -- colours it. enhanceKeystones (keystone tooltips) and autoGossip have no 2.0 feature to map to.
+    { "mythicplus.enabled", "MythicPlus", "enabled", bool },
+    { "mythicplus.showTimer", "MythicPlus", "timer", bool },
+    { "mythicplus.showObjectives", "MythicPlus", "timerForces", bool },
+    { "mythicplus.showObjectives", "MythicPlus", "timerBosses", bool },
+    { "mythicplus.deathTracker", "MythicPlus", "timerDeaths", bool },
+    { "maps.coords", "Minimap", "coords", bool },
+    { "maps.clock", "DataTexts", "clock", bool },
+    { "misc.safequeue", "PvP", "safeQueue", bool },
+    { "misc.tabbinder", "PvP", "tabBinder", bool },
+    { "misc.surrender", "PvP", "surrender", bool },
+}
+
+local function importLegacy(sv)
+    local legacy = Phoenix_UIDB
+    if type(legacy) ~= "table" or type(legacy.profiles) ~= "table" then return end
+    local U = ns.Util
+    local imported, skipped = 0, 0
+    for name, old in pairs(legacy.profiles) do
+        if type(name) == "string" and type(old) == "table" and not sv.profiles[name] then
+            local profile = { modules = {} }
+            for _, row in ipairs(LEGACY_MAP) do
+                local ok, value = pcall(U.GetPath, old, row[1]) -- tolerate non-table intermediates
+                if ok and value ~= nil then
+                    local v = row[4] and row[4](value)
+                    if v ~= nil then
+                        profile.modules[row[2]] = profile.modules[row[2]] or {}
+                        U.SetPath(profile.modules[row[2]], row[3], v)
+                        imported = imported + 1
+                    else
+                        skipped = skipped + 1
+                    end
+                end
+            end
+            sv.profiles[name] = profile
+        end
+    end
+    if type(legacy.profileKeys) == "table" then
+        for char, name in pairs(legacy.profileKeys) do
+            if type(char) == "string" and type(name) == "string" and sv.profiles[name] and not sv.profileKeys[char] then
+                sv.profileKeys[char] = name
+            end
+        end
+    end
+    Mg.legacyReport = { imported = imported, skipped = skipped }
+end
+
+-- 2.0 keys that became per-element style tables in 2.1: { module, old path, new path }.
+Mg.MOVES = {
+    { "NamePlates", "textSize", "health.size" },
+    { "ActionBars", "fontSize", "hotkey.size" },
+    { "Auras", "durationSize", "duration.size" },
+    { "Auras", "countSize", "count.size" },
+    { "GroupFrames", "nameSize", "name.size" },
+    { "Bags", "countSize", "count.size" },
+}
+
+-- Settings that changed owner: { from module, path, to module, path }. The countdown voice moved from
+-- Auras & Cooldowns (Tracker) to Encounters in 2.0 Stage 1, so one module owns every pull and start timer.
+Mg.MODULE_MOVES = {
+    { "Tracker", "countdown", "Encounters", "countdown" },
+}
+
+-- Settings whose value changed shape: { module, old path, new path, convert(old) -> new }.
+Mg.CONVERTS = {
+    -- 2.0 "Square minimap" switch -> 2.1 shape picker (round, square, rectangle)
+    { "Minimap", "square", "shape", function(v) if v == false then return "ROUND" elseif v == true then return "SQUARE" end end },
+}
+
+local function convert(modules)
+    for _, row in ipairs(Mg.CONVERTS) do
+        local db = modules[row[1]]
+        if type(db) == "table" and db[row[2]] ~= nil then
+            local value = row[4](db[row[2]])
+            if value ~= nil and db[row[3]] == nil then db[row[3]] = value end
+            db[row[2]] = nil
+        end
+    end
+end
+
+local function moveBetweenModules(modules)
+    for _, row in ipairs(Mg.MODULE_MOVES) do
+        local from = modules[row[1]]
+        local value
+        if type(from) == "table" then value = from[row[2]] end
+        if value ~= nil then
+            modules[row[3]] = type(modules[row[3]]) == "table" and modules[row[3]] or {}
+            if modules[row[3]][row[4]] == nil then modules[row[3]][row[4]] = value end
+            from[row[2]] = nil
+        end
+    end
+end
+
+-- Moves flat 2.0 keys into the style specs of one profile and settings that changed module to their new
+-- owner; idempotent (a moved key no longer exists).
+local function moveProfile(profile)
+    local U = ns.Util
+    local modules = type(profile) == "table" and type(profile.modules) == "table" and profile.modules
+    if modules then moveBetweenModules(modules); convert(modules) end
+    for _, row in ipairs(modules and Mg.MOVES or {}) do
+        local db = modules[row[1]]
+        local ok, value = pcall(U.GetPath, db, row[2])
+        if type(db) == "table" and ok and value ~= nil then
+            local okNew = pcall(U.SetPath, db, row[3], value)
+            if okNew then U.SetPath(db, row[2], nil) end
+        end
+    end
+end
+
+local function moveKeys(sv)
+    for _, profile in pairs(sv.profiles) do moveProfile(profile) end
+end
+
+-- Profiles imported from an older export string get the same upgrade.
+function Mg:UpgradeProfile(profile, schema)
+    if (tonumber(schema) or 0) < ns.C.SCHEMA then ns.SafeCall(moveProfile, profile) end
+    return profile
+end
+
+Mg.steps = {
+    { version = 1, run = importLegacy },
+    { version = 2, run = moveKeys },
+    { version = 3, run = moveKeys },   -- GroupFrames.nameSize joined MOVES after step 2 shipped on the branch
+    { version = 4, run = moveKeys },   -- Tracker.countdown -> Encounters.countdown (MODULE_MOVES)
+    { version = 5, run = moveKeys },   -- Minimap.square -> Minimap.shape (CONVERTS)
+    { version = 6, run = moveKeys },   -- Bags.countSize -> Bags.count.size (MOVES)
+}
+
+function Mg:Run(sv)
+    for _, step in ipairs(self.steps) do
+        if sv.schema < step.version then
+            ns.SafeCall(step.run, sv)
+            sv.schema = step.version
+        end
+    end
+    -- Legacy tables are dropped from disk once read (they stay listed in the TOC for one release).
+    Phoenix_UIDB, Phoenix_UIPerCharDB = nil, nil
+end

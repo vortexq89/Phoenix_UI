@@ -1,0 +1,77 @@
+## Interface: 120105
+## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r Options
+## Notes: The Phoenix UI settings window. Loads only when you open it (/pui).
+## Author: VortexQ8
+#@debug@
+## Version: 2.0.0-beta1
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
+## Category: User Interface
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
+## Dependencies: Phoenix_UI
+## LoadOnDemand: 1
+## X-License: MIT
+## X-Website: https://github.com/vortexq89/Phoenix_UI
+
+Bridge.lua
+Previews\Previews.lua
+Previews\NamePlates.lua
+Previews\UnitFrames.lua
+Previews\GroupFrames.lua
+Previews\CastBars.lua
+Previews\ActionBars.lua
+Previews\Auras.lua
+Previews\DataTexts.lua
+Previews\Tooltip.lua
+Previews\Chat.lua
+Previews\MythicPlus.lua
+Previews\General.lua
+Previews\Combat.lua
+Previews\Interface.lua
+Previews\Tracker.lua
+Previews\Encounters.lua
+Previews\Sim.lua
+Previews\Quests.lua
+Previews\GroupFinder.lua
+Config\Window.lua
+Config\Groups.lua
+Config\Renderer.lua
+Config\Search.lua
+Config\Home.lua
+Config\Profiles.lua
+Config\Appearance.lua
+Config\Diagnostics.lua
+Config\Presets.lua
+Config\About.lua
+Options\General.lua
+Options\Bugs.lua
+Options\Skins.lua
+Options\ActionBars.lua
+Options\UnitFrames.lua
+Options\GroupFrames.lua
+Options\CastBars.lua
+Options\Auras.lua
+Options\NamePlates.lua
+Options\Tooltip.lua
+Options\ItemLevel.lua
+Options\Bags.lua
+Options\Sim.lua
+Options\Minimap.lua
+Options\DataTexts.lua
+Options\Movers.lua
+Options\CooldownText.lua
+Options\Tracker.lua
+Options\Encounters.lua
+Options\CombatText.lua
+Options\DamageMeter.lua
+Options\SpellHistory.lua
+Options\PvP.lua
+Options\Chat.lua
+Options\AFK.lua
+Options\Quality.lua
+Options\Automation.lua
+Options\MythicPlus.lua
+Options\Quests.lua
+Options\GroupFinder.lua

@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "note": "SimulationCraft builds the Phoenix app may download. Each entry is checked by tools/simc/pin.py against the official nightly artifact of simulationcraft/simc-publish (GitHub's own SHA-256 digest of the artifact, then the hash of the .7z inside it). The app refuses any file whose size or SHA-256 differs.",
+  "builds": [
+    {
+      "version": "1210-01",
+      "commit": "7bc1071",
+      "wowBuild": "12.1.5.70448",
+      "file": "simc-1210.01.7bc1071-win64.7z",
+      "url": "http://downloads.simulationcraft.org/nightly/simc-1210.01.7bc1071-win64.7z",
+      "size": 120923152,
+      "sha256": "6c2be8db622f52866469d44f41a75f5ab721ea0a862dcc56d8f69e2b064910bd",
+      "exe": "simc-1210.01.7bc1071-win64/simc.exe",
+      "exeSize": 121413632,
+      "exeSha256": "b0ea12ee3ac233a4a590609e2a5bd4c4db45c5f8ae6f8994b1b8d0de4d5acff4",
+      "license": "simc-1210.01.7bc1071-win64/COPYING",
+      "source": {
+        "repo": "simulationcraft/simc-publish",
+        "workflow": "Nightly",
+        "artifactId": 12318091482,
+        "artifactDigest": "sha256:c8b0ee8781fa1eff41a78a863926c99e8feeae49ffa3a0e878f6789d81f67f1e"
+      },
+      "verified": "2026-10-22"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+local _, ns = ...
+local Opt = ns.Opt
+
+local TITLE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = "minimal", label = "SKINS_TITLE_MINIMAL" },
+    { value = "blizzard", label = "SKINS_TITLE_BLIZZARD" } }
+local CLOSE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = "blizzard", label = "SKINS_TITLE_BLIZZARD" } }
+
+ns:RegisterOptions("Skins", {
+    { type = "preview", kind = "skins" },
+    { type = "header", label = "SKINS_DIALOGS", icon = "skins" },
+    { type = "toggle", key = "gameMenu", label = "SKINS_GAMEMENU", desc = "SKINS_GAMEMENU_DESC", reload = true, keywords = "escape menu" },
+    { type = "toggle", key = "popups", label = "SKINS_POPUPS", desc = "SKINS_POPUPS_DESC", reload = true, keywords = "dialog" },
+    { type = "toggle", key = "readyCheck", label = "SKINS_READYCHECK", desc = "SKINS_READYCHECK_DESC", reload = true },
+    { type = "toggle", key = "alerts", label = "SKINS_ALERTS", desc = "SKINS_ALERTS_DESC", reload = true,
+      keywords = "alerts toasts achievement loot popup banner" },
+    { type = "header", label = "SKINS_WINDOWS", icon = "layout" },
+    { type = "toggle", key = "character", label = "SKINS_CHARACTER", reload = true, keywords = "paper doll equipment reputation currency" },
+    { type = "toggle", key = "inspect", label = "SKINS_INSPECT", reload = true, keywords = "inspect player gear" },
+    { type = "toggle", key = "spellbook", label = "SKINS_SPELLBOOK", reload = true, keywords = "talents spellbook specialization" },
+    { type = "toggle", key = "groupFinder", label = "SKINS_GROUP_FINDER", reload = true, keywords = "lfg dungeon finder pvp premade" },
+    { type = "toggle", key = "collections", label = "SKINS_COLLECTIONS", reload = true, keywords = "mounts pets toys transmog" },
+    { type = "toggle", key = "professions", label = "SKINS_PROFESSIONS", reload = true, keywords = "crafting tradeskill" },
+    { type = "toggle", key = "auction", label = "SKINS_AUCTION", reload = true, keywords = "auction house ah" },
+    { type = "toggle", key = "mail", label = "SKINS_MAIL", reload = true, keywords = "mailbox" },
+    { type = "toggle", key = "merchant", label = "SKINS_MERCHANT", reload = true, keywords = "vendor shop" },
+    { type = "toggle", key = "gossip", label = "SKINS_GOSSIP", reload = true, keywords = "quest npc dialog" },
+    { type = "toggle", key = "loot", label = "SKINS_LOOT", reload = true, keywords = "loot rolls need greed" },
+    { type = "toggle", key = "achievements", label = "SKINS_ACHIEVEMENTS", reload = true, keywords = "achievement" },
+    { type = "toggle", key = "journal", label = "SKINS_JOURNAL", reload = true, keywords = "encounter journal adventure guide" },
+    { type = "toggle", key = "calendar", label = "SKINS_CALENDAR", reload = true, keywords = "events" },
+    { type = "toggle", key = "communities", label = "SKINS_COMMUNITIES", reload = true, keywords = "guild communities clubs" },
+    { type = "toggle", key = "friends", label = "SKINS_FRIENDS", reload = true, keywords = "social who raid" },
+    { type = "toggle", key = "settings", label = "SKINS_SETTINGS", reload = true, keywords = "options addon list" },
+    { type = "toggle", key = "vault", label = "SKINS_VAULT", reload = true, keywords = "great vault weekly", feature = "vault" },
+    { type = "toggle", key = "keystone", label = "SKINS_KEYSTONE", reload = true, keywords = "mythic plus key", feature = "mythicplus" },
+    { type = "toggle", key = "trade", label = "SKINS_TRADE", reload = true, keywords = "trade window" },
+    { type = "toggle", key = "dressUp", label = "SKINS_DRESSUP", reload = true, keywords = "dressing room preview" },
+    { type = "header", label = "SKINS_STYLE", icon = "border" },
+    Opt.Background("backdrop", "SKINS_BACKGROUND", "bg.base"),
+    Opt.Border("border", "SKINS_BORDER", "border.strong"),
+    { type = "select", key = "titleStyle", label = "SKINS_TITLE", desc = "SKINS_TITLE_DESC", values = TITLE, reload = true },
+    { type = "select", key = "closeStyle", label = "SKINS_CLOSE", desc = "SKINS_CLOSE_DESC", values = CLOSE, reload = true },
+    { type = "toggle", key = "tabs", label = "SKINS_TABS", desc = "SKINS_TABS_DESC", reload = true, keywords = "tab buttons" },
+    { type = "description", text = "SKINS_NOTE" },
+})

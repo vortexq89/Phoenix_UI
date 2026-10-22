@@ -1,0 +1,49 @@
+name: Lint
+
+on:
+  push:
+    branches: [main, rework]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.1 and luacheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1 luarocks
+          sudo luarocks install luacheck
+
+      - name: luacheck (12.1.5 std, zero warnings)
+        run: luacheck . --formatter plain
+
+      - name: API reference check
+        run: python3 tools/check_api.py
+
+      - name: Game ID check (pinned 12.1.5 snapshot)
+        run: python3 tools/check_ids.py
+
+      - name: Locale coverage
+        run: python3 tools/check_locales.py
+
+      - name: Offline load test
+        run: lua5.1 tools/smoke/harness.lua .
+
+      # WoW Forever 1.60.1 (Phoenix_UI_Forever.toc): the same checks against that client's generated data
+      - name: luacheck (Forever 1.60.1 std)
+        run: luacheck . --std lua51+wowf --formatter plain
+
+      - name: API reference check (Forever)
+        run: PUI_FLAVOR=forever python3 tools/check_api.py
+
+      - name: Game ID check (Forever snapshot)
+        run: PUI_FLAVOR=forever python3 tools/check_ids.py
+
+      - name: Offline load test (Forever client)
+        run: lua5.1 tools/smoke/harness.lua . forever
