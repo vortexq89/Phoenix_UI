@@ -13,7 +13,7 @@ Config.GROUPS = {
     { key = "nameplates", label = "NAMEPLATES",       icon = "nameplates",  entries = { "NamePlates" } },
     { key = "actionbars", label = "GROUP_ACTIONBARS", icon = "actionbars",  entries = { "ActionBars", "CooldownText" } },
     { key = "combat",     label = "CAT_COMBAT",       icon = "cat-combat",
-      entries = { "CastBars", "Auras", "tracker", "CombatText", "SpellHistory", "DamageMeter" } },
+      entries = { "CastBars", "Auras", "Tracker", "CombatText", "SpellHistory", "DamageMeter" } },
     { key = "group",      label = "GROUP_MYTHIC",     icon = "mythicplus",  entries = { "MythicPlus", "PvP" } },
     { key = "social",     label = "GROUP_SOCIAL",     icon = "chat",        entries = { "Chat", "AFK" } },
     { key = "maps",       label = "GROUP_MAPS",       icon = "maps",        entries = { "Minimap", "DataTexts" } },

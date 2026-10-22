@@ -26,6 +26,7 @@
     <Script file="Previews\General.lua"/>
     <Script file="Previews\Combat.lua"/>
     <Script file="Previews\Interface.lua"/>
+    <Script file="Previews\Tracker.lua"/>
     <Script file="Config\Window.lua"/>
     <Script file="Config\Groups.lua"/>
     <Script file="Config\Renderer.lua"/>

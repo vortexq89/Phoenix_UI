@@ -18,7 +18,7 @@ local defaults = {
     HasFocus = false, GetChecked = false, IsEnabled = true, GetObjectType = "Frame", GetName = nil,
     GetMinMaxValues = { 0, 1 }, GetTexCoord = { 0, 1, 0, 1 }, GetTextColor = { 1, 1, 1, 1 },
     GetVertexColor = { 1, 1, 1, 1 }, GetFont = { "font", 12, "" }, GetCursorPosition = 0, GetNumLetters = 0,
-    GetVerticalScrollRange = 0, GetHorizontalScrollRange = 0, GetVerticalScroll = 0, GetNumRegions = 0,
+    GetVerticalScrollRange = 0, GetNumMaskTextures = 0, EnumerateActive = { function() end }, GetHorizontalScrollRange = 0, GetVerticalScroll = 0, GetNumRegions = 0,
     GetTexture = nil, GetAtlas = nil, GetFontObject = nil, GetParent = nil, GetRegions = {}, GetChildren = {},
 }
 local scripts = setmetatable({}, { __mode = "k" })
@@ -283,15 +283,28 @@ if ns.Profiles then
     end)
 end
 -- write every option back with its current value (exercises OnSettingChanged/Refresh paths)
-local function eachItem(list, fn)
+local function eachItem(list, fn, parent)
     for _, item in ipairs(list or {}) do
-        fn(item)
-        eachItem(item.cog, fn)
+        fn(item, parent)
+        eachItem(item.cog, fn, item)
     end
 end
+local function scopeUnits(list)
+    for _, item in ipairs(list or {}) do
+        if item.type == "scope" then
+            local out = {}
+            for _, v in ipairs(item.values) do out[#out + 1] = v.value end
+            return out
+        end
+    end
+    return { "player" }
+end
 for _, m in ipairs(ns.moduleList or {}) do
-    eachItem(ns.options[m.key], function(item)
-        local key = item.key and item.key:gsub("@", "player")
+  for _, unit in ipairs(scopeUnits(ns.options[m.key])) do
+    eachItem(ns.options[m.key], function(item, parent)
+        local owner = (parent and parent.hidden) and parent or item
+        local hiddenHere = owner.hidden and item.key and item.key:find("@", 1, true) and owner.hidden(m, unit)
+        local key = item.key and not hiddenHere and item.key:gsub("@", unit)
         if key and not (item.get and item.set) then
             try("set " .. m.key .. "." .. key, function()
                 local v = ns.DB:Get(m, key)
@@ -302,8 +315,9 @@ for _, m in ipairs(ns.moduleList or {}) do
             try("set " .. m.key .. "." .. tostring(item.label), function() item.set(m, item.get(m)) end)
         end
         if item.disabled then try("disabled " .. m.key, item.disabled, m) end
-        if item.hidden then try("hidden " .. m.key, item.hidden, m) end
+        if item.hidden then try("hidden " .. m.key, item.hidden, m, unit) end
     end)
+  end
 end
 -- profiles, theme and slash commands
 try("profile new", function()
@@ -680,7 +694,11 @@ try("search", function()
     assert(hit, "the nameplate health text outline (a cog option) is not searchable")
     local page = ns.Config:Show("NamePlates")
     page:Focus(hit.item)
-    assert(page.tab == 2, "focusing a Text-tab option did not switch tabs")
+    local textTab, n = nil, 0
+    for _, item in ipairs(ns.options.NamePlates) do
+        if item.type == "tab" then n = n + 1; if item.label == "TAB_TEXT" then textTab = n end end
+    end
+    assert(page.tab == textTab, "focusing a Text-tab option did not switch tabs")
     ns.Config:Search("")
 end)
 -- layout: 13 groups; every module and built-in page sits in exactly one; every option row is reachable
@@ -824,6 +842,38 @@ try("previews", function()
     for _, key in ipairs({ "CooldownText", "SpellHistory", "DamageMeter", "Minimap", "ItemLevel", "Skins", "CombatText", "AFK" }) do
         assert(ns.Config:Show(key).pinned, key .. " has no preview")
     end
+end)
+-- Auras & Cooldowns: item frames of the Cooldown Manager are dressed; countdown voices ignore secret payloads
+try("tracker", function()
+    local M = ns.modules.Tracker
+    assert(M and M.db.viewers.bars.texture == "" and M.db.countdown.voice == "Jim", "tracker defaults")
+    local icon = env.CreateFrame("Frame"):CreateTexture()
+    M:StyleIcon("essential", icon, env.CreateFrame("Frame"), env.CreateFrame("Frame"):CreateFontString())
+    M:StyleBar("bars", env.CreateFrame("StatusBar"), env.CreateFrame("Frame"):CreateFontString())
+    local played, ticks = {}, {}
+    local saved = { PlaySoundFile = rawget(env, "PlaySoundFile"), C_Timer = env.C_Timer }
+    rawset(env, "PlaySoundFile", function(path) played[#played + 1] = path end)
+    rawset(env, "C_Timer", { After = function() end,
+        NewTicker = function(_, fn) ticks[#ticks + 1] = fn; return { Cancel = function() end } end })
+    local isSecret = ns.Secret.IsSecret
+    ns.Secret.IsSecret = function(v) return v == 777 end
+    fire("START_PLAYER_COUNTDOWN", "guid", 777, 777, false)
+    fire("START_PLAYER_COUNTDOWN", "guid", nil)
+    ns.Secret.IsSecret = isSecret
+    assert(#played == 0 and #ticks == 0, "a secret or missing countdown payload must stay silent")
+    fire("START_PLAYER_COUNTDOWN", "guid", 3, 10, false)
+    assert(#ticks == 1 and played[1] and played[1]:find("Jim\\3.ogg", 1, true), "a 3 s pull did not say three")
+    fire("START_TIMER", env.Enum.StartTimerType and env.Enum.StartTimerType.PlayerCountdown, 3, 10)
+    fire("CANCEL_PLAYER_COUNTDOWN", "guid")
+    M.db.countdown.enabled = false
+    M:StartCountdown(4)
+    M.db.countdown.enabled = true
+    assert(#played == 1, "the countdown spoke while switched off")
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
+    local stage = ns.Previews:Create("tracker", env.CreateFrame("Frame"), M, { scope = { unit = "bars" } })
+    M.db.viewers.essential.square = false
+    stage:Redraw()
+    M.db.viewers.essential.square = true
 end)
 -- 2.0 -> 2.1: flat size keys move into the per-element style tables
 try("style keys move", function()
