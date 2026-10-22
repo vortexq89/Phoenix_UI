@@ -71,8 +71,9 @@ installId.
 
 Go 1.22+. `CGO_ENABLED=0`, `-trimpath -s -w -H windowsgui`. The icon and version resource come from
 `winres/` through go-winres (`go install github.com/tc-hib/go-winres@latest`) when it is installed.
-`dist/SHA256SUMS` lists the hashes. Attach `PhoenixUploader.exe` to each GitHub release under that exact name:
-the website links to `releases/latest/download/PhoenixUploader.exe`.
+`dist/SHA256SUMS` lists the hashes. Attach `PhoenixUploader.exe` to each GitHub release under that exact name.
+The website links to the tagged asset, `releases/download/<tag>/PhoenixUploader.exe` (GitHub's `releases/latest`
+skips pre-releases), so bump `PHOENIX_UPLOADER_TAG` in the site's `components/phoenix/data.ts` with each release.
 
 ## Test
 
