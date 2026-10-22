@@ -35,6 +35,7 @@
     <Script file="Config\Profiles.lua"/>
     <Script file="Config\Appearance.lua"/>
     <Script file="Config\Diagnostics.lua"/>
+    <Script file="Config\Presets.lua"/>
     <Script file="Config\About.lua"/>
     <Script file="Config\Blizzard.lua"/>
 </Ui>

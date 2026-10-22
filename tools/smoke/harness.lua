@@ -914,6 +914,48 @@ try("nameplate colours", function()
     assert(rgb({ threat = 3 }) == "", "threat colours while switched off")
     db.threat.enabled, db.highlight.target, db.highlight.focus = was[1], was[2], was[3]
 end)
+-- presets: one click writes only existing keys, Undo restores them; the picker opens only on a fresh install
+try("presets", function()
+    local C = ns.Config
+    local function snapshot()
+        local out = {}
+        for _, m in ipairs(ns.moduleList) do out[m.key] = ns.Util.DeepCopy(m.db) end
+        return out
+    end
+    local function keys(t, prefix, out)
+        for k, v in pairs(t) do
+            local p = prefix .. "." .. tostring(k)
+            out[p] = true
+            if type(v) == "table" then keys(v, p, out) end
+        end
+        return out
+    end
+    local before = snapshot()
+    local n = C:ApplyPreset("clean")
+    assert(n > 5 and C:CanUndoPreset(), "the clean preset changed only " .. n .. " settings")
+    assert(ns.modules.General.db.theme.barTexture == "Flat", "the preset did not set the bar texture")
+    local after = snapshot()
+    local kb, ka = keys(before, "", {}), keys(after, "", {})
+    for k in pairs(ka) do
+        if not kb[k] and not k:find("%.r$") and not k:find("%.g$") and not k:find("%.b$") and not k:find("%.a$") then
+            error("a preset created the new key " .. k)
+        end
+    end
+    C:UndoPreset()
+    assert(ns.Util.Equal(snapshot(), before), "Undo did not restore every setting")
+    assert(not C:CanUndoPreset(), "Undo is still offered")
+    C:Show("presets")
+    local ui = ns.DB.sv.global.ui
+    local fresh, picked = ns.DB.fresh, ui.stylePicked
+    ns.DB.fresh, ui.stylePicked = false, nil
+    assert(C:ShowStylePicker() == nil, "the picker opened for an existing install")
+    ns.DB.fresh = true
+    local pk = C:ShowStylePicker()
+    assert(pk and pk:IsShown(), "the picker did not open on a fresh install")
+    pk.skip.onClick(pk.skip)
+    assert(ui.stylePicked == "skip" and C:ShowStylePicker() == nil, "Skip did not stick")
+    ns.DB.fresh, ui.stylePicked = fresh, picked
+end)
 -- 2.0 -> 2.1: flat size keys move into the per-element style tables
 try("style keys move", function()
     local sv = { profiles = { P = { modules = { NamePlates = { textSize = 13 } } } } }

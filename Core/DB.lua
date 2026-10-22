@@ -36,6 +36,8 @@ local function stripModules(self)
 end
 
 function DB:Init()
+    -- fresh: no Phoenix settings at all before this login (first install); the style picker offers itself once
+    self.fresh = type(PhoenixUIDB) ~= "table" or next(PhoenixUIDB) == nil
     if type(PhoenixUIDB) ~= "table" then PhoenixUIDB = {} end
     local sv = PhoenixUIDB
     sv.profiles = type(sv.profiles) == "table" and sv.profiles or {}
