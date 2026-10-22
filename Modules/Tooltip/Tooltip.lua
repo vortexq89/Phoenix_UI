@@ -104,8 +104,15 @@ local function addTarget(tt, unit)
     GameTooltip_AddNormalLine(tt, L.TOOLTIP_TARGET_LINE:format(color and color:WrapTextInColorCode(name) or name))
 end
 
+-- Post-calls run for every tooltip that shows unit/item/spell data, including embedded and third-party
+-- tooltips that are not GameTooltips. In-game report (BugGrabber, 43x): "Tooltip.lua: attempt to call a
+-- nil value" from tt:GetItem() on such a frame. Only real GameTooltips are touched.
+local function usable(tt)
+    return tt and tt.IsForbidden and not tt:IsForbidden() and tt.AddLine and tt.GetUnit and tt.GetItem
+end
+
 local function onUnit(tt, data)
-    if not M:IsEnabled() or tt:IsForbidden() then return end
+    if not M:IsEnabled() or not usable(tt) then return end
     local _, unit = tt:GetUnit()
     if not plain(unit) or not unit then return end
     if M.db.hideInCombat and InCombatLockdown() and not IsModifierKeyDown() and tt == GameTooltip then
@@ -127,9 +134,10 @@ local function onUnit(tt, data)
 end
 
 local function onItem(tt, data)
-    if not M:IsEnabled() or tt:IsForbidden() then return end
+    if not M:IsEnabled() or not usable(tt) then return end
     if M.db.qualityBorder then
-        local _, link = tt:GetItem()
+        local link = data and data.hyperlink
+        if not (plain(link) and link) then link = select(2, tt:GetItem()) end
         local quality = plain(link) and link and C_Item.GetItemQualityByID(link)
         local color = quality and ITEM_QUALITY_COLORS[quality]
         if color and quality > 1 then border(tt, color.r, color.g, color.b) end
@@ -140,7 +148,7 @@ local function onItem(tt, data)
 end
 
 local function onSpell(tt, data)
-    if M:IsEnabled() and M.db.ids and not tt:IsForbidden() and data and plain(data.id) and data.id then
+    if M:IsEnabled() and M.db.ids and usable(tt) and data and plain(data.id) and data.id then
         GameTooltip_AddColoredLine(tt, L.TOOLTIP_SPELL_ID:format(data.id), GRAY_FONT_COLOR)
     end
 end

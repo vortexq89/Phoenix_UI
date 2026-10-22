@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- `/pui diag`: checks that every Phoenix texture and icon atlas loads in your client and records what the
+  settings window's icons look like to the game; the result is kept in the SavedVariables for support. It also
+  runs quietly once per version after login and only speaks up if something failed.
 - **Mythic+ timer**: ahead/behind against your best timed run of the dungeon and level for every boss and the forces,
   the time to beat beside bosses still alive, and the current pull added to the forces line when the game lets
   addons read it (otherwise it stays silent).
@@ -20,6 +23,9 @@
   account folder names; text-like string locals (chat lines and the like) are reduced to their length.
 
 ### Fixed
+- **Tooltip**: no more "attempt to call a nil value" when an item, unit or spell tooltip is not a standard game
+  tooltip (seen 43 times in testing); the item quality border reads the tooltip data first.
+- Texture pickers draw each texture in a neutral tint so its shading is visible; the chosen one keeps the accent.
 - The version no longer reads `@project-version@` in an unpackaged checkout: the source TOC carries `2.0.0-beta1`
   and only packaged builds use the packager token.
 

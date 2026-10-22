@@ -571,6 +571,17 @@ try("test error", function()
     local ok, e = pcall(queued)
     assert(not ok and tostring(e):find("PHOENIX TEST ERROR", 1, true), "wrong test error: " .. tostring(e))
 end)
+-- /pui diag probes every bundled texture and stores a report in the SavedVariables
+try("diag", function()
+    local after = env.C_Timer.After
+    env.C_Timer.After = function(_, fn) fn() end
+    ns.TestSlash("diag")
+    env.C_Timer.After = after
+    local report = ns.DB.sv.global.diag
+    assert(type(report) == "table" and report.version == ns.version, "diag wrote no report")
+    assert(report.total >= 40 and #report.media == report.total, "diag probed " .. tostring(report.total) .. " files")
+    assert(type(report.glyphs) == "table", "diag lacks the glyph list")
+end)
 -- every translation listed in Locales.xml loads only on its own client, covers every enUS key and keeps format specifiers
 try("locales", function()
     local function capture(path, locale)

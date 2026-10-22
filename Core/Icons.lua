@@ -94,6 +94,9 @@ function I:Apply(tex, name, size)
     tex:SetTexCoord(texCoords(t, indexOf(name)))
 end
 
+-- Read-only view of every tracked texture (texture -> state) for /pui diag.
+function I:Tracked() return tracked end
+
 -- Atlas currently used by a texture (file name, cell size); for diagnostics and the smoke test.
 function I:GetTier(tex)
     local s = tracked[tex]

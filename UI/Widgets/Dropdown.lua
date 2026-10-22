@@ -136,7 +136,9 @@ local function getPopup()
                     end
                     if owner.preview == "bar" then
                         r.bar:SetTexture(barOf(item))
-                        W.Color(r.bar, "accent.primary", item.value == owner.value and 0.9 or 0.6)
+                        -- neutral light tint shows the texture's own shading; the chosen one wears the accent
+                        if item.value == owner.value then W.Color(r.bar, "accent.primary", 0.95)
+                        else W.Color(r.bar, "text.secondary", 0.9) end
                         r.bar:Show()
                         r.label:SetShadowColor(0, 0, 0, 1)
                         r.label:SetShadowOffset(1, -1)
