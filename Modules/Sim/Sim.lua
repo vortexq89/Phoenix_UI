@@ -16,7 +16,7 @@ local L, Secret = ns.L, ns.Secret
     item = { key, slot, line, name, level, itemID, twoHand }. Results arrive as PhoenixUISimResults (schema 1).
     Item keys are "itemID:bonusIDs…" (sorted), the same on both sides and on tooltips. ]]
 local M = ns:NewModule("Sim", {
-    label = "SIM", desc = "SIM_DESC", category = "utility", order = 74, icon = "sim",
+    label = "SIM", desc = "SIM_DESC", category = "utility", order = 74, icon = "sim", feature = "sim",
     defaults = {
         mode = "compare",
         fight = { style = "Patchwerk", length = 300, targets = 1 },

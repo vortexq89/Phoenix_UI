@@ -6,7 +6,7 @@ if GetLocale() ~= "itIT" then return end
 
 local T = {
     ---------------------------------------------------------------- shell & common
-    TAGLINE = "Uno stile piatto e coerente per l'interfaccia predefinita della 12.x.",
+    TAGLINE = "Uno stile piatto e coerente per l'interfaccia predefinita.",
     HOME = "Home",
     MODULES = "Moduli",
     MODULES_ACTIVE = "%d moduli attivi",
@@ -173,6 +173,7 @@ local T = {
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Targhette",
     NAMEPLATES_DESC = "Texture delle barre, percentuale di salute e forze nemiche della Mitica+ sulle targhette Blizzard.",
+    NAMEPLATES_DESC_PLAIN = "Texture delle barre e percentuale di salute sulle targhette Blizzard.",
     NP_STYLE = "Stile",
     NP_TEXTURE = "Texture delle barre Phoenix",
     NP_TEXTURE_DESC = "Usa la texture delle barre della scheda Generale.",
@@ -1111,14 +1112,18 @@ local T = {
     ---------------------------------------------------------------- encounters (2.0 Stage 1) and the module picker
     ENCOUNTERS = "Scontri",
     ENCOUNTERS_DESC = "Timer e avvisi dei boss in stile Phoenix, timer di pull e pausa, voce del conto alla rovescia e uno stile barre per BigWigs.",
+    ENCOUNTERS_DESC_TIMERS = "Timer di pull e pausa con barre Phoenix, voce del conto alla rovescia e uno stile barre per BigWigs.",
     ENC_START = "Panoramica",
     ENC_MASTER = "Avvisi e cronologia dei boss",
     ENC_MASTER_DESC = "L'interruttore generale del gioco per timer e avvisi dei boss (Opzioni → Gameplay → Avvisi di combattimento). Phoenix può mostrarli solo se è attivo.",
     ENC_TEST = "Prova",
     ENC_TEST_BUTTON = "Avvia prova",
     ENC_TEST_DESC = "Mostra per circa 30 secondi i timer e gli avvisi di esempio del gioco, così vedi le tue impostazioni sulle barre vere.",
+    ENC_TEST_TIMERS_DESC = "Avvia una barra di pull di 10 secondi con la voce del conto alla rovescia, solo sul tuo schermo (al gruppo non arriva nulla), così vedi le tue impostazioni sulla barra vera.",
     ENC_TEST_RUNNING = "Prova in corso: timer dei boss di esempio per circa 30 secondi.",
+    ENC_TEST_PULL_RUNNING = "Test in corso: una barra di pull di 10 secondi, solo sul tuo schermo.",
     ENC_NOTE = "Timer e allarmi dei boss arrivano dal gioco stesso (la cronologia dello scontro). I nomi degli incantesimi restano nascosti agli addon in combattimento, quindi Phoenix li mostra senza leggerli. Sposta barre e banner in Modalità modifica (/pui edit).",
+    ENC_NOTE_TIMERS = "Questo gioco non ha cronologia né avvisi dei boss, quindi Phoenix porta qui ciò che serve a un gruppo: timer di pull e di pausa, le loro barre e la voce del conto alla rovescia. Sposta le barre in Modalità modifica (/pui edit).",
     ENC_BOSSMOD_NOTE = "%s è caricato e mostra barre dei boss, pull e pause, quindi Phoenix non li mostra una seconda volta. Con BigWigs puoi scegliere lo stile barre \"Phoenix\" (scheda BigWigs).",
     ENC_TAB_TIMELINE = "Cronologia",
     ENC_TAB_WARNINGS = "Avvisi",

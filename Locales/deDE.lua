@@ -6,7 +6,7 @@ if GetLocale() ~= "deDE" then return end
 
 local T = {
     ---------------------------------------------------------------- shell & common
-    TAGLINE = "Ein flacher, einheitlicher Look für die Standardoberfläche von 12.x.",
+    TAGLINE = "Ein flacher, einheitlicher Look für die Standardoberfläche.",
     HOME = "Startseite",
     MODULES = "Module",
     MODULES_ACTIVE = "%d Module aktiv",
@@ -173,6 +173,7 @@ local T = {
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Namensplaketten",
     NAMEPLATES_DESC = "Leistentextur, Gesundheit in Prozent und feindliche Streitkräfte (Mythisch+) auf Blizzards Namensplaketten.",
+    NAMEPLATES_DESC_PLAIN = "Leistentextur und Gesundheit in Prozent auf Blizzards Namensplaketten.",
     NP_STYLE = "Stil",
     NP_TEXTURE = "Phoenix-Leistentextur",
     NP_TEXTURE_DESC = "Verwendet die Leistentextur aus „Allgemein“.",
@@ -1111,14 +1112,18 @@ local T = {
     ---------------------------------------------------------------- encounters (2.0 Stage 1) and the module picker
     ENCOUNTERS = "Begegnungen",
     ENCOUNTERS_DESC = "Boss-Timer und -Warnungen im Phoenix-Stil, Pull- und Pause-Timer, Countdown-Stimme und ein BigWigs-Leistenstil.",
+    ENCOUNTERS_DESC_TIMERS = "Pull- und Pause-Timer mit Phoenix-Leisten, Countdown-Stimme und ein BigWigs-Leistenstil.",
     ENC_START = "Übersicht",
     ENC_MASTER = "Bosswarnungen und Zeitleiste",
     ENC_MASTER_DESC = "Der Hauptschalter des Spiels für Boss-Timer und Bosswarnungen (Optionen → Spielmechanik → Kampfwarnungen). Phoenix kann sie nur zeigen, solange er an ist.",
     ENC_TEST = "Test",
     ENC_TEST_BUTTON = "Test starten",
     ENC_TEST_DESC = "Zeigt etwa 30 Sekunden lang die Beispiel-Boss-Timer und -Warnungen des Spiels, damit du deine Einstellungen an den echten Leisten siehst.",
+    ENC_TEST_TIMERS_DESC = "Startet eine 10-Sekunden-Pull-Leiste mit Countdown-Stimme, nur auf deinem Bildschirm (an die Gruppe geht nichts), damit du deine Einstellungen an der echten Leiste siehst.",
     ENC_TEST_RUNNING = "Test läuft: Beispiel-Boss-Timer für etwa 30 Sekunden.",
+    ENC_TEST_PULL_RUNNING = "Test läuft: eine 10-Sekunden-Pull-Leiste, nur auf deinem Bildschirm.",
     ENC_NOTE = "Boss-Timer und -Alarme kommen vom Spiel selbst (der Begegnungszeitleiste). Zaubernamen bleiben im Kampf vor Addons verborgen, daher zeigt Phoenix sie an, ohne sie zu lesen. Leisten und Banner verschiebst du im Bearbeitungsmodus (/pui edit).",
+    ENC_NOTE_TIMERS = "Dieses Spiel hat keine Boss-Zeitleiste und keine Boss-Warnungen, daher bringt Phoenix hier mit, was eine Gruppe braucht: Pull- und Pausen-Timer, ihre Leisten und die Countdown-Stimme. Die Leisten verschiebst du im Bearbeitungsmodus (/pui edit).",
     ENC_BOSSMOD_NOTE = "%s ist geladen und zeigt Bossleisten, Pulls und Pausen, daher zeigt Phoenix sie nicht ein zweites Mal. BigWigs-Nutzer können den Leistenstil „Phoenix“ wählen (Reiter BigWigs).",
     ENC_TAB_TIMELINE = "Zeitleiste",
     ENC_TAB_WARNINGS = "Warnungen",

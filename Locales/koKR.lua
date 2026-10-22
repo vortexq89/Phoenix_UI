@@ -6,7 +6,7 @@ if GetLocale() ~= "koKR" then return end
 
 local T = {
     ---------------------------------------------------------------- shell & common
-    TAGLINE = "12.x 기본 인터페이스를 위한 평면적이고 일관된 디자인.",
+    TAGLINE = "기본 인터페이스를 위한 평면적이고 일관된 디자인.",
     HOME = "홈",
     MODULES = "모듈",
     MODULES_ACTIVE = "모듈 %d개 사용 중",
@@ -173,6 +173,7 @@ local T = {
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "이름표",
     NAMEPLATES_DESC = "블리자드 이름표에 바 텍스처, 생명력 백분율, 신화+ 적 병력을 표시합니다.",
+    NAMEPLATES_DESC_PLAIN = "블리자드 이름표에 바 텍스처와 생명력 백분율을 표시합니다.",
     NP_STYLE = "스타일",
     NP_TEXTURE = "Phoenix 바 텍스처",
     NP_TEXTURE_DESC = "일반 탭의 바 텍스처를 사용합니다.",
@@ -1111,14 +1112,18 @@ local T = {
     ---------------------------------------------------------------- encounters (2.0 Stage 1) and the module picker
     ENCOUNTERS = "우두머리 전투",
     ENCOUNTERS_DESC = "Phoenix 스타일의 우두머리 타이머와 경고, 풀·휴식 타이머, 카운트다운 음성, BigWigs 바 스타일.",
+    ENCOUNTERS_DESC_TIMERS = "Phoenix 바로 표시하는 풀·휴식 타이머, 카운트다운 음성, BigWigs 바 스타일.",
     ENC_START = "개요",
     ENC_MASTER = "우두머리 경고 및 타임라인",
     ENC_MASTER_DESC = "우두머리 타이머와 경고를 켜고 끄는 게임의 주 스위치입니다(설정 → 게임 플레이 → 전투 경고). 이 설정이 켜져 있어야 Phoenix도 표시할 수 있습니다.",
     ENC_TEST = "테스트",
     ENC_TEST_BUTTON = "테스트 실행",
     ENC_TEST_DESC = "게임의 예시 우두머리 타이머와 경고를 약 30초 동안 표시해 실제 바에서 설정을 확인할 수 있습니다.",
+    ENC_TEST_TIMERS_DESC = "카운트다운 음성과 함께 10초 풀링 바를 내 화면에만 표시합니다(파티에는 아무것도 보내지 않음). 실제 바에서 설정을 확인할 수 있습니다.",
     ENC_TEST_RUNNING = "테스트 중: 약 30초 동안 예시 우두머리 타이머를 표시합니다.",
+    ENC_TEST_PULL_RUNNING = "테스트 중: 내 화면에만 10초 풀링 바를 표시합니다.",
     ENC_NOTE = "우두머리 타이머와 경고는 게임 자체(전투 타임라인)에서 옵니다. 전투 중에는 주문 이름이 애드온에 숨겨지므로 Phoenix는 읽지 않고 그대로 표시합니다. 바와 배너는 편집 모드(/pui edit)에서 옮기세요.",
+    ENC_NOTE_TIMERS = "이 게임에는 우두머리 타임라인과 우두머리 경고가 없으므로 Phoenix가 파티에 필요한 기능을 제공합니다: 풀링 및 휴식 타이머, 해당 바, 카운트다운 음성. 바는 편집 모드(/pui edit)에서 옮기세요.",
     ENC_BOSSMOD_NOTE = "%s 애드온이 불러와져 우두머리 바, 풀, 휴식을 직접 표시하므로 Phoenix는 중복 표시하지 않습니다. BigWigs에서는 \"Phoenix\" 바 스타일을 고를 수 있습니다(BigWigs 탭).",
     ENC_TAB_TIMELINE = "타임라인",
     ENC_TAB_WARNINGS = "경고",

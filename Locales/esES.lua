@@ -6,7 +6,7 @@ if GetLocale() ~= "esES" and GetLocale() ~= "esMX" then return end
 
 local T = {
     ---------------------------------------------------------------- shell & common
-    TAGLINE = "Un aspecto plano y coherente para la interfaz predeterminada de la 12.x.",
+    TAGLINE = "Un aspecto plano y coherente para la interfaz predeterminada.",
     HOME = "Inicio",
     MODULES = "Módulos",
     MODULES_ACTIVE = "%d módulos activos",
@@ -173,6 +173,7 @@ local T = {
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Placas de nombre",
     NAMEPLATES_DESC = "Textura de barras, porcentaje de salud y fuerzas enemigas de Mítica+ en las placas de nombre de Blizzard.",
+    NAMEPLATES_DESC_PLAIN = "Textura de barras y porcentaje de salud en las placas de nombre de Blizzard.",
     NP_STYLE = "Estilo",
     NP_TEXTURE = "Textura de barras de Phoenix",
     NP_TEXTURE_DESC = "Usa la textura de barras de General.",
@@ -1111,14 +1112,18 @@ local T = {
     ---------------------------------------------------------------- encounters (2.0 Stage 1) and the module picker
     ENCOUNTERS = "Encuentros",
     ENCOUNTERS_DESC = "Temporizadores y avisos de jefe con estilo Phoenix, temporizadores de pull y descanso, voz de cuenta atrás y un estilo de barras para BigWigs.",
+    ENCOUNTERS_DESC_TIMERS = "Temporizadores de pull y descanso con barras Phoenix, voz de cuenta atrás y un estilo de barras para BigWigs.",
     ENC_START = "Resumen",
     ENC_MASTER = "Avisos y cronología de jefes",
     ENC_MASTER_DESC = "El interruptor general del juego para temporizadores y avisos de jefe (Opciones → Jugabilidad → Avisos de combate). Phoenix solo puede mostrarlos si está activado.",
     ENC_TEST = "Prueba",
     ENC_TEST_BUTTON = "Iniciar prueba",
     ENC_TEST_DESC = "Muestra durante unos 30 segundos los temporizadores y avisos de jefe de ejemplo del juego, para ver tus ajustes en las barras reales.",
+    ENC_TEST_TIMERS_DESC = "Inicia una barra de pull de 10 segundos con la voz de cuenta atrás, solo en tu pantalla (no se envía nada al grupo), para ver tus ajustes en la barra real.",
     ENC_TEST_RUNNING = "Prueba en curso: temporizadores de jefe de ejemplo durante unos 30 segundos.",
+    ENC_TEST_PULL_RUNNING = "Prueba en curso: una barra de pull de 10 segundos, solo en tu pantalla.",
     ENC_NOTE = "Los temporizadores y alertas de jefe vienen del propio juego (la cronología del encuentro). Los nombres de hechizos quedan ocultos a los addons en combate, así que Phoenix los muestra sin leerlos. Mueve las barras y el aviso en el modo Edición (/pui edit).",
+    ENC_NOTE_TIMERS = "Este juego no tiene cronología ni avisos de jefe, así que Phoenix aporta aquí lo que necesita un grupo: temporizadores de pull y de descanso, sus barras y la voz de cuenta atrás. Mueve las barras en el modo Edición (/pui edit).",
     ENC_BOSSMOD_NOTE = "%s está cargado y muestra las barras de jefe, los pulls y los descansos, así que Phoenix no los muestra una segunda vez. Con BigWigs puedes elegir el estilo de barras «Phoenix» (pestaña BigWigs).",
     ENC_TAB_TIMELINE = "Cronología",
     ENC_TAB_WARNINGS = "Avisos",

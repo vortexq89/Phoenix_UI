@@ -2,7 +2,11 @@ local _, ns = ...
 
 --[[ Module manager (ARCHITECTURE §4).
     ns:NewModule(key, def) -> module; def = { label, desc, category, order, icon, defaults, globalDefaults,
-    requires, reloadOnToggle, locked, loadWhen }. Lifecycle: OnInitialize, OnEnable, OnDisable,
+    requires, reloadOnToggle, locked, loadWhen, feature, descWithout }.
+    A module whose `feature` this client lacks (ns:Supports, Core/Flavor.lua) is unavailable: never
+    initialized or enabled and hidden from every menu, while its saved settings stay untouched for the other
+    game. descWithout = { feature, desc } is the description on a client without that feature, so a card
+    never promises what is not there. Lifecycle: OnInitialize, OnEnable, OnDisable,
     OnSettingChanged(path, value) (default: Refresh), OnProfileChanged (default: re-evaluate enabled). ]]
 local Module = {}
 Module.__index = Module
@@ -21,6 +25,8 @@ function ns:NewModule(key, def)
     m.order = m.order or 100
     m.icon = m.icon or key:lower()
     m.state = "disabled"
+    if not ns:Supports(m.feature) then m.unavailable, m.hidden = true, true end
+    if m.descWithout and not ns:Supports(m.descWithout.feature) then m.desc = m.descWithout.desc end
     ns.modules[key] = m
     ns.moduleList[#ns.moduleList + 1] = m
     return m
@@ -30,8 +36,10 @@ function ns:GetModule(key)
     return ns.modules[key]
 end
 
+-- Rows tagged with a feature this client lacks are dropped here, so search, presets and the renderer never
+-- see them.
 function ns:RegisterOptions(key, schema)
-    ns.options[key] = schema
+    ns.options[key] = ns:FilterSchema(schema)
 end
 
 local function sortModules()
@@ -50,7 +58,7 @@ function Module:IsEnabled()
 end
 
 function Module:ShouldEnable()
-    if not self.db then return false end
+    if not self.db or self.unavailable then return false end
     if not self.locked and not self.db.enabled then return false end
     if self.requires then
         for _, dep in ipairs(self.requires) do
@@ -122,7 +130,7 @@ end
 function ns:InitializeModules()
     sortModules()
     for _, m in ipairs(ns.moduleList) do
-        if m.OnInitialize then
+        if m.OnInitialize and not m.unavailable then
             if not ns.SafeCall(m.OnInitialize, m) then m.state = "errored" end
         end
     end

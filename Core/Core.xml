@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Namespace.lua"/>
+    <Script file="Flavor.lua"/>
     <Script file="Util.lua"/>
     <Script file="Events.lua"/>
     <Script file="Secret.lua"/>

@@ -13,6 +13,7 @@ local Theme, Skin, Secret, Media, Style = ns.Theme, ns.Skin, ns.Secret, ns.Media
     (debuffs, buffs, crowd control) get icon zoom, a border and fonts after every RefreshList. ]]
 local M = ns:NewModule("NamePlates", {
     label = "NAMEPLATES", desc = "NAMEPLATES_DESC", category = "interface", order = 55, reloadOnToggle = true,
+    descWithout = { feature = "mythicplus", desc = "NAMEPLATES_DESC_PLAIN" },
     defaults = {
         texture = true, healthText = true, forces = true,
         bar = "",                                       -- "" = the theme's bar texture
@@ -96,7 +97,7 @@ end
 local function updateForces(unit, bar)
     local fs = forcesFor(bar)
     fs:SetText("")
-    if not (M.db.forces and C_ChallengeMode.IsChallengeModeActive()) then return end
+    if not (M.db.forces and ns:Supports("mythicplus") and C_ChallengeMode.IsChallengeModeActive()) then return end
     local count = C_ScenarioInfo.GetUnitCriteriaProgressValues(unit)
     if Secret.IsSecret(count) or count then
         fs:SetText(C_StringUtil.WrapString(C_StringUtil.TruncateWhenZero(count), "+"))

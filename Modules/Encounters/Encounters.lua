@@ -10,10 +10,13 @@ local L, Style, Media, Secret = ns.L, ns.Style, ns.Media, ns.Secret
 
     One owner per timer: when BigWigs or DBM is loaded they draw the encounter bars and pulls, so Phoenix
     stands down there (no second set of bars, no second voice) and styles BigWigs' bars instead (BigWigs.lua).
+    A client without the game's timeline or warnings (WoW Forever: both Blizzard addons load on "standard"
+    only) keeps the pull and break timers, their bars and the countdown voice; the rest steps aside.
     Blizzard frames are never hidden, reparented or hooked: Phoenix turns Blizzard's view off through the same
     CVars the game's own settings use, remembers your value and puts it back when Phoenix stops drawing. ]]
 local M = ns:NewModule("Encounters", {
     label = "ENCOUNTERS", desc = "ENCOUNTERS_DESC", category = "combat", order = 12, icon = "encounters",
+    descWithout = { feature = "encounterTimeline", desc = "ENCOUNTERS_DESC_TIMERS" },
     defaults = {
         timeline = {
             display = "phoenix",            -- "phoenix": Phoenix bars, "blizzard": the game's timeline
@@ -52,9 +55,15 @@ function M:BossMod()
     end
 end
 
+-- The game runs its boss timeline / warnings on this client (ns.FEATURES).
+local FEATURE = { timeline = "encounterTimeline", warnings = "encounterWarnings" }
+function M:HasFeature(kind)
+    return ns:Supports(FEATURE[kind])
+end
+
 -- Phoenix draws `kind` ("timeline" / "warnings") itself.
 function M:Draws(kind)
-    return self.active and self.db[kind].display == "phoenix" and not self:BossMod()
+    return self.active and self:HasFeature(kind) and self.db[kind].display == "phoenix" and not self:BossMod()
 end
 
 ---------------------------------------------------------------- Blizzard CVars
@@ -69,13 +78,16 @@ function M:ApplyCVars()
     if self:BossMod() then return end
     local saved = self.global.cvars
     for kind, cvar in pairs(OWNED) do
-        local replace = self.active and self.db[kind].display ~= "blizzard"
-        if replace then
-            if saved[kind] == nil then saved[kind] = C_CVar.GetCVar(cvar) or "1" end
-            if C_CVar.GetCVar(cvar) ~= "0" then setCVar(cvar, "0") end
-        elseif saved[kind] ~= nil then
-            setCVar(cvar, saved[kind])
-            saved[kind] = nil
+        -- a client without this system (ns.FEATURES) has nothing of the game's to hide or restore
+        if self:HasFeature(kind) then
+            local replace = self.active and self.db[kind].display ~= "blizzard"
+            if replace then
+                if saved[kind] == nil then saved[kind] = C_CVar.GetCVar(cvar) or "1" end
+                if C_CVar.GetCVar(cvar) ~= "0" then setCVar(cvar, "0") end
+            elseif saved[kind] ~= nil then
+                setCVar(cvar, saved[kind])
+                saved[kind] = nil
+            end
         end
     end
 end
@@ -212,6 +224,12 @@ end
 -- an encounter will look like in either display; the warning banner gets the game's three sample warnings.
 function M:Test()
     if C_InstanceEncounter.IsEncounterInProgress() then ns:Print(L.ENC_IN_ENCOUNTER); return false end
+    if not self:HasFeature("timeline") then
+        -- no game timeline to sample: show what this client does have, a pull bar (and its voice)
+        if self.Bars then self.Bars:StartTimer("pull", L.ENC_PULL_BAR, 10, 10, self.PULL_ICON) end
+        self:StartCountdown(10)
+        return true
+    end
     if self.testTimer then self.testTimer:Cancel() end
     C_EncounterTimeline.CancelEditModeEvents()
     local loop = C_EncounterTimeline.AddEditModeEvents()
@@ -225,7 +243,7 @@ end
 
 function M:StopTest()
     if self.testTimer then self.testTimer:Cancel(); self.testTimer = nil end
-    C_EncounterTimeline.CancelEditModeEvents()
+    if self:HasFeature("timeline") then C_EncounterTimeline.CancelEditModeEvents() end
 end
 
 ---------------------------------------------------------------- slash

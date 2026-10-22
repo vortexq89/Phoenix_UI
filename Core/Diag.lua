@@ -94,7 +94,7 @@ function D:Run(quiet)
         local build, _, _, toc = GetBuildInfo()
         local pw, ph = GetPhysicalScreenSize()
         local report = {
-            version = ns.version, time = time(), build = build, toc = toc, locale = GetLocale(),
+            version = ns.version, time = time(), build = build, toc = toc, flavor = ns.flavor, locale = GetLocale(),
             screen = tostring(pw) .. "x" .. tostring(ph), uiScale = round(UIParent:GetEffectiveScale()),
             media = results, failed = failed, total = #results,
             window = ns.Config and ns.Config.current or false, glyphs = glyphs(),

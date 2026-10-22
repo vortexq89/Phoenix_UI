@@ -126,7 +126,7 @@ local function onUnit(tt, data)
         if plain(classFile) then border(tt, ns.Util.ClassColor(classFile)) end
     end
     if M.db.role then addRole(tt, unit) end
-    if isPlayer and M.db.mplusRating then addRating(tt, unit) end
+    if isPlayer and M.db.mplusRating and ns:Supports("mythicplus") then addRating(tt, unit) end
     if M.db.target then addTarget(tt, unit) end
     if M.db.ids and data and plain(data.id) and data.id then
         GameTooltip_AddColoredLine(tt, L.TOOLTIP_ID:format(data.id), GRAY_FONT_COLOR)

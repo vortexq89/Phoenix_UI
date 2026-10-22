@@ -6,7 +6,7 @@ if GetLocale() ~= "zhCN" then return end
 
 local T = {
     ---------------------------------------------------------------- shell & common
-    TAGLINE = "为 12.x 默认界面带来扁平、统一的外观。",
+    TAGLINE = "为默认界面带来扁平、统一的外观。",
     HOME = "主页",
     MODULES = "模块",
     MODULES_ACTIVE = "%d 个模块已启用",
@@ -173,6 +173,7 @@ local T = {
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "姓名板",
     NAMEPLATES_DESC = "在暴雪姓名板上显示状态条材质、生命百分比和史诗钥石敌方部队。",
+    NAMEPLATES_DESC_PLAIN = "在暴雪姓名板上显示状态条材质和生命百分比。",
     NP_STYLE = "样式",
     NP_TEXTURE = "Phoenix 状态条材质",
     NP_TEXTURE_DESC = "使用“常规”中的状态条材质。",
@@ -1111,14 +1112,18 @@ local T = {
     ---------------------------------------------------------------- encounters (2.0 Stage 1) and the module picker
     ENCOUNTERS = "首领战",
     ENCOUNTERS_DESC = "Phoenix 风格的首领计时与警报、开怪与休息计时、倒计时语音，以及 BigWigs 计时条样式。",
+    ENCOUNTERS_DESC_TIMERS = "Phoenix 计时条显示的开怪与休息计时、倒计时语音，以及 BigWigs 计时条样式。",
     ENC_START = "概览",
     ENC_MASTER = "首领警报与时间轴",
     ENC_MASTER_DESC = "游戏中首领计时与首领警报的总开关（选项 → 游戏功能 → 战斗警报）。只有开启时 Phoenix 才能显示它们。",
     ENC_TEST = "测试",
     ENC_TEST_BUTTON = "开始测试",
     ENC_TEST_DESC = "显示游戏自带的示例首领计时和警报约 30 秒，让你在真实计时条上查看设置效果。",
+    ENC_TEST_TIMERS_DESC = "仅在你的屏幕上显示一个 10 秒的开怪计时条和倒数语音（不会发送给队伍），让你在真实计时条上查看设置效果。",
     ENC_TEST_RUNNING = "测试中：示例首领计时约 30 秒。",
+    ENC_TEST_PULL_RUNNING = "测试中：仅在你的屏幕上显示 10 秒开怪计时条。",
     ENC_NOTE = "首领计时和警报来自游戏本身（首领战时间轴）。战斗中法术名称对插件隐藏，因此 Phoenix 只负责显示而不读取。在编辑模式（/pui edit）中移动计时条和横幅。",
+    ENC_NOTE_TIMERS = "此游戏没有首领时间轴和首领警报，因此 Phoenix 在这里提供团队所需的功能：开怪和休息计时、计时条以及倒数语音。在编辑模式（/pui edit）中移动计时条。",
     ENC_BOSSMOD_NOTE = "已加载 %s，它会显示首领计时条、开怪和休息，因此 Phoenix 不再重复显示。使用 BigWigs 时可选择“Phoenix”计时条样式（BigWigs 标签页）。",
     ENC_TAB_TIMELINE = "时间轴",
     ENC_TAB_WARNINGS = "警报",

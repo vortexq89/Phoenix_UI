@@ -5,7 +5,7 @@ local L = ns.L
     opens and reports the new key after a run. Bag and run data are plain (not secret); nothing here
     touches combat data. ]]
 local M = ns:NewModule("MythicPlus", {
-    label = "MYTHICPLUS", desc = "MYTHICPLUS_DESC", category = "utility", order = 30,
+    label = "MYTHICPLUS", desc = "MYTHICPLUS_DESC", category = "utility", order = 30, feature = "mythicplus",
     defaults = {
         autoInsert = true, reportKey = true,
         timer = true, timerForces = true, timerBosses = true, timerDeaths = true, timerBest = true,

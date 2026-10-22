@@ -6,7 +6,7 @@ if GetLocale() ~= "frFR" then return end
 
 local T = {
     ---------------------------------------------------------------- shell & common
-    TAGLINE = "Un style épuré et cohérent pour l'interface par défaut de la 12.x.",
+    TAGLINE = "Un style épuré et cohérent pour l'interface par défaut.",
     HOME = "Accueil",
     MODULES = "Modules",
     MODULES_ACTIVE = "%d modules actifs",
@@ -173,6 +173,7 @@ local T = {
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Plaques de nom",
     NAMEPLATES_DESC = "Texture des barres, pourcentage de vie et forces ennemies Mythique+ sur les plaques de nom de Blizzard.",
+    NAMEPLATES_DESC_PLAIN = "Texture des barres et pourcentage de vie sur les plaques de nom de Blizzard.",
     NP_STYLE = "Style",
     NP_TEXTURE = "Texture des barres Phoenix",
     NP_TEXTURE_DESC = "Utilise la texture des barres de l'onglet Général.",
@@ -1111,14 +1112,18 @@ local T = {
     ---------------------------------------------------------------- encounters (2.0 Stage 1) and the module picker
     ENCOUNTERS = "Rencontres",
     ENCOUNTERS_DESC = "Délais et alertes de boss au style Phoenix, minuteurs de pull et de pause, voix de compte à rebours et style de barres BigWigs.",
+    ENCOUNTERS_DESC_TIMERS = "Minuteurs de pull et de pause avec barres Phoenix, voix de compte à rebours et style de barres BigWigs.",
     ENC_START = "Aperçu",
     ENC_MASTER = "Alertes et chronologie de boss",
     ENC_MASTER_DESC = "L'interrupteur principal du jeu pour les délais et alertes de boss (Options → Jouabilité → Alertes de combat). Phoenix ne peut les afficher que s'il est activé.",
     ENC_TEST = "Test",
     ENC_TEST_BUTTON = "Lancer le test",
     ENC_TEST_DESC = "Affiche pendant environ 30 secondes les délais et alertes de boss d'exemple du jeu, pour voir vos réglages sur les vraies barres.",
+    ENC_TEST_TIMERS_DESC = "Lance une barre de pull de 10 secondes avec la voix du compte à rebours, sur votre écran uniquement (rien n'est envoyé au groupe), pour voir vos réglages sur la vraie barre.",
     ENC_TEST_RUNNING = "Test en cours : délais de boss d'exemple pendant environ 30 secondes.",
+    ENC_TEST_PULL_RUNNING = "Test en cours : une barre de pull de 10 secondes, sur votre écran uniquement.",
     ENC_NOTE = "Les délais et alertes de boss viennent du jeu lui-même (la chronologie de rencontre). Les noms de sorts restent cachés aux addons pendant un combat ; Phoenix les affiche donc sans les lire. Déplacez les barres et la bannière en mode Édition (/pui edit).",
+    ENC_NOTE_TIMERS = "Ce jeu n'a ni chronologie ni alertes de boss ; Phoenix apporte donc ici ce dont un groupe a besoin : les délais de pull et de pause, leurs barres et la voix du compte à rebours. Déplacez les barres en mode Édition (/pui edit).",
     ENC_BOSSMOD_NOTE = "%s est chargé et affiche les barres de boss, les pulls et les pauses ; Phoenix ne les affiche donc pas une seconde fois. Avec BigWigs, choisissez le style de barres « Phoenix » (onglet BigWigs).",
     ENC_TAB_TIMELINE = "Chronologie",
     ENC_TAB_WARNINGS = "Alertes",

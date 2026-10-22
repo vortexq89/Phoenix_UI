@@ -3,7 +3,7 @@ local _, ns = ...
 -- English (base) strings. Every key used by the addon lives here; tools/check_locales.py enforces it.
 ns.RegisterLocale("enUS", {
     ---------------------------------------------------------------- shell & common
-    TAGLINE = "A flat, consistent look for the default 12.x interface.",
+    TAGLINE = "A flat, consistent look for the default interface.",
     HOME = "Home",
     MODULES = "Modules",
     MODULES_ACTIVE = "%d modules active",
@@ -178,6 +178,7 @@ ns.RegisterLocale("enUS", {
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Nameplates",
     NAMEPLATES_DESC = "Bar texture, health percent and Mythic+ enemy forces on Blizzard nameplates.",
+    NAMEPLATES_DESC_PLAIN = "Bar texture and health percent on Blizzard nameplates.",
     NP_STYLE = "Style",
     NP_TEXTURE = "Phoenix bar texture",
     NP_TEXTURE_DESC = "Use the bar texture from General.",
@@ -1137,14 +1138,18 @@ ns.RegisterLocale("enUS", {
     ---------------------------------------------------------------- encounters (2.0 Stage 1) and the module picker
     ENCOUNTERS = "Encounters",
     ENCOUNTERS_DESC = "Boss timers and warnings in Phoenix style, pull and break timers, the countdown voice and a BigWigs bar style.",
+    ENCOUNTERS_DESC_TIMERS = "Pull and break timers with Phoenix bars, the countdown voice and a BigWigs bar style.",
     ENC_START = "Overview",
     ENC_MASTER = "Boss warnings and timeline",
     ENC_MASTER_DESC = "The game's master switch for boss timers and boss warnings (Options → Gameplay → Combat Warnings). Phoenix can only draw them while it is on.",
     ENC_TEST = "Test",
     ENC_TEST_BUTTON = "Run test",
     ENC_TEST_DESC = "Puts the game's sample boss timers and warnings on screen for about 30 seconds, so you see your settings on the real bars.",
+    ENC_TEST_TIMERS_DESC = "Starts a 10-second pull bar with the countdown voice, only on your screen (nothing is sent to the group), so you see your settings on the real bar.",
     ENC_TEST_RUNNING = "Test running: sample boss timers for about 30 seconds.",
+    ENC_TEST_PULL_RUNNING = "Test running: a 10-second pull bar, only on your screen.",
     ENC_NOTE = "Boss timers and alerts come from the game itself (the encounter timeline). Spell names stay hidden from addons during a fight, so Phoenix shows them without reading them. Move the bars and the banner in Edit Mode (/pui edit).",
+    ENC_NOTE_TIMERS = "This game has no boss timeline or boss warnings, so Phoenix brings what a group needs here: pull and break timers, their bars and the countdown voice. Move the bars in Edit Mode (/pui edit).",
     ENC_BOSSMOD_NOTE = "%s is loaded and draws boss bars, pulls and breaks, so Phoenix does not draw them a second time. BigWigs users can pick the \"Phoenix\" bar style (BigWigs tab).",
     ENC_TAB_TIMELINE = "Timeline",
     ENC_TAB_WARNINGS = "Warnings",
