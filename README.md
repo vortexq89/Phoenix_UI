@@ -68,6 +68,8 @@ missing; Russian clients only offer bundled fonts that include Cyrillic.
 | ![Unit frames with unit selector](docs/screenshots/unitframes.png) | ![Font picker](docs/screenshots/fonts.png) |
 | ![Bar texture picker](docs/screenshots/textures.png) | ![Bundled fonts and statusbars](docs/screenshots/media.png) |
 | ![This week: Great Vault and rating on Home](docs/screenshots/vault.png) | ![Mythic+ page with party keystones](docs/screenshots/keystones.png) |
+| ![Bags: quality borders and upgrade arrows](docs/screenshots/bags.png) | ![Data bar with drag ordering](docs/screenshots/databar.png) |
+| ![Minimap button bin](docs/screenshots/minimap.png) | ![Presets](docs/screenshots/presets.png) |
 
 The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
 same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world timer at 150 % and sample nameplates.
@@ -99,6 +101,10 @@ window; it is load-on-demand, so it costs no memory until you type `/pui`. Keep 
 | `/pui reset` | Reset the settings window position |
 | `/pui <module>` | Jump to a module, e.g. `/pui tooltip` |
 | `/pui settings` | Open the Phoenix page in Blizzard's settings |
+| `/pui help` | List every command in chat |
+| `/pui diag` | Check that textures, icons and fonts load (Tools → Diagnostics shows the result) |
+| `/pui bugs share on\|off` | Allow or stop error reports to the author |
+| `/pui debug` | Toggle debug output |
 | `/gg` | Surrender an arena match (PvP module, asks first) |
 
 You can also open the settings from the Addon Compartment (the button by the minimap) or from

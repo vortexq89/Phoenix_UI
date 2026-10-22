@@ -40,6 +40,8 @@
 - **Data bar**: drag the segments into any order; new free bag slots, item level, friends online, guild online and
   mail segments (off by default) with tooltips and click-to-open out of combat.
 - **Minimap button bin**: addon minimap buttons (LibDBIcon) gathered into one Phoenix flyout on the minimap corner.
+- **Every settings row explains itself on hover**: description, default value, right-click to reset, and whether it
+  needs a reload or waits for combat to end. `/pui help` lists every command.
 - **Settings load on demand**: the settings window is a second folder, `Phoenix_UI_Options`, loaded the first time
   you open it (`/pui`, the minimap/compartment entry or the game's AddOns settings), so it costs no memory or load
   time until then. Install both folders.
@@ -53,6 +55,11 @@
   account folder names; text-like string locals (chat lines and the like) are reduced to their length.
 
 ### Fixed
+- Phoenix_UI warns once if the `Phoenix_UI_Options` folder is from a different version (one folder updated, the other
+  not); Tools → Diagnostics shows the same.
+- Less background work: Spell History's fade timer, the data bar and the minimap coordinates stop polling while
+  idle or hidden; nameplates ignore health events while the health text is off; bag and roster events are coalesced.
+- Every settings card has an icon; the Data Bar and Minimap descriptions name their new features.
 - **Tooltip**: no more "attempt to call a nil value" when an item, unit or spell tooltip is not a standard game
   tooltip (seen 43 times in testing); the item quality border reads the tooltip data first.
 - Texture pickers draw each texture in a neutral tint so its shading is visible; the chosen one keeps the accent.

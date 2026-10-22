@@ -38,7 +38,8 @@ SIDEBAR = [
     ("group", "Group & Mythic+", "mythicplus", [("mythicplus", "Mythic+", "mythicplus", True), ("pvp", "PvP", "pvp", True)]),
     ("social", "Chat & Social", "chat", [("chat", "Chat", "chat", True), ("afk", "AFK Screen", "afk", True)]),
     ("maps", "Maps, Minimap & Data", "maps", [("minimap", "Minimap", "minimap", True), ("datatexts", "Data Bar", "datatexts", True)]),
-    ("items", "Tooltips & Items", "items", [("tooltip", "Tooltip", "tooltip", True), ("itemlevel", "Item Level", "itemlevel", True)]),
+    ("items", "Tooltips & Items", "items", [("tooltip", "Tooltip", "tooltip", True), ("itemlevel", "Item Level", "itemlevel", True),
+                                            ("bags", "Bags", "items", True)]),
     ("qol", "Quality of Life", "quality", [("quality", "Quality of Life", "quality", True),
                                            ("automation", "Automation", "automation", True), ("skins", "Skins", "skins", True)]),
     ("tools", "Tools", "cat-utility", [("movers", "Movers", "movers", True), ("profiles", "Profiles", "profiles", None),
@@ -910,6 +911,100 @@ def presets_page():
     return shell("presets", body, head=faces(font_data()), status="Ember applied: 34 settings changed", status_icon="success",
                  status_cls="ok")
 
+# ---------------------------------------------------------------- P2 item 10: bags, data bar order, minimap bin
+QUAL = {0: "#9d9d9d", 1: "#ffffff", 2: "#1eff00", 3: "#0070dd", 4: "#a335ee"}
+BAG_ITEMS = [(0, 701, 4, "", True), (5, 0, 1, "20", False), (2, 688, 3, "", False), (3, 0, 2, "5", False),
+             (6, 714, 4, "", True), (1, 0, 1, "200", False), (4, 672, 2, "", False), (7, 0, 3, "3", False),
+             (0, 695, 4, "", False), (2, 0, 1, "12", False), (5, 0, 0, "8", False), None]
+
+
+def bag_slot(it):
+    if not it:
+        return '<span class="bslot empty"></span>'
+    i, lvl, q, cnt, up = it
+    c1, c2, g = SPELLS[i % len(SPELLS)]
+    border = QUAL[q] if q >= 2 else "#000"
+    lv = f'<b class="blv" style="color:{QUAL[q]}">{lvl}</b>' if lvl else ""
+    ct = f'<b class="bct">{cnt}</b>' if cnt else ""
+    ar = f'<span class="bup">{ico("arrow-up", "", 14)}</span>' if up else ""
+    return (f'<span class="bslot" style="border-color:{border};background:radial-gradient(circle at 35% 30%, {c1}, {c2} 78%)">'
+            f'{ico(g, "", 20)}{lv}{ct}{ar}</span>')
+
+
+def tip(title, lines, left, top):
+    body = "".join(f"<i>{l}</i>" for l in lines)
+    return f'<div class="rtip" style="left:{left}px;top:{top}px"><b>{title}</b>{body}</div>'
+
+
+def bags_page():
+    body = page_head("items", "Bags", "Phoenix look for the bag windows, quality borders and upgrade arrows on better gear.")
+    slots = "".join(bag_slot(it) for it in BAG_ITEMS)
+    stage = f'<div class="bwin"><div class="bwt">Backpack</div><div class="bgrid">{slots}</div></div>'
+    body += preview_card(stage, 170)
+    left = card2("Look", [
+        row("Phoenix bag windows", tog(), "Themed panel behind the bags, cropped icons with thin borders and a dark slot background."),
+        row("Quality borders", tog(), "Colour the border of uncommon and better items by quality."),
+        row("Stack count size", sl2(40, "12")),
+    ], icon="items", reset=True)
+    right = card2("On the items", [
+        row("Upgrade arrows", tog(), "A green arrow on gear you can use with a higher item level than what you wear in that slot.", hl=True),
+        row("Item level on gear", tog(), "Same switch as Item Level › Bags; size and colour are set there.",
+            gear=f'<span class="cog">{ico("chevron-right")}</span>'),
+    ], icon="itemlevel")
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    over = tip("Upgrade arrows", ["Default: On", "Right-click the row to reset it."], 682, 335)
+    return shell("bags", body, overlay=over, head=faces(font_data()), status="Bag windows restyled live", status_icon="success",
+                 status_cls="ok")
+
+
+DT = [("fps", "fps", "144", "fps", ""), ("latency", "latency", "38", "ms", "ok"), ("items", "bags", "24", "free", "ok"),
+      ("itemlevel", "itemlevel", "712.4", "ilvl", ""), ("friends", "friends", "7", "online", ""), ("guild", "guild", "31", "online", ""),
+      ("mail", "mail", "New", "", "ok"), ("clock", "clock", "21:42", "", ""), ("bugs", "bugs", "0", "bugs", "ok")]
+CHIPS = [("fps", "Frame rate", True), ("latency", "Latency", True), ("items", "Free bag slots", True), ("itemlevel", "Item level", True),
+         ("friends", "Friends online", True), ("guild", "Guild online", True), ("mail", "Mail", True), ("speed", "Movement speed", False),
+         ("durability", "Durability", False), ("gold", "Gold", False), ("clock", "Clock", True), ("bugs", "Bug count", True)]
+
+
+def databar_page():
+    body = page_head("datatexts", "Data Bar",
+                     "A slim bar of live info — FPS, latency, gold, bags, friends and more — in the order you choose.")
+    segs = "".join(f'<span class="dts">{ico(i, "", 13)}<b class="{c}">{v}</b><i>{u}</i></span>' for i, _, v, u, c in DT)
+    body += preview_card(f'<div class="dtbar">{segs}</div>', 90)
+    chips = ""
+    for n, (i, label, on) in enumerate(CHIPS):
+        mark = '<span class="dmark"></span>' if n == 2 else ""
+        drag = " drag" if n == 9 else ""
+        chips += f'{mark}<span class="dchip{"" if on else " off"}{drag}">{ico(i, "", 13)}{label}</span>'
+    order = (f'<div class="opt d full"><div class="l"><b>Order</b><i>Drag the segments into the order the bar shows them. '
+             f'Dimmed ones are switched off.</i></div><span class="rst">{ico("reset")}</span><div class="dchips">{chips}</div></div>')
+    seg_rows = [row("Free bag slots", tog(), "Free slots across your bags; amber under 10, red under 3. Click to open your bags."),
+                row("Item level", tog(), "Your equipped average item level. Click to open the character pane."),
+                row("Friends online", tog(), "Friends and Battle.net friends online. Click to open the friends list."),
+                row("Guild online", tog(), "Guild members online. Click to open the guild window."),
+                row("Mail", tog(), "Lights up when new mail is waiting.")]
+    body += card2("Segments", [order] + seg_rows, wide=True, icon="datatexts")
+    return shell("datatexts", body, head=faces(font_data()), status="Order saved; the bar follows at once",
+                 status_icon="success", status_cls="ok")
+
+
+def minimap_page():
+    body = page_head("minimap", "Minimap", "Square minimap, coordinates, a themed zone name and a bin for addon buttons.")
+    cells = "".join(f'<span class="mcell">{ico(i, "", 13)}</span>' for i in ["items", "maps", "chat", "bugs", "tracker", "sound"])
+    stage = (f'<div class="mmz">Silvermoon City</div><div class="mm"><span class="mlake"></span><span class="mroad"></span>'
+             f'<span class="mbin">{ico("bin", "", 11)}</span><b class="mco">48.2  61.7</b></div><div class="mfly">{cells}</div>')
+    body += preview_card(stage, 190)
+    left = card2("Shape", [row("Square minimap", tog(), "Square mask with a thin border."),
+                           row("Size", btn("Edit Mode", "editmode"), "Set in Edit Mode (Minimap › Size, 50–200 %)."),
+                           row("Zone text", tog(), "Restyle the zone name.")], icon="minimap")
+    right = card2("Button bin", [
+        row("Collect addon buttons", tog(), "Gathers the minimap buttons other addons add (LibDBIcon) into one flyout opened from the corner glyph."),
+        row("Columns", sl2(40, "3"), "Buttons per row in the flyout."),
+        row("Open the bin", btn("Show", "bin"), "Shows the flyout now so you can check which buttons it holds."),
+    ], icon="bin")
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    return shell("minimap", body, head=faces(font_data()), status="6 addon buttons in the bin", status_icon="bin")
+
+
 
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
          "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page, "nameplates": nameplates_page,
@@ -917,7 +1012,7 @@ PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": pro
          "textures": lambda: appearance_page("bar"), "media": media_sheet, "pinned": lambda: nameplates_page(True),
          "diagnostics": diagnostics_page, "sidebar": sidebar_shot,
          "vault": vault_page, "keystones": keystones_page, "tracker": tracker_page, "uftest": uf_test_page,
-         "presets": presets_page}
+         "presets": presets_page, "bags": bags_page, "databar": databar_page, "minimap": minimap_page}
 SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1"), "uftest": ("1560,800", "1")}
 
 if __name__ == "__main__":

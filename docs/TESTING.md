@@ -73,6 +73,12 @@ the step number.
 - [ ] **2.9 Diagnostics.** Tools → Diagnostics → **Run**.
   **Expect:** "N of N loaded" in green and a report you can copy. If anything failed, screenshot this page.
   Set **Icon source** to Game icons: every sidebar icon turns into a Blizzard icon; set it back to Automatic.
+  The **Settings addon** line reads "Phoenix_UI_Options 2.0.0-beta1, matches" in green.
+- [ ] **2.10 Row tooltips.** Point at a few rows on different pages (a toggle, a slider, a dropdown, a font picker).
+  **Expect:** a small tooltip above the label with the default value ("Default: On", "Default: 12", the default
+  choice) and "Right-click the row to reset it."; rows marked Reload or Out of combat say so. No row is silent.
+- [ ] **2.11 Slash help.** Type `/pui help`, then `/pui nonsense`.
+  **Expect:** the full command list in chat; the nonsense command says it is unknown and points to `/pui help`.
 
 ## 3. Every module page
 
