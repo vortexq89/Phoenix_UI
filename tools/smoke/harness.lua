@@ -1,8 +1,14 @@
 -- Offline load test for Phoenix_UI (Lua 5.1). Not a WoW emulator: every unknown global, frame and
 -- method is a permissive stub. It catches load-order mistakes, nil indexing in file scope and in the
 -- boot path, and errors while building every settings page.
--- Usage (from the repo root): lua5.1 tools/smoke/harness.lua
+-- Usage (from the repo root): lua5.1 tools/smoke/harness.lua [root] [retail|forever]
+-- "forever" boots the WoW Forever client (Interface 16001, the _Forever TOCs, no encounter timeline or
+-- warnings) and checks that retail-only features are gone rather than broken. tools/check_flavors.py runs both.
 local ROOT = arg and arg[1] or "."
+local FLAVOR = arg and arg[2] or os.getenv("PUI_FLAVOR") or "retail"
+assert(FLAVOR == "retail" or FLAVOR == "forever", "flavor must be retail or forever")
+local RETAIL = FLAVOR == "retail"
+local TOC_SUFFIX = RETAIL and "" or "_Forever"
 local errors, NAME = {}, "Phoenix_UI"
 local function errorHandler(e) errors[#errors + 1] = tostring(e) end
 local slashes = {}
@@ -140,7 +146,8 @@ local api = {
     issecretvalue = function() return false end, canaccessvalue = function() return true end,
     issecure = function() return false end, InCombatLockdown = function() return false end,
     GetLocale = function() return "enUS" end, GetTime = function() return os.clock() end,
-    GetBuildInfo = function() return "12.1.5", "70448", "Oct 2026", 120105 end,
+    GetBuildInfo = RETAIL and function() return "12.1.5", "70448", "Oct 2026", 120105 end
+        or function() return "1.60.1", "70532", "Oct 2026", 16001 end,
     UnitName = function() return "Tester", "Realm" end, GetRealmName = function() return "Realm" end,
     GetNormalizedRealmName = function() return "Realm" end,
     BreakUpLargeNumbers = function(n) return tostring(n) end,
@@ -172,15 +179,20 @@ local api = {
     C_CVar = { GetCVar = function() return "1" end, GetCVarBool = function() return true end, SetCVar = function() end,
                GetCVarBitfield = function() return false end, SetCVarBitfield = function() end },
     -- encounter timeline / warnings (12.x): no events unless a test adds them
-    C_EncounterTimeline = { GetEventList = function() return {} end, AddEditModeEvents = function() return 30 end,
+    -- (Forever: the APIs exist but the game's timeline and warnings are off, IsFeatureAvailable says so)
+    C_EncounterTimeline = { IsFeatureAvailable = function() return RETAIL end,
+        GetEventList = function() return {} end, AddEditModeEvents = function() return 30 end,
         CancelEditModeEvents = function() end, GetEventInfo = function() return nil end,
         GetEventState = function() return 0 end, GetEventTimeRemaining = function() return 5 end,
         GetEventTrack = function() return 1 end, IsEventBlocked = function() return false end },
-    C_EncounterWarnings = { PlaySound = function() end, GetEditModeWarningInfo = function(sev)
+    C_EncounterWarnings = { IsFeatureAvailable = function() return RETAIL end, PlaySound = function() end,
+        GetEditModeWarningInfo = function(sev)
         return { text = "Sample %s", casterName = "Boss", targetName = "You", iconFileID = 1, severity = sev, duration = 4 }
     end },
     C_PartyInfo = { DoCountdown = function() return true end },
+    -- IsSpecSelectionEnabled is Forever-only; the stub Forever character's class has spec choice switched off
     C_SpecializationInfo = { GetSpecialization = function() return 1 end,
+        IsSpecSelectionEnabled = not RETAIL and function() return false end or nil,
         GetNumSpecializationsForClassID = function() return 3 end,
         GetSpecializationInfo = function(i) return i, "Spec" .. i, "", 0 end },
     C_EncodingUtil = { SerializeCBOR = function(t) env_cbor = t; return "x" end, CompressString = function(s) return s end,
@@ -260,7 +272,7 @@ local function walkXml(path)
     end
 end
 
-for line in readAll("Phoenix_UI.toc"):gmatch("[^\r\n]+") do
+for line in readAll("Phoenix_UI" .. TOC_SUFFIX .. ".toc"):gmatch("[^\r\n]+") do
     if not line:match("^%s*#") and line:match("%S") then
         local p = line:gsub("\\", "/"):gsub("%s+$", "")
         if p:match("^Libs/") then -- replaced by the fakes above
@@ -275,7 +287,7 @@ local optionsLoads = 0
 local function loadOptions()
     optionsLoads = optionsLoads + 1
     local private = {}
-    for line in readAll(OPTIONS .. "/" .. OPTIONS .. ".toc"):gmatch("[^\r\n]+") do
+    for line in readAll(OPTIONS .. "/" .. OPTIONS .. TOC_SUFFIX .. ".toc"):gmatch("[^\r\n]+") do
         if not line:match("^%s*#") and line:match("%S") then
             local path = OPTIONS .. "/" .. line:gsub("\\", "/"):gsub("%s+$", "")
             local chunk, err = loadfile(ROOT .. "/" .. path)
@@ -312,6 +324,10 @@ fire("PLAYER_ENTERING_WORLD", true, false)
 local function try(label, fn, ...)
     local ok, e = pcall(fn, ...)
     if not ok then errors[#errors + 1] = label .. ": " .. tostring(e) end
+end
+-- Features that only exist on retail (ns.FEATURES): the Forever run checks they are gone instead ("flavor").
+local function retailTry(label, fn, ...)
+    if RETAIL then try(label, fn, ...) end
 end
 -- the settings window is not loaded at login; the first /pui loads Phoenix_UI_Options once
 try("load on demand", function()
@@ -511,7 +527,7 @@ try("movers", function()
     M:SetUnlocked(false)
 end)
 -- mythic+ timer: Edit Mode sample, a live run with splits, completion and personal best
-try("mythic+ timer", function()
+retailTry("mythic+ timer", function()
     local M, LEM = ns.modules.MythicPlus, libs.LibEditMode
     for _, fn in ipairs(LEM.callbacks.enter or {}) do fn() end
     for _, fn in ipairs(LEM.callbacks.exit or {}) do fn() end
@@ -560,7 +576,7 @@ try("mythic+ timer", function()
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- current pull: summed over hostile nameplates in combat, dropped as soon as one value is secret
-try("mythic+ pull", function()
+retailTry("mythic+ pull", function()
     local M = ns.modules.MythicPlus
     local saved = {}
     for _, k in ipairs({ "UnitAffectingCombat", "UnitCanAttack", "C_ScenarioInfo" }) do saved[k] = rawget(env, k) or false end
@@ -581,7 +597,7 @@ try("mythic+ pull", function()
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- party keystones over the LibKeystone protocol: store answers, answer requests, stay quiet in lockdown
-try("mythic+ keystones", function()
+retailTry("mythic+ keystones", function()
     local K = ns.modules.MythicPlus.Keystones
     local saved, sent, locked = {}, {}, false
     for _, k in ipairs({ "UnitName", "UnitClass", "IsInGroup", "IsInRaid", "Ambiguate", "C_ChatInfo", "C_MythicPlus" }) do
@@ -612,7 +628,7 @@ try("mythic+ keystones", function()
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- this week on Home: vault slots from C_WeeklyRewards, season from the rating summary and run history
-try("weekly summary", function()
+retailTry("weekly summary", function()
     local saved = {}
     for _, k in ipairs({ "C_WeeklyRewards", "C_MythicPlus", "C_PlayerInfo" }) do saved[k] = rawget(env, k) or false end
     rawset(env, "C_WeeklyRewards", { GetActivities = function()
@@ -954,34 +970,48 @@ try("encounters", function()
     M:StartCountdown(4)
     M.db.countdown.enabled = true
     assert(#played == 1, "the countdown spoke while switched off")
-    -- CVars: Phoenix owns the Blizzard views it replaces, and gives them back
-    M:ApplyCVars()
-    assert(values.encounterTimelineEnabled == "0" and values.encounterWarningsEnabled == "0", "Blizzard views not handed over")
-    assert(M.global.cvars.timeline == "1", "the player's own timeline value was not kept")
-    ns.DB:Set(M, "timeline.display", "blizzard")
-    assert(values.encounterTimelineEnabled == "1" and M.global.cvars.timeline == nil, "the timeline CVar was not restored")
-    ns.DB:Set(M, "timeline.display", "phoenix")
-    assert(M:BlizzardValue("timeline") == true, "BlizzardValue should report the player's value")
-    -- timeline events become bars; secret names only reach SetText
-    fire("ENCOUNTER_TIMELINE_EVENT_ADDED", { id = 41, source = 0, duration = 20, spellName = "Breath", iconFileID = 1 })
-    fire("ENCOUNTER_TIMELINE_EVENT_ADDED", { id = 42, source = 2, duration = 8, spellName = "Edit", iconFileID = 2 })
-    assert(M.Bars:Draw() == 2, "two timeline events should draw two bars")
-    M.db.timeline.horizon = 3
-    assert(M.Bars:Draw() == 0, "events beyond the horizon should not draw")
-    M.db.timeline.horizon = 0
-    fire("ENCOUNTER_TIMELINE_EVENT_REMOVED", 41)
-    fire("ENCOUNTER_TIMELINE_EVENT_REMOVED", 42)
-    assert(M.Bars:Draw() == 0, "removed events still draw")
-    -- warnings: severity is plain, everything else goes to the sinks; secret severity is ignored
-    fire("ENCOUNTER_WARNING", { text = "%s breathes on %s", casterName = "Boss", targetName = "You", severity = 2,
-        duration = 3, iconFileID = 1 })
-    assert(sounds[1] == 2 and M.Warnings:Count() == 1, "a critical warning did not show with the game's sound")
-    fire("ENCOUNTER_WARNING", { text = "x", severity = 777, duration = 3 })
-    assert(M.Warnings:Count() == 1, "a warning with a secret severity was shown")
-    values.encounterWarningsLevel = "2"
-    fire("ENCOUNTER_WARNING", { text = "minor", severity = 0, duration = 3 })
-    assert(M.Warnings:Count() == 1, "a warning under the minimum severity was shown")
-    values.encounterWarningsLevel = nil
+    if RETAIL then
+        -- CVars: Phoenix owns the Blizzard views it replaces, and gives them back
+        M:ApplyCVars()
+        assert(values.encounterTimelineEnabled == "0" and values.encounterWarningsEnabled == "0", "Blizzard views not handed over")
+        assert(M.global.cvars.timeline == "1", "the player's own timeline value was not kept")
+        ns.DB:Set(M, "timeline.display", "blizzard")
+        assert(values.encounterTimelineEnabled == "1" and M.global.cvars.timeline == nil, "the timeline CVar was not restored")
+        ns.DB:Set(M, "timeline.display", "phoenix")
+        assert(M:BlizzardValue("timeline") == true, "BlizzardValue should report the player's value")
+        -- timeline events become bars; secret names only reach SetText
+        fire("ENCOUNTER_TIMELINE_EVENT_ADDED", { id = 41, source = 0, duration = 20, spellName = "Breath", iconFileID = 1 })
+        fire("ENCOUNTER_TIMELINE_EVENT_ADDED", { id = 42, source = 2, duration = 8, spellName = "Edit", iconFileID = 2 })
+        assert(M.Bars:Draw() == 2, "two timeline events should draw two bars")
+        M.db.timeline.horizon = 3
+        assert(M.Bars:Draw() == 0, "events beyond the horizon should not draw")
+        M.db.timeline.horizon = 0
+        fire("ENCOUNTER_TIMELINE_EVENT_REMOVED", 41)
+        fire("ENCOUNTER_TIMELINE_EVENT_REMOVED", 42)
+        assert(M.Bars:Draw() == 0, "removed events still draw")
+        -- warnings: severity is plain, everything else goes to the sinks; secret severity is ignored
+        fire("ENCOUNTER_WARNING", { text = "%s breathes on %s", casterName = "Boss", targetName = "You", severity = 2,
+            duration = 3, iconFileID = 1 })
+        assert(sounds[1] == 2 and M.Warnings:Count() == 1, "a critical warning did not show with the game's sound")
+        fire("ENCOUNTER_WARNING", { text = "x", severity = 777, duration = 3 })
+        assert(M.Warnings:Count() == 1, "a warning with a secret severity was shown")
+        values.encounterWarningsLevel = "2"
+        fire("ENCOUNTER_WARNING", { text = "minor", severity = 0, duration = 3 })
+        assert(M.Warnings:Count() == 1, "a warning under the minimum severity was shown")
+        values.encounterWarningsLevel = nil
+    else
+        -- no game timeline or warnings (WoW Forever): the game's settings stay untouched, its events draw nothing
+        M:ApplyCVars()
+        assert(#cvars == 0 and next(M.global.cvars) == nil, "Phoenix touched timeline CVars on a client without one")
+        assert(not M:Draws("timeline") and not M:Draws("warnings"), "Phoenix claims a view this client lacks")
+        fire("ENCOUNTER_TIMELINE_EVENT_ADDED", { id = 41, source = 0, duration = 20, spellName = "Breath", iconFileID = 1 })
+        assert(M.Bars:Draw() == 0, "a timeline event drew on a client without the timeline")
+        fire("ENCOUNTER_TIMELINE_EVENT_REMOVED", 41)
+        fire("ENCOUNTER_WARNING", { text = "x", severity = 2, duration = 3 })
+        assert(M.Warnings:Count() == 0 and #sounds == 0, "a warning showed on a client without warnings")
+        assert(M:Test() and M.Bars:HasTimer("pull"), "test mode should show a pull bar without the timeline")
+        M.Bars:StopTimer("pull")
+    end
     ns.Secret.IsSecret = isSecret
     -- test mode, pull, break and the D5 break message
     assert(M:Test(), "test mode did not start")
@@ -1017,6 +1047,85 @@ try("encounters", function()
     assert(picker and picker.rows and #picker.rows > 10, "module picker has no rows")
     picker.keep.onClick()
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
+end)
+-- flavour gating: retail-only features are present on retail and cleanly absent on WoW Forever
+try("flavor", function()
+    local C = ns.Config
+    assert(ns.flavor == FLAVOR, "ns.flavor is " .. tostring(ns.flavor) .. " on a " .. FLAVOR .. " client")
+    local function sidebar()
+        local keys, labels = {}, {}
+        for _, g in ipairs(C:Groups()) do
+            labels[g.key] = g.label
+            for _, key in ipairs(g.entries) do keys[key] = true end
+        end
+        return keys, labels
+    end
+    local function rowKeys(key)
+        local out = {}
+        local function walk(list) for _, item in ipairs(list or {}) do
+            out[item.key or item.label or "?"] = true
+            walk(item.cog)
+        end end
+        walk(ns.options[key])
+        return out
+    end
+    local keys, labels = sidebar()
+    local tooltip, plates, bags, enc = rowKeys("Tooltip"), rowKeys("NamePlates"), rowKeys("Bags"), rowKeys("Encounters")
+    local profiles, specRows = C:Show("profiles"), false
+    for _, item in ipairs(profiles.schema or {}) do if item.label == "SPEC_PROFILES" then specRows = true end end
+    assert(specRows == RETAIL, "per-spec profiles should show only where a specialization can be chosen")
+    local home = C:Show("home")
+    local tests = {}
+    for _, item in ipairs(ns.options.Encounters) do if item.label == "ENC_TEST" then tests[#tests + 1] = item.desc end end
+    assert(#tests == 1 and tests[1] == (RETAIL and "ENC_TEST_DESC" or "ENC_TEST_TIMERS_DESC"),
+        "Encounters should have one test button that says what it shows on this client")
+    if RETAIL then
+        for _, k in ipairs({ "MythicPlus", "Sim" }) do
+            local m = ns.modules[k]
+            assert(not m.unavailable and not m.hidden and m:IsEnabled() and keys[k], k .. " should be on retail")
+        end
+        assert(labels.group == "GROUP_MYTHIC", "the Mythic+ group lost its name on retail")
+        assert(tooltip.mplusRating and tooltip.simLine and plates.forces and plates["forcesText.font"] and bags.simArrow,
+            "retail lost a Mythic+ or Sim option")
+        assert(enc.ENC_TAB_TIMELINE and enc.ENC_TAB_WARNINGS and enc["timeline.display"] and enc.ENC_MASTER,
+            "retail lost the encounter timeline or warnings options")
+        assert(home.week, "Home lost its Great Vault card on retail")
+        assert(ns.modules.Encounters.desc == "ENCOUNTERS_DESC" and ns.modules.NamePlates.desc == "NAMEPLATES_DESC",
+            "retail module descriptions changed")
+        return
+    end
+    -- Forever: the modules exist (profiles stay portable) but never initialize, enable or show
+    for _, k in ipairs({ "MythicPlus", "Sim" }) do
+        local m = ns.modules[k]
+        assert(m and m.unavailable and m.hidden and not m:IsEnabled() and not m:ShouldEnable(), k .. " is not gated")
+        assert(not keys[k], k .. " is in the sidebar on Forever")
+        ns:SetModuleEnabled(k, true)
+        assert(not m:IsEnabled(), k .. " could be switched on on Forever")
+        assert(C:Show(k) == C.pages.home, "opening " .. k .. " on Forever did not fall back to Home")
+    end
+    assert(ns.modules.Sim.db and type(ns.modules.Sim.db.mode) == "string", "a gated module lost its saved settings")
+    assert(labels.group == "PVP", "the group page should be named PvP without Mythic+")
+    assert(not (tooltip.mplusRating or tooltip.simLine or plates.forces or plates["forcesText.font"] or bags.simArrow),
+        "a Mythic+ or Sim option is left on Forever")
+    assert(tooltip.ids and plates.healthText and bags.upgrade, "filtering dropped options that Forever has")
+    assert(not (enc.ENC_TAB_TIMELINE or enc.ENC_TAB_WARNINGS or enc["timeline.display"] or enc["warnings.display"]
+        or enc.ENC_MASTER or enc["warnings.sounds.high"] or enc.ENC_SOUND_TEST), "timeline or warning options left")
+    assert(enc.ENC_TAB_TIMERS and enc["pull.seconds"] and enc["countdown.voice"] and enc.ENC_TAB_BIGWIGS,
+        "Forever lost the pull, break or countdown options")
+    assert(not home.week, "Home shows the Great Vault on Forever")
+    assert(ns.modules.Encounters.desc == "ENCOUNTERS_DESC_TIMERS" and ns.modules.NamePlates.desc == "NAMEPLATES_DESC_PLAIN",
+        "a module card still promises boss timers or Mythic+ forces")
+    C:Search("keystone")
+    for _, r in ipairs(C.results.rows) do
+        assert(not (r:IsShown() and r.entry and r.entry.key == "MythicPlus"), "search reaches the hidden Mythic+ page")
+    end
+    C:Search("")
+    local picker = C:ShowModulePicker(true)
+    for _, row in ipairs(picker.rows) do
+        local k = row.module and row.module.key or row.key
+        assert(k ~= "MythicPlus" and k ~= "Sim", "the module picker offers " .. tostring(k))
+    end
+    picker.keep.onClick()
 end)
 -- unit frames: boss scope, test frames (never in combat), portraits and range fade options exist
 try("unit frames depth", function()
@@ -1287,7 +1396,7 @@ end
 
 -- Sim: item export, request shape, and importing what the app writes (uploader/testdata/sim_results.lua is
 -- rendered by the Go writer and checked by its tests, so this is the shared file contract)
-try("sim", function()
+retailTry("sim", function()
     local M, X = ns.modules.Sim, ns.SimExport
     assert(M and X and M.db.mode == "compare", "sim defaults")
     local function link(fields, name)
