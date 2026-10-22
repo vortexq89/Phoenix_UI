@@ -137,7 +137,7 @@ ns:RegisterOptions("Encounters", {
 
     { type = "tab", label = "ENC_TAB_SOUNDS" },
     { type = "header", label = "ENC_COUNTDOWN", icon = "sound" },
-    { type = "toggle", key = "countdown.enabled", label = "ENC_VOICE", desc = "ENC_VOICE_DESC",
+    { type = "toggle", gate = true, key = "countdown.enabled", label = "ENC_VOICE", desc = "ENC_VOICE_DESC",
       keywords = "pull timer countdown voice sound" },
     { type = "select", key = "countdown.voice", label = "ENC_VOICE_PICK", values = voices, disabled = noVoice },
     { type = "range", key = "countdown.from", label = "ENC_VOICE_FROM", min = 3, max = 10, step = 1, disabled = noVoice },

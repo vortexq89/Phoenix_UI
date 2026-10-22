@@ -8,8 +8,10 @@ local W, Skin, Theme, Media = ns.Widgets, ns.Skin, ns.Theme, ns.Media
     the real frames, and redrawn on every PUI_SETTING_CHANGED of its module, on theme changes and when
     the page's unit selector moves.
 
-    ns.Previews:Register(kind, { height = px, states = { {key, label, icon} }?,
-        build = function(stage, m) -> redraw(stage, unit) }) ]]
+    ns.Previews:Register(kind, { height = px, width = px?, states = { {key, label, icon} }?,
+        build = function(stage, m) -> redraw(stage, unit) })
+    width is the room the mock needs; a narrower slot (the preview dock) scales the whole stage down to fit
+    instead of clipping it (stage:Fit). ]]
 local P = { kinds = {} }
 ns.Previews = P
 
@@ -82,6 +84,14 @@ function P:Create(kind, parent, m, page)
         Skin:Panel(self, "sunken", { border = "border.subtle" })
         W.Color(self.floor, "accent.primary", 0.06)
     end)
+    stage.designWidth = def and def.width or 0
+    -- Scales the stage so its design width fits `width`; returns the scale (1 when it already fits).
+    function stage:Fit(width)
+        local scale = 1
+        if self.designWidth > 0 and width and width > 0 and width < self.designWidth then scale = width / self.designWidth end
+        self:SetScale(scale)
+        return scale
+    end
     local draw = def and def.build(stage, m)
     function stage:Redraw()
         if draw then ns.SafeCall(draw, self, page.scope and page.scope.unit) end

@@ -15,7 +15,7 @@ KEY = r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*"
 USE_PATTERNS = [
     re.compile(r"\bL\.(" + KEY + r")\b"),
     re.compile(r"\bL\[\"(" + KEY + r")\"\]"),
-    re.compile(r"\b(?:label|desc|text|button|title|err|status)\s*=\s*\"(" + KEY + r")\""),
+    re.compile(r"\b(?:label|desc|text|button|title|err|status|heading)\s*=\s*\"(" + KEY + r")\""),
     re.compile(r"\breturn\s+(?:nil|false),\s*\"(" + KEY + r")\""),
     re.compile(r"\"(CAT_[A-Z]+)\""),
     re.compile(r"\blabel\s+or\s+\"(" + KEY + r")\""),

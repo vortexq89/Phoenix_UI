@@ -13,7 +13,7 @@ ns:RegisterOptions("Tracker", {
     { type = "preview", kind = "tracker" },
     { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "TRACKER_ICONS", icon = "tracker" },
-    { type = "toggle", key = "viewers.@.style", label = "TRACKER_SKIN", desc = "TRACKER_SKIN_DESC", reload = true,
+    { type = "toggle", gate = true, key = "viewers.@.style", label = "TRACKER_SKIN", desc = "TRACKER_SKIN_DESC", reload = true,
       keywords = "cooldown manager weakauras skin" },
     { type = "toggle", key = "viewers.@.square", label = "TRACKER_SQUARE", desc = "TRACKER_SQUARE_DESC", disabled = unstyled,
       cog = { { type = "range", key = "viewers.@.zoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01 } } },

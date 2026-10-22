@@ -51,7 +51,10 @@ the step number.
 
 - [ ] **2.1 Open and close.** Try `/pui`, `/phoenix` and the minimap or addon compartment button. Press Escape to close.
   **Expect:** it opens on Home and closes with Escape. You also get one Phoenix UI entry under Esc → Options → AddOns.
-- [ ] **2.2 Home.** **Expect:** module stats, the **This week** card (section 7.4) and a grid of module tiles. Clicking a tile opens that module.
+- [ ] **2.2 Home.** **Expect:** module stats, the **This week** card (section 7.4), filter chips (All, Frames, Bars,
+  Combat, Interface, Content, Phoenix, Off) and module tiles, each with its switch and a depth bar ("44 / 150").
+  Clicking a tile opens that module. On a wide window the right side shows Health checks, Quick actions and What's
+  new; make the window narrower than 1100 px and they move under the stats.
 - [ ] **2.3 Search.** Type `font` in the search box.
   **Expect:** results from several modules. Clicking one jumps to the setting and highlights it. A nonsense word
   shows `Nothing matches that search.`
@@ -59,30 +62,55 @@ the step number.
   **Expect:** the window scales smoothly, text stays sharp, and the size is kept after `/reload`. `/pui reset` puts the window back in the middle.
 - [ ] **2.5 Dragging.** Move the window by its title bar.
   **Expect:** it moves, and the position is kept after `/reload`.
-- [ ] **2.6 Sidebar groups.** The sidebar has 13 headings (Home, General, Appearance & Media, Unit Frames, Nameplates,
-  Action Bars & Cooldowns, Combat, Group & Mythic+, Chat & Social, Maps, Minimap & Data, Tooltips & Items,
-  Quality of Life, Tools). Click a heading with an arrow to fold or unfold it.
-  **Expect:** the group with the open page is unfolded, the open/closed state is kept after `/reload`, no label is
-  cut off or wraps, and every module you used before is still there with the same settings.
-- [ ] **2.7 Search jumps.** Search `texture`, then click a result in another group.
-  **Expect:** that group unfolds, the page opens on the right tab and the row flashes. Results show the path
-  (group › module › tab › section).
+- [ ] **2.6 Rail and page list.** The left rail has 7 groups: Home, Frames, Bars, Combat, Interface, Content,
+  Phoenix. Click each one.
+  **Expect:** the list beside it shows that group's pages (Interface and Phoenix with sub-headings), each with a
+  green dot when on and a thin depth bar; hovering the bar says "N of M planned settings built". Every module you
+  used before is still there with the same settings. On WoW Forever, Content has Encounters and PvP only.
+- [ ] **2.7 Search jumps.** Search `texture`, then click a result in another group. Then search `hp` and `cd`.
+  **Expect:** the rail switches group, the page opens on the right tab and the row flashes. Results show the path
+  (group › module › tab › section). `hp` finds health options, `cd` cooldown ones. The empty box reads
+  "Search N settings…".
 - [ ] **2.8 Reset.** Change a slider, then right-click its row (or click the orange ↺ arrow beside it).
   **Expect:** that one setting goes back to its default. The ↺ on a card's header asks for a second click, then
   resets the card; the ↺ beside a module's Enabled switch resets the whole module but keeps it on.
-- [ ] **2.9 Diagnostics.** Tools → Diagnostics → **Run**.
+- [ ] **2.9 Diagnostics.** Phoenix → Diagnostics → **Run**.
   **Expect:** "N of N loaded" in green and a report you can copy. If anything failed, screenshot this page.
-  Set **Icon source** to Game icons: every sidebar icon turns into a Blizzard icon; set it back to Automatic.
+  Set **Icon source** to Game icons: every rail and page-list icon turns into a Blizzard icon; set it back to Automatic.
   The **Settings addon** line reads "Phoenix_UI_Options 2.0.0-beta1, matches" in green.
 - [ ] **2.10 Row tooltips.** Point at a few rows on different pages (a toggle, a slider, a dropdown, a font picker).
   **Expect:** a small tooltip above the label with the default value ("Default: On", "Default: 12", the default
   choice) and "Right-click the row to reset it."; rows marked Reload or Out of combat say so. No row is silent.
 - [ ] **2.11 Slash help.** Type `/pui help`, then `/pui nonsense`.
   **Expect:** the full command list in chat; the nonsense command says it is unknown and points to `/pui help`.
+- [ ] **2.12 Preview dock.** Open Nameplates on a window at least 1100 px wide (the default 1280×800 is).
+  **Expect:** the live preview sits on the right, scaled to fit, with sample-state chips (pick several) and
+  **Show in world**; scrolling the page does not move it. Drag the window narrower than 1100 px: the preview moves
+  into the page above the cards and stays pinned while you scroll.
+- [ ] **2.13 Section switches.** Nameplates → Colours → Threat: switch the card's header toggle off.
+  **Expect:** the card's rows grey out and cannot be changed; switch it on and they come back. Hovering the header
+  switch shows its name and description.
+- [ ] **2.14 Element chips.** Unit Frames: click Target, then Shift-click Focus, change Bar texture.
+  **Expect:** both Target and Focus change, Player does not. Turn on **All** and change it again: every frame
+  changes. Click the ⇄ beside one row: only that setting goes to every frame. "Apply all settings from" copies
+  every setting from the frame you pick.
+- [ ] **2.15 Borders & shadows.** Phoenix → General → Borders & shadows: open Border style and hover the cards.
+  **Expect:** the preview and every Phoenix border set to Follow Appearance change as you hover; clicking keeps
+  it. Try Ember with Glow colour on **Class**: borders glow in your class colour. Border colour **Theme** returns
+  to the dark edge. Shadow depth darkens or lightens shadows.
+- [ ] **2.16 Colour chips.** Any colour row with Class / Theme chips (for example a background colour cog).
+  **Expect:** Class lights up and the swatch shows your class colour on every character; Theme follows the theme;
+  picking a colour in the swatch unlights both.
+- [ ] **2.17 Top bar.** Use the profile switch, **Layout** and **Test frames**.
+  **Expect:** the profile changes at once; Layout closes the window and unlocks frames to move (Edit Mode when
+  Movers is off); Test frames shows sample unit frames (a note if Unit Frames is off). In combat the footer says
+  changes wait for the end of combat.
+- [ ] **2.18 Footer.** **Expect:** "Changes save automatically", the last action, the pixel-perfect UI scale for
+  your screen, the window scale slider and, only when something needs it, **Reload UI**.
 
 ## 3. Every module page
 
-For **each** module in the sidebar (General, Action Bars, Unit Frames, Group Frames, Name Plates, Cast Bars, Auras,
+For **each** module in the page lists (General, Action Bars, Unit Frames, Group Frames, Name Plates, Cast Bars, Auras,
 Auras & Cooldowns, Cooldown Text, Combat Text, Damage Meter, Tooltip, Chat, Minimap, Data Texts, Item Level, Bags, Spell History, Mythic+,
 PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 
@@ -100,7 +128,7 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   Pointing at a card shows it on the preview at once; moving away puts the old font back; clicking keeps it.
 - [ ] **3.5 Textures.** Open any bar texture picker.
   **Expect:** a grid of neutral-tinted strips (about 36), the same hover-to-try behaviour, and the choice applies to bars in game.
-- [ ] **3.5b Appearance & Media.** Open Fonts, then Textures.
+- [ ] **3.5b Fonts and Textures.** Phoenix → Fonts, then Textures.
   **Expect:** every font/texture setting of every module listed on one page; changing one here changes it on the
   module page too (the → arrow jumps there). **Apply to all** sets every row at once; **Use theme** returns them to
   Default. Sounds: each **Play** button plays the alert or the 5→1 countdown.
@@ -127,7 +155,7 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   mobs slipping are yellow and mobs on others red (as damage or healer: red when they attack you). The plate cast
   bar uses the Phoenix texture/colour/font, and the debuff icons above the plates are cropped with a border.
   No Lua errors in Mythic+ or delves. **If not:** send `/pui bugs`.
-- [ ] **3.5g Presets.** Tools → Presets: apply **Clean**, then **Vivid**, then press **Undo**.
+- [ ] **3.5g Presets.** Phoenix → Presets: apply **Clean**, then **Vivid**, then press **Undo**.
   **Expect:** each look changes the theme colour, fonts, bar texture and borders everywhere at once; Undo puts the
   previous look back exactly. Your profile list and other settings are untouched.
 - [ ] **3.5h Welcome picker.** Only on a brand-new install (no `Phoenix_UI.lua` in SavedVariables) or with
@@ -135,7 +163,7 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Expect:** about four seconds after the first login a window offers the three looks and **Skip**; picking or
   skipping closes it for good. Existing users never see it on their own.
 - [ ] **3.5h2 Module picker.** Right after the welcome picker (pick a look or Skip), or with **Choose modules** on
-  Tools → Presets.
+  Phoenix → Presets.
   **Expect:** a window lists every optional module with its icon, name and description, all switches matching their
   current state. Turn two off: the button reads **Apply and reload** if one of them needs a reload, otherwise
   **Apply**. Applying changes exactly those modules; **Keep all** changes nothing. It does not open again on its own.
@@ -197,8 +225,8 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 - [ ] **4.3 Export.** Click Export.
   **Expect:** a string starting with the Phoenix prefix. Press Ctrl+A, Ctrl+C and paste it into Notepad.
 - [ ] **4.4 Import.** Paste it back, using Import as `Imported`.
-  **Expect:** the preview reads `Valid profile "…" with N modules.`, the import gives the same settings, and pasting
-  garbage shows `This is not a Phoenix UI profile string.`
+  **Expect:** the preview reads `"…": N modules, M settings change.` with one entry per module (unchanged modules
+  greyed), the import gives the same settings, and pasting garbage shows `This is not a Phoenix UI profile string.`
 - [ ] **4.5 Reset.** Click Reset profile and confirm.
   **Expect:** `Profile reset.` and defaults restored, in that profile only.
 - [ ] **4.6 Rename and delete.** Rename `Test2`, then delete it.
@@ -207,6 +235,13 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
   **Expect:** the profile switches automatically.
 - [ ] **4.8 Slash.** Type `/pui profile Default`.
   **Expect:** `Switched to profile Default.` A name that doesn't exist gives `No profile named …`.
+- [ ] **4.9 Export some modules.** Under Export pick Nameplates and Unit Frames in Modules to export, then Generate.
+  **Expect:** importing that string on another profile lists only those two modules.
+- [ ] **4.10 Merge.** Paste a string and click **Merge** instead of Import.
+  **Expect:** "N modules merged into <your profile>"; only those modules change, everything else stays.
+- [ ] **4.11 Characters.** With two or more characters that used Phoenix, set another character's profile under
+  Characters, then log in on it.
+  **Expect:** it loads that profile. Changing this character's row switches at once.
 
 ## 5. Edit Mode and Movers
 
@@ -333,7 +368,7 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 - [ ] **12b.1 Restart.** After installing this build, quit the game completely and start it again (new icon files are
   only found at game start; `/reload` is not enough).
 - [ ] **12b.2 Icons.** Open `/pui`.
-  **Expect:** every sidebar entry, card header and button shows its glyph, sharp at your resolution.
+  **Expect:** every rail button, page-list entry, card header and button shows its glyph, sharp at your resolution.
 - [ ] **12b.3 Self-test.** Type `/pui diag`.
   **Expect:** `diag: N/N media files loaded …`, no Lua error. If any file is listed as FAILED, Phoenix switches to game
   icons by itself; `/reload` and send the `diag` block of `Phoenix_UI.lua`.
@@ -365,7 +400,7 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 Uses the Phoenix app 1.2.0 (until it is released: the test build you were given), running in the tray. Use a
 character with a spec, talents and at least one wearable item in the bags (a ring or trinket is best).
 
-- [ ] **13b.1 Page.** `/pui sim` (or Tooltips & Items → Sim).
+- [ ] **13b.1 Page.** `/pui sim` (or Content → Sim).
   **Expect:** the pinned results card shows a sample with a *Sample* badge, the paperdoll shows your gear with item
   icons (empty slots in grey), the list shows the bag gear you could wear with item level and slot.
 - [ ] **13b.2 Filter and pick.** Click your ring slot on the paperdoll, tick one ring, click **All slots**.
@@ -403,12 +438,12 @@ Forever yet, so send errors from `/pui bugs` by hand.
 - [ ] **13c.1 Loads, not out of date.** Character select → AddOns.
   **Expect:** *Phoenix UI* and *Phoenix UI Options* listed without "Out of date". `/pui` opens the window.
   `/run print(GetBuildInfo())` prints 1.60.1 … 16001. **If not:** screenshot of the AddOns list.
-- [ ] **13c.2 Which game.** Tools → Diagnostics. **Expect:** *Game client* starts with *WoW Forever · 1.60.1*.
+- [ ] **13c.2 Which game.** Phoenix → Diagnostics. **Expect:** *Game client* starts with *WoW Forever · 1.60.1*.
 - [ ] **13c.3 Retail-only features are gone, not broken.** **Expect:** no *Mythic+* page (the group is called
   *PvP*), no *Sim* page, no Great Vault card on Home, no Mythic+ rating or Sim switches on the Tooltip page, no
   enemy-forces switches on Nameplates, no Sim arrow switch on Bags, none of them in search (`keystone`, `sim`) or
-  in Tools → Presets → module picker. The Nameplates card no longer mentions Mythic+.
-- [ ] **13c.4 Encounters.** Combat → Encounters. **Expect:** tabs *Pull & break*, *Sounds* and *BigWigs* only, and a
+  in Phoenix → Presets → module picker. The Nameplates card no longer mentions Mythic+.
+- [ ] **13c.4 Encounters.** Content → Encounters. **Expect:** tabs *Pull & break*, *Sounds* and *BigWigs* only, and a
   note that this game has no boss timeline or warnings. **Run test**: a 10-second pull bar with the countdown
   voice on your screen only. In a group as leader: **Pull** starts the game's countdown for everyone and the bar;
   **Break** shows the break bar (and reaches DBM/BigWigs users when shared).

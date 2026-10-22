@@ -56,7 +56,7 @@ local function makeCard(parent)
     c.sample:SetWordWrap(false)
     c.check = W.Icon(c, "check", 12, "accent.primary")
     c.check:SetPoint("TOPRIGHT", -7, -7)
-    c.play = W:IconButton(c, "sound", 24, L.MEDIA_PLAY)
+    c.play = W:IconButton(c, "play", 24, L.MEDIA_PLAY)
     c.play:SetPoint("LEFT", 6, 0)
     c.play.onClick = function() playSound(c.item) end
     function c:Paint()
@@ -245,7 +245,7 @@ function W:MediaPicker(parent, kind, items, width)
     d.arrow = W.Icon(d, "chevron-down", 12)
     d.arrow:SetPoint("RIGHT", -9, 0)
     if kind == "sound" then
-        d.play = W:IconButton(d, "sound", 22, L.MEDIA_PLAY)
+        d.play = W:IconButton(d, "play", 22, L.MEDIA_PLAY)
         d.play:SetPoint("LEFT", 3, 0)
         d.play.onClick = function() playSound(d.current) end
     end

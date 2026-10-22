@@ -135,6 +135,32 @@ function DB:SnapshotProfile()
     return copy
 end
 
+-- Replaces the given modules' settings in the active profile ({ [key] = savedTable }) and reloads them.
+function DB:ReplaceModules(map)
+    ns.Combat:Run("db.merge", function()
+        stripModules(self)
+        for key, values in pairs(map) do self.profile.modules[key] = U.DeepCopy(values) end
+        bindModules(self)
+        ns:ReloadModules()
+        ns.Events:Fire("PUI_PROFILE_CHANGED", self.profileName)
+    end)
+end
+
+-- Characters that have used Phoenix on this account and the profile each loads ({ { key, profile }, ... }).
+function DB:GetCharacters()
+    local list = {}
+    for char, name in pairs(self.sv.profileKeys) do list[#list + 1] = { key = char, profile = name } end
+    table.sort(list, function(a, b) return a.key < b.key end)
+    return list
+end
+
+-- Which profile a character loads next login (this character switches now).
+function DB:SetCharacterProfile(char, name)
+    if type(name) ~= "string" or type(self.sv.profiles[name]) ~= "table" then return false end
+    if char == self.charKey then self:SetProfile(name) else self.sv.profileKeys[char] = name end
+    return true
+end
+
 function DB:ImportProfile(name, data)
     self.sv.profiles[name] = data
     self:SetProfile(name)

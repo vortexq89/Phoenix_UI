@@ -9,14 +9,34 @@
   switches, and the Encounters page keeps pull and break timers, their bars and the countdown voice (Forever has no
   boss timeline or warnings; Run test shows a pull bar). Per-spec profiles appear only where a class can choose a
   specialization. A retail profile imports as is; settings for retail-only modules are kept for when you go back.
-  Tools → Diagnostics names the game. Checked against Forever 1.60.1's own API, UI source and game data
+  Phoenix → Diagnostics names the game. Checked against Forever 1.60.1's own API, UI source and game data
   (`tools/check_flavors.py`).
 - **Game ID audit**: every hard-coded icon path, atlas, spell ID, sound and enum fallback was checked against
   build 12.1.5.70448 (wago.tools DB2 + Blizzard UI source). One was wrong: the Bugs page game-icon fallback
   (`INV_Misc_Bug_01` does not exist) now uses `INV_Misc_Bugsprayer`. `tools/check_ids.py` keeps it that way.
-- **Settings window 2.0**: the sidebar is 13 folding groups (Appearance & Media, Combat, Group & Mythic+, Tools …);
-  every module and option kept its place in your saved settings, only the menu moved. Search covers every page and
-  shows the full path. Reset any setting (right-click or ↺), any card, or a whole module.
+- **Settings window v2** (plan v2 stage S6): a 1280×800 window (resizable 900×560 to 1800×1200) with an icon rail
+  of seven groups (Home, Frames, Bars, Combat, Interface, Content, Phoenix), the open group's pages beside it with
+  sub-headings and a depth meter (settings now against the plan target), the page, a **preview dock** on the right
+  (from 1100 px wide; narrower windows keep the preview in the page) and a footer with auto-save, status, the
+  pixel-perfect UI scale, window scale and Reload. The top bar has search ("Search 607 settings…"), a profile
+  switch, **Layout** (unlock frames) and **Test frames**. Every module and option kept its saved place; only the
+  menu moved, and every option is still reachable (smoke-tested).
+- **Widget kit**: compact rows pair two to a line on wide cards; a card's first switch can sit in its header and
+  turn the whole card off (Cast bar, Auras, Threat, countdown voice, Tooltip and Cast Bars skins…); element chips
+  (Player, Target, Bar 1 …) with Shift-click to edit several, **All** to edit every element, **Apply all settings
+  from**, and a ⇄ button on each row that sends that one setting to every element; right-click any row to reset it.
+- **Style library** (Appearance → Borders & shadows): border styles Follow Appearance, None, Pixel, Solid, Thick,
+  Inset, Shadow, Glow and **Ember**; shadows Soft, Hard and Glow; backdrops Solid, Gradient and Glass, all picked
+  from visual cards. Set the border style, size, colour, shadow depth and glow colour once and every border set to
+  Follow Appearance follows. Colours can follow your **Class** or the **Theme**.
+- **Search** understands players' words: `hp`, `cd`, `colour`/`color`, `bg`, `np`, `m+`, `ilvl` …, and finds pages
+  by their rail group or sub-heading.
+- **Profiles**: which profile each of your characters loads; export the whole profile or only the modules you pick;
+  an import shows what it changes ("4 modules, 23 settings change", per module) and can be **merged** into the
+  active profile instead of making a new one; a link to Presets.
+- **Home**: module tiles filtered by group (or Off), each with its on/off switch and depth meter; the side panel
+  (health checks, quick actions, what's new) sits in the dock.
+- 7 new icons (109 in the atlas), all 10 languages translated.
 - **Previews**: every visual module has one; it stays pinned while you scroll, folds away, and Unit Frames,
   Nameplates and Cast Bars can show low health, out of range, targeted or interrupted. Hovering a font, texture or
   dropdown choice previews it before you pick.
@@ -46,7 +66,7 @@
   the item level (both can be switched off). **Test** fills the page with a sample. The exporter follows the
   SimulationCraft addon's item format (Unlicense, credited); spec and profession names come from the game data.
 - **Module picker**: after the welcome looks, new installs choose which modules to run (Apply, or Apply and reload
-  when one needs it); reopen it from Tools → Presets.
+  when one needs it); reopen it from Phoenix → Presets.
 - **Unit Frames**: Boss 1–5 frames, class-icon or hidden portraits, leader/raid-marker/PvP icon switches, a range
   fade for group members you target or focus, cropped aura icons, and **test frames** shown where the real frames
   sit (they close in combat).
@@ -54,7 +74,7 @@
   bar, and cropped, bordered debuff/buff icons with Phoenix fonts.
 - **Presets** (Tools): three complete looks — Ember, Clean, Vivid — in one click with Undo; new installs are offered
   them once in a welcome window.
-- **Tools → Diagnostics**: the media check, icon source (falls back to Blizzard icons if the Phoenix sheet fails)
+- **Phoenix → Diagnostics**: the media check, icon source (falls back to Blizzard icons if the Phoenix sheet fails)
   and a copyable report.
 - `/pui diag`: checks that every Phoenix texture and icon atlas loads in your client and records what the
   settings window's icons look like to the game; the result is kept in the SavedVariables for support. It also
@@ -87,7 +107,7 @@
 
 ### Fixed
 - Phoenix_UI warns once if the `Phoenix_UI_Options` folder is from a different version (one folder updated, the other
-  not); Tools → Diagnostics shows the same.
+  not); Phoenix → Diagnostics shows the same.
 - Less background work: Spell History's fade timer, the data bar and the minimap coordinates stop polling while
   idle or hidden; nameplates ignore health events while the health text is off; bag and roster events are coalesced.
 - Every settings card has an icon; the Data Bar and Minimap descriptions name their new features.

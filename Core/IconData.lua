@@ -112,5 +112,12 @@ ns.IconData = {
         ["encounters"] = 100,
         ["break"] = 101,
         ["sim"] = 102,
+        ["interface"] = 103,
+        ["content"] = 104,
+        ["apply-all"] = 105,
+        ["play"] = 106,
+        ["border"] = 107,
+        ["palette"] = 108,
+        ["layout"] = 109,
     },
 }

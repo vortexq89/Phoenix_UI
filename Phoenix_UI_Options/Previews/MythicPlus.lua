@@ -12,6 +12,7 @@ local SAMPLE = {
 
 P:Register("keystones", {
     module = "MythicPlus",
+    width = 450,
     height = 140,
     build = function(stage, m)
         local K = m.Keystones

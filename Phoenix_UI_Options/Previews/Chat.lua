@@ -20,6 +20,7 @@ end
 
 P:Register("chat", {
     module = "Chat",
+    width = 470,
     height = 150,
     build = function(stage, m)
         local win = CreateFrame("Frame", nil, stage)

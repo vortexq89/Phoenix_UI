@@ -17,8 +17,10 @@ function Style.Text(size, extra)
         anchor = "CENTER", x = 0, y = 0, show = true }, extra)
 end
 
-function Style.Border(extra) return with({ style = "solid", size = 1, color = false }, extra) end
-function Style.Background(extra) return with({ alpha = 0.6, color = false }, extra) end
+-- style "theme" follows Appearance & General (theme.borderStyle / borderSize), so one change there restyles every
+-- module that kept the default; shadow "auto" lets the style decide (only "shadow" draws one).
+function Style.Border(extra) return with({ style = "theme", size = 1, color = false, shadow = "auto" }, extra) end
+function Style.Background(extra) return with({ alpha = 0.6, color = false, style = "solid" }, extra) end
 function Style.Icons(size, extra) return with({ size = size or 32, spacing = 4, zoom = 0.08, growth = "RIGHT" }, extra) end
 
 ---------------------------------------------------------------- option rows
@@ -33,9 +35,25 @@ Opt.ANCHOR = {
     { value = "BOTTOMLEFT", label = "ANCHOR_BOTTOMLEFT" }, { value = "BOTTOM", label = "ANCHOR_BOTTOM" },
     { value = "BOTTOMRIGHT", label = "ANCHOR_BOTTOMRIGHT" },
 }
+-- The style library (ns.Skin:BorderSpec). Order is the picker's: follow Appearance first, then plain to loud.
 Opt.BORDER = {
-    { value = "none", label = "BORDER_NONE" }, { value = "solid", label = "BORDER_SOLID" },
-    { value = "glow", label = "BORDER_GLOW" }, { value = "shadow", label = "BORDER_SHADOW" },
+    { value = "theme", label = "BORDER_THEME" }, { value = "none", label = "BORDER_NONE" },
+    { value = "pixel", label = "BORDER_PIXEL" }, { value = "solid", label = "BORDER_SOLID" },
+    { value = "thick", label = "BORDER_THICK" }, { value = "inset", label = "BORDER_INSET" },
+    { value = "shadow", label = "BORDER_SHADOW" }, { value = "glow", label = "BORDER_GLOW" },
+    { value = "ember", label = "BORDER_EMBER" },
+}
+-- Appearance's own list: everything but "follow Appearance".
+Opt.BORDER_GLOBAL = {}
+for i = 2, #Opt.BORDER do Opt.BORDER_GLOBAL[#Opt.BORDER_GLOBAL + 1] = Opt.BORDER[i] end
+Opt.SHADOW = {
+    { value = "auto", label = "SHADOW_AUTO" }, { value = "none", label = "SHADOW_NONE" },
+    { value = "soft", label = "SHADOW_SOFT" }, { value = "hard", label = "SHADOW_HARD" },
+    { value = "glow", label = "SHADOW_GLOW" },
+}
+Opt.BACKDROP = {
+    { value = "solid", label = "BACKDROP_SOLID" }, { value = "gradient", label = "BACKDROP_GRADIENT" },
+    { value = "glass", label = "BACKDROP_GLASS" },
 }
 Opt.GROWTH = {
     { value = "RIGHT", label = "GROW_RIGHT" }, { value = "LEFT", label = "GROW_LEFT" },
@@ -69,19 +87,26 @@ function Opt.Text(path, label, opts)
         keywords = "font text size outline shadow" }, opts.row)
 end
 
+-- A border row: the visual style picker, with size, colour (Class / Theme tokens) and shadow behind its cog.
 function Opt.Border(path, label, token)
-    return { type = "select", key = path .. ".style", label = label or "BORDER", values = Opt.BORDER,
-        keywords = "border edge glow outline",
+    return { type = "style", kind = "border", key = path .. ".style", label = label or "BORDER", values = Opt.BORDER,
+        keywords = "border edge glow outline shadow pixel inset ember",
         cog = {
             { type = "range", key = path .. ".size", label = "BORDER_SIZE", min = 1, max = 6, step = 1 },
-            { type = "color", key = path .. ".color", label = "BORDER_COLOR", token = token or "border.black", alpha = true, reset = true },
+            { type = "color", key = path .. ".color", label = "BORDER_COLOR", token = token or "border.black", alpha = true,
+              reset = true, classToken = true },
+            { type = "style", kind = "shadow", key = path .. ".shadow", label = "SHADOW", values = Opt.SHADOW },
         } }
 end
 
 function Opt.Background(path, label, token)
     return { type = "range", key = path .. ".alpha", label = label or "BACKGROUND_OPACITY", min = 0, max = 1, step = 0.05,
-        percent = true, keywords = "background backdrop opacity alpha",
-        cog = { { type = "color", key = path .. ".color", label = "BACKGROUND_COLOR", token = token or "bg.sunken", reset = true } } }
+        percent = true, keywords = "background backdrop opacity alpha gradient glass",
+        cog = {
+            { type = "color", key = path .. ".color", label = "BACKGROUND_COLOR", token = token or "bg.sunken", reset = true,
+              classToken = true },
+            { type = "style", kind = "backdrop", key = path .. ".style", label = "BACKDROP_STYLE", values = Opt.BACKDROP },
+        } }
 end
 
 function Opt.Icons(path, opts)

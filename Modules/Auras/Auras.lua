@@ -47,6 +47,8 @@ function M:OnEnable()
         hooksecurefunc(frame, "UpdateAuraButtons", onUpdate)
         onUpdate(frame)
     end
+    -- borders that follow Appearance & General restyle with it
+    ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
 end
 
 function M:Refresh()

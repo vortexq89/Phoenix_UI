@@ -20,6 +20,7 @@ local HAS_AURAS = { target = true, focus = true, boss = true }
 
 P:Register("unitframe", {
     module = "UnitFrames",
+    width = 360,
     height = 120,
     states = {
         { key = "low", label = "PREVIEW_STATE_LOW", icon = "warning" },

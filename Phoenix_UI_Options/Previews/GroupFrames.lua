@@ -13,6 +13,7 @@ local W_, H_, POWER_H, GAP, SCALE = 84, 40, 6, 6, 1.3
 
 P:Register("groupframe", {
     module = "GroupFrames",
+    width = 600,
     height = 100,
     build = function(stage, m)
         local row = CreateFrame("Frame", nil, stage)

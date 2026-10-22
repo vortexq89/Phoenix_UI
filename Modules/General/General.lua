@@ -8,6 +8,8 @@ local M = ns:NewModule("General", {
         theme = {
             preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
             uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false,
+            -- the style library defaults every module border set to "Follow Appearance" uses (Core/Style.lua)
+            borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
         },
     },
 })

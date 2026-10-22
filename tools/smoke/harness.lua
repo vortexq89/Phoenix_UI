@@ -170,6 +170,7 @@ local api = {
     GetNormalizedRealmName = function() return "Realm" end,
     BreakUpLargeNumbers = function(n) return tostring(n) end,
     UnitClass = function() return "Mage", "MAGE", 8 end, UnitLevel = function() return 90 end,
+    UnitThreatSituation = function() return nil end,
     UnitGUID = function() return "Player-1-0001" end, UnitRace = function() return "Human", "Human" end,
     GetMoney = function() return 12345678 end, GetFramerate = function() return 60 end,
     GetNetStats = function() return 0, 0, 20, 30 end, GetServerTime = function() return os.time() end,
@@ -904,11 +905,11 @@ try("search", function()
     assert(page.tab == textTab, "focusing a Text-tab option did not switch tabs")
     ns.Config:Search("")
 end)
--- layout: 13 groups; every module and built-in page sits in exactly one; every option row is reachable
+-- layout: the 7 rail groups of plan v2; every module and built-in page sits in exactly one; every option row is reachable
 try("layout coverage", function()
     local C = ns.Config
     local groups, seen = C:Groups(), {}
-    assert(#C.GROUPS == 13, "expected 13 sidebar groups, have " .. #C.GROUPS)
+    assert(#C.GROUPS == 7, "expected 7 rail groups, have " .. #C.GROUPS)
     for _, g in ipairs(groups) do
         for _, key in ipairs(g.entries) do
             assert(not seen[key], key .. " is listed in two groups")
@@ -952,8 +953,12 @@ try("search pages and groups", function()
     end
     assert(find("unit frames texture", function(e) return e.key == "UnitFrames" and e.item end), "multi-word search failed")
     assert(find("export", function(e) return e.key == "profiles" and e.item end), "profiles page rows are not searchable")
-    local e = find(ns.L.GROUP_TOOLTIPS:lower(), function(x) return x.key == "ItemLevel" end)
-    assert(e, "a group name does not find its pages")
+    local e = find(ns.L.SUB_ITEMS:lower(), function(x) return x.key == "ItemLevel" end)
+    assert(e, "a sub-heading does not find its pages")
+    e = find(ns.L.RAIL_CONTENT:lower(), function(x) return x.key == "Encounters" end)
+    assert(e, "a rail group name does not find its pages")
+    assert(find("hp", function(x) return x.item and (ns.L[x.item.label] or ""):lower():find("health") end),
+        "the synonym hp does not find health options")
     C:Search("")
 end)
 -- resets: a row, a card and a whole module go back to their defaults; the module keeps its on/off state
@@ -1214,7 +1219,7 @@ try("flavor", function()
             local m = ns.modules[k]
             assert(not m.unavailable and not m.hidden and m:IsEnabled() and keys[k], k .. " should be on retail")
         end
-        assert(labels.group == "GROUP_MYTHIC", "the Mythic+ group lost its name on retail")
+        assert(labels.content == "RAIL_CONTENT" and keys.MythicPlus and keys.Sim, "the Content group lost Mythic+ or Sim on retail")
         assert(tooltip.mplusRating and tooltip.simLine and plates.forces and plates["forcesText.font"] and bags.simArrow,
             "retail lost a Mythic+ or Sim option")
         assert(enc.ENC_TAB_TIMELINE and enc.ENC_TAB_WARNINGS and enc["timeline.display"] and enc.ENC_MASTER,
@@ -1234,7 +1239,7 @@ try("flavor", function()
         assert(C:Show(k) == C.pages.home, "opening " .. k .. " on Forever did not fall back to Home")
     end
     assert(ns.modules.Sim.db and type(ns.modules.Sim.db.mode) == "string", "a gated module lost its saved settings")
-    assert(labels.group == "PVP", "the group page should be named PvP without Mythic+")
+    assert(labels.content == "RAIL_CONTENT" and keys.Encounters and keys.PvP, "the Content group lost its pages on Forever")
     assert(not (tooltip.mplusRating or tooltip.simLine or plates.forces or plates["forcesText.font"] or bags.simArrow),
         "a Mythic+ or Sim option is left on Forever")
     assert(tooltip.ids and plates.healthText and bags.upgrade, "filtering dropped options that Forever has")
@@ -1490,6 +1495,175 @@ try("schema and import", function()
     assert(np.health and np.health.size == 14 and np.textSize == nil, "an old export was not upgraded on import")
     ns.DB:SetProfile(current)
     ns.DB.sv.profiles[name] = nil
+end)
+
+---------------------------------------------------------------- 2.0 S6: settings window v2 and the widget kit
+-- chips: single pick, Shift-click extras, multi sets
+try("chips", function()
+    local W = ns.Widgets
+    local shift = false
+    local saved = rawget(env, "IsShiftKeyDown")
+    rawset(env, "IsShiftKeyDown", function() return shift end)
+    local c = W:Chips(env.CreateFrame("Frame"), { { value = "a", label = "A" }, { value = "b", label = "B" }, { value = "c" } })
+    local got
+    c.onChange = function(_, v, sh) got = { v, sh } end
+    scripts[c.chips[2]].OnClick(c.chips[2])
+    assert(c:GetValue() == "b" and got[1] == "b" and not got[2], "a chip click did not pick it")
+    shift = true
+    scripts[c.chips[3]].OnClick(c.chips[3])
+    assert(c:GetValue() == "b" and c:GetExtra().c and got[2], "Shift-click did not add an extra chip")
+    shift = false
+    c:ClearExtra()
+    assert(not next(c:GetExtra()), "ClearExtra kept extras")
+    local m = W:Chips(env.CreateFrame("Frame"), { { value = "x" }, { value = "y" } }, true)
+    scripts[m.chips[1]].OnClick(m.chips[1]); scripts[m.chips[2]].OnClick(m.chips[2]); scripts[m.chips[1]].OnClick(m.chips[1])
+    assert(not m:GetValue().x and m:GetValue().y, "multi chips do not toggle a set")
+    rawset(env, "IsShiftKeyDown", saved)
+end)
+-- section gates: the switch sits in the card header and turns the card's other rows off
+try("gates", function()
+    local C = ns.Config
+    local m = ns.modules.NamePlates
+    local page = C:Show("NamePlates")
+    local gate, colors
+    for _, r in ipairs(page.rows) do
+        if r.item.key == "threat.enabled" then gate = r end
+        if r.item.label == "NP_THREAT_PICK" then colors = r end
+    end
+    assert(gate and colors and gate.card.gateRow == gate, "the threat switch is not its card's gate")
+    page.tabs.onChange(page.tabs, 2)
+    page:Layout()
+    assert(gate.mode == "gate", "the gate row was not laid out in the card header")
+    ns.DB:Set(m, "threat.enabled", false); page:Refresh()
+    assert(colors.enabledState == false, "a gated-off card left its rows enabled")
+    ns.DB:Set(m, "threat.enabled", true); page:Refresh()
+    assert(colors.enabledState == true, "turning the gate on did not enable its rows")
+    -- every gate is the first row under a header
+    for key, schema in pairs(ns.options) do
+        for i, item in ipairs(schema) do
+            if item.gate then assert(schema[i - 1] and schema[i - 1].type == "header", key .. ": a gate is not right after a header") end
+        end
+    end
+end)
+-- paired cells: compact rows sit two per line on a wide card, one per line on a narrow one
+try("paired cells", function()
+    local C = ns.Config
+    local page = C:Show("UnitFrames")
+    rawset(page.scroll.child, "GetWidth", function() return 1100 end)
+    page:Layout()
+    local cells = 0
+    for _, r in ipairs(page.rows) do if r:IsShown() and r.mode == "cell" then cells = cells + 1 end end
+    assert(cells >= 2, "no paired cells on a wide page")
+    rawset(page.scroll.child, "GetWidth", nil)
+    page:Layout()
+    for _, r in ipairs(page.rows) do assert(r.mode ~= "cell", "a narrow page still pairs rows") end
+end)
+-- ⇄ apply to all copies a scoped row to every element
+try("apply to all", function()
+    local C = ns.Config
+    local m = ns.modules.UnitFrames
+    local page = C:Show("UnitFrames")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.key == "units.@.texture" then row = r end end
+    assert(row and row.applyAll, "a scoped row has no apply-to-all button")
+    ns.DB:Set(m, "units." .. page.scope.unit .. ".texture", "Neon")
+    local n = C.ApplyRowToAll(page, m, row.item)
+    assert(n == #page.scope.values - 1, "apply to all wrote " .. n .. " elements")
+    for _, e in ipairs(page.scope.values) do assert(m.db.units[e.value].texture == "Neon", e.value .. " was not updated") end
+    for _, e in ipairs(page.scope.values) do ns.DB:Set(m, "units." .. e.value .. ".texture", m.defaults.units[e.value].texture) end
+end)
+-- the style library: every border, shadow and backdrop style draws; "theme" follows Appearance & General
+try("border styles", function()
+    local Skin, Opt = ns.Skin, ns.Opt
+    local f = env.CreateFrame("Frame")
+    for _, b in ipairs(Opt.BORDER) do
+        for _, sh in ipairs(Opt.SHADOW) do Skin:BorderSpec(f, { style = b.value, size = 2, color = false, shadow = sh.value }) end
+    end
+    for _, bd in ipairs(Opt.BACKDROP) do Skin:Backdrop(f, { alpha = 0.6, color = false, style = bd.value }) end
+    local General = ns.modules.General
+    ns.DB:Set(General, "theme.borderStyle", "ember"); ns.DB:Set(General, "theme.borderSize", 3)
+    local style, size = Skin:ResolveBorder({ style = "theme", size = 1 })
+    assert(style == "ember" and size == 3, "a theme border does not follow Appearance & General")
+    ns.DB:Set(General, "theme.borderStyle", "solid"); ns.DB:Set(General, "theme.borderSize", 1)
+    for _, b in ipairs(Opt.BORDER_GLOBAL) do assert(b.value ~= "theme", "the global border list can point at itself") end
+end)
+-- colour fields: Class follows the class colour live, Theme returns to the token; a global border colour works
+try("class token", function()
+    local W, Skin = ns.Widgets, ns.Skin
+    local f = W:ColorField(env.CreateFrame("Frame"), false, "border.black")
+    local got
+    f.onChange = function(_, v) got = v end
+    f.chips.onChange(f.chips, "class")
+    assert(type(got) == "table" and got.token == "class", "the Class chip did not save a class token")
+    local r, g, b = Skin:SpecColor(got)
+    assert(r and g and b, "a class token does not resolve to a colour")
+    f.chips.onChange(f.chips, "theme")
+    assert(got == false, "the Theme chip did not return to the theme")
+    local General = ns.modules.General
+    ns.DB:Set(General, "theme.borderColor", { token = "class" })
+    ns.Theme:Apply(General.db.theme)
+    ns.DB:Set(General, "theme.borderColor", false)
+    ns.Theme:Apply(General.db.theme)
+end)
+-- search: the placeholder counts the settings it reaches
+try("search count", function()
+    local C = ns.Config
+    C:InvalidateSearch()
+    local n = C:SearchCount()
+    assert(n > 300, "search reaches only " .. n .. " settings")
+    C:UpdateSearchHint()
+end)
+-- profiles: export chosen modules, preview an import's changes, merge into the active profile
+try("profiles v2", function()
+    local P, DB = ns.Profiles, ns.DB
+    local np = ns.modules.NamePlates
+    local before = np.db.bar
+    DB:Set(np, "bar", "Neon")
+    local payload = P:Decode(P:Export({ NamePlates = true }))
+    assert(payload and payload.partial and payload.profile.modules.NamePlates and not payload.profile.modules.UnitFrames,
+        "a module export carried other modules")
+    DB:Set(np, "bar", before)
+    local diff = P:Diff(payload)
+    assert(#diff == 1 and diff[1].key == "NamePlates" and diff[1].changes >= 1, "the import preview missed a change")
+    assert(P:Merge(payload) == 1 and np.db.bar == "Neon", "merging did not write the module into this profile")
+    DB:Set(np, "bar", before)
+    assert(#DB:GetCharacters() >= 1, "no characters listed")
+    assert(DB:SetCharacterProfile(DB.charKey, DB:GetProfileName()), "assigning this character's profile failed")
+    assert(not DB:SetCharacterProfile("Nobody-Realm", "\0missing"), "a missing profile was assigned")
+end)
+-- the preview dock: wide windows pin the preview beside the page, narrow ones keep it in the page
+try("dock", function()
+    local C = ns.Config
+    local f = C.frame
+    rawset(f, "GetWidth", function() return 1280 end)
+    local page = C:Show("NamePlates")
+    C:LayoutShell()
+    assert(page.docked and f.dock:IsShown(), "a 1280 px window did not dock the preview")
+    assert(page.pinned:GetScale() <= 1, "the docked preview is not fitted")
+    rawset(f, "GetWidth", function() return 1000 end)
+    C:LayoutShell()
+    assert(not page.docked and not f.dock:IsShown(), "a 1000 px window still docks the preview")
+    rawset(f, "GetWidth", function() return 1280 end)
+    local home = C:Show("home")
+    C:LayoutShell()
+    assert(home.docked and home.side, "Home's side panel did not dock")
+    rawset(f, "GetWidth", nil)
+    C:LayoutShell()
+    -- stages wider than the dock scale down instead of clipping
+    local stage = ns.Previews:Create("nameplate", env.CreateFrame("Frame"), ns.modules.NamePlates, {})
+    assert(stage:Fit(300) < 1 and stage:Fit(900) == 1, "stage:Fit does not scale a wide preview")
+end)
+-- Home: filter chips narrow the module grid, every card shows its depth
+try("home v2", function()
+    local C = ns.Config
+    local home = C:Show("home")
+    home.filter:SetValue("frames"); home:Layout()
+    local shown = 0
+    for _, c in ipairs(home.cards) do if c:IsShown() then shown = shown + 1; assert(c.group == "frames", "filter let another group through") end end
+    assert(shown >= 3, "the Frames filter shows " .. shown .. " cards")
+    home.filter:SetValue("all"); home:Layout()
+    for _, c in ipairs(home.cards) do assert(c.depth, "a module card has no depth meter") end
+    home.side:Refresh()
 end)
 
 for _, e in ipairs(events) do fire(unpack(e)) end

@@ -266,8 +266,11 @@ name is used twice. Licences and sizes: `Media/Fonts/FONTS.md`.
 
 ### 7.2 Style specs
 `Core/Style.lua` defines the per-module look as plain tables stored in the profile:
-`Style.Text(size)` (font, size, outline, shadow, colour, anchor, x, y, show), `Style.Border` (none/solid/glow/
-shadow, size, colour), `Style.Background` (alpha, colour) and `Style.Icons` (size, spacing, zoom, growth).
+`Style.Text(size)` (font, size, outline, shadow, colour, anchor, x, y, show), `Style.Border` (style theme / none /
+pixel / solid / thick / inset / shadow / glow / ember, size, colour, shadow auto / none / soft / hard / glow),
+`Style.Background` (alpha, colour, style solid / gradient / glass) and `Style.Icons` (size, spacing, zoom, growth).
+Style `theme` follows Appearance & General (`theme.borderStyle`, `borderSize`); `theme.borderColor` and
+`theme.glowColor` override the `border.black` and `accent.glow` tokens, and `theme.shadowAlpha` sets shadow depth.
 `colour = false` means "follow the theme token", so presets keep working. `ns.Opt.Text/Border/Background/Icons`
 build the matching option rows (a font row with a cog for size/outline/shadow/colour/position, and so on), and
 `ns.Skin:TextSpec/Place/BorderSpec/Backdrop/IconZoom` apply a spec to a frame. Modules style their frames through
@@ -289,33 +292,51 @@ Presets change the accent family over one shared dark surface palette: **Phoenix
 
 ## 9. Standalone config window
 
-Movable and resizable (860×540 to 1600×1100, default 1000×660). Built on first open, closes with Esc
+Settings window v2 (plan v2 stage S6, `Phoenix_UI_Options/Config/Window.lua`). Movable and resizable (900×560 to
+1800×1200, default 1280×800; sizes saved by the 13-group layout reset once). Built on first open, closes with Esc
 (`UISpecialFrames`, frame `PhoenixUI_Config`), position and size saved in `global.ui` (`/pui reset` clears them).
-Header 56, sidebar 216, footer 40 (profile, status, window scale 0.7–1.4 applied on mouse-up and saved in
-`global.ui.scale`, Reload UI, Close). See `docs/screenshots` for the rendered layout.
 
-* **Sidebar:** Home, then modules grouped System / Interface / Combat / Social / Utility, then Profiles and About.
-  Rows show the module icon and state (enabled, errored, reload pending).
-* **Search:** indexes every schema entry (`label`, `desc`, `keywords`, module name) and the rows inside cogs.
-  Picking a result opens the page, switches to its tab, scrolls to the row and flashes it.
+* **Shell:** top bar 52 (brand, search centred and narrowing before it overlaps, profile switch, Layout, Test
+  frames, close), icon rail 64, page list 212, content, preview dock (30 % of the width, 380–460, only from 1100 px;
+  `Config:LayoutShell`), footer 34 (auto-saved, status, pixel-perfect UI scale from `GetPhysicalScreenSize`,
+  window scale 0.7–1.4 applied on mouse-up and saved in `global.ui.scale`, Reload when a module needs it).
+* **Navigation** (`Groups.lua`): seven rail groups (Home, Frames, Bars, Combat, Interface, Content, Phoenix), each a
+  list of module or page keys with optional `{ heading = KEY }` sub-headings. Every module and page sits in exactly
+  one group; unlisted modules fall into the group for their category. `Config.DEPTH` holds the plan v2 target per
+  page and `Config:Depth(key)` returns now/target for the page-list and Home meters. Menu only: saved settings
+  never move.
+* **Search** (`Search.lua`): indexes every schema entry (`label`, `desc`, `keywords`, module name, rail group and
+  sub-heading) and the rows inside cogs, with a synonym table for players' words (hp, cd, colour, bg, np, m+, ilvl…).
+  Picking a result opens the page, switches to its tab, scrolls to the row and flashes it. The placeholder counts
+  the settings it reaches (`Config:SearchCount`). No global key capture: `SetPropagateKeyboardInput` is
+  restricted in combat, so there is no Ctrl+F.
 * **Live updates:** controls write through `ns.DB:Set(module, path, value)`, which calls
   `module:OnSettingChanged()` and fires `PUI_SETTING_CHANGED`.
 * **Schema → widgets** (`Phoenix_UI_Options/Config/Renderer.lua`): `header`, `description`, `toggle`, `range`, `select`, `font`,
   `texture`, `color`, `input`, `button`, `custom` (`build(row, module)`). Per entry: `key` or `get`/`set`, `desc`,
   `keywords`, `disabled = fn(m)`, `hidden = fn(m)`, `reload` (Reload badge) and `combat` (applies after combat).
 * **2.1 additions:** `tab` (splits a page; cards belong to the last tab), `preview` (`kind` registered in
-  `Phoenix_UI_Options/Previews`), `scope` (a unit selector; keys containing `@` resolve to the chosen unit, with "Apply to"
-  This / All / Multiple and "Apply all settings from"), `colors` (several token swatches in one row) and
-  `cog = { … }` on any row (a popover with the sub-options; cogs do not nest, `Opt.Flat` flattens rows for them).
-  `color` rows take `token`, `reset` and `alpha`; `texture` and `font` pickers draw live samples, filter as you
-  type from 12 entries and group by family or style.
+  `Phoenix_UI_Options/Previews`), `scope` (element chips; keys containing `@` resolve to the picked element),
+  `colors` (several token swatches in one row) and `cog = { … }` on any row (a popover with the sub-options; cogs do
+  not nest, `Opt.Flat` flattens rows for them). `color` rows take `token`, `reset`, `alpha` and `classToken`
+  (Class / Theme chips; `{ token = "class" }` follows the class colour). `texture` and `font` pickers draw live
+  samples, filter as you type and group by family or style.
+* **S6 widget kit:** `style` rows (`kind` border / shadow / backdrop, `W:StylePicker`, cards drawn by
+  `Skin:BorderSpec`/`Backdrop`); `gate = true` on the first toggle under a header makes it the card's header switch
+  and disables the card's other rows while off; rows without a description pair two per line on cards of 400 px
+  or more (`Renderer.lua` `CELL_H` 60, `TOGGLE_CELL_H` 38); the scope bar is `W:Chips` (Shift-click edits several,
+  **All** edits every element, "Apply all settings from" copies one element), and each `@` row has ⇄
+  (`Config.ApplyRowToAll`). Page header 96: icon, title, description, setting count, state, Reset module, switch.
+* **Preview dock:** the page's preview card (or Home's side panel, `page.side`) moves into the dock on wide windows
+  (`page:SetDocked`); stages wider than the dock scale down (`stage:Fit(width)`, `width` per preview kind).
 * **Previews** (`Phoenix_UI_Options/Previews/*.lua`): `ns.Previews:Register(kind, { module, height, build(stage, m) })`. The build
   creates plain frames with fixed sample data and returns a redraw function that calls the module's own style
   methods (for example `NamePlates:StyleBar`, `UnitFrames:StyleTexts`, `CastBars:FillColor`). Redraws on
   `PUI_SETTING_CHANGED` for the module or General, on `PUI_THEME_CHANGED` and on show. No secure templates, no
   unit tokens, nothing that can taint. Kinds: theme, nameplate, unitframe, groupframe, castbar, actionbar, aura, datatext,
   tooltip, chat.
-* **Layout:** page padding 24, card gap 16, card header 40, rows 36 (52 with a description), controls 28 high.
+* **Layout:** page padding 24, card gap 16, card header 42, rows 46 (more with a description), cells 60 / 38,
+  controls 26–28 high.
   From 760 px of content width cards flow into two columns (each card goes to the shorter column; `wide`
   headers and a lone card span both).
 

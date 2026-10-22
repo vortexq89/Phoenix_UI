@@ -10,20 +10,48 @@ local Config = ns.Config
 local MAX_RESULTS, RESULT_H = 40, 44
 local index
 
+--[[ Words people type for what the options call something else. A query word matches a row when the word or
+    any of its synonyms is in the row's text, so "hp", "cd" or "colour" land where they should. Kept in
+    English on purpose: these are the abbreviations players use in every client language. ]]
+local SYNONYMS = {
+    hp = { "health" }, health = { "hp" }, mana = { "power" }, power = { "mana", "energy", "rage" },
+    cd = { "cooldown" }, cds = { "cooldown" }, cooldown = { "cd" },
+    colour = { "color" }, color = { "colour" }, grey = { "gray" }, gray = { "grey" },
+    bg = { "background", "backdrop" }, background = { "backdrop" }, backdrop = { "background" },
+    opacity = { "alpha", "transparency" }, alpha = { "opacity" }, transparency = { "opacity", "alpha" },
+    scale = { "size" },
+    keybind = { "hotkey", "binding" }, hotkey = { "keybind", "binding" }, bind = { "hotkey", "keybind" },
+    np = { "nameplate" }, plates = { "nameplate" }, uf = { "unit frame" }, ab = { "action bar" },
+    raid = { "group" }, party = { "group" }, mplus = { "mythic" }, ["m+"] = { "mythic" }, key = { "keystone" },
+    dbm = { "encounter", "boss" }, bigwigs = { "encounter", "boss" }, timers = { "timer", "bar" },
+    edge = { "border" }, typeface = { "font" }, ilvl = { "item level" },
+    fps = { "frame rate" }, ping = { "latency" },
+}
+
+local function matches(haystack, word)
+    if haystack:find(word, 1, true) then return true end
+    for _, alt in ipairs(SYNONYMS[word] or {}) do
+        if haystack:find(alt, 1, true) then return true end
+    end
+    return false
+end
+
 -- Every page (module or built-in) with its schema: modules first in sidebar order, then built-in pages.
 local function sources()
     local out = {}
     for _, g in ipairs(Config:Groups()) do
-        for _, key in ipairs(g.entries) do
-            local m = ns.modules[key]
-            if m then
-                out[#out + 1] = { key = key, object = m, schema = ns.options[key] or {}, group = g }
-            else
-                local info = Config.pageInfo[key]
-                if info then
-                    local schema = info.schema
-                    if type(schema) == "function" then schema = schema() end
-                    out[#out + 1] = { key = key, object = info.object or info, schema = schema or {}, group = g }
+        for _, sec in ipairs(g.sections) do
+            local heading = sec.heading and L[sec.heading] or ""
+            for _, key in ipairs(sec.entries) do
+                local m = ns.modules[key]
+                if m then
+                    out[#out + 1] = { key = key, object = m, schema = ns.options[key] or {}, group = g, heading = heading }
+                else
+                    local info = Config.pageInfo[key]
+                    if info then
+                        out[#out + 1] = { key = key, object = info.object or info, schema = Config:SchemaOf(key) or {},
+                            group = g, heading = heading }
+                    end
                 end
             end
         end
@@ -37,8 +65,9 @@ local function buildIndex()
     for _, src in ipairs(sources()) do
         local m = src.object
         local mLabel = L[m.label] or m.label
-        local gLabel = L[src.group.label] or ""
-        local root = (src.group.entries[2] and gLabel ~= mLabel) and (gLabel .. "  ›  " .. mLabel) or mLabel
+        local gLabel = (L[src.group.label] or "") .. " " .. src.heading
+        local rail = L[src.group.label] or ""
+        local root = (src.group.entries[2] and rail ~= mLabel) and (rail .. "  ›  " .. mLabel) or mLabel
         local mDesc = m.desc and L[m.desc] or ""
         index[#index + 1] = { key = src.key, icon = m.icon, label = mLabel, path = root,
             haystack = (mLabel .. " " .. mDesc .. " " .. gLabel):lower() }
@@ -70,6 +99,19 @@ local function buildIndex()
 end
 
 function Config:InvalidateSearch() index = nil end
+
+-- Settings the search reaches (rows, not pages), for the placeholder: "Search 455 settings…".
+function Config:SearchCount()
+    if not index then buildIndex() end
+    local n = 0
+    for _, e in ipairs(index) do if e.item then n = n + 1 end end
+    return n
+end
+
+function Config:UpdateSearchHint()
+    local box = self.frame and self.frame.header.search
+    if box and box.placeholder then box.placeholder:SetText(L.SEARCH_PLACEHOLDER_N:format(self:SearchCount())) end
+end
 
 local function resultRow(parent, i)
     local r = CreateFrame("Button", nil, parent)
@@ -145,7 +187,7 @@ function Config:Search(query)
         if n >= MAX_RESULTS then break end
         local hit = true
         for _, w in ipairs(words) do
-            if not e.haystack:find(w, 1, true) then hit = false; break end
+            if not matches(e.haystack, w) then hit = false; break end
         end
         if hit then
             n = n + 1

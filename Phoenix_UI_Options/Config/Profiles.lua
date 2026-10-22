@@ -4,8 +4,10 @@ local W, Skin = ns.Widgets, ns.Skin
 local Config = ns.Config
 local DB, Profiles = ns.DB, ns.Profiles
 
---[[ Profiles page: switch / create / rename / delete, per-spec auto switching, export & import.
-    Rendered through the schema renderer with a module-like page object. ]]
+--[[ Profiles page: switch / create / rename / delete, presets, which profile each character loads, per-spec
+    auto switching, export (whole profile or chosen modules) and import with a preview of what changes, as a
+    new profile or merged into the active one. Rendered through the schema renderer with a module-like page
+    object. ]]
 local page = { key = "profiles", label = "PROFILES", desc = "PROFILES_DESC", icon = "profiles", locked = true, db = {} }
 local NONE = "\0none"
 
@@ -59,7 +61,34 @@ local function profileValues(includeNone, excludeActive)
 end
 
 local deleteTarget
-local exportBox, importBox, importStatus, importName, pending
+local exportBox, importBox, importStatus, importName, pending, exportChips
+
+local function moduleChips()
+    local out = {}
+    for _, m in ipairs(ns.moduleList) do
+        if not m.hidden then out[#out + 1] = { value = m.key, label = L[m.label] or m.key, icon = m.icon } end
+    end
+    table.sort(out, function(a, b) return a.label < b.label end)
+    return out
+end
+
+-- "Name: 4 modules, 23 settings change" and one line of "Label (n)" per module, unchanged ones muted
+local function previewText(payload)
+    local diff, total, parts = Profiles:Diff(payload), 0, {}
+    for _, e in ipairs(diff) do
+        total = total + e.changes
+        parts[#parts + 1] = e.changes > 0 and ("%s (%d)"):format(e.label, e.changes) or ns.Theme:Wrap(e.label, "text.muted")
+    end
+    return ns.Theme:Wrap(L.IMPORT_DIFF:format(tostring(payload.name), #diff, total), "state.success") .. "\n"
+        .. table.concat(parts, ", ")
+end
+
+local function clearImport()
+    pending = nil
+    importBox:SetValue("")
+    importName:SetValue("")
+    importStatus:SetText("")
+end
 
 local function buildSchema()
     local schema = {
@@ -102,6 +131,26 @@ local function buildSchema()
         end },
     }
 
+    schema[#schema + 1] = { type = "button", label = "PRESETS_LINK", desc = "PRESETS_LINK_DESC", button = "PRESETS_OPEN",
+        icon = "presets", func = function() Config:Show("presets") end }
+
+    -- which profile every character of the account loads (this one switches now, the others on their next login)
+    local chars = DB:GetCharacters()
+    if #chars > 1 then
+        schema[#schema + 1] = { type = "header", label = "CHARACTERS", icon = "user", desc = "CHARACTERS_DESC" }
+        for _, c in ipairs(chars) do
+            schema[#schema + 1] = {
+                type = "select", label = c.key, keywords = "character alt",
+                desc = c.key == DB.charKey and L.CHARACTER_THIS or nil,
+                values = function() return profileValues() end,
+                get = function()
+                    for _, x in ipairs(DB:GetCharacters()) do if x.key == c.key then return x.profile end end
+                end,
+                set = function(_, v) DB:SetCharacterProfile(c.key, v) end,
+            }
+        end
+    end
+
     -- per-spec profiles, where this character can choose a specialization (ns.FEATURES.specSelection)
     local _, _, classID = UnitClass("player")
     local specs = ns:Supports("specSelection") and classID and C_SpecializationInfo.GetNumSpecializationsForClassID(classID) or 0
@@ -123,10 +172,16 @@ local function buildSchema()
 
     local rest = {
         { type = "header", label = "EXPORT", icon = "export" },
+        { type = "custom", label = "EXPORT_MODULES", desc = "EXPORT_MODULES_DESC", fullWidth = true, height = 210,
+          keywords = "share partial", build = function(row)
+            exportChips = W:Chips(row, moduleChips(), true)
+            return exportChips
+        end },
         { type = "custom", label = "EXPORT_STRING", desc = "EXPORT_DESC", build = function(row)
             local b = W:Button(row, L.GENERATE, "primary", "export", 140)
             b.onClick = function()
-                exportBox:SetValue(Profiles:Export())
+                local keys = exportChips and next(exportChips:GetValue()) and exportChips:GetValue() or nil
+                exportBox:SetValue(Profiles:Export(keys))
                 exportBox.edit:SetFocus()
                 exportBox.edit:HighlightText()
                 Config:SetStatus(L.EXPORT_READY, "state.success")
@@ -148,16 +203,13 @@ local function buildSchema()
                 if not payload then
                     importStatus:SetText(importBox:GetValue() == "" and "" or ns.Theme:Wrap(L[err], "state.danger"))
                 else
-                    local parts = {}
-                    for _, e in ipairs(Profiles:Summarize(payload)) do parts[#parts + 1] = e.label end
-                    importStatus:SetText(ns.Theme:Wrap(L.IMPORT_PREVIEW:format(tostring(payload.name), #parts), "state.success")
-                        .. "\n" .. table.concat(parts, ", "))
+                    importStatus:SetText(previewText(payload))
                     if importName:GetText() == "" and type(payload.name) == "string" then importName:SetValue(payload.name) end
                 end
             end)
             return importBox
         end },
-        { type = "custom", label = "IMPORT_AS", height = 72, build = function(row)
+        { type = "custom", label = "IMPORT_AS", height = 84, build = function(row)
             local holder = CreateFrame("Frame", nil, row)
             holder:SetSize(W.CONTROL_WIDTH + 124, 28)
             importName = W:Input(holder, W.CONTROL_WIDTH, L.PROFILE_NAME)
@@ -170,12 +222,10 @@ local function buildSchema()
                     return
                 end
                 local name = Profiles:Import(pending, strtrim(importName:GetText() or ""))
-                pending = nil
-                importBox:SetValue("")
-                importName:SetValue("")
-                importStatus:SetText("")
+                clearImport()
                 Config:SetStatus(L.IMPORT_DONE:format(name), "state.success")
             end
+            holder.button = b
             row.label:ClearAllPoints()
             row.label:SetPoint("TOPLEFT", 16, -12)
             importStatus = W.Text(row, "desc", "text.secondary")
@@ -186,6 +236,19 @@ local function buildSchema()
             importStatus:SetPoint("RIGHT", row, "RIGHT", -(W.CONTROL_WIDTH + 160), 0)
             Skin:Register(importStatus, function(fs) Skin:Text(fs, "desc", "text.secondary") end)
             return holder
+        end },
+        { type = "custom", label = "IMPORT_MERGE", desc = "IMPORT_MERGE_DESC", keywords = "partial combine", build = function(row)
+            local b = W:Button(row, L.IMPORT_MERGE_BUTTON, "secondary", "import", 140)
+            b.onClick = function()
+                if not pending then
+                    Config:SetStatus(L.IMPORT_ERR_EMPTY, "state.danger")
+                    return
+                end
+                local n = Profiles:Merge(pending)
+                clearImport()
+                Config:SetStatus(L.IMPORT_MERGED:format(n, DB:GetProfileName()), "state.success")
+            end
+            return b
         end },
     }
     for _, item in ipairs(rest) do schema[#schema + 1] = item end

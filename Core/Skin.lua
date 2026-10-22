@@ -190,8 +190,16 @@ end
 local OUTLINES = { NONE = "", OUTLINE = "OUTLINE", THICK = "THICKOUTLINE", MONO = "OUTLINE, MONOCHROME" }
 Sk.OUTLINES = OUTLINES
 
+-- color: { r, g, b[, a] } | { token = "class" } (the player's class colour, kept live) | false (the caller's token)
 function Sk:SpecColor(color, token)
-    if type(color) == "table" then return color.r or 1, color.g or 1, color.b or 1, color.a or 1 end
+    if type(color) == "table" then
+        if color.token == "class" then
+            local _, classFile = UnitClass("player")
+            local r, g, b = ns.Util.ClassColor(classFile)
+            return r, g, b, color.a or 1
+        end
+        return color.r or 1, color.g or 1, color.b or 1, color.a or 1
+    end
     return Theme:Color(token or "text.primary")
 end
 
@@ -223,31 +231,97 @@ function Sk:Place(fs, parent, spec)
     fs:SetJustifyH(JUSTIFY[anchor] or "CENTER")
 end
 
--- spec: { style = "none"|"solid"|"glow"|"shadow", size = px, color = {r,g,b,a}|false }
+--[[ The style library: one spec drives every module's borders, shadows and backdrops (Core/Style.lua).
+    border spec: { style, size = px, color = {r,g,b,a}|{token="class"}|false, shadow = "auto"|"none"|"soft"|"hard"|"glow" }
+      theme   follow Appearance & General (theme.borderStyle, theme.borderSize)
+      none    nothing                       pixel   exactly one physical pixel, whatever the size
+      solid   size px lines                 thick   double weight (min 2 px)
+      inset   lines plus a faint inner highlight, for a pressed-in look
+      shadow  lines plus a soft drop shadow glow    tinted outer glow, no lines
+      ember   accent lines plus an accent glow (the Phoenix signature)
+    Shadows use their own slices, so a glow and a shadow can be worn together. ]]
+local function hideLines(s, key)
+    if s and s[key] then for _, side in ipairs(SIDES) do s[key][side]:Hide() end end
+end
+
+local function inner(frame, thick, r, g, b, a)
+    local s = st(frame)
+    local t = s.inner
+    if not t then
+        t = {}
+        for _, side in ipairs(SIDES) do
+            local tex = frame:CreateTexture(nil, "BORDER", nil, 6)
+            tex:SetTexture(WHITE)
+            t[side] = tex
+        end
+        s.inner = t
+    end
+    local one = px(frame, 1)
+    t.top:ClearAllPoints(); t.top:SetPoint("TOPLEFT", thick, -thick); t.top:SetPoint("TOPRIGHT", -thick, -thick); t.top:SetHeight(one)
+    t.bottom:ClearAllPoints(); t.bottom:SetPoint("BOTTOMLEFT", thick, thick); t.bottom:SetPoint("BOTTOMRIGHT", -thick, thick)
+    t.bottom:SetHeight(one)
+    t.left:ClearAllPoints(); t.left:SetPoint("TOPLEFT", thick, -thick); t.left:SetPoint("BOTTOMLEFT", thick, thick); t.left:SetWidth(one)
+    t.right:ClearAllPoints(); t.right:SetPoint("TOPRIGHT", -thick, -thick); t.right:SetPoint("BOTTOMRIGHT", -thick, thick)
+    t.right:SetWidth(one)
+    for _, side in ipairs(SIDES) do t[side]:SetVertexColor(r, g, b, a); t[side]:Show() end
+end
+
+-- The style and size a spec draws with ("theme" resolved through Appearance & General).
+function Sk:ResolveBorder(spec)
+    local style, size = spec.style or "solid", spec.size or 1
+    if style == "theme" then
+        local t = Theme.settings
+        style, size = t.borderStyle or "solid", t.borderSize or size
+        if style == "theme" then style = "solid" end
+    end
+    return style, size
+end
+
+local function shadowOf(style, shadow)
+    if shadow and shadow ~= "auto" then return shadow end
+    return style == "shadow" and "soft" or "none"
+end
+
 function Sk:BorderSpec(frame, spec, token)
-    local style = spec.style or "solid"
+    local style, size = self:ResolveBorder(spec)
     local r, g, b, a = self:SpecColor(spec.color, token or "border.black")
     local s = state[frame]
-    if style == "none" then
-        if s and s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
-        self:HideGlow(frame)
-        return
+    hideLines(s, "inner")
+    if style == "none" or style == "glow" then
+        hideLines(s, "border")
+    else
+        local thick = (style == "pixel" and 1) or (style == "thick" and math.max(2, size * 2)) or size
+        self:Border(frame, nil, thick)
+        if style == "ember" and type(spec.color) ~= "table" then
+            self:SetBorderColor(frame, "accent.primary")
+        else
+            self:SetBorderColor(frame, r, g, b, a)
+        end
+        if style == "inset" then inner(frame, px(frame, thick), 1, 1, 1, 0.08) end
     end
     if style == "glow" then
-        if s and s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
-        self:Glow(frame, 4 + (spec.size or 1) * 3, "Tight", r, g, b, a)
-        return
-    end
-    self:Border(frame, nil, spec.size or 1)
-    self:SetBorderColor(frame, r, g, b, a)
-    if style == "shadow" then
-        self:Glow(frame, 6 + (spec.size or 1) * 3, "Soft", 0, 0, 0, 0.75)
+        self:Glow(frame, 4 + size * 3, "Tight", r, g, b, a)
+    elseif style == "ember" then
+        local gr, gg, gb = Theme:Color("accent.glow")
+        self:Glow(frame, 6 + size * 3, "Soft", gr, gg, gb, 0.85)
     else
         self:HideGlow(frame)
     end
+    local kind = shadowOf(style, spec.shadow)
+    local depth = Theme.settings.shadowAlpha or 0.75
+    if kind == "soft" then
+        self:Shadow(frame, 6 + size * 3, nil, depth)
+    elseif kind == "hard" then
+        nineSlice(frame, "shadow", Media:Glow("Tight"), 3 + size * 2, 0, 0, 0, math.min(1, depth + 0.2))
+    elseif kind == "glow" then
+        local gr, gg, gb = Theme:Color("accent.glow")
+        nineSlice(frame, "shadow", Media:Glow("Wide"), 8 + size * 3, gr, gg, gb, 0.7)
+    else
+        self:HideShadow(frame)
+    end
 end
 
--- spec: { alpha = 0..1, color = {r,g,b}|false }; drawn under everything on frame.
+-- spec: { alpha = 0..1, color = {r,g,b}|false, style = "solid"|"gradient"|"glass" }; drawn under everything on frame.
 function Sk:Backdrop(frame, spec, token)
     local s = st(frame)
     if not s.backdrop then
@@ -256,8 +330,29 @@ function Sk:Backdrop(frame, spec, token)
         s.backdrop:SetAllPoints()
     end
     local r, g, b = self:SpecColor(spec.color, token or "bg.sunken")
-    s.backdrop:SetVertexColor(r, g, b, spec.alpha or 0.6)
-    s.backdrop:SetShown((spec.alpha or 0.6) > 0)
+    local alpha = spec.alpha or 0.6
+    local style = spec.style or "solid"
+    if style == "gradient" then
+        -- darker at the bottom, like light falling from above
+        s.backdrop:SetVertexColor(1, 1, 1, 1)
+        s.backdrop:SetGradient("VERTICAL", CreateColor(r * 0.45, g * 0.45, b * 0.45, alpha), CreateColor(r, g, b, alpha))
+    else
+        s.backdrop:SetGradient("VERTICAL", CreateColor(r, g, b, alpha), CreateColor(r, g, b, alpha))
+    end
+    s.backdrop:SetShown(alpha > 0)
+    if style == "glass" and alpha > 0 then
+        if not s.glass then
+            s.glass = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
+            s.glass:SetTexture(Media.textures.FADE_V)
+        end
+        s.glass:ClearAllPoints()
+        s.glass:SetPoint("TOPLEFT"); s.glass:SetPoint("TOPRIGHT")
+        s.glass:SetHeight(math.max(4, (frame:GetHeight() or 12) * 0.5))
+        s.glass:SetVertexColor(1, 1, 1, 0.07)
+        s.glass:Show()
+    elseif s.glass then
+        s.glass:Hide()
+    end
 end
 
 -- Icon crop: zoom 0 = Blizzard's full art, 0.08 = the usual trim, up to 0.3.
@@ -329,6 +424,8 @@ function Sk:Restore(obj)
         if s.barbg then s.barbg:Hide() end
         if s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
         if s.backdrop then s.backdrop:Hide() end
+        if s.glass then s.glass:Hide() end
+        hideLines(s, "inner")
         self:HideShadow(obj)
         self:HideGlow(obj)
     end

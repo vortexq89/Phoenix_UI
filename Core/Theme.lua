@@ -56,6 +56,7 @@ T.tokens = tokens
 T.settings = {
     preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
     uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false,
+    borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
 }
 
 local function lighten(r, g, b, f) return r + (1 - r) * f, g + (1 - g) * f, b + (1 - b) * f end
@@ -89,6 +90,25 @@ function T:Rebuild()
     tokens["accent.soft"] = { r, g, b, 0.14 }
     local tr, tg, tb = lighten(r, g, b, 0.15)
     tokens["accent.text"] = { tr, tg, tb, 1 }
+    -- Appearance & General overrides every module inherits: the colour of element borders that follow the theme
+    -- ("border.black") and of every glow (ember borders, glow shadows).
+    local s = self.settings
+    local function rgb(col)
+        if col.token == "class" then
+            local _, classFile = UnitClass("player")
+            return ns.Util.ClassColor(classFile)
+        end
+        return col.r or 1, col.g or 1, col.b or 1
+    end
+    local bc, gc = s.borderColor, s.glowColor
+    if type(bc) == "table" then
+        local br, bg, bb = rgb(bc)
+        tokens["border.black"] = { br, bg, bb, bc.a or 1 }
+    end
+    if type(gc) == "table" then
+        local gr, gg, gb = rgb(gc)
+        tokens["accent.glow"] = { gr, gg, gb, 0.35 }
+    end
 end
 
 function T:Color(token)

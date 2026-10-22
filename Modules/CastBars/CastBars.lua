@@ -178,6 +178,8 @@ function M:OnEnable()
     extras = buildExtras()
     for _, event in ipairs(START_EVENTS) do ns.Events:OnUnit(event, self, onCastStart, "player") end
     for _, event in ipairs(STOP_EVENTS) do ns.Events:OnUnit(event, self, onCastStop, "player") end
+    -- borders that follow Appearance & General restyle with it
+    ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
 end
 
 function M:Refresh()

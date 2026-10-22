@@ -12,6 +12,7 @@ local PLATE_W, PLATE_H, SCALE, AURA = 150, 12, 1.25, 16
 
 P:Register("nameplate", {
     module = "NamePlates",
+    width = 600,
     height = 128,
     states = {
         { key = "low", label = "PREVIEW_STATE_LOW", icon = "warning" },

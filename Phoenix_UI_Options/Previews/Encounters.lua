@@ -19,6 +19,7 @@ local MAX_W = 340
 
 P:Register("encounters", {
     module = "Encounters",
+    width = 480,
     height = 196,
     build = function(stage, m)
         local bars = m:HasFeature("timeline") and BARS or TIMER_BARS

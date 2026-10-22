@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/screenshots/home.png" alt="Phoenix UI settings window" width="860">
+  <img src="docs/screenshots/s6_home.png" alt="Phoenix UI settings window" width="860">
 </p>
 
 # Phoenix UI
@@ -77,12 +77,27 @@ missing; Russian clients only offer bundled fonts that include Cyrillic.
 | ![Sim: results card and gear picker](docs/screenshots/sim_picker.png) | ![Sim: fight, history and where results show](docs/screenshots/sim_results.png) |
 | ![Sim result on an item tooltip and the bag arrow switch](docs/screenshots/sim_tooltip.png) | ![Sim page](docs/screenshots/sim.png) |
 
-The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
+### Settings window
+
+Seven groups on the icon rail, the open group's pages beside it, the page, and a live preview pinned on the right.
+Compact rows pair up, a card's switch sits in its header, element chips edit one frame, several or all, and one
+style library (Pixel, Thick, Inset, Glow, Ember borders; Soft, Hard, Glow shadows; Solid, Gradient, Glass
+backdrops) drives every module. Search knows `hp`, `cd` and friends; profiles export single modules and preview
+what an import changes.
+
+| | |
+|---|---|
+| ![Nameplates with the preview dock and a section switch](docs/screenshots/s6_nameplates.png) | ![Unit Frames: element chips, paired rows, apply to all](docs/screenshots/s6_unitframes.png) |
+| ![Borders & shadows and the style picker](docs/screenshots/s6_general.png) | ![Profiles: characters, module export, import preview](docs/screenshots/s6_profiles.png) |
+| ![Search with synonyms](docs/screenshots/s6_search.png) | ![Narrow window: preview in the page](docs/screenshots/s6_narrow.png) |
+
+The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`, the window v2
+screens by `s6.py`) with the
 same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world timer at 150 % and sample nameplates.
 
 ### Icons
 
-Every icon in the window, the data bar and Phoenix's own frames comes from one set: 102
+Every icon in the window, the data bar and Phoenix's own frames comes from one set: 109
 [Phosphor](https://phosphoricons.com) duotone glyphs (MIT), packed into white atlases with 24, 48 and 64 px
 cells and tinted by the active theme. Each icon picks the atlas that matches its size in physical pixels,
 so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
@@ -109,7 +124,7 @@ window; it is load-on-demand, so it costs no memory until you type `/pui`. Keep 
 | `/pui <module>` | Jump to a module, e.g. `/pui tooltip` |
 | `/pui settings` | Open the Phoenix page in Blizzard's settings |
 | `/pui help` | List every command in chat |
-| `/pui diag` | Check that textures, icons and fonts load (Tools → Diagnostics shows the result) |
+| `/pui diag` | Check that textures, icons and fonts load (Phoenix → Diagnostics shows the result) |
 | `/pui bugs share on\|off` | Allow or stop error reports to the author |
 | `/pui debug` | Toggle debug output |
 | `/gg` | Surrender an arena match (PvP module, asks first) |

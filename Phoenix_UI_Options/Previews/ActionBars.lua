@@ -10,6 +10,7 @@ local SIZE, GAP, SCALE = 38, 4, 1.15
 
 P:Register("actionbar", {
     module = "ActionBars",
+    width = 400,
     height = 96,
     build = function(stage, m)
         local row = CreateFrame("Frame", nil, stage)

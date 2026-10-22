@@ -3,9 +3,11 @@ local L = ns.L
 local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
 local Config = ns.Config
 
---[[ Home: hero banner, quick theme switch, live stats, this week (Great Vault and Mythic+ season)
-    and a grid of module cards. ]]
-local PAD, GAP, CARD_MIN_W, CARD_H, WEEK_H = 24, 12, 236, 108, 132
+--[[ Home: hero banner with the look presets, live stats, this week (Great Vault and Mythic+ season) and
+    the module grid, filtered by rail group, each card with its on/off switch and how deep its options go
+    against the plan. The side panel (health checks, quick actions, what's new) sits in the preview dock on a
+    wide window and under the stats on a narrow one. ]]
+local PAD, GAP, CARD_MIN_W, CARD_H, WEEK_H = 24, 12, 236, 124, 132
 local PRESETS = { "ember", "frost", "fel", "arcane", "class" }
 
 local function moduleCard(parent, m)
@@ -30,8 +32,24 @@ local function moduleCard(parent, m)
     c.desc:SetMaxLines(2)
     c.desc:SetJustifyV("TOP")
     c.desc:SetPoint("TOPLEFT", c.iconBg, "BOTTOMLEFT", 0, -10)
-    c.desc:SetPoint("BOTTOMRIGHT", -14, 10)
+    c.desc:SetPoint("BOTTOMRIGHT", -14, 26)
     c.desc:SetText(L[m.desc])
+    -- depth: settings now against the plan v2 target (Groups.lua Config.DEPTH)
+    c.now, c.target = Config:Depth(m.key)
+    c.meterBg = W.Texture(c, "ARTWORK", 0, Media.textures.PILL)
+    c.meterBg:SetHeight(4)
+    c.meterBg:SetPoint("BOTTOMLEFT", 14, 14)
+    c.meterBg:SetPoint("BOTTOMRIGHT", -64, 14)
+    c.meter = W.Texture(c, "ARTWORK", 1, Media.textures.PILL)
+    c.meter:SetHeight(4)
+    c.meter:SetPoint("LEFT", c.meterBg, "LEFT")
+    c.depth = W.Text(c, "small", "text.muted", "RIGHT")
+    c.depth:SetPoint("BOTTOMRIGHT", -14, 10)
+    c.depth:SetText(c.target and ("%d / %d"):format(c.now, c.target) or tostring(c.now))
+    c:SetScript("OnSizeChanged", function(self, w)
+        local frac = self.target and math.min(1, self.now / self.target) or 1
+        self.meter:SetWidth(math.max(4, (w - 78) * frac))
+    end)
     if not m.locked then
         c.toggle = W:Toggle(c)
         c.toggle:SetPoint("TOPRIGHT", -14, -16)
@@ -48,15 +66,135 @@ local function moduleCard(parent, m)
         Skin:Text(self.label, "body", "text.primary")
         Skin:Text(self.cat, "small", "text.muted")
         Skin:Text(self.desc, "desc", "text.secondary")
+        Skin:Text(self.depth, "small", "text.muted")
+        W.Color(self.meterBg, "bg.sunken")
+        local full = not self.target or self.now >= self.target
+        W.Color(self.meter, full and "state.success" or "accent.primary", on and 0.9 or 0.4)
         local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning") or (on and "state.success")
         if token and not m.locked then W.Color(self.dot, token); self.dot:Show() else self.dot:Hide() end
         if self.toggle then self.toggle:SetValue(m.db.enabled) end
     end
     Skin:Register(c, c.Paint)
-    c:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
-    c:SetScript("OnLeave", function(self) self.hover = false; self:Paint() end)
+    c:SetScript("OnEnter", function(self)
+        self.hover = true
+        self:Paint()
+        if self.target then W.ShowTooltip(self, L[m.label], L.DEPTH_TIP:format(self.now, self.target)) end
+    end)
+    c:SetScript("OnLeave", function(self) self.hover = false; self:Paint(); W.HideTooltip() end)
     c:SetScript("OnClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON); Config:Show(m.key) end)
     return c
+end
+
+---------------------------------------------------------------- side panel (dock on wide windows)
+local function sideLine(parent, icon)
+    local r = CreateFrame("Frame", nil, parent)
+    r:SetHeight(22)
+    r.icon = W.Icon(r, icon, 12)
+    r.icon:SetPoint("LEFT", 2, 0)
+    r.text = W.Text(r, "desc", "text.secondary")
+    r.text:SetPoint("LEFT", r.icon, "RIGHT", 8, 0)
+    r.text:SetPoint("RIGHT")
+    r.text:SetWordWrap(false)
+    function r:Set(text, token)
+        self.text:SetText(text)
+        W.Color(self.icon, token or "text.muted")
+        Skin:Text(self.text, "desc", "text.secondary")
+    end
+    return r
+end
+
+local function quickAction(parent, label, icon, func)
+    local b = W:Button(parent, label, "secondary", icon)
+    b:SetHeight(28)
+    b.onClick = func
+    return b
+end
+
+local NEWS = { L.HOME_NEW_1, L.HOME_NEW_2, L.HOME_NEW_3, L.HOME_NEW_4 }
+
+local function buildSide(parent)
+    local sd = CreateFrame("Frame", nil, parent)
+    sd.health = W:Card(sd, L.HOME_HEALTH, "success")
+    sd.health.lines = { sideLine(sd.health, "success"), sideLine(sd.health, "reload"), sideLine(sd.health, "bugs"),
+        sideLine(sd.health, "lock") }
+    sd.actions = W:Card(sd, L.HOME_QUICK, "presets")
+    sd.actions.buttons = {
+        quickAction(sd.actions, L.LAYOUT_MODE, "layout", function() Config.frame.header.layout.onClick() end),
+        quickAction(sd.actions, L.TEST_FRAMES, "test", function() Config.frame.header.test.onClick() end),
+        quickAction(sd.actions, L.PROFILES, "profiles", function() Config:Show("profiles") end),
+        quickAction(sd.actions, L.PRESETS, "presets", function() Config:Show("presets") end),
+    }
+    sd.news = W:Card(sd, L.HOME_NEW, "bell")
+    sd.news.lines = {}
+    for i, key in ipairs(NEWS) do
+        local fs = W.Text(sd.news, "desc", "text.secondary")
+        fs:SetWordWrap(true)
+        fs:SetJustifyH("LEFT")
+        fs:SetText("·  " .. key)
+        sd.news.lines[i] = fs
+        Skin:Register(fs, function(t) Skin:Text(t, "desc", "text.secondary") end)
+    end
+
+    function sd:Refresh()
+        local errored, reload = 0, 0
+        for _, m in ipairs(ns.moduleList) do
+            if m.state == "errored" then errored = errored + 1 end
+            if m.needsReload then reload = reload + 1 end
+        end
+        local h = self.health.lines
+        if errored > 0 then h[1]:Set(L.HOME_HEALTH_ERRORED:format(errored), "state.danger")
+        else h[1]:Set(L.HOME_HEALTH_OK, "state.success") end
+        if reload > 0 then h[2]:Set(L.HOME_HEALTH_RELOAD:format(reload), "state.warning")
+        else h[2]:Set(L.HOME_HEALTH_NO_RELOAD, "state.success") end
+        local bugs = ns.modules.Bugs
+        local unique = bugs and bugs:IsEnabled() and bugs:Counts() or 0
+        if unique > 0 then h[3]:Set(L.HOME_HEALTH_BUGS:format(unique), "state.warning")
+        else h[3]:Set(L.HOME_HEALTH_NO_BUGS, "state.success") end
+        if InCombatLockdown() then h[4]:Set(L.STATUS_COMBAT, "state.warning")
+        else h[4]:Set(L.HOME_HEALTH_COMBAT_OK, "state.success") end
+    end
+
+    -- lays the three cards out top to bottom in `width`; returns the height used
+    function sd:Arrange(width)
+        local y = 0
+        local inner = width - 32
+        local hy = 40
+        for _, line in ipairs(self.health.lines) do
+            line:ClearAllPoints()
+            line:SetPoint("TOPLEFT", 16, -hy); line:SetPoint("TOPRIGHT", -16, -hy)
+            hy = hy + 24
+        end
+        self.health:ClearAllPoints()
+        self.health:SetPoint("TOPLEFT", 0, -y); self.health:SetPoint("TOPRIGHT", 0, -y)
+        self.health:SetHeight(hy + 10)
+        y = y + hy + 10 + GAP
+        local bw = (inner - 8) / 2
+        for i, b in ipairs(self.actions.buttons) do
+            local col, row = (i - 1) % 2, math.floor((i - 1) / 2)
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", 16 + col * (bw + 8), -(40 + row * 36))
+            b:SetWidth(bw)
+        end
+        self.actions:ClearAllPoints()
+        self.actions:SetPoint("TOPLEFT", 0, -y); self.actions:SetPoint("TOPRIGHT", 0, -y)
+        local ah = 40 + math.ceil(#self.actions.buttons / 2) * 36 + 8
+        self.actions:SetHeight(ah)
+        y = y + ah + GAP
+        local ny = 40
+        for _, fs in ipairs(self.news.lines) do
+            fs:ClearAllPoints()
+            fs:SetPoint("TOPLEFT", 16, -ny)
+            fs:SetWidth(inner)
+            ny = ny + math.max(16, fs:GetStringHeight()) + 8
+        end
+        self.news:ClearAllPoints()
+        self.news:SetPoint("TOPLEFT", 0, -y); self.news:SetPoint("TOPRIGHT", 0, -y)
+        self.news:SetHeight(ny + 6)
+        y = y + ny + 6
+        self:SetHeight(y)
+        return y
+    end
+    return sd
 end
 
 local function statChip(parent, icon)
@@ -254,12 +392,47 @@ local function build(parent)
         ns.Events:On("CHALLENGE_MODE_MAPS_UPDATE", page.week, weekly)
     end
 
+    page.side = buildSide(child)
+
     page.gridTitle = W.Text(child, "heading", "text.muted")
     page.gridTitle:SetText(L.MODULES:upper())
     Skin:Register(page.gridTitle, function(fs) Skin:Text(fs, "heading", "text.muted") end)
     page.cards = {}
     for _, m in ipairs(ns.moduleList) do
         if not m.hidden and not m.locked then page.cards[#page.cards + 1] = moduleCard(child, m) end
+    end
+    -- filter: every rail group that has a module card, plus "Off" (modules switched off)
+    local filters, has = { { value = "all", label = L.FILTER_ALL } }, {}
+    for _, c in ipairs(page.cards) do
+        local g = Config:GroupOf(c.module.key)
+        c.group = g and g.key
+        if c.group then has[c.group] = true end
+    end
+    for _, g in ipairs(Config:Groups()) do
+        if has[g.key] then filters[#filters + 1] = { value = g.key, label = L[g.label], icon = g.icon } end
+    end
+    filters[#filters + 1] = { value = "off", label = L.FILTER_OFF }
+    page.filter = W:Chips(child, filters)
+    page.filter:SetValue("all")
+    page.filter.onChange = function() page:Layout() end
+
+    local function passes(c)
+        local f = page.filter:GetValue()
+        if f == "off" then return not c.module:IsEnabled() end
+        return f == "all" or c.group == f
+    end
+
+    function page:SetDocked(dock)
+        self.docked = dock ~= nil
+        self.side:SetParent(dock or child)
+        self.side:ClearAllPoints()
+        if dock then
+            self.side:SetFrameLevel(dock:GetFrameLevel() + 10)
+            self.side:SetPoint("TOPLEFT", dock, "TOPLEFT", 14, -14)
+            self.side:SetPoint("TOPRIGHT", dock, "TOPRIGHT", -14, -14)
+            self.side:Arrange((dock:GetWidth() or 380) - 28)
+        end
+        self:Layout()
     end
 
     function page:Layout()
@@ -273,6 +446,12 @@ local function build(parent)
             s:SetWidth(sw)
         end
         y = y + 54 + GAP
+        if not self.docked then
+            self.side:ClearAllPoints()
+            self.side:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
+            self.side:SetPoint("TOPRIGHT", child, "TOPRIGHT", -PAD, -y)
+            y = y + self.side:Arrange(w) + GAP
+        end
         if self.week then
             self.week:ClearAllPoints()
             self.week:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
@@ -283,15 +462,26 @@ local function build(parent)
         self.gridTitle:ClearAllPoints()
         self.gridTitle:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
         y = y + 22
+        self.filter:ClearAllPoints()
+        self.filter:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
+        self.filter:SetWidth(w)
+        self.filter:Arrange()
+        y = y + self.filter:GetHeight() + GAP
         local cols = math.max(2, math.floor((w + GAP) / (CARD_MIN_W + GAP)))
         local cw = (w - (cols - 1) * GAP) / cols
-        for i, c in ipairs(self.cards) do
-            local col, row = (i - 1) % cols, math.floor((i - 1) / cols)
-            c:ClearAllPoints()
-            c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + col * (cw + GAP), -(y + row * (CARD_H + GAP)))
-            c:SetWidth(cw)
+        local n = 0
+        for _, c in ipairs(self.cards) do
+            local show = passes(c)
+            c:SetShown(show)
+            if show then
+                local col, row = n % cols, math.floor(n / cols)
+                c:ClearAllPoints()
+                c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + col * (cw + GAP), -(y + row * (CARD_H + GAP)))
+                c:SetWidth(cw)
+                n = n + 1
+            end
         end
-        local rows = math.ceil(#self.cards / cols)
+        local rows = math.ceil(n / cols)
         child:SetHeight(y + rows * (CARD_H + GAP) + PAD)
         self.scroll:UpdateBar()
     end
@@ -313,6 +503,8 @@ local function build(parent)
             self.week:Update()
         end
         for _, s in ipairs(self.hero.swatches) do s:Paint() end
+        self.side:Refresh()
+        if self.docked then self.side:Arrange(self.side:GetWidth()) end
     end
     ns.Events:Listen("PUI_THEME_CHANGED", page, function() if page:IsShown() then page:Refresh() end end)
     return page

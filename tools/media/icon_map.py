@@ -47,4 +47,7 @@ ICONS = [
     ("encounters", "siren"), ("break", "coffee"),
     # 2.0 S2: sim (SimulationCraft through the Phoenix app)
     ("sim", "chart-line-up"),
+    # 2.0 S6: settings window v2 (rail groups, apply-to-all, sound preview, style pickers, layout mode)
+    ("interface", "app-window"), ("content", "compass"), ("apply-all", "arrows-left-right"), ("play", "play"),
+    ("border", "bounding-box"), ("palette", "palette"), ("layout", "layout"),
 ]
