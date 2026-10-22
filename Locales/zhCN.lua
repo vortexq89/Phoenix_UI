@@ -1217,6 +1217,15 @@ local T = {
     PREVIEW_ENC_2 = "暗影箭雨",
     PREVIEW_ENC_3 = "粉碎猛击",
     PREVIEW_ENC_WARN = "灼热吐息点了你！",
+    MODPICK_TITLE = "选择模块",
+    MODPICK_INTRO = "默认全部开启。关闭不需要的模块；之后可随时在主页或“工具 → 预设”中更改。",
+    MODPICK_APPLY = "应用",
+    MODPICK_APPLY_RELOAD = "应用并重载",
+    MODPICK_KEEP = "全部保留",
+    MODPICK_DONE = "已更改 %d 个模块。",
+    MODPICK_OPEN = "模块选择",
+    MODPICK_OPEN_DESC = "打开新用户在选择外观后看到的模块列表。",
+    MODPICK_OPEN_BUTTON = "选择模块",
 }
 
 ns.RegisterLocale("zhCN", T)

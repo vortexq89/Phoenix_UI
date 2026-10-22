@@ -1217,6 +1217,15 @@ local T = {
     PREVIEW_ENC_2 = "Rajada Sombria",
     PREVIEW_ENC_3 = "Golpe Esmagador",
     PREVIEW_ENC_WARN = "Sopro Calcinante em você!",
+    MODPICK_TITLE = "Escolha seus módulos",
+    MODPICK_INTRO = "Tudo vem ligado. Desligue o que não precisar; dá para mudar quando quiser no Início ou em Ferramentas → Predefinições.",
+    MODPICK_APPLY = "Aplicar",
+    MODPICK_APPLY_RELOAD = "Aplicar e recarregar",
+    MODPICK_KEEP = "Manter tudo",
+    MODPICK_DONE = "%d módulos alterados.",
+    MODPICK_OPEN = "Seletor de módulos",
+    MODPICK_OPEN_DESC = "Abre a lista de módulos que novos usuários veem depois de escolher um visual.",
+    MODPICK_OPEN_BUTTON = "Escolher módulos",
 }
 
 ns.RegisterLocale("ptBR", T)

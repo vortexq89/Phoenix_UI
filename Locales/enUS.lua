@@ -1243,4 +1243,13 @@ ns.RegisterLocale("enUS", {
     PREVIEW_ENC_2 = "Shadow Volley",
     PREVIEW_ENC_3 = "Crushing Slam",
     PREVIEW_ENC_WARN = "Searing Breath on you!",
+    MODPICK_TITLE = "Choose your modules",
+    MODPICK_INTRO = "Everything is on by default. Switch off what you don't need; you can change it any time on the Home page or under Tools → Presets.",
+    MODPICK_APPLY = "Apply",
+    MODPICK_APPLY_RELOAD = "Apply and reload",
+    MODPICK_KEEP = "Keep all",
+    MODPICK_DONE = "%d modules changed.",
+    MODPICK_OPEN = "Module picker",
+    MODPICK_OPEN_DESC = "Opens the module list new users see after picking a look.",
+    MODPICK_OPEN_BUTTON = "Choose modules",
 })

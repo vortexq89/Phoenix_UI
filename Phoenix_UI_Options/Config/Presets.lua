@@ -198,6 +198,8 @@ local schema = {
       end },
     { type = "button", label = "PRESETS_PICKER", desc = "PRESETS_PICKER_DESC", button = "PRESETS_PICKER_BUTTON", icon = "preview",
       func = function() Config:ShowStylePicker(true) end },
+    { type = "button", label = "MODPICK_OPEN", desc = "MODPICK_OPEN_DESC", button = "MODPICK_OPEN_BUTTON", icon = "addon",
+      keywords = "modules choose enable disable first install", func = function() Config:ShowModulePicker(true) end },
 }
 
 Config:RegisterPage("presets", function(parent)
@@ -223,15 +225,115 @@ function Config:ShowStylePicker(force)
                 applied(choice)
                 ui.stylePicked = choice.key
                 picker:Hide()
+                Config:ShowModulePicker()
             end)
             c:SetPoint("TOPLEFT", 18 + (i - 1) * 244, -80)
             picker.cards[i] = c
         end
         picker.skip = W:Button(picker, L.STYLE_PICKER_SKIP, "secondary", nil, 140)
         picker.skip:SetPoint("BOTTOMRIGHT", -18, 14)
-        picker.skip.onClick = function() ui.stylePicked = "skip"; picker:Hide() end
+        picker.skip.onClick = function() ui.stylePicked = "skip"; picker:Hide(); Config:ShowModulePicker() end
         picker.close.onClick = picker.skip.onClick
     end
     picker:Show()
     return picker
+end
+
+---------------------------------------------------------------- first-install module picker
+--[[ The second step of a first install: every optional module with its icon, name and one-line description,
+    switched on or off before anything is applied. Nothing changes until Apply; modules that only take effect
+    after a reload turn the button into "Apply and reload". Reopen it any time from Tools > Presets. ]]
+local modPicker
+local COLS, ROW_H, COL_W = 2, 44, 362
+
+local function pickable()
+    local out = {}
+    for _, m in ipairs(ns.moduleList) do
+        if not m.locked and not m.hidden and m.db then out[#out + 1] = m end
+    end
+    return out
+end
+
+local function modRow(parent, m, onToggle)
+    local r = CreateFrame("Frame", nil, parent)
+    r:SetSize(COL_W, ROW_H - 4)
+    r.icon = W.Icon(r, m.icon, 16, "accent.primary")
+    r.icon:SetPoint("LEFT", 10, 0)
+    r.label = W.Text(r, "body", "text.primary")
+    r.label:SetPoint("TOPLEFT", 36, -5)
+    r.label:SetPoint("RIGHT", -56, 0)
+    r.label:SetText(L[m.label] or m.label)
+    r.desc = W.Text(r, "small", "text.muted")
+    r.desc:SetPoint("TOPLEFT", r.label, "BOTTOMLEFT", 0, -2)
+    r.desc:SetPoint("RIGHT", -56, 0)
+    r.desc:SetText(L[m.desc] or "")
+    r.toggle = W:Toggle(r)
+    r.toggle:SetPoint("RIGHT", -10, 0)
+    r.toggle.onChange = function(_, v) onToggle(m, v) end
+    Skin:Register(r, function(self)
+        Skin:Panel(self, "raised", { border = "border.subtle" })
+        Skin:Text(self.label, "body", "text.primary")
+        Skin:Text(self.desc, "small", "text.muted")
+    end)
+    return r
+end
+
+local pending = {} -- module -> chosen state, applied together
+
+local function needsReload()
+    for m, v in pairs(pending) do
+        if m.reloadOnToggle and v ~= m.db.enabled then return true end
+    end
+    return false
+end
+
+local function refreshApply()
+    modPicker.apply:SetText(needsReload() and L.MODPICK_APPLY_RELOAD or L.MODPICK_APPLY)
+end
+
+function Config:ShowModulePicker(force)
+    local ui = ns.DB.sv.global.ui
+    if not force and (ui.modulesPicked or not ns.DB.fresh) then return end
+    if InCombatLockdown() then return end
+    wipe(pending)
+    if not modPicker then
+        local mods = pickable()
+        local rows = math.ceil(#mods / COLS)
+        modPicker = W:Popup(L.MODPICK_TITLE, COLS * (COL_W + 10) + 26, 130 + rows * ROW_H, "addon")
+        modPicker.intro = W.Text(modPicker, "body", "text.secondary", "LEFT")
+        modPicker.intro:SetPoint("TOPLEFT", 18, -44)
+        modPicker.intro:SetPoint("RIGHT", -18, 0)
+        modPicker.intro:SetWordWrap(true)
+        modPicker.intro:SetText(L.MODPICK_INTRO)
+        modPicker.rows = {}
+        for i, m in ipairs(mods) do
+            local r = modRow(modPicker, m, function(mod, v) pending[mod] = v; refreshApply() end)
+            local col, line = (i - 1) % COLS, math.floor((i - 1) / COLS)
+            r:SetPoint("TOPLEFT", 18 + col * (COL_W + 10), -78 - line * ROW_H)
+            r.module = m
+            modPicker.rows[i] = r
+        end
+        modPicker.apply = W:Button(modPicker, L.MODPICK_APPLY, "primary", "check", 180)
+        modPicker.apply:SetPoint("BOTTOMRIGHT", -18, 14)
+        modPicker.keep = W:Button(modPicker, L.MODPICK_KEEP, "secondary", nil, 160)
+        modPicker.keep:SetPoint("RIGHT", modPicker.apply, "LEFT", -10, 0)
+    end
+    for _, r in ipairs(modPicker.rows) do r.toggle:SetValue(r.module.db.enabled) end
+    modPicker.keep.onClick = function() ui.modulesPicked = true; modPicker:Hide() end
+    modPicker.close.onClick = modPicker.keep.onClick
+    modPicker.apply.onClick = function()
+        local reload = needsReload()
+        local n = 0
+        for m, v in pairs(pending) do
+            if v ~= m.db.enabled then ns:SetModuleEnabled(m.key, v); n = n + 1 end
+        end
+        ui.modulesPicked = true
+        modPicker:Hide()
+        if reload then ReloadUI() return end
+        Config:SetStatus(L.MODPICK_DONE:format(n), "state.success", "addon")
+        refreshPage()
+    end
+    refreshApply()
+    modPicker:Show()
+    return modPicker
 end

@@ -1217,6 +1217,15 @@ local T = {
     PREVIEW_ENC_2 = "Raffica d'ombra",
     PREVIEW_ENC_3 = "Colpo devastante",
     PREVIEW_ENC_WARN = "Soffio rovente su di te!",
+    MODPICK_TITLE = "Scegli i tuoi moduli",
+    MODPICK_INTRO = "Tutto è attivo per impostazione predefinita. Disattiva ciò che non ti serve; puoi cambiarlo quando vuoi nella Home o in Strumenti → Preimpostazioni.",
+    MODPICK_APPLY = "Applica",
+    MODPICK_APPLY_RELOAD = "Applica e ricarica",
+    MODPICK_KEEP = "Mantieni tutto",
+    MODPICK_DONE = "%d moduli cambiati.",
+    MODPICK_OPEN = "Scelta dei moduli",
+    MODPICK_OPEN_DESC = "Apre l'elenco dei moduli che i nuovi utenti vedono dopo aver scelto un look.",
+    MODPICK_OPEN_BUTTON = "Scegli i moduli",
 }
 
 ns.RegisterLocale("itIT", T)

@@ -1217,6 +1217,15 @@ local T = {
     PREVIEW_ENC_2 = "暗影箭雨",
     PREVIEW_ENC_3 = "粉碎猛擊",
     PREVIEW_ENC_WARN = "灼熱吐息點了你！",
+    MODPICK_TITLE = "選擇模組",
+    MODPICK_INTRO = "預設全部開啟。關閉不需要的模組；之後可隨時在首頁或「工具 → 預設」中變更。",
+    MODPICK_APPLY = "套用",
+    MODPICK_APPLY_RELOAD = "套用並重新載入",
+    MODPICK_KEEP = "全部保留",
+    MODPICK_DONE = "已變更 %d 個模組。",
+    MODPICK_OPEN = "模組選擇",
+    MODPICK_OPEN_DESC = "開啟新使用者在選擇外觀後看到的模組清單。",
+    MODPICK_OPEN_BUTTON = "選擇模組",
 }
 
 ns.RegisterLocale("zhTW", T)

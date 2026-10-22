@@ -39,7 +39,7 @@ function Launcher:Load()
 end
 
 -- Front-door methods; Phoenix_UI_Options' Window.lua replaces them on the same table.
-for _, name in ipairs({ "Toggle", "Show", "ResetPosition", "ShowStylePicker" }) do
+for _, name in ipairs({ "Toggle", "Show", "ResetPosition", "ShowStylePicker", "ShowModulePicker" }) do
     local front
     front = function(self, ...)
         if not Launcher:Load() or Config[name] == front then return end

@@ -1217,6 +1217,15 @@ local T = {
     PREVIEW_ENC_2 = "Descarga de sombras",
     PREVIEW_ENC_3 = "Golpe aplastante",
     PREVIEW_ENC_WARN = "¡Aliento abrasador sobre ti!",
+    MODPICK_TITLE = "Elige tus módulos",
+    MODPICK_INTRO = "Todo está activado por defecto. Desactiva lo que no necesites; puedes cambiarlo cuando quieras en Inicio o en Herramientas → Preajustes.",
+    MODPICK_APPLY = "Aplicar",
+    MODPICK_APPLY_RELOAD = "Aplicar y recargar",
+    MODPICK_KEEP = "Mantener todo",
+    MODPICK_DONE = "%d módulos cambiados.",
+    MODPICK_OPEN = "Selector de módulos",
+    MODPICK_OPEN_DESC = "Abre la lista de módulos que ven los usuarios nuevos tras elegir un estilo.",
+    MODPICK_OPEN_BUTTON = "Elegir módulos",
 }
 
 ns.RegisterLocale("esES", T)

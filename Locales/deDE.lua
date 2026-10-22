@@ -1217,6 +1217,15 @@ local T = {
     PREVIEW_ENC_2 = "Schattensalve",
     PREVIEW_ENC_3 = "Zermalmender Hieb",
     PREVIEW_ENC_WARN = "Sengender Atem auf dir!",
+    MODPICK_TITLE = "Module wählen",
+    MODPICK_INTRO = "Standardmäßig ist alles an. Schalte ab, was du nicht brauchst; ändern kannst du es jederzeit auf der Startseite oder unter Werkzeuge → Vorlagen.",
+    MODPICK_APPLY = "Übernehmen",
+    MODPICK_APPLY_RELOAD = "Übernehmen und neu laden",
+    MODPICK_KEEP = "Alle behalten",
+    MODPICK_DONE = "%d Module geändert.",
+    MODPICK_OPEN = "Modulauswahl",
+    MODPICK_OPEN_DESC = "Öffnet die Modulliste, die neue Nutzer nach der Wahl eines Looks sehen.",
+    MODPICK_OPEN_BUTTON = "Module wählen",
 }
 
 ns.RegisterLocale("deDE", T)

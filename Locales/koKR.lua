@@ -1217,6 +1217,15 @@ local T = {
     PREVIEW_ENC_2 = "암흑 일제 사격",
     PREVIEW_ENC_3 = "분쇄의 강타",
     PREVIEW_ENC_WARN = "당신에게 불타는 숨결!",
+    MODPICK_TITLE = "모듈 선택",
+    MODPICK_INTRO = "기본적으로 모두 켜져 있습니다. 필요 없는 것은 끄세요. 언제든 홈 화면이나 도구 → 프리셋에서 바꿀 수 있습니다.",
+    MODPICK_APPLY = "적용",
+    MODPICK_APPLY_RELOAD = "적용 후 다시 불러오기",
+    MODPICK_KEEP = "모두 유지",
+    MODPICK_DONE = "모듈 %d개를 바꿨습니다.",
+    MODPICK_OPEN = "모듈 선택기",
+    MODPICK_OPEN_DESC = "새 사용자가 외형을 고른 뒤 보는 모듈 목록을 엽니다.",
+    MODPICK_OPEN_BUTTON = "모듈 선택",
 }
 
 ns.RegisterLocale("koKR", T)

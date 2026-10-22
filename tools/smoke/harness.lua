@@ -1005,11 +1005,14 @@ try("encounters", function()
     bar.candyBarDuration = env.CreateFrame("Frame"):CreateFontString()
     style.ApplyStyle(bar); style.BarStopped(bar)
     rawset(env, "BigWigsAPI", nil)
-    -- preview
+    -- preview, options page and the module picker
     local stage = ns.Previews:Create("encounters", env.CreateFrame("Frame"), M, {})
     M.db.timeline.emphasize = false
     stage:Redraw()
     M.db.timeline.emphasize = true
+    local picker = ns.Config:ShowModulePicker(true)
+    assert(picker and picker.rows and #picker.rows > 10, "module picker has no rows")
+    picker.keep.onClick()
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- unit frames: boss scope, test frames (never in combat), portraits and range fade options exist
