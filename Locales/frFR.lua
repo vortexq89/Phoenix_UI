@@ -1047,6 +1047,8 @@ local T = {
     UF_AURAS_STYLE = "Icônes d'aura Phoenix",
     UF_AURAS_STYLE_DESC = "Recadre les icônes d'amélioration et d'affaiblissement sous les cadres de cible, de focalisation et de boss, avec une bordure facultative et la police de cumuls Phoenix. Leur taille et leur ordre restent ceux de Blizzard.",
     UF_AURA_COUNT_FONT = "Cumuls d'aura",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "La fenêtre des options n'a pas pu se charger (%s). Installez et activez le dossier Phoenix_UI_Options à côté de Phoenix_UI.",
 }
 
 ns.RegisterLocale("frFR", T)

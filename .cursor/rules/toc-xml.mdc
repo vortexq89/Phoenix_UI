@@ -6,8 +6,8 @@ alwaysApply: false
 # TOC / XML
 
 - `## Interface: 120105` only (single value, retail). Required fields: `Title`, `Notes`, `Author`, `Version`, `Category`, `IconTexture`, `SavedVariables: PhoenixUIDB, PhoenixUIBugsDB` (+ the legacy SVs during the migration window), `X-License`, `X-Curse-Project-ID`, `X-Wago-ID`.
-- No `## AddonCompartmentFunc` (needs a global); register with `AddonCompartmentFrame:RegisterAddon{}` in `UI/Config/Blizzard.lua`.
+- No `## AddonCompartmentFunc` (needs a global); register with `AddonCompartmentFrame:RegisterAddon{}` in `UI/Launcher.lua`.
 - Load order: `Libs\Libs.xml` → `Locales\Locales.xml` → `Core\Core.xml` → `UI\UI.xml` → `Modules\Modules.xml`.
-- Paths are **case-exact** and use backslashes in XML/TOC. Every Lua file is referenced exactly once. No orphan files, no `.bak`, no nested `.toc` files in the shipped tree.
+- Paths are **case-exact** and use backslashes in XML/TOC. Every Lua file is referenced exactly once. No orphan files, no `.bak`. The only nested `.toc` is `Phoenix_UI_Options/Phoenix_UI_Options.toc`: the load-on-demand settings addon, moved to its own AddOns folder by `.pkgmeta` `move-folders` (and installed as a second folder by hand). Its `## Interface` and `## Version` match `Phoenix_UI.toc`.
 - XML files contain only `<Script>`/`<Include>` (and templates when unavoidable). No stray text nodes or `##` lines inside XML.
 - Templates you inherit must exist in 12.1.5 mainline (`rg 'name="TemplateName"' wow-ui-source`): e.g. `BackdropTemplate`, `WowStyle1DropdownTemplate`, `UIPanelButtonTemplate`, `SecureActionButtonTemplate`.

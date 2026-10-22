@@ -1047,6 +1047,8 @@ local T = {
     UF_AURAS_STYLE = "Icone aure Phoenix",
     UF_AURAS_STYLE_DESC = "Ritaglia le icone di benefici e penalità sotto i riquadri di bersaglio, focus e boss, con bordo opzionale e il carattere dei cumuli Phoenix. Dimensioni e ordine restano quelli di Blizzard.",
     UF_AURA_COUNT_FONT = "Cumuli aura",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "Impossibile caricare la finestra delle impostazioni (%s). Installa e attiva la cartella Phoenix_UI_Options accanto a Phoenix_UI.",
 }
 
 ns.RegisterLocale("itIT", T)

@@ -255,6 +255,33 @@ for line in readAll("Phoenix_UI.toc"):gmatch("[^\r\n]+") do
     end
 end
 
+-- Phoenix_UI_Options: the load-on-demand settings addon, loaded the way the client does it (its own private
+-- table, files run in TOC order) when Phoenix_UI calls C_AddOns.LoadAddOn("Phoenix_UI_Options").
+local OPTIONS = "Phoenix_UI_Options"
+local optionsLoads = 0
+local function loadOptions()
+    optionsLoads = optionsLoads + 1
+    local private = {}
+    for line in readAll(OPTIONS .. "/" .. OPTIONS .. ".toc"):gmatch("[^\r\n]+") do
+        if not line:match("^%s*#") and line:match("%S") then
+            local path = OPTIONS .. "/" .. line:gsub("\\", "/"):gsub("%s+$", "")
+            local chunk, err = loadfile(ROOT .. "/" .. path)
+            if not chunk then errors[#errors + 1] = err else
+                setfenv(chunk, env)
+                local ok, e = pcall(chunk, OPTIONS, private)
+                if not ok then errors[#errors + 1] = path .. ": " .. tostring(e) end
+                loaded = loaded + 1
+            end
+        end
+    end
+    return true
+end
+env.C_AddOns.LoadAddOn = function(name)
+    if name ~= OPTIONS then return false, "MISSING" end
+    if optionsLoads > 0 then return true end
+    return loadOptions()
+end
+
 ---------------------------------------------------------------- boot + exercise
 local function fire(event, ...)
     for _, f in ipairs(frames) do
@@ -273,6 +300,17 @@ local function try(label, fn, ...)
     local ok, e = pcall(fn, ...)
     if not ok then errors[#errors + 1] = label .. ": " .. tostring(e) end
 end
+-- the settings window is not loaded at login; the first /pui loads Phoenix_UI_Options once
+try("load on demand", function()
+    assert(ns.Config and not ns.Config.loaded and optionsLoads == 0, "Phoenix_UI_Options loaded before it was asked for")
+    assert(not ns.Previews and not next(ns.options), "option schemas or previews are in the main addon")
+    slashes.pui("")
+    assert(ns.Config.loaded and optionsLoads == 1, "/pui did not load Phoenix_UI_Options")
+    assert(rawget(env, "PhoenixUI_Bridge") == nil, "the bridge global outlived the load")
+    assert(ns.options.NamePlates and ns.Previews, "options schemas did not register into the main namespace")
+    ns.Config:Toggle()
+    assert(optionsLoads == 1, "Phoenix_UI_Options loaded twice")
+end)
 if ns.Config then
     try("Config:Toggle", ns.Config.Toggle, ns.Config)
     for _, key in ipairs({ "home", "profiles", "about" }) do try("page " .. key, ns.Config.Show, ns.Config, key) end

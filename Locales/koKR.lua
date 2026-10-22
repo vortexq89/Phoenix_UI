@@ -1047,6 +1047,8 @@ local T = {
     UF_AURAS_STYLE = "Phoenix 오라 아이콘",
     UF_AURAS_STYLE_DESC = "대상, 주시 대상, 우두머리 프레임 아래의 강화·약화 아이콘을 잘라 내고, 선택적 테두리와 Phoenix 중첩 글꼴을 적용합니다. 크기와 순서는 블리자드 그대로입니다.",
     UF_AURA_COUNT_FONT = "오라 중첩",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "설정 창을 불러오지 못했습니다(%s). Phoenix_UI 옆에 Phoenix_UI_Options 폴더를 설치하고 활성화하세요.",
 }
 
 ns.RegisterLocale("koKR", T)

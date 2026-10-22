@@ -6,8 +6,9 @@ local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
     Built lazily on first open. Pages: one per module key plus the built-in pages registered with
     Config:RegisterPage (home, fonts, textures, sounds, presets, profiles, diagnostics, about). The sidebar is
     grouped by Config.GROUPS (Groups.lua). ]]
-local Config = {}
+local Config = ns.Config or {} -- the front door from Phoenix_UI/UI/Launcher.lua; its methods are replaced here
 ns.Config = Config
+Config.loaded = true
 Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
 local HEADER_H, SIDEBAR_W, FOOTER_H = 56, 216, 40

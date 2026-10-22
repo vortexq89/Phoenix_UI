@@ -12,7 +12,7 @@ alwaysApply: false
 - Combat colours (class, power, reaction, dispel) come from Blizzard sources, applied via colour curves when values may be secret.
 - Skins must re-apply on `PUI_THEME_CHANGED` (register the object with `ns.Skin`) and be reversible (`ns.Skin:Restore`).
 - Skin Blizzard windows lazily: `EventUtil.ContinueOnAddOnLoaded("Blizzard_X", fn)`. Target frames by mixin/parentKey (`frame.NineSlice`, `frame.Bg`, `frame.TitleContainer`), never by removed global names such as `*Inset`, `*TextureFrame`, `MainMenuBarArtFrame`.
-- Config window widgets live in `UI/Widgets`. Modules never create option widgets; they declare schema in `Options.lua`.
+- Config window widgets live in `UI/Widgets`. Modules never create option widgets; they declare schema in `Phoenix_UI_Options/Options/<Key>.lua`.
 - Motion: 80–160 ms tweens through `ns.Anim` (one shared OnUpdate that only runs while a tween is active), skipped when reduce motion is on. No animations on in-world frames during combat.
 - Config window dropdowns use `W:Dropdown`. Menus on Blizzard or in-world frames use `MenuUtil`. No `UIDropDownMenu`, no `EasyMenu`.
 - Edit Mode: our movable frames register through `ns.EditMode:Register`. Never move Blizzard Edit Mode systems.

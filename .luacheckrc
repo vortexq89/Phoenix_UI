@@ -16,6 +16,7 @@ globals = {
   "PhoenixUIDB",
   "PhoenixUIBugsDB", -- captured error reports (account-wide; read by the Phoenix Uploader app)
   "Phoenix_UIDB", "Phoenix_UIPerCharDB", -- legacy, read once by the migration then set to nil
+  "PhoenixUI_Bridge", -- set only during Phoenix_UI's LoadAddOn("Phoenix_UI_Options") call (UI/Launcher.lua)
 }
 
 read_globals = {

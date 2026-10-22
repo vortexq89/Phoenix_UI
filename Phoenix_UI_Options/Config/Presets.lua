@@ -235,7 +235,3 @@ function Config:ShowStylePicker(force)
     picker:Show()
     return picker
 end
-
-ns.Events:On("PLAYER_LOGIN", page, function()
-    if ns.DB.fresh then C_Timer.After(4, function() ns.SafeCall(Config.ShowStylePicker, Config) end) end
-end)

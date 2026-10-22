@@ -82,8 +82,9 @@ so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
 
 ## Installation
 
-Install from CurseForge or Wago, or download a release and extract `Phoenix_UI` into
-`World of Warcraft/_retail_/Interface/AddOns/`.
+Install from CurseForge or Wago, or download a release and extract **both** folders, `Phoenix_UI` and
+`Phoenix_UI_Options`, into `World of Warcraft/_retail_/Interface/AddOns/`. `Phoenix_UI_Options` is the settings
+window; it is load-on-demand, so it costs no memory until you type `/pui`. Keep both enabled in the AddOns list.
 
 ## Usage
 

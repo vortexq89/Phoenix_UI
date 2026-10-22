@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Static API check against the 12.1.5 reference (.luacheck/reference_12.1.5.json).
 
-Checks, for Core/, UI/, Modules/ and Locales/:
+Checks, for Core/, UI/, Modules/, Locales/ and the load-on-demand Phoenix_UI_Options/ addon:
   * every `:Method(` call names a method that exists in the client (C API docs + FrameXML) or is
     defined by Phoenix_UI itself;
   * events passed to Events:On/OnUnit and RegisterEvent/RegisterUnitEvent exist;
@@ -45,7 +45,7 @@ FORBIDDEN = [
     (re.compile(r"\b_G\s*\[[^\]]+\]\s*=(?!=)"), "no global writes"),
 ]
 
-CODE_DIRS = ("Core", "UI", "Modules", "Locales")
+CODE_DIRS = ("Core", "UI", "Modules", "Locales", "Phoenix_UI_Options")
 sources = sorted(p for d in CODE_DIRS for p in (ROOT / d).rglob("*.lua"))
 problems = []
 
@@ -126,17 +126,32 @@ def walk_xml(xml):
 
 
 toc = ROOT / "Phoenix_UI.toc"
-for line in toc.read_text(encoding="utf-8").splitlines():
-    line = line.strip()
-    if not line or line.startswith("#"):
-        continue
-    target = ROOT / line.replace("\\", "/")
-    if not exact(target):
-        problems.append(f"Phoenix_UI.toc: missing or wrong-case file {line}")
-    elif target.suffix == ".xml":
-        walk_xml(target)
-    else:
-        loaded.append(target)
+OPTIONS_TOC = ROOT / "Phoenix_UI_Options" / "Phoenix_UI_Options.toc"
+for t in (toc, OPTIONS_TOC):
+    for line in t.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        target = t.parent / line.replace("\\", "/")
+        if not exact(target):
+            problems.append(f"{t.relative_to(ROOT)}: missing or wrong-case file {line}")
+        elif target.suffix == ".xml":
+            walk_xml(target)
+        else:
+            loaded.append(target)
+opt_text = OPTIONS_TOC.read_text(encoding="utf-8")
+for need in ("## LoadOnDemand: 1", "## Dependencies: Phoenix_UI"):
+    if need not in opt_text:
+        problems.append(f"Phoenix_UI_Options.toc: needs '{need}'")
+main_iface = re.search(r"^## Interface:\s*(\S+)", toc.read_text(encoding="utf-8"), re.M)
+opt_iface = re.search(r"^## Interface:\s*(\S+)", opt_text, re.M)
+if not (main_iface and opt_iface and main_iface.group(1) == opt_iface.group(1)):
+    problems.append("Phoenix_UI_Options.toc: ## Interface must match Phoenix_UI.toc")
+if re.findall(r"^## Version:\s*(\S+)", opt_text, re.M) != re.findall(r"^## Version:\s*(\S+)", toc.read_text(encoding="utf-8"), re.M):
+    problems.append("Phoenix_UI_Options.toc: ## Version must match Phoenix_UI.toc")
+pkg = (ROOT / ".pkgmeta").read_text(encoding="utf-8")
+if "Phoenix_UI/Phoenix_UI_Options: Phoenix_UI_Options" not in pkg:
+    problems.append(".pkgmeta: move-folders must ship Phoenix_UI_Options as its own addon folder")
 
 counts = {}
 for p in loaded:

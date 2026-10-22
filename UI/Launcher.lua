@@ -1,10 +1,44 @@
 local _, ns = ...
 local L = ns.L
 local W, Skin = ns.Widgets, ns.Skin
-local Config = ns.Config
 
---[[ Integration points with Blizzard UI: a themed landing page in Options → AddOns and an
-    Addon Compartment entry. Both just open the standalone window. ]]
+--[[ The settings window lives in a separate load-on-demand addon, Phoenix_UI_Options, so its pages, previews
+    and option schemas cost nothing until you open it. This file stays in Phoenix_UI: it owns ns.Config's
+    front door (Toggle / Show / ResetPosition load the window first, then the real methods take over the same
+    table), the landing page in Options → AddOns, the Addon Compartment entry and the first-install picker.
+    Phoenix_UI_Options reaches this addon's namespace through a global that exists only while it loads. ]]
+local OPTIONS = "Phoenix_UI_Options"
+local Config = ns.Config or {}
+ns.Config = Config
+local Launcher = {}
+ns.Launcher = Launcher
+
+-- Loads the settings addon once; true when the real window code is in place.
+function Launcher:Load()
+    if Config.loaded then return true end
+    if self.failed then return false end
+    local reason
+    PhoenixUI_Bridge = ns
+    local ok, loaded, why = pcall(C_AddOns.LoadAddOn, OPTIONS)
+    PhoenixUI_Bridge = nil
+    if ok and loaded and Config.loaded then return true end
+    reason = (ok and (why and _G["ADDON_" .. why] or why)) or loaded
+    self.failed = true
+    ns:Print(L.OPTIONS_MISSING, tostring(reason or OPTIONS))
+    return false
+end
+
+-- Front-door methods; Phoenix_UI_Options' Window.lua replaces them on the same table.
+for _, name in ipairs({ "Toggle", "Show", "ResetPosition", "ShowStylePicker" }) do
+    local front
+    front = function(self, ...)
+        if not Launcher:Load() or Config[name] == front then return end
+        return Config[name](self, ...)
+    end
+    Config[name] = front
+end
+
+---------------------------------------------------------------- Blizzard integration
 local function openFromSettings()
     if SettingsPanel and SettingsPanel:IsShown() then HideUIPanel(SettingsPanel) end
     Config:Show()
@@ -80,3 +114,12 @@ end
 function Config:OpenBlizzardSettings()
     if self.settingsCategory then Settings.OpenToCategory(self.settingsCategory:GetID()) end
 end
+
+---------------------------------------------------------------- first install: the style picker
+ns.Events:On("PLAYER_LOGIN", Launcher, function()
+    local ui = ns.DB.sv.global.ui
+    if not ns.DB.fresh or ui.stylePicked then return end
+    C_Timer.After(4, function()
+        if not InCombatLockdown() then ns.SafeCall(Config.ShowStylePicker, Config) end
+    end)
+end)

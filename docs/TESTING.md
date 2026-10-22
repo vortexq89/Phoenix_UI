@@ -13,9 +13,13 @@ the step number.
 
 - [ ] **0.1 Back up WTF.** Copy `World of Warcraft\_retail_\WTF` to somewhere safe (for example `WTF-backup-2026-10-22`).
   **Expect:** a full copy of the folder. **If not:** stop and fix this first. You need it to retest migration.
-- [ ] **0.2 Install the build.** Replace `Interface\AddOns\Phoenix_UI` with the beta1 folder, then delete any old
-  `Phoenix_UI` copies (for example `Phoenix_UI-main`).
-  **Expect:** one `Phoenix_UI` folder only. **If not:** report the folder names you found.
+- [ ] **0.2 Install the build.** Replace `Interface\AddOns\Phoenix_UI` with the beta1 folder and add the
+  `Phoenix_UI_Options` folder next to it, then delete any old `Phoenix_UI` copies (for example `Phoenix_UI-main`).
+  **Expect:** exactly `Phoenix_UI` and `Phoenix_UI_Options`. In the AddOns list *Phoenix UI Options* shows as
+  load-on-demand. **If not:** report the folder names you found.
+- [ ] **0.2b Settings load on demand.** Log in, then type `/run print(C_AddOns.IsAddOnLoaded("Phoenix_UI_Options"))`.
+  **Expect:** `false`. Type `/pui`: the window opens; the same line now prints `true`. Esc → Options → AddOns →
+  Phoenix UI → **Open Phoenix UI** and the minimap compartment entry open it too.
 - [ ] **0.3 Start the uploader.** Run `PhoenixUploader.exe` (from https://vq8s.com/phoenix-ui). With no options it
   runs in the tray.
   **Expect:** a tray icon, and `uploader.log` (in `%LOCALAPPDATA%\PhoenixUploader`) shows `watching …\_retail_`.

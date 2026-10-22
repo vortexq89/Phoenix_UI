@@ -1073,4 +1073,6 @@ ns.RegisterLocale("enUS", {
     UF_AURAS_STYLE = "Phoenix aura icons",
     UF_AURAS_STYLE_DESC = "Crops the buff and debuff icons under the target, focus and boss frames, with an optional border and the Phoenix stack font. Their size and order stay Blizzard's.",
     UF_AURA_COUNT_FONT = "Aura stacks",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "The settings window could not load (%s). Install and enable the Phoenix_UI_Options folder next to Phoenix_UI.",
 })

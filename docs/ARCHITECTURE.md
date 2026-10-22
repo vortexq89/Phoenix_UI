@@ -13,7 +13,7 @@ This describes the code as it is. If code and this document disagree, fix one of
 2. **No Ace3 / no embedded third-party addons.** Kept libraries: `LibStub`, `CallbackHandler-1.0`, `LibSharedMedia-3.0` (12000005, interop), `LibEditMode` (current, our own movable frames). Everything else is replaced by our small core or by Blizzard APIs (`C_EncodingUtil`, `MenuUtil`, `C_Timer`, `hooksecurefunc`, `Settings`).
 3. **Blizzard owns layout, we own looks.** Blizzard frames are positioned/sized by **Edit Mode**. Phoenix modules *skin* and *augment* Blizzard frames (textures, fonts, colours, extra text). We do not move or replace protected frames. Our *own* frames (data bar, spell history) are registered with Edit Mode via LibEditMode.
 4. **Display-only combat UI.** Under Midnight secret values we never do maths/comparisons on combat data. We hand possible secrets straight to display sinks (`FontString:SetFormattedText`, `Texture:SetTexture`, `UnitHealthPercent` with `CurveConstants.ScaleTo100`) and never test them.
-5. **Declarative options.** Each module declares an options schema once (`Options.lua`). The same schema drives its config page and the search index. Defaults live on the module.
+5. **Declarative options.** Each module declares an options schema once (`Phoenix_UI_Options/Options/<Module>.lua`). The same schema drives its config page and the search index. Defaults live on the module.
 6. **One theme.** Every pixel goes through `ns.Theme` tokens and `ns.Skin` primitives. No module hard-codes a colour, font path or border.
 7. **One SavedVariables owner (`ns.DB`)** with profiles, a schema version, and ordered migrations, including a one-shot import of the legacy `Phoenix_UIDB`.
 
@@ -54,12 +54,17 @@ Phoenix_UI/
 │  ├─ UI.xml
 │  ├─ Anim.lua
 │  ├─ Widgets/          -- Core, Button, Toggle, Slider, Dropdown, ColorSwatch, Input, Scroll, Section, Popup
-│  └─ Config/           -- Window, Renderer (schema → widgets), Search, Home, Profiles, About, Blizzard (landing + compartment)
+│  └─ Launcher.lua      -- ns.Config front door (loads Phoenix_UI_Options), Blizzard landing + compartment, welcome picker
 ├─ Modules/
 │  ├─ Modules.xml       -- lists every module file directly (no per-module XML)
 │  └─ <ModuleName>/
-│     ├─ <ModuleName>.lua   -- module object, defaults, lifecycle
-│     └─ Options.lua        -- options schema (no UI code)
+│     └─ <ModuleName>.lua   -- module object, defaults, lifecycle
+├─ Phoenix_UI_Options/  -- SECOND ADDON (## LoadOnDemand: 1, ## Dependencies: Phoenix_UI); .pkgmeta move-folders ships it
+│  ├─ Phoenix_UI_Options.toc
+│  ├─ Bridge.lua        -- proxies this addon's private table to Phoenix_UI's ns (bridge global lives only during LoadAddOn)
+│  ├─ Previews/         -- live previews built from each module's own styling code
+│  ├─ Config/           -- Window, Groups, Renderer (schema → widgets), Search, Home, Profiles, Appearance, Diagnostics, Presets, About
+│  └─ Options/<ModuleName>.lua -- options schema per module (no UI code)
 ├─ Media/ Fonts/ Textures/ (surfaces, Emblem64/128/256, Logo512/1024)  Icons/ (Icons24/48/96 atlases + LICENSE)
 ├─ tools/ check_api.py  check_locales.py  smoke/harness.lua  audit/ (reference generators)  media/
 ├─ .luacheck/ wow_std_12.1.5.lua  reference_12.1.5.json  deprecated_12.1.5.json
@@ -266,7 +271,7 @@ Presets change the accent family over one shared dark surface palette: **Phoenix
 
 ## 8. Blizzard Settings registration
 
-* `Settings.RegisterCanvasLayoutCategory(landingFrame, "Phoenix UI")` + `Settings.RegisterAddOnCategory(category)` (UI/Config/Blizzard.lua). The landing canvas is themed: logo, short text and an **Open Phoenix UI** button.
+* `Settings.RegisterCanvasLayoutCategory(landingFrame, "Phoenix UI")` + `Settings.RegisterAddOnCategory(category)` (UI/Launcher.lua). The landing canvas is themed: logo, short text and an **Open Phoenix UI** button.
 * `/pui settings` → `Settings.OpenToCategory(category:GetID())`.
 * Addon Compartment: `AddonCompartmentFrame:RegisterAddon({ text, icon, notCheckable, func, funcOnEnter, funcOnLeave })` with a themed tooltip. There is no `## AddonCompartmentFunc` global.
 * Slash (Core/Init.lua): `RegisterNewSlashCommand(handler, "pui", "phoenix")`. Sub-commands: none/`config`, `settings`, `edit`, `profile [name]`, `reset`, `debug`, `<module key>`.
@@ -287,16 +292,16 @@ Header 56, sidebar 216, footer 40 (profile, status, window scale 0.7–1.4 appli
   Picking a result opens the page, switches to its tab, scrolls to the row and flashes it.
 * **Live updates:** controls write through `ns.DB:Set(module, path, value)`, which calls
   `module:OnSettingChanged()` and fires `PUI_SETTING_CHANGED`.
-* **Schema → widgets** (`UI/Config/Renderer.lua`): `header`, `description`, `toggle`, `range`, `select`, `font`,
+* **Schema → widgets** (`Phoenix_UI_Options/Config/Renderer.lua`): `header`, `description`, `toggle`, `range`, `select`, `font`,
   `texture`, `color`, `input`, `button`, `custom` (`build(row, module)`). Per entry: `key` or `get`/`set`, `desc`,
   `keywords`, `disabled = fn(m)`, `hidden = fn(m)`, `reload` (Reload badge) and `combat` (applies after combat).
 * **2.1 additions:** `tab` (splits a page; cards belong to the last tab), `preview` (`kind` registered in
-  `UI/Previews`), `scope` (a unit selector; keys containing `@` resolve to the chosen unit, with "Apply to"
+  `Phoenix_UI_Options/Previews`), `scope` (a unit selector; keys containing `@` resolve to the chosen unit, with "Apply to"
   This / All / Multiple and "Apply all settings from"), `colors` (several token swatches in one row) and
   `cog = { … }` on any row (a popover with the sub-options; cogs do not nest, `Opt.Flat` flattens rows for them).
   `color` rows take `token`, `reset` and `alpha`; `texture` and `font` pickers draw live samples, filter as you
   type from 12 entries and group by family or style.
-* **Previews** (`UI/Previews/*.lua`): `ns.Previews:Register(kind, { module, height, build(stage, m) })`. The build
+* **Previews** (`Phoenix_UI_Options/Previews/*.lua`): `ns.Previews:Register(kind, { module, height, build(stage, m) })`. The build
   creates plain frames with fixed sample data and returns a redraw function that calls the module's own style
   methods (for example `NamePlates:StyleBar`, `UnitFrames:StyleTexts`, `CastBars:FillColor`). Redraws on
   `PUI_SETTING_CHANGED` for the module or General, on `PUI_THEME_CHANGED` and on show. No secure templates, no
@@ -383,8 +388,8 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
 
 ## 13. Scope notes
 
-* **No `Core/Settings.lua`.** Boot and slash live in `Core/Init.lua` (loaded last from the TOC so every module is registered); the Blizzard landing page and compartment entry live with the rest of the config UI in `UI/Config/Blizzard.lua`.
-* **No per-module XML.** `Modules/Modules.xml` lists `<Module>.lua` + `Options.lua` for every module; one place to read the load order.
+* **No `Core/Settings.lua`.** Boot and slash live in `Core/Init.lua` (loaded last from the TOC so every module is registered); the Blizzard landing page and compartment entry live in `UI/Launcher.lua`, which stays in Phoenix_UI so they work before the settings addon is loaded.
+* **No per-module XML.** `Modules/Modules.xml` lists `<Module>.lua` (and helpers) for every module; option schemas are listed in `Phoenix_UI_Options/Phoenix_UI_Options.toc`.
 * **No empty locale stubs.** Only `enUS.lua` ships; `ns.RegisterLocale` accepts other locales when translations exist. `tools/check_locales.py` keeps enUS complete and free of unused keys.
 * **Positions:** Edit Mode owns layout. Phoenix-owned frames that belong in Edit Mode (data bar, spell history) register with LibEditMode and are stored per Edit Mode layout. The Movers module (§16) positions only a verified list of Blizzard frames Edit Mode does not manage, plus small Phoenix frames such as the bug indicator; it never touches an Edit Mode system.
 * **Removed with no replacement in Phoenix:** chat emoji, arena dampening display (aura data is restricted in arenas), a Phoenix minimap size slider (Edit Mode owns the size; the Minimap page links to it), mouseover bar fading. Brought back on 12.x APIs: the M+ timer (`MythicPlus/Timer.lua`, non-secret `C_ChallengeMode`/`C_ScenarioInfo` data) and chat history (typed lines only, not received messages). Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).

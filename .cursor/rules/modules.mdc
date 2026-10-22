@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Module contract
 
-- Register with `ns:NewModule(key, { label, category, order, defaults, requires?, reloadOnToggle?, loadWhen? })`. `key` is PascalCase and unique. Folder `Modules/<Key>/` with `<Key>.xml`, `<Key>.lua`, `Options.lua`.
+- Register with `ns:NewModule(key, { label, category, order, defaults, requires?, reloadOnToggle?, loadWhen? })`. `key` is PascalCase and unique. Folder `Modules/<Key>/` with `<Key>.lua` (+ helpers); its schema is `Phoenix_UI_Options/Options/<Key>.lua`.
 - Lifecycle: `OnInitialize` (no visuals/events) → `OnEnable` (create/attach/register) → `OnSettingChanged(path, value)` / `Refresh()` → `OnDisable` (revert all visuals; the core releases events) → `OnProfileChanged`.
 - Every `hooksecurefunc`/`HookScript` body begins with `if not M:IsEnabled() then return end`. Hooks are installed once (guard flag), never per enable.
 - Every visual change on a Blizzard object must be reversible through `ns.Skin:Restore` (Skin primitives record originals).

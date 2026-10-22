@@ -1047,6 +1047,8 @@ local T = {
     UF_AURAS_STYLE = "Ícones de aura Phoenix",
     UF_AURAS_STYLE_DESC = "Recorta os ícones de bônus e penalidades sob os quadros de alvo, foco e chefe, com borda opcional e a fonte de acúmulos Phoenix. Tamanho e ordem continuam os da Blizzard.",
     UF_AURA_COUNT_FONT = "Acúmulos de aura",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "Não foi possível carregar a janela de opções (%s). Instale e ative a pasta Phoenix_UI_Options ao lado de Phoenix_UI.",
 }
 
 ns.RegisterLocale("ptBR", T)

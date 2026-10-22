@@ -1047,6 +1047,8 @@ local T = {
     UF_AURAS_STYLE = "Phoenix 光环图标",
     UF_AURAS_STYLE_DESC = "裁切目标、焦点与首领框体下方的增益和减益图标，可选边框并使用 Phoenix 层数字体。大小与顺序保持暴雪原样。",
     UF_AURA_COUNT_FONT = "光环层数",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "设置窗口无法加载（%s）。请在 Phoenix_UI 旁安装并启用 Phoenix_UI_Options 文件夹。",
 }
 
 ns.RegisterLocale("zhCN", T)

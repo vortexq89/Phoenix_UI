@@ -1047,6 +1047,8 @@ local T = {
     UF_AURAS_STYLE = "Phoenix-Aurensymbole",
     UF_AURAS_STYLE_DESC = "Beschneidet die Stärkungs- und Schwächungssymbole unter Ziel-, Fokus- und Bossrahmen, mit optionalem Rahmen und Phoenix-Stapelschrift. Größe und Reihenfolge bleiben Blizzards.",
     UF_AURA_COUNT_FONT = "Aurenstapel",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "Das Einstellungsfenster konnte nicht geladen werden (%s). Installiere und aktiviere den Ordner Phoenix_UI_Options neben Phoenix_UI.",
 }
 
 ns.RegisterLocale("deDE", T)

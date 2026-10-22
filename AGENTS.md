@@ -48,7 +48,7 @@ Never invent an API. If you can't find it in (1)–(3), it does not exist.
 * 4-space indent, double quotes, `local` everything, early returns, ≤140 columns.
 * Names: modules `PascalCase` keys (`"Tooltip"`). Files `PascalCase.lua`. Locals/functions `camelCase`. Methods `PascalCase` (`M:OnEnable`, Blizzard convention). Constants `UPPER_SNAKE` on `ns.C`. Locale keys `MODULE_THING`. Internal messages `PUI_*`. Frame names (only when Blizzard requires one, e.g. `UISpecialFrames`) `PhoenixUI_<Thing>`.
 * Cache hot globals in locals at file top only where profiling shows benefit (no blanket `local _G = _G` blocks).
-* One responsibility per file. Module files are listed directly in `Modules/Modules.xml` (`<Module>.lua`, any helper files such as `Viewer.lua`, then `Options.lua`).
+* One responsibility per file. Module files are listed directly in `Modules/Modules.xml` (`<Module>.lua`, any helper files such as `Viewer.lua`); its options schema is `Phoenix_UI_Options/Options/<Module>.lua`, listed in `Phoenix_UI_Options/Phoenix_UI_Options.toc` (the settings window is a separate load-on-demand addon).
 * Comments explain *why* (especially every secret/taint workaround, with the API doc reference).
 * No dead code, no commented-out blocks, no `.bak`, no debug prints (use `ns:Debug()`, compiled out unless `/pui debug`).
 
@@ -107,7 +107,7 @@ function M:Refresh()
 end
 ```
 
-`Modules/Example/Options.lua`
+`Phoenix_UI_Options/Options/Example.lua`
 ```lua
 local ADDON, ns = ...
 ns:RegisterOptions("Example", {
@@ -117,7 +117,7 @@ ns:RegisterOptions("Example", {
 })
 ```
 
-Then add `<Script file="Example\Example.lua"/>` and `<Script file="Example\Options.lua"/>` to `Modules/Modules.xml` (in its category block) and the locale keys to `Locales/enUS.lua`.
+Then add `<Script file="Example\Example.lua"/>` to `Modules/Modules.xml` (in its category block), `Options\Example.lua` to `Phoenix_UI_Options/Phoenix_UI_Options.toc`, and the locale keys to `Locales/enUS.lua` (and every translation).
 
 ## 6. How to add a feature (checklist)
 

@@ -1,5 +1,9 @@
 package-as: Phoenix_UI
 
+# The settings window is a second, load-on-demand addon shipped next to Phoenix_UI in the same zip.
+move-folders:
+  Phoenix_UI/Phoenix_UI_Options: Phoenix_UI_Options
+
 manual-changelog:
   filename: CHANGES.md
   markup-type: markdown

@@ -1047,6 +1047,8 @@ local T = {
     UF_AURAS_STYLE = "Значки аур Phoenix",
     UF_AURAS_STYLE_DESC = "Обрезает значки эффектов под рамками цели, фокуса и босса, с необязательной рамкой и шрифтом стаков Phoenix. Размер и порядок остаются как у Blizzard.",
     UF_AURA_COUNT_FONT = "Стаки аур",
+    ---------------------------------------------------------------- load-on-demand settings
+    OPTIONS_MISSING = "Не удалось загрузить окно настроек (%s). Установите и включите папку Phoenix_UI_Options рядом с Phoenix_UI.",
 }
 
 ns.RegisterLocale("ruRU", T)
