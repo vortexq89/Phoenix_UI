@@ -249,6 +249,8 @@ local function styleAuraButton(b, a)
     b:EnableMouse(a.tooltips)
 end
 
+M.StyleAuraButton = styleAuraButton
+
 local function layoutAuraButtons(container, a, up, leftGrow)
     local slots = M.AuraSlots(a.max, a.size, a.perRow, a.spacing, leftGrow and "LEFT" or "RIGHT", up)
     local anchor = (up and "BOTTOM" or "TOP") .. (leftGrow and "RIGHT" or "LEFT")

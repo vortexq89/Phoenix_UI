@@ -83,6 +83,11 @@ function Live:Away(f)
     if yes(UnitIsDND(f.unit)) then return L.UF_DND end
     return ""
 end
+function Live:Guild(f)
+    local guild = GetGuildInfo(f.unit)
+    if guild == nil then return "" end
+    return guild
+end
 function Live:Health(f) return UnitHealth(f.unit) end
 function Live:HealthMax(f) return UnitHealthMax(f.unit) end
 function Live:HealthText(f, kind)
@@ -192,6 +197,7 @@ function Sample:Offline(f) return sv(f).offline or false end
 Sample.Status = Live.Status
 function Sample:Group(f) return sv(f).group or "" end
 function Sample:Away() return "" end
+function Sample:Guild(f) return sv(f).guild or "" end
 function Sample:Health(f) return sv(f).hp or 0 end
 function Sample:HealthMax(f) return sv(f).hpMax or 1 end
 function Sample:HealthText(f, kind)
@@ -452,18 +458,21 @@ function M:UpdatePortrait(f, src)
 end
 
 ---------------------------------------------------------------- indicators
-local function marker(f, src, ic)
-    -- the index may be secret; SetSpriteSheetCell takes it as is
-    local idx = ic.marker and src:RaidMarker(f)
-    if ic.marker and not plain(idx) then
-        pcall(f.Marker.SetSpriteSheetCell, f.Marker, idx, 4, 4)
-        f.Marker:Show()
+-- A raid marker texture for an index that may be secret (SetSpriteSheetCell takes it as is); nil hides it.
+function M.ShowMarker(tex, idx)
+    if idx ~= nil and not plain(idx) then
+        pcall(tex.SetSpriteSheetCell, tex, idx, 4, 4)
+        tex:Show()
     elseif idx then
-        SetRaidTargetIconTexture(f.Marker, idx)
-        f.Marker:Show()
+        SetRaidTargetIconTexture(tex, idx)
+        tex:Show()
     else
-        f.Marker:Hide()
+        tex:Hide()
     end
+end
+
+local function marker(f, src, ic)
+    if ic.marker then M.ShowMarker(f.Marker, src:RaidMarker(f)) else f.Marker:Hide() end
 end
 
 local function roleAndStates(f, src, ic)
@@ -484,19 +493,24 @@ local function roleAndStates(f, src, ic)
 end
 
 local ELITE = { elite = "state.warning", worldboss = "state.warning", rareelite = "text.secondary" }
-local function elite(f, src, ic)
-    local class = ic.elite and src:RawClassification(f)
+-- The elite / boss / rare badge for a (plain) classification; hidden for normal units.
+function M.ShowClassification(tex, class, size)
     if ELITE[class] then
-        ns.Icons:Apply(f.Elite, "boss", ic.size + 2)
-        f.Elite:SetVertexColor(Theme:Color(ELITE[class]))
-        f.Elite:Show()
+        ns.Icons:Apply(tex, "boss", size)
+        tex:SetVertexColor(Theme:Color(ELITE[class]))
+        tex:Show()
     elseif class == "rare" then
-        f.Elite:SetAtlas(M.ATLAS.rare)
-        f.Elite:SetVertexColor(1, 1, 1)
-        f.Elite:Show()
+        tex:SetAtlas(M.ATLAS.rare)
+        tex:SetSize(size, size)
+        tex:SetVertexColor(1, 1, 1)
+        tex:Show()
     else
-        f.Elite:Hide()
+        tex:Hide()
     end
+end
+
+local function elite(f, src, ic)
+    if ic.elite then M.ShowClassification(f.Elite, src:RawClassification(f), ic.size + 2) else f.Elite:Hide() end
 end
 
 local READY = { ready = "READY_CHECK_READY_TEXTURE", notready = "READY_CHECK_NOT_READY_TEXTURE",
@@ -608,6 +622,8 @@ local function showAura(b, unit, aura, kind, a)
     b:Show()
 end
 
+M.ShowAura = showAura
+
 local SAMPLE_DISPEL = { Magic = DEBUFF_TYPE_MAGIC_COLOR, Curse = DEBUFF_TYPE_CURSE_COLOR,
     Disease = DEBUFF_TYPE_DISEASE_COLOR, Poison = DEBUFF_TYPE_POISON_COLOR }
 
@@ -623,6 +639,7 @@ local function showSample(b, s, kind, a, i)
     b.index = i
     b:Show()
 end
+M.ShowSampleAura = showSample
 
 function M:UpdateAuras(f)
     local u = self:Unit(f.unitKey)
@@ -811,7 +828,7 @@ function M:UpdateClassPower(f)
     end
     local was = f.classPowerActive
     f.classPowerActive = db.show ~= "off" and info ~= nil
-    if was ~= f.classPowerActive and not (f.secure and InCombatLockdown()) then self:Layout(f) end
+    if was ~= f.classPowerActive and not f.noLayout and not (f.secure and InCombatLockdown()) then self:Layout(f) end
     f.hasRunes = info and info.runes ~= nil
     cp:SetShown(f.classPowerActive)
     if not f.classPowerActive then return end

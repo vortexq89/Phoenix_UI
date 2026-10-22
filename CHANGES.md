@@ -3,6 +3,29 @@
 ## 2.0.0-beta1
 
 ### New
+- **Nameplates** (plan v2 stage S10): Phoenix now draws its own nameplates (Nameplates → *Plates drawn by*:
+  *Phoenix*, the default; *Blizzard (restyled)* keeps the game's plates with the 2.0 restyle). Separate *Enemy* and
+  *Friendly* styles (chips with Shift multi-edit and *Apply to: All*): size, names only (friendly), bar texture,
+  reverse and smooth fill, shading, colour by reaction, class, health left or a fixed colour, class colours for
+  players, absorb shields, border and background. Colours: reaction colours (hostile, neutral, friendly, tapped),
+  threat colours by role (automatic from your spec, tank or damage/healer, with an off-tank colour when another
+  tank holds the mob), quest mobs in their own colour with a quest badge, and an **execute range** colour with a
+  threshold mark. Target: glow, border or arrows (or arrows on top), target and focus colours, a focus stripe, a
+  mouseover highlight, your class resource under the target plate, and the game's target scale, non-target alpha
+  and occluded alpha. Cast bars on plates come from the S9 cast bar engine (no second copy): fill and state colours,
+  interrupt-ready tick, **important-cast colour** (also new on every Cast Bars bar), shield, icon, time format,
+  name length, hold and flash. Texts use Unit Frames tags (name, health, level with classification, an info line
+  such as the new `[guild]` tag) with their own fonts, plus Mythic+ enemy forces. Auras: debuff rows (yours,
+  important or all, crowd control first) and enemy buff rows (purgeable, important or all) asked of the game with
+  filter words only. Indicators: raid marker (left, top or right), quest, elite and rare badges. **Per zone**: open
+  world, dungeons and raids, battlegrounds and arenas each get a scale, friendly players as plates, names or hidden,
+  hide enemies out of combat and enemy minions. The *Game* tab gathers stacking for enemy and friendly plates,
+  overlap spacing, max distance and every nameplate visibility CVar; the click area (enemy and friendly width and
+  height, click-through friendly plates) is set out of combat. **Test plates** shows three samples mid-screen; the
+  page has a live pinned preview (target, low health, marker, quest, absorbs). Built for 12.1.5's nameplate rules:
+  forbidden plates are never touched, target/focus/mouseover are found by comparing plate frames, secret health,
+  threat, reaction and aura data only reach the game's drawing functions. 272 settings on retail, 266 on WoW
+  Forever (target 100).
 - **Cast bars** (plan v2 stage S9): Phoenix now draws its own cast bars for the player, target, focus, pet, boss
   1–5 and arena 1–5 (Cast Bars → *Bars drawn by*: *Phoenix*, the default; *Blizzard (skinned)* keeps the game's
   bars with the 1.x skin). The player bar replaces Edit Mode's. Each bar sits on its Phoenix unit frame's cast bar

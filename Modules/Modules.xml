@@ -25,6 +25,9 @@
     <Script file="Auras\Containers.lua"/>
     <Script file="Auras\Blizzard.lua"/>
     <Script file="NamePlates\NamePlates.lua"/>
+    <Script file="NamePlates\Blizzard.lua"/>
+    <Script file="NamePlates\Plate.lua"/>
+    <Script file="NamePlates\Update.lua"/>
     <Script file="Tooltip\Tooltip.lua"/>
     <Script file="ItemLevel\ItemLevel.lua"/>
     <Script file="Bags\Bags.lua"/>

@@ -1,5 +1,9 @@
 {
  "atlases": {
+  "QuestNormal": {
+   "height": 64,
+   "width": 64
+  },
   "UI-HUD-CoolDownManager-IconOverlay": {
    "height": 86,
    "width": 86

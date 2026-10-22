@@ -1,6 +1,12 @@
 local _, ns = ...
 local L, P = ns.L, ns.Previews
 
+--[[ Phoenix mode: three plates built by NamePlates itself (M:BuildPlate / LayoutPlate / DrawSample, the code that
+    draws the real plates) fed plain sample units - an elite enemy casting an important spell, a rare quest mob
+    and a friendly player - so the cast bar, auras, badges and highlights all show. Nothing reads a unit.
+    States (eye toggles): low health (execute), target, raid markers, quest mobs, absorbs.
+    Blizzard mode: the 2.0 restyle drawn on plain bars. ]]
+
 -- Three sample plates (hostile, neutral, friendly) drawn by NamePlates' own style methods.
 local SAMPLES = {
     { sample = "PREVIEW_MOB_HOSTILE", value = 0.72, token = "state.danger", forces = "+4", threat = 3, cast = 0.6,
@@ -10,15 +16,8 @@ local SAMPLES = {
 }
 local PLATE_W, PLATE_H, SCALE, AURA = 150, 12, 1.25, 16
 
-P:Register("nameplate", {
-    module = "NamePlates",
-    width = 600,
-    height = 128,
-    states = {
-        { key = "low", label = "PREVIEW_STATE_LOW", icon = "warning" },
-        { key = "target", label = "PREVIEW_STATE_TARGET", icon = "nameplates" },
-    },
-    build = function(stage, m)
+local function legacy(stage, m)
+    do
         local plates = {}
         for i, sample in ipairs(SAMPLES) do
             local holder = CreateFrame("Frame", nil, stage)
@@ -98,6 +97,56 @@ P:Register("nameplate", {
                 m:StyleForces(p.forces)
                 p.forces:SetText(p.sample.forces or "")
                 p.forces:SetShown(db.forces)
+            end
+        end
+    end
+end
+
+P:Register("nameplate", {
+    module = "NamePlates",
+    width = 600,
+    height = 150,
+    states = {
+        { key = "low", label = "PREVIEW_STATE_LOW", icon = "deaths" },
+        { key = "target", label = "PREVIEW_STATE_TARGET", icon = "nameplates" },
+        { key = "marker", label = "PREVIEW_STATE_MARKER", icon = "boss" },
+        { key = "quest", label = "PREVIEW_STATE_QUEST", icon = "tracker" },
+        { key = "absorb", label = "PREVIEW_STATE_ABSORB", icon = "auras" },
+    },
+    build = function(stage, m)
+        local holder = CreateFrame("Frame", nil, stage)
+        holder:SetAllPoints()
+        local drawOld = legacy(holder, m)
+        local plates
+        return function(view)
+            local phoenix = m.db.mode == "phoenix" and m.BuildPlate ~= nil
+            holder:SetShown(not phoenix)
+            for _, p in ipairs(plates or {}) do p:SetShown(phoenix) end
+            if not phoenix then drawOld(view); return end
+            if not plates then
+                plates = {}
+                for i = 1, 3 do
+                    local p = m:BuildPlate(stage, { preview = true, sample = true })
+                    p:EnableMouse(false)
+                    plates[i] = p
+                end
+            end
+            local st = view.states
+            local samples = m.Samples()
+            local w = view:GetWidth()
+            for i, p in ipairs(plates) do
+                local s = samples[i]
+                s.frozen = true
+                s.target = st.target and i == 1 or false
+                s.hover = i == 3
+                if not st.marker then s.marker = nil end
+                s.quest = st.quest and i == 2 or false
+                if st.absorb then s.absorb = math.floor((s.hpMax or 1) * 0.15) else s.absorb = 0 end
+                if st.low and i == 1 then s.hp = math.floor((s.hpMax or 1) * 0.14) end
+                p:ClearAllPoints()
+                p:SetPoint("CENTER", stage, "LEFT", w * (i - 0.5) / 3, 4)
+                p:Show()
+                m:DrawSample(p, s)
             end
         end
     end,

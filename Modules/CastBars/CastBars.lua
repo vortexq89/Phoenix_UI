@@ -42,7 +42,8 @@ local function bar(o)
         strata = "MEDIUM", scale = 1, spacing = o.spacing or 46, growth = "DOWN",
         -- look (texture / border / background / text / time / colors are the 2.0 keys, Blizzard mode reads them too)
         texture = "", reverse = false, smooth = false, gradient = 0.25, classColor = false,
-        colors = { cast = false, channel = false, locked = false, notReady = false, interrupted = false, success = false },
+        colors = { cast = false, channel = false, locked = false, notReady = false, interrupted = false, success = false,
+                   important = false },
         background = Style.Background({ alpha = 0.85 }),
         border = Style.Border({ style = "pixel" }),
         spark = true, sparkColor = false,
@@ -53,7 +54,7 @@ local function bar(o)
                                                  show = o.spellTarget or false }),
         timeFormat = o.timeFormat or "remaining", decimals = 1, nameLength = 0,
         hold = 0.5, flash = true, important = o.important or false, targeted = o.targeted or false,
-        kick = o.kick or false,
+        importantFill = o.importantFill or false, kick = o.kick or false,
     }
 end
 
@@ -84,12 +85,22 @@ local M = ns:NewModule("CastBars", {
     defaults = DEFAULTS,
 })
 M.KEYS, M.COUNT, M.TOKENS, M.ATTACHABLE, M.DEFAULTS = KEYS, COUNT, TOKENS, ATTACHABLE, DEFAULTS
+-- The settings shape of one bar; other modules that draw bars with this engine (nameplates, S10) build theirs with it.
+M.NewBarSettings = bar
+--[[ Settings sources: key -> function(key) returning a bar's settings table. A module that draws its own bars with
+    this engine registers its keys here (NamePlates: "plate.enemy", "plate.friendly"), so BuildBar / LayoutBar /
+    ShowCast / the sample casts read its settings without a copy of the drawing code. ]]
+M.SOURCES = {}
 
 local function plain(v) return not Secret.IsSecret(v) end
 M.plain = plain
 
 function M:IsPhoenix() return self.db.mode == "phoenix" end
-function M:Bar(key) return self.db.bars[key] or self.db.bars.player end
+function M:Bar(key)
+    local source = M.SOURCES[key]
+    if source then return source(key) end
+    return self.db.bars[key] or self.db.bars.player
+end
 -- The settings key of a unit token: boss3 -> boss
 function M.KeyOf(token)
     if type(token) ~= "string" then return nil end
@@ -108,11 +119,11 @@ local TOKEN = {
     cast = "accent.primary", channel = "state.info", locked = "text.muted", notReady = "state.warning",
     interrupted = "state.danger", success = "state.success",
     latency = "state.danger", tick = "text.primary", stage = "text.primary", kick = "state.success",
-    gcd = "text.secondary", swing = "accent.primary", glow = "state.warning",
+    gcd = "text.secondary", swing = "accent.primary", glow = "state.warning", important = "state.warning",
 }
 M.COLOR_TOKENS = TOKEN
 
--- A bar's colour for a state: cast | channel | locked | notReady | interrupted | success (r, g, b, a).
+-- A bar's colour for a state: cast | channel | locked | notReady | interrupted | success | important (r, g, b, a).
 function M:StateColor(key, state)
     local b = self:Bar(key)
     if (state == "cast" or state == "channel") and b.classColor then

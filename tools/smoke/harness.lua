@@ -894,7 +894,10 @@ try("search", function()
     ns.Config:Search("outline")
     local rows = ns.Config.results and ns.Config.results.rows or {}
     local hit
-    for _, r in ipairs(rows) do if r.entry and r.entry.item and r.entry.item.key == "health.outline" then hit = r.entry end end
+    for _, r in ipairs(rows) do
+        local k = r.entry and r.entry.item and r.entry.item.key
+        if k == "health.outline" or k == "styles.@.health.outline" then hit = hit or r.entry end
+    end
     assert(hit, "the nameplate health text outline (a cog option) is not searchable")
     local page = ns.Config:Show("NamePlates")
     page:Focus(hit.item)
@@ -1328,12 +1331,16 @@ try("aura rows", function()
     local styled = 0
     local orig = NP.StyleAuraIcon
     NP.StyleAuraIcon = function(...) styled = styled + 1; return orig(...) end
+    -- the 2.0 restyle (Blizzard mode) listens under its own owner, so it can be switched on beside Phoenix plates
+    NP:EnableBlizzard()
     fire("NAME_PLATE_UNIT_ADDED", "nameplate9")
     auras:RefreshList()
     auras:RefreshList()
     NP.StyleAuraIcon = orig
     rawset(env, "C_NamePlate", saved or nil)
     fire("NAME_PLATE_UNIT_REMOVED", "nameplate9")
+    ns.Events:OffAll(NP.BlizzardOwner)
+    NP.blizzardOn = nil
     assert(styled == 2, "nameplate aura items styled " .. styled .. " times (each once expected)")
     assert(NP.db.auras.style and NP.db.auras.count and NP.db.auras.timer, "nameplate aura defaults")
     -- unit frames: the container's ApplyLayout post-hook (installed at enable) styles each button once
@@ -2138,6 +2145,124 @@ try("auras depth (S9)", function()
     local n = ns.Config.CountSettings(ns.options.Auras)
     assert(n >= 41 and ns.Config.DEPTH.Auras == 41, ("Auras has %d of 41 settings"):format(n))
     print(("  Auras settings: %d"):format(n))
+end)
+
+-- nameplates (S10): pure helpers, cast bar source registry, Phoenix plates on a stub base, samples, Test, depth
+try("nameplate helpers", function()
+    local M = ns.modules.NamePlates
+    assert(M.ContextOf("party") == "instance" and M.ContextOf("raid") == "instance" and M.ContextOf("scenario") == "instance",
+        "instance contexts")
+    assert(M.ContextOf("arena") == "pvp" and M.ContextOf("pvp") == "pvp" and M.ContextOf("none") == "world"
+        and M.ContextOf(nil) == "world", "pvp / world contexts")
+    assert(M.ExecuteOffset(20, 150) == 30 and M.ExecuteOffset(-5, 100) == 0 and M.ExecuteOffset(400, 100) == 100, "execute offset")
+    assert(M:ReactionColor(2) == M:Color("hostile") and M:ReactionColor(4) == M:Color("neutral")
+        and M:ReactionColor(6) == M:Color("friendly") and M:ReactionColor(nil) == nil, "reaction colours")
+    local db = M.db
+    local was = db.threat.enabled
+    db.threat.enabled = true
+    assert(M:ThreatColor(3, true) and M:ThreatColor(0, true, true) == M:Color("offTank"), "tank threat colours")
+    assert(M:ThreatColor(0, false) == nil and M:ThreatColor(2, false) and M:ThreatColor(nil, false) == nil, "dps threat colours")
+    db.threat.enabled = false
+    assert(M:ThreatColor(3, true) == nil, "threat colours while off")
+    db.threat.enabled = was
+    assert(M:IsTank({ tank = true }) and not M:IsTank({}), "sample tank role")
+    for _, kind in ipairs(M.KINDS) do
+        local g = M.Geometry(M:Style(kind), false)
+        assert(g.cast and g.auras and g.marker, "geometry " .. kind)
+        assert(M.Geometry(M:Style(kind), true).auras, "name-only geometry " .. kind)
+        assert(M:BarTexture(kind), "bar texture " .. kind)
+    end
+    assert(M.DEBUFF_FILTERS.mine:find("PLAYER") and M.BUFF_FILTERS.purgeable and M.CC_FILTER:find("CROWD_CONTROL"), "aura filters")
+    -- contexts: friendly plates as names only in instances
+    db.contexts.enabled = true
+    M.context = "instance"
+    db.contexts.instance.friendly = "name"
+    assert(M:NameOnly("friendly") and not M:NameOnly("enemy"), "instance names only")
+    db.contexts.instance.friendly = "show"
+    db.contexts.enabled = false
+    M.context = nil
+    assert(M:Context() == nil, "contexts off")
+    M:UpdateContext()
+end)
+try("nameplate cast bar source", function()
+    local CB, M = ns.modules.CastBars, ns.modules.NamePlates
+    for _, kind in ipairs(M.KINDS) do
+        local s = CB:Bar("plate." .. kind)
+        assert(s and s == M:Style(kind).cast, "the cast engine should read plate." .. kind .. " from the NamePlates style")
+        assert(s.importantFill ~= nil and s.colors and s.colors.important ~= nil, "important-cast settings " .. kind)
+    end
+    assert(CB:Bar("target") == CB.db.bars.target, "own bars unchanged")
+    -- the important-cast colour on a cast bar sample
+    local f = CB:BuildBar(env.UIParent, "plate.enemy", { preview = true })
+    CB:LayoutBar(f, 150, 10)
+    M:Style("enemy").cast.importantFill = true
+    CB:StartSample(f, { kind = "cast", total = 2, elapsed = 1, important = true, frozen = true })
+    assert(f.importantOn, "important casts should be flagged")
+    CB:StopSample(f)
+end)
+try("nameplates phoenix", function()
+    local M = ns.modules.NamePlates
+    assert(M:IsPhoenix(), "Phoenix plates are the default")
+    -- a live plate on a stub base: added, updated through its unit events, hovered, removed
+    local base = env.CreateFrame("Frame")
+    base.UnitFrame = env.CreateFrame("Frame")
+    rawset(base, "IsForbidden", function() return false end)
+    rawset(base.UnitFrame, "IsForbidden", function() return false end)
+    local saved = rawget(env, "C_NamePlate")
+    rawset(env, "C_NamePlate", { GetNamePlateForUnit = function(u) if u == "nameplate3" then return base end end,
+        GetNamePlates = function() return {} end })
+    local savedWidgets = rawget(env, "UnitNameplateShowsWidgetsOnly")
+    rawset(env, "UnitNameplateShowsWidgetsOnly", function() return false end)
+    fire("NAME_PLATE_UNIT_ADDED", "nameplate3")
+    local p = M.byBase[base]
+    assert(p and M.active.nameplate3 == p and p.unit == "nameplate3", "no Phoenix plate on the base")
+    assert(p.layoutDone and p.Health and p.Cast and p.Debuffs, "the plate was not built")
+    for _, ev in ipairs({ "UNIT_HEALTH", "UNIT_AURA", "UNIT_THREAT_SITUATION_UPDATE", "UNIT_NAME_UPDATE", "UNIT_LEVEL",
+        "UNIT_CLASSIFICATION_CHANGED", "UNIT_FACTION", "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP" }) do
+        fire(ev, "nameplate3")
+    end
+    for _, ev in ipairs({ "PLAYER_TARGET_CHANGED", "PLAYER_FOCUS_CHANGED", "UPDATE_MOUSEOVER_UNIT", "RAID_TARGET_UPDATE",
+        "QUEST_LOG_UPDATE", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "ZONE_CHANGED_NEW_AREA" }) do fire(ev) end
+    -- every style switch re-lays the live plate out
+    local s = M:Style("enemy")
+    for _, effect in ipairs({ "border", "arrows", "glow" }) do M.db.target.effect = effect; M:Refresh() end
+    M.db.target.arrows = true; M.db.target.classPower = true; M:Refresh()
+    M.db.target.arrows = false; M.db.target.classPower = false
+    M.db.execute.enabled = true; M.db.execute.marker = true; M:Refresh()
+    s.auras.debuffs = "all"; s.auras.buffs = "all"; M:Refresh()
+    s.auras.debuffs = "mine"; s.auras.buffs = "purgeable"; M:Refresh()
+    fire("NAME_PLATE_UNIT_REMOVED", "nameplate3")
+    rawset(env, "C_NamePlate", saved or nil)
+    rawset(env, "UnitNameplateShowsWidgetsOnly", savedWidgets or nil)
+    assert(not M.active.nameplate3 and not p.unit, "the plate was not released")
+    -- samples: every state draws on a free plate, both kinds
+    local free = M:BuildPlate(env.UIParent, { sample = true })
+    for _, sample in ipairs(M.Samples()) do
+        M:DrawSample(free, sample)
+        sample.hp = 1; M:DrawSample(free, sample) -- execute range
+    end
+    M.db.styles.friendly.nameOnly = true
+    M:DrawSample(free, M.Samples()[3])
+    M.db.styles.friendly.nameOnly = false
+    assert(M:ShowTest(true) and M.testShown and #M.testPlates == 3, "test plates")
+    assert(M:ShowTest(false) and not M.testShown, "test plates did not hide")
+    -- client-wide plate size and stacking go through the combat queue; nothing may error
+    M.db.click.enabled = true; M:OnSettingChanged("click.enabled"); M.db.click.enabled = false
+    M.SetStacking(1, true); M.GetStacking(1)
+end)
+try("nameplates blizzard fallback", function()
+    local M = ns.modules.NamePlates
+    M.db.mode = "blizzard"
+    assert(M:ShowTest(true) and M:ShowTest(false), "Blizzard-mode test plates")
+    M:RefreshBlizzard()
+    M.db.mode = "phoenix"
+    M.blizzardOn = nil
+    ns.Events:OffAll(M.BlizzardOwner)
+end)
+try("nameplates depth (S10)", function()
+    local n = ns.Config.CountSettings(ns.options.NamePlates)
+    assert(n >= 100 and ns.Config.DEPTH.NamePlates == 100, ("NamePlates has %d of 100 settings"):format(n))
+    print(("  NamePlates settings: %d"):format(n))
 end)
 
 fire("PLAYER_LOGOUT")

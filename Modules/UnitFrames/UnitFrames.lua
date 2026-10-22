@@ -141,7 +141,15 @@ local function plain(v) return not Secret.IsSecret(v) end
 M.plain = plain
 
 function M:IsPhoenix() return self.db.mode == "phoenix" end
-function M:Unit(key) return self.db.units[key] or self.db.units.player end
+--[[ Unit settings sources: key -> function(key) returning a settings table shaped like a unit's (at least nameLength
+    and auras.tooltips). Modules that draw with this module's tags and aura buttons register their keys here
+    (NamePlates: "plate.enemy", "plate.friendly"). ]]
+M.UNIT_SOURCES = {}
+function M:Unit(key)
+    local source = M.UNIT_SOURCES[key]
+    if source then return source(key) end
+    return self.db.units[key] or self.db.units.player
+end
 -- the settings key of a unit token: boss3 -> boss, targettarget -> targettarget
 function M.KeyOf(token)
     if type(token) ~= "string" then return nil end
@@ -202,6 +210,7 @@ tag("class", "%s", function(f, s) return s:ClassName(f) end)
 tag("status", "%s", function(f, s) return s:Status(f) end)
 tag("group", "%s", function(f, s) return s:Group(f) end)
 tag("afk", "%s", function(f, s) return s:Away(f) end)
+tag("guild", "%s", function(f, s) return s:Guild(f) end)
 tag("health:current", "%s", num("current"))
 tag("health:max", "%s", num("max"))
 tag("health:percent", "%P", hpct)
@@ -215,7 +224,7 @@ tag("power:percent", "%P", ppct)
 tag("power:current-max", "%s / %s", pnum("current"), pnum("max"))
 tag("altpower", "%s", function(f, s) return s:AltPowerText(f) end)
 -- list for the options help, in a stable order
-M.TAG_LIST = { "name", "name:short", "level", "classification", "class", "status", "group", "afk", "health:current",
+M.TAG_LIST = { "name", "name:short", "level", "classification", "class", "status", "group", "afk", "guild", "health:current",
     "health:max", "health:percent", "health:current-max", "health:current-percent", "health:deficit", "absorbs",
     "power:current", "power:max", "power:percent", "power:current-max", "altpower" }
 M.MAX_TAG_VALUES = 8

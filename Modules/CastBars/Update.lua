@@ -128,6 +128,16 @@ local function paint(f, ready)
             if ok and c then base = c end
         end
     end
+    -- important casts (C_Spell.IsSpellImportant, may be secret) take their own fill colour
+    if f.importantOn and f.isImportant ~= nil then
+        local imp = M:StateColorObject(key, "important")
+        if plain(f.isImportant) then
+            if f.isImportant then base = imp end
+        elseif C_CurveUtil and C_CurveUtil.EvaluateColorFromBoolean then
+            local ok, c = pcall(C_CurveUtil.EvaluateColorFromBoolean, f.isImportant, imp, base)
+            if ok and c then base = c end
+        end
+    end
     local ni = f.notInterruptible
     if plain(ni) then
         if ni then setColor(f, M:StateColor(key, "locked")) else setColor(f, base:GetRGBA()) end
@@ -258,6 +268,11 @@ function M:ShowCast(f, keepHold)
     f.Icon.tex:SetTexture(icon)
     f.showShield = b.shield and b.icon ~= "off"
     f.kickOn = b.kick and f.key ~= "player" and M:KickSpell() ~= nil
+    f.importantOn, f.isImportant = b.importantFill and f.key ~= "player", nil
+    if f.importantOn and C_Spell and C_Spell.IsSpellImportant then
+        local ok, yes = pcall(C_Spell.IsSpellImportant, spellID)
+        if ok then f.isImportant = flag(yes) end
+    end
     paint(f)
     f.secretTime = isSecretDuration(d)
     unbindTime(f)
@@ -434,6 +449,8 @@ function M:StartSample(f, s)
     f.Icon.tex:SetTexture(s.icon)
     f.showShield = b.shield and b.icon ~= "off"
     f.kickOn = b.kick and f.key ~= "player" and s.kick ~= nil
+    f.importantOn = b.importantFill and f.key ~= "player"
+    f.isImportant = s.important and true or false
     paint(f, s.kick == nil or s.kick <= 0)
     sampleExtras(self, f, s, b)
     if f.kickOn then self:LayoutKick(f, f.kind == "channel") end

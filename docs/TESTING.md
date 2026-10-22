@@ -604,6 +604,59 @@ There is no separate list of spells targeting you. Blizzard's arena cast bars ar
 frames are off. The GCD bar is retail-only (Forever has no global cooldown spell).
   **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13f.13).
 
+## 13g. Nameplates (2.0 S10)
+
+Phoenix plates are the default. Start with `/console taintLog 1` and an empty `/pui bugs`. *Combat* steps need a
+target dummy or open-world mobs; *group* needs a party or a follower dungeon.
+
+- [ ] **13g.1 First login.** **Expect:** enemy plates in the Phoenix style (health bar, name above, health percent,
+  your debuffs above the name); friendly players as class-coloured names with their guild below; Blizzard's own
+  plate art is gone. Quest objects and widget-only plates still look like Blizzard's.
+- [ ] **13g.2 Test plates and preview.** Nameplates → **Toggle test plates**. **Expect:** three plates mid-screen (a
+  casting elite with a skull, a rare quest mob, a friendly player); the pinned preview shows the same and follows
+  every setting; the preview state switch shows low health, target, marker, quest and absorbs.
+- [ ] **13g.3 Colours and threat (combat).** Pull two mobs. **Expect:** reaction colours; on a tank spec green while
+  you hold aggro, warning while losing it, danger when lost (off-tank colour when another tank holds it, group);
+  on damage/healer specs a warning/danger colour when a mob turns to you. *Execute range* on at 20 %: mobs under
+  20 % switch colour and a mark sits at 20 % on the bar.
+- [ ] **13g.4 Target, focus, mouseover.** Target a mob, focus another, hover a third. **Expect:** the target glows
+  (try *Border* and *Arrows*, and *Also arrows*), the focus has its stripe and colour, the hovered plate brightens
+  and clears when the mouse leaves. *Class resource on the target* (rogue/feral/paladin …): pips under the target
+  plate. Game rows: *Target scale*, *Alpha of other plates* and *Behind walls* change the game's plates at once.
+- [ ] **13g.5 Cast bars (combat).** A caster mob or dungeon boss. **Expect:** the plate cast bar under the bar with
+  icon, name and time; locked casts in the locked colour with a shield; the kick tick while your interrupt cools
+  down; casts the game marks as important in the important colour (Cast Bars → *Important cast colour* does the
+  same on your other bars).
+- [ ] **13g.6 Texts and tags.** Text tab: name `[name:short]`, health `[health:current] ([health:percent])`, level on,
+  info `[guild]` on friendly. **Expect:** the plates and the preview change together; elite levels show `+`,
+  coloured by difficulty. In a Mythic+ key the enemy forces value shows beside the bar.
+- [ ] **13g.7 Auras (combat).** Debuffs *Mine*, then *Important*, then *All*; buffs *Purgeable*. **Expect:** the
+  rows change; crowd control first when on; timers, stacks and dispel borders.
+- [ ] **13g.8 Indicators.** Put raid markers on mobs, find a quest mob, an elite and a rare. **Expect:** the marker
+  on the chosen side, the quest badge (and quest colour when on), elite and rare badges.
+- [ ] **13g.9 Per zone.** Zones tab on; instance: friendly players *Names only*, scale 0.8; PvP: friendly *Show*;
+  open world: *Hide enemies out of combat*. **Expect:** the settings switch when you enter a dungeon, a battleground
+  and the open world. With *Change plates by zone* off, the Game tab's *Friendly players* and *Enemy minions* rows
+  are yours again (Phoenix leaves them at their last value).
+- [ ] **13g.10 Stacking and click area.** Game tab: enemy stacking on/off, vertical spacing, max distance.
+  **Expect:** the game's plates follow at once. *Set the click area*: enemy 140×30, *Click through friendly plates*
+  on. **Expect:** after combat (if in combat) the click box changes; friendly plates no longer catch clicks.
+- [ ] **13g.11 Restricted content (group).** A current dungeon or raid boss. **Expect:** health, colours, casts and
+  auras keep working (a colour that needs a plain answer falls back to the reaction colour); nothing in `/pui bugs`.
+- [ ] **13g.12 Combat and taint (combat).** Change size, click area and zone settings in combat. **Expect:** Phoenix
+  applies the restricted ones after combat; no `ADDON_ACTION_BLOCKED`, nothing in `Logs\taint.log` from Phoenix_UI.
+- [ ] **13g.13 Blizzard mode.** *Plates drawn by* → *Blizzard (restyled)*, reload. **Expect:** the game's plates with
+  the 2.0 restyle (texture, health percent, forces, styled cast bar and aura icons); switching back and reloading
+  restores the Phoenix plates.
+- [ ] **13g.14 WoW Forever.** Repeat 13g.1–13g.5 on Forever. **Expect:** the same plates; rows the client lacks
+  are hidden.
+
+Known limits: NPC titles are not shown (no plain API; `[guild]` covers players). *Hide enemies out of combat* only
+fades the plate; the game keeps it clickable. Blizzard's own class resource on the target plate fades with
+Blizzard's plate (use *Class resource on the target*). The click area is one size for the game's plates (the
+largest of enemy and friendly) with per-kind insets.
+  **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13g.12).
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another
