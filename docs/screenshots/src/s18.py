@@ -50,9 +50,13 @@ def foe(i, spec, colour, hp, glow, aura):
     return o
 
 
+def shift(o, dx):
+    return f'<div style="position:absolute;left:{-dx}px;top:0;width:100%;height:100%">{o}</div>'
+
+
 def stage_arena():
-    o = "".join(foe(i, *f) for i, f in enumerate(FOES))
-    return preview("Live preview", fit(CSS + o, 0.62, 200), 200, tag="ARENA · 3 TEST FRAMES")
+    o = shift("".join(foe(i, *f) for i, f in enumerate(FOES)), 84)
+    return preview("Live preview", fit(CSS + o, 0.6, 200), 200, tag="ARENA · 3 TEST FRAMES")
 
 
 def stage_resources():
@@ -71,8 +75,8 @@ def stage_resources():
     o += "".join(f'<div style="position:absolute;left:{224 + k * 44}px;top:{y + 12}px;width:36px;height:36px;background:#2f4a5a;'
                  f'box-shadow:0 0 0 1px #000"><div class="ft" style="left:10px;top:22px;font-size:10px;color:#fff">{9 + k * 7}</div></div>'
                  for k in range(4))
-    o += f'<div class="ft" style="left:200px;top:{y + 56}px;font-size:11px;color:#8a93a3">Druid (cat): health · energy · mana · combo points · Ironfur · totems</div>'
-    return preview("Live preview", fit(CSS + o, 0.62, 200), 200, tag="RESOURCE BARS · TOTEMS")
+    o += f'<div class="ft" style="left:200px;top:{y + 56}px;font-size:11px;color:#8a93a3">Druid (cat) · 4 totems</div>'
+    return preview("Live preview", fit(CSS + shift(o, 186), 0.92, 200), 200, tag="RESOURCE BARS · TOTEMS")
 
 
 def stage_castbars():
@@ -83,30 +87,30 @@ def stage_castbars():
          '<div style="position:absolute;left:150px;top:96px;width:300px;height:8px;background:#1d2027;box-shadow:0 0 0 1px #000">'
          '<div style="width:165px;height:8px;background:#ff6a1a"></div><div class="ft" style="left:3px;top:-3px;font-size:9px;color:#c7cbd3">MH</div></div>'
          '<div style="position:absolute;left:150px;top:106px;width:300px;height:4px;background:#1d2027"><div style="width:90px;height:4px;background:#ff6a1a"></div></div>'
-         '<div class="ft" style="left:150px;top:126px;font-size:11px;color:#8a93a3">standalone GCD bar · swing with hand labels, dimmed out of melee</div>')
-    return preview("Live preview", fit(CSS + o, 0.62, 180), 180, tag="GCD · SWING")
+         '<div class="ft" style="left:150px;top:126px;font-size:11px;color:#8a93a3">GCD bar · swing MH / OH</div>')
+    return preview("Live preview", fit(CSS + shift(o, 136), 0.72, 180), 180, tag="GCD · SWING")
 
 
 def stage_pvp():
     o = ('<div class="dm" style="left:180px;top:14px;width:260px;height:84px"><div class="h">Arena ready</div></div>'
          '<div class="ft" style="left:270px;top:110px;font-size:14px;color:#ff6a1a">Shadowsight in 0:38</div>')
-    return preview("Live preview", fit(CSS + o, 0.62, 180), 180, tag="SHADOWSIGHT")
+    return preview("Live preview", fit(CSS + shift(o, 166), 0.8, 180), 180, tag="SHADOWSIGHT")
 
 
 def build(rows):
     return {
         "s18_unitframes_arena": page(rows, "UnitFrames", "Unit Frames", "unitframes",
                                      "Phoenix frames for you, your target, focus, pet, bosses and arena enemies.",
-                                     ["Arena", "Diminishing returns", "Arena widgets", "Click actions"], stage_arena(), "bars",
+                                     ["Arena", "Diminishing returns", "Arena widgets", "Click actions", "Quick focus"], stage_arena(), "bars",
                                      "DR and trinket: the game's own trackers, restyled on the Phoenix frame · retail only",
                                      ["Frames", "Health", "Power", "Text", "Portrait", "Indicators", "Resources"]),
         "s18_unitframes_resources": page(rows, "UnitFrames", "Unit Frames", "unitframes",
                                          "Phoenix frames for you, your target, focus, pet, bosses and arena enemies.",
-                                         ["Resource bars", "Rows", "Totem bar"], stage_resources(), "bars",
+                                         ["Resource bars", "Rows", "Class resource", "Totem bar"], stage_resources(), "bars",
                                          "Right-click a totem to destroy it · Layout mode moves the block and the totems",
                                          ["Frames", "Health", "Power", "Text", "Portrait", "Indicators", "Resources"]),
         "s18_castbars_extras": page(rows, "CastBars", "Cast Bars", "castbars", "Phoenix cast bars, GCD bar and swing timer.",
-                                    None, stage_castbars(), "bars", "GCD bar retail · swing timer where the client allows"),
+                                    ["Player cast bar", "Enemy casts"], stage_castbars(), "bars", "GCD bar retail · swing timer where the client allows"),
         "s18_pvp": page(rows, "PvP", "PvP", "pvp", "Safer queue pops, TAB targeting, arena helpers.", None, stage_pvp(),
                         "content", "Shadowsight from the match clock · retail arenas"),
     }
