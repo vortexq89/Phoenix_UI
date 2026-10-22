@@ -1,6 +1,7 @@
 # Phoenix_UI 2.0 — Architecture
 
-Target: **WoW Retail 12.1.5 (Midnight), `## Interface: 120105`, build 12.1.5.70448.** Retail only. No Classic code paths.
+Target: **WoW Retail 12.1.5 (Midnight), `## Interface: 120105`, build 12.1.5.70448**, and **WoW Forever 1.60.1
+(`## Interface: 16001`)**, which shares Mainline's UI (§17). No Classic code paths.
 This describes the code as it is. If code and this document disagree, fix one of them in the same change.
 
 ---
@@ -25,6 +26,7 @@ This describes the code as it is. If code and this document disagree, fix one of
 ```
 Phoenix_UI/
 ├─ Phoenix_UI.toc               -- only file list; order = Libs → Locales → Core → UI → Modules → Core/Init.lua
+├─ Phoenix_UI_Forever.toc       -- WoW Forever (16001); GENERATED from Phoenix_UI.toc by tools/gen_tocs.py (§17)
 ├─ Libs/
 │  ├─ Libs.xml
 │  ├─ LibStub/  CallbackHandler-1.0/  LibSharedMedia-3.0/  LibEditMode/
@@ -34,6 +36,7 @@ Phoenix_UI/
 ├─ Core/
 │  ├─ Core.xml
 │  ├─ Namespace.lua     -- ns tables, version, constants, ns:Print / ns:Debug, SafeCall
+│  ├─ Flavor.lua        -- ns.flavor (retail | forever), ns:Supports(feature), ns.FEATURES, ns:FilterSchema (§17)
 │  ├─ Util.lua          -- pure helpers (tables, strings, colour maths on *non-secret* data)
 │  ├─ Events.lua        -- ns.Events: game-event dispatcher + internal message bus (combat-log guard)
 │  ├─ Secret.lua        -- ns.Secret.IsSecret: the one secret-value gate
@@ -60,14 +63,16 @@ Phoenix_UI/
 │  └─ <ModuleName>/
 │     └─ <ModuleName>.lua   -- module object, defaults, lifecycle
 ├─ Phoenix_UI_Options/  -- SECOND ADDON (## LoadOnDemand: 1, ## Dependencies: Phoenix_UI); .pkgmeta move-folders ships it
-│  ├─ Phoenix_UI_Options.toc
+│  ├─ Phoenix_UI_Options.toc  (+ Phoenix_UI_Options_Forever.toc, generated)
 │  ├─ Bridge.lua        -- proxies this addon's private table to Phoenix_UI's ns (bridge global lives only during LoadAddOn)
 │  ├─ Previews/         -- live previews built from each module's own styling code
 │  ├─ Config/           -- Window, Groups, Renderer (schema → widgets), Search, Home, Profiles, Appearance, Diagnostics, Presets, About
 │  └─ Options/<ModuleName>.lua -- options schema per module (no UI code)
 ├─ Media/ Fonts/ Textures/ (surfaces, Emblem64/128/256, Logo512/1024)  Icons/ (Icons24/48/96 atlases + LICENSE)
-├─ tools/ check_api.py  check_locales.py  smoke/harness.lua  audit/ (reference generators)  media/
+├─ tools/ check_api.py  check_ids.py  check_locales.py  check_flavors.py  gen_tocs.py  smoke/harness.lua
+│         audit/ (reference generators, PUI_FLAVOR=retail|forever)  ids/  media/
 ├─ .luacheck/ wow_std_12.1.5.lua  reference_12.1.5.json  deprecated_12.1.5.json
+│             wow_std_forever_1.60.1.lua  reference_forever_1.60.1.json
 ├─ docs/  AUDIT.md  ARCHITECTURE.md  ROADMAP.md  PROMPTS.md  audit/  screenshots/
 ├─ .github/workflows/luacheck.yml   .pkgmeta   AGENTS.md   .cursor/rules/*.mdc   .luacheckrc
 ```
@@ -398,7 +403,7 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
 * **Removed with no replacement in Phoenix:** chat emoji, arena dampening display (aura data is restricted in arenas), a Phoenix minimap size slider (Edit Mode owns the size; the Minimap page links to it), mouseover bar fading. Brought back on 12.x APIs: the M+ timer (`MythicPlus/Timer.lua`, non-secret `C_ChallengeMode`/`C_ScenarioInfo` data) and chat history (typed lines only, not received messages). Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
 * **Details!:** optional, never a dependency. The Damage Meter page offers a one-click "Style Details!" button that calls Details' public instance API inside `pcall`; it is never applied automatically because it rewrites Details' own saved settings.
 * **Icons (§14):** one Phosphor duotone set via `ns.Icons`; brand art via `ns.Icons:Brand`.
-* **Checks:** `luacheck .` (generated 12.1.5 std), `tools/check_api.py` (methods/events/CVars/templates/atlases vs. the 12.1.5 reference, forbidden patterns, TOC/XML completeness and case), `tools/check_locales.py`, and `tools/smoke/harness.lua` (offline load + boot + every settings page). All run in `.github/workflows/luacheck.yml`.
+* **Checks:** `luacheck .` (generated 12.1.5 std), `tools/check_api.py` (methods/events/CVars/templates/atlases vs. the 12.1.5 reference, forbidden patterns, TOC/XML completeness and case), `tools/check_ids.py`, `tools/check_locales.py`, and `tools/smoke/harness.lua` (offline load + boot + every settings page). `tools/check_flavors.py` runs them for retail and again for WoW Forever (§17). All run in `.github/workflows/luacheck.yml`.
 
 ## 14. Icon system
 
@@ -503,3 +508,29 @@ managed: UIParent lays it out every update), `TicketStatusFrame` (placed by the 
   Edit Mode entry (`EditMode.Enter`) lock it.
 * **Storage.** Per profile in `modules.Movers.frames[key] = { point, x, y, scale, alpha }`. Offsets are UIParent
   units from the nearest screen third, so positions survive UI scale and resolution changes.
+
+## 17. Games (flavours): retail and WoW Forever
+
+Phoenix is one code base for the two games that share Mainline's UI and secret rules: retail (Midnight 12.1.5,
+`Phoenix_UI.toc`) and WoW Forever (1.60.1, interface 16001, `Phoenix_UI_Forever.toc`). Research and the measured
+API differences: `docs/research/wow-forever.md`.
+
+* **TOCs.** The client picks `<Addon>_Forever.toc` on Forever and `<Addon>.toc` elsewhere. Both list the same files
+  in the same order; only `## Interface` differs, so `tools/gen_tocs.py` writes the Forever ones and `check_api.py`
+  fails when they drift. Never edit a `_Forever.toc` by hand.
+* **Detection.** `Core/Flavor.lua` (loaded right after `Namespace.lua`) sets `ns.flavor` from `GetBuildInfo()`'s
+  interface number (16000–19999 = Forever) and `ns.gameName` for Diagnostics.
+* **Features, not flavours.** Code never asks "is this Forever?"; it asks `ns:Supports(feature)`. `ns.FEATURES`
+  maps a feature to the flavours that have it (`mythicplus`, `vault`, `sim`: retail) or to a runtime check
+  (`encounterTimeline`/`encounterWarnings`: the game's `IsFeatureAvailable()`; `specSelection`:
+  `C_SpecializationInfo.IsSpecSelectionEnabled`, Forever-only). `"!feature"` means "where it is missing".
+* **Modules** take `feature = "…"`: without it the module is `unavailable` and `hidden` (never initialized or
+  enabled, absent from the sidebar, search, Home, presets and the module picker; `Config:Show` falls back to Home),
+  while its saved settings stay so a profile moves between the games unchanged. `descWithout = { feature, desc }`
+  swaps the card text.
+* **Option rows** take `feature = "…"`; `ns:RegisterOptions` drops them (a `tab` row takes its whole tab), keeping
+  row identity when nothing is dropped. Sidebar groups take `without = { feature, label, icon }`.
+* **Checks per game.** `.luacheckrc` defines `wow` and `wowf` stds; `PUI_FLAVOR=forever` points `check_api.py` and
+  `check_ids.py` at `reference_forever_1.60.1.json` and `tools/ids/snapshot_forever.json`; the harness takes
+  `forever` as its second argument and asserts every gate. `tools/check_flavors.py` runs all of it.
+

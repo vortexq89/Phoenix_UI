@@ -4,8 +4,8 @@
 
 # Phoenix UI
 
-**A flat, consistent look for the default World of Warcraft 12.x interface.**
-Retail · Interface 120105 (12.1.5) · by **VortexQ8** · MIT licence
+**A flat, consistent look for the default World of Warcraft interface.**
+Retail · Interface 120105 (12.1.5) · WoW Forever · Interface 16001 (1.60.1) · by **VortexQ8** · MIT licence
 
 Phoenix UI builds on Blizzard's interface instead of replacing it. Edit Mode keeps control of layout, and Phoenix
 adds a consistent look and small comforts on top. It restyles secure frames but never rebuilds them, which keeps
@@ -92,7 +92,8 @@ so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
 ## Installation
 
 Install from CurseForge or Wago, or download a release and extract **both** folders, `Phoenix_UI` and
-`Phoenix_UI_Options`, into `World of Warcraft/_retail_/Interface/AddOns/`. `Phoenix_UI_Options` is the settings
+`Phoenix_UI_Options`, into `World of Warcraft/_retail_/Interface/AddOns/` (WoW Forever: the same two folders into
+the Forever client's `Interface/AddOns`; Battle.net → *World of Warcraft: Forever* → cog → *Show in Explorer*). `Phoenix_UI_Options` is the settings
 window; it is load-on-demand, so it costs no memory until you type `/pui`. Keep both enabled in the AddOns list.
 
 ## Usage
@@ -159,6 +160,14 @@ Profiles are shared across your account. You can create, duplicate, rename, rese
 automatically per specialization, and share them as text strings. An import shows what the string contains before
 anything is changed.
 
+### WoW Forever
+
+The same release runs on WoW Forever (interface 16001): the client picks `Phoenix_UI_Forever.toc`. Pages for things
+Forever does not have are left out instead of shown broken: Mythic+, Sim, the Great Vault card, Mythic+ rating and
+enemy forces, and the boss timeline and warnings on the Encounters page (pull and break timers, their bars and the
+countdown voice stay). Profiles move between the games as they are. The Phoenix app does not watch the Forever
+client yet, so copy errors from `/pui bugs` by hand there.
+
 ### Upgrading from Phoenix UI 11.x
 
 On first login, 2.0 imports your old profiles once where the setting still exists (theme, automation, tooltip,
@@ -187,9 +196,10 @@ python3 tools/check_api.py          # APIs, events, CVars, templates, atlases vs
 python3 tools/check_ids.py          # every icon path, atlas, spellID, SOUNDKIT and enum fallback vs the pinned 12.1.5 snapshot
 python3 tools/check_locales.py      # locale coverage; every translation complete
 lua5.1 tools/smoke/harness.lua .    # offline load test
+python3 tools/check_flavors.py      # all of the above for retail and again for WoW Forever 1.60.1
 ```
 
-CI runs all four on every push. The in-game checklist for a release is [`docs/TESTING.md`](docs/TESTING.md).
+CI runs them on every push, for both games. The in-game checklist for a release is [`docs/TESTING.md`](docs/TESTING.md).
  Read [`AGENTS.md`](AGENTS.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 before contributing. They cover the module contract, taint and secret-value rules, and the theme tokens.
 

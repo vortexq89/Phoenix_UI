@@ -166,7 +166,7 @@ def home():
 linear-gradient(100deg, rgba(255,106,26,.20), rgba(255,61,0,.05) 45%, transparent 70%), var(--bg-raised);padding:22px 24px;display:flex;align-items:center;overflow:hidden">
 <div style="position:absolute;right:-60px;top:-80px;width:340px;height:340px;background:radial-gradient(circle, rgba(255,106,26,.22), transparent 65%)"></div>
 <div><div style="width:300px;height:64px;background:url(../assets/logo.png) left center / contain no-repeat"></div>
-<div style="font-family:Roboto;color:var(--text2);margin-top:8px;font-size:13px">A flat, consistent look for the default 12.x interface.</div>
+<div style="font-family:Roboto;color:var(--text2);margin-top:8px;font-size:13px">A flat, consistent look for the default interface.</div>
 <div style="display:flex;gap:10px;margin-top:16px;align-items:center"><span style="font-family:CondBold;font-size:10.5px;letter-spacing:1.6px;color:var(--muted)">ACCENT</span>{swatches}</div></div>
 <div style="position:absolute;right:-40px;top:-30px;width:220px;height:220px;background:url(../assets/emblem.png) center / contain no-repeat;opacity:.10"></div>
 <div style="margin-left:auto;display:flex;gap:10px;position:relative">{btn("Profiles", "profiles")}{btn("Edit Mode", "editmode", "primary")}</div></div>'''
@@ -714,7 +714,7 @@ def diagnostics_page():
     left = card2("Last check", [
         row("Last run", '<span class="val2">2026-10-22 14:05</span>'),
         row("Media files", v(f"{total} of {total} loaded")),
-        row("Game client", '<span class="val2">12.1.5  ·  120105  ·  enUS</span>'),
+        row("Game client", '<span class="val2">World of Warcraft  ·  12.1.5  ·  120105  ·  enUS</span>'),
         row("Display", '<span class="val2">2560x1440  ·  UI scale 0.71</span>'),
         row("Run the check", btn("Run", "diagnostics", "primary"), "Loads every Phoenix texture and compares its size with the file."),
     ], icon="diagnostics")
@@ -1280,6 +1280,83 @@ def modpicker_page():
     return html.replace('row("Welcome picker"', 'row("Welcome picker"')
 
 
+# ---------------------------------------------------------------- WoW Forever (ARCHITECTURE §17)
+# The same window on the Forever client: Mythic+ and Sim are not in the sidebar (the group becomes "PvP"), no Great
+# Vault card, the Encounters page keeps pull and break timers. Mirrors ns:Supports / Groups `without`.
+FOREVER_HIDE = {"mythicplus", "sim"}
+
+
+def forever_sidebar():
+    out = []
+    for gkey, glabel, gicon, entries in SIDEBAR:
+        entries = [e for e in entries if e[0] not in FOREVER_HIDE]
+        if gkey == "group":
+            glabel, gicon = "PvP", "pvp"
+        out.append((gkey, glabel, gicon, entries))
+    return out
+
+
+def forever(fn):
+    def run():
+        global SIDEBAR
+        saved = SIDEBAR
+        SIDEBAR = forever_sidebar()
+        try:
+            return fn().replace("20 modules active", "18 modules active")
+        finally:
+            SIDEBAR = saved
+    return run
+
+
+def forever_home():
+    html = home().replace(week_card(), "").replace("20 / 22", "18 / 20")
+    return html.replace("Bar texture, health percent and Mythic+ enemy forces on Blizzard nameplates.",
+                        "Bar texture and health percent on Blizzard nameplates.")
+
+
+def forever_encounters(tab=None):
+    """tab None: overview; 0: the Pull & break tab (Forever has no Timeline or Warnings tab)."""
+    body = page_head("encounters", "Encounters",
+                     "Pull and break timers with Phoenix bars, the countdown voice and a BigWigs bar style.")
+    bars = '<div class="ebars">' + ebar("Pull", 42, "4.2", 4, "#4da3ff") + ebar("Break", 91, "4:32", 1, "#3ddc97") + '</div>'
+    body += preview_card(f'<div class="estage">{bars}</div>', 196, stuck=tab is not None)
+    if tab is None:
+        body += card2("Overview", [
+            row("Test", btn("Run test", "test", "primary"), "Starts a 10-second pull bar with the countdown voice, only on your screen "
+                "(nothing is sent to the group), so you see your settings on the real bar."),
+            '<div class="encnote">This game has no boss timeline or boss warnings, so Phoenix brings what a group needs here: pull and '
+            'break timers, their bars and the countdown voice. Move the bars in Edit Mode (/pui edit).</div>',
+        ], wide=True, icon="encounters")
+    body += tabs(["Pull & break", "Sounds", "BigWigs"], 0)
+    left = card2("Pull timer", [
+        row("Seconds", sl2(16, "10")),
+        row("Start a pull", btn("Pull", "encounters", "primary"), "Starts the game's group countdown, which everyone and every boss mod "
+            "sees. Needs leader or assist in a group. Also: /pui encounters pull 10"),
+        row("Cancel the pull", btn("Cancel", "close"), "Stops a running pull countdown for the whole group."),
+    ], icon="encounters")
+    left += card2("Countdown voice", [
+        row("Speak the countdown", tog(), "A voice counts the last seconds down to 1."),
+        row("Voice", dd2("Jim")), row("Start at", sl2(40, "5")),
+        row("Pull timers", tog(), "While DBM or BigWigs is loaded, their own voice counts instead."),
+    ], icon="sound")
+    right = card2("Break timer", [
+        row("Minutes", sl2(8, "5")),
+        row("Share with the group", tog(), "Sends the break so DBM, BigWigs and Phoenix users in your group see it too."),
+        row("Start a break", btn("Break", "break", "primary"), "Also: /pui encounters break 5"),
+        row("End the break", btn("Cancel", "close"), "Removes the break bar, and from the group when it was shared."),
+    ], icon="break")
+    body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+    status = ("Test running: a 10-second pull bar, only on your screen." if tab is None
+              else "Pull and break timers reach DBM and BigWigs users too")
+    return shell("encounters", body, head=faces(font_data()) + ENC_CSS, status=status, status_icon="success", status_cls="ok")
+
+
+def forever_diagnostics():
+    html = diagnostics_page()
+    html = html.replace("World of Warcraft  ·  12.1.5  ·  120105  ·  enUS", "WoW Forever  ·  1.60.1  ·  16001  ·  enUS")
+    return html.replace("WoW 12.1.5 (120105) · enUS", "WoW 1.60.1 (16001) · enUS")
+
+
 PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": profiles, "icons": icons_page,
          "bugs": bugs_page, "movers": movers_page, "mplus": mplus_page, "nameplates": nameplates_page,
          "unitframes": unitframes_page, "fonts": lambda: appearance_page("font"),
@@ -1288,7 +1365,10 @@ PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": pro
          "vault": vault_page, "keystones": keystones_page, "tracker": tracker_page, "uftest": uf_test_page,
          "presets": presets_page, "bags": bags_page, "databar": databar_page, "minimap": minimap_page,
          "encounters": encounters_page, "encounters_timeline": lambda: encounters_page(0), "encounters_timers": lambda: encounters_page(2), "encounters_test": encounters_test,
-         "modpicker": modpicker_page, "sim": sim_page, "sim_picker": lambda: sim_page(picker=True), "sim_results": lambda: sim_page(True), "sim_tooltip": sim_tooltip}
+         "modpicker": modpicker_page, "sim": sim_page, "sim_picker": lambda: sim_page(picker=True), "sim_results": lambda: sim_page(True), "sim_tooltip": sim_tooltip,
+         "forever_home": forever(forever_home), "forever_encounters": forever(forever_encounters),
+         "forever_encounters_timers": forever(lambda: forever_encounters(0)), "forever_diagnostics": forever(forever_diagnostics),
+         "forever_bags": forever(bags_page)}
 SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1"), "uftest": ("1560,800", "1"), "encounters_test": ("1560,800", "1")}
 
 if __name__ == "__main__":

@@ -365,6 +365,34 @@ character with a spec, talents and at least one wearable item in the bags (a rin
   is gone; the next sim asks again.
   **If anything fails:** send `uploader.log` and the folder `%LOCALAPPDATA%\Phoenix UI Uploader\sims\<newest>`.
 
+## 13c. WoW Forever (from 4 Nov 2026, or a Forever test client)
+
+Phoenix loads `Phoenix_UI_Forever.toc` on WoW Forever (interface 16001). Forever's launch folder name is not
+published yet (the beta used `_classic_beta_`): in Battle.net pick *World of Warcraft: Forever*, cog → *Show in
+Explorer*, and copy **both** folders into that client's `Interface\AddOns`. The Phoenix app does not watch
+Forever yet, so send errors from `/pui bugs` by hand.
+
+- [ ] **13c.1 Loads, not out of date.** Character select → AddOns.
+  **Expect:** *Phoenix UI* and *Phoenix UI Options* listed without "Out of date". `/pui` opens the window.
+  `/run print(GetBuildInfo())` prints 1.60.1 … 16001. **If not:** screenshot of the AddOns list.
+- [ ] **13c.2 Which game.** Tools → Diagnostics. **Expect:** *Game client* starts with *WoW Forever · 1.60.1*.
+- [ ] **13c.3 Retail-only features are gone, not broken.** **Expect:** no *Mythic+* page (the group is called
+  *PvP*), no *Sim* page, no Great Vault card on Home, no Mythic+ rating or Sim switches on the Tooltip page, no
+  enemy-forces switches on Nameplates, no Sim arrow switch on Bags, none of them in search (`keystone`, `sim`) or
+  in Tools → Presets → module picker. The Nameplates card no longer mentions Mythic+.
+- [ ] **13c.4 Encounters.** Combat → Encounters. **Expect:** tabs *Pull & break*, *Sounds* and *BigWigs* only, and a
+  note that this game has no boss timeline or warnings. **Run test**: a 10-second pull bar with the countdown
+  voice on your screen only. In a group as leader: **Pull** starts the game's countdown for everyone and the bar;
+  **Break** shows the break bar (and reaches DBM/BigWigs users when shared).
+- [ ] **13c.5 Everything else.** Walk sections 2, 3 (skipping Mythic+ and Sim), 5, 6, 9, 10 and 11 once.
+  **Expect:** the same results as retail. Unit frames, minimap and chat use Forever's own art underneath (Blizzard
+  reskinned them), so look for text or bars that sit wrong, not for retail's exact look.
+- [ ] **13c.6 Profiles.** Profiles page. **Expect:** the *Specializations* section shows only if your class can choose a
+  specialization on Forever. Importing a retail export works; Mythic+ and Sim settings in it are kept but unused.
+- [ ] **13c.7 Taint and errors.** A dungeon run with `/console taintLog 1`.
+  **Expect:** nothing from Phoenix in `/pui bugs` or `Logs\taint.log`.
+  **If anything fails:** the step number, a screenshot and `/pui bugs` → copy.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

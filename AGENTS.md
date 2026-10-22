@@ -8,11 +8,11 @@ Scoped rules live in `.cursor/rules/*.mdc`.
 
 | | |
 |---|---|
-| Game | World of Warcraft **Retail only**, Midnight |
-| Patch / TOC | **12.1.5 → `## Interface: 120105`** |
-| Build | **12.1.5.70448** (wago.tools `wow`, 2026-10-16) |
+| Game | World of Warcraft **Retail**, Midnight; and **WoW Forever** (same Mainline UI, ARCHITECTURE §17) |
+| Patch / TOC | **12.1.5 → `## Interface: 120105`**; Forever **1.60.1 → 16001** (`*_Forever.toc`, generated) |
+| Build | **12.1.5.70448** (wago.tools `wow`, 2026-10-16); Forever **1.60.1.70532** (`wowf`) |
 | Lua | 5.1 (WoW dialect) + 12.1.5 natives (`string.startswith/endswith/split/trim`, `table.contains/count`, `math.clamp/round/lerp` …) |
-| Not targeted | Classic, PTR (12.1.7 is on `wowt` — do not use PTR-only API) |
+| Not targeted | Classic (Era, Anniversary, Mists …), PTR (12.1.7 is on `wowt` — do not use PTR-only API) |
 
 When a new patch ships: update the TOC number, regenerate the std (`tools/audit/README.md`), run luacheck, read the
 wiki "Patch X API changes" page, and use `docs/PROMPTS.md` → *API update*.
@@ -129,6 +129,9 @@ Then add `<Script file="Example\Example.lua"/>` to `Modules/Modules.xml` (in its
 5. Implement with `ns.Events`, `ns.Combat`, `ns.Secret`, `ns.Skin`. No new frames for events.
 6. `luacheck .` must be clean. Then run the in-game checklist (§7).
 7. Update `docs/ARCHITECTURE.md` if you changed a contract. Add an entry to `CHANGES.md`.
+8. Does it exist on WoW Forever? If not, tag the module or option rows with `feature = "…"` (`ns.FEATURES` in
+   `Core/Flavor.lua`) so Forever hides it, and run `python3 tools/check_flavors.py`. After any TOC edit run
+   `python3 tools/gen_tocs.py`; never edit a `_Forever.toc` by hand.
 
 ## 7. Testing
 
@@ -142,6 +145,7 @@ python3 tools/check_api.py          # methods/events/CVars/templates/atlases vs 
 python3 tools/check_ids.py          # every icon path, atlas, spellID, SOUNDKIT and enum fallback vs the pinned 12.1.5 snapshot
 python3 tools/check_locales.py      # enUS has every key used, and no unused or duplicate keys
 lua5.1 tools/smoke/harness.lua .    # offline load: every file, boot events, every settings page, profiles, slash
+python3 tools/check_flavors.py      # all of the above for retail and for WoW Forever (wowf std, Forever data, 16001 boot)
 ```
 CI (`.github/workflows/luacheck.yml`) runs the same five commands. The harness uses permissive stubs: it proves the
 load order and boot path, not in-game behaviour.

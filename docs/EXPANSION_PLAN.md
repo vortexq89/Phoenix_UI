@@ -125,7 +125,7 @@ Automation, not Quests; upgrade arrows stay in Bags and only gain the sim delta;
 | S2 (shipped 2026-10-22) | Sim in game (#7) + Phoenix app 1.2.0 sim runner (#8), tooltips and bag arrows (#9), stat weights (#10); sim times measured (docs/research/simulationcraft.md). The 1.2.0 exe is built and tested, released only after confirmation | L |
 | S3 | Data pipeline + journal card (#3, #4) + Quests (#11, #12, #14) | L |
 | S4 | Group Finder (#17, #18), Raid Tools (#19), WindTools QoL set (#20–24) | L |
-| S5 | WoW Forever flavour: `## Interface: 120105, 16001`, `ns.flavor`, gate retail-only modules, `wowf` data build, test on Forever client | M |
+| S5 (shipped 2026-10-22, third in the agreed order) | WoW Forever flavour: generated `*_Forever.toc` (16001), `ns.flavor` + `ns:Supports(feature)`, retail-only modules/rows/cards gated (Mythic+, Sim, Great Vault, M+ rating, enemy forces, encounter timeline/warnings at run time, per-spec profiles where spec choice is off), Forever luacheck std + API reference + `wowf` ID snapshot + smoke boot (`tools/check_flavors.py`). Still to do on the live client after 4 Nov: checklist 13c, and the Phoenix app's Forever folder once Blizzard names it | M |
 | S6 (optional) | Classic flavours: separate TOCs, API shims (no `C_EncounterTimeline`, no secrets, older C_ APIs), per-flavour data, own test matrix; realistically XL and an ongoing tax on every feature | XL |
 
 ## 8. Risks
@@ -136,7 +136,8 @@ Automation, not Quests; upgrade arrows stay in Bags and only gain the sim delta;
   antivirus false positives for an unsigned exe.
 - simc download is 115 MB; first sim needs consent and disk space.
 - Data size and patch churn: generated data must stay optional and regenerated each patch.
-- Forever launch (4 Nov) may change APIs; test on the live client before claiming support.
+- Forever launch (4 Nov) may change APIs (and the `camelot` game type is due to be renamed); rerun the Forever
+  generators (`tools/audit/README.md`) on the launch build and checklist 13c on the live client.
 - Licence: switching Phoenix to GPL would allow PGF/Questie code reuse but blocks some future options; the plan
   assumes Phoenix stays MIT.
 

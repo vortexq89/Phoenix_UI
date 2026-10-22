@@ -3,6 +3,14 @@
 ## 2.0.0-beta1
 
 ### New
+- **WoW Forever** (interface 16001, launches 4 Nov 2026): Phoenix loads on Blizzard's new level 1–60 game through
+  its own `Phoenix_UI_Forever.toc` files, same code, same settings format. What Forever does not have is not shown
+  rather than left broken: no Mythic+ or Sim pages, no Great Vault card, no Mythic+ rating, enemy forces or Sim
+  switches, and the Encounters page keeps pull and break timers, their bars and the countdown voice (Forever has no
+  boss timeline or warnings; Run test shows a pull bar). Per-spec profiles appear only where a class can choose a
+  specialization. A retail profile imports as is; settings for retail-only modules are kept for when you go back.
+  Tools → Diagnostics names the game. Checked against Forever 1.60.1's own API, UI source and game data
+  (`tools/check_flavors.py`).
 - **Game ID audit**: every hard-coded icon path, atlas, spell ID, sound and enum fallback was checked against
   build 12.1.5.70448 (wago.tools DB2 + Blizzard UI source). One was wrong: the Bugs page game-icon fallback
   (`INV_Misc_Bug_01` does not exist) now uses `INV_Misc_Bugsprayer`. `tools/check_ids.py` keeps it that way.
