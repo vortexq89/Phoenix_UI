@@ -8,7 +8,8 @@ Finds every hard-coded game reference in Phoenix's own Lua (Core/, UI/, Modules/
   * spell IDs    numbers on lines tagged with a `-- spellIDs:` comment (the comment names the spells);
   * sound kits   SOUNDKIT.NAME;
   * enum values  `kind = "Name", fallback = N` rows (Core/Weekly.lua) vs Enum.WeeklyRewardChestThresholdType;
-  * file IDs     SetTexture(<number>) / SetNormalTexture(<number>) etc.
+  * file IDs     SetTexture(<number>) / SetNormalTexture(<number>) etc., `iconFileID = <number>` fields, and
+                 numbers on lines tagged with a `-- fileID:` comment (the comment names the file)
 """
 import pathlib
 import re
@@ -23,9 +24,10 @@ PREFIX_DEF = re.compile(r'^\s*local\s+([\w\s,]+?)\s*=\s*((?:"[^"]*"\s*,?\s*)+)$'
 ATLAS_CALL = re.compile(r'(?:SetAtlas|CreateAtlasMarkup)\(\s*"([^"]+)"')
 ATLAS_TABLE = re.compile(r'local\s+\w*ATLAS\w*\s*=\s*\{([^}]*)\}')
 SPELL_LINE = re.compile(r'--\s*spellIDs:')
+FILEID_LINE = re.compile(r'--\s*fileID:')
 SOUNDKIT = re.compile(r'SOUNDKIT\.([A-Z0-9_]+)')
 ENUM_ROW = re.compile(r'kind\s*=\s*"(\w+)"\s*,\s*fallback\s*=\s*(\d+)')
-FILEID = re.compile(r':Set(?:Normal|Pushed|Highlight|Disabled|Checked|StatusBar)?Texture\(\s*(\d{4,})\s*[,)]')
+FILEID = re.compile(r'(?::Set(?:Normal|Pushed|Highlight|Disabled|Checked|StatusBar)?Texture\(|\biconFileID\s*=)\s*(\d{4,})\b')
 
 
 def lua_files():
@@ -71,6 +73,9 @@ def scan():
                 add("soundkits", s, where)
             for n in FILEID.findall(code):
                 add("fileids", int(n), where)
+            if FILEID_LINE.search(line):
+                for n in re.findall(r'\b(\d{4,})\b', line.split("--", 1)[0]):
+                    add("fileids", int(n), where)
             if SPELL_LINE.search(line):
                 body = line.split("--", 1)[0]
                 for n in re.findall(r'\[(\d+)\]|\b(\d{2,})\b', body):
