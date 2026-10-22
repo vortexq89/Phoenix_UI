@@ -10,6 +10,7 @@ tools/ids/refresh.py; this check runs offline. Exit 1 on any finding.
 Rule: prefer runtime lookups (C_Spell.GetSpellTexture, C_ChallengeMode.GetMapUIInfo, C_Texture.GetAtlasInfo)
 over literals; any literal that remains must be listed here."""
 import json
+import os
 import pathlib
 import re
 import sys
@@ -17,7 +18,9 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "ids"))
 import common  # noqa: E402
 
-SNAP = json.loads((common.ROOT / "tools" / "ids" / "snapshot.json").read_text(encoding="utf-8"))
+# PUI_FLAVOR=forever checks the same references against the WoW Forever snapshot (snapshot_forever.json).
+SNAP_FLAVOR = os.environ.get("PUI_FLAVOR", "retail")
+SNAP = json.loads(common.snapshot_path(SNAP_FLAVOR).read_text(encoding="utf-8"))
 problems = []
 refs = common.scan()
 
@@ -48,7 +51,11 @@ for f in common.lua_files():
         if not m:
             continue
         ids = [int(a or b) for a, b in re.findall(r"\[(\d+)\]|\b(\d{2,})\b", line.split("--", 1)[0])]
-        names = [n.strip() for n in m.group(1).split(",")]
+        # a name the other game spells differently reads "Retail Name (Forever: Forever Name)"
+        names = []
+        for n in m.group(1).split(","):
+            alt = re.match(r"^(.*?)\s*\(Forever:\s*(.*?)\)$", n.strip())
+            names.append((alt.group(2) if SNAP_FLAVOR == "forever" else alt.group(1)) if alt else n.strip())
         actual = [SNAP["spells"].get(str(s), {}).get("name") for s in ids]
         if names != actual:
             problems.append(f"{f.relative_to(common.ROOT)}:{i}: spellIDs comment {names} != client names {actual}")

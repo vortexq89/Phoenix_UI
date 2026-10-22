@@ -34,3 +34,16 @@ jobs:
 
       - name: Offline load test
         run: lua5.1 tools/smoke/harness.lua .
+
+      # WoW Forever 1.60.1 (Phoenix_UI_Forever.toc): the same checks against that client's generated data
+      - name: luacheck (Forever 1.60.1 std)
+        run: luacheck . --std lua51+wowf --formatter plain
+
+      - name: API reference check (Forever)
+        run: PUI_FLAVOR=forever python3 tools/check_api.py
+
+      - name: Game ID check (Forever snapshot)
+        run: PUI_FLAVOR=forever python3 tools/check_ids.py
+
+      - name: Offline load test (Forever client)
+        run: lua5.1 tools/smoke/harness.lua . forever

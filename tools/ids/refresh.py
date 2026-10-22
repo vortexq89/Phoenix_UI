@@ -2,6 +2,7 @@
 """Rebuild tools/ids/snapshot.json from live game data for every game reference Phoenix uses.
 
     python3 tools/ids/refresh.py [--build 12.1.5.70448] [--ui-source PATH] [--cache DIR]
+    python3 tools/ids/refresh.py --flavor forever [--build 1.60.1.70532] ...   # -> snapshot_forever.json
 
 Sources (all public):
   * wago.tools DB2 CSV: ManifestInterfaceData (interface file paths -> fileDataID), UiTextureAtlasElement +
@@ -57,8 +58,13 @@ def main():
     ap.add_argument("--ui-source")
     ap.add_argument("--enum-source", help="local BlizzardInterfaceResources checkout")
     ap.add_argument("--cache")
+    ap.add_argument("--flavor", choices=common.SNAPSHOTS, default="retail",
+                    help="forever: WoW Forever (wago product wowf, the `forever` source branches)")
     a = ap.parse_args()
-    build = a.build or json.loads(fetch("https://wago.tools/api/builds/wow/latest"))["version"]
+    global UI_RAW, BIR_RAW
+    product, branch = ("wow", "live") if a.flavor == "retail" else ("wowf", "forever")
+    UI_RAW, BIR_RAW = UI_RAW.replace("/live/", f"/{branch}/"), BIR_RAW.replace("/live/", f"/{branch}/")
+    build = a.build or json.loads(fetch(f"https://wago.tools/api/builds/{product}/latest"))["version"]
     cache = pathlib.Path(a.cache) if a.cache else None
     if cache:
         cache.mkdir(parents=True, exist_ok=True)
@@ -105,7 +111,7 @@ def main():
         snap["fileids"][str(fid)] = {"path": next((k for k, v in manifest.items() if v == fid), None)} \
             if fid in manifest.values() else {"missing": True}
 
-    out = pathlib.Path(__file__).resolve().parent / "snapshot.json"
+    out = common.snapshot_path(a.flavor)
     out.write_text(json.dumps(snap, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     missing = sum(1 for k in snap if isinstance(snap[k], dict) for v in snap[k].values() if isinstance(v, dict) and v.get("missing"))
     print(f"refresh: build {build}, {sum(len(snap[k]) for k in snap if k != 'build')} references, {missing} missing -> {out}")

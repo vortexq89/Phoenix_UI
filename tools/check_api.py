@@ -17,12 +17,16 @@ Checks, for Core/, UI/, Modules/, Locales/ and the load-on-demand Phoenix_UI_Opt
     exists with exact case, and the TOC IconTexture exists with exact case.
 Exit code 1 on any finding. Run from anywhere: python3 tools/check_api.py"""
 import json
+import os
 import pathlib
 import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-REF = json.loads((ROOT / ".luacheck" / "reference_12.1.5.json").read_text(encoding="utf-8"))
+# PUI_FLAVOR=forever checks against the WoW Forever 1.60.1 reference instead (tools/check_flavors.py runs both).
+FLAVOR = os.environ.get("PUI_FLAVOR", "retail")
+REF_FILE = {"retail": "reference_12.1.5.json", "forever": "reference_forever_1.60.1.json"}[FLAVOR]
+REF = json.loads((ROOT / ".luacheck" / REF_FILE).read_text(encoding="utf-8"))
 METHODS, EVENTS = set(REF["methods"]), set(REF["events"])
 CVARS = {c.lower() for c in REF["cvars"]}
 TEMPLATES, ATLASES = set(REF["templates"]), set(REF["atlases"])
@@ -150,6 +154,24 @@ if not (main_iface and opt_iface and main_iface.group(1) == opt_iface.group(1)):
     problems.append("Phoenix_UI_Options.toc: ## Interface must match Phoenix_UI.toc")
 if re.findall(r"^## Version:\s*(\S+)", opt_text, re.M) != re.findall(r"^## Version:\s*(\S+)", toc.read_text(encoding="utf-8"), re.M):
     problems.append("Phoenix_UI_Options.toc: ## Version must match Phoenix_UI.toc")
+# WoW Forever TOCs: generated from the retail ones (tools/gen_tocs.py), so the same files load in the same order.
+import subprocess  # noqa: E402
+gen = subprocess.run([sys.executable, str(ROOT / "tools" / "gen_tocs.py"), "--check"], capture_output=True, text=True)
+problems.extend(line for line in gen.stdout.splitlines() if line.strip())
+
+
+def toc_files(path):
+    return [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip() and not l.strip().startswith("#")]
+
+
+for t in (toc, OPTIONS_TOC):
+    ft = t.with_name(t.stem + "_Forever.toc")
+    if not ft.exists():
+        problems.append(f"{ft.relative_to(ROOT)}: missing (run python3 tools/gen_tocs.py)")
+    elif toc_files(ft) != toc_files(t):
+        problems.append(f"{ft.relative_to(ROOT)}: file list differs from {t.name}")
+    elif not re.search(r"^## Interface:\s*16\d{3}\s*$", ft.read_text(encoding="utf-8"), re.M):
+        problems.append(f"{ft.relative_to(ROOT)}: ## Interface must be the WoW Forever one (16xxx)")
 pkg = (ROOT / ".pkgmeta").read_text(encoding="utf-8")
 if "Phoenix_UI/Phoenix_UI_Options: Phoenix_UI_Options" not in pkg:
     problems.append(".pkgmeta: move-folders must ship Phoenix_UI_Options as its own addon folder")
@@ -262,5 +284,5 @@ for key in re.findall(r"^\s*(\w+)\s*=", tex_block.group(1), re.M) if tex_block e
 
 for line in problems:
     print(line)
-print(f"check_api: {len(sources)} files, {len(loaded)} loaded, {len(problems)} problems")
+print(f"check_api ({FLAVOR}): {len(sources)} files, {len(loaded)} loaded, {len(problems)} problems")
 sys.exit(1 if problems else 0)

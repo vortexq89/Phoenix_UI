@@ -11,10 +11,19 @@ Finds every hard-coded game reference in Phoenix's own Lua (Core/, UI/, Modules/
   * file IDs     SetTexture(<number>) / SetNormalTexture(<number>) etc., `iconFileID = <number>` fields, and
                  numbers on lines tagged with a `-- fileID:` comment (the comment names the file)
 """
+import os
 import pathlib
 import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+# One snapshot per game: retail (Midnight 12.1.5) and WoW Forever 1.60.1 (wago product wowf).
+SNAPSHOTS = {"retail": "snapshot.json", "forever": "snapshot_forever.json"}
+
+
+def snapshot_path(flavor=None):
+    flavor = flavor or os.environ.get("PUI_FLAVOR", "retail")
+    return pathlib.Path(__file__).resolve().parent / SNAPSHOTS[flavor]
+
 DIRS = ("Core", "UI", "Modules", "Phoenix_UI_Options")
 TABLE_PREFIX = {"GAME_ART": "Interface\\Icons\\"}
 ENUM_ROWS = {"Core/Weekly.lua": "WeeklyRewardChestThresholdType"}
