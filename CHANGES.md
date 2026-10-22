@@ -28,6 +28,15 @@
   Cooldowns (your settings come along). With BigWigs or DBM loaded Phoenix draws nothing twice, and BigWigs and
   LittleWigs get a **Phoenix bar style** through BigWigs' public style API. Spell names, icons and texts stay
   secret: they are only displayed, never read.
+- **Sim** (Tooltips & Items): SimulationCraft for your character without leaving the game, run by the Phoenix app
+  on your PC (1.2.0). A paperdoll and a list of the gear in your bags you could wear (click a slot to filter, tick
+  what to try), four modes (gear, compare items, best set of the ticked items, stat weights) and the fight
+  (style, targets, length). **Prepare sim**, then **Reload to send**; the app runs it in seconds (about 2.5 s for
+  six items on a single-target fight) and the answer appears after your next reload: DPS per set with the
+  difference to what you wear, the sim time, stat weights, and the last 10 sims (click to show, right-click to
+  delete). Item tooltips get a "Sim: +1.2% (+2,640)" line and the bag upgrade arrows follow the sim instead of
+  the item level (both can be switched off). **Test** fills the page with a sample. The exporter follows the
+  SimulationCraft addon's item format (Unlicense, credited); spec and profession names come from the game data.
 - **Module picker**: after the welcome looks, new installs choose which modules to run (Apply, or Apply and reload
   when one needs it); reopen it from Tools → Presets.
 - **Unit Frames**: Boss 1–5 frames, class-icon or hidden portraits, leader/raid-marker/PvP icon switches, a range

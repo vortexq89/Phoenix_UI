@@ -122,7 +122,7 @@ Automation, not Quests; upgrade arrows stay in Bags and only gain the sim delta;
 |---|---|---|
 | S0 (done) | Icon/ID audit, `check_ids.py`, research notes, this plan | — |
 | S1 (shipped 2026-10-22) | Encounters module (#1, #2, #5), countdown move, module picker (#28); journal card and stats moved to S3 | M |
-| S2 | Sim in game (#7) + Phoenix app sim runner (#8), tooltips (#9); measure sim times | L |
+| S2 (shipped 2026-10-22) | Sim in game (#7) + Phoenix app 1.2.0 sim runner (#8), tooltips and bag arrows (#9), stat weights (#10); sim times measured (docs/research/simulationcraft.md). The 1.2.0 exe is built and tested, released only after confirmation | L |
 | S3 | Data pipeline + journal card (#3, #4) + Quests (#11, #12, #14) | L |
 | S4 | Group Finder (#17, #18), Raid Tools (#19), WindTools QoL set (#20–24) | L |
 | S5 | WoW Forever flavour: `## Interface: 120105, 16001`, `ns.flavor`, gate retail-only modules, `wowf` data build, test on Forever client | M |

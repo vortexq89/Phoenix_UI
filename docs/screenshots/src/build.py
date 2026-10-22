@@ -40,7 +40,7 @@ SIDEBAR = [
     ("social", "Chat & Social", "chat", [("chat", "Chat", "chat", True), ("afk", "AFK Screen", "afk", True)]),
     ("maps", "Maps, Minimap & Data", "maps", [("minimap", "Minimap", "minimap", True), ("datatexts", "Data Bar", "datatexts", True)]),
     ("items", "Tooltips & Items", "items", [("tooltip", "Tooltip", "tooltip", True), ("itemlevel", "Item Level", "itemlevel", True),
-                                            ("bags", "Bags", "items", True)]),
+                                            ("bags", "Bags", "items", True), ("sim", "Sim", "sim", True)]),
     ("qol", "Quality of Life", "quality", [("quality", "Quality of Life", "quality", True),
                                            ("automation", "Automation", "automation", True), ("skins", "Skins", "skins", True)]),
     ("tools", "Tools", "cat-utility", [("movers", "Movers", "movers", True), ("profiles", "Profiles", "profiles", None),
@@ -937,7 +937,7 @@ def tip(title, lines, left, top):
     return f'<div class="rtip" style="left:{left}px;top:{top}px"><b>{title}</b>{body}</div>'
 
 
-def bags_page():
+def bags_page(sim=False):
     body = page_head("items", "Bags", "Phoenix look for the bag windows, quality borders and upgrade arrows on better gear.")
     slots = "".join(bag_slot(it) for it in BAG_ITEMS)
     stage = f'<div class="bwin"><div class="bwt">Backpack</div><div class="bgrid">{slots}</div></div>'
@@ -948,12 +948,14 @@ def bags_page():
         row("Stack count size", sl2(40, "12")),
     ], icon="items", reset=True)
     right = card2("On the items", [
-        row("Upgrade arrows", tog(), "A green arrow on gear you can use with a higher item level than what you wear in that slot.", hl=True),
+        row("Upgrade arrows", tog(), "A green arrow on gear you can use with a higher item level than what you wear in that slot.", hl=not sim),
+    ] + ([row("Arrow from sim results", tog(), "On items you simmed, the sim decides: the arrow shows, in the accent colour, only for a "
+               "DPS gain.", hl=True)] if sim else []) + [
         row("Item level on gear", tog(), "Same switch as Item Level › Bags; size and colour are set there.",
             gear=f'<span class="cog">{ico("chevron-right")}</span>'),
     ], icon="itemlevel")
     body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
-    over = tip("Upgrade arrows", ["Default: On", "Right-click the row to reset it."], 682, 335)
+    over = "" if sim else tip("Upgrade arrows", ["Default: On", "Right-click the row to reset it."], 682, 335)
     return shell("bags", body, overlay=over, head=faces(font_data()), status="Bag windows restyled live", status_icon="success",
                  status_cls="ok")
 
@@ -1120,6 +1122,132 @@ def encounters_test():
     return html.replace("Phoenix draws the timeline; Blizzard's is off until you hand it back", "Test running: sample boss timers for about 30 seconds.")
 
 
+SIM_CSS = """<style>
+.sm-simc{display:flex;flex-direction:column;gap:6px;padding:12px 16px;font-family:Inter;color:var(--text)}
+.sm-simc .sm-sh{display:flex;align-items:baseline;gap:10px}.sm-simc .sm-big{font-family:F-InterBold;font-size:30px;color:#fff}
+.sm-simc .sm-unit{font-size:12px;color:var(--text3)}.sm-simc .sm-sub{margin-left:auto;font-size:11.5px;color:var(--text2)}
+.sm-simc .sm-bdg{font-size:10px;padding:1px 7px;border-radius:9px;background:#3a2a10;color:#ffb23f;margin-left:8px}
+.sm-simc .sm-sr{display:grid;grid-template-columns:230px 90px 1fr 64px;align-items:center;gap:10px;font-size:12px;height:20px}
+.sm-simc .sm-sr b{font-family:F-InterSemiBold;font-weight:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sm-simc .sm-sr .sm-n{text-align:right;color:var(--text2)}.sm-simc .sm-sr .sm-p{text-align:right;font-family:F-InterSemiBold}
+.sm-simc .sm-trk{height:8px;background:#1b1e24;border-radius:4px;position:relative}
+.sm-simc .sm-trk span{position:absolute;top:0;bottom:0;border-radius:4px}
+.sm-simc .sm-when{font-size:11px;color:var(--text3)}
+.sm-spk{display:flex;gap:14px;padding:10px 14px}.sm-pd{display:grid;grid-template-columns:repeat(2,38px);gap:6px;align-content:start}
+.sm-pd span{width:38px;height:38px;border-radius:5px;border:1px solid #000;display:flex;align-items:center;justify-content:center;position:relative}
+.sm-pd span.sm-f{outline:2px solid var(--accent);outline-offset:1px}.sm-pd span.sm-e{background:#15171c;border-color:#2a2e37;opacity:.6}
+.sm-pl{flex:1;display:flex;flex-direction:column;gap:2px}.sm-pl .sm-pt{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text2);padding:0 2px 6px}
+.sm-pr{display:grid;grid-template-columns:18px 26px 1fr 40px 74px 56px;align-items:center;gap:8px;height:28px;padding:0 6px;border-radius:5px;font-size:12px}
+.sm-pr:hover,.sm-pr.sm-h{background:#1d2027}.sm-pr .sm-cb{width:14px;height:14px;border:1px solid #4a505c;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.sm-pr .sm-cb.sm-on{background:var(--accent);border-color:var(--accent)}.sm-pr .sm-ic{width:24px;height:24px;border-radius:4px;border:1px solid #a335ee;display:flex;align-items:center;justify-content:center}
+.sm-pr .sm-lv{color:var(--text2);text-align:right}.sm-pr .sm-sl{color:var(--text3)}.sm-pr .sm-pc{text-align:right;font-family:F-InterSemiBold}
+.sm-sft{display:flex;flex-direction:column;gap:10px;padding:12px 16px}.sm-sft .sm-r1{display:flex;align-items:center;gap:10px}
+.sm-sft .sm-st{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)}.sm-sft .sm-dot{width:8px;height:8px;border-radius:4px;background:#3ddc97}
+.sm-sft .sm-hint{font-size:11.5px;color:var(--text3)}
+.sm-hr{display:grid;grid-template-columns:76px 104px 1fr 64px;white-space:nowrap;gap:10px;align-items:center;height:26px;padding:0 8px;font-size:12px;border-radius:5px}
+.sm-hr.sm-on{background:#1d2027}.sm-hr .sm-m{color:var(--text3)}.sm-hr .sm-d{text-align:right;font-family:F-InterSemiBold}
+.sm-simapp{font-size:11.5px;color:var(--text2);line-height:1.5;padding:4px 2px}
+</style>"""
+SIM_SETS = [("Voidforged Signet", 233702, 4662, 2.04), ("Sunwell Cinder Charm", 231130, 2090, 0.91),
+            ("Twilight Weaver's Cuffs", 229655, 615, 0.27), ("Shadowsteel Greatstaff", 227390, -1650, -0.72)]
+SIM_BAG = [("items", "Voidforged Signet", 724, "Rings", True, "+2.0%"), ("cat-combat", "Band of the Drowned Choir", 711, "Rings", True, "+0.6%"),
+           ("theme", "Sunwell Cinder Charm", 720, "Trinkets", True, "+0.9%"), ("speed", "Ichor-Stained Idol", 704, "Trinkets", False, ""),
+           ("auras", "Twilight Weaver's Cuffs", 718, "Wrist", True, "+0.3%"), ("castbars", "Shadowsteel Greatstaff", 727, "Main hand", True, "-0.7%"),
+           ("tracker", "Cowl of the Last Vigil", 707, "Head", False, ""), ("encounters", "Emberweave Slippers", 701, "Feet", False, "")]
+
+
+def sim_card(sample=True):
+    peak = max(abs(x[2]) for x in SIM_SETS)
+    rows = ""
+    for name, dps, delta, pct in SIM_SETS:
+        w = abs(delta) / peak * 50
+        col = "#3ddc97" if delta > 0 else "#ff4d5e"
+        pos = f"left:50%;width:{w}%" if delta > 0 else f"right:50%;width:{w}%"
+        rows += (f'<div class="sm-sr"><b>{name}</b><span class="sm-n">{dps:,}</span><span class="sm-trk"><span style="{pos};background:{col}"></span></span>'
+                 f'<span class="sm-p" style="color:{col}">{"+" if pct > 0 else ""}{pct:.2f}%</span></div>')
+    bdg = '<span class="sm-bdg">Sample</span>' if sample else ""
+    return (f'<div class="sm-simc"><div class="sm-sh"><span class="sm-big">229,040</span><span class="sm-unit">DPS  ±182</span>{bdg}'
+            f'<span class="sm-sub">Fire Mage · Compare items · Patchwerk (single target), 5 min</span></div>{rows}'
+            f'<div class="sm-when">simmed in 2.4 s · 12 min ago · SimulationCraft 1210-01</div></div>')
+
+
+def sim_picker():
+    gear = ["cat-combat", "theme", "speed", "auras", "castbars", "tracker", "encounters", "items",
+            "fonts", "unitframes", "items", "cat-combat", "theme", "speed", "castbars", None]
+    pd = "".join((f'<span class="{"sm-f" if i == 10 else ""}" style="background:radial-gradient(circle at 35% 30%, '
+                  f'{SPELLS[i % len(SPELLS)][0]}, {SPELLS[i % len(SPELLS)][1]} 78%)">{ico(g, "", 18)}</span>') if g else '<span class="sm-e"></span>'
+                 for i, g in enumerate(gear))
+    rows = ""
+    for i, (g, name, lvl, slot, on, pct) in enumerate(SIM_BAG):
+        c1, c2, _ = SPELLS[i % len(SPELLS)]
+        col = "#3ddc97" if pct.startswith("+") else "#ff4d5e"
+        rows += (f'<div class="sm-pr{" sm-h" if i == 1 else ""}"><span class="sm-cb{" sm-on" if on else ""}">{ico("check", "", 11) if on else ""}</span>'
+                 f'<span class="sm-ic" style="background:radial-gradient(circle at 35% 30%, {c1}, {c2} 78%)">{ico(g, "", 14)}</span>'
+                 f'<b style="font-family:F-InterSemiBold;font-weight:normal;color:#c58cff">{name}</b><span class="sm-lv">{lvl}</span>'
+                 f'<span class="sm-sl">{slot}</span><span class="sm-pc" style="color:{col}">{pct}</span></div>')
+    head = (f'<div class="sm-pt"><span>All slots: 8 items, 5 ticked</span><span>{btn("Clear", "close")} {btn("All slots", "items")}</span></div>')
+    return f'<div class="sm-spk"><div class="sm-pd">{pd}</div><div class="sm-pl">{head}{rows}</div></div>'
+
+
+def sim_footer():
+    return (f'<div class="sm-sft"><div class="sm-r1">{seg(["Current gear", "Compare items", "Best set", "Stat weights"], 1)}'
+            f'<span style="margin-left:auto">{btn("Cancel", "close")} {btn("Reload to send", "reload", "primary")}</span></div>'
+            '<div class="sm-st"><span class="sm-dot"></span>Prepared. Reload so WoW writes it to disk for the Phoenix app.</div>'
+            '<div class="sm-hint">Each ticked item in place of what you wear (rings and trinkets in both slots). 8 sets.</div></div>')
+
+
+def sim_page(scrolled=False, picker=False):
+    """scrolled: further down (fight, history) with the results card pinned; picker: the gear picker and footer."""
+    body = "" if picker else page_head("sim", "Sim", "SimulationCraft on your PC: pick gear, compare it, see the DPS on tooltips and bag arrows.")
+    body += preview_card(sim_card(not scrolled), 196, stuck=scrolled or picker)
+    if picker:
+        body += card2("Pick gear", [sim_picker(), sim_footer()], wide=True, icon="sim")
+        status = "Sim prepared. Reload to send it to the Phoenix app."
+    elif not scrolled:
+        body += card2("Pick gear", [
+            '<div class="sm-simapp">Tick items from your bags (click a slot on the left to filter), choose what to sim and press Prepare sim. '
+            'Reload so WoW saves the request; the Phoenix app runs SimulationCraft within seconds. Reload again to see the result.</div>',
+            sim_picker(), sim_footer()], wide=True, icon="sim")
+        status = "Sim prepared. Reload to send it to the Phoenix app."
+    else:
+        hist = "".join(f'<div class="sm-hr{" sm-on" if i == 0 else ""}"><span>{t}</span><span class="sm-m">{m}</span><span>{d}</span>'
+                       f'<span class="sm-d" style="color:{c}">{x}</span></div>'
+                       for i, (t, m, d, f, x, c) in enumerate([
+                           ("12 min ago", "Compare items", "229,040 DPS", "Patchwerk", "+2.04%", "#3ddc97"),
+                           ("2 h ago", "Stat weights", "227,910 DPS", "Patchwerk", "Int 1.00", "#c9ced8"),
+                           ("1 d ago", "Best set", "226,480 DPS", "Dungeon slice", "+1.12%", "#3ddc97"),
+                           ("3 d ago", "Current gear", "221,300 DPS", "Patchwerk", "", "#c9ced8")]))
+        left = card2("Fight", [
+            row("Fight style", dd2("Patchwerk (single target)"), "SimulationCraft's fight model. Dungeon slice takes about 7x as long as Patchwerk "
+                "(measured: 6 items in 2.4 s vs 18 s on a 28-thread PC)."),
+            row("Targets", sl2(0, "1")), row("Fight length (seconds)", sl2(44, "300"), "Ignored by the dungeon fight styles, which bring their own pacing."),
+            row("Sample results", btn("Toggle sample", "test"), "Shows a sample result in the card above to try the layout. Your saved results are not touched."),
+        ], icon="sim", reset=True)
+        left += card2("Where results show", [
+            row("Use results for (days)", sl2(100, "14")),
+            row("Sim results", tog(), "A line on items you simmed on the Sim page: the DPS gain or loss and when.", hl=True),
+            row("Arrow from sim results", tog(), "On items you simmed, the sim decides: the arrow shows, in the accent colour, only for a DPS gain."),
+        ], icon="tooltip")
+        right = card2("History", [f'<div style="padding:6px 8px">{hist}</div>',
+                                  '<div class="sm-simapp" style="padding:4px 16px 10px">Click: show it in the card above. Right-click: delete it.</div>'],
+                      icon="sim")
+        right += card2("Phoenix app", ['<div class="sm-simapp" style="padding:8px 16px 12px">Sims run in the Phoenix app (vq8s.com/phoenix-ui), the same '
+                                       'small program that sends error reports. The first sim asks before it downloads SimulationCraft (about 115 MB, '
+                                       'GPL, from the SimulationCraft project), checked against a pinned SHA-256. Nothing about you is uploaded.</div>'],
+                       icon="cat-utility")
+        body += f'<div class="cols"><div class="col">{left}</div><div class="col">{right}</div></div>'
+        status = "Showing your results."
+    return shell("sim", body, head=faces(font_data()) + SIM_CSS, status=status, status_icon="success", status_cls="ok",
+                 scroll=0)
+
+
+def sim_tooltip():
+    html = bags_page(sim=True)
+    over = ('<div class="rtip" style="left:712px;top:196px;width:260px"><b style="color:#a335ee">Voidforged Signet</b>'
+            '<i>Item Level 724</i><i>Finger</i><i>+1,204 Haste</i><i>+987 Versatility</i>'
+            '<i style="color:#3fcf6f">Sim: +2.0% (+4,662) · 12 min ago</i></div>')
+    return html.replace("</body>", over + "</body>")
+
 MODPICK = [("unitframes", "Unit Frames", True), ("groupframes", "Group Frames", True), ("castbars", "Cast Bars", True),
            ("auras", "Buffs & Debuffs", True), ("nameplates", "Nameplates", True), ("tracker", "Auras & Cooldowns", True),
            ("encounters", "Encounters", True), ("damagemeter", "Damage Meter", False), ("spellhistory", "Spell History", False),
@@ -1160,7 +1288,7 @@ PAGES = {"home": home, "module": tooltip, "search": search_page, "profiles": pro
          "vault": vault_page, "keystones": keystones_page, "tracker": tracker_page, "uftest": uf_test_page,
          "presets": presets_page, "bags": bags_page, "databar": databar_page, "minimap": minimap_page,
          "encounters": encounters_page, "encounters_timeline": lambda: encounters_page(0), "encounters_timers": lambda: encounters_page(2), "encounters_test": encounters_test,
-         "modpicker": modpicker_page}
+         "modpicker": modpicker_page, "sim": sim_page, "sim_picker": lambda: sim_page(picker=True), "sim_results": lambda: sim_page(True), "sim_tooltip": sim_tooltip}
 SIZES = {"icons": ("1280,1240", "2"), "media": ("1280,1420", "1"), "uftest": ("1560,800", "1"), "encounters_test": ("1560,800", "1")}
 
 if __name__ == "__main__":

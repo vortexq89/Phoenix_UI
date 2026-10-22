@@ -332,6 +332,39 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 - [ ] **13.8 Clean up.** On the issue page click **Delete**.
   **Expect:** the issue and its reports are gone, and the Data page audit log lists the deletion.
 
+## 13b. Sim (needs Phoenix Uploader 1.2.0)
+
+Uses the Phoenix app 1.2.0 (until it is released: the test build you were given), running in the tray. Use a
+character with a spec, talents and at least one wearable item in the bags (a ring or trinket is best).
+
+- [ ] **13b.1 Page.** `/pui sim` (or Tooltips & Items → Sim).
+  **Expect:** the pinned results card shows a sample with a *Sample* badge, the paperdoll shows your gear with item
+  icons (empty slots in grey), the list shows the bag gear you could wear with item level and slot.
+- [ ] **13b.2 Filter and pick.** Click your ring slot on the paperdoll, tick one ring, click **All slots**.
+  **Expect:** the list filters to rings, the tick stays, the footer says how many sets the mode will sim.
+- [ ] **13b.3 Test mode.** Press **Test**. **Expect:** the card, history and footer fill with sample data; press it
+  again to leave.
+- [ ] **13b.4 Prepare and send.** Mode **Compare**, fight Patchwerk, press **Prepare sim**.
+  **Expect:** the status dot reads ready and the button becomes **Reload to send**. Press it.
+- [ ] **13b.5 First time: consent.** **Expect:** within about 5 seconds a Phoenix Uploader window asks whether it may
+  download SimulationCraft (version, size, source, folder; *No* is the default). Press **No**, `/reload`.
+  **Expect:** the Sim page says the download was declined. In the tray choose **Download SimulationCraft...**.
+- [ ] **13b.6 The sim.** **Expect:** `uploader.log` shows `archive SHA-256 matches the pin`, `SimulationCraft 1210-01
+  ready` and `sim: … done in N s`, and (unless switched off) a window offering the HTML report. `/reload`.
+  **Expect:** chat says a sim result arrived; the card shows your DPS, each tried item's DPS and difference, the
+  fight and the sim time; the run is first in History.
+- [ ] **13b.7 Tooltip and bags.** Hover the ring in your bags, open the bags.
+  **Expect:** a `Sim: +x.x% (+n)` line with its age; the bag arrow follows the sim (up only if it gained DPS).
+  Switch either off on the Sim page (*Show results*) and they go away.
+- [ ] **13b.8 Weights and best set.** Repeat 13b.4 with **Stat weights** (no ticks needed) and with **Best set**
+  (two rings ticked). **Expect:** weights listed with your main stat at 1.00; best set lists the combinations.
+- [ ] **13b.9 History.** Click an older entry: the card shows it. Right-click it: it is deleted.
+- [ ] **13b.10 Cancel and errors.** Prepare, then **Cancel** before reloading: nothing is sent. Prepare in combat:
+  refused with a message. Respec to a spec without talents chosen: Prepare says talents are missing.
+- [ ] **13b.11 Remove.** Tray → **Remove SimulationCraft**. **Expect:** `%LOCALAPPDATA%\Phoenix UI Uploader\simc`
+  is gone; the next sim asks again.
+  **If anything fails:** send `uploader.log` and the folder `%LOCALAPPDATA%\Phoenix UI Uploader\sims\<newest>`.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

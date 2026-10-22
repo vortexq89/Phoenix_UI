@@ -47,3 +47,39 @@ and raidbots.com/developers.
 - Results land back on tooltips and the Bags upgrade arrow (which today only compares item level).
 - What we cannot do: run a sim inside WoW (no network, no processes, Lua CPU budget) or send to Raidbots
   automatically (no API).
+
+## What S2 built, and what was measured (2026-10-22)
+
+Differences from the design above: the results file lives in `Phoenix_UI\Sim\Results.lua` (no second addon), and
+the SHA-256 pin could not come from a release listing because there is none (below).
+
+**Trust chain.** Checked on 2026-10-22:
+- `downloads.simulationcraft.org` serves the Windows nightlies over plain HTTP only (its HTTPS certificate does
+  not match the host). No checksum, signature or `SHA256SUMS` file is published next to the archives, and
+  `simc.exe` carries no Authenticode signature.
+- The official build workflow, `simulationcraft/simc-publish` → "Nightly", uploads each `.7z` as a GitHub Actions
+  artifact, and GitHub records a SHA-256 digest for every artifact. For `simc-1210.01.7bc1071-win64.7z` that is
+  artifact 12318091482, digest `sha256:c8b0ee87…f67f1e`; the `.7z` inside it is 120,923,152 bytes,
+  SHA-256 `6c2be8db…4910bd`, and its `simc.exe` is 121,413,632 bytes, SHA-256 `b0ea12ee…d5acff4`. The same file
+  downloaded from the nightly server over HTTP on the user's PC had the same size and hash.
+- `tools/simc/pin.py` repeats that chain (artifact → GitHub digest → hashes) and writes `uploader/simc.json`;
+  `--check` confirms the pinned artifact is unchanged. The app refuses any archive or exe whose size or hash
+  differ from the pin, so the HTTP transport and the mirror do not have to be trusted.
+- Limits: a pin goes stale if the team re-uploads a nightly under the same version (the app then refuses the file
+  until the pin is refreshed); artifacts expire after GitHub's retention period, after which `--check` reports
+  them expired but the pinned hashes stay valid. The app reads `simc.json` from the repository's `main` branch
+  and falls back to the copy built into the exe while that file is not there yet.
+- Midnight `MID1_*` profiles fail on the 1210-01 build (old item data); `MID2_*` ones run.
+
+**Sim times** (SimC 1210-01, `MID2_Mage_Fire`, 28 threads, default `target_error`):
+
+| Run | Patchwerk 300 s | Dungeon slice |
+|---|---|---|
+| Gear (one profile) | 0.5 s | 2.9 s |
+| Compare, 6 profilesets | 2.4 s | 17.9 s |
+| Stat weights | 2.4 s | — |
+| Phoenix app end to end (compare 2 items, incl. writing Results.lua) | 2.3 s sim, 2.8 s process | — |
+| First use: download 115 MB + verify + unpack | 19 s on the user's connection | |
+
+So the design estimate was pessimistic: a normal compare takes a few seconds; only dungeon routes and large
+"best set" runs (capped at 400 combinations) take a minute or more. The app's limit per sim is 15 minutes.

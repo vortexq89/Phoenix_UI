@@ -34,6 +34,7 @@ Mode cannot reach.
 | | **Tooltip** | Dark style, class and quality borders, health bar, target, role and IDs, Mythic+ rating, cursor anchor, hide in combat |
 | | **Item Level** | Item levels on the character sheet and bags |
 | | **Bags** | Phoenix bag windows, quality borders, stack-count font, upgrade arrows on better gear; item levels from Item Level |
+| | **Sim** | SimulationCraft from the game: tick bag gear on a paperdoll, compare it, find the best set or get stat weights; the Phoenix app runs the sim on your PC and the result shows as DPS per set, a tooltip line and the bag upgrade arrows |
 | | **Minimap** | Square minimap, zone text style, coordinates, a button bin for addon minimap buttons; size stays in Edit Mode |
 | | **Data Bar** | FPS, latency, speed, durability, gold, clock, bug count, free bag slots, item level, friends, guild and mail, in the order you drag them to; movable in Edit Mode |
 | | **Movers** | Move, scale and fade frames Edit Mode does not manage: zone text, error messages, alerts, top-center widgets, boss banner, event toasts, ready check |
@@ -73,6 +74,8 @@ missing; Russian clients only offer bundled fonts that include Cyrillic.
 | ![Minimap button bin](docs/screenshots/minimap.png) | ![Presets](docs/screenshots/presets.png) |
 | ![Encounters: boss timeline and warnings](docs/screenshots/encounters_timeline.png) | ![Encounters test mode in the world](docs/screenshots/encounters_test.png) |
 | ![Pull and break timers](docs/screenshots/encounters_timers.png) | ![Module picker for new installs](docs/screenshots/modpicker.png) |
+| ![Sim: results card and gear picker](docs/screenshots/sim_picker.png) | ![Sim: fight, history and where results show](docs/screenshots/sim_results.png) |
+| ![Sim result on an item tooltip and the bag arrow switch](docs/screenshots/sim_tooltip.png) | ![Sim page](docs/screenshots/sim.png) |
 
 The screenshots are design mockups of the settings window rendered from HTML (`docs/screenshots/src`) with the
 same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world timer at 150 % and sample nameplates.
@@ -128,6 +131,20 @@ this account's reports; turn it off there or with `/pui bugs share off`. What is
 locals, addon and game version and client language. Character names, realms, GUIDs, BattleTags, chat text and
 account or Windows user names are removed first. The file format is documented in
 [docs/BUG_REPORTS.md](docs/BUG_REPORTS.md).
+
+### Sim
+
+The Sim page (Tooltips & Items, or `/pui sim`) runs [SimulationCraft](https://www.simulationcraft.org) for your
+character through the **Phoenix Uploader** app (1.2.0 or newer, Windows). Addons cannot start programs, so a sim
+takes two reloads: tick the bag items to try, choose the mode and fight, press **Prepare sim** and **Reload to
+send**; the app picks the request up from your saved variables within seconds and runs the sim; after the next
+reload the result is on the page, on item tooltips and on the bag arrows. Results stay for 14 days (adjustable) and
+the last 10 per character are kept.
+
+SimulationCraft is not part of Phoenix and is not bundled. The first time, the app asks before it downloads the
+SimulationCraft build pinned in this repository (about 115 MB, from the SimulationCraft team's server) and refuses
+it unless its size and SHA-256 match the pin, which is taken from SimulationCraft's official GitHub build. Nothing
+about you is uploaded; sims run on your PC. Details and every option: [uploader/README.md](uploader/README.md).
 
 ### Movers
 
