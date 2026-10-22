@@ -35,10 +35,12 @@
     <Script file="Tooltip\Extras.lua"/>
     <Script file="ItemLevel\ItemLevel.lua"/>
     <Script file="Bags\Bags.lua"/>
+    <Script file="Bags\Window.lua"/>
     <Script file="Sim\Export.lua"/>
     <Script file="Sim\Sim.lua"/>
     <Script file="Minimap\Minimap.lua"/>
     <Script file="DataTexts\DataTexts.lua"/>
+    <Script file="DataTexts\Bar.lua"/>
     <Script file="Movers\Movers.lua"/>
     <Script file="Movers\Toolbar.lua"/>
     <!-- combat -->

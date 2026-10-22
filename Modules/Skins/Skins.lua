@@ -1,33 +1,191 @@
 local _, ns = ...
-local Skin = ns.Skin
+local Skin, Style, W = ns.Skin, ns.Style, ns.Widgets
 
---[[ Skins: Phoenix panels behind a few Blizzard dialogs. Art is hidden with alpha only, our textures
-    are added beside it; nothing is re-parented, re-anchored or written onto the Blizzard frame. ]]
+--[[ Skins: the Phoenix look (style-library background and border, accent title, flat tabs and close button)
+    for Blizzard's windows and dialogs, one switch per window. Load-on-demand windows (talents, collections,
+    professions, auction house …) are dressed when their Blizzard addon loads.
+
+    Safety: art is hidden with alpha only (Skin:HideRegion records the original), our textures and frames are
+    added beside it, and selected-tab colours follow a post-hook of PanelTemplates_SelectTab. Nothing is
+    re-parented, re-anchored, resized or written onto a Blizzard frame, so secure buttons inside these windows
+    stay untainted. The bank window belongs to Bags (one place for bank slots and its frame). ]]
 local M = ns:NewModule("Skins", {
     label = "SKINS", desc = "SKINS_DESC", category = "interface", order = 5, reloadOnToggle = true,
-    defaults = { gameMenu = true, popups = true, readyCheck = true },
+    defaults = {
+        gameMenu = true, popups = true, readyCheck = true,
+        character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
+        auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
+        calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
+        trade = true, dressUp = true,
+        backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
+        titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
+    },
 })
 
-local ART = { "Border", "NineSlice", "BG", "Bg", "Background" }
-local HEADER_ART = { "LeftBG", "RightBG", "CenterBG" }
+-- key -> frames (global names), the Blizzard addon that creates them (nil = always loaded), dialog = small
+-- panel look (no title strip), feature = client gate (ns:Supports).
+M.WINDOWS = {
+    { key = "gameMenu", frames = { "GameMenuFrame" }, dialog = true },
+    { key = "popups", frames = { "StaticPopup1", "StaticPopup2", "StaticPopup3", "StaticPopup4" }, dialog = true },
+    { key = "readyCheck", frames = { "ReadyCheckListenerFrame" }, dialog = true },
+    { key = "character", frames = { "CharacterFrame" } },
+    { key = "inspect", frames = { "InspectFrame" }, addon = "Blizzard_InspectUI" },
+    { key = "spellbook", frames = { "PlayerSpellsFrame" }, addon = "Blizzard_PlayerSpells" },
+    { key = "groupFinder", frames = { "PVEFrame" }, addon = "Blizzard_GroupFinder" },
+    { key = "collections", frames = { "CollectionsJournal" }, addon = "Blizzard_Collections" },
+    { key = "professions", frames = { "ProfessionsFrame" }, addon = "Blizzard_Professions" },
+    { key = "auction", frames = { "AuctionHouseFrame" }, addon = "Blizzard_AuctionHouseUI" },
+    { key = "mail", frames = { "MailFrame", "OpenMailFrame" } },
+    { key = "merchant", frames = { "MerchantFrame" } },
+    { key = "gossip", frames = { "GossipFrame", "QuestFrame" } },
+    { key = "loot", frames = { "LootFrame", "GroupLootFrame1", "GroupLootFrame2", "GroupLootFrame3", "GroupLootFrame4" } },
+    { key = "achievements", frames = { "AchievementFrame" }, addon = "Blizzard_AchievementUI" },
+    { key = "journal", frames = { "EncounterJournal" }, addon = "Blizzard_EncounterJournal" },
+    { key = "calendar", frames = { "CalendarFrame" }, addon = "Blizzard_Calendar" },
+    { key = "communities", frames = { "CommunitiesFrame" }, addon = "Blizzard_Communities" },
+    { key = "friends", frames = { "FriendsFrame" } },
+    { key = "settings", frames = { "SettingsPanel", "AddonList" } },
+    { key = "vault", frames = { "WeeklyRewardsFrame" }, addon = "Blizzard_WeeklyRewards", feature = "vault" },
+    { key = "keystone", frames = { "ChallengesKeystoneFrame" }, addon = "Blizzard_ChallengesUI", feature = "mythicplus" },
+    { key = "trade", frames = { "TradeFrame" } },
+    { key = "dressUp", frames = { "DressUpFrame" } },
+}
 
-local function window(frame, shadow)
+local ART = { "Border", "NineSlice", "BG", "Bg", "Background", "TopTileStreaks", "PortraitContainer" }
+local HEADER_ART = { "LeftBG", "RightBG", "CenterBG" }
+local INSET_ART = { "Bg", "NineSlice" }
+local CLOSE_ART = { "GetNormalTexture", "GetPushedTexture", "GetHighlightTexture", "GetDisabledTexture" }
+local TAB_ART = { "Left", "Middle", "Right", "LeftActive", "MiddleActive", "RightActive", "LeftHighlight", "MiddleHighlight",
+    "RightHighlight", "LeftDisabled", "MiddleDisabled", "RightDisabled" }
+
+local extras = setmetatable({}, { __mode = "k" }) -- [blizzard frame] = { strip, glyph … } (our regions)
+local skinnedTabs = setmetatable({}, { __mode = "k" })
+
+local function titleOf(frame)
+    local tc = frame.TitleContainer
+    return (tc and tc.TitleText) or frame.TitleText or (frame.Header and frame.Header.Text)
+end
+
+-- Phoenix close button: Blizzard's art faded out, our glyph on a child frame of ours.
+local function closeButton(button)
+    if not button or extras[button] then return end
+    for _, getter in ipairs(CLOSE_ART) do
+        local tex = button[getter] and button[getter](button)
+        if tex then Skin:HideRegion(tex) end
+    end
+    local holder = CreateFrame("Frame", nil, button)
+    holder:SetAllPoints()
+    holder:SetFrameLevel(button:GetFrameLevel() + 1)
+    local glyph = W.Icon(holder, "close", 12, "text.secondary")
+    glyph:SetPoint("CENTER")
+    extras[button] = { holder = holder, glyph = glyph }
+    button:HookScript("OnEnter", function() ns.Icons:Tint(glyph, "accent.primary") end)
+    button:HookScript("OnLeave", function() ns.Icons:Tint(glyph, "text.secondary") end)
+end
+
+local function tabsOf(frame)
+    local out = {}
+    if type(frame.Tabs) == "table" then for _, t in ipairs(frame.Tabs) do out[#out + 1] = t end end
+    local name = frame:GetName()
+    if name and #out == 0 then
+        for i = 1, 12 do
+            local t = _G[name .. "Tab" .. i]
+            if not t then break end
+            out[#out + 1] = t
+        end
+    end
+    return out
+end
+
+local function paintTab(tab)
+    local selected = tab.isSelected
+    if selected == nil and tab.IsEnabled then selected = not tab:IsEnabled() end
+    Skin:Panel(tab, selected and "raised" or "sunken", { border = selected and "accent.primary" or "border.subtle", inset = 2 })
+    local fs = tab.Text or (tab.GetFontString and tab:GetFontString())
+    if fs then Skin:Text(fs, "small", selected and "accent.text" or "text.secondary") end
+end
+M.PaintTab = paintTab
+
+local function skinTabs(frame)
+    for _, tab in ipairs(tabsOf(frame)) do
+        if not skinnedTabs[tab] then
+            skinnedTabs[tab] = true
+            for _, key in ipairs(TAB_ART) do Skin:HideRegion(tab[key]) end
+            Skin:Register(tab, paintTab)
+        else
+            paintTab(tab)
+        end
+    end
+end
+
+-- One window or dialog. dialog: a centred panel without a title strip.
+local function window(frame, dialog)
     if not frame or Skin:IsSkinned(frame) then return end
-    for _, key in ipairs(ART) do Skin:HideRegion(frame[key]) end
+    local db = M.db
+    for _, key in ipairs(ART) do
+        if key ~= "PortraitContainer" or db.titleStyle ~= "blizzard" then Skin:HideRegion(frame[key]) end
+    end
     local header = frame.Header
     if header then
         for _, key in ipairs(HEADER_ART) do Skin:HideRegion(header[key]) end
     end
+    local inset = frame.Inset
+    if inset then for _, key in ipairs(INSET_ART) do Skin:HideRegion(inset[key]) end end
+    local e = extras[frame] or {}
+    extras[frame] = e
+    if not dialog and db.titleStyle == "phoenix" and not e.strip then
+        e.strip = frame:CreateTexture(nil, "BACKGROUND", nil, -6)
+        e.strip:SetTexture(ns.Media.textures.WHITE)
+        e.strip:SetPoint("TOPLEFT", 1, -1)
+        e.strip:SetPoint("TOPRIGHT", -1, -1)
+        e.strip:SetHeight(22)
+    end
+    if db.closeStyle == "phoenix" then closeButton(frame.CloseButton or frame.ClosePanelButton) end
     Skin:Register(frame, function(self)
-        Skin:Panel(self, "base", { border = "border.strong", shadow = shadow or 14, sheen = 30 })
-        if header and header.Text then Skin:Text(header.Text, "heading", "accent.primary", 13) end
+        local now = M.db
+        Skin:Backdrop(self, now.backdrop, "bg.base")
+        Skin:BorderSpec(self, now.border, "border.strong")
+        if e.strip then W.Color(e.strip, "bg.raised") end
+        if inset then Skin:Panel(inset, "sunken", { border = "border.subtle" }) end
+        local title = titleOf(self)
+        if title and (dialog or now.titleStyle ~= "blizzard") then
+            Skin:Text(title, "heading", now.titleStyle == "minimal" and "text.primary" or "accent.primary", dialog and 13 or 12)
+        end
     end)
+    if db.tabs and not dialog then skinTabs(frame) end
+end
+M.SkinWindow = window
+
+function M:Wanted(entry)
+    if entry.feature and not ns:Supports(entry.feature) then return false end
+    return self.db[entry.key] and true or false
 end
 
+local function apply(entry)
+    if not M:Wanted(entry) then return end
+    for _, name in ipairs(entry.frames) do window(_G[name], entry.dialog) end
+end
+
+local tabHooked
 function M:OnEnable()
-    if self.db.gameMenu then window(GameMenuFrame) end
-    if self.db.readyCheck then window(ReadyCheckListenerFrame, 10) end
-    if self.db.popups then
-        for i = 1, 4 do window(_G["StaticPopup" .. i], 10) end
+    local byAddon = {}
+    for _, entry in ipairs(self.WINDOWS) do
+        if entry.addon and not C_AddOns.IsAddOnLoaded(entry.addon) then
+            byAddon[entry.addon] = entry
+        else
+            apply(entry)
+        end
+    end
+    ns.Events:On("ADDON_LOADED", self, function(_, _, name)
+        local entry = byAddon[name]
+        if entry then byAddon[name] = nil; apply(entry) end
+    end)
+    if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then
+        tabHooked = true
+        hooksecurefunc("PanelTemplates_SelectTab", function(tab)
+            if skinnedTabs[tab] then
+                for t in pairs(skinnedTabs) do paintTab(t) end
+            end
+        end)
     end
 end

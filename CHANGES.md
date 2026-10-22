@@ -3,6 +3,26 @@
 ## 2.0.0-beta1
 
 ### New
+- **Bags** (plan v2 stage S13b): an optional Phoenix bag window (*Bag window*: Blizzard's or Phoenix; Blizzard's stays
+  the default). One combined grid or category sections (new, equipment, consumables, reagents, quest, junk, other)
+  you reorder and hide by dragging chips, sorted by bag order, quality, item level or name; columns, slot size,
+  spacing, scale, the reagent bag as its own section, empty slots shown or not. Search box, sort button (and the
+  game's sort direction), gold and currency footer, free-slot count, a Layout-mode mover. Slots: border from the
+  style library, quality colours, junk coin (or dimmed junk), new-item glow, bind-on-equip/warbound label,
+  cooldowns, count font and place, upgrade arrows and item levels. Blizzard's bank and warband bank get the same
+  slot styling. Opens with the auction house and trade if you like; selling junk and repairs stay in Automation
+  (mirrored here). The old *Count size* moves into the count font (migration 6). 53 settings on retail, 52 on WoW
+  Forever (target 47).
+- **Data Texts** (S13b): a second panel; drag texts between panels and reorder them. New texts: specialization and
+  loot specialization (click opens talents), Mythic+ key (retail), coordinates, volume (mouse wheel). Tooltips for
+  each text (durability per slot, gold per character plus the warband bank and total, local and realm time,
+  friends and guild online, bags, key and rating), hidden in combat if you like. Panel width, text alignment,
+  mouseover only; gold with silver/copper, account-wide totals, realm clock, durability warning level. An
+  experience/reputation bar with rested overlay, size, text font and when to show the text, movable in Edit Mode.
+  67 settings on retail, 66 on WoW Forever (target 47).
+- **Skins** (S13b): 24 Blizzard windows and dialogs in the Phoenix look, each on or off: background and border from
+  the style library, a title strip (Phoenix, minimal or Blizzard), a Phoenix close glyph and Phoenix tabs.
+  Load-on-demand windows are styled when they load. 34 settings on retail, 32 on WoW Forever (target 28).
 - **Chat** (plan v2 stage S13a): styled chat windows (background and border from the style library), fade after N
   seconds, lines kept, hide in combat (the window you type in stays), Blizzard's side buttons on/off, a jump-to-bottom
   arrow; tabs fade when idle and can take a selected-tab colour. The game's own timestamp, class-colour and

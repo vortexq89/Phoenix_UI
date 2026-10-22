@@ -100,6 +100,7 @@ Mg.MOVES = {
     { "Auras", "durationSize", "duration.size" },
     { "Auras", "countSize", "count.size" },
     { "GroupFrames", "nameSize", "name.size" },
+    { "Bags", "countSize", "count.size" },
 }
 
 -- Settings that changed owner: { from module, path, to module, path }. The countdown voice moved from
@@ -170,6 +171,7 @@ Mg.steps = {
     { version = 3, run = moveKeys },   -- GroupFrames.nameSize joined MOVES after step 2 shipped on the branch
     { version = 4, run = moveKeys },   -- Tracker.countdown -> Encounters.countdown (MODULE_MOVES)
     { version = 5, run = moveKeys },   -- Minimap.square -> Minimap.shape (CONVERTS)
+    { version = 6, run = moveKeys },   -- Bags.countSize -> Bags.count.size (MOVES)
 }
 
 function Mg:Run(sv)

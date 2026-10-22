@@ -132,3 +132,133 @@ function W:Chips(parent, items, multi)
     s:SetItems(items or {})
     return s
 end
+
+--[[ W:OrderChips(parent, spec): drag-to-reorder chips (Data Texts segments, bag categories). Drag a chip and drop
+    it where the accent marker shows. spec = { order = fn() -> keys, label = fn(key), icon = fn(key)|nil,
+    dimmed = fn(key), tip = fn(key), onReorder = fn(keys), onRightClick = fn(key)|nil }.
+    :Layout() redraws from spec.order(); :SetValue() does the same (settings rows call it on reset). ]]
+local CHIP_H, CHIP_GAP = 26, 6
+function W:OrderChips(parent, spec)
+    local holder = CreateFrame("Frame", nil, parent)
+    holder:SetHeight(2 * CHIP_H + CHIP_GAP)
+    holder.chips = {}
+    holder.marker = W.Texture(holder, "OVERLAY", 2, Media.textures.WHITE)
+    holder.marker:SetSize(2, CHIP_H)
+    holder.marker:Hide()
+    Skin:Register(holder.marker, function(t) W.Color(t, "accent.primary") end)
+
+    local function chip(key)
+        local c = holder.chips[key]
+        if c then return c end
+        c = CreateFrame("Button", nil, holder)
+        c:SetHeight(CHIP_H)
+        local icon = spec.icon and spec.icon(key)
+        if icon then
+            c.icon = W.Icon(c, icon, 13, "accent.primary")
+            c.icon:SetPoint("LEFT", 8, 0)
+        end
+        c.text = W.Text(c, "small", "text.primary", "LEFT")
+        c.text:SetPoint("LEFT", c.icon or c, c.icon and "RIGHT" or "LEFT", c.icon and 6 or 10, 0)
+        c.text:SetText(spec.label(key))
+        c:SetWidth(c.text:GetUnboundedStringWidth() + (c.icon and 38 or 20))
+        c:RegisterForDrag("LeftButton")
+        c:RegisterForClicks("RightButtonUp")
+        c.key = key
+        Skin:Register(c, function(self) Skin:Panel(self, "sunken", { border = "border.default" }) end)
+        c:SetScript("OnEnter", function(self) W.ShowTooltip(self, spec.label(key), spec.tip and spec.tip(key)) end)
+        c:SetScript("OnLeave", W.HideTooltip)
+        c:SetScript("OnDragStart", function(self) holder:BeginDrag(self) end)
+        c:SetScript("OnDragStop", function() holder:EndDrag() end)
+        c:SetScript("OnClick", function() if spec.onRightClick then spec.onRightClick(key); holder:Layout() end end)
+        holder.chips[key] = c
+        return c
+    end
+
+    -- Lays the chips out left to right, wrapping; keeps the slot rectangles for the drop test.
+    function holder:Layout()
+        local width = self:GetWidth()
+        if not width or width <= 0 then width = W.CONTROL_WIDTH * 2 end
+        local x, y = 0, 0
+        self.slots = {}
+        local order = spec.order()
+        for i, key in ipairs(order) do
+            local c = chip(key)
+            if x > 0 and x + c:GetWidth() > width then x, y = 0, y - (CHIP_H + CHIP_GAP) end
+            c:ClearAllPoints()
+            c:SetPoint("TOPLEFT", x, y)
+            c:SetAlpha(spec.dimmed and spec.dimmed(key) and 0.45 or 1)
+            c:Show()
+            self.slots[i] = { key = key, x = x, y = y, w = c:GetWidth() }
+            x = x + c:GetWidth() + CHIP_GAP
+        end
+        for key, c in pairs(self.chips) do
+            local listed = false
+            for _, k in ipairs(order) do if k == key then listed = true end end
+            if not listed then c:Hide() end
+        end
+        self:SetHeight(-y + CHIP_H)
+    end
+
+    function holder:SetValue() self:Layout() end
+
+    -- Index the dragged chip would take for the cursor position, from the slot rectangles.
+    local function dropIndex()
+        local cx, cy = GetCursorPosition()
+        local scale = holder:GetEffectiveScale()
+        local left, top = holder:GetLeft(), holder:GetTop()
+        if not (left and top) then return nil end
+        cx, cy = cx / scale - left, cy / scale - top
+        local best, bestDist = #holder.slots + 1, math.huge
+        for i, sl in ipairs(holder.slots) do
+            local mid = sl.y - CHIP_H / 2
+            if math.abs(cy - mid) <= CHIP_H then
+                local d = math.abs(cx - sl.x)
+                if d < bestDist then best, bestDist = i, d end
+                local dEnd = math.abs(cx - (sl.x + sl.w))
+                if dEnd < bestDist then best, bestDist = i + 1, dEnd end
+            end
+        end
+        return best
+    end
+    holder.DropIndex = dropIndex
+
+    function holder:BeginDrag(c)
+        self.dragging = c
+        c:SetAlpha(0.6)
+        self:SetScript("OnUpdate", function()
+            local i = dropIndex()
+            local sl = i and (self.slots[i] or self.slots[#self.slots])
+            if not sl then self.marker:Hide(); return end
+            local x = self.slots[i] and sl.x - CHIP_GAP / 2 - 1 or sl.x + sl.w + CHIP_GAP / 2 - 1
+            self.marker:ClearAllPoints()
+            self.marker:SetPoint("TOPLEFT", x, sl.y)
+            self.marker:Show()
+        end)
+    end
+
+    -- Moves key from its index to target (an insertion index before the move) and saves the list.
+    function holder:Move(key, target)
+        local order = spec.order()
+        local from
+        for i, k in ipairs(order) do if k == key then from = i end end
+        if target and from and target ~= from and target ~= from + 1 then
+            table.remove(order, from)
+            if target > from then target = target - 1 end
+            table.insert(order, target, key)
+            spec.onReorder(order)
+        end
+        self:Layout()
+    end
+
+    function holder:EndDrag()
+        local c = self.dragging
+        self:SetScript("OnUpdate", nil)
+        self.marker:Hide()
+        self.dragging = nil
+        if c then self:Move(c.key, dropIndex()) end
+    end
+
+    holder:SetScript("OnSizeChanged", function(self) self:Layout() end)
+    holder:Layout()
+    return holder
+end

@@ -11,7 +11,7 @@ ns.title = "Phoenix UI"
 ns.C = {
     MEDIA = "Interface\\AddOns\\" .. ADDON .. "\\Media\\",
     PREFIX = "|cffff6a1aPhoenix|r|cffffb23fUI|r",
-    SCHEMA = 5,   -- the last ns.Migrations step; export strings carry it
+    SCHEMA = 6,   -- the last ns.Migrations step; export strings carry it
 }
 ns.C.TEXTURES = ns.C.MEDIA .. "Textures\\"
 ns.C.FONTS = ns.C.MEDIA .. "Fonts\\"

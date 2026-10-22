@@ -514,6 +514,21 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   (`Secret.IsSecret`) first; NPC IDs come from `UnitCreatureID`, never a GUID; inspect is throttled (1.5 s), never in
   combat or with the Inspect window open, cached per GUID for 5 minutes, and refreshes the open tooltip with
   `RefreshData` on `INSPECT_READY`.
+* **Bags, Data Texts, Skins (2.0 S13b).** `Modules/Bags/Window.lua` is the optional Phoenix bag window
+  (`Bags.view = "phoenix"`, reload): our own `ContainerFrameItemButtonTemplate` buttons parented to per-bag holder
+  frames (`SetID(bag)`, `IsCombinedBagContainer` false) so Blizzard's click, drag, use and tooltip code runs
+  unchanged; sections come from plain `C_Container` data (`M.Categorize`, `M.Sections`), sort is
+  `C_Container.SortBags`, search is `BagSearchBoxTemplate`. Open/close follows Blizzard's own functions through
+  post-hooks (`OpenAllBags`, `ToggleBag` …) and `ContainerFrameContainer` is reparented to a hidden frame only
+  in the Phoenix view (AGENTS rule 9). Bank and warband bank slots are styled from post-hooks on `BankPanel`
+  (`GenerateItemSlotsForSelectedTab`, `RefreshAllItemsForSelectedTab`). `Modules/DataTexts`: two panels
+  (`order`, `order2`), `TIPS` tooltip builders (hidden in combat when `combatTips` is off), gold saved per
+  character in `ns.DB.sv.global.gold`, warband money via `C_Bank.FetchDepositedMoney` under `pcall`; `Bar.lua` is
+  the experience/reputation bar (`DataTextsXP` in Edit Mode). `Modules/Skins`: `M.WINDOWS` (24 entries with
+  optional `addon` and `feature` fields) styled by `window()` (Blizzard art hidden, backdrop and border specs,
+  title strip, close glyph, tabs re-painted from a `PanelTemplates_SelectTab` post-hook); load-on-demand windows on
+  `ADDON_LOADED`. `UI/Widgets/Chips.lua` `W:OrderChips` is the shared drag-to-reorder chip row (data-text panels,
+  bag categories). Migration step 6 moves `Bags.countSize` to `Bags.count.size`.
 * **Nameplates (2.0 S10).** `Modules/NamePlates` builds one plain plate per Blizzard base plate (kept in a weak
   side table, nothing written onto Blizzard frames), parented to the base and only for plates
   `C_NamePlate.GetNamePlateForUnit(unit, false)` returns (forbidden plates are never asked for); widget-only plates

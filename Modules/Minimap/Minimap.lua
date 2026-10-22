@@ -174,14 +174,8 @@ end
 local coords, ticker
 
 local function updateCoords()
-    local mapID = C_Map.GetBestMapForUnit("player")
-    local pos = mapID and C_Map.GetPlayerMapPosition(mapID, "player")
-    if not pos then coords:SetText(""); return end
-    local x, y = pos:GetXY()
-    if ns.Secret.IsSecret(x) or ns.Secret.IsSecret(y) or not (x and y) or (x == 0 and y == 0) then
-        coords:SetText(""); return
-    end
-    coords:SetText(M.FormatCoords(x, y, M.db.coordDecimals))
+    local x, y = ns.Util.PlayerMapXY()
+    coords:SetText(x and M.FormatCoords(x, y, M.db.coordDecimals) or "")
 end
 
 local function setupCoords(self)

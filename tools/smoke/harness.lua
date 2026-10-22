@@ -154,7 +154,8 @@ local api = {
         end
     end,
     bit = { band = band, bor = bor },
-    NUM_CONTAINER_FRAMES = 6, NUM_BAG_SLOTS = 4, BACKPACK_CONTAINER = 0, INVSLOT_HEAD = 1, INVSLOT_LAST_EQUIPPED = 19,
+    NUM_CONTAINER_FRAMES = 6, TIMEMANAGER_AM = "AM", TIMEMANAGER_PM = "PM",
+    NUM_BAG_SLOTS = 4, NUM_TOTAL_EQUIPPED_BAG_SLOTS = 5, BACKPACK_CONTAINER = 0, INVSLOT_HEAD = 1, INVSLOT_LAST_EQUIPPED = 19,
     -- WoW's xpcall forwards extra arguments (Lua 5.1's does not).
     xpcall = function(fn, handler, ...)
         local args, n = { ... }, select("#", ...)
@@ -221,7 +222,8 @@ local api = {
     LEVEL = "Level", GetGuildInfo = function() return nil end,
     C_MerchantFrame = { GetNumJunkItems = function() return 0 end, SellAllJunkItems = function() end },
     CanMerchantRepair = function() return false end, GetRepairAllCost = function() return 0, false end,
-    C_Container = { GetContainerNumSlots = function() return 0 end, GetContainerItemInfo = function() return nil end },
+    C_Container = { GetContainerNumSlots = function() return 0 end, GetContainerItemInfo = function() return nil end,
+        GetContainerNumFreeSlots = function() return 0 end },
     STANDARD_TEXT_FONT = "font", UNIT_NAME_FONT = "font", DAMAGE_TEXT_FONT = "font",
     UISpecialFrames = {}, SlashCmdList = {},
     Settings = { RegisterCanvasLayoutCategory = function() return { GetID = function() return 1 end } end,
@@ -2772,6 +2774,174 @@ try("tooltip extras (S13a)", function()
 end)
 try("chat, minimap and tooltip depth (S13a)", function()
     for key, target in pairs({ Chat = 51, Minimap = 41, Tooltip = 45 }) do
+        local n = ns.Config.CountSettings(ns.options[key])
+        assert(n >= target and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
+        print(("  %s settings: %d"):format(key, n))
+    end
+end)
+
+-- S13b: bag window categories/sections, layout with stub bags, bank hook, count migration; data text panels and
+-- tooltips; experience bar; window skins (load-on-demand and tabs); previews in every state; settings depth
+try("bags window (S13b)", function()
+    local B = ns.modules.Bags
+    local order = B:CategoryOrder("junk,nope,new,junk")
+    assert(order[1] == "junk" and order[2] == "new" and #order == #B.CATEGORIES, "category order normalisation")
+    B.db.hiddenCats = "junk,other"
+    assert(B:CategoryHidden("junk") and not B:CategoryHidden("other"), "Other can never be hidden")
+    local info = { itemID = 1, quality = 0, stackCount = 3, itemName = "B" }
+    assert(B:Categorize(0, nil, nil, {}) == "free", "empty slot is free")
+    assert(B:Categorize(0, info, nil, { new = true }) == "new", "new first")
+    assert(B:Categorize(0, info, nil, { junk = true }) ~= "junk", "hidden junk falls through")
+    assert(B:Categorize(0, info, { isQuestItem = true }, {}) == "quest", "quest item")
+    B.db.hiddenCats = ""
+    local recs = {
+        { bag = 0, slot = 1, order = 1, cat = "equipment", quality = 3, level = 700, name = "b" },
+        { bag = 0, slot = 2, order = 2, cat = "equipment", quality = 4, level = 690, name = "a" },
+        { bag = 5, slot = 1, order = 3, cat = "reagents", quality = 1, level = 0, name = "c" },
+        { bag = 0, slot = 3, order = 4, cat = "free", quality = -1, level = 0, name = "" },
+        { bag = 0, slot = 4, order = 5, cat = "free", quality = -1, level = 0, name = "" },
+    }
+    B.db.view, B.db.catSort, B.db.emptySlots = "categories", "quality", false
+    local secs = B:Sections(recs)
+    assert(secs[1].key == "equipment" and secs[1].slots[1].quality == 4, "quality sort inside a section")
+    assert(secs[#secs].key == "free" and #secs[#secs].slots == 1, "one free slot kept when empty slots are off")
+    B.db.catSort = "ilvl"
+    assert(B:Sections(recs)[1].slots[1].level == 700, "item level sort")
+    B.db.view, B.db.reagents = "combined", true
+    secs = B:Sections(recs)
+    assert(#secs == 2 and secs[2].key == "reagentBag" and #secs[1].slots == 4, "reagent bag section in the combined view")
+    -- a stub backpack: three items, one free slot; the window lays them out and dresses them
+    local saved = { env.C_Container, rawget(env, "NUM_TOTAL_EQUIPPED_BAG_SLOTS"), env.C_CurrencyInfo }
+    rawset(env, "NUM_TOTAL_EQUIPPED_BAG_SLOTS", 5)
+    rawset(env, "C_Container", {
+        GetContainerNumSlots = function(bag) return bag == 0 and 4 or (bag == 5 and 2 or 0) end,
+        GetContainerItemInfo = function(bag, slot)
+            if slot > 3 then return nil end
+            return { itemID = slot, quality = slot, stackCount = slot, iconFileID = 1, itemName = "I" .. slot, hyperlink = "x" }
+        end,
+        GetContainerItemQuestInfo = function() return {} end, GetContainerNumFreeSlots = function() return 1 end,
+        SortBags = function() end, GetSortBagsRightToLeft = function() return false end, SetSortBagsRightToLeft = function() end,
+    })
+    rawset(env, "C_CurrencyInfo", { GetBackpackCurrencyInfo = function(i) return i == 1 and { iconFileID = 2, quantity = 50 } or nil end,
+        GetCoinTextureString = function() return "1g" end })
+    for _, view in ipairs({ "combined", "categories" }) do
+        B.db.view = view
+        B:EnableWindow()
+        local win = B:GetWindow()
+        assert(win, "window built for " .. view)
+        win:Show()
+        B:Layout()
+        B:RefreshWindow()
+        assert(win.free:GetText() ~= nil, "footer free count")
+    end
+    B.SyncWindow()
+    assert(B.BlizzardBagsOpen() == false, "no Blizzard bag frame is open in the harness")
+    rawset(env, "C_Container", saved[1]); rawset(env, "NUM_TOTAL_EQUIPPED_BAG_SLOTS", saved[2]); rawset(env, "C_CurrencyInfo", saved[3])
+    B.db.view = "blizzard"
+    -- bank buttons get the same dressing
+    local panel = { EnumerateValidItems = function()
+        local done
+        return function()
+            if done then return nil end
+            done = true
+            local b = env.CreateFrame("Button")
+            b.GetBankTabID = function() return 6 end
+            b.GetContainerSlotID = function() return 1 end
+            return b
+        end
+    end }
+    B.OnBankItems(panel)
+    for _, mode in ipairs({ "phoenix", "blizzard", "off" }) do
+        B.db.newGlow, B.db.junkDim, B.db.bind = mode, mode == "off", mode ~= "off"
+        ns.Previews:Create("bags", env.CreateFrame("Frame"), B, {}):Redraw()
+    end
+    for _, view in ipairs({ "blizzard", "combined", "categories" }) do
+        B.db.view, B.db.skin = view, view ~= "blizzard"
+        ns.Previews:Create("bags", env.CreateFrame("Frame"), B, {}):Redraw()
+    end
+    B.db.view, B.db.skin, B.db.newGlow, B.db.junkDim, B.db.bind = "blizzard", true, "phoenix", false, true
+    -- 2.0 Bags.countSize moves into the count font spec
+    local sv = { profiles = { P = { modules = { Bags = { countSize = 15 } } } } }
+    ns.Migrations.steps[6].run(sv)
+    assert(sv.profiles.P.modules.Bags.count.size == 15 and sv.profiles.P.modules.Bags.countSize == nil, "Bags.countSize not moved")
+end)
+try("data text panels (S13b)", function()
+    local DT = ns.modules.DataTexts
+    DT.db.panel2 = true
+    DT.db.order2 = "gold,nope,clock,gold"
+    local o2 = DT:Order2()
+    assert(#o2 == 2 and o2[1] == "gold" and o2[2] == "clock", "panel 2 order normalisation")
+    for _, key in ipairs(DT:Order1()) do assert(key ~= "gold" and key ~= "clock", "panel 1 skips panel 2 segments") end
+    DT:MoveToPanel("fps", 2)
+    assert(DT:Order2()[3] == "fps", "moved to panel 2")
+    DT:MoveToPanel("fps", 1)
+    assert(#DT:Order2() == 2, "moved back to panel 1")
+    DT.db.panel2 = false
+    assert(#DT:Order2() == 0 and #DT:Order1() == #DT.ORDER, "panel 2 off puts everything on panel 1")
+    -- every segment and tooltip renders with stubs
+    for _, key in ipairs(DT.ORDER) do DT.db[key] = true end
+    DT.db.panel2, DT.db.width, DT.db.justify, DT.db.mouseover = true, 600, "CENTER", true
+    DT.db.goldCopper, DT.db.clockRealm, DT.db.clock24 = true, true, false
+    rawset(env, "GetGameTime", function() return 13, 5 end)
+    local h, m = DT.ClockText(true, false)
+    assert(h == "1:05" and m ~= "", "12 h realm clock")
+    assert(DT.ClockText(true, true) == "13:05", "24 h realm clock")
+    DT:Refresh()
+    local bars = DT:GetBars()
+    assert(bars[1] and bars[2], "two live panels")
+    for _, key in ipairs(DT.ORDER) do
+        if DT.TIPS[key] then
+            local ok, err = pcall(DT.TooltipFor, DT, key)
+            assert(ok, key .. " tooltip: " .. tostring(err))
+        end
+    end
+    DT:SaveGold()
+    assert(ns.DB.sv.global.gold["Tester - Realm"] == 12345678, "gold saved account-wide")
+    -- the experience bar: text modes and the live bar
+    local d = { kind = "xp", cur = 25, max = 100, rested = 10 }
+    assert(DT.BarText(d, "percent") == "25%", "percent text")
+    assert(DT.BarText(d, "mouseover", false) == "" and DT.BarText(d, "mouseover", true) == "25%", "mouseover text")
+    assert(DT.BarText(d, "none") == "", "no text")
+    DT.db.xpBar = true
+    DT:RefreshBar()
+    for _, mode in ipairs({ "percent", "current", "remaining", "mouseover", "none" }) do
+        DT.db.barTextMode = mode
+        ns.Previews:Create("datatexts", env.CreateFrame("Frame"), DT, {}):Redraw()
+    end
+    DT.db.xpBar = false
+    DT:RefreshBar()
+    for _, key in ipairs(DT.ORDER) do DT.db[key] = DT.defaults[key] end
+    DT.db.panel2, DT.db.order2, DT.db.width, DT.db.justify, DT.db.mouseover = false, "", 0, "LEFT", false
+    DT.db.goldCopper, DT.db.clockRealm, DT.db.clock24 = false, false, true
+    DT:Refresh()
+    assert(not RETAIL == not ns:Supports("mythicplus"), "keystone segment follows the mythicplus feature")
+end)
+try("window skins (S13b)", function()
+    local S = ns.modules.Skins
+    local entries = 0
+    for _, e in ipairs(S.WINDOWS) do
+        entries = entries + 1
+        assert(S.db[e.key] ~= nil, "no default for skin " .. e.key)
+    end
+    assert(entries >= 24, "only " .. entries .. " skinned windows")
+    -- a load-on-demand window is dressed when its addon loads
+    local f = env.CreateFrame("Frame", "CollectionsJournal")
+    f.CloseButton = env.CreateFrame("Button")
+    f.Tabs = { env.CreateFrame("Button"), env.CreateFrame("Button") }
+    fire("ADDON_LOADED", "Blizzard_Collections")
+    assert(ns.Skin:IsSkinned(f), "Collections not skinned on ADDON_LOADED")
+    S.PaintTab(f.Tabs[1])
+    for _, title in ipairs({ "phoenix", "minimal", "blizzard" }) do
+        S.db.titleStyle, S.db.closeStyle, S.db.tabs = title, title == "phoenix" and "phoenix" or "blizzard", title ~= "blizzard"
+        S.db.character = title ~= "minimal"
+        S.SkinWindow(env.CreateFrame("Frame"), false)
+        ns.Previews:Create("skins", env.CreateFrame("Frame"), S, {}):Redraw()
+    end
+    S.db.titleStyle, S.db.closeStyle, S.db.tabs, S.db.character = "phoenix", "phoenix", true, true
+    assert(S:Wanted({ key = "vault", feature = "vault" }) == RETAIL, "Great Vault skin is retail-only")
+end)
+try("bags, data texts and skins depth (S13b)", function()
+    for key, target in pairs({ Bags = 47, DataTexts = 47, Skins = 28 }) do
         local n = ns.Config.CountSettings(ns.options[key])
         assert(n >= target and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
         print(("  %s settings: %d"):format(key, n))

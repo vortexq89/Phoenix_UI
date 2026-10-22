@@ -99,6 +99,16 @@ function U.ClassColor(classFile)
     return 1, 1, 1
 end
 
+-- The player's position on the current map as 0..1 fractions, or nil (no map, instance, or secret values).
+function U.PlayerMapXY()
+    local mapID = C_Map.GetBestMapForUnit("player")
+    local pos = mapID and C_Map.GetPlayerMapPosition(mapID, "player")
+    if not pos then return nil end
+    local x, y = pos:GetXY()
+    if ns.Secret.IsSecret(x) or ns.Secret.IsSecret(y) or not (x and y) or (x == 0 and y == 0) then return nil end
+    return x, y
+end
+
 function U.PlayerKey()
     return UnitName("player") .. " - " .. GetRealmName()
 end

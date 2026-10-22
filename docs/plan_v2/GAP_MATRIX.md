@@ -23,13 +23,13 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Combat Text | Combat | 16 | 26 | 16 | 0 | 10 | Blizzard FCT CVars · MSBT-like | Configures Blizzard floating combat text (CVars) + optional Phoenix scrolling areas |
 | Damage Meter | Combat | 2 | 31 | 2 | 0 | 29 | EUI DamageMeters 82 | Restyles Blizzard's built-in damage meter (C_DamageMeter, 12.0) |
 | Spell History | Combat | 6 | 12 | 6 | 0 | 6 | — | Row of recently cast spells |
-| Chat | Interface | 17 | 51 | 12 | 8 | 31 | EUI Chat 57 · WindTools Social (chat bar, emotes, links) 16 · Prat-like features | Restyles Blizzard chat frames and adds tools; no chat replacement |
-| Minimap | Interface | 5 | 41 | 2 | 3 | 36 | EUI Minimap 62 · WindTools Maps 29 (rectangle minimap, buttons bar, instance difficulty, world map reveal) | Restyles Blizzard's minimap cluster |
-| Tooltips | Interface | 29 | 45 | 25 | 1 | 19 | EUI BlizzardSkin tooltip 23 · WindTools Tooltips 27 · idTip 27 ID kinds | Restyles GameTooltip and adds lines; IDs where idTip-style (BSD-2) |
-| Bags | Interface | 6 | 47 | 5 | 0 | 42 | EUI Bags 45 · Baganator-style features | Restyles Blizzard's combined bag + bank; own sorting via C_Container |
+| Chat | Interface | 58 | 51 | 44 | 2 | 5 | EUI Chat 57 · WindTools Social (chat bar, emotes, links) 16 · Prat-like features | Restyles Blizzard chat frames and adds tools; no chat replacement |
+| Minimap | Interface | 47 | 41 | 36 | 0 | 5 | EUI Minimap 62 · WindTools Maps 29 (rectangle minimap, buttons bar, instance difficulty, world map reveal) | Restyles Blizzard's minimap cluster |
+| Tooltips | Interface | 54 | 45 | 38 | 1 | 6 | EUI BlizzardSkin tooltip 23 · WindTools Tooltips 27 · idTip 27 ID kinds | Restyles GameTooltip and adds lines; IDs where idTip-style (BSD-2) |
+| Bags | Interface | 53 | 47 | 35 | 5 | 7 | EUI Bags 45 · Baganator-style features | Restyles Blizzard's combined bag + bank; own sorting via C_Container |
 | Item Level | Interface | 4 | 19 | 4 | 0 | 15 | EUI BlizzardSkin character sheet 30 · WindTools Item 27 (inspect, already known) | Item level on character, inspect, bags, loot frames |
-| Data Texts | Interface | 35 | 47 | 14 | 7 | 26 | EUI DataBars 55 (XP/rep/honor bars) + MinimapDataText · ElvUI datatexts | Own data panels + broker (LDB) feeds |
-| Skins | Interface | 3 | 28 | 3 | 0 | 25 | EUI BlizzardSkin 123 (character, popups, tooltips, skyriding, CDM, objective tracker) | Phoenix look for Blizzard windows |
+| Data Texts | Interface | 67 | 47 | 32 | 8 | 7 | EUI DataBars 55 (XP/rep/honor bars) + MinimapDataText · ElvUI datatexts | Own data panels + broker (LDB) feeds |
+| Skins | Interface | 34 | 28 | 22 | 3 | 3 | EUI BlizzardSkin 123 (character, popups, tooltips, skyriding, CDM, objective tracker) | Phoenix look for Blizzard windows |
 | Appearance & General | Phoenix | 7 | 23 | 7 | 0 | 16 | EUI Fonts 37 + Textures + Colors + Glow + General ~90 | Theme, global fonts/textures/colours, scale, sounds; every module's 'Theme default' points here |
 | Profiles | Phoenix | 0 | 8 | 0 | 1 | 7 | EUI Profiles 4 pages (Profiles, Presets, Overrides, FullExport) | Profiles, per-spec switching, import/export strings, presets |
 | Layout (Movers) | Phoenix | 3 | 11 | 3 | 0 | 8 | MoveAny 150 frame toggles · EUI unlock mode (snap, grid, nudge, per-element) | Unlock mode for every Phoenix-owned frame + selected Blizzard frames (no Edit Mode conflicts) |
@@ -44,7 +44,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | PvP | Content | 3 | 8 | 4 | 0 | 4 | sArena 416 (arena frames — goes to Unit Frames › Arena) · WindTools Combat 33 | Battleground / arena helpers; arena frames live in Unit Frames |
 | Sim | Content | 6 | 8 | 6 | 0 | 2 | simc addon (Unlicense) | Simulationcraft export + uploader results (S2) |
 | Diagnostics | Phoenix | 0 | 3 | 0 | 3 | 0 | — | Status page (secret state, conflicts, versions) — exists as a page, not settings |
-| **Total** | | **455** | **1186** | **393** | **49** | **744** | EllesmereUI 2,420 controls · WindTools 361 · sArena 416 · MoveAny ~150 | |
+| **Total** | | **673** | **1186** | **539** | **49** | **598** | EllesmereUI 2,420 controls · WindTools 361 · sArena 416 · MoveAny ~150 | |
 
 ## Action Bars  (`ActionBars`)
 
@@ -837,7 +837,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 ## Chat  (`Chat`)
 
-*Now 17 → target 51* · has 12 · part 8 · new 31
+*Now 58 → target 51* · has 44 · part 2 · new 5
 
 **How:** Restyles Blizzard chat frames and adds tools; no chat replacement
 
@@ -845,61 +845,61 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 | Group | Setting | Type | Range / choices | Default | Preview | Status |
 |---|---|---|---|---|---|---|
-| Window | Chat background | toggle |  | On | live | new |
-| Window | Chat background texture | texture | Phoenix surfaces + LSM | Solid | hover | new |
-| Window | Chat background colour | colour | colour + theme token | #0B0C0F | live | new |
-| Window | Chat background opacity | slider | 0–100 % | 45 | live | new |
-| Window | Chat border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | part |
-| Window | Chat border size | slider | 0–4 px (pixel-perfect) | 1 | live | part |
-| Window | Chat border colour | colour | colour + class colour + quality + theme token | #000000 | live | part |
-| Window | Chat border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | new |
+| Window | Chat background | toggle |  | On | live | has |
+| Window | Chat background texture | texture | Phoenix surfaces + LSM | Solid | hover | part |
+| Window | Chat background colour | colour | colour + theme token | #0B0C0F | live | has |
+| Window | Chat background opacity | slider | 0–100 % | 45 | live | has |
+| Window | Chat border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has |
+| Window | Chat border size | slider | 0–4 px (pixel-perfect) | 1 | live | has |
+| Window | Chat border colour | colour | colour + class colour + quality + theme token | #000000 | live | has |
+| Window | Chat border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | has |
 | Window | Chat border shadow size | slider | 0–16 px | 4 | live | new |
-| Window | Width / height (main) | slider | 200–900 / 80–600 px | 440 / 180 | world | new |
-| Window | Fade lines after | slider | 0–600 s (0 = never) | 120 | none | new |
-| Window | Max lines kept | slider | 128–4096 | 1024 | none | new |
-| Window | Hide in combat | toggle |  | Off | world | new |
-| Window | Hide side buttons | toggle |  | On | live | new |
-| Window | Scroll to bottom button | toggle |  | On | live | new |
+| Window | Width / height (main) | slider | 200–900 / 80–600 px | 440 / 180 | world | has |
+| Window | Fade lines after | slider | 0–600 s (0 = never) | 120 | none | has |
+| Window | Max lines kept | slider | 128–4096 | 1024 | none | has |
+| Window | Hide in combat | toggle |  | Off | world | has |
+| Window | Hide side buttons | toggle |  | On | live | has |
+| Window | Scroll to bottom button | toggle |  | On | live | has |
 | Tabs | Tab font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
 | Tabs | Tab size | slider | 6–40 | 12 | live | has |
 | Tabs | Tab outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
 | Tabs | Tab shadow | toggle |  | Off | live | has |
 | Tabs | Tab colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
 | Tabs | Tab style | dropdown | Phoenix underline / Pill / Blizzard | Phoenix underline | hover | part |
-| Tabs | Selected tab colour | colour |  | accent | live | new |
+| Tabs | Selected tab colour | colour |  | accent | live | has |
 | Tabs | Flash new messages | toggle |  | On | live | has |
-| Tabs | Fade tabs when idle | toggle |  | On | live | new |
-| Messages | Chat font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | part |
-| Messages | Chat size | slider | 6–40 | 13 | live | part |
+| Tabs | Fade tabs when idle | toggle |  | On | live | has |
+| Messages | Chat font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
+| Messages | Chat size | slider | 6–40 | 13 | live | has |
 | Messages | Chat outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
 | Messages | Chat shadow | toggle |  | Off | live | has |
 | Messages | Chat colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
-| Messages | Timestamps | dropdown | Off / HH:MM / HH:MM:SS / 12h | HH:MM | live | new |
+| Messages | Timestamps | dropdown | Off / HH:MM / HH:MM:SS / 12h | HH:MM | live | has |
 | Messages | Timestamp colour | colour |  | #808080 | live | new |
-| Messages | Short channel names ([G], [P], [1]) | toggle |  | On | live | new |
-| Messages | Class-coloured names | toggle |  | On | live | new |
+| Messages | Short channel names ([G], [P], [1]) | toggle |  | On | live | has |
+| Messages | Class-coloured names | toggle |  | On | live | has |
 | Messages | Clickable URLs | toggle |  | On | live | has |
 | Messages | Copy chat (per-line and window) | toggle |  | On | none | has |
-| Messages | Item level in item links | toggle |  | On | live | new |
-| Messages | Icons in links (item, spell, achievement) | toggle |  | On | live | new |
-| Messages | Role icons before names | toggle |  | On | live | new |
-| Messages | Keyword highlight list | list | words | your name | live | new |
-| Messages | Keyword sound | dropdown | sound list | None | hover | new |
-| Messages | Spam throttle (repeat lines) | slider | 0–120 s | 0 | none | new |
-| Edit box | Edit box position | dropdown | Below / Above / Top of window | Below | live | new |
-| Edit box | Edit box style | dropdown | Phoenix / Blizzard | Phoenix | hover | part |
+| Messages | Item level in item links | toggle |  | On | live | has |
+| Messages | Icons in links (item, spell, achievement) | toggle |  | On | live | has |
+| Messages | Role icons before names | toggle |  | On | live | has |
+| Messages | Keyword highlight list | list | words | your name | live | has |
+| Messages | Keyword sound | dropdown | sound list | None | hover | has |
+| Messages | Spam throttle (repeat lines) | slider | 0–120 s | 0 | none | has |
+| Edit box | Edit box position | dropdown | Below / Above / Top of window | Below | live | has |
+| Edit box | Edit box style | dropdown | Phoenix / Blizzard | Phoenix | hover | has |
 | Edit box | Arrow keys without Alt | toggle |  | On | none | has |
 | Edit box | Remember last channel | toggle |  | On | none | new |
-| Edit box | History lines | slider | 10–200 | 50 | none | part |
-| Tools | Chat bar (channel buttons, roll, ready check) | toggle |  | Off | world | new |
+| Edit box | History lines | slider | 10–200 | 50 | none | has |
+| Tools | Chat bar (channel buttons, roll, ready check) | toggle |  | Off | world | has |
 | Tools | Emote picker | toggle |  | Off | world | new |
-| Tools | Whisper sound | dropdown | sound list | Phoenix chime | hover | new |
-| Tools | Whisper tab per person | toggle |  | Off | none | new |
+| Tools | Whisper sound | dropdown | sound list | Phoenix chime | hover | has |
+| Tools | Whisper tab per person | toggle |  | Off | none | has |
 | Tools | Combat log tab hidden | toggle |  | Off | none | new |
 
 ## Minimap  (`Minimap`)
 
-*Now 5 → target 41* · has 2 · part 3 · new 36
+*Now 47 → target 41* · has 36 · part 0 · new 5
 
 **How:** Restyles Blizzard's minimap cluster
 
@@ -907,51 +907,51 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 | Group | Setting | Type | Range / choices | Default | Preview | Status |
 |---|---|---|---|---|---|---|
-| Shape and size | Shape | dropdown | Round / Square / Rectangle | Square | hover | part |
-| Shape and size | Size | slider | 120–400 px | 200 | live | new |
-| Shape and size | Rectangle height (shape = rectangle) | slider | 50–100 % | 70 | live | new |
+| Shape and size | Shape | dropdown | Round / Square / Rectangle | Square | hover | has |
+| Shape and size | Size | slider | 120–400 px | 200 | live | has |
+| Shape and size | Rectangle height (shape = rectangle) | slider | 50–100 % | 70 | live | has |
 | Shape and size | Scale | slider | 50–200 % | 100 | world | new |
-| Shape and size | Border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | new |
-| Shape and size | Border size | slider | 0–4 px (pixel-perfect) | 1 | live | new |
-| Shape and size | Border colour | colour | colour + class colour + quality + theme token | #000000 | live | new |
-| Shape and size | Border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | new |
+| Shape and size | Border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has |
+| Shape and size | Border size | slider | 0–4 px (pixel-perfect) | 1 | live | has |
+| Shape and size | Border colour | colour | colour + class colour + quality + theme token | #000000 | live | has |
+| Shape and size | Border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | has |
 | Shape and size | Border shadow size | slider | 0–16 px | 4 | live | new |
-| Shape and size | Mouse wheel zoom | toggle |  | On | none | new |
-| Shape and size | Auto zoom out after | slider | 0–30 s | 5 | none | new |
-| Elements (each: show, position, size) | Zone text | dropdown | Always / Mouseover / Hidden | Always | live | part |
-| Elements (each: show, position, size) | Zone text font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | new |
-| Elements (each: show, position, size) | Zone text size | slider | 6–40 | 12 | live | new |
-| Elements (each: show, position, size) | Zone text outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | new |
-| Elements (each: show, position, size) | Zone text shadow | toggle |  | Off | live | new |
-| Elements (each: show, position, size) | Zone text colour | colour | colour + class colour + theme token | #FFFFFF | live | new |
-| Elements (each: show, position, size) | Zone text colour by PvP status | toggle |  | On | live | new |
-| Elements (each: show, position, size) | Clock | dropdown | Always / Mouseover / Hidden | Always | live | new |
-| Elements (each: show, position, size) | Clock font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | new |
-| Elements (each: show, position, size) | Clock size | slider | 6–40 | 11 | live | new |
-| Elements (each: show, position, size) | Clock outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | new |
-| Elements (each: show, position, size) | Clock shadow | toggle |  | Off | live | new |
-| Elements (each: show, position, size) | Clock colour | colour | colour + class colour + theme token | #FFFFFF | live | new |
-| Elements (each: show, position, size) | Coordinates | dropdown | Always / Mouseover / Hidden | Mouseover | live | part |
-| Elements (each: show, position, size) | Coordinate decimals | slider | 0–2 | 1 | live | new |
-| Elements (each: show, position, size) | Calendar / invites | dropdown | Icon / Hidden | Icon | live | new |
-| Elements (each: show, position, size) | Tracking button | dropdown | Icon / Right-click menu | Right-click menu | live | new |
-| Elements (each: show, position, size) | Mail icon | toggle |  | On | live | new |
-| Elements (each: show, position, size) | Crafting order icon | toggle |  | On | live | new |
-| Elements (each: show, position, size) | Instance difficulty badge | dropdown | Phoenix text / Blizzard / Hidden | Phoenix text | hover | new |
-| Elements (each: show, position, size) | Expansion / housing button | dropdown | Icon / Hidden | Icon | live | new |
+| Shape and size | Mouse wheel zoom | toggle |  | On | none | has |
+| Shape and size | Auto zoom out after | slider | 0–30 s | 5 | none | has |
+| Elements (each: show, position, size) | Zone text | dropdown | Always / Mouseover / Hidden | Always | live | has |
+| Elements (each: show, position, size) | Zone text font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
+| Elements (each: show, position, size) | Zone text size | slider | 6–40 | 12 | live | has |
+| Elements (each: show, position, size) | Zone text outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
+| Elements (each: show, position, size) | Zone text shadow | toggle |  | Off | live | has |
+| Elements (each: show, position, size) | Zone text colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
+| Elements (each: show, position, size) | Zone text colour by PvP status | toggle |  | On | live | has |
+| Elements (each: show, position, size) | Clock | dropdown | Always / Mouseover / Hidden | Always | live | has |
+| Elements (each: show, position, size) | Clock font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
+| Elements (each: show, position, size) | Clock size | slider | 6–40 | 11 | live | has |
+| Elements (each: show, position, size) | Clock outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
+| Elements (each: show, position, size) | Clock shadow | toggle |  | Off | live | has |
+| Elements (each: show, position, size) | Clock colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
+| Elements (each: show, position, size) | Coordinates | dropdown | Always / Mouseover / Hidden | Mouseover | live | has |
+| Elements (each: show, position, size) | Coordinate decimals | slider | 0–2 | 1 | live | has |
+| Elements (each: show, position, size) | Calendar / invites | dropdown | Icon / Hidden | Icon | live | has |
+| Elements (each: show, position, size) | Tracking button | dropdown | Icon / Right-click menu | Right-click menu | live | has |
+| Elements (each: show, position, size) | Mail icon | toggle |  | On | live | has |
+| Elements (each: show, position, size) | Crafting order icon | toggle |  | On | live | has |
+| Elements (each: show, position, size) | Instance difficulty badge | dropdown | Phoenix text / Blizzard / Hidden | Phoenix text | hover | has |
+| Elements (each: show, position, size) | Expansion / housing button | dropdown | Icon / Hidden | Icon | live | has |
 | Elements (each: show, position, size) | Group finder eye | toggle |  | On | live | new |
 | Addon buttons | Collect addon buttons | dropdown | Off / Bar / Drawer / Mouseover ring | Drawer | hover | has |
 | Addon buttons | Buttons per row | slider | 1–12 | 6 | live | has |
-| Addon buttons | Button size | slider | 16–40 px | 24 | live | new |
-| Addon buttons | Ignore list | list | button names |  | none | new |
-| Map extras | Ping name display | toggle |  | On | none | new |
+| Addon buttons | Button size | slider | 16–40 px | 24 | live | has |
+| Addon buttons | Ignore list | list | button names |  | none | has |
+| Map extras | Ping name display | toggle |  | On | none | has |
 | Map extras | World map: reveal unexplored | toggle |  | Off | none | new |
-| Map extras | World map: player / cursor coords | toggle |  | On | live | new |
+| Map extras | World map: player / cursor coords | toggle |  | On | live | has |
 | Map extras | World map scale | slider | 50–150 % | 100 | none | new |
 
 ## Tooltips  (`Tooltip`)
 
-*Now 29 → target 45* · has 25 · part 1 · new 19
+*Now 54 → target 45* · has 38 · part 1 · new 6
 
 **How:** Restyles GameTooltip and adds lines; IDs where idTip-style (BSD-2)
 
@@ -960,13 +960,13 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Group | Setting | Type | Range / choices | Default | Preview | Status |
 |---|---|---|---|---|---|---|
 | Look | Background | toggle |  | On | live | has |
-| Look | Background texture | texture | Phoenix surfaces + LSM | Solid | hover | new |
+| Look | Background texture | texture | Phoenix surfaces + LSM | Solid | hover | part |
 | Look | Background colour | colour | colour + theme token | #0B0C0F | live | has |
 | Look | Background opacity | slider | 0–100 % | 92 | live | has |
 | Look | Border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has |
 | Look | Border size | slider | 0–4 px (pixel-perfect) | 1 | live | has |
 | Look | Border colour | colour | colour + class colour + quality + theme token | #000000 | live | has |
-| Look | Border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | new |
+| Look | Border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | has |
 | Look | Border shadow size | slider | 0–16 px | 4 | live | new |
 | Look | Border by item quality | toggle |  | On | live | has |
 | Look | Border by class (players) | toggle |  | On | live | has |
@@ -983,23 +983,23 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Look | Health bar | dropdown | Off / Below / Above | Below | live | has |
 | Look | Health bar height | slider | 2–12 px | 4 | live | has |
 | Position | Anchor | dropdown | Default / Cursor / Cursor left / Cursor right / Fixed | Default | world | has |
-| Position | Cursor offset X / Y | slider | -100–100 | 0 / 16 | world | new |
-| Position | Scale | slider | 50–150 % | 100 | world | new |
+| Position | Cursor offset X / Y | slider | -100–100 | 0 / 16 | world | has |
+| Position | Scale | slider | 50–150 % | 100 | world | has |
 | Position | Hide in combat | dropdown | Never / Units / All / Unless modifier held | Never | none | has |
-| Unit info | Class-coloured names | toggle |  | On | live | new |
-| Unit info | Guild rank | toggle |  | On | live | new |
-| Unit info | Realm | dropdown | Full / Asterisk / Hidden | Asterisk | live | new |
+| Unit info | Class-coloured names | toggle |  | On | live | has |
+| Unit info | Guild rank | toggle |  | On | live | has |
+| Unit info | Realm | dropdown | Full / Asterisk / Hidden | Asterisk | live | has |
 | Unit info | Target of unit | toggle |  | On | live | has |
-| Unit info | Targeted by (group) | toggle |  | On | live | new |
-| Unit info | Item level and spec (inspect) | toggle |  | On | live | new |
+| Unit info | Targeted by (group) | toggle |  | On | live | has |
+| Unit info | Item level and spec (inspect) | toggle |  | On | live | has |
 | Unit info | Mythic+ score and best run | toggle |  | On | live | has |
 | Unit info | Raid progression line | toggle |  | Off | live | new |
 | Unit info | Role icon | toggle |  | On | live | has |
-| Unit info | Mount the player is on | toggle |  | Off | live | new |
-| Unit info | NPC: reaction-coloured, hide 'PvP' line | toggle |  | On | live | new |
-| IDs and extras | Show IDs | dropdown | Off / With modifier / Always | With modifier | none | part |
-| IDs and extras | ID kinds | list | Spell, Item, NPC, Quest, Achievement, Currency, Mount, Talent, Icon, Vignette, AreaPOI… | Spell, Item, NPC, Quest | none | new |
-| IDs and extras | Item: count in bags / bank / warband | toggle |  | On | live | new |
+| Unit info | Mount the player is on | toggle |  | Off | live | has |
+| Unit info | NPC: reaction-coloured, hide 'PvP' line | toggle |  | On | live | has |
+| IDs and extras | Show IDs | dropdown | Off / With modifier / Always | With modifier | none | has |
+| IDs and extras | ID kinds | list | Spell, Item, NPC, Quest, Achievement, Currency, Mount, Talent, Icon, Vignette, AreaPOI… | Spell, Item, NPC, Quest | none | has |
+| IDs and extras | Item: count in bags / bank / warband | toggle |  | On | live | has |
 | IDs and extras | Item: vendor price | toggle |  | On | live | new |
 | IDs and extras | Item: already known / collected | toggle |  | On | live | new |
 | IDs and extras | Keystone tooltip (affixes, depleted) | toggle |  | On | live | new |
@@ -1007,7 +1007,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 ## Bags  (`Bags`)
 
-*Now 6 → target 47* · has 5 · part 0 · new 42
+*Now 53 → target 47* · has 35 · part 5 · new 7
 
 **How:** Restyles Blizzard's combined bag + bank; own sorting via C_Container
 
@@ -1016,52 +1016,52 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Group | Setting | Type | Range / choices | Default | Preview | Status |
 |---|---|---|---|---|---|---|
 | Layout | Combined bags | toggle |  | On | live | has |
-| Layout | Columns | slider | 6–24 | 12 | live | new |
-| Layout | Slot size | slider | 24–56 px | 36 | live | new |
-| Layout | Slot spacing | slider | 0–8 px | 3 | live | new |
-| Layout | Category sections | dropdown | Off / Blizzard filters / Phoenix categories | Off | hover | new |
-| Layout | Category list (reorder / hide) | reorder | Equipment, Consumables, Reagents, Junk, New… | default order | live | new |
-| Layout | Bank / Warband bank same layout | toggle |  | On | live | new |
-| Layout | Scale | slider | 50–150 % | 100 | world | new |
+| Layout | Columns | slider | 6–24 | 12 | live | has |
+| Layout | Slot size | slider | 24–56 px | 36 | live | has |
+| Layout | Slot spacing | slider | 0–8 px | 3 | live | has |
+| Layout | Category sections | dropdown | Off / Blizzard filters / Phoenix categories | Off | hover | has |
+| Layout | Category list (reorder / hide) | reorder | Equipment, Consumables, Reagents, Junk, New… | default order | live | has |
+| Layout | Bank / Warband bank same layout | toggle |  | On | live | part |
+| Layout | Scale | slider | 50–150 % | 100 | world | has |
 | Slots | Item level on gear | toggle |  | On | live | has |
 | Slots | Item level font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | new |
-| Slots | Item level size | slider | 6–40 | 11 | live | new |
+| Slots | Item level size | slider | 6–40 | 11 | live | part |
 | Slots | Item level outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | new |
 | Slots | Item level shadow | toggle |  | Off | live | new |
 | Slots | Item level colour | colour | colour + class colour + theme token | #FFFFFF | live | new |
 | Slots | Quality border | toggle |  | On | live | has |
-| Slots | Slot border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | new |
-| Slots | Slot border size | slider | 0–4 px (pixel-perfect) | 1 | live | new |
-| Slots | Slot border colour | colour | colour + class colour + quality + theme token | #000000 | live | new |
-| Slots | Slot border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | new |
+| Slots | Slot border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has |
+| Slots | Slot border size | slider | 0–4 px (pixel-perfect) | 1 | live | has |
+| Slots | Slot border colour | colour | colour + class colour + quality + theme token | #000000 | live | has |
+| Slots | Slot border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | has |
 | Slots | Slot border shadow size | slider | 0–16 px | 4 | live | new |
-| Slots | Junk coin icon | toggle |  | On | live | new |
-| Slots | New item glow | dropdown | Blizzard / Phoenix / Off | Phoenix | hover | new |
+| Slots | Junk coin icon | toggle |  | On | live | has |
+| Slots | New item glow | dropdown | Blizzard / Phoenix / Off | Phoenix | hover | has |
 | Slots | Upgrade arrow (better ilvl) | toggle |  | On | live | has |
-| Slots | Bind-on-equip / warbound label | toggle |  | On | live | new |
-| Slots | Cooldown on usable items | toggle |  | On | live | new |
-| Slots | Count font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | new |
+| Slots | Bind-on-equip / warbound label | toggle |  | On | live | has |
+| Slots | Cooldown on usable items | toggle |  | On | live | has |
+| Slots | Count font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
 | Slots | Count size | slider | 6–40 | 12 | live | has |
-| Slots | Count outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | new |
-| Slots | Count shadow | toggle |  | Off | live | new |
-| Slots | Count colour | colour | colour + class colour + theme token | #FFFFFF | live | new |
-| Window | Window background | toggle |  | On | live | new |
-| Window | Window background texture | texture | Phoenix surfaces + LSM | Solid | hover | new |
-| Window | Window background colour | colour | colour + theme token | #0B0C0F | live | new |
-| Window | Window background opacity | slider | 0–100 % | 92 | live | new |
-| Window | Window border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | new |
-| Window | Window border size | slider | 0–4 px (pixel-perfect) | 1 | live | new |
-| Window | Window border colour | colour | colour + class colour + quality + theme token | #000000 | live | new |
-| Window | Window border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | new |
+| Slots | Count outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
+| Slots | Count shadow | toggle |  | Off | live | has |
+| Slots | Count colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
+| Window | Window background | toggle |  | On | live | has |
+| Window | Window background texture | texture | Phoenix surfaces + LSM | Solid | hover | part |
+| Window | Window background colour | colour | colour + theme token | #0B0C0F | live | has |
+| Window | Window background opacity | slider | 0–100 % | 92 | live | has |
+| Window | Window border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has |
+| Window | Window border size | slider | 0–4 px (pixel-perfect) | 1 | live | has |
+| Window | Window border colour | colour | colour + class colour + quality + theme token | #000000 | live | has |
+| Window | Window border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | has |
 | Window | Window border shadow size | slider | 0–16 px | 4 | live | new |
-| Window | Search box | toggle |  | On | live | new |
-| Window | Gold, currencies footer | toggle |  | On | live | new |
+| Window | Search box | toggle |  | On | live | has |
+| Window | Gold, currencies footer | toggle |  | On | live | has |
 | Window | Bag bar inside window | toggle |  | On | live | new |
-| Behaviour | Sort button | toggle |  | On | none | new |
-| Behaviour | Sort direction / reverse | dropdown | Blizzard / Reverse | Blizzard | none | new |
-| Behaviour | Auto sell junk (in Automation) | toggle | see Automation |  | none | new |
-| Behaviour | Open with vendor / bank / mail / AH | toggle | 4 toggles | On | none | new |
-| Behaviour | Close with vendor | toggle |  | On | none | new |
+| Behaviour | Sort button | toggle |  | On | none | has |
+| Behaviour | Sort direction / reverse | dropdown | Blizzard / Reverse | Blizzard | none | has |
+| Behaviour | Auto sell junk (in Automation) | toggle | see Automation |  | none | has |
+| Behaviour | Open with vendor / bank / mail / AH | toggle | 4 toggles | On | none | part |
+| Behaviour | Close with vendor | toggle |  | On | none | part |
 
 ## Item Level  (`ItemLevel`)
 
@@ -1095,7 +1095,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 
 ## Data Texts  (`DataTexts`)
 
-*Now 35 → target 47* · has 14 · part 7 · new 26
+*Now 67 → target 47* · has 32 · part 8 · new 7
 
 **How:** Own data panels + broker (LDB) feeds
 
@@ -1104,18 +1104,18 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Group | Setting | Type | Range / choices | Default | Preview | Status |
 |---|---|---|---|---|---|---|
 | Panels (each panel) | Enable panel | toggle |  | On | world | has |
-| Panels (each panel) | Slots | slider | 1–6 | 3 | live | new |
+| Panels (each panel) | Slots | slider | 1–6 | 3 | live | has |
 | Panels (each panel) | Width / height | slider | 60–1200 / 14–40 px | 420 / 22 | live | part |
 | Panels (each panel) | Panel background | toggle |  | On | live | has |
-| Panels (each panel) | Panel background texture | texture | Phoenix surfaces + LSM | Solid | hover | new |
+| Panels (each panel) | Panel background texture | texture | Phoenix surfaces + LSM | Solid | hover | part |
 | Panels (each panel) | Panel background colour | colour | colour + theme token | #0B0C0F | live | has |
 | Panels (each panel) | Panel background opacity | slider | 0–100 % | 70 | live | has |
 | Panels (each panel) | Panel border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has |
 | Panels (each panel) | Panel border size | slider | 0–4 px (pixel-perfect) | 1 | live | has |
 | Panels (each panel) | Panel border colour | colour | colour + class colour + quality + theme token | #000000 | live | has |
-| Panels (each panel) | Panel border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | new |
+| Panels (each panel) | Panel border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | has |
 | Panels (each panel) | Panel border shadow size | slider | 0–16 px | 4 | live | new |
-| Panels (each panel) | Mouseover only | toggle |  | Off | world | new |
+| Panels (each panel) | Mouseover only | toggle |  | Off | world | has |
 | Panels (each panel) | Anchor | dropdown | 9 points + frame picker | per element | world | part |
 | Panels (each panel) | X offset | slider | -2000–2000 | per element | world | part |
 | Panels (each panel) | Y offset | slider | -1200–1200 | per element | world | part |
@@ -1128,32 +1128,32 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Text | Data text colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
 | Text | Label colour / value colour | colour | 2 colours | grey / class | live | part |
 | Text | Hide labels | toggle |  | Off | live | has |
-| Text | Combat: hide tooltips | toggle |  | On | none | new |
+| Text | Combat: hide tooltips | toggle |  | On | none | has |
 | Data sources (each slot) | Slot source | dropdown | Gold, Durability, Bags, Friends, Guild, FPS/MS, Time, Spec/Loot spec, Item level, Coords, Mythic+ score, Great Vault, Currencies, Mail, Talents loadout, Volume, LDB feeds | per slot | hover | has |
-| Data sources (each slot) | Gold: show silver/copper | toggle |  | Off | live | new |
-| Data sources (each slot) | Gold: account-wide totals | toggle |  | On | none | new |
-| Data sources (each slot) | Time: 24h / local vs realm | dropdown | Local / Realm · 12h / 24h | Local 24h | live | new |
-| Data sources (each slot) | Durability: warn below | slider | 0–100 % | 25 | live | new |
+| Data sources (each slot) | Gold: show silver/copper | toggle |  | Off | live | has |
+| Data sources (each slot) | Gold: account-wide totals | toggle |  | On | none | has |
+| Data sources (each slot) | Time: 24h / local vs realm | dropdown | Local / Realm · 12h / 24h | Local 24h | live | has |
+| Data sources (each slot) | Durability: warn below | slider | 0–100 % | 25 | live | has |
 | Data sources (each slot) | Currency picker | list | currency IDs | Valorstones, crests | none | new |
-| Experience / reputation / honor bars | Experience bar | toggle |  | On below max level | world | new |
-| Experience / reputation / honor bars | Reputation bar (watched) | toggle |  | On | world | new |
+| Experience / reputation / honor bars | Experience bar | toggle |  | On below max level | world | has |
+| Experience / reputation / honor bars | Reputation bar (watched) | toggle |  | On | world | has |
 | Experience / reputation / honor bars | Honor bar | toggle |  | Off | world | new |
-| Experience / reputation / honor bars | Bar width / height | slider | 100–1200 / 4–30 px | 520 / 10 | live | new |
+| Experience / reputation / honor bars | Bar width / height | slider | 100–1200 / 4–30 px | 520 / 10 | live | has |
 | Experience / reputation / honor bars | Data bar texture | texture | Phoenix bars + LSM, cards with samples | Phoenix Satin | hover | new |
 | Experience / reputation / honor bars | Data bar fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | new |
 | Experience / reputation / honor bars | Data bar smooth fill | toggle |  | On | live | new |
 | Experience / reputation / honor bars | Data bar gradient | dropdown | None / Horizontal / Vertical | None | live | new |
-| Experience / reputation / honor bars | Rested / quest XP overlay | toggle |  | On | live | new |
-| Experience / reputation / honor bars | Bar text | dropdown | Off / Percent / Current / Remaining / Mouseover | Mouseover | live | new |
-| Experience / reputation / honor bars | Bar text font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | new |
-| Experience / reputation / honor bars | Bar text size | slider | 6–40 | 10 | live | new |
-| Experience / reputation / honor bars | Bar text outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | new |
-| Experience / reputation / honor bars | Bar text shadow | toggle |  | Off | live | new |
-| Experience / reputation / honor bars | Bar text colour | colour | colour + class colour + theme token | #FFFFFF | live | new |
+| Experience / reputation / honor bars | Rested / quest XP overlay | toggle |  | On | live | has |
+| Experience / reputation / honor bars | Bar text | dropdown | Off / Percent / Current / Remaining / Mouseover | Mouseover | live | has |
+| Experience / reputation / honor bars | Bar text font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has |
+| Experience / reputation / honor bars | Bar text size | slider | 6–40 | 10 | live | has |
+| Experience / reputation / honor bars | Bar text outline | dropdown | None / Outline / Thick / Monochrome | Outline | live | has |
+| Experience / reputation / honor bars | Bar text shadow | toggle |  | Off | live | has |
+| Experience / reputation / honor bars | Bar text colour | colour | colour + class colour + theme token | #FFFFFF | live | has |
 
 ## Skins  (`Skins`)
 
-*Now 3 → target 28* · has 3 · part 0 · new 25
+*Now 34 → target 28* · has 22 · part 3 · new 3
 
 **How:** Phoenix look for Blizzard windows
 
@@ -1164,31 +1164,31 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22). One row per u
 | Windows (each toggle) | Game menu | toggle |  | On | live | has |
 | Windows (each toggle) | Popups (StaticPopup) | toggle |  | On | live | has |
 | Windows (each toggle) | Ready check | toggle |  | On | live | has |
-| Windows (each toggle) | Character / inspect | toggle |  | On | live | new |
-| Windows (each toggle) | Spellbook / talents | toggle |  | On | live | new |
-| Windows (each toggle) | Group finder | toggle |  | On | live | new |
-| Windows (each toggle) | Collections | toggle |  | On | live | new |
-| Windows (each toggle) | Professions | toggle |  | On | live | new |
-| Windows (each toggle) | Auction house | toggle |  | On | live | new |
-| Windows (each toggle) | Mail / merchant / gossip / quest | toggle |  | On | live | new |
-| Windows (each toggle) | Loot / rolls | toggle |  | On | live | new |
-| Windows (each toggle) | Achievement / encounter journal | toggle |  | On | live | new |
-| Windows (each toggle) | Calendar / guild / communities | toggle |  | On | live | new |
-| Windows (each toggle) | Settings / addon list | toggle |  | On | live | new |
-| Windows (each toggle) | Great vault / keystone | toggle |  | On | live | new |
+| Windows (each toggle) | Character / inspect | toggle |  | On | live | has |
+| Windows (each toggle) | Spellbook / talents | toggle |  | On | live | has |
+| Windows (each toggle) | Group finder | toggle |  | On | live | has |
+| Windows (each toggle) | Collections | toggle |  | On | live | has |
+| Windows (each toggle) | Professions | toggle |  | On | live | has |
+| Windows (each toggle) | Auction house | toggle |  | On | live | has |
+| Windows (each toggle) | Mail / merchant / gossip / quest | toggle |  | On | live | has |
+| Windows (each toggle) | Loot / rolls | toggle |  | On | live | part |
+| Windows (each toggle) | Achievement / encounter journal | toggle |  | On | live | has |
+| Windows (each toggle) | Calendar / guild / communities | toggle |  | On | live | has |
+| Windows (each toggle) | Settings / addon list | toggle |  | On | live | part |
+| Windows (each toggle) | Great vault / keystone | toggle |  | On | live | has |
 | Windows (each toggle) | Alerts / toasts | toggle |  | On | live | new |
 | Windows (each toggle) | Skyriding vigor bar | toggle |  | On | live | new |
-| Skin options | Window background | toggle |  | On | live | new |
-| Skin options | Window background texture | texture | Phoenix surfaces + LSM | Solid | hover | new |
-| Skin options | Window background colour | colour | colour + theme token | #0B0C0F | live | new |
-| Skin options | Window background opacity | slider | 0–100 % | 94 | live | new |
-| Skin options | Window border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | new |
-| Skin options | Window border size | slider | 0–4 px (pixel-perfect) | 1 | live | new |
-| Skin options | Window border colour | colour | colour + class colour + quality + theme token | #000000 | live | new |
-| Skin options | Window border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | new |
+| Skin options | Window background | toggle |  | On | live | has |
+| Skin options | Window background texture | texture | Phoenix surfaces + LSM | Solid | hover | part |
+| Skin options | Window background colour | colour | colour + theme token | #0B0C0F | live | has |
+| Skin options | Window background opacity | slider | 0–100 % | 94 | live | has |
+| Skin options | Window border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has |
+| Skin options | Window border size | slider | 0–4 px (pixel-perfect) | 1 | live | has |
+| Skin options | Window border colour | colour | colour + class colour + quality + theme token | #000000 | live | has |
+| Skin options | Window border shadow | dropdown | None / Soft / Hard / Glow | Soft | hover | has |
 | Skin options | Window border shadow size | slider | 0–16 px | 4 | live | new |
-| Skin options | Title bar style | dropdown | Phoenix / Minimal / Blizzard | Phoenix | hover | new |
-| Skin options | Close button style | dropdown | Phoenix / Blizzard | Phoenix | hover | new |
+| Skin options | Title bar style | dropdown | Phoenix / Minimal / Blizzard | Phoenix | hover | has |
+| Skin options | Close button style | dropdown | Phoenix / Blizzard | Phoenix | hover | has |
 
 ## Appearance & General  (`General`)
 

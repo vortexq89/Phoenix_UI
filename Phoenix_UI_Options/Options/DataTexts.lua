@@ -1,125 +1,54 @@
 local _, ns = ...
-local L, W, Skin = ns.L, ns.Widgets, ns.Skin
+local L, W = ns.L, ns.Widgets
 
 local Opt = ns.Opt
 
--- Drag-to-reorder: one chip per segment (dimmed when the segment is off). Drag a chip and drop it where the
--- accent marker shows; the order is saved as a comma list and the bar and preview follow at once.
-local CHIP_H, GAP = 26, 6
+-- Segment chips for one panel (W:OrderChips): drag to reorder, right-click to move a segment to the other panel.
+-- Dimmed chips are segments that are switched off.
 local LABEL = { fps = "DT_FPS", latency = "DT_LATENCY", speed = "DT_SPEED", durability = "DT_DURABILITY", gold = "DT_GOLD",
     clock = "DT_CLOCK", bugs = "DT_BUGS", bags = "DT_BAGS", itemlevel = "DT_ITEMLEVEL", friends = "DT_FRIENDS",
-    guild = "DT_GUILD", mail = "DT_MAIL" }
+    guild = "DT_GUILD", mail = "DT_MAIL", spec = "DT_SPEC", keystone = "DT_KEYSTONE", coords = "DT_COORDS",
+    volume = "DT_VOLUME" }
 
-local function orderRow(row, m)
-    local holder = CreateFrame("Frame", nil, row)
-    holder:SetHeight(2 * CHIP_H + GAP)
-    holder.chips = {}
-    holder.marker = W.Texture(holder, "OVERLAY", 2, ns.Media.textures.WHITE)
-    holder.marker:SetSize(2, CHIP_H)
-    holder.marker:Hide()
-    Skin:Register(holder.marker, function(t) W.Color(t, "accent.primary") end)
-
-    local function chip(key)
-        local c = holder.chips[key]
-        if c then return c end
-        c = CreateFrame("Button", nil, holder)
-        c:SetHeight(CHIP_H)
-        c.icon = W.Icon(c, m.ICON[key] or key, 13, "accent.primary")
-        c.icon:SetPoint("LEFT", 8, 0)
-        c.text = W.Text(c, "small", "text.primary", "LEFT")
-        c.text:SetPoint("LEFT", c.icon, "RIGHT", 6, 0)
-        c.text:SetText(L[LABEL[key]])
-        c:SetWidth(c.text:GetUnboundedStringWidth() + 38)
-        c:RegisterForDrag("LeftButton")
-        c.key = key
-        Skin:Register(c, function(self) Skin:Panel(self, "sunken", { border = "border.default" }) end)
-        c:SetScript("OnEnter", function(self) W.ShowTooltip(self, L[LABEL[key]], L.DT_ORDER_TIP) end)
-        c:SetScript("OnLeave", W.HideTooltip)
-        c:SetScript("OnDragStart", function(self) holder:BeginDrag(self) end)
-        c:SetScript("OnDragStop", function() holder:EndDrag() end)
-        holder.chips[key] = c
-        return c
-    end
-
-    -- Lays the chips out left to right, wrapping; returns the slot rectangles in order.
-    function holder:Layout(order)
-        local width = self:GetWidth()
-        if not width or width <= 0 then width = W.CONTROL_WIDTH * 2 end
-        local x, y = 0, 0
-        self.slots = {}
-        for i, key in ipairs(order) do
-            local c = chip(key)
-            if x > 0 and x + c:GetWidth() > width then x, y = 0, y - (CHIP_H + GAP) end
-            c:ClearAllPoints()
-            c:SetPoint("TOPLEFT", x, y)
-            c:SetAlpha(m.db[key] and 1 or 0.45)
-            c:Show()
-            self.slots[i] = { key = key, x = x, y = y, w = c:GetWidth() }
-            x = x + c:GetWidth() + GAP
-        end
-        self:SetHeight(-y + CHIP_H)
-    end
-
-    function holder:SetValue() self:Layout(m:Order()) end
-
-    -- Index the dragged chip would take for the cursor position, from the slot rectangles.
-    local function dropIndex()
-        local cx, cy = GetCursorPosition()
-        local scale = holder:GetEffectiveScale()
-        local left, top = holder:GetLeft(), holder:GetTop()
-        if not (left and top) then return nil end
-        cx, cy = cx / scale - left, cy / scale - top
-        local best, bestDist = #holder.slots + 1, math.huge
-        for i, sl in ipairs(holder.slots) do
-            local mid = sl.y - CHIP_H / 2
-            if math.abs(cy - mid) <= CHIP_H then
-                local d = math.abs(cx - sl.x)
-                if d < bestDist then best, bestDist = i, d end
-                local dEnd = math.abs(cx - (sl.x + sl.w))
-                if dEnd < bestDist then best, bestDist = i + 1, dEnd end
+local function panelRow(panel)
+    return function(row, m)
+        local function list()
+            local out = {}
+            for _, key in ipairs(panel == 1 and m:Order1() or m:Order2()) do
+                if not m.FEATURE[key] or ns:Supports(m.FEATURE[key]) then out[#out + 1] = key end
             end
+            return out
         end
-        return best
+        local h = W:OrderChips(row, {
+            order = list,
+            label = function(key) return L[LABEL[key]] end,
+            icon = function(key) return m.ICON[key] or key end,
+            dimmed = function(key) return not m.db[key] end,
+            tip = function() return m.db.panel2 and L.DT_ORDER_TIP2 or L.DT_ORDER_TIP end,
+            onReorder = function(keys)
+                if panel == 2 then ns.DB:Set(m, "order2", table.concat(keys, ",")); return end
+                -- panel 1's saved order also keeps panel 2's segments (they are skipped there)
+                local full, on1 = {}, {}
+                for _, k in ipairs(keys) do on1[k] = true; full[#full + 1] = k end
+                for _, k in ipairs(m:Order()) do if not on1[k] then full[#full + 1] = k end end
+                ns.DB:Set(m, "order", table.concat(full, ","))
+            end,
+            onRightClick = function(key)
+                if not m.db.panel2 then return end
+                m:MoveToPanel(key, panel == 1 and 2 or 1)
+            end,
+        })
+        ns.Events:Listen("PUI_SETTING_CHANGED", h, function(_, _, key) if key == "DataTexts" then h:Layout() end end)
+        return h
     end
-
-    function holder:BeginDrag(c)
-        self.dragging = c
-        c:SetAlpha(0.6)
-        self:SetScript("OnUpdate", function()
-            local i = dropIndex()
-            local sl = i and (self.slots[i] or self.slots[#self.slots])
-            if not sl then self.marker:Hide(); return end
-            local x = self.slots[i] and sl.x - GAP / 2 - 1 or sl.x + sl.w + GAP / 2 - 1
-            self.marker:ClearAllPoints()
-            self.marker:SetPoint("TOPLEFT", x, sl.y)
-            self.marker:Show()
-        end)
-    end
-
-    function holder:EndDrag()
-        local c = self.dragging
-        self:SetScript("OnUpdate", nil)
-        self.marker:Hide()
-        self.dragging = nil
-        if not c then return end
-        local target = dropIndex()
-        local order = m:Order()
-        local from
-        for i, key in ipairs(order) do if key == c.key then from = i end end
-        if target and from and target ~= from and target ~= from + 1 then
-            table.remove(order, from)
-            if target > from then target = target - 1 end
-            table.insert(order, target, c.key)
-            ns.DB:Set(m, "order", table.concat(order, ","))
-        end
-        self:Layout(m:Order())
-    end
-
-    holder:SetScript("OnSizeChanged", function(self) self:Layout(m:Order()) end)
-    ns.Events:Listen("PUI_SETTING_CHANGED", holder, function(_, _, key) if key == "DataTexts" then holder:Layout(m:Order()) end end)
-    holder:Layout(m:Order())
-    return holder
 end
+
+local JUSTIFY = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "CENTER", label = "ANCHOR_CENTER" },
+    { value = "RIGHT", label = "ANCHOR_RIGHT" } }
+local BAR_TEXT = { { value = "mouseover", label = "DT_BAR_MOUSEOVER" }, { value = "percent", label = "DT_BAR_PERCENT" },
+    { value = "current", label = "DT_BAR_CURRENT" }, { value = "remaining", label = "DT_BAR_REMAINING_LABEL" },
+    { value = "none", label = "OFF" } }
+local function noBar(m) return not m.db.xpBar end
 
 ns:RegisterOptions("DataTexts", {
     { type = "preview", kind = "datatexts" },
@@ -128,9 +57,17 @@ ns:RegisterOptions("DataTexts", {
     { type = "toggle", key = "latency", label = "DT_LATENCY", keywords = "ping ms" },
     { type = "toggle", key = "speed", label = "DT_SPEED", keywords = "movement" },
     { type = "toggle", key = "durability", label = "DT_DURABILITY", keywords = "repair armor" },
+    { type = "range", key = "durabilityWarn", label = "DT_DURABILITY_WARN", desc = "DT_DURABILITY_WARN_DESC", min = 5, max = 50,
+      step = 5, disabled = function(m) return not m.db.durability end },
     { type = "toggle", key = "gold", label = "DT_GOLD", keywords = "money" },
+    { type = "toggle", key = "goldCopper", label = "DT_GOLD_COPPER", desc = "DT_GOLD_COPPER_DESC", keywords = "silver copper coins",
+      disabled = function(m) return not m.db.gold end },
+    { type = "toggle", key = "goldAccount", label = "DT_GOLD_ACCOUNT", desc = "DT_GOLD_ACCOUNT_DESC",
+      keywords = "warband bank alts characters total", disabled = function(m) return not m.db.gold end },
     { type = "toggle", key = "clock", label = "DT_CLOCK", keywords = "time" },
     { type = "toggle", key = "clock24", label = "DT_CLOCK24", disabled = function(m) return not m.db.clock end },
+    { type = "toggle", key = "clockRealm", label = "DT_CLOCK_REALM", desc = "DT_CLOCK_REALM_DESC", keywords = "server time",
+      disabled = function(m) return not m.db.clock end },
     { type = "toggle", key = "bugs", label = "DT_BUGS", desc = "DT_BUGS_DESC", keywords = "errors lua",
       disabled = function() local b = ns:GetModule("Bugs"); return not (b and b:IsEnabled()) end },
     { type = "toggle", key = "bags", label = "DT_BAGS", desc = "DT_BAGS_DESC", keywords = "free slots inventory space" },
@@ -138,8 +75,22 @@ ns:RegisterOptions("DataTexts", {
     { type = "toggle", key = "friends", label = "DT_FRIENDS", desc = "DT_FRIENDS_DESC", keywords = "battle.net online" },
     { type = "toggle", key = "guild", label = "DT_GUILD", desc = "DT_GUILD_DESC", keywords = "members online" },
     { type = "toggle", key = "mail", label = "DT_MAIL", desc = "DT_MAIL_DESC", keywords = "mailbox letter" },
+    { type = "toggle", key = "spec", label = "DT_SPEC", desc = "DT_SPEC_DESC", keywords = "specialization loot talents" },
+    { type = "toggle", key = "keystone", label = "DT_KEYSTONE", desc = "DT_KEYSTONE_DESC", feature = "mythicplus",
+      keywords = "mythic plus key dungeon rating" },
+    { type = "toggle", key = "coords", label = "DT_COORDS", desc = "DT_COORDS_DESC", keywords = "coordinates position map" },
+    { type = "toggle", key = "volume", label = "DT_VOLUME", desc = "DT_VOLUME_DESC", keywords = "sound master audio" },
+    { type = "header", label = "DT_PANELS", icon = "layout" },
     { type = "custom", key = "order", label = "DT_ORDER", desc = "DT_ORDER_DESC", fullWidth = true, height = 112, resettable = true,
-      keywords = "drag reorder arrange sort", build = orderRow },
+      keywords = "drag reorder arrange sort", build = panelRow(1) },
+    { type = "toggle", key = "panel2", label = "DT_PANEL2", desc = "DT_PANEL2_DESC", keywords = "second bar panel" },
+    { type = "custom", key = "order2", label = "DT_ORDER2", desc = "DT_ORDER2_DESC", fullWidth = true, height = 60, resettable = true,
+      keywords = "second panel segments", build = panelRow(2), disabled = function(m) return not m.db.panel2 end },
+    { type = "range", key = "width", label = "DT_WIDTH", desc = "DT_WIDTH_DESC", min = 0, max = 1600, step = 10 },
+    { type = "select", key = "justify", label = "DT_JUSTIFY", values = JUSTIFY, disabled = function(m) return m.db.width == 0 end },
+    { type = "toggle", key = "mouseover", label = "DT_MOUSEOVER", desc = "DT_MOUSEOVER_DESC", keywords = "fade hide hover" },
+    { type = "toggle", key = "tooltips", label = "DT_TOOLTIPS", desc = "DT_TOOLTIPS_DESC", icon = "tooltip" },
+    { type = "toggle", key = "combatTips", label = "DT_COMBAT_TIPS", desc = "DT_COMBAT_TIPS_DESC", keywords = "hide tooltips combat" },
     { type = "header", label = "DT_STYLE", icon = "theme" },
     { type = "toggle", key = "background", label = "DT_BACKGROUND", desc = "DT_BACKGROUND_DESC",
       cog = Opt.Flat(Opt.Background("backdrop", nil, "bg.base"), Opt.Border("border", nil, "border.subtle")) },
@@ -152,6 +103,14 @@ ns:RegisterOptions("DataTexts", {
     Opt.Text("unitText", "DT_UNIT_FONT", { max = 18, token = "text.muted" }),
     { type = "toggle", key = "colorValues", label = "DT_COLOR_VALUES", desc = "DT_COLOR_VALUES_DESC" },
     { type = "toggle", key = "icons", label = "DT_ICONS" },
+    { type = "header", label = "DT_XP_BAR", icon = "arrow-up" },
+    { type = "toggle", key = "xpBar", label = "DT_XP_BAR_SHOW", desc = "DT_XP_BAR_DESC", keywords = "experience reputation rep xp" },
+    { type = "toggle", key = "xpRep", label = "DT_XP_REP", desc = "DT_XP_REP_DESC", disabled = noBar },
+    { type = "toggle", key = "rested", label = "DT_RESTED", desc = "DT_RESTED_DESC", disabled = noBar },
+    { type = "range", key = "barWidth", label = "DT_BAR_WIDTH", min = 100, max = 1600, step = 10, disabled = noBar },
+    { type = "range", key = "barHeight", label = "DT_BAR_HEIGHT", min = 4, max = 30, step = 1, disabled = noBar },
+    { type = "select", key = "barTextMode", label = "DT_BAR_TEXT", values = BAR_TEXT, disabled = noBar },
+    Opt.With(Opt.Text("barText", "DT_BAR_FONT", { max = 18, place = true }), { disabled = noBar }),
     { type = "button", label = "DT_MOVE", desc = "DT_MOVE_DESC", button = "OPEN_EDIT_MODE", icon = "editmode",
       func = function() ns.Config.frame:Hide(); ns.EditMode:Open() end },
 })

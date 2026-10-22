@@ -817,6 +817,46 @@ Start with `/console taintLog 1` and an empty `/pui bugs`. For the restricted-ch
 
 **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13j.19).
 
+## 13k. Bags, Data Texts and Skins (2.0 S13b)
+
+Start with `/console taintLog 1` and an empty `/pui bugs`.
+
+- [ ] **13k.1 Bag window.** Bags → *Bag window* Phoenix, reload. Press B, Shift-B, click the backpack and each bag
+  slot, Escape. **Expect:** one Phoenix window opens and closes with every key and button; Blizzard's bag frames
+  never show; Escape closes it. Back to Blizzard (reload) restores Blizzard's bags exactly.
+- [ ] **13k.2 Layout.** Columns 10, slot size 40, spacing 4, scale 90 %, *Categories* on, drag *Junk* first and
+  right-click *Quest* to hide it, sort by item level, *Empty slots* off. **Expect:** sections in that order, Quest
+  items in Other, items ordered by item level, no empty slots; the reagent bag as its own section.
+- [ ] **13k.3 Items.** Left/right-click, drag to the action bar, shift-click to chat, split a stack, use a potion in
+  and out of combat, open the auction house and sell from the window. **Expect:** all the game's item actions work,
+  no blocked-action errors, cooldown swipes on usable items.
+- [ ] **13k.4 Window tools.** Search `potion`, press the sort button (and with *Clean up right to left*), check the
+  footer gold, currencies and free slots; move the window in Layout mode. **Expect:** non-matching slots dim; sort
+  as the game does; footer values right; the place is kept after a reload.
+- [ ] **13k.5 Slot marks.** Loot a new item, carry grey junk, a bind-on-equip and a warbound item, gear better than
+  yours. **Expect:** glow on new items until hovered, junk coin (or dimmed junk), BoE/WuE label, upgrade arrow and
+  item level; count text in your font and place.
+- [ ] **13k.6 Bank.** Open the bank, switch to the warband bank tabs. **Expect:** slots styled the same (borders,
+  quality, item levels), no errors when switching tabs; *Style the bank* off (reload) leaves Blizzard's look.
+- [ ] **13k.7 Data text panels.** Turn *Second panel* on; drag Gold and Clock chips to panel 2, reorder panel 1;
+  width 600, align Center, *Mouseover only*. **Expect:** both panels in Edit Mode (*DataTexts*, *DataTexts2*), texts
+  where you dropped them, panel fades in only on hover.
+- [ ] **13k.8 New texts and tooltips.** Enable Spec, Key, Coordinates, Volume; hover every text, click Spec, use the
+  wheel on Volume; enter combat with *No tooltips in combat* on. **Expect:** tooltips (gold per character, warband
+  bank and total; durability per slot; local and realm time; friends and guild lists), the talents window opens from Spec,
+  volume steps by 5 %, no tooltips in combat.
+- [ ] **13k.9 XP bar.** *Experience bar* on below max level (then at max with a watched reputation), rested on,
+  text *On hover*. **Expect:** fill and rested overlay, reputation at max level, text only on hover; movable in Edit
+  Mode as *DataTextsXP*.
+- [ ] **13k.10 Skins.** Open each window with its toggle on: character, inspect, spellbook, group finder,
+  collections, professions, auction house, mail, merchant, gossip/quest, loot, achievements, encounter journal,
+  calendar, communities, friends, settings, Great Vault, keystone, trade, dressing room. Switch tabs; set *Title bar*
+  Minimal, *Close button* Blizzard. **Expect:** Phoenix background, border, title strip and tabs on each (also on
+  load-on-demand windows the first time they open), the selected tab highlighted, all buttons still work. Toggles off
+  after a reload leave that window Blizzard's.
+- [ ] **13k.11 WoW Forever.** Repeat 13k.1, 13k.7 and 13k.10 on WoW Forever. **Expect:** no Key text, no Great
+  Vault/keystone skins, everything else as on retail.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

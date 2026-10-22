@@ -45,16 +45,22 @@ local function onSlotUpdate(button)
 end
 
 local EQUIPPABLE_SKIP = { [""] = true, INVTYPE_BAG = true, INVTYPE_NON_EQUIP_IGNORE = true, INVTYPE_QUIVER = true }
+-- One bag-style button (Blizzard's bags and bank, the Phoenix bag window): gear only.
+local function paintBagButton(button, location)
+    if not M:IsEnabled() then return end
+    local show = false
+    if M.db.bags and C_Item.DoesItemExist(location) then
+        local _, _, _, equipLoc = C_Item.GetItemInfoInstant(C_Item.GetItemID(location))
+        show = equipLoc ~= nil and not EQUIPPABLE_SKIP[equipLoc]
+    end
+    paint(button, show and location or nil)
+end
+M.PaintButton = paintBagButton
+
 local function onBagUpdate(frame)
     if not M:IsEnabled() then return end
     for _, button in frame:EnumerateValidItems() do
-        local location = ItemLocation:CreateFromBagAndSlot(button:GetBagID(), button:GetID())
-        local show = false
-        if M.db.bags and C_Item.DoesItemExist(location) then
-            local _, _, _, equipLoc = C_Item.GetItemInfoInstant(C_Item.GetItemID(location))
-            show = equipLoc ~= nil and not EQUIPPABLE_SKIP[equipLoc]
-        end
-        paint(button, show and location or nil)
+        paintBagButton(button, ItemLocation:CreateFromBagAndSlot(button:GetBagID(), button:GetID()))
     end
 end
 
