@@ -1,0 +1,5147 @@
+{
+ "generated": "2026-10-22",
+ "totals": {
+  "features": 315,
+  "options": 6526,
+  "done": 96,
+  "part": 90,
+  "miss": 97,
+  "imp": 16,
+  "skip": 16
+ },
+ "addons": {
+  "EllesmereUI ActionBars": {
+   "features": 11,
+   "options": 164,
+   "done": 6,
+   "part": 3,
+   "miss": 1,
+   "imp": 1,
+   "skip": 0
+  },
+  "EllesmereUI CooldownManager": {
+   "features": 11,
+   "options": 185,
+   "done": 2,
+   "part": 5,
+   "miss": 4,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI AuraBuffReminders": {
+   "features": 2,
+   "options": 55,
+   "done": 0,
+   "part": 2,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI Bags": {
+   "features": 6,
+   "options": 47,
+   "done": 1,
+   "part": 4,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI BlizzardSkin": {
+   "features": 11,
+   "options": 135,
+   "done": 3,
+   "part": 5,
+   "miss": 3,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI Chat": {
+   "features": 6,
+   "options": 58,
+   "done": 3,
+   "part": 2,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI (core pages)": {
+   "features": 14,
+   "options": 186,
+   "done": 6,
+   "part": 2,
+   "miss": 5,
+   "imp": 0,
+   "skip": 1
+  },
+  "EllesmereUI DamageMeters": {
+   "features": 5,
+   "options": 89,
+   "done": 1,
+   "part": 2,
+   "miss": 2,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI ForeverEssentials": {
+   "features": 15,
+   "options": 92,
+   "done": 2,
+   "part": 1,
+   "miss": 11,
+   "imp": 0,
+   "skip": 1
+  },
+  "EllesmereUI Friends": {
+   "features": 1,
+   "options": 9,
+   "done": 0,
+   "part": 1,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI GroupFinder": {
+   "features": 1,
+   "options": 5,
+   "done": 0,
+   "part": 1,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI Minimap": {
+   "features": 4,
+   "options": 81,
+   "done": 3,
+   "part": 1,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI MythicTimer": {
+   "features": 4,
+   "options": 133,
+   "done": 1,
+   "part": 1,
+   "miss": 2,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI Nameplates": {
+   "features": 10,
+   "options": 200,
+   "done": 6,
+   "part": 2,
+   "miss": 1,
+   "imp": 1,
+   "skip": 0
+  },
+  "EllesmereUI PlayerAuraBars": {
+   "features": 2,
+   "options": 47,
+   "done": 1,
+   "part": 0,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI QoL": {
+   "features": 21,
+   "options": 221,
+   "done": 6,
+   "part": 3,
+   "miss": 10,
+   "imp": 1,
+   "skip": 1
+  },
+  "EllesmereUI QuestTracker": {
+   "features": 3,
+   "options": 32,
+   "done": 2,
+   "part": 0,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI Quickdraw": {
+   "features": 1,
+   "options": 30,
+   "done": 0,
+   "part": 0,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI RaidFrames": {
+   "features": 14,
+   "options": 384,
+   "done": 4,
+   "part": 5,
+   "miss": 5,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI ResourceBars": {
+   "features": 13,
+   "options": 276,
+   "done": 2,
+   "part": 4,
+   "miss": 6,
+   "imp": 1,
+   "skip": 0
+  },
+  "EllesmereUI UnitFrames": {
+   "features": 10,
+   "options": 535,
+   "done": 5,
+   "part": 4,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI DataBars": {
+   "features": 2,
+   "options": 67,
+   "done": 0,
+   "part": 1,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "EllesmereUI WindTools": {
+   "features": 54,
+   "options": 391,
+   "done": 21,
+   "part": 14,
+   "miss": 12,
+   "imp": 1,
+   "skip": 6
+  },
+  "sArena Reloaded": {
+   "features": 16,
+   "options": 458,
+   "done": 1,
+   "part": 6,
+   "miss": 8,
+   "imp": 1,
+   "skip": 0
+  },
+  "BigWigs": {
+   "features": 25,
+   "options": 1188,
+   "done": 5,
+   "part": 8,
+   "miss": 8,
+   "imp": 3,
+   "skip": 1
+  },
+  "LittleWigs": {
+   "features": 2,
+   "options": 758,
+   "done": 0,
+   "part": 1,
+   "miss": 0,
+   "imp": 1,
+   "skip": 0
+  },
+  "Questie": {
+   "features": 15,
+   "options": 220,
+   "done": 2,
+   "part": 5,
+   "miss": 3,
+   "imp": 2,
+   "skip": 3
+  },
+  "QuestieDB": {
+   "features": 1,
+   "options": 1,
+   "done": 0,
+   "part": 0,
+   "miss": 0,
+   "imp": 0,
+   "skip": 1
+  },
+  "QuestieTrace": {
+   "features": 1,
+   "options": 1,
+   "done": 0,
+   "part": 1,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "PremadeGroupsFilter": {
+   "features": 6,
+   "options": 123,
+   "done": 2,
+   "part": 1,
+   "miss": 1,
+   "imp": 2,
+   "skip": 0
+  },
+  "MoveAny": {
+   "features": 9,
+   "options": 149,
+   "done": 6,
+   "part": 2,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "idTip": {
+   "features": 2,
+   "options": 27,
+   "done": 1,
+   "part": 0,
+   "miss": 1,
+   "imp": 0,
+   "skip": 0
+  },
+  "AutoQueue": {
+   "features": 4,
+   "options": 10,
+   "done": 0,
+   "part": 1,
+   "miss": 1,
+   "imp": 2,
+   "skip": 0
+  },
+  "Simulationcraft": {
+   "features": 1,
+   "options": 4,
+   "done": 1,
+   "part": 0,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "TrufiGCD": {
+   "features": 3,
+   "options": 44,
+   "done": 1,
+   "part": 2,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "BugGrabber + BugSack": {
+   "features": 1,
+   "options": 11,
+   "done": 1,
+   "part": 0,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  },
+  "Auctionator": {
+   "features": 6,
+   "options": 110,
+   "done": 0,
+   "part": 0,
+   "miss": 5,
+   "imp": 0,
+   "skip": 1
+  },
+  "WoW-API-main": {
+   "features": 1,
+   "options": 0,
+   "done": 0,
+   "part": 0,
+   "miss": 0,
+   "imp": 0,
+   "skip": 1
+  },
+  "EllesmereUI Locales": {
+   "features": 1,
+   "options": 0,
+   "done": 1,
+   "part": 0,
+   "miss": 0,
+   "imp": 0,
+   "skip": 0
+  }
+ },
+ "features": [
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "AnimationsPage::"
+   ],
+   "feature": "Button press / hover / cast animations, assisted-highlight ring, interaction colours",
+   "owner": "ActionBars",
+   "status": "part",
+   "note": "Pressed/mouseover looks, assisted highlight and cast-animation hiding exist; class-coloured interaction colour and ring fit on cropped buttons do not",
+   "stage": "S26",
+   "n": 15,
+   "id": 1
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "BarAppearance::BAR BACKGROUND"
+   ],
+   "feature": "Bar backdrop, border, custom button shape, icon zoom, cooldown numbers per bar",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 27,
+   "id": 2
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "BarAppearance::ICON EFFECTS~Hide Charge"
+   ],
+   "feature": "Hide the charge count at zero charges",
+   "owner": "ActionBars",
+   "status": "imp",
+   "note": "Action charge counts are secret values in combat (C_Spell.GetSpellCharges returns secrets); Phoenix can only pass them to a FontString, not compare them with 0",
+   "stage": null,
+   "n": 1,
+   "id": 3
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "BarAppearance::ICON EFFECTS~Item Rank"
+   ],
+   "feature": "Crafted-quality rank pip on item buttons",
+   "owner": "ActionBars",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 1,
+   "id": 4
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "BarAppearance::ICON EFFECTS"
+   ],
+   "feature": "Desaturate on cooldown, range colouring, alpha on cooldown, swipe opacity, equipped border, tooltips",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 6,
+   "id": 5
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "BarAppearance::PAGING"
+   ],
+   "feature": "Form / skyriding / modifier paging, page arrows, keybind / macro / charge text",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 25,
+   "id": 6
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "BarVisibilityLayout::"
+   ],
+   "feature": "Per-bar layout (icons, rows, size, spacing, growth, order) and visibility (spellbook, drag, mouseover, click-through)",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 17,
+   "id": 7
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "MenuBagsRepPage::"
+   ],
+   "feature": "Micro menu, bag bar and reputation bar layout (orientation, text, texture)",
+   "owner": "ActionBars",
+   "status": "part",
+   "note": "Phoenix shows/hides the menu and bag buttons; their layout belongs to Edit Mode. Rep bar text/texture is on Data Texts",
+   "stage": "S28",
+   "n": 21,
+   "id": 8
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "XPBarPage::"
+   ],
+   "feature": "Experience bar: dividers, 5 % lines, rested, quest-XP overlay, gain animation",
+   "owner": "DataTexts",
+   "status": "part",
+   "note": "Bar, rested and text exist; dividers, quest-XP overlay (C_QuestLog.GetQuestLogRewardXP) and gain animation do not",
+   "stage": "S28",
+   "n": 24,
+   "id": 9
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "EUI_ActionBars::"
+   ],
+   "feature": "Action bar art and its size / offsets",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 5,
+   "id": 10
+  },
+  {
+   "addon": "EllesmereUI ActionBars",
+   "keys": [
+    "EllesmereUI::"
+   ],
+   "feature": "Global action-button skin: modern styling, keybind text, scale, combat / zone visibility",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 22,
+   "id": 11
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BarsPage::BAR LAYOUT",
+    "BarsPage::ADDITIONAL BAR OFFSET"
+   ],
+   "feature": "Cooldown viewer rows, base / second row sizes, overflow, fade, keep places",
+   "owner": "Tracker",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 18,
+   "id": 12
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BarsPage::ICON DISPLAY"
+   ],
+   "feature": "Cooldown icon look: shape, zoom, border, duration / stack text, item count and quality, numbers-only mode",
+   "owner": "Tracker",
+   "status": "part",
+   "note": "Numbers-only (no icon) mode and item quality on icons are missing",
+   "stage": "S20",
+   "n": 48,
+   "id": 13
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BarsPage::EXTRAS"
+   ],
+   "feature": "Viewer extras: trinkets, tooltips, keybinds, rotation helper, mirror key presses, potion swap, glows only in combat",
+   "owner": "Tracker",
+   "status": "part",
+   "note": "Trinkets, tooltips and keybinds exist; key-press mirroring, potion swap and in-combat-only glows do not",
+   "stage": "S20",
+   "n": 17,
+   "id": 14
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BarsPage::FocusKick Options"
+   ],
+   "feature": "Focus interrupt reminder: text near the focus plate, focus cast sound, interrupt spell",
+   "owner": "NamePlates",
+   "status": "part",
+   "note": "Focus marker exists; the focus cast sound and reminder text do not",
+   "stage": "S20",
+   "n": 10,
+   "id": 15
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "EUI_CooldownManager::ROTATION ASSIST ICON"
+   ],
+   "feature": "Rotation assist icon (C_AssistedCombat) with keybind and GCD",
+   "owner": "Tracker",
+   "status": "miss",
+   "note": "",
+   "stage": "S20",
+   "n": 7,
+   "id": 16
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "EUI_CooldownManager::",
+    "EUI_CooldownManager_BarGlowConditions::"
+   ],
+   "feature": "Glow conditions: at N stacks, only in combat, by hero talent; text and background per tracked spell",
+   "owner": "Tracker",
+   "status": "miss",
+   "note": "Stack counts of tracked auras are secret in combat, so 'glow at N stacks' needs the viewer's own alert events (verify in game)",
+   "stage": "S20",
+   "n": 20,
+   "id": 17
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "SpellPicker::"
+   ],
+   "feature": "Per-spell overrides in the spell picker (duration, glow at stacks, size, colour)",
+   "owner": "Tracker",
+   "status": "part",
+   "note": "Phoenix picks spells; per-spell overrides are missing",
+   "stage": "S20",
+   "n": 17,
+   "id": 18
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BuffBarsPage::GROUP SETTINGS"
+   ],
+   "feature": "Buff bar groups (named groups, auto-add, global group, shift when empty)",
+   "owner": "Tracker",
+   "status": "miss",
+   "note": "",
+   "stage": "S20",
+   "n": 7,
+   "id": 19
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BuffBarsPage::BAR LAYOUT"
+   ],
+   "feature": "Buff bar size, texture, texts, timer decimals, reverse fill, charge hash lines, smooth bars",
+   "owner": "Tracker",
+   "status": "part",
+   "note": "Smooth fill and gradient are open gap rows; hash lines and partial-charge shade are missing",
+   "stage": "S20",
+   "n": 28,
+   "id": 20
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BuffBarsPage::Display"
+   ],
+   "feature": "Buff bar icon, opacity, colours, spark, border",
+   "owner": "Tracker",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 9,
+   "id": 21
+  },
+  {
+   "addon": "EllesmereUI CooldownManager",
+   "keys": [
+    "BuffBarsPage::EXTRAS"
+   ],
+   "feature": "Stack-based bar fill with max / threshold",
+   "owner": "Tracker",
+   "status": "miss",
+   "note": "Needs plain stack counts; the viewer's aura applications are secret in restricted content, so this may end as api after the in-game check",
+   "stage": "S17",
+   "n": 4,
+   "id": 22
+  },
+  {
+   "addon": "EllesmereUI AuraBuffReminders",
+   "keys": [
+    "EUI_AuraBuffReminders::"
+   ],
+   "feature": "Missing-buff reminders: custom spells, sounds, where shown, scale, cursor attach, M+ beacon, well fed / camp",
+   "owner": "Tracker",
+   "status": "part",
+   "note": "Phoenix Reminders has flask, food, rune, raid buff, weapon oil, pet, healthstone and mana; custom spells, cursor attach and position presets are missing",
+   "stage": "S20",
+   "n": 35,
+   "id": 23
+  },
+  {
+   "addon": "EllesmereUI AuraBuffReminders",
+   "keys": [
+    "EUI_AuraBuffReminders::PETS"
+   ],
+   "feature": "Pet reminders (missing / passive / wrong demon), soulstone, consumables without item",
+   "owner": "Tracker",
+   "status": "part",
+   "note": "Pet reminder exists; passive / wrong-demon and soulstone checks are missing",
+   "stage": "S20",
+   "n": 20,
+   "id": 24
+  },
+  {
+   "addon": "EllesmereUI Bags",
+   "keys": [
+    "EUI_Bags::LAYOUT",
+    "EUI_Bags::DISPLAY"
+   ],
+   "feature": "Bag window style, scale, strata, auto size, bank display",
+   "owner": "Bags",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 6,
+   "id": 25
+  },
+  {
+   "addon": "EllesmereUI Bags",
+   "keys": [
+    "EUI_Bags::DISPLAY (GRID / COMPACT)"
+   ],
+   "feature": "Grid view: item level, gear track rank, BoE / warbound label, set name",
+   "owner": "Bags",
+   "status": "part",
+   "note": "Item level and bind label exist; track rank and set name do not",
+   "stage": "S23",
+   "n": 9,
+   "id": 26
+  },
+  {
+   "addon": "EllesmereUI Bags",
+   "keys": [
+    "EUI_Bags::DISPLAY (LIST)"
+   ],
+   "feature": "List view of bags (rows with names, gold value per section)",
+   "owner": "Bags",
+   "status": "miss",
+   "note": "",
+   "stage": "S23",
+   "n": 7,
+   "id": 27
+  },
+  {
+   "addon": "EllesmereUI Bags",
+   "keys": [
+    "EUI_Bags::SIDEBAR",
+    "EUI_Bags::GROUPING"
+   ],
+   "feature": "Category sidebar, nest by expansion, group by category",
+   "owner": "Bags",
+   "status": "part",
+   "note": "Categories exist; sidebar and expansion nesting do not",
+   "stage": "S23",
+   "n": 5,
+   "id": 28
+  },
+  {
+   "addon": "EllesmereUI Bags",
+   "keys": [
+    "EUI_Bags::CATEGORIES"
+   ],
+   "feature": "Pinned and recent items, custom categories, empty-category hiding",
+   "owner": "Bags",
+   "status": "part",
+   "note": "",
+   "stage": "S23",
+   "n": 11,
+   "id": 29
+  },
+  {
+   "addon": "EllesmereUI Bags",
+   "keys": [
+    "EUI_Bags::EXTRAS"
+   ],
+   "feature": "Merge stacks, gear by slot, gold history, stack splitter, quality borders, open with character",
+   "owner": "Bags",
+   "status": "part",
+   "note": "Quality borders exist; merge view, gold history and splitter do not",
+   "stage": "S23",
+   "n": 9,
+   "id": 30
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::BLIZZARD POPUPS & GAME MENU",
+    "EUI_BlizzardSkin::"
+   ],
+   "feature": "Popups and game menu reskin, resurrect-accept glow",
+   "owner": "Skins",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 9,
+   "id": 31
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::BLIZZARD TOOLTIP~Player Buffs|Icon Size|Icons Per Row"
+   ],
+   "feature": "Tooltip: the unit's buffs as icons",
+   "owner": "Tooltip",
+   "status": "miss",
+   "note": "C_UnitAuras on other units is secret in combat; out of combat the icons can be drawn",
+   "stage": "S24",
+   "n": 3,
+   "id": 32
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::BLIZZARD TOOLTIP"
+   ],
+   "feature": "Tooltip reskin, anchor, modifier peek, IDs, max stack, health strip",
+   "owner": "Tooltip",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 23,
+   "id": 33
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::BLIZZARD BARS, POPUPS & BUTTONS~Widget|Extra Action|Queue|Minimum|Bar Height|Text Offset|Icon Zoom"
+   ],
+   "feature": "Widget bars, extra action button and queue pop-up skin with queue timer",
+   "owner": "Skins",
+   "status": "part",
+   "note": "Extra action skin exists (Action Bars); widget bars and queue timer on the LFG pop-up do not",
+   "stage": "S24",
+   "n": 8,
+   "id": 34
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::BLIZZARD BARS, POPUPS & BUTTONS~Rating|Socket|Stat|Enchant|Durability|Season|Location|Label|Vault|Item Level|Tertiary|Flyout|Diminishing|Mana|Crests|UI Color|Secondary|Inspect|Upgrade"
+   ],
+   "feature": "Character and inspect sheet: stat letters, enchants, durability, crests, season panel, M+ rating, vault shortcut",
+   "owner": "ItemLevel",
+   "status": "part",
+   "note": "Item level, upgrade track, enchant text and sockets exist; stats-panel restyle, durability, crests and season panel do not",
+   "stage": "S23",
+   "n": 26,
+   "id": 35
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::BLIZZARD BARS, POPUPS & BUTTONS~Sign-Up|Class Icon|Friend|Guildmates|List|Row Height|Bulk|Quality Strip|Gold Toast|Toast"
+   ],
+   "feature": "Friends list look, sign-up roles memory, merchant list view and bulk buy, gold / loot toasts",
+   "owner": "Skins",
+   "status": "miss",
+   "note": "Remembered sign-up roles exist on Group Finder; the rest is missing",
+   "stage": "S24",
+   "n": 10,
+   "id": 36
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::BLIZZARD BARS, POPUPS & BUTTONS"
+   ],
+   "feature": "Other Blizzard bars and buttons",
+   "owner": "Skins",
+   "status": "part",
+   "note": "",
+   "stage": "S24",
+   "n": 5,
+   "id": 37
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::THIRD-PARTY ADDONS"
+   ],
+   "feature": "Skin third-party addons",
+   "owner": "Skins",
+   "status": "part",
+   "note": "Details! and BigWigs are styled; a general third-party skin list is missing",
+   "stage": "S24",
+   "n": 2,
+   "id": 38
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::GLOBAL OPTIONS"
+   ],
+   "feature": "Accent bar, bar fill opacity, link colour",
+   "owner": "General",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 3,
+   "id": 39
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::DISPLAY",
+    "EUI_BlizzardSkin::APPEARANCE"
+   ],
+   "feature": "Chat bubble skin (font, border, padding, speaker name)",
+   "owner": "Skins",
+   "status": "part",
+   "note": "Open world only: chat bubbles inside instances are forbidden frames in 12.x (C_ChatBubbles returns none, GetChildren of WorldFrame is blocked), so 'in instances' is impossible",
+   "stage": "S24",
+   "n": 17,
+   "id": 40
+  },
+  {
+   "addon": "EllesmereUI BlizzardSkin",
+   "keys": [
+    "EUI_BlizzardSkin::GENERAL",
+    "EUI_BlizzardSkin::LAYOUT",
+    "EUI_BlizzardSkin::SPEED BAR"
+   ],
+   "feature": "Skyriding vigor and speed bar (charges, second wind, whirling surge, thrill colour, sound on full)",
+   "owner": "Skins",
+   "status": "miss",
+   "note": "",
+   "stage": "S17",
+   "n": 29,
+   "id": 41
+  },
+  {
+   "addon": "EllesmereUI Chat",
+   "keys": [
+    "EUI_Chat::DISPLAY",
+    "EUI_Chat::TYPOGRAPHY",
+    "EUI_Chat::BORDER",
+    "EUI_Chat::INPUT FIELD"
+   ],
+   "feature": "Chat panel look, fonts, border, edit box",
+   "owner": "Chat",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 24,
+   "id": 42
+  },
+  {
+   "addon": "EllesmereUI Chat",
+   "keys": [
+    "EUI_Chat::IDLE FADE"
+   ],
+   "feature": "Idle fade of the chat panel",
+   "owner": "Chat",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 3,
+   "id": 43
+  },
+  {
+   "addon": "EllesmereUI Chat",
+   "keys": [
+    "EUI_Chat::SIDEBAR",
+    "EUI_Chat::ICONS"
+   ],
+   "feature": "Chat sidebar with icon buttons (side, width, icons, free move)",
+   "owner": "Chat",
+   "status": "part",
+   "note": "Chat bar and side buttons exist; the sidebar layout does not",
+   "stage": "S24",
+   "n": 12,
+   "id": 44
+  },
+  {
+   "addon": "EllesmereUI Chat",
+   "keys": [
+    "EUI_Chat::LAYOUT",
+    "EUI_Chat::APPEARANCE"
+   ],
+   "feature": "Tabs inside the panel, tab height / spacing / background / underline / texture",
+   "owner": "Chat",
+   "status": "part",
+   "note": "Tab font and colours exist; tabs-inside layout and tab textures do not",
+   "stage": "S24",
+   "n": 9,
+   "id": 45
+  },
+  {
+   "addon": "EllesmereUI Chat",
+   "keys": [
+    "EUI_Chat::EXTRAS~Remember Last"
+   ],
+   "feature": "Restore the last chat lines after /reload",
+   "owner": "Chat",
+   "status": "miss",
+   "note": "",
+   "stage": "S24",
+   "n": 1,
+   "id": 46
+  },
+  {
+   "addon": "EllesmereUI Chat",
+   "keys": [
+    "EUI_Chat::EXTRAS"
+   ],
+   "feature": "Max lines, hide borders, whisper sound, timestamps, short channels, class colours",
+   "owner": "Chat",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 9,
+   "id": 47
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_Colors::DARK MODE"
+   ],
+   "feature": "Dark mode for all frames with darkening amount",
+   "owner": "General",
+   "status": "part",
+   "note": "Per-module dark bars exist; one global dark mode does not",
+   "stage": "S28",
+   "n": 6,
+   "id": 48
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_Fonts::",
+    "EUI_Fonts::GLOBAL FONT"
+   ],
+   "feature": "Global and per-module fonts",
+   "owner": "General",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 51,
+   "id": 49
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_Textures::"
+   ],
+   "feature": "Global and per-module textures",
+   "owner": "General",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 28,
+   "id": 50
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EllesmereUI_GlowOptions::",
+    "EUI_Glows::"
+   ],
+   "feature": "Glow type and parameters (lines, thickness, speed)",
+   "owner": "General",
+   "status": "part",
+   "note": "Glow colour exists; glow type parameters are an open gap row",
+   "stage": "S28",
+   "n": 9,
+   "id": 51
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI__General::DISPLAY"
+   ],
+   "feature": "UI accent colour, UI scale, options theme / language",
+   "owner": "General",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 7,
+   "id": 52
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI__General::COMBAT"
+   ],
+   "feature": "Camera distance, image quality, cast on key down, lag tolerance, combat text font",
+   "owner": "Quality",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 7,
+   "id": 53
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI__General::DEVELOPER"
+   ],
+   "feature": "Suppress Lua errors, spell IDs",
+   "owner": "Bugs",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 2,
+   "id": 54
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EllesmereUI_Widgets::",
+    "EllesmereUI_Widgets_CogPopup::",
+    "EllesmereUI_Widgets_Color::",
+    "EllesmereUI_Widgets_PageParts::",
+    "EllesmereUI_Widgets_Rows::",
+    "EllesmereUI_Widgets_Visibility::",
+    "EllesmereUI_UICore::",
+    "EllesmereUI_RoundedCorners::",
+    "EUI_Style::"
+   ],
+   "feature": "Shared widget kit rows (cog pop-ups, colour, visibility, rounded corners)",
+   "owner": "General",
+   "status": "done",
+   "note": "Phoenix's own options kit covers these patterns",
+   "stage": null,
+   "n": 26,
+   "id": 55
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EllesmereUI_Widgets_RowAddons::"
+   ],
+   "feature": "Top name bar / anchor to cursor row add-ons",
+   "owner": "GroupFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S19",
+   "n": 5,
+   "id": 56
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_SimpleLootCouncil::"
+   ],
+   "feature": "Simple loot council",
+   "owner": "Quality",
+   "status": "skip",
+   "note": "Raid-leading tool that needs group addon comms; out of Phoenix's scope",
+   "stage": null,
+   "n": 5,
+   "id": 57
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_Gamepad::"
+   ],
+   "feature": "Gamepad mode: hide action bars / cast bars",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 3,
+   "id": 58
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_UpgradeCalc::"
+   ],
+   "feature": "Crest upgrade calculator window",
+   "owner": "ItemLevel",
+   "status": "miss",
+   "note": "C_ItemUpgrade and crest currencies are readable",
+   "stage": "S23",
+   "n": 10,
+   "id": 59
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_LoadoutManager::GENERAL",
+    "EUI_LoadoutManager::SELECTED LOADOUT",
+    "EUI_LoadoutManager::INSTANCES"
+   ],
+   "feature": "Loadout manager: talents + gear set per instance, auto-swap, warn on change",
+   "owner": "Loadouts",
+   "status": "miss",
+   "note": "C_ClassTalents.LoadConfig and C_EquipmentSet.UseEquipmentSet work out of combat; swaps queue until combat ends",
+   "stage": "S28",
+   "n": 10,
+   "id": 60
+  },
+  {
+   "addon": "EllesmereUI (core pages)",
+   "keys": [
+    "EUI_PartyMode::PARTY MODE",
+    "EUI_PartyMode::CELEBRATION TRIGGERS"
+   ],
+   "feature": "Party mode celebrations (bloodlust, timed key, boss kills, rated wins)",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 17,
+   "id": 61
+  },
+  {
+   "addon": "EllesmereUI DamageMeters",
+   "keys": [
+    "EUI_DamageMeters::DISPLAY",
+    "EUI_DamageMeters::HEADER",
+    "EUI_DamageMeters::EXTRAS"
+   ],
+   "feature": "Meter window: refresh, header, always show player, reset button, spell tooltips",
+   "owner": "DamageMeter",
+   "status": "part",
+   "note": "Refresh rate is the game's (C_DamageMeter); header and window styling partly exist",
+   "stage": "S28",
+   "n": 21,
+   "id": 62
+  },
+  {
+   "addon": "EllesmereUI DamageMeters",
+   "keys": [
+    "EUI_DamageMeters::BARS",
+    "EUI_DamageMeters::BAR TEXT"
+   ],
+   "feature": "Meter bars and text: icons, borders, breakdown on hover, number format, rank numbers",
+   "owner": "DamageMeter",
+   "status": "part",
+   "note": "",
+   "stage": "S28",
+   "n": 31,
+   "id": 63
+  },
+  {
+   "addon": "EllesmereUI DamageMeters",
+   "keys": [
+    "EUI_DamageMeters::STANDALONE COMBAT TIMER"
+   ],
+   "feature": "Standalone combat timer",
+   "owner": "DamageMeter",
+   "status": "miss",
+   "note": "",
+   "stage": "S28",
+   "n": 17,
+   "id": 64
+  },
+  {
+   "addon": "EllesmereUI DamageMeters",
+   "keys": [
+    "EUI_DamageMeters::ICON HISTORY"
+   ],
+   "feature": "Spell icon history",
+   "owner": "SpellHistory",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 10,
+   "id": 65
+  },
+  {
+   "addon": "EllesmereUI DamageMeters",
+   "keys": [
+    "EUI_DamageMeters::BAR HISTORY"
+   ],
+   "feature": "Spell history as bars",
+   "owner": "SpellHistory",
+   "status": "miss",
+   "note": "",
+   "stage": "S28",
+   "n": 10,
+   "id": 66
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::SPELL RANKS"
+   ],
+   "feature": "WoW Forever: put the highest spell rank on your bars after training",
+   "owner": "ActionBars",
+   "status": "miss",
+   "note": "Out of combat only (PlaceAction is protected)",
+   "stage": "S27",
+   "n": 1,
+   "id": 67
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::WORLD MAP"
+   ],
+   "feature": "World map: fade while moving, reveal unexplored, zone levels, map markers",
+   "owner": "Minimap",
+   "status": "miss",
+   "note": "Reveal needs WorldMapOverlay data from DB2 (generated, like quest data)",
+   "stage": "S25",
+   "n": 7,
+   "id": 68
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::CLASSIC WINDOWS"
+   ],
+   "feature": "WoW Forever: classic-style spellbook and talent windows",
+   "owner": "Skins",
+   "status": "skip",
+   "note": "A replacement for Blizzard's protected spellbook / talent windows; too large and taint-prone for a skin layer",
+   "stage": null,
+   "n": 2,
+   "id": 69
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::SIMPLIFIED STATS"
+   ],
+   "feature": "Shorter stat lines on item tooltips",
+   "owner": "Tooltip",
+   "status": "miss",
+   "note": "",
+   "stage": "S27",
+   "n": 4,
+   "id": 70
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::QUEST REWARDS"
+   ],
+   "feature": "Pick the most valuable quest reward",
+   "owner": "Quests",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 71
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::COMPANION PETS"
+   ],
+   "feature": "Auto-summon a favourite companion pet",
+   "owner": "Automation",
+   "status": "miss",
+   "note": "Out of combat (C_PetJournal.SummonPetByGUID)",
+   "stage": "S27",
+   "n": 2,
+   "id": 72
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::ACTIVE STANCE, FORM, ASPECT & AURA"
+   ],
+   "feature": "Icon for the active stance / form / aspect",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S27",
+   "n": 4,
+   "id": 73
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::NAME FORMAT"
+   ],
+   "feature": "Name format",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 74
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::GATHERING"
+   ],
+   "feature": "Gathering skill in node tooltips and minimap",
+   "owner": "Tooltip",
+   "status": "miss",
+   "note": "",
+   "stage": "S27",
+   "n": 2,
+   "id": 75
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::JUNK ITEMS"
+   ],
+   "feature": "Junk window (items, prices, confirm skip, low-space trigger)",
+   "owner": "Bags",
+   "status": "part",
+   "note": "Sell junk exists; the junk window does not",
+   "stage": "S27",
+   "n": 10,
+   "id": 76
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_General::FISHING"
+   ],
+   "feature": "Double-click to fish, fishing sounds",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "Needs a secure override binding set out of combat (SetOverrideBindingClick)",
+   "stage": "S27",
+   "n": 3,
+   "id": 77
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_Loot::",
+    "EUI_ForeverEssentials_Loot::LOOT FEED",
+    "EUI_ForeverEssentials_Loot::ITEMS",
+    "EUI_ForeverEssentials_Loot::LAYOUT",
+    "EUI_ForeverEssentials_Loot::DISPLAY"
+   ],
+   "feature": "Loot feed (style, quality filter, growth)",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S27",
+   "n": 9,
+   "id": 78
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_Macros::",
+    "EUI_ForeverEssentials_Macros::LINES",
+    "EUI_ForeverEssentials_Macros::MACRO"
+   ],
+   "feature": "Macro manager",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "EditMacro / CreateMacro are out-of-combat only",
+   "stage": "S27",
+   "n": 5,
+   "id": 79
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_Threat::",
+    "EUI_ForeverEssentials_Threat::THREAT METER",
+    "EUI_ForeverEssentials_Threat::WARNING",
+    "EUI_ForeverEssentials_Threat::THREAT % TEXT",
+    "EUI_ForeverEssentials_Threat::BARS",
+    "EUI_ForeverEssentials_Threat::HEADER",
+    "EUI_ForeverEssentials_Threat::COLORS",
+    "EUI_ForeverEssentials_Threat::BAR TEXT",
+    "EUI_ForeverEssentials_Threat::WINDOW & BORDERS"
+   ],
+   "feature": "WoW Forever threat meter (bars, warning sound, threat % text)",
+   "owner": "DamageMeter",
+   "status": "miss",
+   "note": "UnitDetailedThreatSituation is plain on Forever",
+   "stage": "S27",
+   "n": 25,
+   "id": 80
+  },
+  {
+   "addon": "EllesmereUI ForeverEssentials",
+   "keys": [
+    "EUI_ForeverEssentials_Travel::",
+    "EUI_ForeverEssentials_Travel::FLIGHT TIMER",
+    "EUI_ForeverEssentials_Travel::LAYOUT",
+    "EUI_ForeverEssentials_Travel::DISPLAY"
+   ],
+   "feature": "Flight timer bar and travel pins (from DB2 TaxiNodes / AreaPOI)",
+   "owner": "Minimap",
+   "status": "miss",
+   "note": "Flight times come from a build-time DB2 script, like EUI's own",
+   "stage": "S25",
+   "n": 16,
+   "id": 81
+  },
+  {
+   "addon": "EllesmereUI Friends",
+   "keys": [
+    "EUI_Friends::DISPLAY"
+   ],
+   "feature": "Friends list: class icons, class colours, faction banners, region icons, auto-accept friend invites",
+   "owner": "Skins",
+   "status": "part",
+   "note": "Accept invites from friends exists (Automation); the friends-list look does not",
+   "stage": "S24",
+   "n": 9,
+   "id": 82
+  },
+  {
+   "addon": "EllesmereUI GroupFinder",
+   "keys": [
+    "EUI_GroupFinder::GROUP FINDER",
+    "EUI_GroupFinder::APPLICATIONS"
+   ],
+   "feature": "Applications counter bar in the group finder",
+   "owner": "GroupFinder",
+   "status": "part",
+   "note": "",
+   "stage": "S28",
+   "n": 5,
+   "id": 83
+  },
+  {
+   "addon": "EllesmereUI Minimap",
+   "keys": [
+    "EUI_Minimap::"
+   ],
+   "feature": "Minimap shape, size, border, zoom reset, rotate",
+   "owner": "Minimap",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 13,
+   "id": 84
+  },
+  {
+   "addon": "EllesmereUI Minimap",
+   "keys": [
+    "EUI_Minimap::MINIMAP & QOL BUTTONS"
+   ],
+   "feature": "Addon button bar, extra buttons, M+ portals, friends tooltip, middle-click micro menu",
+   "owner": "Minimap",
+   "status": "part",
+   "note": "Button bin exists; M+ portal buttons, friends tooltip and middle-click menu do not",
+   "stage": "S25",
+   "n": 15,
+   "id": 85
+  },
+  {
+   "addon": "EllesmereUI Minimap",
+   "keys": [
+    "EUI_Minimap::BLIZZARD ELEMENTS"
+   ],
+   "feature": "Blizzard minimap elements: compartment, mail, folio, scroll zoom",
+   "owner": "Minimap",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 18,
+   "id": 86
+  },
+  {
+   "addon": "EllesmereUI Minimap",
+   "keys": [
+    "EUI_Minimap::TEXT"
+   ],
+   "feature": "Clock, zone, coordinates, FPS / MS and difficulty text on the minimap",
+   "owner": "Minimap",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 35,
+   "id": 87
+  },
+  {
+   "addon": "EllesmereUI MythicTimer",
+   "keys": [
+    "EUI_MythicTimer::DISPLAY",
+    "EUI_MythicTimer::TITLE AND AFFIXES",
+    "EUI_MythicTimer::TIMER",
+    "EUI_MythicTimer::TIMER BAR",
+    "EUI_MythicTimer::THRESHOLDS",
+    "EUI_MythicTimer::FORCES",
+    "EUI_MythicTimer::BOSS OBJECTIVES"
+   ],
+   "feature": "Mythic+ timer: title, affixes, timer bar, chest thresholds, forces, boss splits",
+   "owner": "MythicPlus",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 65,
+   "id": 88
+  },
+  {
+   "addon": "EllesmereUI MythicTimer",
+   "keys": [
+    "EUI_MythicTimer::TARGETED SPELL BARS"
+   ],
+   "feature": "Bars for enemy casts aimed at you / your group",
+   "owner": "CastBars",
+   "status": "miss",
+   "note": "UnitSpellTargetName / Class return secrets, so the target name can be shown but Phoenix cannot filter 'aimed at me' by comparing it; S28 checks in game what UnitIsUnit allows (secret when unit comparison is restricted) and may close this as impossible",
+   "stage": "S28",
+   "n": 27,
+   "id": 89
+  },
+  {
+   "addon": "EllesmereUI MythicTimer",
+   "keys": [
+    "EUI_MythicTimer::INTERRUPT AND VISIBILITY",
+    "EUI_MythicTimer::CAST COLORS AND EFFECTS"
+   ],
+   "feature": "Focus / enemy cast bar extras: kick-ready hint, raid marker, interrupt range fade",
+   "owner": "CastBars",
+   "status": "part",
+   "note": "",
+   "stage": "S28",
+   "n": 28,
+   "id": 90
+  },
+  {
+   "addon": "EllesmereUI MythicTimer",
+   "keys": [
+    "EUI_MythicTimer::RUN SUMMARY",
+    "EUI_MythicTimer::COLUMNS"
+   ],
+   "feature": "Run summary window (spec, item level, score, loot, DPS, interrupts, deaths)",
+   "owner": "MythicPlus",
+   "status": "miss",
+   "note": "C_DamageMeter session data is readable after combat",
+   "stage": "S28",
+   "n": 13,
+   "id": 91
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "ColorsPage::DEBUFF BASED NAMEPLATE COLORING"
+   ],
+   "feature": "Colour plates by your debuffs; caster / mini-boss / boss colours; threat tweaks",
+   "owner": "NamePlates",
+   "status": "part",
+   "note": "Threat colours exist; debuff-based colouring and caster / mini-boss colours (need NPC classification data) do not",
+   "stage": "S28",
+   "n": 28,
+   "id": 92
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "ColorsPage::",
+    "CoreTextColoring::CORE TEXT COLORING"
+   ],
+   "feature": "Threat text and name / level colouring",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 10,
+   "id": 93
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "DisplayBars::HEALTH AND CAST BAR",
+    "DisplayBars::TARGET, FOCUS & HOVER EFFECTS",
+    "DisplayBars::GENERAL TEXT"
+   ],
+   "feature": "Plate health and cast bar, target / focus / hover effects, text",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 59,
+   "id": 94
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "DisplayBars::CLASS RESOURCE"
+   ],
+   "feature": "Class resource on the target plate (shape, colours)",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 9,
+   "id": 95
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "DisplayLayout::STYLE",
+    "DisplayLayout::CORE POSITIONS",
+    "DisplayLayout::CORE TEXT POSITIONS"
+   ],
+   "feature": "Plate style (border, corners, separators, level box) and element positions",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 30,
+   "id": 96
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "GeneralPage::~NPC Title|Title Size|Title Color|Subtitle|Guild"
+   ],
+   "feature": "NPC titles and guild text on friendly plates",
+   "owner": "NamePlates",
+   "status": "miss",
+   "note": "Open gap row (friendly NPC titles)",
+   "stage": "S17",
+   "n": 6,
+   "id": 97
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "GeneralPage::"
+   ],
+   "feature": "Friendly name-only plates, stacking, hitbox, max debuffs, enemy pets",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 26,
+   "id": 98
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "GeneralPage::TARGET AND FOCUS EFFECTS~Line of Sight"
+   ],
+   "feature": "Fade plates out of line of sight",
+   "owner": "NamePlates",
+   "status": "imp",
+   "note": "No line-of-sight API for units; addons cannot test LoS in 12.x",
+   "stage": null,
+   "n": 1,
+   "id": 99
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "GeneralPage::TARGET AND FOCUS EFFECTS"
+   ],
+   "feature": "Hash line at %, target scale, non-target opacity, focus letter, range text, scale on cast",
+   "owner": "NamePlates",
+   "status": "part",
+   "note": "Target scale, opacity and execute mark exist; range text, scale on cast and focus letter do not",
+   "stage": "S28",
+   "n": 29,
+   "id": 100
+  },
+  {
+   "addon": "EllesmereUI Nameplates",
+   "keys": [
+    "EUI_Nameplates::"
+   ],
+   "feature": "Aura type colour (magic / enrage), textured background",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 2,
+   "id": 101
+  },
+  {
+   "addon": "EllesmereUI PlayerAuraBars",
+   "keys": [
+    "EUI_PlayerAuraBars_ManagerPages::CORE",
+    "EUI_PlayerAuraBars_ManagerPages::DISPLAY",
+    "EUI_PlayerAuraBars_ManagerPages::DEBUFF DISPLAY",
+    "EUI_PlayerAuraBars_ManagerPages::ICON EFFECTS"
+   ],
+   "feature": "Player buff / debuff grid: size, growth, sort, wrap, timers, cancel",
+   "owner": "Auras",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 44,
+   "id": 102
+  },
+  {
+   "addon": "EllesmereUI PlayerAuraBars",
+   "keys": [
+    "EUI_PlayerAuraBars_ManagerPages::ASSIGNED BUFFS",
+    "EUI_PlayerAuraBars_ManagerPages::ASSIGNED DEBUFFS"
+   ],
+   "feature": "Assigned aura lists (filters, extra spells)",
+   "owner": "Auras",
+   "status": "miss",
+   "note": "",
+   "stage": "S19",
+   "n": 3,
+   "id": 103
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_Alerts::",
+    "EUI_QoL_Alerts::ALERTS~Combat|Text|Color|Enter|Leave|Sound"
+   ],
+   "feature": "Combat enter / leave alert",
+   "owner": "Quality",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 14,
+   "id": 104
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_Alerts::ALERTS"
+   ],
+   "feature": "Potion-ready and unspent-talent alerts, group deaths notice",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 4,
+   "id": 105
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_AutoLogging::AUTO COMBAT LOGGING"
+   ],
+   "feature": "Auto combat logging in chosen content",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "LoggingCombat() is allowed",
+   "stage": "S26",
+   "n": 3,
+   "id": 106
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_AutoLogging::KEYSTONE CHECK POPUP"
+   ],
+   "feature": "/keys pop-up of party keystones",
+   "owner": "MythicPlus",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 3,
+   "id": 107
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_AutoLogging::LFG REMINDER"
+   ],
+   "feature": "Reminder when you are not queued",
+   "owner": "GroupFinder",
+   "status": "miss",
+   "note": "",
+   "stage": "S28",
+   "n": 3,
+   "id": 108
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_AutoLogging::WAYPOINT COMMAND"
+   ],
+   "feature": "/way command and arrival with hand-placed pins",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "Builds on the S17 NPC search and the S14 arrow",
+   "stage": "S17",
+   "n": 2,
+   "id": 109
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_BattleRes::",
+    "EUI_QoL_BattleRes::BATTLE RES",
+    "EUI_QoL_BattleRes::BLOODLUST TRACKER"
+   ],
+   "feature": "Battle-res charges and bloodlust / sated tracker icons",
+   "owner": "Encounters",
+   "status": "miss",
+   "note": "C_Spell.GetSpellCharges(20484) gives the shared battle-res pool in encounters",
+   "stage": "S21",
+   "n": 36,
+   "id": 110
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_Cursor::"
+   ],
+   "feature": "Cursor ring, trail, GCD and cast circles, reticle",
+   "owner": "Quality",
+   "status": "part",
+   "note": "Ring exists; trail, GCD / cast circles and reticle do not",
+   "stage": "S26",
+   "n": 27,
+   "id": 111
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_MovementAlert::MOVEMENT COOLDOWN ALERT",
+    "EUI_QoL_MovementAlert::EXTRA TRACKING"
+   ],
+   "feature": "Movement-cooldown alert (with TTS), Time Spiral and gateway shard alerts",
+   "owner": "Tracker",
+   "status": "miss",
+   "note": "Own-spell cooldowns can be secret in combat; the alert would use the Cooldown Manager's events",
+   "stage": "S20",
+   "n": 30,
+   "id": 112
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::SELF COMBAT TEXT"
+   ],
+   "feature": "Self combat text",
+   "owner": "CombatText",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 8,
+   "id": 113
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::GENERAL~Item Transforms|/cd|AH Current"
+   ],
+   "feature": "Hide item transforms, /cd command, AH current-expansion filter",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "AH filter moves to the Auction House page (S22)",
+   "stage": "S26",
+   "n": 3,
+   "id": 114
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::GENERAL"
+   ],
+   "feature": "Skip cinematics, quick loot, delete fill, repair (guild funds), sell junk, single gossip",
+   "owner": "Automation",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 14,
+   "id": 115
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::EXTRAS~FPS|MS|Local|World|Interval|Durability|Coordinates"
+   ],
+   "feature": "FPS / latency counters, low durability warning, map coordinates",
+   "owner": "DataTexts",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 7,
+   "id": 116
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::EXTRAS"
+   ],
+   "feature": "Secondary stats on screen, guild chat privacy cover, rested indicator, target distance text",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 25,
+   "id": 117
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::CROSSHAIR"
+   ],
+   "feature": "Character crosshair with melee-range colour",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 13,
+   "id": 118
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::GROUP FINDER~Persistent"
+   ],
+   "feature": "Persistent sign-up note",
+   "owner": "GroupFinder",
+   "status": "imp",
+   "note": "Blizzard's sign-up note box refuses SetText from addons (verified in S15, docs/GROUP_FINDER.md)",
+   "stage": null,
+   "n": 1,
+   "id": 119
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::GROUP FINDER~Announce"
+   ],
+   "feature": "Announce instance reset",
+   "owner": "Automation",
+   "status": "skip",
+   "note": "Chat announcements are a recorded scope cut",
+   "stage": null,
+   "n": 1,
+   "id": 120
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::GROUP FINDER"
+   ],
+   "feature": "Auto-insert keystone, quick sign-up",
+   "owner": "MythicPlus",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 2,
+   "id": 121
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL::UI"
+   ],
+   "feature": "Hide screenshot text, train all, auto unwrap, auto open containers, hold capped payouts",
+   "owner": "Automation",
+   "status": "miss",
+   "note": "Opening containers needs a hardware event per item (C_Container.UseContainerItem is protected); a click-to-open button is possible",
+   "stage": "S26",
+   "n": 8,
+   "id": 122
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_RaidTools::GENERAL",
+    "EUI_QoL_RaidTools::QUICK FIRE",
+    "EUI_QoL_RaidTools::GROUP BUTTONS",
+    "EUI_QoL_RaidTools::PULL TIMER"
+   ],
+   "feature": "Raid tools window (ready check, pull, markers, world markers)",
+   "owner": "Quality",
+   "status": "part",
+   "note": "Raid marker bar and pull timer exist; one raid-tools window does not",
+   "stage": "S26",
+   "n": 10,
+   "id": 123
+  },
+  {
+   "addon": "EllesmereUI QoL",
+   "keys": [
+    "EUI_QoL_Shifter::SHIFTER",
+    "EUI_QoL_Shifter::LOOT WINDOWS",
+    "EUI_QoL_Shifter::BLIZZARD TOP BAR EVENT TEXT"
+   ],
+   "feature": "Move Blizzard windows by dragging (with reset)",
+   "owner": "Movers",
+   "status": "part",
+   "note": "Window scale exists; free dragging of Blizzard windows does not",
+   "stage": "S26",
+   "n": 7,
+   "id": 124
+  },
+  {
+   "addon": "EllesmereUI QuestTracker",
+   "keys": [
+    "EUI_QuestTracker::DISPLAY",
+    "EUI_QuestTracker::COLORS"
+   ],
+   "feature": "Tracker look: fonts, colours, background, hide in raid",
+   "owner": "Quests",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 15,
+   "id": 125
+  },
+  {
+   "addon": "EllesmereUI QuestTracker",
+   "keys": [
+    "EUI_QuestTracker::TRACKING"
+   ],
+   "feature": "Sorting, filtering, auto-track zone quests, completion sounds",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "Announce progress is a scope cut",
+   "stage": "S25",
+   "n": 10,
+   "id": 126
+  },
+  {
+   "addon": "EllesmereUI QuestTracker",
+   "keys": [
+    "EUI_QuestTracker::EXTRAS"
+   ],
+   "feature": "Auto accept / turn in with shift skip, ignore low level / old expansion",
+   "owner": "Quests",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 7,
+   "id": 127
+  },
+  {
+   "addon": "EllesmereUI Quickdraw",
+   "keys": [
+    "EUI_Quickdraw::GENERAL",
+    "EUI_Quickdraw::ACTION MENU SETUP",
+    "EUI_Quickdraw::LAYOUT",
+    "EUI_Quickdraw::APPEARANCE"
+   ],
+   "feature": "Radial / grid action menu on a key (world markers, nesting)",
+   "owner": "ActionBars",
+   "status": "miss",
+   "note": "Secure buttons inside a SecureHandler; set up out of combat",
+   "stage": "S26",
+   "n": 30,
+   "id": 128
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "FramesPages::FRAME SIZES",
+    "FramesPages::FRAME DISPLAY",
+    "FramesPages::LAYOUT",
+    "FramesPages::FRAME STYLE",
+    "FramesPages::RAID SYNC AND SOLO",
+    "FramesPages::FRAMES"
+   ],
+   "feature": "Party / raid layouts per size, sorting, growth, solo, spacing",
+   "owner": "GroupFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 62,
+   "id": 129
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualBars::HEALTH BAR",
+    "VisualBars::POWER BAR",
+    "VisualBars::TEXT DISPLAY"
+   ],
+   "feature": "Group health / power bars and texts",
+   "owner": "GroupFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 49,
+   "id": 130
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualBars::ABSORBS"
+   ],
+   "feature": "Absorbs: overshield, glow line, absorb bar, heal absorb, max-health reduction",
+   "owner": "GroupFrames",
+   "status": "part",
+   "note": "Shields and heal absorbs exist; max-health reduction style and overshield glow do not",
+   "stage": "S19",
+   "n": 19,
+   "id": 131
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualIndicators::INDICATORS"
+   ],
+   "feature": "Indicators: missing buffs, role, marker, ready check / summon / rez, status, leader, combat, group numbers, ping",
+   "owner": "GroupFrames",
+   "status": "part",
+   "note": "Role, marker, leader, ready check exist; missing-buff, summon / rez, group numbers and ping markers do not",
+   "stage": "S19",
+   "n": 52,
+   "id": 132
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualIndicators::DISPELS"
+   ],
+   "feature": "Dispel overlay, type icon, per-type dispel colours",
+   "owner": "GroupFrames",
+   "status": "part",
+   "note": "Open gap row (dispel colours)",
+   "stage": "S17",
+   "n": 11,
+   "id": 133
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualIndicators::TOP NAME BAR"
+   ],
+   "feature": "Top name bar strip",
+   "owner": "GroupFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S19",
+   "n": 10,
+   "id": 134
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualIndicators::FRIENDLY BOSS FRAMES"
+   ],
+   "feature": "Friendly boss frames group",
+   "owner": "GroupFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S19",
+   "n": 6,
+   "id": 135
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualIndicators::EXTRA FRAMES",
+    "VisualIndicators::PET FRAMES"
+   ],
+   "feature": "Tank / extra group and pet frames",
+   "owner": "GroupFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 15,
+   "id": 136
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "VisualIndicators::EXTRAS"
+   ],
+   "feature": "Range alpha, tooltips, healer mana display, names in raid, status colours, strata",
+   "owner": "GroupFrames",
+   "status": "part",
+   "note": "Healer mana display is missing",
+   "stage": "S19",
+   "n": 15,
+   "id": 137
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "EUI_RaidFrames::PORTRAIT"
+   ],
+   "feature": "Portraits on group frames",
+   "owner": "GroupFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S19",
+   "n": 13,
+   "id": 138
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "EUI_RaidFrames::PARTY TARGETS"
+   ],
+   "feature": "Party target frames",
+   "owner": "GroupFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S19",
+   "n": 9,
+   "id": 139
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "EUI_RaidFrames_ManagerPages::CORE",
+    "EUI_RaidFrames_ManagerPages::DISPLAY",
+    "EUI_RaidFrames_ManagerPages::ICON EFFECTS",
+    "EUI_RaidFrames_ManagerPages::EFFECT"
+   ],
+   "feature": "Debuff manager on group frames (size, position, growth, duration, filters)",
+   "owner": "GroupFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 59,
+   "id": 140
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "EUI_RaidFrames_ManagerPages::ASSIGNED BUFFS",
+    "EUI_RaidFrames_ManagerPages::ASSIGNED DEBUFFS"
+   ],
+   "feature": "Assigned buff / debuff lists with custom order and placement",
+   "owner": "GroupFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S19",
+   "n": 7,
+   "id": 141
+  },
+  {
+   "addon": "EllesmereUI RaidFrames",
+   "keys": [
+    "EUI_RaidFrames_BuffManager::",
+    "EUI_RaidFrames_BuffManager::CORE",
+    "EUI_RaidFrames_BuffManager::DISPLAY",
+    "EUI_RaidFrames_BuffManager::THRESHOLD TEXT"
+   ],
+   "feature": "Buff manager: own-only, pandemic border, threshold text, dashes",
+   "owner": "GroupFrames",
+   "status": "part",
+   "note": "Buff icons exist; pandemic border and threshold text do not",
+   "stage": "S19",
+   "n": 57,
+   "id": 142
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "BarDisplayPage::BAR DISPLAY"
+   ],
+   "feature": "Detached resource bars: texture, backgrounds, strata, borders",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "Phoenix has no detached player resource bars",
+   "stage": "S18",
+   "n": 16,
+   "id": 143
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "BarDisplayPage::BAR SHIFTING~Mana Regen"
+   ],
+   "feature": "Mana regen spark",
+   "owner": "UnitFrames",
+   "status": "imp",
+   "note": "Retail has no five-second rule or mana tick to mark, and GetManaRegen is secret while unit stats are restricted; the open gap row closes as api",
+   "stage": null,
+   "n": 1,
+   "id": 144
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "BarDisplayPage::BAR SHIFTING~Spell Cost"
+   ],
+   "feature": "Spell cost prediction on the power bar",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "UNIT_SPELLCAST_START + C_Spell.GetSpellPowerCost for the player; power values may be secret in combat (verify)",
+   "stage": "S17",
+   "n": 1,
+   "id": 145
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "BarDisplayPage::BAR SHIFTING"
+   ],
+   "feature": "Shift / expand bars when a resource is missing, mana bar while shapeshifted",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "",
+   "stage": "S18",
+   "n": 21,
+   "id": 146
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "BarDisplayPage::ARCANE SOUL (SUNFURY)"
+   ],
+   "feature": "Spec helper: Arcane Soul countdown",
+   "owner": "Tracker",
+   "status": "miss",
+   "note": "",
+   "stage": "S20",
+   "n": 9,
+   "id": 147
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "CastBarPage::"
+   ],
+   "feature": "Player cast bar: layout, gradient, ticks, latency, empowered stages",
+   "owner": "CastBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 44,
+   "id": 148
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "ClassResourceSection::CLASS RESOURCE BAR~Ironfur|Ignore Pain|Sweeping"
+   ],
+   "feature": "Spec bars: Ironfur, Ignore Pain, Sweeping Strikes",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S18",
+   "n": 3,
+   "id": 149
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "ClassResourceSection::CLASS RESOURCE BAR"
+   ],
+   "feature": "Class resource bar: orientation, separators, pip borders, charged colour, thresholds, text",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Pips, borders, charged points exist; thresholds, separators and orientation do not",
+   "stage": "S18",
+   "n": 43,
+   "id": 150
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "GCDBarPage::LAYOUT",
+    "GCDBarPage::DISPLAY"
+   ],
+   "feature": "GCD bar",
+   "owner": "CastBars",
+   "status": "part",
+   "note": "GCD bar under the cast bar exists; standalone bar options do not",
+   "stage": "S18",
+   "n": 26,
+   "id": 151
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "HealthSection::HEALTH BAR",
+    "PowerSection::POWER BAR"
+   ],
+   "feature": "Detached player health and power bars (personal resource display)",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S18",
+   "n": 54,
+   "id": 152
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "SwingTimerPage::LAYOUT",
+    "SwingTimerPage::DISPLAY"
+   ],
+   "feature": "Swing timer",
+   "owner": "CastBars",
+   "status": "part",
+   "note": "Swing timer exists where the client allows (feature swingTimer); weapon labels and range cues do not",
+   "stage": "S18",
+   "n": 36,
+   "id": 153
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "TotemBarPage::"
+   ],
+   "feature": "Totem bar",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "GetTotemInfo is readable; destroying needs a secure button",
+   "stage": "S18",
+   "n": 11,
+   "id": 154
+  },
+  {
+   "addon": "EllesmereUI ResourceBars",
+   "keys": [
+    "EUI_ResourceBars::",
+    "EUI_ResourceBars::POSITIONING",
+    "EUI_ResourceBars::RESET"
+   ],
+   "feature": "Resource bar positioning / reset",
+   "owner": "Movers",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 11,
+   "id": 155
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "MiniFrames::DISPLAY",
+    "MiniFrames::HEALTH BAR",
+    "MiniFrames::POWER BAR",
+    "MiniFrames::BUFFS AND DEBUFFS"
+   ],
+   "feature": "Target-of-target, focus, pet and boss frames with their bars, auras and cast bars",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 199,
+   "id": 156
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedAppearance::DISPLAY"
+   ],
+   "feature": "Frame look: nicknames, fade, dark mode, borders, detached bars, threat %",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Threat % on target and detached power / text bars are missing",
+   "stage": "S18",
+   "n": 28,
+   "id": 157
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedAppearance::PORTRAIT"
+   ],
+   "feature": "Portraits: 2D / 3D / class, shape, rings, dragon art",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "2D / class portraits exist; 3D model, rings and dragon art do not; size is an open gap row",
+   "stage": "S18",
+   "n": 30,
+   "id": 158
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedAppearance::TEXT BAR"
+   ],
+   "feature": "Separate text bar strip under the frame",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S18",
+   "n": 32,
+   "id": 159
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedAppearance::EXTRAS"
+   ],
+   "feature": "Combat, marker, leader, elite, faction and PvP indicators",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 33,
+   "id": 160
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedBars::HEALTH BAR",
+    "SharedBars::CLASS RESOURCE"
+   ],
+   "feature": "Health bar and class resource on frames",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 62,
+   "id": 161
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedBars::POWER BAR"
+   ],
+   "feature": "Power bar: position, gradient, text, cost prediction, regen spark",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Cost prediction / regen spark are open gap rows",
+   "stage": "S17",
+   "n": 30,
+   "id": 162
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedBars::ABSORBS AND HEALS"
+   ],
+   "feature": "Absorbs and heals: overshield, glow line, heal prediction, overheal",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Overheal is an open gap row",
+   "stage": "S17",
+   "n": 19,
+   "id": 163
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "SharedCastAuras::CAST BAR",
+    "SharedCastAuras::BUFFS AND DEBUFFS"
+   ],
+   "feature": "Cast bar and auras on unit frames",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 84,
+   "id": 164
+  },
+  {
+   "addon": "EllesmereUI UnitFrames",
+   "keys": [
+    "EUI_UnitFrames::",
+    "TextSlots::"
+   ],
+   "feature": "Name format, borders, corners, text slots",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 18,
+   "id": 165
+  },
+  {
+   "addon": "EllesmereUI DataBars",
+   "keys": [
+    "EllesmereUIDataBars::BAR SETTINGS~Currency|Crests|Portals|Audio|Menu|Plugin"
+   ],
+   "feature": "Data bar blocks: currency picker, crests, M+ portals, audio channel, menu, plugins",
+   "owner": "DataTexts",
+   "status": "miss",
+   "note": "Currency picker is an open gap row",
+   "stage": "S17",
+   "n": 7,
+   "id": 166
+  },
+  {
+   "addon": "EllesmereUI DataBars",
+   "keys": [
+    "EllesmereUIDataBars::BAR SETTINGS"
+   ],
+   "feature": "Data bar layout: blocks, full-screen extent, snap, text, tooltips, clock, gold",
+   "owner": "DataTexts",
+   "status": "part",
+   "note": "Panels and segments exist; block layout and screen-edge bars do not",
+   "stage": "S28",
+   "n": 60,
+   "id": 167
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Advanced::Core",
+    "Advanced::Game Fix",
+    "Advanced::Developer",
+    "Core::",
+    "Misc::"
+   ],
+   "feature": "Addon internals (login message, changelog, developer, fonts)",
+   "owner": "General",
+   "status": "skip",
+   "note": "Tooling of the addon itself",
+   "stage": null,
+   "n": 19,
+   "id": 168
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Announcement::General",
+    "Announcement::Quest",
+    "Announcement::Utility",
+    "Announcement::Goodbye",
+    "Announcement::Reset Instance",
+    "Announcement::Keystone"
+   ],
+   "feature": "Chat announcements (quests, interrupts, goodbye, reset, keystone)",
+   "owner": "Automation",
+   "status": "skip",
+   "note": "Chat announcements are a recorded scope cut (spam risk)",
+   "stage": null,
+   "n": 28,
+   "id": 169
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Combat::Raid Markers"
+   ],
+   "feature": "Raid marker bar with countdown and ready-check buttons",
+   "owner": "Quality",
+   "status": "part",
+   "note": "Marker bar exists; countdown / ready-check buttons and inverse mode do not",
+   "stage": "S26",
+   "n": 18,
+   "id": 170
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Combat::Combat Alert"
+   ],
+   "feature": "Combat alert animation",
+   "owner": "Quality",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 12,
+   "id": 171
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Combat::Destroy Totem"
+   ],
+   "feature": "Click to destroy totems",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "Secure button (DestroyTotem is protected)",
+   "stage": "S18",
+   "n": 1,
+   "id": 172
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Combat::Quick Keystone"
+   ],
+   "feature": "Quick keystone insert",
+   "owner": "MythicPlus",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 173
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Combat::Damage Meter Layout"
+   ],
+   "feature": "Damage meter layout tweaks",
+   "owner": "DamageMeter",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 7,
+   "id": 174
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "ExtraItemBar::General",
+    "ExtraItemBar::Layout",
+    "ExtraItemBar::Visibility",
+    "ExtraItemBar::Text & Fonts"
+   ],
+   "feature": "Extra item bars (custom items, groups, visibility, texts)",
+   "owner": "ActionBars",
+   "status": "part",
+   "note": "Item bar with quest items and extra items exists; several bars, groups and blacklist do not",
+   "stage": "S26",
+   "n": 30,
+   "id": 175
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Delete Item"
+   ],
+   "feature": "Fill DELETE",
+   "owner": "Automation",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 3,
+   "id": 176
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Fast Loot"
+   ],
+   "feature": "Fast loot",
+   "owner": "Automation",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 2,
+   "id": 177
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Trade"
+   ],
+   "feature": "Trade thanks button",
+   "owner": "Automation",
+   "status": "skip",
+   "note": "Sends chat; scope cut",
+   "stage": null,
+   "n": 2,
+   "id": 178
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Already Known"
+   ],
+   "feature": "Already-known tint",
+   "owner": "Quality",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 3,
+   "id": 179
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Contacts"
+   ],
+   "feature": "Mail contacts (alts)",
+   "owner": "Skins",
+   "status": "miss",
+   "note": "",
+   "stage": "S24",
+   "n": 3,
+   "id": 180
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Inspect"
+   ],
+   "feature": "Inspect: item icons, quality borders, sockets",
+   "owner": "ItemLevel",
+   "status": "part",
+   "note": "",
+   "stage": "S23",
+   "n": 13,
+   "id": 181
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Item Level"
+   ],
+   "feature": "Item level on items",
+   "owner": "ItemLevel",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 4,
+   "id": 182
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Item::Extend Merchant Pages"
+   ],
+   "feature": "Wider merchant window",
+   "owner": "Skins",
+   "status": "miss",
+   "note": "",
+   "stage": "S24",
+   "n": 2,
+   "id": 183
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Maps::Super Tracker"
+   ],
+   "feature": "Super tracker: auto-track waypoints, middle-click clear, no distance limit, /way box",
+   "owner": "Quests",
+   "status": "part",
+   "note": "Super-track on click and the arrow exist; /way box is S17",
+   "stage": "S17",
+   "n": 7,
+   "id": 184
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Maps::Rectangle Minimap"
+   ],
+   "feature": "Rectangle minimap",
+   "owner": "Minimap",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 4,
+   "id": 185
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Maps::Minimap Buttons"
+   ],
+   "feature": "Minimap button bar",
+   "owner": "Minimap",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 7,
+   "id": 186
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Maps::World Map"
+   ],
+   "feature": "World map reveal with coloured fog, map scale",
+   "owner": "Minimap",
+   "status": "miss",
+   "note": "Open gap rows (reveal, scale)",
+   "stage": "S17",
+   "n": 4,
+   "id": 187
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Maps::Instance Difficulty"
+   ],
+   "feature": "Instance difficulty text",
+   "owner": "Minimap",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 4,
+   "id": 188
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Maps::Event Tracker"
+   ],
+   "feature": "World event timer tracker",
+   "owner": "Minimap",
+   "status": "miss",
+   "note": "Needs event schedule data (DB2 / runtime C_AreaPoiInfo timers)",
+   "stage": "S25",
+   "n": 4,
+   "id": 189
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::General"
+   ],
+   "feature": "Misc tweaks (talking head, cut scenes, loot panel, chat bubble toggle)",
+   "owner": "Quality",
+   "status": "part",
+   "note": "",
+   "stage": "S26",
+   "n": 13,
+   "id": 190
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Automation~Combat Resurrect"
+   ],
+   "feature": "Accept combat resurrections automatically",
+   "owner": "Automation",
+   "status": "skip",
+   "note": "Phoenix accepts resurrections only out of combat (InCombatLockdown guard in Automation); accepting a combat res for you mid-fight is left to your click",
+   "stage": null,
+   "n": 1,
+   "id": 191
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Automation"
+   ],
+   "feature": "Auto hide map / bags, accept resurrect, confirm summon",
+   "owner": "Automation",
+   "status": "part",
+   "note": "",
+   "stage": "S26",
+   "n": 5,
+   "id": 192
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Exit Phase Diving"
+   ],
+   "feature": "Exit phase diving button",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 3,
+   "id": 193
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::CVars Editor"
+   ],
+   "feature": "CVar editor (screenshots, floating text, spell queue, camera, effects)",
+   "owner": "Quality",
+   "status": "part",
+   "note": "",
+   "stage": "S26",
+   "n": 14,
+   "id": 194
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Move Frames"
+   ],
+   "feature": "Move Blizzard frames, remember positions",
+   "owner": "Movers",
+   "status": "part",
+   "note": "",
+   "stage": "S26",
+   "n": 5,
+   "id": 195
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Mute"
+   ],
+   "feature": "Mute specific sounds",
+   "owner": "General",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 13,
+   "id": 196
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Game Bar"
+   ],
+   "feature": "Game bar (micro buttons, time, friends, notifications)",
+   "owner": "DataTexts",
+   "status": "part",
+   "note": "",
+   "stage": "S28",
+   "n": 32,
+   "id": 197
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::LFG List~Auto Refresh|Auto Join"
+   ],
+   "feature": "Auto refresh / auto join group listings",
+   "owner": "GroupFinder",
+   "status": "imp",
+   "note": "C_LFGList.Search is flagged HasRestrictions in the API docs (it runs from your click) and joining goes through Blizzard's Sign Up button; no automatic refresh or join",
+   "stage": null,
+   "n": 2,
+   "id": 198
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::LFG List"
+   ],
+   "feature": "Group list look: leader, role icons, description shortening, filter tooltip",
+   "owner": "GroupFinder",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 25,
+   "id": 199
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Spell Activation Alert"
+   ],
+   "feature": "Spell activation overlay opacity / scale",
+   "owner": "Quality",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 4,
+   "id": 200
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Misc::Keybind Alias"
+   ],
+   "feature": "Short keybind names",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 201
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Objective Tracker"
+   ],
+   "feature": "Tracker text tweaks (dash, colourful progress, %)",
+   "owner": "Quests",
+   "status": "part",
+   "note": "",
+   "stage": "S25",
+   "n": 6,
+   "id": 202
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Auto Collapse"
+   ],
+   "feature": "Auto-collapse tracker by situation",
+   "owner": "Quests",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 10,
+   "id": 203
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Switch Buttons"
+   ],
+   "feature": "Tracker switch buttons",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "",
+   "stage": "S25",
+   "n": 4,
+   "id": 204
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Progress"
+   ],
+   "feature": "Quest progress chat messages",
+   "owner": "Quests",
+   "status": "skip",
+   "note": "Chat announcements are a scope cut",
+   "stage": null,
+   "n": 4,
+   "id": 205
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Turn In"
+   ],
+   "feature": "Auto turn-in with modes",
+   "owner": "Quests",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 7,
+   "id": 206
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Prey Hunt"
+   ],
+   "feature": "Prey hunt helper",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "",
+   "stage": "S25",
+   "n": 1,
+   "id": 207
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Achievement Screenshot"
+   ],
+   "feature": "Achievement screenshots",
+   "owner": "Quality",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 5,
+   "id": 208
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Quest::Achievement Tracker"
+   ],
+   "feature": "Achievement tracker window",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "",
+   "stage": "S25",
+   "n": 4,
+   "id": 209
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Social::"
+   ],
+   "feature": "Chat bar, smart tab, emote picker",
+   "owner": "Chat",
+   "status": "part",
+   "note": "Chat bar exists; emote picker is an open gap row",
+   "stage": "S17",
+   "n": 16,
+   "id": 210
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Tooltips::General"
+   ],
+   "feature": "Tooltip icons, faction / pet icons, pet ID, tier set count",
+   "owner": "Tooltip",
+   "status": "part",
+   "note": "",
+   "stage": "S24",
+   "n": 8,
+   "id": 211
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Tooltips::Progression"
+   ],
+   "feature": "Raid / M+ progression in tooltips",
+   "owner": "Tooltip",
+   "status": "part",
+   "note": "Mythic+ rating exists; raid progression is an open gap row",
+   "stage": "S17",
+   "n": 4,
+   "id": 212
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Tooltips::Keystone"
+   ],
+   "feature": "Keystone tooltip (affixes)",
+   "owner": "Tooltip",
+   "status": "miss",
+   "note": "Open gap row",
+   "stage": "S17",
+   "n": 2,
+   "id": 213
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Tooltips::Group Info"
+   ],
+   "feature": "Group info in tooltips",
+   "owner": "GroupFinder",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 5,
+   "id": 214
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Tooltips::ElvUI Tooltip Tweaks"
+   ],
+   "feature": "ElvUI tooltip tweaks",
+   "owner": "Tooltip",
+   "status": "skip",
+   "note": "ElvUI-only",
+   "stage": null,
+   "n": 6,
+   "id": 215
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "Tooltips::Objective Progress"
+   ],
+   "feature": "Objective progress in tooltips",
+   "owner": "Quests",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 2,
+   "id": 216
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "UnitFrames::Quick Focus"
+   ],
+   "feature": "Modifier-click to set focus (with marker)",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "Secure attribute on frames, out of combat",
+   "stage": "S18",
+   "n": 5,
+   "id": 217
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "UnitFrames::Friendly Nameplate Outline"
+   ],
+   "feature": "Friendly plate outline",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 218
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "UnitFrames::Absorb"
+   ],
+   "feature": "Absorb texture",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 2,
+   "id": 219
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "UnitFrames::Role Icon"
+   ],
+   "feature": "Role icon set",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 220
+  },
+  {
+   "addon": "EllesmereUI WindTools",
+   "keys": [
+    "SilverDragon::"
+   ],
+   "feature": "SilverDragon skin",
+   "owner": "Skins",
+   "status": "part",
+   "note": "",
+   "stage": "S24",
+   "n": 2,
+   "id": 221
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "BlizzArena::",
+    "BlizzCompact::",
+    "BlizzRaid::",
+    "BlizzRetail::",
+    "BlizzTarget::",
+    "BlizzTourney::",
+    "Gladiuish::",
+    "Pixelated::",
+    "Xaryu::"
+   ],
+   "feature": "Arena frame layouts (9 presets: mirrored, sizes, power height, crop)",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "Phoenix arena frames have one layout",
+   "stage": "S18",
+   "n": 42,
+   "id": 222
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::~^Castbar_"
+   ],
+   "feature": "Arena cast bars: modern look, shield, spark, colours, highlight casts on me / CC",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Arena frames reuse Phoenix cast bars; highlight-on-me / CC colours do not exist",
+   "stage": "S18",
+   "n": 23,
+   "id": 223
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::~^DR_|DRPixel"
+   ],
+   "feature": "DR tracker look (borders, text, size)",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S18",
+   "n": 9,
+   "id": 224
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~^Option_DR|Option_HideDRs|Option_OnlyTriggerable|Option_PerClass|Option_PerSpec|Option_EnableStatic|Option_NewMidnight|Option_ShowDecimalsOnDR|Option_ColorDR|Option_DisableInstantDR"
+   ],
+   "feature": "Diminishing returns tracking (per class / spec, reset time, 12.x DR handling)",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "12.x sends DR state in UNIT_SPELL_DIMINISH_CATEGORY_STATE_UPDATED (secret payloads) and C_SpellDiminish; Phoenix can show it through display sinks or restyle Blizzard's own DR tray, never from the combat log",
+   "stage": "S18",
+   "n": 14,
+   "id": 225
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::~^Widget_"
+   ],
+   "feature": "Arena widgets: combat / healer / target / focus indicators, party ↔ arena targets",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S18",
+   "n": 33,
+   "id": 226
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::~^Text_"
+   ],
+   "feature": "Arena fonts and text placement",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "",
+   "stage": "S18",
+   "n": 18,
+   "id": 227
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~^Racial_|Trinket|Racial"
+   ],
+   "feature": "Trinket and racial tracking",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "PvP trinket exists; racials and swap rules do not",
+   "stage": "S18",
+   "n": 29,
+   "id": 228
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~^ClickAction_"
+   ],
+   "feature": "Click actions on arena frames (spell / macro per button, Clique)",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "Secure attributes set out of combat",
+   "stage": "S18",
+   "n": 15,
+   "id": 229
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~^AuraHighlight_|AuraSort|OnlyShowCCAuras|HideClassIconShowAuras|DisableAurasOnClassIcon"
+   ],
+   "feature": "Auras on the class icon (CC / defensive / important) and aura highlight",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "Arena unit auras are readable through C_UnitAuras with AuraUtil filters; some are secret in combat (display sinks)",
+   "stage": "S18",
+   "n": 24,
+   "id": 230
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~^Option_Pet|PetEnabled|PetClass|PetCustom|ShowPetName|ShowPetNumber|PetNumberIdOnly|PetBorder"
+   ],
+   "feature": "Arena pet frames",
+   "owner": "UnitFrames",
+   "status": "miss",
+   "note": "",
+   "stage": "S18",
+   "n": 7,
+   "id": 231
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~ShowDispels|DesaturateDispel"
+   ],
+   "feature": "Enemy dispel cooldown tracking",
+   "owner": "UnitFrames",
+   "status": "imp",
+   "note": "Enemy dispels are only visible in the combat log, which Phoenix never reads on 12.x, and spell IDs from arena units' cast events are secret in arenas",
+   "stage": null,
+   "n": 2,
+   "id": 232
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~ShadowsightTimer|Dampening|GladTracker"
+   ],
+   "feature": "Shadowsight timer and gladiator tracker",
+   "owner": "PvP",
+   "status": "miss",
+   "note": "Dampening % stays impossible (the gap row Dampening display is api since S16)",
+   "stage": "S18",
+   "n": 3,
+   "id": 233
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames~RangeCheck"
+   ],
+   "feature": "Range check on arena frames",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "",
+   "stage": "S18",
+   "n": 6,
+   "id": 234
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::Category_PetFrames"
+   ],
+   "feature": "Arena frame options: layout test, colours, numbers, swipes, Masque, stealth alpha",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Test frames, class colours and swipe exist; most per-element switches do not",
+   "stage": "S18",
+   "n": 83,
+   "id": 235
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "Config::"
+   ],
+   "feature": "Arena frame general (class icon, spec text, manabars, growth, scale, sizes)",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "",
+   "stage": "S18",
+   "n": 141,
+   "id": 236
+  },
+  {
+   "addon": "sArena Reloaded",
+   "keys": [
+    "AceDBOptions-3.0::",
+    "Profiles::",
+    "SettingsSearch::",
+    "Functions::"
+   ],
+   "feature": "Profiles, settings search, reload",
+   "owner": "Profiles",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 9,
+   "id": 237
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Bars::"
+   ],
+   "feature": "Boss bars: style, emphasize anchor, icons, spell indicators, custom anchors, test bars",
+   "owner": "Encounters",
+   "status": "part",
+   "note": "Phoenix bars cover size, texture, colour, emphasis; a separate emphasize anchor and spell indicators do not",
+   "stage": "S21",
+   "n": 49,
+   "id": 238
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Messages::"
+   ],
+   "feature": "Boss messages: font, icons, class colours, chat-frame copy, test",
+   "owner": "Encounters",
+   "status": "part",
+   "note": "",
+   "stage": "S21",
+   "n": 27,
+   "id": 239
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Countdown::",
+    "Countdown::countdownAudioHeader",
+    "Countdown::countdownTextHeader"
+   ],
+   "feature": "Countdown voice and text",
+   "owner": "Encounters",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 15,
+   "id": 240
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Pull::"
+   ],
+   "feature": "Pull timer: countdown type, sounds, combat log on pull, keybind",
+   "owner": "Encounters",
+   "status": "part",
+   "note": "Pull timer and voice exist; pull sounds / keybind / auto log do not",
+   "stage": "S21",
+   "n": 10,
+   "id": 241
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Colors::"
+   ],
+   "feature": "Per-ability bar / message colours",
+   "owner": "Encounters",
+   "status": "imp",
+   "note": "A colour has to be keyed by spell, and spell IDs are secret during encounters (gap row Per-spell colour override, api since S16); Phoenix colours by the timeline's severity instead",
+   "stage": null,
+   "n": 14,
+   "id": 242
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Sound::",
+    "Sound::oldSounds"
+   ],
+   "feature": "Sounds per alert type (on you, under you)",
+   "owner": "Encounters",
+   "status": "part",
+   "note": "Private aura sounds stay impossible (gap row, api since S16)",
+   "stage": "S21",
+   "n": 11,
+   "id": 243
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Auras::",
+    "Auras::emphasize"
+   ],
+   "feature": "Track chosen auras on chosen players (tank indicator, emphasize)",
+   "owner": "Encounters",
+   "status": "miss",
+   "note": "Other players' auras are secret in encounters; only display sinks are possible (verify)",
+   "stage": "S21",
+   "n": 70,
+   "id": 244
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Nameplates::",
+    "Nameplates::anchoring",
+    "Nameplates::emphasize",
+    "Nameplates::font",
+    "Nameplates::headerIconPositionOthers",
+    "Nameplates::headerIconPositionTarget",
+    "Nameplates::headerIconSizeOthers",
+    "Nameplates::headerIconSizeTarget"
+   ],
+   "feature": "Boss-ability icons and text on nameplates",
+   "owner": "Encounters",
+   "status": "miss",
+   "note": "",
+   "stage": "S21",
+   "n": 67,
+   "id": 245
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Proximity::"
+   ],
+   "feature": "Proximity display",
+   "owner": "Encounters",
+   "status": "imp",
+   "note": "UnitPosition returns nil for group members inside instances since 7.1; no distance data",
+   "stage": null,
+   "n": 15,
+   "id": 246
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "AltPower::",
+    "AltPower::general",
+    "AltPower::yourPowerBar"
+   ],
+   "feature": "Alternate (encounter) power display",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Encounter power bar on the player frame exists; the group list does not",
+   "stage": "S21",
+   "n": 15,
+   "id": 247
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "BattleRes::",
+    "BattleRes::battleResHasCharges",
+    "BattleRes::battleResNoCharges",
+    "BattleRes::battleResPlaySound",
+    "BattleRes::cooldown",
+    "BattleRes::emphasize"
+   ],
+   "feature": "Battle-res charges display",
+   "owner": "Encounters",
+   "status": "miss",
+   "note": "Same feature as the EUI battle-res tracker (one owner)",
+   "stage": "S21",
+   "n": 47,
+   "id": 248
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "BossBlock::"
+   ],
+   "feature": "Block boss emotes, movies, talking heads, tracker, popups, music during encounters",
+   "owner": "Encounters",
+   "status": "part",
+   "note": "Talking heads hide exists (Quality); the rest does not",
+   "stage": "S21",
+   "n": 16,
+   "id": 249
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Statistics::"
+   ],
+   "feature": "Boss kill / wipe statistics, fastest victory",
+   "owner": "Encounters",
+   "status": "miss",
+   "note": "",
+   "stage": "S21",
+   "n": 6,
+   "id": 250
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Victory::",
+    "Wipe::"
+   ],
+   "feature": "Victory sound / message, wipe sound, respawn bar",
+   "owner": "Encounters",
+   "status": "miss",
+   "note": "",
+   "stage": "S21",
+   "n": 5,
+   "id": 251
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "RaidIcon::"
+   ],
+   "feature": "Auto raid icons on boss targets",
+   "owner": "Encounters",
+   "status": "miss",
+   "note": "Needs per-boss data; SetRaidTarget is flagged HasRestrictions in the 12.x API docs, so marking is limited to what it allows (in-game check)",
+   "stage": "S21",
+   "n": 3,
+   "id": 252
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "AutoReply::"
+   ],
+   "feature": "Auto-reply to whispers in combat",
+   "owner": "Automation",
+   "status": "skip",
+   "note": "Sends chat; scope cut",
+   "stage": null,
+   "n": 3,
+   "id": 253
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Timeline::"
+   ],
+   "feature": "Bars vs Blizzard timeline",
+   "owner": "Encounters",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 8,
+   "id": 254
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Keystones::",
+    "Keystones::font",
+    "Keystones::settingsForCurrentTarget",
+    "Keystones::settingsForOtherTargets"
+   ],
+   "feature": "Party keystones viewer, key countdown, auto slot",
+   "owner": "MythicPlus",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 43,
+   "id": 255
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "CombatTimer::"
+   ],
+   "feature": "Combat timer with history",
+   "owner": "DamageMeter",
+   "status": "miss",
+   "note": "Same feature as the EUI standalone combat timer (one owner)",
+   "stage": "S28",
+   "n": 121,
+   "id": 256
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "AutoInvite::"
+   ],
+   "feature": "Invite on keyword",
+   "owner": "Automation",
+   "status": "miss",
+   "note": "InviteUnit is allowed",
+   "stage": "S26",
+   "n": 4,
+   "id": 257
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "LFGTimer::"
+   ],
+   "feature": "LFG proposal timer sound",
+   "owner": "PvP",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 258
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Options::"
+   ],
+   "feature": "Minimap icon, compartment, zone messages, links",
+   "owner": "Encounters",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 8,
+   "id": 259
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [
+    "Sharing::",
+    "InstanceSharing::"
+   ],
+   "feature": "Share boss settings as import strings",
+   "owner": "Profiles",
+   "status": "part",
+   "note": "Profile export exists; per-instance encounter export does not",
+   "stage": "S21",
+   "n": 49,
+   "id": 260
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [],
+   "feature": "Per-boss modules: Midnight raids (The Voidspire, The Dreamrift, March on Quel'Danas, The Venomous Abyss, Kith'ix, Sporefall, Nymrissa) and world bosses",
+   "owner": "Encounters",
+   "status": "part",
+   "note": "Phoenix shows every timeline event and warning the game sends; per-boss names, counts and sounds are S21. The three world bosses have no game timeline in BigWigs either",
+   "stage": "S21",
+   "n": 23,
+   "id": 261
+  },
+  {
+   "addon": "BigWigs",
+   "keys": [],
+   "feature": "Per-boss modules: legacy raids (Classic … The War Within)",
+   "owner": "Encounters",
+   "status": "imp",
+   "note": "These modules are built on combat-log events (self:Log on SPELL_CAST_START etc.); Phoenix never reads the combat log on 12.x (Core/Events.lua refuses it) and spell IDs in it are secret in instances. BigWigs still ships them for 12.1, so whether they fire in old instances is an in-game check; if they do, this becomes a scope decision, not an API wall",
+   "stage": null,
+   "n": 558,
+   "id": 262
+  },
+  {
+   "addon": "LittleWigs",
+   "keys": [],
+   "feature": "Per-boss modules: Midnight dungeons, delves and the current Mythic+ rotation",
+   "owner": "Encounters",
+   "status": "part",
+   "note": "Timeline events and warnings shown generically; per-boss tuning is S21",
+   "stage": "S21",
+   "n": 58,
+   "id": 263
+  },
+  {
+   "addon": "LittleWigs",
+   "keys": [],
+   "feature": "Per-boss modules: legacy dungeons (Classic … The War Within)",
+   "owner": "Encounters",
+   "status": "imp",
+   "note": "Same as the BigWigs legacy modules (combat-log based)",
+   "stage": null,
+   "n": 700,
+   "id": 264
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsTracker::Tracker Options"
+   ],
+   "feature": "Questie tracker (sorting, minimise, fonts, sizer, TomTom)",
+   "owner": "Quests",
+   "status": "part",
+   "note": "Phoenix restyles Blizzard's tracker; its own sorting / sizer options do not exist",
+   "stage": "S25",
+   "n": 48,
+   "id": 265
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsIcons::Icon Options",
+    "QuestieOptionsIcons::Quests",
+    "QuestieOptionsIcons::Objectives"
+   ],
+   "feature": "Quest and objective icons on maps by type",
+   "owner": "Quests",
+   "status": "part",
+   "note": "Givers, turn-ins and quest lines exist; objective icons come from the game's own map",
+   "stage": "S25",
+   "n": 28,
+   "id": 266
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsIcons::Other Icons"
+   ],
+   "feature": "Townsfolk, trainer and vendor icons; icon glow, fade, minimap",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "S17 NPC data (vendors / trainers from ATT) feeds this",
+   "stage": "S17",
+   "n": 25,
+   "id": 267
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsIcons::Season of Discovery Runes"
+   ],
+   "feature": "Season of Discovery runes",
+   "owner": "Quests",
+   "status": "skip",
+   "note": "Classic Season of Discovery only",
+   "stage": null,
+   "n": 5,
+   "id": 268
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsMap::Waypoints"
+   ],
+   "feature": "NPC patrol paths on the map",
+   "owner": "Quests",
+   "status": "imp",
+   "note": "No licence-clean source of NPC waypoints: DB2 has no creature spawns, Questie's data is GPL-3.0 and Wowhead forbids scraping",
+   "stage": null,
+   "n": 9,
+   "id": 269
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsNameplate::Nameplate Icon Options",
+    "QuestieOptionsNameplate::Target Frame Icon Options"
+   ],
+   "feature": "Quest-objective icons on plates and target frame",
+   "owner": "NamePlates",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 10,
+   "id": 270
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsGeneral::General Options~Announce|ShutUp|Channels|Share quest|party members|Accepted|abandoned|Objective completed|Quest completed|Incomplete"
+   ],
+   "feature": "Party quest sharing and announcements",
+   "owner": "Quests",
+   "status": "skip",
+   "note": "Chat announcements are a scope cut; party progress sharing needs addon comms",
+   "stage": null,
+   "n": 13,
+   "id": 271
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsGeneral::General Options~drop rates"
+   ],
+   "feature": "Item drop rates",
+   "owner": "Tooltip",
+   "status": "imp",
+   "note": "No licence-clean drop-rate data (Wowhead and Questie data are off-limits)",
+   "stage": null,
+   "n": 1,
+   "id": 272
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsGeneral::General Options"
+   ],
+   "feature": "Instant quest text, map buttons, coordinates, level filters, tooltips (quests on NPCs, chains, breadcrumbs), sounds",
+   "owner": "Quests",
+   "status": "part",
+   "note": "Coordinates, NPC quest tooltips, level filter exist; chains, instant text and sounds do not",
+   "stage": "S25",
+   "n": 28,
+   "id": 273
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsAuto::",
+    "QuestieOptionsAuto::Auto Accept",
+    "QuestieOptionsAuto::Auto Complete"
+   ],
+   "feature": "Auto accept by quest kind, auto complete, modifier",
+   "owner": "Quests",
+   "status": "part",
+   "note": "Accept / turn-in exist; per-kind filters do not",
+   "stage": "S25",
+   "n": 16,
+   "id": 274
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsAuto::Auto Reject"
+   ],
+   "feature": "Auto reject shared quests (battlegrounds, non-friends)",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "",
+   "stage": "S25",
+   "n": 3,
+   "id": 275
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsAdvanced::Advanced Settings",
+    "QuestieOptionsAdvanced::Localization Settings",
+    "QuestieOptionsAdvanced::Reset Questie"
+   ],
+   "feature": "Icon limits and distances, locale, reset, journey import",
+   "owner": "Quests",
+   "status": "part",
+   "note": "",
+   "stage": "S25",
+   "n": 13,
+   "id": 276
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsAdvanced::Developer Options"
+   ],
+   "feature": "Developer IDs in tooltips",
+   "owner": "Tooltip",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 11,
+   "id": 277
+  },
+  {
+   "addon": "Questie",
+   "keys": [
+    "QuestieOptionsDBM::DBM HUD",
+    "QuestieOptionsDBM::Size & Scale Options",
+    "QuestieOptionsDBM::Filter Options"
+   ],
+   "feature": "DBM HUD quest icons",
+   "owner": "Quests",
+   "status": "skip",
+   "note": "Needs DBM's HUD",
+   "stage": null,
+   "n": 9,
+   "id": 278
+  },
+  {
+   "addon": "Questie",
+   "keys": [],
+   "feature": "My Journey (quest history log)",
+   "owner": "Quests",
+   "status": "miss",
+   "note": "",
+   "stage": "S25",
+   "n": 1,
+   "id": 279
+  },
+  {
+   "addon": "QuestieDB",
+   "keys": [],
+   "feature": "Shared quest / NPC / object database library",
+   "owner": "Quests",
+   "status": "skip",
+   "note": "Classic-era data under ARR/GPL-3; Phoenix uses ATT (MIT) + DB2 + runtime APIs (docs/QUEST_DATA.md)",
+   "stage": null,
+   "n": 1,
+   "id": 280
+  },
+  {
+   "addon": "QuestieTrace",
+   "keys": [],
+   "feature": "Opt-in session recorder with privacy filter and export string",
+   "owner": "Quests",
+   "status": "part",
+   "note": "Phoenix S17 collector: opt-in, NPC IDs + map positions only, merged by tools/; no uploader yet",
+   "stage": "S17",
+   "n": 1,
+   "id": 281
+  },
+  {
+   "addon": "PremadeGroupsFilter",
+   "keys": [
+    "Settings::~oneClick|signupOnEnter|signUpDeclined"
+   ],
+   "feature": "One-click / Enter sign-up, declined dimming",
+   "owner": "GroupFinder",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 3,
+   "id": 282
+  },
+  {
+   "addon": "PremadeGroupsFilter",
+   "keys": [
+    "Settings::~skipSignUp|persistSignUp"
+   ],
+   "feature": "Skip the sign-up dialog, persistent note",
+   "owner": "GroupFinder",
+   "status": "imp",
+   "note": "The sign-up dialog only submits through Blizzard's Sign Up button (a click) and its note box refuses SetText from addons (S15)",
+   "stage": null,
+   "n": 2,
+   "id": 283
+  },
+  {
+   "addon": "PremadeGroupsFilter",
+   "keys": [
+    "Settings::~cancelOldest"
+   ],
+   "feature": "Cancel the oldest application when full",
+   "owner": "GroupFinder",
+   "status": "imp",
+   "note": "Blizzard cancels applications only from its own button; Phoenix treats it as needing your click (like sign-up, S15), so it is not done on its own",
+   "stage": null,
+   "n": 1,
+   "id": 284
+  },
+  {
+   "addon": "PremadeGroupsFilter",
+   "keys": [
+    "Settings::~compact"
+   ],
+   "feature": "Compact list entries",
+   "owner": "GroupFinder",
+   "status": "miss",
+   "note": "",
+   "stage": "S28",
+   "n": 1,
+   "id": 285
+  },
+  {
+   "addon": "PremadeGroupsFilter",
+   "keys": [
+    "Settings::"
+   ],
+   "feature": "Group list extras: class names, coloured texts, age, rating info, spec icons, class circles / bar, leader crown, missing roles, movable dialog",
+   "owner": "GroupFinder",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 11,
+   "id": 286
+  },
+  {
+   "addon": "PremadeGroupsFilter",
+   "keys": [],
+   "feature": "Advanced filter expressions (105 variables)",
+   "owner": "GroupFinder",
+   "status": "part",
+   "note": "Phoenix grammar has 39 words",
+   "stage": "S28",
+   "n": 105,
+   "id": 287
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox~^(SHOWTIPS|SHOWMINIMAPBUTTON|MOVEFRAMES|CLAMPWINDOWTOSCREEN|SAVEFRAMEPOSITION|FRAMESKEYDRAG|SCALEFRAMES|SAVEFRAMESCALE|FRAMESKEYSCALE|FRAMESKEYRESET|DISABLEMOVEMENT)$"
+   ],
+   "feature": "Mover behaviour: drag / scale keys, clamp, save positions",
+   "owner": "Movers",
+   "status": "part",
+   "note": "Grid, snap and nudge exist; per-window drag / scale keys do not",
+   "stage": "S26",
+   "n": 11,
+   "id": 288
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox~^(ACTIONBAR|ACTIONBARS|ACTIONBAR\\d+|PETBAR|STANCEBARANCHOR|POSSESSBAR|OVERRIDEACTIONBAR|LEAVEVEHICLE|EXTRAABILITYCONTAINER|ExtraActionBarFrame|ExtraActionButton1|MICROMENU|BAGS|ENDCAPS|BLIZZARDACTIONBUTTONSART|ZONEABILITYFRAME)$"
+   ],
+   "feature": "Move action bars, extra / zone buttons, micro menu, bags",
+   "owner": "ActionBars",
+   "status": "done",
+   "note": "Phoenix bars have their own movers; Blizzard's go through Edit Mode",
+   "stage": null,
+   "n": 21,
+   "id": 289
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox~^(PLAYERFRAME|PLAYERFRAMEGROUPINDICATOR|PLAYERFRAMEBACKGROUND|PLAYERLEVELTEXT|MAPETFRAME|PETFRAMEHAPPINESS|TARGETFRAME|TARGETFRAMEBUFFMOVER|TARGETFRAMEDEBUFFMOVER|TARGETFRAMESPELLBAR|TargetFrameNumericalThreat|TARGETFRAMENAMEBACKGROUND|TARGETOFTARGETFRAME|TARGETFRAMETOT\\w+|FOCUSFRAME\\w*|TARGETOFFOCUSFRAME|FOCUSFRAMETOT\\w+|PARTYFRAME|PARTYMEMBERFRAMES|COMPACTRAIDFRAMECONTAINER|COMPACTRAIDFRAMEMANAGER|BOSSTARGETFRAMECONTAINER|ARENAENEMYFRAMESCONTAINER|ARENAENEMYFRAMES|ARENAPREPFRAMES|COMPACTARENAFRAME)$"
+   ],
+   "feature": "Move unit, party, raid, boss and arena frames",
+   "owner": "UnitFrames",
+   "status": "done",
+   "note": "Phoenix frames have movers; Blizzard's are Edit Mode",
+   "stage": null,
+   "n": 31,
+   "id": 290
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox~^(RUNEFRAME|TOTEMBAR|TOTEMFRAME|WARLOCKPOWERFRAME|SHARDBARFRAME|MONKHARMONYBARFRAME|MONKSTAGGERBAR|MAGEARCANECHARGESFRAME|PRIESTBARFRAME|COMBOPOINTPLAYERFRAME|COMBOFRAME|EclipseBarFrame|ESSENCEPLAYERFRAME|PALADINPOWERBARFRAME|PALADINPOWERBAR|POWERBAR)$"
+   ],
+   "feature": "Move class power bars",
+   "owner": "UnitFrames",
+   "status": "part",
+   "note": "Class resource sits on the player frame; a detached class bar is S18",
+   "stage": "S18",
+   "n": 16,
+   "id": 291
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox~^(EssentialCooldownViewer|BuffIconCooldownViewer|BuffBarCooldownViewer|UtilityCooldownViewer)$"
+   ],
+   "feature": "Move Cooldown Manager viewers",
+   "owner": "Tracker",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 4,
+   "id": 292
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox~^(BUFFS|DEBUFFS|CASTINGBAR|CASTINGBARTIMER|GAMETOOLTIP|GAMETOOLTIP_ONCURSOR|GAMETOOLTIP_ONCURSOR_NOTINCOMBAT|CHAT|CHATBUTTONFRAME|CHATEDITBOX|CHATTAB|CHATQUICKJOIN|MINIMAP|MINIMAPZONETEXT|MINIMAPFLAG|MINIMAPLFGFRAME|LFGMINIMAPFRAME|MINIMAPTRACKINGBUTTON|MINIMAPTRACKING|ExpansionLandingPageMinimapButton|QUESTTRACKER|QUESTITEMSANCHOR|MainStatusTrackingBarContainer|SecondaryStatusTrackingBarContainer|STATUSTRACKINGBARMANAGER|MAINMENUEXPBAR|REPUTATIONWATCHBAR|MAFPSFrame)$"
+   ],
+   "feature": "Move auras, cast bar, tooltip, chat, minimap and its buttons, tracker, status bars",
+   "owner": "Movers",
+   "status": "done",
+   "note": "Owned by the matching Phoenix page or Edit Mode",
+   "stage": null,
+   "n": 28,
+   "id": 293
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox~^(UIWIDGETTOPCENTER|UIWIDGETBELOWMINIMAP|UIWIDGETPOWERBAR|ZONETEXTFRAME|UIERRORSFRAME|RAIDBOSSEMOTEFRAME|BOSSBANNER|ALERTFRAME|EventToastManagerFrame|READYCHECKLISTENERFRAME|OBJECTIVETRACKERBONUSBANNERFRAME)$"
+   ],
+   "feature": "Move widgets, zone / error / emote text, banners, alerts, toasts, ready check",
+   "owner": "Movers",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 11,
+   "id": 294
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "settings::checkbox"
+   ],
+   "feature": "Move the remaining Blizzard frames (talking head, vehicle seat, durability, ghost, loss of control, mirror timers, queue status, loot, bonus roll, battlefield map, popups, role poll, encounter bar, archaeology, ticket, toasts)",
+   "owner": "Movers",
+   "status": "miss",
+   "note": "",
+   "stage": "S26",
+   "n": 26,
+   "id": 295
+  },
+  {
+   "addon": "MoveAny",
+   "keys": [
+    "D4UISlider::slider"
+   ],
+   "feature": "Frame scale slider",
+   "owner": "Movers",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 1,
+   "id": 296
+  },
+  {
+   "addon": "idTip",
+   "keys": [],
+   "feature": "IDs in tooltips: spell, item, NPC, quest, achievement, currency, mount, aura",
+   "owner": "Tooltip",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 8,
+   "id": 297
+  },
+  {
+   "addon": "idTip",
+   "keys": [],
+   "feature": "IDs in tooltips: talent, criteria, ability, artifact power, enchant, bonus, gem, macro, set, visual, source, species, icon, area POI, vignette, expansion, object, trait node / entry / definition",
+   "owner": "Tooltip",
+   "status": "miss",
+   "note": "Code may be reused under BSD-2 with the notice (docs/LICENSES); NPC IDs only when UnitCreatureID is not secret",
+   "stage": "S26",
+   "n": 19,
+   "id": 298
+  },
+  {
+   "addon": "AutoQueue",
+   "keys": [],
+   "feature": "Accept role checks",
+   "owner": "GroupFinder",
+   "status": "part",
+   "note": "Phoenix accepts with a key you press (secure click). AutoQueue calls CompleteLFGRoleCheck straight from the pop-up's OnShow, and our API reference lists no restriction on it, so an opt-in automatic mode looks possible (verify in game); it was left out by the S15 brief",
+   "stage": "S26",
+   "n": 2,
+   "id": 299
+  },
+  {
+   "addon": "AutoQueue",
+   "keys": [],
+   "feature": "Accept the dungeon-ready pop-up automatically",
+   "owner": "GroupFinder",
+   "status": "imp",
+   "note": "Blizzard only enters through the pop-up's Enter button (AcceptProposal), which we treat as needing your click; a timer-driven Click() is not a hardware event, so Phoenix offers a key binding instead (in-game check)",
+   "stage": null,
+   "n": 1,
+   "id": 300
+  },
+  {
+   "addon": "AutoQueue",
+   "keys": [],
+   "feature": "Sign up automatically when a listing is double-clicked / without the dialog",
+   "owner": "GroupFinder",
+   "status": "imp",
+   "note": "Signing up goes through Blizzard's own Sign Up button (Phoenix uses a secure click on it, S15); without your click or key press it is not built",
+   "stage": null,
+   "n": 2,
+   "id": 301
+  },
+  {
+   "addon": "AutoQueue",
+   "keys": [],
+   "feature": "Role bar (pick tank / healer / damage before queueing), minimap button, enable switch",
+   "owner": "GroupFinder",
+   "status": "miss",
+   "note": "",
+   "stage": "S28",
+   "n": 5,
+   "id": 302
+  },
+  {
+   "addon": "Simulationcraft",
+   "keys": [],
+   "feature": "/simc export with bags, bank, vault and catalyst",
+   "owner": "Sim",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 4,
+   "id": 303
+  },
+  {
+   "addon": "TrufiGCD",
+   "keys": [],
+   "feature": "Ability history for the player",
+   "owner": "SpellHistory",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 8,
+   "id": 304
+  },
+  {
+   "addon": "TrufiGCD",
+   "keys": [],
+   "feature": "Ability history for party, arena, target and focus (per-unit layout)",
+   "owner": "SpellHistory",
+   "status": "part",
+   "note": "Other units' UNIT_SPELLCAST_SUCCEEDED spell IDs are secret in arenas and instances; possible in the open world only",
+   "stage": "S28",
+   "n": 24,
+   "id": 305
+  },
+  {
+   "addon": "TrufiGCD",
+   "keys": [],
+   "feature": "Icon tooltips, stop scrolling on hover, spell ID print, blocklist, profiles, enable by zone type",
+   "owner": "SpellHistory",
+   "status": "part",
+   "note": "",
+   "stage": "S28",
+   "n": 12,
+   "id": 306
+  },
+  {
+   "addon": "BugGrabber + BugSack",
+   "keys": [],
+   "feature": "Error capture, viewer, chat notice, sound, minimap icon, font size, wipe",
+   "owner": "Bugs",
+   "status": "done",
+   "note": "",
+   "stage": null,
+   "n": 11,
+   "id": 307
+  },
+  {
+   "addon": "Auctionator",
+   "keys": [
+    "BasicOptions::BasicOptions"
+   ],
+   "feature": "Auction house: auto scan and interval, small tabs, crafting info in professions",
+   "owner": "AuctionHouse",
+   "status": "miss",
+   "note": "C_AuctionHouse.ReplicateItems scan once per 15 min; crafting costs from C_TradeSkillUI",
+   "stage": "S22",
+   "n": 12,
+   "id": 308
+  },
+  {
+   "addon": "Auctionator",
+   "keys": [
+    "Shopping::Shopping",
+    "ShoppingAlt::ShoppingAlt"
+   ],
+   "feature": "Shopping lists and searches",
+   "owner": "AuctionHouse",
+   "status": "miss",
+   "note": "Each search needs a hardware event (button click)",
+   "stage": "S22",
+   "n": 5,
+   "id": 309
+  },
+  {
+   "addon": "Auctionator",
+   "keys": [
+    "Selling::Selling",
+    "SellingAllItems::SellingAllItems",
+    "Quantities::Quantities",
+    "SellingShortcuts::SellingShortcuts"
+   ],
+   "feature": "Selling: bag view, undercut rules, durations, quantities, shortcuts",
+   "owner": "AuctionHouse",
+   "status": "miss",
+   "note": "Posting needs a hardware event per auction (C_AuctionHouse.PostItem); one click per post",
+   "stage": "S22",
+   "n": 62,
+   "id": 310
+  },
+  {
+   "addon": "Auctionator",
+   "keys": [
+    "Cancelling::Cancelling"
+   ],
+   "feature": "Cancel undercut auctions scan",
+   "owner": "AuctionHouse",
+   "status": "miss",
+   "note": "Each cancel needs a click",
+   "stage": "S22",
+   "n": 7,
+   "id": 311
+  },
+  {
+   "addon": "Auctionator",
+   "keys": [
+    "Tooltips::Tooltips"
+   ],
+   "feature": "Auction / vendor / disenchant / mill / prospect prices in tooltips",
+   "owner": "Tooltip",
+   "status": "miss",
+   "note": "Fed by the S22 price database",
+   "stage": "S22",
+   "n": 19,
+   "id": 312
+  },
+  {
+   "addon": "Auctionator",
+   "keys": [
+    "Profile::Profile",
+    "Advanced::Advanced"
+   ],
+   "feature": "Auctionator profile and debug",
+   "owner": "AuctionHouse",
+   "status": "skip",
+   "note": "Addon internals",
+   "stage": null,
+   "n": 5,
+   "id": 313
+  },
+  {
+   "addon": "WoW-API-main",
+   "keys": [],
+   "feature": "API reference (documentation only, no user features)",
+   "owner": "General",
+   "status": "skip",
+   "note": "Used as an API reference like /workspace/ref",
+   "stage": null,
+   "n": 0,
+   "id": 314
+  },
+  {
+   "addon": "EllesmereUI Locales",
+   "keys": [],
+   "feature": "Locale strings (10 languages)",
+   "owner": "General",
+   "status": "done",
+   "note": "Phoenix ships its own 10 locales",
+   "stage": null,
+   "n": 0,
+   "id": 315
+  }
+ ],
+ "stages": {
+  "S17": [
+   210,
+   166,
+   133,
+   187,
+   97,
+   109,
+   184,
+   267,
+   281,
+   41,
+   212,
+   213,
+   22,
+   145,
+   162,
+   163
+  ],
+  "S18": [
+   151,
+   153,
+   233,
+   143,
+   146,
+   149,
+   150,
+   152,
+   154,
+   157,
+   158,
+   159,
+   172,
+   217,
+   222,
+   223,
+   224,
+   225,
+   226,
+   227,
+   228,
+   229,
+   230,
+   231,
+   234,
+   235,
+   236,
+   291
+  ],
+  "S19": [
+   103,
+   56,
+   131,
+   132,
+   134,
+   135,
+   137,
+   138,
+   139,
+   141,
+   142
+  ],
+  "S20": [
+   15,
+   13,
+   14,
+   16,
+   17,
+   18,
+   19,
+   20,
+   23,
+   24,
+   112,
+   147
+  ],
+  "S21": [
+   110,
+   238,
+   239,
+   241,
+   243,
+   244,
+   245,
+   248,
+   249,
+   250,
+   251,
+   252,
+   261,
+   263,
+   260,
+   247
+  ],
+  "S22": [
+   308,
+   309,
+   310,
+   311,
+   312
+  ],
+  "S23": [
+   26,
+   27,
+   28,
+   29,
+   30,
+   35,
+   59,
+   181
+  ],
+  "S24": [
+   44,
+   45,
+   46,
+   34,
+   36,
+   37,
+   38,
+   40,
+   82,
+   180,
+   183,
+   221,
+   32,
+   211
+  ],
+  "S25": [
+   68,
+   81,
+   85,
+   189,
+   126,
+   202,
+   204,
+   207,
+   209,
+   265,
+   266,
+   273,
+   274,
+   275,
+   276,
+   279
+  ],
+  "S26": [
+   1,
+   4,
+   128,
+   175,
+   122,
+   192,
+   257,
+   299,
+   124,
+   195,
+   288,
+   295,
+   58,
+   61,
+   105,
+   106,
+   111,
+   114,
+   117,
+   118,
+   123,
+   170,
+   190,
+   193,
+   194,
+   200,
+   298
+  ],
+  "S27": [
+   67,
+   72,
+   76,
+   80,
+   77,
+   78,
+   79,
+   70,
+   75,
+   73
+  ],
+  "S28": [
+   8,
+   89,
+   90,
+   62,
+   63,
+   64,
+   256,
+   9,
+   167,
+   197,
+   48,
+   51,
+   83,
+   108,
+   285,
+   287,
+   302,
+   60,
+   91,
+   92,
+   100,
+   66,
+   305,
+   306
+  ]
+ },
+ "inventory_options": 4983,
+ "encounters": {
+  "midnight": [
+   {
+    "kind": "Raid",
+    "name": "March on Quel'Danas",
+    "source": "BigWigs",
+    "modules": 2,
+    "bosses": 2,
+    "trash": 0,
+    "timeline": 2,
+    "options": 31
+   },
+   {
+    "kind": "Lair",
+    "name": "Midnight lairs",
+    "source": "BigWigs",
+    "modules": 1,
+    "bosses": 1,
+    "trash": 0,
+    "timeline": 1,
+    "options": 7
+   },
+   {
+    "kind": "World",
+    "name": "Midnight world bosses",
+    "source": "BigWigs",
+    "modules": 3,
+    "bosses": 3,
+    "trash": 0,
+    "timeline": 0,
+    "options": 9
+   },
+   {
+    "kind": "Raid",
+    "name": "Sporefall",
+    "source": "BigWigs",
+    "modules": 1,
+    "bosses": 1,
+    "trash": 0,
+    "timeline": 1,
+    "options": 7
+   },
+   {
+    "kind": "Raid",
+    "name": "The Dreamrift",
+    "source": "BigWigs",
+    "modules": 1,
+    "bosses": 1,
+    "trash": 0,
+    "timeline": 1,
+    "options": 13
+   },
+   {
+    "kind": "Raid",
+    "name": "The Unbinding of Kith'ix",
+    "source": "BigWigs",
+    "modules": 1,
+    "bosses": 1,
+    "trash": 0,
+    "timeline": 1,
+    "options": 13
+   },
+   {
+    "kind": "Raid",
+    "name": "The Venomous Abyss",
+    "source": "BigWigs",
+    "modules": 8,
+    "bosses": 8,
+    "trash": 0,
+    "timeline": 8,
+    "options": 96
+   },
+   {
+    "kind": "Raid",
+    "name": "The Voidspire",
+    "source": "BigWigs",
+    "modules": 6,
+    "bosses": 6,
+    "trash": 0,
+    "timeline": 6,
+    "options": 64
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Altar of Fangs",
+    "source": "LittleWigs",
+    "modules": 4,
+    "bosses": 3,
+    "trash": 1,
+    "timeline": 3,
+    "options": 21
+   },
+   {
+    "kind": "Delve",
+    "name": "Delves",
+    "source": "LittleWigs",
+    "modules": 19,
+    "bosses": 18,
+    "trash": 1,
+    "timeline": 2,
+    "options": 11
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Den of Nalorakk",
+    "source": "LittleWigs",
+    "modules": 4,
+    "bosses": 3,
+    "trash": 1,
+    "timeline": 3,
+    "options": 13
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Magisters' Terrace",
+    "source": "LittleWigs",
+    "modules": 4,
+    "bosses": 4,
+    "trash": 0,
+    "timeline": 4,
+    "options": 15
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Maisara Caverns",
+    "source": "LittleWigs",
+    "modules": 4,
+    "bosses": 3,
+    "trash": 1,
+    "timeline": 3,
+    "options": 18
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Murder Row",
+    "source": "LittleWigs",
+    "modules": 5,
+    "bosses": 4,
+    "trash": 1,
+    "timeline": 4,
+    "options": 18
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Nexus-Point Xenas",
+    "source": "LittleWigs",
+    "modules": 4,
+    "bosses": 3,
+    "trash": 1,
+    "timeline": 3,
+    "options": 14
+   },
+   {
+    "kind": "Dungeon",
+    "name": "The Blinding Vale",
+    "source": "LittleWigs",
+    "modules": 5,
+    "bosses": 4,
+    "trash": 1,
+    "timeline": 4,
+    "options": 18
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Shared trash (several dungeons)",
+    "source": "LittleWigs",
+    "modules": 1,
+    "bosses": 0,
+    "trash": 1,
+    "timeline": 0,
+    "options": 8
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Voidscar Arena",
+    "source": "LittleWigs",
+    "modules": 4,
+    "bosses": 3,
+    "trash": 1,
+    "timeline": 3,
+    "options": 14
+   },
+   {
+    "kind": "Dungeon",
+    "name": "Windrunner Spire",
+    "source": "LittleWigs",
+    "modules": 4,
+    "bosses": 4,
+    "trash": 0,
+    "timeline": 4,
+    "options": 18
+   }
+  ],
+  "legacy": [
+   {
+    "expansion": "BattleForAzeroth",
+    "source": "BigWigs",
+    "modules": 52,
+    "timeline": 0,
+    "options": 635
+   },
+   {
+    "expansion": "BurningCrusade",
+    "source": "BigWigs",
+    "modules": 55,
+    "timeline": 0,
+    "options": 234
+   },
+   {
+    "expansion": "Cataclysm",
+    "source": "BigWigs",
+    "modules": 31,
+    "timeline": 0,
+    "options": 206
+   },
+   {
+    "expansion": "Classic",
+    "source": "BigWigs",
+    "modules": 107,
+    "timeline": 0,
+    "options": 522
+   },
+   {
+    "expansion": "Dragonflight",
+    "source": "BigWigs",
+    "modules": 35,
+    "timeline": 0,
+    "options": 517
+   },
+   {
+    "expansion": "Legion",
+    "source": "BigWigs",
+    "modules": 64,
+    "timeline": 0,
+    "options": 772
+   },
+   {
+    "expansion": "MistsOfPandaria",
+    "source": "BigWigs",
+    "modules": 49,
+    "timeline": 0,
+    "options": 249
+   },
+   {
+    "expansion": "Shadowlands",
+    "source": "BigWigs",
+    "modules": 39,
+    "timeline": 0,
+    "options": 555
+   },
+   {
+    "expansion": "TheWarWithin",
+    "source": "BigWigs",
+    "modules": 33,
+    "timeline": 0,
+    "options": 527
+   },
+   {
+    "expansion": "WarlordsOfDraenor",
+    "source": "BigWigs",
+    "modules": 37,
+    "timeline": 0,
+    "options": 492
+   },
+   {
+    "expansion": "WrathOfTheLichKing",
+    "source": "BigWigs",
+    "modules": 56,
+    "timeline": 0,
+    "options": 290
+   },
+   {
+    "expansion": "BattleForAzeroth",
+    "source": "LittleWigs",
+    "modules": 73,
+    "timeline": 8,
+    "options": 679
+   },
+   {
+    "expansion": "BurningCrusade",
+    "source": "LittleWigs",
+    "modules": 65,
+    "timeline": 0,
+    "options": 169
+   },
+   {
+    "expansion": "Cataclysm",
+    "source": "LittleWigs",
+    "modules": 69,
+    "timeline": 0,
+    "options": 277
+   },
+   {
+    "expansion": "Classic",
+    "source": "LittleWigs",
+    "modules": 60,
+    "timeline": 0,
+    "options": 190
+   },
+   {
+    "expansion": "Dragonflight",
+    "source": "LittleWigs",
+    "modules": 49,
+    "timeline": 7,
+    "options": 468
+   },
+   {
+    "expansion": "Legion",
+    "source": "LittleWigs",
+    "modules": 85,
+    "timeline": 4,
+    "options": 602
+   },
+   {
+    "expansion": "MistsOfPandaria",
+    "source": "LittleWigs",
+    "modules": 38,
+    "timeline": 0,
+    "options": 174
+   },
+   {
+    "expansion": "Shadowlands",
+    "source": "LittleWigs",
+    "modules": 49,
+    "timeline": 0,
+    "options": 491
+   },
+   {
+    "expansion": "TheWarWithin",
+    "source": "LittleWigs",
+    "modules": 101,
+    "timeline": 0,
+    "options": 772
+   },
+   {
+    "expansion": "WarlordsOfDraenor",
+    "source": "LittleWigs",
+    "modules": 39,
+    "timeline": 4,
+    "options": 208
+   },
+   {
+    "expansion": "WrathOfTheLichKing",
+    "source": "LittleWigs",
+    "modules": 72,
+    "timeline": 3,
+    "options": 153
+   }
+  ]
+ }
+}

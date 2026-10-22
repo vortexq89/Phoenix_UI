@@ -13,6 +13,13 @@ Option counts come from `../data/extract_eui.py` (EllesmereUI-style widget table
 | Simulationcraft | 12.1.5-02 | `/simc` export string | **Unlicense** (public domain) — reusable | 14 / 7 k | 4 | Slot/stat tables |
 | idTip | 12.1.4 | IDs in tooltips (27 kinds) | **BSD-2-Clause** (silverwind) — reusable with notice | 1 / 640 | 1 | — |
 | AutoQueue (+AutoSignLFG) | 1.5.4 | Auto-accept role checks; auto sign-up | No licence file → ARR by default — study only | 17 / 2.5 k | ~10 | — |
+| BigWigs (+Core, Plugins, Options, 19 content modules) | 12.1 | Boss mod: bars, messages, sounds, nameplate icons, 581 boss modules | All rights reserved (fork on GitHub allowed) — study only | see PARITY.md | 1,269 incl. per-boss | Journal / encounter / NPC / spell IDs per boss |
+| LittleWigs (+11 legacy modules) | 12.1 | Dungeon / delve boss mod (758 modules) | All rights reserved — study only | see PARITY.md | per-boss | Same as BigWigs |
+| !BugGrabber + BugSack | — | Error capture and viewer | All rights reserved — study only | — | 11 | — |
+| TrufiGCD | — | Ability history for player / party / arena | **MIT** — reusable with notice (nothing copied) | — | 44 | Spell blocklist |
+| Auctionator | — | Auction House: scans, shopping lists, selling, cancelling, price tooltips | All rights reserved — study only | — | 110 | — |
+| Questie, QuestieDB, QuestieTrace | — | Classic quest helper, its database (incl. a WoW Forever NPC table), session recorder | **GPL-3.0** — not used (GPL; Classic-era data) | — | 220 + DB | Quest / NPC / object / item DB |
+| WoW-API-main | — | API reference | facts only | — | — | API signatures |
 
 ## Attribution warning (important)
 Every copy on I:\ has been edited to insert **"VortexQ8"** into author/licence lines, e.g. `## Author:  VortexQ8  Ellesmere`, `## Title: MoveAny by VortexQ8`, PGF README "licens by VortexQ8e … GNU General Public licens by VortexQ8e, Version 2", LibRealmInfo `## X-licens by VortexQ8e: Zlib`, AceConsole header `--- by VortexQ8`. Hits: PGF 56 files, sArena 40, EllesmereUI 17, MoveAny 7, Simulationcraft 5, WindTools 4, one in each EUI module, idTip, AutoQueue. No LICENSE files are present in the copies.
@@ -22,3 +29,4 @@ These edits do not change who owns the code: the upstream authors and their lice
 - [EllesmereUI.md](EllesmereUI.md) — core + every module, option pages and counts
 - [WindTools.md](WindTools.md) · [MoveAny.md](MoveAny.md) · [PremadeGroupsFilter.md](PremadeGroupsFilter.md) · [sArena.md](sArena.md) · [Simulationcraft.md](Simulationcraft.md) · [idTip.md](idTip.md) · [AutoQueue.md](AutoQueue.md)
 - [NPC_DATA.md](NPC_DATA.md) — spawn-location sources, licences, verdict
+- [../PARITY.md](../PARITY.md) — full feature-parity audit of every addon on I:\ (22 Oct 2026): 315 features, one Phoenix owner each, status, stage; encounter module coverage; built by `../data/parity_build.py` (the raw option dump stays on the box, outside the repo)

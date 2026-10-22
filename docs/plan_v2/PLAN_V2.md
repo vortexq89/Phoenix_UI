@@ -12,6 +12,8 @@ Companion files: `GAP_MATRIX.md` (every setting: type, range, default, preview, 
 
 ## 2. Settings now vs target (per module)
 
+*Historical (first plan v2 baseline). Current numbers: [GAP_MATRIX.md](GAP_MATRIX.md) — after the I:\\ parity audit (22 Oct 2026) 1,326 target rows: 1,065 has, 137 part, 124 new, 40 link / api; per-addon parity in [PARITY.md](PARITY.md).*
+
 | Module | Now | Target | Missing | Has % |
 |---|---:|---:|---:|---:|
 | Action Bars | 33 | 114 | 82 | 28% |
@@ -211,9 +213,103 @@ sub-headings. Needs an in-game test (TESTING §13n).*
 - QoL + Automation adds (banners, camera, markers bar, cursor, CVar browser, auto loot, gossip, role check) — 1.5 d
 - PvP adds, AFK screen, Spell History border/fail marks, Sim inclusion toggles, Encounters adds — 2 d
 
-### S17 — Community NPC data collector (needs approval) (~4 days)
+### S17 — NPC locations + the open gap rows (~5 days)
 
-- In-game collector (secret-safe, opt-in) + uploader channel + Cloudflare aggregation + CC0 publish into Phoenix_UI_Data — 4 d
+*Re-scoped 22 Oct 2026 (brief): no uploader channel or Cloudflare backend. The collector is local and opt-in; data is
+merged by `tools/` into Phoenix_UI_Data slices by the maintainer.*
+
+- NPC spawn data: AllTheThings (MIT) `N|npcID|uiMapID|x|y` lines + DB2 (wago.tools) + runtime APIs → NPC slices in Phoenix_UI_Data; provenance in docs — 1.5 d
+- Opt-in position collector: npcID + uiMapID + your x/y on gossip / quest dialog / vignette, only when nothing is secret, out of combat, open world; no names, realms or GUIDs; SavedVariables → `tools/` merge — 1 d
+- Wire NPC locations into tooltips, quest pins and map search / `/way` waypoint (one owner: Quests) — 1 d
+- Close the 36 open `new` gap rows as far as the API allows (power colour overrides, group dispel colours, buff-bar smooth fill / gradient, class power pip shape, …; the audit already closed charge count at 0 and mana regen spark as `api`) and the parity features tagged S17 — 1.5 d
+
+## 5b. Stages from the I:\ parity audit (S18–S28)
+
+Added 22 Oct 2026 after auditing every addon on I:\ ([PARITY.md](PARITY.md): 315 features, 96 done, 90 partial,
+97 missing, 16 impossible, 16 skipped). In [GAP_MATRIX.md](GAP_MATRIX.md) 180 of the open ones became new rows with their
+source addon and stage, and 11 that were already spec rows were folded into them (two of those, charge count at 0 and
+mana regen spark, are now `api`). One owner page per feature; the stage follows the owner.
+
+**Live-preview rule for every stage below:** each new or deepened setting redraws the pinned preview and any
+unlocked / test frames in the same frame it changes (no reload, no lag); the preview uses the same code path as the
+real frame, so what you see is exactly what you get (100% accurate). Behaviour-only settings show a live example
+(sample tooltip, sample message, sample bar) instead. Secret values are shown in previews with plain test data.
+
+### S18 — Unit Frames II + arena (sArena parity), resource bars, totems, quick focus (~8 days)
+
+- Arena frames: 9 layout presets, class icon with CC / defensive auras, DR tracker from the game's DR events (look: borders, text, size), trinkets and racials, arena pet frames, widgets (healer / target / focus), range, click actions (secure), cast bar extras — 4 d
+- Resource bars: detached player health / power (personal resource display), class power look (orientation, separators, pip borders, charged colour, thresholds), spec bars (Ironfur, Ignore Pain, Sweeping Strikes), totem bar with click-to-destroy (secure) — 2.5 d
+- Frame look: nicknames, fade, threat %, portraits (2D / 3D / class, rings), text bar strip; modifier-click focus with marker; GCD bar and swing timer as standalone bars; Shadowsight / dampening on PvP — 1.5 d
+- *Preview:* arena test frames (3 / 5 enemies with fake DR, trinket, casts) and resource bars for every class you pick in the preview.
+
+### S19 — Group Frames II (~4 days)
+
+- Absorb overshield / glow line / heal absorb / max-health reduction; indicators (missing buffs, status, group numbers); portraits; party target frames; friendly boss frames; top name strip — 2.5 d
+- Assigned buff / debuff lists with order and placement (also for player aura bars); buff manager (own only, pandemic border, threshold text) — 1.5 d
+- *Preview:* test party / raid 5 / 20 / 40 with fake auras, absorbs and dispel types.
+
+### S20 — Cooldown Manager & reminders II (~4 days)
+
+- Icon look (shape, zoom, stack text, item count / quality, numbers-only); rotation-assist icon (C_AssistedCombat) with keybind; glow conditions (stacks, combat, hero talent); per-spell overrides — 2 d
+- Buff bar groups (named, auto-add, shift when empty), stack-based fill, smooth bars; focus interrupt reminder on the plate — 1 d
+- Reminders: custom spells and sounds, pets (missing / passive / wrong demon), soulstone, movement-cooldown alert with TTS — 1 d
+- *Preview:* the viewer with sample spells per spec, glows firing on a loop, bars counting down.
+
+### S21 — Encounters II: per-boss data (~6 days)
+
+- Phoenix-authored per-boss tables for Midnight raids, dungeons and delves (ability names for counts, sounds, nameplate icons; colours stay by severity, spell IDs are secret), built from the Encounter Journal API and in-game logs, never copied from BigWigs — 3 d
+- Bars / messages depth (emphasize anchor, class colours, chat copy), alert sounds by type, block emotes / movies / talking heads during encounters, victory / wipe sounds, respawn bar, kill / wipe statistics — 2 d
+- Battle-res charges and bloodlust / sated icons, alternate (encounter) power, auto raid icons where SetRaidTarget allows, share encounter settings — 1 d
+- *Preview:* a scripted fake encounter (timeline bars, warnings, nameplate icons) playing on a loop.
+
+### S22 — Auction House (new page, ~5 days)
+
+- Price database from ReplicateItems scans (no hardware event), price lines in tooltips (auction / vendor / disenchant) — 1.5 d
+- Shopping lists and saved searches, selling view with undercut rules and durations, cancel-undercut list — 3 d. Every search, post and cancel is your click (hardware event); Phoenix only prepares them.
+- Forever: the same where its auction API matches — 0.5 d
+- *Preview:* sample price tooltip and a mock selling row update instantly with your undercut rule.
+
+### S23 — Bags & items II (~4 days)
+
+- Bag grid extras (item level, track rank, warbound / BoE label, set name), list view, category sidebar, pinned / recent items, custom categories, merge stacks, gold history — 2.5 d
+- Character / inspect sheet extras (stat letters, enchants, durability, crests, season panel), crest upgrade calculator — 1.5 d
+- *Preview:* a mock bag with sample items in each category and a sample character sheet.
+
+### S24 — Skins, chat & tooltips II (~4 days)
+
+- Chat sidebar with icon buttons, tabs in the panel, restore last lines after /reload — 1 d
+- Skins: widget bars, extra action / queue pop-up with timer, skyriding vigor and speed bar, friends list, merchant list / wider merchant, mail contacts, chat bubbles (open world only), third-party skins — 2 d
+- Tooltips: unit buffs as icons, raid / M+ progression, tier set count, icons — 1 d
+- *Preview:* sample chat window, sample tooltip, sample vigor bar.
+
+### S25 — Maps, quests & navigation II (~5 days)
+
+- Quest tracker: sorting, filters, auto-track zone quests, completion sounds, text tweaks, switch buttons, achievement tracker, prey hunt helper — 2 d
+- Quest icons by type and limits, quest tooltips on NPCs (chains, breadcrumbs), auto reject shared quests, My Journey (quest history) — 1.5 d
+- World map: fade while moving, reveal with coloured fog, zone levels, event timers; flight timer bar and travel pins from DB2 TaxiNodes / AreaPOI; minimap addon-button bar extras — 1.5 d
+- *Preview:* sample tracker with live font / colour changes; map preview with sample pins.
+
+### S26 — QoL, automation, movers, tooltip IDs (~5 days)
+
+- Movers for the remaining Blizzard frames (MoveAny list), drag / scale keys, clamp, remember positions — 1.5 d
+- QoL: cursor ring / trail / GCD circle, crosshair, potion / talent alerts, party-mode celebrations, gamepad mode, raid tools window, exit phase diving, spell-alert opacity, CVar editor depth, auto combat logging — 2 d
+- Automation: train all, open containers, invite on keyword, confirm summon; opt-in automatic role-check accept (CompleteLFGRoleCheck is allowed) — 1 d
+- Tooltip IDs: the 19 idTip kinds Phoenix lacks; action-bar animations, crafted-quality pips, radial action menu — 0.5 d
+- *Preview:* movers show their real frames' outlines; cursor and crosshair preview follows the mouse in the settings window.
+
+### S27 — WoW Forever essentials (~4 days)
+
+- Highest rank on bars after training, threat meter, stance / form / aspect icon, junk window, auto companion pet, loot feed, macro manager, fishing helper, gathering skill in tooltips, shorter stat lines — 4 d
+- *Preview:* Forever-only; sample threat bars and loot feed lines.
+
+### S28 — Profiles & loadouts, damage meter, data texts, M+, nameplates II, group finder II, spell history II (~6 days)
+
+- Loadouts page (talents + gear set per instance, warn on change; switching only out of combat, after your confirm) — 1 d
+- Damage meter window / bar depth, combat timer with history, spell history as bars; spell history for party / arena / target / focus with tooltips and blocklist — 1.5 d
+- Data texts: experience bar extras, data bar blocks, game bar; micro / bag / reputation bar layout; dark mode amount and glow parameters — 1 d
+- M+ run summary window; enemy cast bars (with the cast-target limit); nameplate colours by your debuffs and caster / boss types — 1.5 d
+- Group finder: compact entries, more filter variables, applications counter, not-queued reminder, role bar — 1 d
+- *Preview:* sample meter with fake combat, sample data bar, sample listing rows.
 
 ## 6. Quests and NPC data (summary of research/NPC_DATA.md)
 
@@ -248,7 +344,7 @@ sub-headings. Needs an in-game test (TESTING §13n).*
 1. **Own frames:** approve Phoenix-owned Action Bars, Unit Frames and Group Frames (Blizzard mode kept as a fallback). Without this, the depth targets for those three modules can't be met.
 2. **Redesign:** approve the window shape and navigation in mockups 1–5 (or ask for changes) before S6 starts.
 3. **Quest data:** approve the ATT (MIT) extraction into a separate `Phoenix_UI_Data` addon with an ATT credit. Optionally, ask the ATT team for a written OK.
-4. **Community collector (S17):** approve the opt-in consent text, Cloudflare storage and CC0 publication. Until then, ship only the toggle as 'coming soon', or nothing.
+4. **Community collector (S17):** approve the opt-in consent text, Cloudflare storage and CC0 publication. Until then, ship only the toggle as 'coming soon', or nothing. *(22 Oct: S17 builds the local collector only; no upload.)*
 5. **Scope cuts:** chat announcements and automatic LFG sign-ups are left out (spam risk). Confirm.
 6. **I:\ copies:** confirm they are personal edits. They are not used as a source either way.
 
