@@ -5,11 +5,11 @@ local dmGet, dmSet = ns.Combat.CVarAccessors("damageMeterEnabled")
 
 ns:RegisterOptions("DamageMeter", {
     { type = "preview", kind = "damagemeter" },
-    { type = "header", label = "BLIZZARD_FEATURES" },
+    { type = "header", label = "BLIZZARD_FEATURES", icon = "general" },
     { type = "toggle", label = "DM_ENABLE", desc = "DM_ENABLE_DESC", get = dmGet, set = dmSet, combat = true, keywords = "dps meter" },
-    { type = "header", label = "DM_STYLE" },
+    { type = "header", label = "DM_STYLE", icon = "theme" },
     { type = "toggle", key = "skin", label = "DM_SKIN", desc = "DM_SKIN_DESC", reload = true },
-    { type = "header", label = "DM_DETAILS" },
+    { type = "header", label = "DM_DETAILS", icon = "damagemeter" },
     { type = "description", text = "DM_DETAILS_TEXT" },
     { type = "button", label = "DM_DETAILS_APPLY", desc = "DM_DETAILS_APPLY_DESC", button = "APPLY", variant = "primary",
       disabled = function(m) return not m:DetailsLoaded() end,

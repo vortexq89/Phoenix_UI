@@ -229,7 +229,7 @@ local T = {
     ITEMLEVEL_QUALITY_DESC = "Färbt die Zahl nach Gegenstandsqualität.",
     ---------------------------------------------------------------- Minimap
     MINIMAP = "Minikarte",
-    MINIMAP_DESC = "Quadratische Minikarte, Koordinaten und ein gestalteter Gebietsname.",
+    MINIMAP_DESC = "Eckige Minikarte, Koordinaten, thematischer Zonenname und ein Sammler für Addon-Buttons.",
     MINIMAP_SHAPE = "Form",
     MINIMAP_SQUARE = "Quadratische Minikarte",
     MINIMAP_SQUARE_DESC = "Quadratische Maske mit dünnem Rahmen.",
@@ -242,7 +242,7 @@ local T = {
     MINIMAP_COORDS_DESC = "Zeigt deine Kartenkoordinaten unter der Minikarte.",
     ---------------------------------------------------------------- Data texts
     DATATEXTS = "Datenleiste",
-    DATATEXTS_DESC = "Eine kleine Leiste mit FPS, Latenz, Tempo, Haltbarkeit, Gold und Uhr.",
+    DATATEXTS_DESC = "Eine schmale Leiste mit Live-Infos – FPS, Latenz, Gold, Taschen, Freunde und mehr – in deiner Reihenfolge.",
     DT_SEGMENTS = "Segmente",
     DT_FPS = "Bildrate",
     DT_LATENCY = "Latenz",
@@ -1095,6 +1095,20 @@ local T = {
     BAGS_ILVL = "Gegenstandsstufe auf Ausrüstung",
     BAGS_ILVL_DESC = "Derselbe Schalter wie Gegenstandsstufe › Taschen; Größe und Farbe stellst du dort ein.",
     BAGS_PREVIEW_TITLE = "Rucksack",
+    ---------------------------------------------------------------- Settings rows: tooltips
+    TIP_ON = "An",
+    TIP_DEFAULT = "Standard: %s",
+    TIP_RESET = "Rechtsklick auf die Zeile setzt sie zurück.",
+    TIP_RELOAD = "Wirkt nach /reload.",
+    TIP_COMBAT = "Im Kampf geändert, gilt es nach dem Kampf.",
+    ---------------------------------------------------------------- Slash help
+    SLASH_HELP_MORE = "/pui help – diese Liste\n/pui settings – Phoenix in den AddOn-Einstellungen des Spiels\n/pui diag – Texturen, Symbole und Schriften prüfen\n/pui bugs share on|off – Fehlerberichte an den Autor\n/pui debug – Debug-Ausgabe an oder aus",
+    SLASH_UNKNOWN = "Unbekannter Befehl „%s“. /pui help zeigt alle Befehle.",
+    ---------------------------------------------------------------- Settings addon version
+    OPTIONS_VERSION_MISMATCH = "Das Einstellungsfenster hat Version %s, Phoenix UI aber %s. Installiere beide Ordner aus demselben Download.",
+    DIAG_OPTIONS = "Einstellungs-Addon",
+    DIAG_OPTIONS_OK = "Phoenix_UI_Options %s, passt",
+    DIAG_OPTIONS_MISMATCH = "Phoenix_UI_Options %s, aber Phoenix UI ist %s",
 }
 
 ns.RegisterLocale("deDE", T)

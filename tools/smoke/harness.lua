@@ -401,7 +401,7 @@ try("colour round-trip", function()
     assert(r == 0.2 and g == 0.4 and b == 0.6, ("custom accent is %s %s %s"):format(tostring(r), tostring(g), tostring(b)))
     ns.DB:Set(general, "theme.preset", "ember")
 end)
-for _, msg in ipairs({ "", "", "profile", "profile Default", "debug", "debug", "general", "nonsense", "reset" }) do
+for _, msg in ipairs({ "", "", "profile", "profile Default", "debug", "debug", "general", "nonsense", "reset", "help", "?", "bags", "minimap" }) do
     try("/pui " .. msg, slashes.pui or error, msg)
 end
 -- error catcher: the stored shape must match the uploader contract (docs/BUG_REPORTS.md)
@@ -1062,6 +1062,23 @@ try("bags", function()
     B.StyleButton(b, nil)
     B.StyleButton(b, {})
     B:Refresh()
+end)
+-- every settings row explains itself on hover (description, default, reset, reload/combat notes)
+try("row tooltips", function()
+    local hovered = 0
+    for _, m in ipairs(ns.moduleList) do
+        local page = ns.Config:Show(m.key)
+        for _, r in ipairs(page.rows or {}) do
+            local enter = scripts[r] and scripts[r].OnEnter
+            if enter and r.item and r.item.label then enter(r); hovered = hovered + 1 end
+        end
+    end
+    assert(hovered > 150, "only " .. hovered .. " rows show a tooltip")
+    for key, schema in pairs(ns.options) do
+        for _, item in ipairs(schema) do
+            assert(item.type ~= "header" or item.icon, key .. ": card header " .. tostring(item.label) .. " has no icon")
+        end
+    end
 end)
 -- presets: one click writes only existing keys, Undo restores them; the picker opens only on a fresh install
 try("presets", function()

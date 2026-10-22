@@ -229,7 +229,7 @@ local T = {
     ITEMLEVEL_QUALITY_DESC = "Colorea el número según la calidad del objeto.",
     ---------------------------------------------------------------- Minimap
     MINIMAP = "Minimapa",
-    MINIMAP_DESC = "Minimapa cuadrado, coordenadas y un nombre de zona con estilo.",
+    MINIMAP_DESC = "Minimapa cuadrado, coordenadas, nombre de zona temático y un contenedor para botones de addons.",
     MINIMAP_SHAPE = "Forma",
     MINIMAP_SQUARE = "Minimapa cuadrado",
     MINIMAP_SQUARE_DESC = "Máscara cuadrada con un borde fino.",
@@ -242,7 +242,7 @@ local T = {
     MINIMAP_COORDS_DESC = "Muestra tus coordenadas bajo el minimapa.",
     ---------------------------------------------------------------- Data texts
     DATATEXTS = "Barra de datos",
-    DATATEXTS_DESC = "Una pequeña barra con FPS, latencia, velocidad, durabilidad, oro y reloj.",
+    DATATEXTS_DESC = "Una barra fina con información en vivo —FPS, latencia, oro, bolsas, amigos y más— en el orden que elijas.",
     DT_SEGMENTS = "Segmentos",
     DT_FPS = "Fotogramas por segundo",
     DT_LATENCY = "Latencia",
@@ -1095,6 +1095,20 @@ local T = {
     BAGS_ILVL = "Nivel de objeto en el equipo",
     BAGS_ILVL_DESC = "El mismo interruptor que Nivel de objeto › Bolsas; el tamaño y el color se ajustan allí.",
     BAGS_PREVIEW_TITLE = "Mochila",
+    ---------------------------------------------------------------- Settings rows: tooltips
+    TIP_ON = "Activado",
+    TIP_DEFAULT = "Predeterminado: %s",
+    TIP_RESET = "Haz clic derecho en la fila para restablecerla.",
+    TIP_RELOAD = "Se aplica tras /reload.",
+    TIP_COMBAT = "Si lo cambias en combate, se aplica al terminar.",
+    ---------------------------------------------------------------- Slash help
+    SLASH_HELP_MORE = "/pui help – esta lista\n/pui settings – Phoenix en las opciones de accesorios del juego\n/pui diag – comprobar texturas, iconos y fuentes\n/pui bugs share on|off – informes de errores al autor\n/pui debug – activar o desactivar la depuración",
+    SLASH_UNKNOWN = "Comando desconocido «%s». Escribe /pui help para ver la lista.",
+    ---------------------------------------------------------------- Settings addon version
+    OPTIONS_VERSION_MISMATCH = "La ventana de opciones es la versión %s, pero Phoenix UI es la %s. Instala ambas carpetas de la misma descarga.",
+    DIAG_OPTIONS = "Addon de opciones",
+    DIAG_OPTIONS_OK = "Phoenix_UI_Options %s, coincide",
+    DIAG_OPTIONS_MISMATCH = "Phoenix_UI_Options %s, pero Phoenix UI es %s",
 }
 
 ns.RegisterLocale("esES", T)

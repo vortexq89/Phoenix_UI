@@ -13,6 +13,11 @@ ns.Config = Config
 local Launcher = {}
 ns.Launcher = Launcher
 
+-- Version strings of Phoenix_UI and Phoenix_UI_Options (nil when the options folder is missing).
+function Launcher:Versions()
+    return C_AddOns.GetAddOnMetadata("Phoenix_UI", "Version"), C_AddOns.GetAddOnMetadata(OPTIONS, "Version")
+end
+
 -- Loads the settings addon once; true when the real window code is in place.
 function Launcher:Load()
     if Config.loaded then return true end
@@ -21,7 +26,12 @@ function Launcher:Load()
     PhoenixUI_Bridge = ns
     local ok, loaded, why = pcall(C_AddOns.LoadAddOn, OPTIONS)
     PhoenixUI_Bridge = nil
-    if ok and loaded and Config.loaded then return true end
+    if ok and loaded and Config.loaded then
+        -- Updating only one of the two folders leaves the window out of step with the addon: say so once.
+        local mine, theirs = Launcher:Versions()
+        if theirs and mine ~= theirs then ns:Print(L.OPTIONS_VERSION_MISMATCH, theirs, mine) end
+        return true
+    end
     reason = (ok and (why and _G["ADDON_" .. why] or why)) or loaded
     self.failed = true
     ns:Print(L.OPTIONS_MISSING, tostring(reason or OPTIONS))

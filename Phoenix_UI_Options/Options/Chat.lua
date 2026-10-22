@@ -15,7 +15,7 @@ ns:RegisterOptions("Chat", {
       keywords = "tab flash alert new message glow" },
     { type = "toggle", key = "whisperTabs", label = "CHAT_WHISPER_TABS", desc = "CHAT_WHISPER_TABS_DESC",
       keywords = "whisper tab colour color" },
-    { type = "header", label = "CHAT_TEXT" },
+    { type = "header", label = "CHAT_TEXT", icon = "fonts" },
     { type = "toggle", key = "styleText", label = "CHAT_STYLE_TEXT", desc = "CHAT_STYLE_TEXT_DESC" },
     { type = "font", key = "messages.font", label = "CHAT_MESSAGE_FONT", allowDefault = true, disabled = unstyled,
       cog = {

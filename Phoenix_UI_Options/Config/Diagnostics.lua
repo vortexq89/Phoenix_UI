@@ -56,6 +56,7 @@ local function report()
         ("Phoenix UI %s · WoW %s (%s) · %s"):format(tostring(d.version), tostring(d.build), tostring(d.toc), tostring(d.locale)),
         ("Screen %s · UI scale %s · icons: %s%s"):format(tostring(d.screen), tostring(d.uiScale), ns.Icons:Source(),
             ns.Icons.game and " (game icons in use)" or ""),
+        ("Settings addon %s"):format(tostring(select(2, ns.Launcher:Versions()))),
         ("Media %d/%d loaded · %s"):format((d.total or 0) - (d.failed or 0), d.total or 0, mediaSummary(d)),
     }
     for _, r in ipairs(d.media or {}) do
@@ -91,6 +92,11 @@ local schema = {
         local d = last()
         local build, _, _, toc = GetBuildInfo()
         return ("%s  ·  %s  ·  %s"):format(d and d.build or build, d and d.toc or toc, d and d.locale or GetLocale())
+    end) },
+    { type = "custom", label = "DIAG_OPTIONS", build = valueRow(function()
+        local mine, theirs = ns.Launcher:Versions()
+        if theirs ~= mine then return L.DIAG_OPTIONS_MISMATCH:format(tostring(theirs), tostring(mine)), "state.warning" end
+        return L.DIAG_OPTIONS_OK:format(tostring(theirs)), "state.success"
     end) },
     { type = "custom", label = "DIAG_DISPLAY", build = valueRow(function()
         local d = last()

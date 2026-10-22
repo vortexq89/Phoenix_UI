@@ -229,7 +229,7 @@ local T = {
     ITEMLEVEL_QUALITY_DESC = "按物品品质为数字着色。",
     ---------------------------------------------------------------- Minimap
     MINIMAP = "小地图",
-    MINIMAP_DESC = "方形小地图、坐标和美化的区域名称。",
+    MINIMAP_DESC = "方形小地图、坐标、主题化区域名称以及插件按钮收纳。",
     MINIMAP_SHAPE = "形状",
     MINIMAP_SQUARE = "方形小地图",
     MINIMAP_SQUARE_DESC = "带细边框的方形遮罩。",
@@ -242,7 +242,7 @@ local T = {
     MINIMAP_COORDS_DESC = "在小地图下方显示你的地图坐标。",
     ---------------------------------------------------------------- Data texts
     DATATEXTS = "信息条",
-    DATATEXTS_DESC = "显示帧数、延迟、速度、耐久度、金币和时钟的小信息条。",
+    DATATEXTS_DESC = "一条细长的实时信息条——帧数、延迟、金币、背包、好友等——按你选择的顺序排列。",
     DT_SEGMENTS = "分段",
     DT_FPS = "帧数",
     DT_LATENCY = "延迟",
@@ -1095,6 +1095,20 @@ local T = {
     BAGS_ILVL = "装备上显示物品等级",
     BAGS_ILVL_DESC = "与「物品等级 › 背包」为同一开关；大小与颜色在那里设置。",
     BAGS_PREVIEW_TITLE = "行囊",
+    ---------------------------------------------------------------- Settings rows: tooltips
+    TIP_ON = "开启",
+    TIP_DEFAULT = "默认：%s",
+    TIP_RESET = "右键点击此行可重置。",
+    TIP_RELOAD = "需 /reload 后生效。",
+    TIP_COMBAT = "战斗中更改将在战斗结束后生效。",
+    ---------------------------------------------------------------- Slash help
+    SLASH_HELP_MORE = "/pui help – 本列表\n/pui settings – 游戏插件设置中的 Phoenix\n/pui diag – 检查材质、图标与字体\n/pui bugs share on|off – 向作者发送错误报告\n/pui debug – 开关调试输出",
+    SLASH_UNKNOWN = "未知命令“%s”。输入 /pui help 查看完整列表。",
+    ---------------------------------------------------------------- Settings addon version
+    OPTIONS_VERSION_MISMATCH = "设置窗口版本为 %s，而 Phoenix UI 为 %s。请从同一下载中安装两个文件夹。",
+    DIAG_OPTIONS = "设置插件",
+    DIAG_OPTIONS_OK = "Phoenix_UI_Options %s，版本一致",
+    DIAG_OPTIONS_MISMATCH = "Phoenix_UI_Options %s，但 Phoenix UI 为 %s",
 }
 
 ns.RegisterLocale("zhCN", T)

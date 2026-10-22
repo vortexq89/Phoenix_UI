@@ -14,14 +14,14 @@ local modeGet, modeSet = CVar("floatingCombatTextFloatMode_v2", "number")
 ns:RegisterOptions("CombatText", {
     { type = "preview", kind = "combattext" },
     { type = "description", text = "FCT_INTRO" },
-    { type = "header", label = "FCT_OUTGOING" },
+    { type = "header", label = "FCT_OUTGOING", icon = "arrow-up" },
     toggle("floatingCombatTextCombatDamage_v2", { label = "FCT_DAMAGE", desc = "FCT_DAMAGE_DESC", keywords = "numbers sct msbt" }),
     toggle("floatingCombatTextCombatLogPeriodicSpells_v2", { label = "FCT_PERIODIC", desc = "FCT_PERIODIC_DESC", keywords = "dot" }),
     toggle("floatingCombatTextPetMeleeDamage_v2", { label = "FCT_PET", desc = "FCT_PET_DESC" }),
     toggle("floatingCombatTextCombatHealing_v2", { label = "FCT_HEALING", desc = "FCT_HEALING_DESC" }),
     { type = "range", label = "FCT_SCALE", desc = "FCT_SCALE_DESC", min = 0.5, max = 2.5, step = 0.1,
       get = scaleGet, set = scaleSet, combat = true },
-    { type = "header", label = "FCT_INCOMING" },
+    { type = "header", label = "FCT_INCOMING", icon = "arrow-down" },
     toggle("enableFloatingCombatText", { label = "FCT_SELF", desc = "FCT_SELF_DESC", keywords = "msbt incoming" }),
     { type = "select", label = "FCT_MODE", desc = "FCT_MODE_DESC", get = modeGet, set = modeSet, combat = true, values = {
         { value = 1, label = "FCT_MODE_UP" }, { value = 2, label = "FCT_MODE_DOWN" }, { value = 3, label = "FCT_MODE_ARC" },

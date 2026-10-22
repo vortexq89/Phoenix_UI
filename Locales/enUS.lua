@@ -237,7 +237,7 @@ ns.RegisterLocale("enUS", {
 
     ---------------------------------------------------------------- Minimap
     MINIMAP = "Minimap",
-    MINIMAP_DESC = "Square minimap, coordinates and a themed zone name.",
+    MINIMAP_DESC = "Square minimap, coordinates, a themed zone name and a bin for addon buttons.",
     MINIMAP_SHAPE = "Shape",
     MINIMAP_SQUARE = "Square minimap",
     MINIMAP_SQUARE_DESC = "Square mask with a thin border.",
@@ -251,7 +251,7 @@ ns.RegisterLocale("enUS", {
 
     ---------------------------------------------------------------- Data texts
     DATATEXTS = "Data Bar",
-    DATATEXTS_DESC = "A small bar with FPS, latency, speed, durability, gold and clock.",
+    DATATEXTS_DESC = "A slim bar of live info — FPS, latency, gold, bags, friends and more — in the order you choose.",
     DT_SEGMENTS = "Segments",
     DT_FPS = "Frame rate",
     DT_LATENCY = "Latency",
@@ -1121,4 +1121,18 @@ ns.RegisterLocale("enUS", {
     BAGS_ILVL = "Item level on gear",
     BAGS_ILVL_DESC = "Same switch as Item Level › Bags; size and colour are set there.",
     BAGS_PREVIEW_TITLE = "Backpack",
+    ---------------------------------------------------------------- Settings rows: tooltips
+    TIP_ON = "On",
+    TIP_DEFAULT = "Default: %s",
+    TIP_RESET = "Right-click the row to reset it.",
+    TIP_RELOAD = "Takes effect after /reload.",
+    TIP_COMBAT = "Changed in combat, it applies when combat ends.",
+    ---------------------------------------------------------------- Slash help
+    SLASH_HELP_MORE = "/pui help – this list\n/pui settings – Phoenix in the game's AddOns settings\n/pui diag – check textures, icons and fonts\n/pui bugs share on|off – error reports to the author\n/pui debug – debug output on or off",
+    SLASH_UNKNOWN = "Unknown command \"%s\". Type /pui help for the full list.",
+    ---------------------------------------------------------------- Settings addon version
+    OPTIONS_VERSION_MISMATCH = "The settings window is version %s but Phoenix UI is %s. Install both folders from the same download.",
+    DIAG_OPTIONS = "Settings addon",
+    DIAG_OPTIONS_OK = "Phoenix_UI_Options %s, matches",
+    DIAG_OPTIONS_MISMATCH = "Phoenix_UI_Options %s, but Phoenix UI is %s",
 })

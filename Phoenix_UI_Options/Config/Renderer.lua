@@ -17,6 +17,7 @@ local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT = 24, 16, 36, 52, 760
 local POPOVER_W = 400
 
 local function text(key) return key and (L[key] or key) or "" end
+local rowTip -- defined after the reset helpers
 
 ---------------------------------------------------------------- values (scope aware)
 local function resolve(page, key)
@@ -91,6 +92,40 @@ local function resetItem(page, m, item)
         if resetItem(page, m, sub) then changed = true end
     end
     return changed
+end
+
+---------------------------------------------------------------- row tooltip
+-- Every row explains itself on hover: its description when the row has no room for one, the default
+-- value, how to reset it, and whether it needs a reload or waits for combat to end.
+local function describe(item, m, v)
+    local t = item.type
+    if t == "toggle" then return v and L.TIP_ON or L.OFF end
+    if t == "range" and type(v) == "number" then
+        if item.percent then return ("%d%%"):format(math.floor(v * 100 + 0.5)) end
+        return (item.step or 1) < 1 and ("%.2f"):format(v):gsub("0+$", ""):gsub("%.$", "") or tostring(v)
+    end
+    if t == "select" then
+        local values = type(item.values) == "function" and item.values(m) or item.values or {}
+        for _, e in ipairs(values) do if e.value == v then return text(e.label) end end
+    end
+    if (t == "font" or t == "texture" or t == "sound") and type(v) == "string" then
+        return v == "" and L.DEFAULT or v
+    end
+    return nil
+end
+
+function rowTip(page, m, item, withDesc)
+    local lines = {}
+    if withDesc and item.desc then lines[#lines + 1] = text(item.desc) end
+    if item.tip then lines[#lines + 1] = text(item.tip) end
+    if resettable(page, m, item) and item.type ~= "colors" then
+        local d = describe(item, m, defaultOf(page, m, item))
+        if d then lines[#lines + 1] = L.TIP_DEFAULT:format(d) end
+    end
+    if resettable(page, m, item) then lines[#lines + 1] = L.TIP_RESET end
+    if item.reload then lines[#lines + 1] = L.TIP_RELOAD end
+    if item.combat then lines[#lines + 1] = L.TIP_COMBAT end
+    return #lines > 0 and table.concat(lines, "\n") or nil
 end
 
 ---------------------------------------------------------------- hover preview
@@ -304,8 +339,11 @@ function buildRow(card, page, m, item)
         if self.desc then Skin:Text(self.desc, "desc", "text.muted") end
     end)
     row:EnableMouse(true)
-    row:SetScript("OnEnter", function(self) W.Color(self.hl, "bg.hover", 0.55) end)
-    row:SetScript("OnLeave", function(self) W.Color(self.hl, "bg.hover", 0) end)
+    row:SetScript("OnEnter", function(self)
+        W.Color(self.hl, "bg.hover", 0.55)
+        W.ShowTooltip(self.label, text(item.label), rowTip(page, m, item, not hasDesc))
+    end)
+    row:SetScript("OnLeave", function(self) W.Color(self.hl, "bg.hover", 0); W.HideTooltip() end)
     attachReset(row, page, m, item)
 
     function row:Measure()
@@ -360,7 +398,7 @@ local function buildDescription(card, item)
     row.text:SetWordWrap(true)
     row.text:SetPoint("TOPLEFT", 16, -4)
     row.text:SetPoint("RIGHT", -16, 0)
-    row.text:SetText(text(item.text))
+    row.text:SetText(type(item.text) == "function" and item.text() or text(item.text))
     row.item = item
     row.isDescription = true
     Skin:Register(row, function(self) Skin:Text(self.text, "desc", "text.secondary") end)

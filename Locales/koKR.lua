@@ -229,7 +229,7 @@ local T = {
     ITEMLEVEL_QUALITY_DESC = "숫자를 아이템 등급 색상으로 표시합니다.",
     ---------------------------------------------------------------- Minimap
     MINIMAP = "미니맵",
-    MINIMAP_DESC = "사각형 미니맵, 좌표, 꾸민 지역 이름.",
+    MINIMAP_DESC = "사각 미니맵, 좌표, 테마 지역 이름, 애드온 버튼 보관함.",
     MINIMAP_SHAPE = "모양",
     MINIMAP_SQUARE = "사각형 미니맵",
     MINIMAP_SQUARE_DESC = "얇은 테두리가 있는 사각형 마스크.",
@@ -242,7 +242,7 @@ local T = {
     MINIMAP_COORDS_DESC = "미니맵 아래에 지도 좌표를 표시합니다.",
     ---------------------------------------------------------------- Data texts
     DATATEXTS = "정보 바",
-    DATATEXTS_DESC = "FPS, 지연 시간, 속도, 내구도, 골드, 시계를 보여 주는 작은 바.",
+    DATATEXTS_DESC = "FPS, 지연 시간, 골드, 가방, 친구 등 실시간 정보를 원하는 순서로 보여 주는 얇은 막대입니다.",
     DT_SEGMENTS = "구역",
     DT_FPS = "초당 프레임",
     DT_LATENCY = "지연 시간",
@@ -1095,6 +1095,20 @@ local T = {
     BAGS_ILVL = "장비에 아이템 레벨",
     BAGS_ILVL_DESC = "아이템 레벨 › 가방과 같은 스위치입니다. 크기와 색은 그곳에서 설정합니다.",
     BAGS_PREVIEW_TITLE = "배낭",
+    ---------------------------------------------------------------- Settings rows: tooltips
+    TIP_ON = "켜짐",
+    TIP_DEFAULT = "기본값: %s",
+    TIP_RESET = "줄을 우클릭하면 초기화됩니다.",
+    TIP_RELOAD = "/reload 후 적용됩니다.",
+    TIP_COMBAT = "전투 중에 바꾸면 전투가 끝난 뒤 적용됩니다.",
+    ---------------------------------------------------------------- Slash help
+    SLASH_HELP_MORE = "/pui help – 이 목록\n/pui settings – 게임 애드온 설정의 Phoenix\n/pui diag – 텍스처, 아이콘, 글꼴 점검\n/pui bugs share on|off – 제작자에게 오류 보고 전송\n/pui debug – 디버그 출력 켜기/끄기",
+    SLASH_UNKNOWN = "알 수 없는 명령 \"%s\". 전체 목록은 /pui help 를 입력하세요.",
+    ---------------------------------------------------------------- Settings addon version
+    OPTIONS_VERSION_MISMATCH = "설정 창 버전은 %s이지만 Phoenix UI는 %s입니다. 두 폴더를 같은 다운로드에서 설치하세요.",
+    DIAG_OPTIONS = "설정 애드온",
+    DIAG_OPTIONS_OK = "Phoenix_UI_Options %s, 일치",
+    DIAG_OPTIONS_MISMATCH = "Phoenix_UI_Options %s, Phoenix UI는 %s",
 }
 
 ns.RegisterLocale("koKR", T)

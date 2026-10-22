@@ -68,11 +68,18 @@ local function render()
     end
 end
 
+local tick
+-- The fade ticker only runs while an icon is waiting to fade (started by a cast, stopped by tick).
+local function startTicker()
+    if not M.ticker and M.db.fade > 0 then M.ticker = C_Timer.NewTicker(0.25, tick) end
+end
+
 local function push(texture)
     local db = M.db
     table.insert(history, 1, { texture = texture, expires = GetTime() + db.fade })
     for i = #history, db.count + 1, -1 do history[i] = nil end
     render()
+    startTicker()
 end
 
 local function onCast(_, _, _, _, spellID)
@@ -86,13 +93,14 @@ local function onCast(_, _, _, _, spellID)
     if texture then push(texture) end
 end
 
-local function tick()
-    if M.db.fade <= 0 then return end
-    local now = GetTime()
+function tick()
+    local now, waiting = GetTime(), false
     for i, entry in ipairs(history) do
         local f = icons[i]
         if f and f:IsShown() and now >= entry.expires and not f.fade:IsPlaying() then f.fade:Play() end
+        if f and f:IsShown() and now < entry.expires then waiting = true end
     end
+    if (not waiting or M.db.fade <= 0) and M.ticker then M.ticker:Cancel(); M.ticker = nil end
 end
 
 function M:OnEnable()
@@ -107,7 +115,7 @@ function M:OnEnable()
     end
     strip:Show()
     ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", self, onCast, "player")
-    self.ticker = C_Timer.NewTicker(0.25, tick)
+    startTicker()
 end
 
 function M:OnDisable()
@@ -120,5 +128,6 @@ function M:Refresh()
     layout()
     for i = #history, self.db.count + 1, -1 do history[i] = nil end
     render()
+    startTicker()
 end
 

@@ -280,10 +280,15 @@ local function onHealth(_, _, unit)
     if M.db.healthText and not Secret.IsSecret(unit) then updateHealth(unit) end
 end
 
+-- UNIT_HEALTH fires for every unit many times a second; listen only while the health text is on.
+local function syncHealthEvent(self)
+    if self.db.healthText then ns.Events:On("UNIT_HEALTH", self, onHealth) else ns.Events:Off("UNIT_HEALTH", self) end
+end
+
 function M:OnEnable()
     ns.Events:On("NAME_PLATE_UNIT_ADDED", self, onAdded)
     ns.Events:On("NAME_PLATE_UNIT_REMOVED", self, onRemoved)
-    ns.Events:On("UNIT_HEALTH", self, onHealth)
+    syncHealthEvent(self)
     ns.Events:On("PLAYER_TARGET_CHANGED", self, recolorAll)
     ns.Events:On("PLAYER_FOCUS_CHANGED", self, recolorAll)
     ns.Events:On("UNIT_THREAT_SITUATION_UPDATE", self, onThreat)
@@ -293,6 +298,7 @@ function M:OnEnable()
 end
 
 function M:Refresh()
+    syncHealthEvent(self)
     for _, fs in pairs(texts) do
         styleText(fs)
         fs:Hide()

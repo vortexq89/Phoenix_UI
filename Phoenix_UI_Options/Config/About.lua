@@ -44,7 +44,7 @@ for _, link in ipairs(LINKS) do
 end
 local tail = {
     { type = "header", label = "SLASH_COMMANDS", icon = "terminal" },
-    { type = "description", text = "SLASH_HELP_TEXT" },
+    { type = "description", text = function() return L.SLASH_HELP_TEXT .. "\n" .. L.SLASH_HELP_MORE end },
     { type = "header", label = "RECOMMENDED", icon = "addon" },
     { type = "description", text = "RECOMMENDED_TEXT" },
     { type = "header", label = "CREDITS", icon = "heart" },

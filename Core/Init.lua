@@ -39,6 +39,8 @@ local function slash(msg)
     elseif cmd == "debug" then
         ns.debug = not ns.debug
         ns:Print(L.SLASH_DEBUG, ns.debug and L.ENABLED or L.DISABLED)
+    elseif cmd == "help" or cmd == "?" then
+        for line in (L.SLASH_HELP_TEXT .. "\n" .. L.SLASH_HELP_MORE):gmatch("[^\n]+") do ns:Print(line) end
     else
         for _, m in ipairs(ns.moduleList) do
             if m.key:lower() == cmd then
@@ -46,6 +48,7 @@ local function slash(msg)
                 return ns.Config:Show(m.key)
             end
         end
+        ns:Print(L.SLASH_UNKNOWN:format(cmd))
         ns:Print(L.SLASH_HELP)
     end
 end
