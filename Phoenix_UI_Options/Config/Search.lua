@@ -183,7 +183,11 @@ function Config:Search(query)
     for w in query:gmatch("%S+") do words[#words + 1] = w end
     local f = getResults()
     local n = 0
-    for _, e in ipairs(index) do
+    -- Pages first, then settings rows, so a group name still lists its pages when its rows alone fill the cap.
+    local ordered = {}
+    for _, e in ipairs(index) do if not e.item then ordered[#ordered + 1] = e end end
+    for _, e in ipairs(index) do if e.item then ordered[#ordered + 1] = e end end
+    for _, e in ipairs(ordered) do
         if n >= MAX_RESULTS then break end
         local hit = true
         for _, w in ipairs(words) do

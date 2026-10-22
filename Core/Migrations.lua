@@ -108,6 +108,23 @@ Mg.MODULE_MOVES = {
     { "Tracker", "countdown", "Encounters", "countdown" },
 }
 
+-- Settings whose value changed shape: { module, old path, new path, convert(old) -> new }.
+Mg.CONVERTS = {
+    -- 2.0 "Square minimap" switch -> 2.1 shape picker (round, square, rectangle)
+    { "Minimap", "square", "shape", function(v) if v == false then return "ROUND" elseif v == true then return "SQUARE" end end },
+}
+
+local function convert(modules)
+    for _, row in ipairs(Mg.CONVERTS) do
+        local db = modules[row[1]]
+        if type(db) == "table" and db[row[2]] ~= nil then
+            local value = row[4](db[row[2]])
+            if value ~= nil and db[row[3]] == nil then db[row[3]] = value end
+            db[row[2]] = nil
+        end
+    end
+end
+
 local function moveBetweenModules(modules)
     for _, row in ipairs(Mg.MODULE_MOVES) do
         local from = modules[row[1]]
@@ -126,7 +143,7 @@ end
 local function moveProfile(profile)
     local U = ns.Util
     local modules = type(profile) == "table" and type(profile.modules) == "table" and profile.modules
-    if modules then moveBetweenModules(modules) end
+    if modules then moveBetweenModules(modules); convert(modules) end
     for _, row in ipairs(modules and Mg.MOVES or {}) do
         local db = modules[row[1]]
         local ok, value = pcall(U.GetPath, db, row[2])
@@ -152,6 +169,7 @@ Mg.steps = {
     { version = 2, run = moveKeys },
     { version = 3, run = moveKeys },   -- GroupFrames.nameSize joined MOVES after step 2 shipped on the branch
     { version = 4, run = moveKeys },   -- Tracker.countdown -> Encounters.countdown (MODULE_MOVES)
+    { version = 5, run = moveKeys },   -- Minimap.square -> Minimap.shape (CONVERTS)
 }
 
 function Mg:Run(sv)

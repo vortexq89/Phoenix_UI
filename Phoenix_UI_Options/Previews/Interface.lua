@@ -13,15 +13,24 @@ local function caption(parent, anchor, text)
 end
 
 ---------------------------------------------------------------- minimap
+-- Element glyphs around the map edge: Blizzard's buttons the page can tuck away.
+local ELEMENTS = {
+    { key = "tracking", icon = "search", point = "TOPLEFT", x = 4, y = -4 },
+    { key = "mail", icon = "mail", point = "TOPLEFT", x = 4, y = -24 },
+    { key = "calendar", icon = "layout", point = "TOPRIGHT", x = -26, y = -4 },
+    { key = "difficulty", icon = "heart", point = "TOPLEFT", x = 24, y = -4 },
+    { key = "expansion", icon = "maps", point = "BOTTOMLEFT", x = 4, y = 4 },
+    { key = "compartment", icon = "cog", point = "TOPRIGHT", x = -4, y = -24 },
+}
+
 P:Register("minimap", {
     module = "Minimap",
-    height = 170,
+    height = 190,
     build = function(stage, m)
         local map = CreateFrame("Frame", nil, stage)
-        map:SetSize(116, 116)
-        map:SetPoint("CENTER")
+        map:SetSize(130, 130)
+        map:SetPoint("CENTER", -40, -4)
         map.mask = map:CreateMaskTexture()
-        map.mask:SetTexture(Media.textures.CIRCLE, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
         map.mask:SetAllPoints()
         local layers = {}
         local function layer(tex, r, g, b, a, w, h, x, y)
@@ -37,21 +46,33 @@ P:Register("minimap", {
         layer(Media.textures.CIRCLE, 0.24, 0.33, 0.18, 0.9, 90, 70, -26, 24)
         layer(Media.textures.CIRCLE, 0.28, 0.36, 0.2, 0.8, 70, 80, 34, -30)
         layer(Media.textures.CIRCLE, 0.15, 0.28, 0.4, 0.95, 46, 34, 30, 30)
-        local road = layer(Media.textures.WHITE, 0.55, 0.47, 0.33, 0.8, 140, 5, 0, -4)
+        local road = layer(Media.textures.WHITE, 0.55, 0.47, 0.33, 0.8, 150, 5, 0, -4)
         road:SetRotation(math.rad(-24))
         local arrow = map:CreateTexture(nil, "OVERLAY")
         arrow:SetTexture("Interface\\Minimap\\MinimapArrow")
         arrow:SetSize(24, 24)
         arrow:SetPoint("CENTER", -4, -4)
-        map.coords = P.Text(map, "OVERLAY")
-        map.coords:SetPoint("BOTTOM", 0, 8)
+        -- the visible band (the whole map unless rectangular): border and texts sit on it, as in game
+        local band = CreateFrame("Frame", nil, map)
+        band:SetFrameLevel(map:GetFrameLevel() + 2)
+        map.coords = P.Text(band, "OVERLAY")
+        map.clock = P.Text(stage, "OVERLAY")
         map.zone = P.Text(stage, "OVERLAY")
-        map.zone:SetPoint("BOTTOM", map, "TOP", 0, 6)
+        map.zone:SetPoint("BOTTOM", band, "TOP", 0, 6)
+        map.clock:SetPoint("TOP", band, "BOTTOM", 0, -5)
+        map.elements = {}
+        for _, e in ipairs(ELEMENTS) do
+            local g = ns.Icons:Create(band, e.icon, 12, "text.secondary")
+            g:SetPoint(e.point, band, e.point, e.x, e.y)
+            map.elements[e.key] = g
+        end
+        map.zoom = P.Text(band, "OVERLAY")
+        map.zoom:SetPoint("BOTTOMRIGHT", -6, 4)
         -- the button bin: its corner glyph and the open flyout with a few sample addon buttons
-        local binBtn = CreateFrame("Frame", nil, map)
+        local binBtn = CreateFrame("Frame", nil, band)
         binBtn:SetSize(18, 18)
-        binBtn:SetPoint("TOPRIGHT", -4, -4)
-        binBtn:SetFrameLevel(map:GetFrameLevel() + 4)
+        binBtn:SetPoint("BOTTOMRIGHT", band, "BOTTOMRIGHT", -22, 4)
+        binBtn:SetFrameLevel(band:GetFrameLevel() + 2)
         binBtn.icon = ns.Icons:Create(binBtn, "bin", 11, "accent.primary")
         binBtn.icon:SetPoint("CENTER")
         local fly = CreateFrame("Frame", nil, stage)
@@ -60,40 +81,56 @@ P:Register("minimap", {
         local SAMPLE = { "items", "maps", "chat", "bugs", "tracker", "sound" }
         for i, icon in ipairs(SAMPLE) do
             local c = CreateFrame("Frame", nil, fly)
-            c:SetSize(22, 22)
             c.icon = ns.Icons:Create(c, icon, 12, "text.secondary")
             c.icon:SetPoint("CENTER")
             fly.cells[i] = c
         end
         return function()
             local db = m.db
+            local shape = m:Shape()
+            local round = shape == "ROUND"
+            map.mask:SetTexture(m.MaskFor(shape, db.rectHeight) or Media.textures.CIRCLE,
+                "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
             for _, t in ipairs(layers) do
-                if db.square then t:RemoveMaskTexture(map.mask) else t:AddMaskTexture(map.mask) end
+                t:RemoveMaskTexture(map.mask)
+                t:AddMaskTexture(map.mask)
             end
-            if db.square then
-                Skin:Border(map, "border.black", 2)
-                Skin:Shadow(map, 8)
+            local inset = m.BandInset(shape, db.rectHeight, map:GetHeight())
+            band:ClearAllPoints()
+            band:SetPoint("TOPLEFT", 0, -inset)
+            band:SetPoint("BOTTOMRIGHT", 0, inset)
+            if round then
+                Skin:BorderSpec(band, { style = "none", shadow = "none" })
             else
-                Skin:Border(map, "border.black", 0)
-                Skin:HideShadow(map)
+                Skin:BorderSpec(band, db.border, "border.black")
             end
-            Skin:Text(map.coords, "number", "text.primary", 11, "OUTLINE")
-            map.coords:SetText("48.2  61.7")
+            Skin:TextSpec(map.coords, db.coordsText, "number", "text.primary")
+            Skin:Place(map.coords, band, db.coordsText)
+            map.coords:SetText(m.FormatCoords(0.482, 0.617, db.coordDecimals))
             map.coords:SetShown(db.coords)
-            Skin:Text(map.zone, "body", "accent.primary", 12, "OUTLINE")
+            Skin:TextSpec(map.zone, db.zone, "heading", db.zonePvP and "state.success" or "accent.primary")
             map.zone:SetText(L.PREVIEW_ZONE)
             map.zone:SetShown(db.zoneText)
+            Skin:TextSpec(map.clock, db.clockText, "number", "text.primary")
+            map.clock:SetText("14:32")
+            map.clock:SetShown(db.clock)
+            for key, g in pairs(map.elements) do g:SetShown(db[key] ~= false) end
+            Skin:Text(map.zoom, "number", "text.secondary", 12, "OUTLINE")
+            map.zoom:SetText("+ -")
+            map.zoom:SetShown(db.zoomButtons)
             binBtn:SetShown(db.bin)
             fly:SetShown(db.bin)
             Skin:Panel(binBtn, "raised", { border = "border.default" })
             Skin:Panel(fly, "raised", { border = "border.default" })
             local cols = math.max(1, db.binColumns or 4)
+            local size = math.floor((db.binSize or 28) * 22 / 28 + 0.5)
             for i, c in ipairs(fly.cells) do
+                c:SetSize(size, size)
                 c:ClearAllPoints()
-                c:SetPoint("TOPLEFT", 6 + ((i - 1) % cols) * 24, -6 - math.floor((i - 1) / cols) * 24)
+                c:SetPoint("TOPLEFT", 6 + ((i - 1) % cols) * (size + 2), -6 - math.floor((i - 1) / cols) * (size + 2))
                 Skin:Panel(c, "sunken", { border = "border.subtle" })
             end
-            fly:SetSize(12 + math.min(#fly.cells, cols) * 24 - 2, 12 + math.ceil(#fly.cells / cols) * 24 - 2)
+            fly:SetSize(12 + math.min(#fly.cells, cols) * (size + 2) - 2, 12 + math.ceil(#fly.cells / cols) * (size + 2) - 2)
         end
     end,
 })

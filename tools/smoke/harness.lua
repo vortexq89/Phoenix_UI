@@ -2614,6 +2614,170 @@ try("cooldown manager depth (S12)", function()
     print(("  Tracker settings: %d"):format(n))
 end)
 
+-- chat, minimap, tooltips (S13a): pure helpers, restricted-chat filters (secret pass-through), windows and bar,
+-- minimap shapes, elements and texts, tooltip extras (secret-safe), previews, depth
+try("minimap helpers (S13a)", function()
+    local MM = ns.modules.Minimap
+    assert(MM.SnapRect(83) == 80 and MM.SnapRect(nil) == 80 and MM.SnapRect(52) == 50, "rectangle heights snap")
+    assert(MM.BandInset("RECTANGLE", 80, 200) == 20 and MM.BandInset("SQUARE", 80, 200) == 0, "band inset")
+    assert(MM.MaskFor("ROUND") == nil and MM.MaskFor("SQUARE") == ns.Media.textures.WHITE, "round/square masks")
+    assert(MM.MaskFor("RECTANGLE", 60) == ns.Media.textures.MINIMAP_RECT60, "rectangle mask")
+    assert(MM.FormatCoords(0.4823, 0.617, 1) == "48.2  61.7", "coords one decimal: " .. MM.FormatCoords(0.4823, 0.617, 1))
+    assert(MM.FormatCoords(0.4823, 0.617, 0) == "48  62" and MM.FormatCoords(0.5, 0.5, 2) == "50.00  50.00", "coords")
+    local ig = MM.ParseIgnore(" Alpha, beta ;Gamma ,, ")
+    assert(ig.alpha and ig.beta and ig.gamma and not ig[""], "ignore list")
+    local conv = ns.Migrations.CONVERTS[1]
+    assert(conv[1] == "Minimap" and conv[2] == "square" and conv[3] == "shape", "minimap convert row")
+    assert(conv[4](false) == "ROUND" and conv[4](true) == "SQUARE", "square -> shape values")
+end)
+try("minimap shapes and elements (S13a)", function()
+    local MM = ns.modules.Minimap
+    local db = MM.db
+    for _, shape in ipairs({ "ROUND", "RECTANGLE", "SQUARE" }) do
+        db.shape = shape
+        assert(MM:Shape() == shape, "shape " .. shape)
+        MM:Refresh()
+        ns.Previews:Create("minimap", env.CreateFrame("Frame"), MM, {}):Redraw()
+    end
+    db.shape = "TRIANGLE"
+    assert(MM:Shape() == "SQUARE", "unknown shapes fall back to square")
+    db.shape = "SQUARE"
+    local cal = env.GameTimeFrame
+    db.calendar, db.mail, db.zoomButtons = false, false, false
+    MM:ApplyElements()
+    if cal then assert(MM:IsTucked(cal), "calendar not tucked") end
+    db.calendar, db.mail, db.zoomButtons = true, true, true
+    MM:ApplyElements()
+    if cal then assert(not MM:IsTucked(cal), "calendar not given back") end
+    db.autoZoom, db.coordDecimals, db.zonePvP, db.binSize, db.binIgnore = 5, 2, false, 34, "Alpha"
+    MM:Refresh()
+    fire("MINIMAP_UPDATE_ZOOM"); fire("MINIMAP_PING", "player", 0, 0)
+    fire("ADDON_LOADED", "Blizzard_TimeManager"); fire("ADDON_LOADED", "Blizzard_WorldMap")
+    db.autoZoom, db.coordDecimals, db.zonePvP, db.binSize, db.binIgnore = 0, 1, true, 28, ""
+    MM:Refresh()
+end)
+try("chat helpers (S13a)", function()
+    local C = ns.modules.Chat
+    assert(C.ShortChannel("2. Trade - City") == "2" and C.ShortChannel("Guild") == "Guild", "short channel")
+    local words = C.ParseKeywords("keys, , ara-kara", "Phoenixia")
+    assert(#words == 3, "keywords parsed: " .. #words)
+    local out, hit = C.Highlight("ready Phoenixia? keys up", words, "ff0000")
+    assert(hit and out:find("|cffff0000Phoenixia|r", 1, true) and out:find("|cffff0000keys|r", 1, true), "highlight")
+    local _, partial = C.Highlight("Phoenixias", { "Phoenixia" }, "ff0000")
+    assert(not partial, "keywords match whole words only")
+    local link = "|cffa335ee|Hitem:19019::|h[Phoenixia]|h|r"
+    assert(C.Highlight(link, { "Phoenixia" }, "ff0000") == link, "keywords inside links are left alone")
+    local u, uhit = C.URLs("see www.example.com now", function(x) return "<" .. x .. ">" end)
+    assert(uhit and u:find("<www.example.com>", 1, true), "urls")
+    local d = C.DecorateLinks("|Hitem:19019::|h[Sword]|h", true, true, function() return { level = 684, icon = 123 } end)
+    assert(d:find("(684)", 1, true) and d:find("|T123:0|t", 1, true), "item level and icon on links: " .. d)
+    assert(C.DecorateLinks("x", false, false) == "x", "decorating off")
+    local t = C.NewThrottle()
+    assert(not t("a", 1, 0, 10) and not t("a", 1, 0, 10), "first line passes in every window")
+    assert(t("a", 2, 5, 10), "repeat inside the window is dropped")
+    assert(not t("a", 3, 30, 10), "repeat after the window passes")
+    local pts, w, h = C.BarLayout(5, "TOP")
+    assert(#pts == 5 and w == 108 and h == 20, "top bar layout")
+    _, w, h = C.BarLayout(5, "LEFT")
+    assert(w == 20 and h == 108, "left bar layout")
+    assert(C.Initial("Say") == "S" and C.Initial("Ärger") == "Ä", "initials (UTF-8)")
+    assert(#C.TimestampValues() >= 1, "timestamp values")
+end)
+try("chat filters (S13a)", function()
+    local C = ns.modules.Chat
+    local db = C.db
+    db.shortChannels, db.throttle, db.keywords = true, 0, "keys"
+    C:RefreshMessages()
+    local r = { C.Filter(nil, "CHAT_MSG_CHANNEL", "keys tonight", "Bob", "", "2. Trade", "", 0, 2, "", 0, 0, 77, "") }
+    assert(r[1] == false and r[5] == "2", "channel shortened through arg4: " .. tostring(r[5]))
+    assert(r[2]:find("keys", 1, true), "message kept")
+    local SECRET = {}
+    local isSecret = ns.Secret.IsSecret
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    local s = { C.Filter(nil, "CHAT_MSG_CHANNEL", SECRET, "Bob", "", "2. Trade") }
+    assert(#s == 1 and s[1] == false, "secret messages pass untouched")
+    assert(C.SenderFilter(nil, SECRET) == nil, "secret sender names pass untouched")
+    ns.Secret.IsSecret = isSecret
+    db.shortChannels, db.keywords = false, ""
+    C:RefreshMessages()
+end)
+try("chat windows and bar (S13a)", function()
+    local C = ns.modules.Chat
+    local db = C.db
+    db.skinWindows, db.chatBar, db.editBoxTop, db.skinEditBox, db.hideInCombat = true, true, true, true, true
+    db.sideButtons, db.scrollButton, db.selectedTabColor, db.maxLines = false, true, { r = 1, g = 0, b = 0 }, 256
+    C:Refresh()
+    fire("PLAYER_REGEN_DISABLED"); fire("PLAYER_REGEN_ENABLED")
+    db.chatBarSide = "LEFT"; C:RefreshBar()
+    C.ShowIconPicker(env.CreateFrame("Frame"))
+    for _, v in ipairs({ true, false }) do
+        db.shortChannels, db.itemLevels, db.roleIcons, db.keywordOwnName = v, v, v, v
+        ns.Previews:Create("chat", env.CreateFrame("Frame"), C, {}):Redraw()
+    end
+    db.skinWindows, db.chatBar, db.editBoxTop, db.skinEditBox, db.hideInCombat = false, false, false, false, false
+    db.sideButtons, db.selectedTabColor, db.maxLines, db.chatBarSide = true, false, 0, "TOP"
+    db.shortChannels, db.itemLevels, db.roleIcons, db.keywordOwnName = false, true, true, true
+    C:Refresh()
+end)
+try("tooltip extras (S13a)", function()
+    local T = ns.modules.Tooltip
+    local lines, tip = {}, { AddLine = function() end }
+    local addColored = env.GameTooltip_AddColoredLine
+    rawset(env, "GameTooltip_AddColoredLine", function(_, text) lines[#lines + 1] = text end)
+    local creature = env.UnitCreatureID
+    rawset(env, "UnitCreatureID", function() return 154424 end)
+    T.db.ids = true
+    T:AddID(tip, "unit", {}, "mouseover")
+    assert(lines[1] == ns.L.TOOLTIP_ID_NPC:format(154424), "npc id from UnitCreatureID: " .. tostring(lines[1]))
+    T.db.idKinds.unit = false
+    T:AddID(tip, "unit", {}, "mouseover")
+    assert(#lines == 1, "an unticked ID kind adds no line")
+    T.db.idKinds.unit, T.db.ids = true, false
+    rawset(env, "UnitCreatureID", creature); rawset(env, "GameTooltip_AddColoredLine", addColored)
+    assert(T.IDLine("spell", 5) == ns.L.TOOLTIP_ID_SPELL:format(5) and T.IDLine("bogus", 1) == nil, "id lines")
+    local line = T.CountLine(3, 13, 15)
+    assert(line:find("3", 1, true) and line:find("10", 1, true) and line:find("2", 1, true), "count line " .. line)
+    assert(T.CountLine(0, 0, 0) == nil, "nothing owned, no line")
+    local saved = { env.InCombatLockdown, env.IsModifierKeyDown, env.IsShiftKeyDown }
+    rawset(env, "InCombatLockdown", function() return true end)
+    T.db.hideInCombat = true
+    for mod, want in pairs({ ANY = true, NONE = true, SHIFT = true }) do
+        T.db.combatModifier = mod
+        rawset(env, "IsModifierKeyDown", function() return false end)
+        rawset(env, "IsShiftKeyDown", function() return false end)
+        assert(T:CombatHidden() == want, mod .. " without a key held")
+    end
+    rawset(env, "IsModifierKeyDown", function() return true end)
+    T.db.combatModifier = "ANY"
+    assert(not T:CombatHidden(), "holding a key shows the tooltip")
+    T.db.combatModifier = "NONE"
+    assert(T:CombatHidden(), "NONE always hides")
+    rawset(env, "InCombatLockdown", saved[1]); rawset(env, "IsModifierKeyDown", saved[2])
+    rawset(env, "IsShiftKeyDown", saved[3])
+    T.db.hideInCombat, T.db.combatModifier = false, "ANY"
+    for _, a in ipairs({ "CURSOR", "CURSOR_LEFT", "CURSOR_TOP", "MOVER", "DEFAULT" }) do
+        T.db.anchor = a
+        T:Refresh()
+    end
+    T.db.scale = 1.2; T:Refresh(); T.db.scale = 1; T:Refresh()
+    T:OnInspectReady("Player-1-0ABCDEF")
+    fire("INSPECT_READY", "Player-1-0ABCDEF")
+    T.db.healthText, T.db.hidePvP, T.db.ids = true, true, true
+    for _, v in ipairs({ true, false }) do
+        T.db.classNames, T.db.guildRank, T.db.realm, T.db.inspect, T.db.mount, T.db.targetedBy = v, v, v, v, v, v
+        ns.Previews:Create("tooltip", env.CreateFrame("Frame"), T, {}):Redraw()
+    end
+    T.db.healthText, T.db.hidePvP, T.db.ids = false, false, false
+    T.db.classNames, T.db.guildRank, T.db.realm, T.db.inspect, T.db.mount, T.db.targetedBy = true, true, true, true, true, true
+end)
+try("chat, minimap and tooltip depth (S13a)", function()
+    for key, target in pairs({ Chat = 51, Minimap = 41, Tooltip = 45 }) do
+        local n = ns.Config.CountSettings(ns.options[key])
+        assert(n >= target and ns.Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
+        print(("  %s settings: %d"):format(key, n))
+    end
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

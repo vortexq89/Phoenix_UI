@@ -754,6 +754,69 @@ Turn on Blizzard's Cooldown Manager and pick a few spells and buffs (**Choose sp
 
 **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13i.12).
 
+## 13j. Chat, Minimap and Tooltips (2.0 S13a)
+
+Start with `/console taintLog 1` and an empty `/pui bugs`. For the restricted-chat steps use a dungeon or
+`/console addonChatRestrictionsForced 1` (reset to 0 afterwards).
+
+- [ ] **13j.1 Chat windows.** Chat → *Style chat windows* on with a background and border; *Fade old lines* after
+  20 s; *Lines kept* 256; *Side buttons* off; *Jump-to-bottom button* on. **Expect:** every chat window gets the
+  backdrop (Blizzard's art hidden), old lines fade after 20 s, Blizzard's menu/channel/social/voice buttons are gone
+  (back when switched on), scrolling up shows the arrow that jumps to the newest line. Changing *Lines kept* clears
+  the window once (a game rule).
+- [ ] **13j.2 Combat and tabs.** *Hide chat in combat* on, fight a dummy, then type during the fight. *Fade idle
+  tabs* off, *Selected tab colour* red. **Expect:** windows vanish in combat and come back after; the window you type
+  in stays visible; tabs stay fully visible; the open tab's name is red.
+- [ ] **13j.3 Game chat settings.** *Timestamps* 15:27, *Class-coloured names* Always, *New whispers* In a new tab.
+  **Expect:** the same values in Options → Social; timestamps appear; names are class-coloured; a whisper opens a tab.
+- [ ] **13j.4 Messages.** *Short channel names*, *Item levels on links*, *Icons on links*, *Role icons on names* on;
+  link gear in Trade, join a group. **Expect:** `[2]` instead of `[2. Trade]`, `[Greatsword (684)]` with an icon in
+  front, role icons before group members' names. Guild/Party labels stay the game's.
+- [ ] **13j.5 Keywords and spam.** *Highlight words* `keys`, *Highlight my name* on, a keyword sound; *Spam filter* 30.
+  Have someone write `keys?` and your name, then repeat a line in Trade. **Expect:** both words in the highlight
+  colour, the sound once per line, the repeat inside 30 s hidden; your own lines never highlighted or filtered.
+- [ ] **13j.6 Restricted chat.** In a dungeon (or with the forced CVar) keep chatting with the steps above on.
+  **Expect:** messages the game marks restricted show unchanged (no highlight, no short names), no errors.
+- [ ] **13j.7 Edit box and history.** *Edit box above the window*, *Style the edit box*, edit box font 16, *History
+  length* 50. **Expect:** the edit box sits above the tabs, styled, in your font; 50 lines recalled with Up/Down; off
+  restores Blizzard's place and art.
+- [ ] **13j.8 Chat bar and markers.** *Chat bar* on (above, then left), *Raid marker picker* on; click each button.
+  **Expect:** channel buttons open the edit box on that channel; % rolls 1-100; ✓ starts a ready check (leader); 10
+  starts a pull countdown; the star (bar and edit box) inserts `{rt1}`-`{rt8}`. *Whisper sound* plays on whispers.
+- [ ] **13j.9 Minimap shapes.** Minimap → *Map shape* Round, Square, Rectangle (60 % and 90 %), each with a reload;
+  border 3 px coloured. **Expect:** the shape and band, the border only on square/rectangle, clicks and pings only
+  inside the visible band; other addons' minimap buttons follow the shape (`GetMinimapShape`).
+- [ ] **13j.10 Minimap texts.** *Zone text* font 14, *PvP colours* off; *Clock* font; *Coordinates* 2 decimals,
+  anchor Top. **Expect:** your fonts and placement; zone name in your colour (PvP colours back when on).
+- [ ] **13j.11 Minimap buttons and zoom.** Turn each Blizzard button off and on (calendar, tracking, mail, crafting
+  orders, difficulty in a dungeon, expansion, compartment, zoom). *Mouse wheel zoom* on, *Zoom out after* 10 s.
+  **Expect:** each one disappears and comes back; wheel zooms; the map zooms back out 10 s later.
+- [ ] **13j.12 Button bin.** With LibDBIcon addons (BugSack, Details …): columns 3, button size 34, *Keep on the
+  minimap* `BugSack`, *Show the bin glyph on hover*. **Expect:** the flyout re-flows; BugSack stays on the minimap;
+  the glyph only shows while pointing at the map.
+- [ ] **13j.13 Pings and world map.** Have a group member ping the minimap; open the world map and move the cursor.
+  **Expect:** their class-coloured name at the ping for 3 s; player and cursor coordinates at the map's bottom (retail).
+- [ ] **13j.14 Tooltip anchor and scale.** Tooltip → *Anchor* Cursor (offset 30/0), Cursor (left), Cursor (above),
+  Mover (drag *Tooltip* in Layout mode); *Scale* 120 %. **Expect:** each placement, the mover position kept after a
+  reload; tooltips 20 % larger.
+- [ ] **13j.15 Tooltip combat.** *Hide in combat* with *Show anyway with* Shift, then *What to hide* Every tooltip.
+  **Expect:** in combat unit tooltips (then all tooltips) stay hidden unless Shift is held.
+- [ ] **13j.16 Tooltip units.** Hover guildies, players from other realms, mounted players, tapped and hostile NPCs,
+  group members while someone targets them. **Expect:** class-coloured names, guild rank after the guild, *Realm:*,
+  *Mount:* with *(owned)*, NPC names red/yellow/green (grey when tapped), *Targeted by (n):*, PvP line blank with
+  *Hide the PvP line*, the percent on the health bar.
+- [ ] **13j.17 Inspect.** Out of combat hover a few players. **Expect:** *Item level* and *Specialization* appear
+  within a second (once per player for 5 minutes); nothing is requested in combat; the Inspect window still works.
+- [ ] **13j.18 IDs and counts.** *IDs* on; untick a kind in the cog. Hover items (with some in the bank/warband
+  bank), spells, auras, NPCs, currencies, quests, achievements, mounts. **Expect:** the matching ID line; none for
+  the unticked kind; *Bags/Bank/Warband* counts.
+- [ ] **13j.19 Secrets and taint.** In a Mythic+ or raid boss fight hover everything above and chat. **Expect:** no
+  errors (secret values are skipped), no `ADDON_ACTION_BLOCKED`, nothing in `Logs\taint.log` from Phoenix_UI.
+- [ ] **13j.20 WoW Forever.** Repeat 13j.1-13j.12 and 13j.14-13j.18 on Forever. **Expect:** the same, without the
+  crafting-order toggle and world map coordinates (the Forever map shows its own).
+
+**If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13j.19).
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

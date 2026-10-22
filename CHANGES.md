@@ -3,6 +3,26 @@
 ## 2.0.0-beta1
 
 ### New
+- **Chat** (plan v2 stage S13a): styled chat windows (background and border from the style library), fade after N
+  seconds, lines kept, hide in combat (the window you type in stays), Blizzard's side buttons on/off, a jump-to-bottom
+  arrow; tabs fade when idle and can take a selected-tab colour. The game's own timestamp, class-colour and
+  whisper-mode settings on the page. Messages: short channel names ([2. Trade] → [2]), item levels and icons on
+  links, role icons on group members' names, keyword highlight (your name plus a list) with a sound, a spam filter
+  for repeats, all through Blizzard's addon-safe chat filters (restricted messages pass untouched). Edit box above
+  the window, styled, its own font, history length. A chat bar (Say, Party, Instance, Raid, Guild, roll, ready
+  check, pull countdown) and a raid-marker picker; an extra whisper sound. 58 settings (target 51).
+- **Minimap** (S13a): round, square or rectangle (50-90 % band) with a border from the style library, zone text
+  (PvP colours or your colour), clock and coordinates in your fonts (coordinates placeable, 0-2 decimals), each
+  Blizzard button (calendar, tracking, mail, crafting orders, difficulty, expansion, addon compartment, zoom) on or
+  off, mouse wheel zoom and auto zoom-out, the button bin with columns, button size, a keep-on-minimap list and
+  show-on-hover, who-pinged names and world map player/cursor coordinates (retail). The old *Square minimap*
+  setting moves to *Map shape*. 47 settings on retail, 45 on WoW Forever (target 41).
+- **Tooltip** (S13a): anchor at the cursor (right, left, above, with offsets) or a Layout-mode mover, scale;
+  hide in combat with a chosen modifier and for units or every tooltip; class-coloured player names and
+  reaction-coloured NPC names, guild rank, realm, targeted by (group), item level and specialization from a
+  throttled inspect, mount (and whether you own it), PvP line hidden, health percent on the bar, item counts in
+  bags, bank and warband bank, and IDs for spells, items, NPCs, auras, currencies, quests, achievements and mounts.
+  Everything secret is skipped. 54 settings on retail, 52 on WoW Forever (target 45).
 - **Cooldown Manager** (plan v2 stage S12; was *Auras & Cooldowns*, settings kept): Blizzard's Cooldown Manager in
   Phoenix style **and layout**. Per viewer (*Essential*, *Utility*, *Buff icons*, *Buff bars*): icon size, icons per
   row, rows, a size step for later rows, spacing, growth and wrap, centred short rows, *Keep places*, extra icons

@@ -2,10 +2,18 @@ local _, ns = ...
 local L = ns.L
 local W, Secret, Skin, Style, Media, Theme = ns.Widgets, ns.Secret, ns.Skin, ns.Style, ns.Media, ns.Theme
 
---[[ Chat: clickable URLs (copy popup), a per-window "copy chat" button, edit box history on the
-    plain arrow keys that persists across sessions, and faster scrolling (Shift: top/bottom,
-    Ctrl: page). Message filters see secret strings while chat is restricted: those pass through
-    untouched, and secret text is never stored. ]]
+--[[ Chat: restyles Blizzard's chat windows and adds tools; it never replaces the chat frames.
+    Chat.lua      URLs (copy popup), the per-window copy button, edit box history that persists across
+                  sessions on the plain arrow keys, faster scrolling (Shift: top/bottom, Ctrl: page), tab colours.
+    Window.lua    window backdrop and border (style library), line fading, kept lines, side buttons, the
+                  jump-to-bottom button, hide in combat, tab fading, edit box position, style and font.
+    Messages.lua  one message filter for URLs, short channel names, keyword highlight and
+                  sound, item levels and icons in links, spam throttle; role icons through Blizzard's sender
+                  name filter; whisper sound; the game's own chat CVars (timestamps, class colours, whispers).
+    Bar.lua       the chat bar (channel buttons, roll, ready check, pull timer) and the raid icon picker.
+    Midnight restricted chat: message filters only run on messages the game lets addons read (Blizzard's
+    registry skips them otherwise), and every other path checks Secret.IsSecret before reading text; secret
+    text is never stored, compared or changed. No chat global (format strings, ChatTypeInfo) is written. ]]
 local M = ns:NewModule("Chat", {
     label = "CHAT", desc = "CHAT_DESC", category = "social", order = 10,
     defaults = {
@@ -15,23 +23,28 @@ local M = ns:NewModule("Chat", {
         styleText = false,
         messages = Style.Text(14, { outline = "NONE", shadow = true }),  -- size stays the chat window's own
         tabs = Style.Text(11),
+        -- window
+        skinWindows = false,
+        background = Style.Background({ alpha = 0.55 }),
+        border = Style.Border(),
+        fade = true, fadeAfter = 120, maxLines = 0,       -- 0 = the game's own (Blizzard keeps 128)
+        hideInCombat = false, sideButtons = true, scrollButton = true,
+        -- tabs
+        fadeTabs = true, selectedTabColor = false,
+        -- messages
+        shortChannels = false, keywords = "", keywordOwnName = true, keywordColor = false, keywordSound = "",
+        itemLevels = true, linkIcons = true, roleIcons = true, throttle = 0,
+        -- edit box
+        editBoxTop = false, skinEditBox = false, historyLines = 32,
+        editBox = Style.Text(14, { outline = "NONE", shadow = true }),
+        -- tools
+        chatBar = false, chatBarSide = "TOP", raidIcons = true, whisperSound = "",
     },
     globalDefaults = { history = {} },
 })
-local HISTORY_MAX = 32 -- ChatFrameEditBoxTemplate historyLines
+local function historyMax() return math.max(1, math.min(100, M.db.historyLines or 32)) end
 
-local EVENTS = {
-    "CHAT_MSG_SAY", "CHAT_MSG_YELL", "CHAT_MSG_GUILD", "CHAT_MSG_OFFICER", "CHAT_MSG_PARTY", "CHAT_MSG_PARTY_LEADER",
-    "CHAT_MSG_RAID", "CHAT_MSG_RAID_LEADER", "CHAT_MSG_INSTANCE_CHAT", "CHAT_MSG_INSTANCE_CHAT_LEADER",
-    "CHAT_MSG_WHISPER", "CHAT_MSG_WHISPER_INFORM", "CHAT_MSG_BN_WHISPER", "CHAT_MSG_BN_WHISPER_INFORM",
-    "CHAT_MSG_CHANNEL", "CHAT_MSG_COMMUNITIES_CHANNEL",
-}
 local LINK = "|cff%s|Haddon:Phoenix_UI:url:%s|h[%s]|h|r"
-local PATTERNS = {
-    "(%a[%w+.-]+://[^%s|]+)",            -- scheme://…
-    "(www%.[%w_-]+%.[^%s|]+)",           -- www.example.com/…
-    "([%w_.-]+%.%a%a+/[^%s|]*)",          -- example.com/path
-}
 
 ---------------------------------------------------------------- style (shared with the options preview)
 function M:URLHex() return ns.Util.Hex(Skin:SpecColor(self.db.urlColor, "state.info")) end
@@ -65,22 +78,6 @@ end
 function M:StyleTabState(tab, fs, chatType, alerting)
     if self.db.whisperTabs and WHISPER[chatType] and fs then fs:SetTextColor(self:WhisperColor(chatType)) end
     if self.db.tabFlash and alerting and tab.glow then tab.glow:SetVertexColor(Theme:Color("accent.primary")) end
-end
-
-local function linkify(url) return M:Linkify(url) end
-
-local function filter(_, _, msg, ...)
-    if Secret.IsSecret(msg) or type(msg) ~= "string" or not M.db.urls then return false end
-    if msg:find("|H", 1, true) then return false end -- never touch messages that already carry links
-    local out, n = msg, 0
-    for _, p in ipairs(PATTERNS) do
-        local c
-        out, c = out:gsub(p, linkify)
-        n = n + c
-        if c > 0 then break end
-    end
-    if n == 0 then return false end
-    return false, out, ...
 end
 
 ---------------------------------------------------------------- copy popups
@@ -148,7 +145,7 @@ local function onHistoryLine(_, text)
     local history = M.global.history
     if history[#history] == text then return end
     history[#history + 1] = text
-    while #history > HISTORY_MAX do table.remove(history, 1) end
+    while #history > historyMax() do table.remove(history, 1) end
 end
 
 local editBoxes = {}
@@ -165,6 +162,7 @@ local function setupEditBox(chatFrame)
         end
     end
     box:SetAltArrowKeyMode(not M.db.arrowKeys and editBoxes[box].altArrows)
+    box:SetHistoryLines(historyMax())
 end
 
 ---------------------------------------------------------------- tabs
@@ -174,7 +172,9 @@ local function tabState(tab)
     local chatFrame = _G["ChatFrame" .. tab:GetID()]
     if not chatFrame then return end
     M:StyleTabState(tab, tab:GetFontString(), chatFrame.chatType, ChatFrameUtil.IsTabAlerting(tab))
+    M:StyleSelectedTab(tab, chatFrame)
 end
+M.TabState = tabState
 
 local function onAlert(chatFrame)
     if chatFrame and chatFrame.GetName then tabState(_G[chatFrame:GetName() .. "Tab"]) end
@@ -185,12 +185,14 @@ end
 -- ScrollingMessageFrameSecureMixin, which runs them untainted when addon code calls them.
 local wheelHooked = {}
 local function onWheel(chatFrame, delta)
+    M:UpdateScrollButton(chatFrame)
     if not (M:IsEnabled() and M.db.fastScroll) then return end
     if IsShiftKeyDown() then
         if delta > 0 then chatFrame:ScrollToTop() else chatFrame:ScrollToBottom() end
     elseif IsControlKeyDown() then
         if delta > 0 then chatFrame:PageUp() else chatFrame:PageDown() end
     end
+    M:UpdateScrollButton(chatFrame)
 end
 
 local function onLink(_, link)
@@ -200,7 +202,7 @@ local function onLink(_, link)
 end
 
 function M:OnEnable()
-    for _, event in ipairs(EVENTS) do ChatFrameUtil.AddMessageEventFilter(event, filter) end
+    self:EnableMessages()
     EventRegistry:RegisterCallback("SetItemRef", onLink, self)
     if not self.windowHooks then
         -- New and temporary (whisper) windows get the copy button, arrow keys and scrolling too.
@@ -210,15 +212,18 @@ function M:OnEnable()
         hooksecurefunc("FCF_OpenTemporaryWindow", onNewWindow)
         hooksecurefunc("FCFTab_UpdateColors", tabState)
         hooksecurefunc("FCF_StartAlertFlash", onAlert)
+        self:HookWindows()
     end
     self:Refresh()
 end
 
 function M:OnDisable()
-    for _, event in ipairs(EVENTS) do ChatFrameUtil.RemoveMessageEventFilter(event, filter) end
+    self:DisableMessages()
     EventRegistry:UnregisterCallback("SetItemRef", self)
     for _, b in pairs(buttons) do b:Hide() end
     for box, saved in pairs(editBoxes) do box:SetAltArrowKeyMode(saved.altArrows) end
+    self:RestoreWindows()
+    self:HideBar()
 end
 
 function M:Refresh()
@@ -233,7 +238,10 @@ function M:Refresh()
             wheelHooked[chatFrame] = true
             chatFrame:HookScript("OnMouseWheel", onWheel)
         end
+        self:StyleWindow(chatFrame)
     end)
+    self:RefreshMessages()
+    self:RefreshBar()
 end
 
 function M:ClearHistory()

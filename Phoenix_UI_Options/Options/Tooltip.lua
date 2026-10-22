@@ -3,6 +3,20 @@ local _, ns = ...
 local Opt = ns.Opt
 local function unskinned(m) return not m.db.skin end
 local function noFonts(m) return not m.db.fonts end
+local function notCursor(m) return m.db.anchor ~= "CURSOR" and m.db.anchor ~= "CURSOR_LEFT" end
+local function noCombat(m) return not m.db.hideInCombat end
+
+-- One toggle per ID kind, under the IDs cog.
+local idCog = {
+    { type = "toggle", key = "idKinds.spell", label = "TOOLTIP_IDK_SPELL" },
+    { type = "toggle", key = "idKinds.item", label = "TOOLTIP_IDK_ITEM" },
+    { type = "toggle", key = "idKinds.unit", label = "TOOLTIP_IDK_NPC" },
+    { type = "toggle", key = "idKinds.aura", label = "TOOLTIP_IDK_AURA" },
+    { type = "toggle", key = "idKinds.currency", label = "TOOLTIP_IDK_CURRENCY" },
+    { type = "toggle", key = "idKinds.quest", label = "TOOLTIP_IDK_QUEST" },
+    { type = "toggle", key = "idKinds.achievement", label = "TOOLTIP_IDK_ACHIEVEMENT" },
+    { type = "toggle", key = "idKinds.mount", label = "TOOLTIP_IDK_MOUNT" },
+}
 
 ns:RegisterOptions("Tooltip", {
     { type = "preview", kind = "tooltip" },
@@ -26,14 +40,44 @@ ns:RegisterOptions("Tooltip", {
     { type = "header", label = "TOOLTIP_BEHAVIOUR", icon = "cog" },
     { type = "select", key = "anchor", label = "TOOLTIP_ANCHOR", desc = "TOOLTIP_ANCHOR_DESC", values = {
         { value = "DEFAULT", label = "TOOLTIP_ANCHOR_DEFAULT" }, { value = "CURSOR", label = "TOOLTIP_ANCHOR_CURSOR" },
-    }, keywords = "mouse" },
+        { value = "CURSOR_LEFT", label = "TOOLTIP_ANCHOR_CURSOR_LEFT" },
+        { value = "CURSOR_TOP", label = "TOOLTIP_ANCHOR_CURSOR_TOP" },
+        { value = "MOVER", label = "TOOLTIP_ANCHOR_MOVER" },
+    }, keywords = "mouse position mover" },
+    { type = "range", key = "cursorX", label = "TOOLTIP_CURSOR_X", min = 0, max = 80, step = 1, disabled = notCursor },
+    { type = "range", key = "cursorY", label = "TOOLTIP_CURSOR_Y", min = -40, max = 80, step = 1, disabled = notCursor },
+    { type = "range", key = "scale", label = "SCALE", min = 0.5, max = 1.6, step = 0.05, percent = true },
     { type = "toggle", key = "hideInCombat", label = "TOOLTIP_HIDE_COMBAT", desc = "TOOLTIP_HIDE_COMBAT_DESC" },
+    { type = "select", key = "combatModifier", label = "TOOLTIP_COMBAT_MODIFIER", desc = "TOOLTIP_COMBAT_MODIFIER_DESC",
+      disabled = noCombat, values = {
+        { value = "ANY", label = "TOOLTIP_MOD_ANY" }, { value = "SHIFT", label = "TOOLTIP_MOD_SHIFT" },
+        { value = "CTRL", label = "TOOLTIP_MOD_CTRL" }, { value = "ALT", label = "TOOLTIP_MOD_ALT" },
+        { value = "NONE", label = "TOOLTIP_MOD_NONE" },
+    } },
+    { type = "select", key = "combatScope", label = "TOOLTIP_COMBAT_SCOPE", desc = "TOOLTIP_COMBAT_SCOPE_DESC",
+      disabled = noCombat, values = {
+        { value = "units", label = "TOOLTIP_SCOPE_UNITS" }, { value = "all", label = "TOOLTIP_SCOPE_ALL" },
+    } },
+    { type = "header", label = "TOOLTIP_UNITS", icon = "heart" },
+    { type = "toggle", key = "classNames", label = "TOOLTIP_CLASS_NAMES", desc = "TOOLTIP_CLASS_NAMES_DESC" },
+    { type = "toggle", key = "reactionNames", label = "TOOLTIP_REACTION_NAMES", desc = "TOOLTIP_REACTION_NAMES_DESC" },
+    { type = "toggle", key = "guildRank", label = "TOOLTIP_GUILD_RANK", desc = "TOOLTIP_GUILD_RANK_DESC" },
+    { type = "toggle", key = "realm", label = "TOOLTIP_REALM", desc = "TOOLTIP_REALM_DESC" },
+    { type = "toggle", key = "hidePvP", label = "TOOLTIP_HIDE_PVP", desc = "TOOLTIP_HIDE_PVP_DESC" },
+    { type = "toggle", key = "healthText", label = "TOOLTIP_HEALTH_TEXT", desc = "TOOLTIP_HEALTH_TEXT_DESC" },
     { type = "header", label = "TOOLTIP_LINES", icon = "tooltip" },
     { type = "toggle", key = "target", label = "TOOLTIP_TARGET", desc = "TOOLTIP_TARGET_DESC" },
+    { type = "toggle", key = "targetedBy", label = "TOOLTIP_TARGETED", desc = "TOOLTIP_TARGETED_DESC" },
     { type = "toggle", key = "role", label = "TOOLTIP_ROLE", desc = "TOOLTIP_ROLE_DESC" },
+    { type = "toggle", key = "inspect", label = "TOOLTIP_INSPECT", desc = "TOOLTIP_INSPECT_DESC",
+      keywords = "item level ilvl gear score spec specialization" },
+    { type = "toggle", key = "mount", label = "TOOLTIP_MOUNT", desc = "TOOLTIP_MOUNT_DESC" },
+    { type = "toggle", key = "itemCount", label = "TOOLTIP_ITEM_COUNT", desc = "TOOLTIP_ITEM_COUNT_DESC",
+      keywords = "bags bank warband count" },
     { type = "toggle", key = "mplusRating", label = "TOOLTIP_MPLUS", desc = "TOOLTIP_MPLUS_DESC", feature = "mythicplus",
       keywords = "mythic plus score rating io keystone" },
     { type = "toggle", key = "simLine", label = "TOOLTIP_SIM", desc = "TOOLTIP_SIM_DESC", feature = "sim",
       keywords = "simulationcraft simc dps upgrade sim" },
-    { type = "toggle", key = "ids", label = "TOOLTIP_IDS", desc = "TOOLTIP_IDS_DESC", keywords = "spellid itemid idtip" },
+    { type = "toggle", key = "ids", label = "TOOLTIP_IDS", desc = "TOOLTIP_IDS_DESC", keywords = "spellid itemid npcid idtip",
+      cog = idCog },
 })

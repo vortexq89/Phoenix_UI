@@ -160,6 +160,9 @@ Already in flight and not re-planned here: Bugs rebuild (other worker), Sim uplo
 
 ### S13 — Interface modules to full depth (~13 days)
 
+*S13a (Chat, Minimap, Tooltips) shipped 22 Oct 2026: Chat 58 (target 51), Minimap 47 / 45 on Forever (41), Tooltip
+54 / 52 (45); needs an in-game test (TESTING §13j). S13b (Bags, Item Level, Data Texts, Skins) follows.*
+
 - Chat: window/backdrop/border, tabs, timestamps, class names, keyword highlight, edit box, chat bar, emotes — 2.5 d
 - Minimap: shapes incl. rectangle, elements (zone, clock, coords, difficulty…), button drawer, world map coords — 2 d
 - Tooltips: realm, guild rank, targeted-by, inspect ilvl/spec, raid progression, item counts, ID kinds — 1.5 d

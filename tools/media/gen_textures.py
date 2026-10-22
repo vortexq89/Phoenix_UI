@@ -169,6 +169,20 @@ def button_shapes():
         save(down(Image.merge("RGBA", (white, white, white, mask)), 64, 64), "Mask" + kind)
         save(down(Image.merge("RGBA", (white, white, white, outline)), 64, 64), "Ring" + kind)
 
+# Minimap rectangle masks: white with a centred horizontal band in alpha (Minimap:SetMaskTexture), one per height the
+# Minimap page offers (percent of the map's width). 128x128: the edges are straight, so they stay crisp scaled up.
+MINIMAP_RECTS = (50, 60, 70, 80, 90)
+
+def minimap_masks():
+    n = 128
+    for pct in MINIMAP_RECTS:
+        band = round(n * pct / 100)
+        top = (n - band) // 2
+        alpha = Image.new("L", (n, n), 0)
+        ImageDraw.Draw(alpha).rectangle([0, top, n - 1, top + band - 1], fill=255)
+        white = Image.new("L", (n, n), 255)
+        save(Image.merge("RGBA", (white, white, white, alpha)), f"MinimapRect{pct}")
+
 def lua_str(s): return '"' + s.replace('"', '\\"') + '"'
 
 def write_data():
@@ -187,5 +201,6 @@ bars()
 bar_set()
 borders_and_glows()
 button_shapes()
+minimap_masks()
 write_data()
 print("textures:", sorted(f for f in os.listdir(OUT) if f.endswith(".tga")))

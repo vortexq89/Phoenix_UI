@@ -42,6 +42,10 @@ ns.FEATURES = {
     gcdBar = { retail = true },
     -- Cooldown Manager reminders for flasks, food, augment runes and raid buffs: the aura IDs are retail's.
     cdmReminders = { retail = true },
+    -- Minimap crafting order indicator: Forever's minimap indicator template has no CraftingOrderFrame.
+    craftingOrders = { retail = true },
+    -- World map coordinates: Forever's world map already shows the player's (WorldMapFrame PlayerCoords).
+    worldMapCoords = { retail = true },
     -- Mythic raids (20 players, groups 1-4): Forever's raids have no Mythic difficulty.
     mythicRaid = { retail = true },
     -- Boss timeline and warnings: Blizzard_EncounterTimeline / _EncounterWarnings load on "standard" only.

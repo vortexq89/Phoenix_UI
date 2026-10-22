@@ -57,6 +57,9 @@ M.textures = {
     RING_ROUNDED = T .. "RingRounded",
     RING_CIRCLE = T .. "RingCircle",
     RING_HEX = T .. "RingHex",
+    -- minimap rectangle masks: the percent of the map's height that stays visible
+    MINIMAP_RECT50 = T .. "MinimapRect50", MINIMAP_RECT60 = T .. "MinimapRect60", MINIMAP_RECT70 = T .. "MinimapRect70",
+    MINIMAP_RECT80 = T .. "MinimapRect80", MINIMAP_RECT90 = T .. "MinimapRect90",
 }
 
 -- Keys saved by earlier builds, kept working.

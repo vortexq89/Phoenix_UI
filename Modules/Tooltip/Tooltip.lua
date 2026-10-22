@@ -2,7 +2,10 @@ local _, ns = ...
 local L = ns.L
 local Skin, Secret, Style, Media, Theme = ns.Skin, ns.Secret, ns.Style, ns.Media, ns.Theme
 
---[[ Tooltip: Phoenix skin, cursor anchoring, class/quality borders and extra lines.
+--[[ Tooltip: Phoenix skin, anchoring (default, cursor or a Layout-mode mover) and scale, class/quality borders,
+    name colours, extra lines (target, targeted by, role, guild rank, realm, item level and specialization from
+    inspect, mount, Mythic+ rating, Sim result, item counts) and IDs of every kind. Tooltip.lua owns the skin and
+    the hooks; Extras.lua builds the lines.
     All data comes from TooltipDataProcessor post-calls; anything secret is skipped, never compared. ]]
 local M = ns:NewModule("Tooltip", {
     label = "TOOLTIP", desc = "TOOLTIP_DESC", category = "interface", order = 60, reloadOnToggle = true,
@@ -14,6 +17,16 @@ local M = ns:NewModule("Tooltip", {
         fonts = true,
         header = Style.Text(14), body = Style.Text(12),
         barTexture = "", barHeight = 4,
+        -- position
+        cursorX = 16, cursorY = 16, scale = 1, mover = { point = "BOTTOMRIGHT", x = -60, y = 220 },
+        combatModifier = "ANY", combatScope = "units",
+        -- unit info
+        classNames = true, reactionNames = true, guildRank = true, realm = true, targetedBy = true, inspect = true,
+        mount = true, hidePvP = false, healthText = false,
+        -- IDs and extras
+        idKinds = { spell = true, item = true, unit = true, aura = true, currency = true, quest = true,
+            achievement = true, mount = true },
+        itemCount = true,
     },
 })
 
@@ -78,6 +91,7 @@ local function plain(...)
     end
     return true
 end
+M.Plain = plain
 
 local function addRole(tt, unit)
     local role = UnitGroupRolesAssigned(unit)
@@ -114,11 +128,19 @@ local function usable(tt)
     return tt and tt.IsForbidden and not tt:IsForbidden() and tt.AddLine and tt.GetUnit and tt.GetItem
 end
 
+-- Combat hiding: the modifier you hold to see a tooltip anyway.
+local MODIFIER = { ANY = "IsModifierKeyDown", SHIFT = "IsShiftKeyDown", CTRL = "IsControlKeyDown", ALT = "IsAltKeyDown" }
+function M:CombatHidden()
+    if not (self.db.hideInCombat and InCombatLockdown()) then return false end
+    local held = MODIFIER[self.db.combatModifier] and _G[MODIFIER[self.db.combatModifier]]
+    return not (held and held())
+end
+
 local function onUnit(tt, data)
     if not M:IsEnabled() or not usable(tt) then return end
     local _, unit = tt:GetUnit()
     if not plain(unit) or not unit then return end
-    if M.db.hideInCombat and InCombatLockdown() and not IsModifierKeyDown() and tt == GameTooltip then
+    if tt == GameTooltip and M:CombatHidden() then
         tt:Hide()
         return
     end
@@ -128,12 +150,11 @@ local function onUnit(tt, data)
         local _, classFile = UnitClass(unit)
         if plain(classFile) then border(tt, ns.Util.ClassColor(classFile)) end
     end
+    M:UnitLines(tt, unit, isPlayer, data)
     if M.db.role then addRole(tt, unit) end
     if isPlayer and M.db.mplusRating and ns:Supports("mythicplus") then addRating(tt, unit) end
     if M.db.target then addTarget(tt, unit) end
-    if M.db.ids and data and plain(data.id) and data.id then
-        GameTooltip_AddColoredLine(tt, L.TOOLTIP_ID:format(data.id), GRAY_FONT_COLOR)
-    end
+    M:UnitExtras(tt, unit, isPlayer, data)
 end
 
 -- The Sim module's result for this exact item (same item ID and bonus IDs), when you simmed it lately.
@@ -161,21 +182,63 @@ local function onItem(tt, data)
         end
     end
     if M.db.simLine then addSim(tt, data) end
-    if M.db.ids and data and plain(data.id) and data.id then
-        GameTooltip_AddColoredLine(tt, L.TOOLTIP_ID:format(data.id), GRAY_FONT_COLOR)
+    if M.db.itemCount then M:AddItemCount(tt, data) end
+    M:AddID(tt, "item", data)
+end
+
+-- IDs for the other tooltip kinds (spell, aura, currency, quest, achievement, mount).
+local function idOnly(kind)
+    return function(tt, data)
+        if M:IsEnabled() and usable(tt) then M:AddID(tt, kind, data) end
     end
 end
 
-local function onSpell(tt, data)
-    if M:IsEnabled() and M.db.ids and usable(tt) and data and plain(data.id) and data.id then
-        GameTooltip_AddColoredLine(tt, L.TOOLTIP_SPELL_ID:format(data.id), GRAY_FONT_COLOR)
-    end
-end
-
+-- anchor: DEFAULT (Blizzard's corner), CURSOR / CURSOR_LEFT (beside the pointer, with offsets), CURSOR_TOP
+-- (centred above it) or MOVER (the Layout-mode "Tooltip" mover).
+local CURSOR = { CURSOR = "ANCHOR_CURSOR_RIGHT", CURSOR_LEFT = "ANCHOR_CURSOR_LEFT", CURSOR_TOP = "ANCHOR_CURSOR" }
+local moverFrame
 local function onAnchor(tt, parent)
-    if M:IsEnabled() and M.db.anchor == "CURSOR" and tt and tt.IsForbidden and not tt:IsForbidden() and tt.SetOwner then
-        tt:SetOwner(parent, "ANCHOR_CURSOR_RIGHT", 16, 16)
+    if not (M:IsEnabled() and tt and tt.IsForbidden and not tt:IsForbidden() and tt.SetOwner) then return end
+    local how = M.db.anchor
+    if CURSOR[how] then
+        local x = how == "CURSOR_LEFT" and -M.db.cursorX or M.db.cursorX
+        tt:SetOwner(parent, CURSOR[how], how == "CURSOR_TOP" and 0 or x, how == "CURSOR_TOP" and 0 or M.db.cursorY)
+    elseif how == "MOVER" and moverFrame then
+        tt:SetOwner(parent, "ANCHOR_NONE")
+        tt:ClearAllPoints()
+        tt:SetPoint("BOTTOMRIGHT", moverFrame, "BOTTOMRIGHT")
     end
+end
+
+local function moverStore()
+    return {
+        active = function() return M:IsEnabled() and M.db.anchor == "MOVER" end,
+        get = function() local p = M.db.mover; return { point = p.point, x = p.x, y = p.y } end,
+        set = function(v) local p = M.db.mover; p.point, p.x, p.y = v.point or p.point, v.x or p.x, v.y or p.y end,
+        apply = function() M:PlaceMover() end,
+        reset = function()
+            local p, d = M.db.mover, M.defaults.mover
+            p.point, p.x, p.y = d.point, d.x, d.y
+            M:PlaceMover()
+        end,
+    }
+end
+
+function M:PlaceMover()
+    if not moverFrame then
+        moverFrame = CreateFrame("Frame", "PhoenixUI_TooltipAnchor", UIParent)
+        moverFrame:SetSize(200, 80)
+        local movers = ns:GetModule("Movers")
+        if movers then movers:Register("tooltip", moverFrame, L.TOOLTIP, moverStore()) end
+    end
+    local p = self.db.mover
+    moverFrame:ClearAllPoints()
+    moverFrame:SetPoint(p.point or "BOTTOMRIGHT", UIParent, p.point or "BOTTOMRIGHT", p.x or 0, p.y or 0)
+end
+
+-- "Hide in combat" for every tooltip, not only units (hold the modifier to see one).
+local function onShow(tt)
+    if M:IsEnabled() and M.db.combatScope == "all" and M:CombatHidden() then tt:Hide() end
 end
 
 -- Hooks run inside Blizzard's tooltip code for every tooltip in the game. A fault in one must not break the
@@ -198,7 +261,16 @@ function M:OnEnable()
     hooksecurefunc("GameTooltip_SetDefaultAnchor", guarded(onAnchor))
     TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, guarded(onUnit))
     TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, guarded(onItem))
-    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, guarded(onSpell))
+    local T = Enum.TooltipDataType
+    TooltipDataProcessor.AddTooltipPostCall(T.Spell, guarded(idOnly("spell")))
+    TooltipDataProcessor.AddTooltipPostCall(T.UnitAura, guarded(idOnly("aura")))
+    TooltipDataProcessor.AddTooltipPostCall(T.Currency, guarded(idOnly("currency")))
+    TooltipDataProcessor.AddTooltipPostCall(T.Quest, guarded(idOnly("quest")))
+    TooltipDataProcessor.AddTooltipPostCall(T.Achievement, guarded(idOnly("achievement")))
+    TooltipDataProcessor.AddTooltipPostCall(T.Mount, guarded(idOnly("mount")))
+    GameTooltip:HookScript("OnShow", guarded(onShow))
+    self:PlaceMover()
+    self:EnableExtras()
     for _, name in ipairs(TOOLTIPS) do
         local tt = _G[name]
         if tt then
@@ -213,9 +285,19 @@ function M:OnEnable()
         end)
     end
     styleFonts()
+    self:ApplyScale()
+end
+
+function M:ApplyScale()
+    for _, name in ipairs(TOOLTIPS) do
+        local tt = _G[name]
+        if tt and tt.SetScale and not tt.IsEmbedded then tt:SetScale(self.db.scale or 1) end
+    end
 end
 
 function M:Refresh()
+    self:ApplyScale()
+    self:PlaceMover()
     for tt in pairs(skinned) do self:StyleFrame(tt); border(tt) end
     if self.db.healthBar and GameTooltip.StatusBar and Skin:IsSkinned(GameTooltip.StatusBar) then
         self:StyleHealthBar(GameTooltip.StatusBar)

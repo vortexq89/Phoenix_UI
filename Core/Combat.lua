@@ -29,15 +29,16 @@ ns.Events:On("PLAYER_REGEN_ENABLED", C, function()
 end)
 
 -- get/set pair for a CVar exposed as an option (writes are deferred out of combat).
--- kind: "bool" (default) or "number".
+-- kind: "bool" (default), "number" or "string" (the raw value, for CVars that hold a choice).
 function C.CVarAccessors(name, kind)
-    local numeric = kind == "number"
+    local numeric, text = kind == "number", kind == "string"
     local function get()
         if numeric then return tonumber(C_CVar.GetCVar(name)) end
+        if text then return C_CVar.GetCVar(name) end
         return C_CVar.GetCVarBool(name)
     end
     local function set(_, value)
-        local raw = numeric and tostring(value) or (value and "1" or "0")
+        local raw = (numeric or text) and tostring(value) or (value and "1" or "0")
         C:Run("cvar." .. name, C_CVar.SetCVar, name, raw)
     end
     return get, set

@@ -32,6 +32,7 @@
     <Script file="NamePlates\Plate.lua"/>
     <Script file="NamePlates\Update.lua"/>
     <Script file="Tooltip\Tooltip.lua"/>
+    <Script file="Tooltip\Extras.lua"/>
     <Script file="ItemLevel\ItemLevel.lua"/>
     <Script file="Bags\Bags.lua"/>
     <Script file="Sim\Export.lua"/>
@@ -56,6 +57,9 @@
     <Script file="PvP\PvP.lua"/>
     <!-- social -->
     <Script file="Chat\Chat.lua"/>
+    <Script file="Chat\Window.lua"/>
+    <Script file="Chat\Messages.lua"/>
+    <Script file="Chat\Bar.lua"/>
     <Script file="AFK\AFK.lua"/>
     <!-- utility -->
     <Script file="Quality\Quality.lua"/>
