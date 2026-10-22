@@ -43,4 +43,6 @@ ICONS = [
     ("test", "flask"),
     # 2.0 P2: data texts and the minimap button bin
     ("mail", "envelope-simple"), ("friends", "users"), ("guild", "users-three"), ("bin", "squares-four"),
+    # 2.0 S1: encounters (boss timeline, warnings, pull and break timers)
+    ("encounters", "siren"), ("break", "coffee"),
 ]

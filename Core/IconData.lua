@@ -5,9 +5,9 @@ local _, ns = ...
 ns.IconData = {
     cols = 10,
     tiers = {
-        { file = "Icons24", cell = 24, gutter = 1, width = 256, height = 256 },
-        { file = "Icons48", cell = 48, gutter = 2, width = 512, height = 512 },
-        { file = "Icons96", cell = 96, gutter = 3, width = 1024, height = 1024 },
+        { file = "Icons24", cell = 24, gutter = 1, width = 256, height = 512 },
+        { file = "Icons48", cell = 48, gutter = 2, width = 512, height = 1024 },
+        { file = "Icons96", cell = 96, gutter = 3, width = 1024, height = 2048 },
     },
     index = {
         ["home"] = 1,
@@ -109,5 +109,7 @@ ns.IconData = {
         ["friends"] = 97,
         ["guild"] = 98,
         ["bin"] = 99,
+        ["encounters"] = 100,
+        ["break"] = 101,
     },
 }
