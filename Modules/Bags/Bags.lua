@@ -3,6 +3,8 @@ local Theme, Skin = ns.Theme, ns.Skin
 
 --[[ Bags: Phoenix look for Blizzard's bag windows (separate and combined) and their item buttons, plus an
     upgrade arrow on gear that beats what you wear. Item level numbers come from the ItemLevel module.
+    When the Sim module has a recent result for an item, the sim decides: the arrow shows (in the accent
+    colour) only when the sim found a DPS gain, and hides when it found a loss, whatever the item level says.
 
     Safety: bag windows and item buttons are dressed after Blizzard's own UpdateItems runs (post-hook only).
     Art is hidden with alpha, and every new region or frame is ours, kept in weak side tables keyed by the
@@ -10,7 +12,7 @@ local Theme, Skin = ns.Theme, ns.Skin
     using items from the bags stays untainted. Item levels are plain numbers (no secret values). ]]
 local M = ns:NewModule("Bags", {
     label = "BAGS", desc = "BAGS_DESC", icon = "items", category = "interface", order = 72, reloadOnToggle = true,
-    defaults = { enabled = true, skin = true, quality = true, upgrade = true, countSize = 12 },
+    defaults = { enabled = true, skin = true, quality = true, upgrade = true, simArrow = true, countSize = 12 },
 })
 
 local deco = setmetatable({}, { __mode = "k" }) -- [button] = { frame, arrow, bg }
@@ -31,6 +33,7 @@ M.SLOTS = SLOTS
 -- The armour type each class wears from level 50 (cloaks are cloth for everyone and are exempt).
 local ARMOR = { WARRIOR = 4, PALADIN = 4, DEATHKNIGHT = 4, HUNTER = 3, SHAMAN = 3, EVOKER = 3,
     ROGUE = 2, DRUID = 2, MONK = 2, DEMONHUNTER = 2, MAGE = 1, PRIEST = 1, WARLOCK = 1 }
+M.ARMOR = ARMOR
 
 local equipped = {} -- [slot] = item level (0 when empty)
 local function readEquipped()
@@ -95,15 +98,23 @@ local function styleButton(button, location)
     else
         d.bg:Hide()
     end
-    local up = false
+    local up, simmed = false, false
     if db.upgrade and exists then
-        local itemID = C_Item.GetItemID(location)
-        local _, _, _, equipLoc, _, classID, subclassID = C_Item.GetItemInfoInstant(itemID)
-        if SLOTS[equipLoc] then
-            local _, classFile = UnitClass("player")
-            up = M:IsUpgrade(C_Item.GetCurrentItemLevel(location), equipLoc, classID, subclassID, itemID, classFile)
+        -- a sim result for this exact item decides (gain or not); otherwise item level does
+        local Sim = db.simArrow and ns.modules.Sim
+        local r = Sim and Sim.active and Sim:ItemResult(C_Item.GetItemLink(location))
+        if r then
+            up, simmed = r.pct > 0, true
+        else
+            local itemID = C_Item.GetItemID(location)
+            local _, _, _, equipLoc, _, classID, subclassID = C_Item.GetItemInfoInstant(itemID)
+            if SLOTS[equipLoc] then
+                local _, classFile = UnitClass("player")
+                up = M:IsUpgrade(C_Item.GetCurrentItemLevel(location), equipLoc, classID, subclassID, itemID, classFile)
+            end
         end
     end
+    if up then ns.Icons:Tint(d.arrow, simmed and "accent.primary" or "state.success") end
     d.arrow:SetShown(up)
 end
 M.StyleButton = styleButton
@@ -145,6 +156,7 @@ function M:OnEnable()
     readEquipped()
     ns.Events:On("PLAYER_EQUIPMENT_CHANGED", self, function() readEquipped(); M:Refresh() end)
     ns.Events:On("PLAYER_LEVEL_UP", self, function() M:Refresh() end)
+    ns.Events:Listen("PUI_SIM_RESULTS", self, self.Refresh)
     ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
     if hooked then self:Refresh(); return end
     hooked = true

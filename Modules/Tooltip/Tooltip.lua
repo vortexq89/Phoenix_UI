@@ -8,7 +8,7 @@ local M = ns:NewModule("Tooltip", {
     label = "TOOLTIP", desc = "TOOLTIP_DESC", category = "interface", order = 60, reloadOnToggle = true,
     defaults = {
         skin = true, anchor = "DEFAULT", hideInCombat = false, target = true, role = true, ids = false,
-        classBorder = true, qualityBorder = true, healthBar = true, mplusRating = true,
+        classBorder = true, qualityBorder = true, healthBar = true, mplusRating = true, simLine = true,
         backdrop = Style.Background({ alpha = 0.97 }),
         border = Style.Border(),
         fonts = true,
@@ -133,6 +133,19 @@ local function onUnit(tt, data)
     end
 end
 
+-- The Sim module's result for this exact item (same item ID and bonus IDs), when you simmed it lately.
+local function addSim(tt, data)
+    local Sim = ns.modules.Sim
+    if not (Sim and Sim.active) then return end
+    local link = data and data.hyperlink
+    if not (plain(link) and link) then link = select(2, tt:GetItem()) end
+    if not (plain(link) and link) then return end
+    local r = Sim:ItemResult(link)
+    if r then
+        GameTooltip_AddNormalLine(tt, L.TOOLTIP_SIM_LINE:format(Sim:Describe(r), Sim:Age(r.finished)))
+    end
+end
+
 local function onItem(tt, data)
     if not M:IsEnabled() or not usable(tt) then return end
     if M.db.qualityBorder then
@@ -142,6 +155,7 @@ local function onItem(tt, data)
         local color = quality and ITEM_QUALITY_COLORS[quality]
         if color and quality > 1 then border(tt, color.r, color.g, color.b) end
     end
+    if M.db.simLine then addSim(tt, data) end
     if M.db.ids and data and plain(data.id) and data.id then
         GameTooltip_AddColoredLine(tt, L.TOOLTIP_ID:format(data.id), GRAY_FONT_COLOR)
     end
