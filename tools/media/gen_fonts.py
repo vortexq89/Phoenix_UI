@@ -61,6 +61,14 @@ FAMILIES = [
     ("Cinzel", "Cinzel", "ofl/cinzel", "Cinzel", "Cinzel[wght].ttf", ["Regular", "Bold"], {}, "OFL.txt", "serif"),
     ("JetBrainsMono", "JetBrains Mono", "ofl/jetbrainsmono", "JetBrainsMono", "JetBrainsMono[wght].ttf", ["Medium", "Bold"], {}, "OFL.txt", "mono"),
     ("RobotoMono", "Roboto Mono", "ofl/robotomono", "RobotoMono", "RobotoMono[wght].ttf", ["Medium"], {}, "OFL.txt", "mono"),
+    # 2.0 Phase 2: open families other addons in the wild bundle without their licences, taken from upstream instead
+    ("NotoSemiCond", "Noto Sans SemiCondensed", "ofl/notosans", "NotoSansSemiCondensed", "NotoSans[wdth,wght].ttf", ["Medium", "SemiBold", "Bold"], {"wdth": 87.5}, "OFL.txt", "condensed"),
+    ("Poppins", "Poppins", "ofl/poppins", "Poppins", "static", ["Medium", "SemiBold", "Bold"], {}, "OFL.txt", "sans"),
+    ("Changa", "Changa", "ofl/changa", "Changa", "Changa[wght].ttf", ["Medium", "SemiBold", "Bold"], {}, "OFL.txt", "display"),
+    ("Exo", "Exo", "ofl/exo", "Exo", "Exo[wght].ttf", ["Medium", "SemiBold", "Bold"], {}, "OFL.txt", "display"),
+    ("CinzelDeco", "Cinzel Decorative", "ofl/cinzeldecorative", "CinzelDecorative", "static", ["Regular", "Bold"], {}, "OFL.txt", "serif"),
+    ("FiraCode", "Fira Code", "ofl/firacode", "FiraCode", "FiraCode[wght].ttf", ["Medium", "Bold"], {}, "OFL.txt", "mono"),
+    ("ChivoMono", "Chivo Mono", "ofl/chivomono", "ChivoMono", "ChivoMono[wght].ttf", ["Medium", "Bold"], {}, "OFL.txt", "mono"),
 ]
 
 UNICODES = (

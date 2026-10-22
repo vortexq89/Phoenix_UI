@@ -103,7 +103,33 @@ BAR_SET = [
     ("BarHalftone", "Halftone", "pixel", lambda x, y: 0.82 - 0.06 * ty(y) + (0.10 if math.hypot((x % 4) - 1.5, (y % 4) - 1.5) < 0.8 + 0.9 * (1 - ty(y)) else 0.0)),
     ("BarAurora", "Aurora", "soft", lambda x, y: 0.80 + 0.14 * math.sin(x / W * math.pi * 4 + ty(y) * 2.0) * (1 - ty(y)) - 0.06 * ty(y)),
     ("BarFrost", "Frost", "soft", lambda x, y: 0.93 - 0.20 * ty(y) + 0.07 * (noise(x, y) - 0.5) * (1 - ty(y))),
+    # 2.0 Phase 2: twelve high-contrast faces that read apart at a glance, even at 12 px tall
+    ("BarNeon", "Neon", "bold", lambda x, y: 0.30 + 0.70 * math.exp(-((ty(y) - 0.5) / 0.16) ** 2)),
+    ("BarTube", "Tube", "bold", lambda x, y: 0.28 + 0.72 * math.sin(ty(y) * math.pi) ** 0.6 + (0.25 if 0.16 < ty(y) < 0.30 else 0.0)),
+    ("BarGloss", "Gloss", "bold", lambda x, y: (1.0 - 0.18 * ty(y) / 0.5) if ty(y) < 0.5 else (0.50 + 0.22 * (ty(y) - 0.5) / 0.5)),
+    ("BarEdge", "Edge", "bold", lambda x, y: 0.95 if y < 3 else (0.42 if y >= H - 3 else 0.70)),
+    ("BarChevron", "Chevron", "pattern", lambda x, y: 0.72 + (0.26 if ((x + abs(y - H / 2)) // 8) % 2 == 0 else 0.0) - 0.10 * ty(y)),
+    ("BarDiamond", "Diamond Plate", "pattern", lambda x, y: 0.70 - 0.10 * ty(y) + (0.28 if abs((x % 16) - 8) + abs((y % 16) - 8) < 4 else 0.0)),
+    ("BarHoney", "Honeycomb", "pattern", lambda x, y: 0.86 - 0.12 * ty(y) - (0.34 if hexline(x, y) else 0.0)),
+    ("BarCells", "Cells", "pattern", lambda x, y: 0.55 + 0.45 * cells(x, y) - 0.08 * ty(y)),
+    ("BarPinstripe", "Pinstripe", "pattern", lambda x, y: (1.0 if x % 8 == 0 else 0.74) - 0.14 * ty(y)),
+    ("BarRain", "Rain", "pattern", lambda x, y: 0.60 - 0.10 * ty(y) + (0.38 if (x + 3 * y) % 24 < 4 and ((x + 3 * y) // 24 + y // 11) % 2 == 0 else 0.0)),
+    ("BarDots", "Dots", "pattern", lambda x, y: 0.62 - 0.08 * ty(y) + (0.36 if math.hypot((x % 16) - 7.5, (y % 16) - 7.5) < 4.2 else 0.0)),
+    ("BarSegments", "Segments", "pattern", lambda x, y: (0.30 if x % 32 in (0, 1) else 0.94 - 0.24 * ty(y))),
 ]
+
+# periodic helpers for the patterned faces (period divides 256 so the bar tiles cleanly)
+def hexline(x, y):
+    # flat hex rows: 16 px cells, borders where the distance to the cell centre peaks
+    cx, cy = (x % 16) - 8, (y % 14) - 7
+    if (y // 14) % 2: cx = ((x + 8) % 16) - 8
+    return max(abs(cx) * 0.866 + abs(cy) * 0.5, abs(cy)) > 6.2
+
+CELL_PTS = [(rng.uniform(0, 256), rng.uniform(0, 32)) for _ in range(28)]
+def cells(x, y):
+    ds = sorted(min(abs(x - px), 256 - abs(x - px)) ** 2 + min(abs(y - py), 32 - abs(y - py)) ** 2 for px, py in CELL_PTS)
+    edge = math.sqrt(ds[1]) - math.sqrt(ds[0])          # 0 on a cell border
+    return min(1.0, edge / 3.0)
 
 def bar_set():
     for file, _, _, fn in BAR_SET:

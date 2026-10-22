@@ -28,6 +28,21 @@ for _, m in ipairs(ns.FontData) do M.fonts[#M.fonts + 1] = m end
 
 M.bars = ns.TextureData.bars
 
+-- CC0 sounds (Media/Sounds/SOUNDS.md). Keys are saved settings; names are the LibSharedMedia names.
+local S = ns.C.MEDIA .. "Sounds\\"
+M.sounds = {
+    { key = "AlertOnYou", name = "Phoenix: Alert (on you)", path = S .. "AlertOnYou.ogg" },
+    { key = "AlertUnderYou", name = "Phoenix: Alert (under you)", path = S .. "AlertUnderYou.ogg" },
+}
+-- Countdown voices: M:Voice(key, n) -> the file that says n (1-10).
+M.voices = { { key = "Jim", name = "Jim" }, { key = "David", name = "David" } }
+function M:Voice(key, n)
+    if not (n and n >= 1 and n <= 10) then return nil end
+    for _, v in ipairs(self.voices) do
+        if v.key == key then return S .. "Countdown\\" .. key .. "\\" .. n .. ".ogg" end
+    end
+end
+
 M.textures = {
     WHITE = "Interface\\Buttons\\WHITE8X8",
     SHADOW = T .. "Shadow",
@@ -52,7 +67,21 @@ M.needsFallbackFont = CJK[GetLocale()] == true
 -- On Russian clients a font without Cyrillic would draw boxes: it is hidden from the pickers and replaced.
 M.needsCyrillic = GetLocale() == "ruRU"
 
+for _, m in ipairs(M.sounds) do byKey[m.key] = m end
+
 function M:Get(key) return byKey[key] end
+
+-- Plays one of our sounds or any LibSharedMedia sound on the chosen channel; "" or unknown keys stay silent.
+function M:Sound(key)
+    local m = byKey[key]
+    if m and m.path and m.path:find("%.ogg$") then return m.path end
+    return key and key ~= "" and LSM:Fetch("sound", key, true) or nil
+end
+
+function M:PlaySound(key, channel)
+    local path = self:Sound(key)
+    if path then PlaySoundFile(path, channel or "Master") end
+end
 
 -- key may be one of ours or any LibSharedMedia name. latinOnly: the text is always Latin (the "PHOENIX" brand).
 function M:Font(key, latinOnly)
@@ -78,6 +107,18 @@ function M:Glow(key) return glows[key] or glows.Soft end
     Items carry what the picker needs to draw a live sample: font = path, texture = path, group = heading. ]]
 function M:List(kind)
     local out, seen = {}, {}
+    if kind == "sound" then
+        for _, m in ipairs(self.sounds) do
+            out[#out + 1] = { value = m.key, label = m.name:gsub("^Phoenix: ", ""), sound = m.path, group = "Phoenix" }
+            seen[m.name] = true
+        end
+        for _, name in ipairs(LSM:List("sound")) do
+            if not seen[name] and name ~= "None" then
+                out[#out + 1] = { value = name, label = name, sound = LSM:Fetch("sound", name, true), group = "LibSharedMedia" }
+            end
+        end
+        return out
+    end
     if kind == "font" then
         for _, m in ipairs(self.fonts) do
             if not (self.needsCyrillic and not m.cyrillic) then
@@ -87,7 +128,7 @@ function M:List(kind)
         end
     else
         for _, m in ipairs(self.bars) do
-            out[#out + 1] = { value = m.key, label = m.name:gsub("^Phoenix ", ""), texture = m.path, group = "Phoenix" }
+            out[#out + 1] = { value = m.key, label = m.name:gsub("^Phoenix ", ""), texture = m.path, group = "Phoenix", style = m.style }
             seen[m.name] = true
         end
     end
@@ -107,3 +148,4 @@ for _, m in ipairs(M.fonts) do LSM:Register("font", m.name, m.path, m.cyrillic a
 for _, m in ipairs(M.bars) do LSM:Register("statusbar", m.name, m.path) end
 for _, b in ipairs(ns.TextureData.borders) do LSM:Register("border", b.name, T .. b.file) end
 LSM:Register("background", "Phoenix Base", M.textures.WHITE)
+for _, m in ipairs(M.sounds) do LSM:Register("sound", m.name, m.path) end

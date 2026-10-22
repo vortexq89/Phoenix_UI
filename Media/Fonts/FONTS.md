@@ -1,6 +1,6 @@
 # Bundled fonts
 
-Phoenix_UI ships 89 font files in 36 families (10.0 MB). All of them may be redistributed
+Phoenix_UI ships 107 font files in 43 families (11.0 MB). All of them may be redistributed
 with the addon under the SIL Open Font License 1.1, the Ubuntu Font Licence 1.0 or Apache 2.0, and each
 licence text travels with the files in `Licenses/`. Every face is registered with LibSharedMedia as
 "Phoenix <Family> <Weight>", so other addons can use them too.
@@ -55,3 +55,13 @@ Roboto. Korean and Chinese clients use the game font throughout, since none of t
 | Cinzel | Regular, Bold | serif | no | subset | SIL OFL 1.1 — Licenses/OFL-Cinzel.txt | 82 KB |
 | JetBrains Mono | Medium, Bold | mono | yes | subset | SIL OFL 1.1 — Licenses/OFL-JetBrainsMono.txt | 82 KB |
 | Roboto Mono | Medium | mono | yes | subset | SIL OFL 1.1 — Licenses/OFL-RobotoMono.txt | 66 KB |
+| Noto Sans SemiCondensed | Medium, SemiBold, Bold | condensed | yes | subset | SIL OFL 1.1 — Licenses/OFL-NotoSansSemiCondensed.txt | 384 KB |
+| Poppins | Medium, SemiBold, Bold | sans | no | subset | SIL OFL 1.1 — Licenses/OFL-Poppins.txt | 69 KB |
+| Changa | Medium, SemiBold, Bold | display | no | subset | SIL OFL 1.1 — Licenses/OFL-Changa.txt | 70 KB |
+| Exo | Medium, SemiBold, Bold | display | no | subset | SIL OFL 1.1 — Licenses/OFL-Exo.txt | 132 KB |
+| Cinzel Decorative | Regular, Bold | serif | no | as published | SIL OFL 1.1 — Licenses/OFL-CinzelDecorative.txt | 119 KB |
+| Fira Code | Medium, Bold | mono | yes | subset | SIL OFL 1.1 — Licenses/OFL-FiraCode.txt | 114 KB |
+| Chivo Mono | Medium, Bold | mono | no | subset | SIL OFL 1.1 — Licenses/OFL-ChivoMono.txt | 71 KB |
+
+Poppins, Changa, Exo, Cinzel Decorative, Fira Code, Chivo Mono and Noto Sans SemiCondensed were added in 2.0 Phase 2. Other
+addons bundle some of these without their licences; Phoenix takes them from the google/fonts originals instead.
