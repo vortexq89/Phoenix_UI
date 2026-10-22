@@ -6,9 +6,7 @@ local Skin, Style, Media, Theme, Secret = ns.Skin, ns.Style, ns.Media, ns.Theme,
     their item frames (square or round icons, zoom, border, Phoenix fonts for timers, stacks and bar texts,
     bar texture and colour) and fade the viewers out of combat. No cooldown, aura or duration value is read:
     Blizzard keeps feeding them into the Cooldown and StatusBar widgets, which accept secret values.
-    Countdown voices speak the last seconds of pull timers (/countdown, DBM/BigWigs pulls use the same
-    event) and of Mythic+ / arena / battleground start timers; their payload is checked with Secret.IsSecret
-    first, because START_PLAYER_COUNTDOWN is secret during chat lockdown. ]]
+    The countdown voice for pulls and start timers lives in Encounters (one owner per timer). ]]
 local function viewer(timer, extra)
     local v = {
         style = true, square = true, zoom = 0.08, hideDebuffBorder = false,
@@ -34,7 +32,6 @@ local M = ns:NewModule("Tracker", {
             }),
         },
         fade = { enabled = false, alpha = 0.35 },
-        countdown = { enabled = true, voice = "Jim", from = 5, pull = true, timers = true },
     },
 })
 
@@ -169,48 +166,6 @@ function M:ApplyFade()
     for f in pairs(keyOf) do f:SetAlpha(alpha) end
 end
 
----------------------------------------------------------------- countdown voices
-local ticker
-local function stopCountdown()
-    if ticker then ticker:Cancel(); ticker = nil end
-end
-M.StopCountdown = stopCountdown
-
--- Speaks from db.countdown.from down to 1 for a timer that ends `seconds` from now.
-function M:StartCountdown(seconds)
-    stopCountdown()
-    local c = self.db.countdown
-    if not (c.enabled and type(seconds) == "number" and seconds > 0) then return end
-    local endsAt = GetTime() + seconds
-    local last
-    local function tick()
-        local left = math.ceil(endsAt - GetTime() - 0.05)
-        if left < 1 then stopCountdown(); return end
-        if left ~= last and left <= c.from then
-            last = left
-            local path = Media:Voice(c.voice, left)
-            if path then PlaySoundFile(path, "Master") end
-        end
-    end
-    ticker = C_Timer.NewTicker(0.1, tick)
-    tick()
-end
-
--- The test button: a 5 → 1 countdown right now.
-function M:TestCountdown() self:StartCountdown(self.db.countdown.from + 0.5) end
-
-local function plainNumber(v) return not Secret.IsSecret(v) and type(v) == "number" and v or nil end
-
-local function onPlayerCountdown(_, _, _, timeRemaining)
-    if M.db.countdown.pull then M:StartCountdown(plainNumber(timeRemaining)) end
-end
-
-local function onStartTimer(_, _, timerType, timeRemaining)
-    if Secret.IsSecret(timerType) or not M.db.countdown.timers then return end
-    if timerType == Enum.StartTimerType.PlayerCountdown then return end -- START_PLAYER_COUNTDOWN covers it
-    M:StartCountdown(plainNumber(timeRemaining))
-end
-
 -- Blizzard's own spell picker for the viewers (the "Advanced Cooldown Settings" window).
 function M:OpenCooldownManager()
     if InCombatLockdown() then return end
@@ -232,15 +187,11 @@ function M:OnEnable()
     ns.Events:On("PLAYER_REGEN_DISABLED", self, self.ApplyFade)
     ns.Events:On("PLAYER_REGEN_ENABLED", self, self.ApplyFade)
     ns.Events:On("PLAYER_ENTERING_WORLD", self, self.ApplyFade)
-    ns.Events:On("START_PLAYER_COUNTDOWN", self, onPlayerCountdown)
-    ns.Events:On("CANCEL_PLAYER_COUNTDOWN", self, stopCountdown)
-    ns.Events:On("START_TIMER", self, onStartTimer)
     ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
     self:Refresh()
 end
 
 function M:OnDisable()
-    stopCountdown()
     for f in pairs(keyOf) do f:SetAlpha(1) end
 end
 

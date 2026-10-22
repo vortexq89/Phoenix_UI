@@ -31,6 +31,7 @@ Previews\General.lua
 Previews\Combat.lua
 Previews\Interface.lua
 Previews\Tracker.lua
+Previews\Encounters.lua
 Config\Window.lua
 Config\Groups.lua
 Config\Renderer.lua
@@ -58,6 +59,7 @@ Options\DataTexts.lua
 Options\Movers.lua
 Options\CooldownText.lua
 Options\Tracker.lua
+Options\Encounters.lua
 Options\CombatText.lua
 Options\DamageMeter.lua
 Options\SpellHistory.lua

@@ -21,6 +21,10 @@
     <!-- combat -->
     <Script file="CooldownText\CooldownText.lua"/>
     <Script file="Tracker\Tracker.lua"/>
+    <Script file="Encounters\Encounters.lua"/>
+    <Script file="Encounters\Bars.lua"/>
+    <Script file="Encounters\Warnings.lua"/>
+    <Script file="Encounters\BigWigs.lua"/>
     <Script file="CombatText\CombatText.lua"/>
     <Script file="DamageMeter\DamageMeter.lua"/>
     <Script file="SpellHistory\SpellHistory.lua"/>

@@ -166,7 +166,17 @@ local api = {
     C_AddOns = { GetAddOnMetadata = function() return "@project-version@" end, IsAddOnLoaded = function() return false end },
     C_Timer = { After = function() end, NewTicker = function() return { Cancel = function() end } end,
                 NewTimer = function() return { Cancel = function() end } end },
-    C_CVar = { GetCVar = function() return "1" end, GetCVarBool = function() return true end, SetCVar = function() end },
+    C_CVar = { GetCVar = function() return "1" end, GetCVarBool = function() return true end, SetCVar = function() end,
+               GetCVarBitfield = function() return false end, SetCVarBitfield = function() end },
+    -- encounter timeline / warnings (12.x): no events unless a test adds them
+    C_EncounterTimeline = { GetEventList = function() return {} end, AddEditModeEvents = function() return 30 end,
+        CancelEditModeEvents = function() end, GetEventInfo = function() return nil end,
+        GetEventState = function() return 0 end, GetEventTimeRemaining = function() return 5 end,
+        GetEventTrack = function() return 1 end, IsEventBlocked = function() return false end },
+    C_EncounterWarnings = { PlaySound = function() end, GetEditModeWarningInfo = function(sev)
+        return { text = "Sample %s", casterName = "Boss", targetName = "You", iconFileID = 1, severity = sev, duration = 4 }
+    end },
+    C_PartyInfo = { DoCountdown = function() return true end },
     C_SpecializationInfo = { GetSpecialization = function() return 1 end,
         GetNumSpecializationsForClassID = function() return 3 end,
         GetSpecializationInfo = function(i) return i, "Spec" .. i, "", 0 end },
@@ -887,37 +897,120 @@ try("previews", function()
         assert(ns.Config:Show(key).pinned, key .. " has no preview")
     end
 end)
--- Auras & Cooldowns: item frames of the Cooldown Manager are dressed; countdown voices ignore secret payloads
+-- Auras & Cooldowns: item frames of the Cooldown Manager are dressed (the countdown voice moved to Encounters)
 try("tracker", function()
     local M = ns.modules.Tracker
-    assert(M and M.db.viewers.bars.texture == "" and M.db.countdown.voice == "Jim", "tracker defaults")
+    assert(M and M.db.viewers.bars.texture == "" and M.db.countdown == nil, "tracker defaults")
     local icon = env.CreateFrame("Frame"):CreateTexture()
     M:StyleIcon("essential", icon, env.CreateFrame("Frame"), env.CreateFrame("Frame"):CreateFontString())
     M:StyleBar("bars", env.CreateFrame("StatusBar"), env.CreateFrame("Frame"):CreateFontString())
-    local played, ticks = {}, {}
-    local saved = { PlaySoundFile = rawget(env, "PlaySoundFile"), C_Timer = env.C_Timer }
-    rawset(env, "PlaySoundFile", function(path) played[#played + 1] = path end)
-    rawset(env, "C_Timer", { After = function() end,
-        NewTicker = function(_, fn) ticks[#ticks + 1] = fn; return { Cancel = function() end } end })
-    local isSecret = ns.Secret.IsSecret
-    ns.Secret.IsSecret = function(v) return v == 777 end
-    fire("START_PLAYER_COUNTDOWN", "guid", 777, 777, false)
-    fire("START_PLAYER_COUNTDOWN", "guid", nil)
-    ns.Secret.IsSecret = isSecret
-    assert(#played == 0 and #ticks == 0, "a secret or missing countdown payload must stay silent")
-    fire("START_PLAYER_COUNTDOWN", "guid", 3, 10, false)
-    assert(#ticks == 1 and played[1] and played[1]:find("Jim\\3.ogg", 1, true), "a 3 s pull did not say three")
-    fire("START_TIMER", env.Enum.StartTimerType and env.Enum.StartTimerType.PlayerCountdown, 3, 10)
-    fire("CANCEL_PLAYER_COUNTDOWN", "guid")
-    M.db.countdown.enabled = false
-    M:StartCountdown(4)
-    M.db.countdown.enabled = true
-    assert(#played == 1, "the countdown spoke while switched off")
-    for k, v in pairs(saved) do rawset(env, k, v or nil) end
     local stage = ns.Previews:Create("tracker", env.CreateFrame("Frame"), M, { scope = { unit = "bars" } })
     M.db.viewers.essential.square = false
     stage:Redraw()
     M.db.viewers.essential.square = true
+end)
+-- Encounters: countdown voice (moved from Tracker), timeline bars, warnings banner, pull / break, CVar
+-- ownership, the BigWigs bar style and the first-install module picker
+try("encounters", function()
+    local M = ns.modules.Encounters
+    assert(M and M:IsEnabled() and M.db.countdown.voice == "Jim" and M.db.timeline.display == "phoenix", "encounters defaults")
+    -- migration: an old profile's Tracker.countdown lands in Encounters and leaves Tracker
+    local old = { modules = { Tracker = { countdown = { voice = "David", from = 7 } } } }
+    ns.Migrations:UpgradeProfile(old, 3)
+    assert(old.modules.Encounters.countdown.voice == "David" and old.modules.Tracker.countdown == nil, "countdown not migrated")
+    local played, ticks, cvars, sounds, counts = {}, {}, {}, {}, {}
+    local saved = { PlaySoundFile = rawget(env, "PlaySoundFile"), C_Timer = env.C_Timer, C_CVar = env.C_CVar,
+        C_EncounterWarnings = env.C_EncounterWarnings, C_PartyInfo = env.C_PartyInfo, GetTime = rawget(env, "GetTime") }
+    local now = 100
+    rawset(env, "GetTime", function() return now end)
+    rawset(env, "PlaySoundFile", function(path) played[#played + 1] = path end)
+    rawset(env, "C_Timer", { After = function(_, fn) fn() end,
+        NewTicker = function(_, fn) ticks[#ticks + 1] = fn; return { Cancel = function() end } end,
+        NewTimer = function() return { Cancel = function() end } end })
+    local values = {}
+    rawset(env, "C_CVar", { GetCVar = function(k) return values[k] or "1" end,
+        GetCVarBool = function(k) return (values[k] or "1") ~= "0" end,
+        SetCVar = function(k, v) values[k] = v; cvars[#cvars + 1] = k .. "=" .. v end,
+        GetCVarBitfield = function() return false end, SetCVarBitfield = function() end })
+    rawset(env, "C_EncounterWarnings", { PlaySound = function(sev) sounds[#sounds + 1] = sev end,
+        GetEditModeWarningInfo = saved.C_EncounterWarnings.GetEditModeWarningInfo })
+    rawset(env, "C_PartyInfo", { DoCountdown = function(n) counts[#counts + 1] = n; return true end })
+    -- countdown voice: secret or missing payloads stay silent
+    local isSecret = ns.Secret.IsSecret
+    ns.Secret.IsSecret = function(v) return v == 777 end
+    fire("START_PLAYER_COUNTDOWN", "guid", 777, 777, false)
+    fire("START_PLAYER_COUNTDOWN", "guid", nil)
+    assert(#played == 0 and #ticks == 0, "a secret or missing countdown payload must stay silent")
+    fire("START_PLAYER_COUNTDOWN", "guid", 3, 10, false)
+    assert(#ticks == 1 and played[1] and played[1]:find("Jim\\3.ogg", 1, true), "a 3 s pull did not say three")
+    assert(M.Bars:HasTimer("pull"), "a pull did not start the pull bar")
+    fire("CANCEL_PLAYER_COUNTDOWN", "guid")
+    assert(not M.Bars:HasTimer("pull"), "a cancelled pull kept its bar")
+    fire("START_TIMER", env.Enum.StartTimerType and env.Enum.StartTimerType.PlayerCountdown, 3, 10)
+    M.db.countdown.enabled = false
+    M:StartCountdown(4)
+    M.db.countdown.enabled = true
+    assert(#played == 1, "the countdown spoke while switched off")
+    -- CVars: Phoenix owns the Blizzard views it replaces, and gives them back
+    M:ApplyCVars()
+    assert(values.encounterTimelineEnabled == "0" and values.encounterWarningsEnabled == "0", "Blizzard views not handed over")
+    assert(M.global.cvars.timeline == "1", "the player's own timeline value was not kept")
+    ns.DB:Set(M, "timeline.display", "blizzard")
+    assert(values.encounterTimelineEnabled == "1" and M.global.cvars.timeline == nil, "the timeline CVar was not restored")
+    ns.DB:Set(M, "timeline.display", "phoenix")
+    assert(M:BlizzardValue("timeline") == true, "BlizzardValue should report the player's value")
+    -- timeline events become bars; secret names only reach SetText
+    fire("ENCOUNTER_TIMELINE_EVENT_ADDED", { id = 41, source = 0, duration = 20, spellName = "Breath", iconFileID = 1 })
+    fire("ENCOUNTER_TIMELINE_EVENT_ADDED", { id = 42, source = 2, duration = 8, spellName = "Edit", iconFileID = 2 })
+    assert(M.Bars:Draw() == 2, "two timeline events should draw two bars")
+    M.db.timeline.horizon = 3
+    assert(M.Bars:Draw() == 0, "events beyond the horizon should not draw")
+    M.db.timeline.horizon = 0
+    fire("ENCOUNTER_TIMELINE_EVENT_REMOVED", 41)
+    fire("ENCOUNTER_TIMELINE_EVENT_REMOVED", 42)
+    assert(M.Bars:Draw() == 0, "removed events still draw")
+    -- warnings: severity is plain, everything else goes to the sinks; secret severity is ignored
+    fire("ENCOUNTER_WARNING", { text = "%s breathes on %s", casterName = "Boss", targetName = "You", severity = 2,
+        duration = 3, iconFileID = 1 })
+    assert(sounds[1] == 2 and M.Warnings:Count() == 1, "a critical warning did not show with the game's sound")
+    fire("ENCOUNTER_WARNING", { text = "x", severity = 777, duration = 3 })
+    assert(M.Warnings:Count() == 1, "a warning with a secret severity was shown")
+    values.encounterWarningsLevel = "2"
+    fire("ENCOUNTER_WARNING", { text = "minor", severity = 0, duration = 3 })
+    assert(M.Warnings:Count() == 1, "a warning under the minimum severity was shown")
+    values.encounterWarningsLevel = nil
+    ns.Secret.IsSecret = isSecret
+    -- test mode, pull, break and the D5 break message
+    assert(M:Test(), "test mode did not start")
+    M:StopTest()
+    assert(M:Pull(12) and counts[1] == 12, "pull did not call DoCountdown")
+    assert(not M:Pull(90), "a 90 s pull was accepted")
+    assert(M:Break(5) and M.Bars:HasTimer("break"), "break did not start a bar")
+    assert(M:Break(0) and not M.Bars:HasTimer("break"), "break 0 did not end it")
+    fire("CHAT_MSG_ADDON", "D5", "Lead-Realm\t1\tBT\t300", "RAID", "Lead-Realm")
+    assert(M.Bars:HasTimer("break"), "a DBM/BigWigs break message did not start the break bar")
+    M.Bars:StopTimer("break")
+    ns.TestSlash("encounters pull 10")
+    assert(counts[#counts] == 10, "/pui encounters pull 10")
+    -- BigWigs bar style: registers through the public API and restores what it changes
+    local style
+    rawset(env, "BigWigsAPI", { RegisterBarStyle = function(_, key, data) assert(key == "Phoenix"); style = data end })
+    M.BigWigs.status = "absent"
+    M.BigWigs:Enable()
+    assert(M.BigWigs.status == "registered" and style and style:GetStyleName() == "Phoenix" and style.apiVersion == 1,
+        "BigWigs style not registered")
+    local bar = env.CreateFrame("Frame")
+    bar.candyBarBar = env.CreateFrame("StatusBar")
+    bar.candyBarLabel = env.CreateFrame("Frame"):CreateFontString()
+    bar.candyBarDuration = env.CreateFrame("Frame"):CreateFontString()
+    style.ApplyStyle(bar); style.BarStopped(bar)
+    rawset(env, "BigWigsAPI", nil)
+    -- preview
+    local stage = ns.Previews:Create("encounters", env.CreateFrame("Frame"), M, {})
+    M.db.timeline.emphasize = false
+    stage:Redraw()
+    M.db.timeline.emphasize = true
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
 end)
 -- unit frames: boss scope, test frames (never in combat), portraits and range fade options exist
 try("unit frames depth", function()

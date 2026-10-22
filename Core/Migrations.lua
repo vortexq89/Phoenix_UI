@@ -102,10 +102,31 @@ Mg.MOVES = {
     { "GroupFrames", "nameSize", "name.size" },
 }
 
--- Moves flat 2.0 keys into the style specs of one profile; idempotent (a moved key no longer exists).
+-- Settings that changed owner: { from module, path, to module, path }. The countdown voice moved from
+-- Auras & Cooldowns (Tracker) to Encounters in 2.0 Stage 1, so one module owns every pull and start timer.
+Mg.MODULE_MOVES = {
+    { "Tracker", "countdown", "Encounters", "countdown" },
+}
+
+local function moveBetweenModules(modules)
+    for _, row in ipairs(Mg.MODULE_MOVES) do
+        local from = modules[row[1]]
+        local value
+        if type(from) == "table" then value = from[row[2]] end
+        if value ~= nil then
+            modules[row[3]] = type(modules[row[3]]) == "table" and modules[row[3]] or {}
+            if modules[row[3]][row[4]] == nil then modules[row[3]][row[4]] = value end
+            from[row[2]] = nil
+        end
+    end
+end
+
+-- Moves flat 2.0 keys into the style specs of one profile and settings that changed module to their new
+-- owner; idempotent (a moved key no longer exists).
 local function moveProfile(profile)
     local U = ns.Util
     local modules = type(profile) == "table" and type(profile.modules) == "table" and profile.modules
+    if modules then moveBetweenModules(modules) end
     for _, row in ipairs(modules and Mg.MOVES or {}) do
         local db = modules[row[1]]
         local ok, value = pcall(U.GetPath, db, row[2])
@@ -130,6 +151,7 @@ Mg.steps = {
     { version = 1, run = importLegacy },
     { version = 2, run = moveKeys },
     { version = 3, run = moveKeys },   -- GroupFrames.nameSize joined MOVES after step 2 shipped on the branch
+    { version = 4, run = moveKeys },   -- Tracker.countdown -> Encounters.countdown (MODULE_MOVES)
 }
 
 function Mg:Run(sv)

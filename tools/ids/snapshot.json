@@ -85,7 +85,14 @@
    "value": 6
   }
  },
- "fileids": {},
+ "fileids": {
+  "132337": {
+   "path": "interface\\icons\\ability_warrior_charge"
+  },
+  "134376": {
+   "path": "interface\\icons\\inv_misc_pocketwatch_01"
+  }
+ },
  "files": {
   "Interface\\Buttons\\LockButton-Locked-Up": {
    "fileDataID": 525906
