@@ -164,6 +164,7 @@ follows that. It skins and configures the Blizzard features and no longer bundle
 ```bash
 luacheck .                          # zero warnings, generated 12.1.5 API std
 python3 tools/check_api.py          # APIs, events, CVars, templates, atlases vs. 12.1.5; load-chain check
+python3 tools/check_ids.py          # every icon path, atlas, spellID, SOUNDKIT and enum fallback vs the pinned 12.1.5 snapshot
 python3 tools/check_locales.py      # locale coverage; every translation complete
 lua5.1 tools/smoke/harness.lua .    # offline load test
 ```

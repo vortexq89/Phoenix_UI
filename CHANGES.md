@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Game ID audit**: every hard-coded icon path, atlas, spell ID, sound and enum fallback was checked against
+  build 12.1.5.70448 (wago.tools DB2 + Blizzard UI source). One was wrong: the Bugs page game-icon fallback
+  (`INV_Misc_Bug_01` does not exist) now uses `INV_Misc_Bugsprayer`. `tools/check_ids.py` keeps it that way.
 - **Settings window 2.0**: the sidebar is 13 folding groups (Appearance & Media, Combat, Group & Mythic+, Tools …);
   every module and option kept its place in your saved settings, only the menu moved. Search covers every page and
   shows the full path. Reset any setting (right-click or ↺), any card, or a whole module.

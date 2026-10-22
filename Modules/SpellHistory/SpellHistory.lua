@@ -10,8 +10,7 @@ local M = ns:NewModule("SpellHistory", {
     defaults = { count = 6, size = 32, spacing = 4, grow = "RIGHT", fade = 8, inCombatOnly = false },
 })
 
--- Auto Attack and Auto Shot
-local IGNORE = { [6603] = true, [75] = true }
+local IGNORE = { [6603] = true, [75] = true } -- spellIDs: Auto Attack, Auto Shot
 
 local strip
 local icons = {}

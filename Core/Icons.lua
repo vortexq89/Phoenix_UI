@@ -53,7 +53,7 @@ local GAME_ART = {
     maps = "INV_Misc_Map_01", minimap = "INV_Misc_Map02", datatexts = "INV_Misc_Note_01", tooltip = "INV_Misc_Note_05",
     itemlevel = "INV_Chest_Plate04", quality = "INV_Misc_EngGizmos_30", automation = "INV_Gizmo_02",
     skins = "INV_Fabric_Silk_02", ["cat-utility"] = "Trade_Engineering", movers = "Ability_Rogue_Sprint",
-    profiles = "INV_Misc_Book_11", bugs = "INV_Misc_Bug_01", diagnostics = "INV_Misc_Spyglass_03",
+    profiles = "INV_Misc_Book_11", bugs = "INV_Misc_Bugsprayer", diagnostics = "INV_Misc_Spyglass_03",
     about = "INV_Misc_Book_07", fonts = "INV_Inscription_Scroll", textures = "INV_Fabric_Linen_01",
     sound = "INV_Misc_Bell_01", tracker = "INV_Misc_PocketWatch_02", presets = "INV_Enchant_ShardBrilliantLarge",
 }

@@ -26,6 +26,9 @@ jobs:
       - name: API reference check
         run: python3 tools/check_api.py
 
+      - name: Game ID check (pinned 12.1.5 snapshot)
+        run: python3 tools/check_ids.py
+
       - name: Locale coverage
         run: python3 tools/check_locales.py
 

@@ -42,6 +42,7 @@ Never invent an API. If you can't find it in (1)–(3), it does not exist.
 7. **Localize.** User-visible strings use `L.KEY` from `Locales/enUS.lua`.
 8. **Lint clean.** `luacheck .` returns 0 warnings for `Core/ UI/ Modules/ Locales/`.
 9. **Errors and positions are owned.** Only `Core/Errors.lua` calls `seterrorhandler`, and it always chains to the previous handler (stand down when BugGrabber is present). Only the Movers module repositions Blizzard frames, only frames on its verified list (ARCHITECTURE §16), never an Edit Mode system.
+10. **Game IDs are verified, never remembered.** Prefer runtime lookups (`C_Spell.GetSpellTexture`, `C_ChallengeMode.GetMapUIInfo`, `C_Texture.GetAtlasInfo`, `GetClassAtlas`) to literals. Any literal icon path, atlas, spell ID (tag the line `-- spellIDs: Name, Name`), `SOUNDKIT` key or enum fallback must pass `tools/check_ids.py`; after adding one, run `tools/ids/refresh.py` (wago.tools DB2 for the live build) and commit the snapshot.
 
 ## 4. Code style
 
@@ -138,10 +139,11 @@ There is no headless WoW client, so testing has two layers:
 luacheck .                          # 0 warnings required (generated 12.1.5 std)
 python3 tools/check_api.py          # methods/events/CVars/templates/atlases vs 12.1.5, forbidden patterns,
                                     # TOC/XML files exist with exact case, every .lua loaded exactly once
+python3 tools/check_ids.py          # every icon path, atlas, spellID, SOUNDKIT and enum fallback vs the pinned 12.1.5 snapshot
 python3 tools/check_locales.py      # enUS has every key used, and no unused or duplicate keys
 lua5.1 tools/smoke/harness.lua .    # offline load: every file, boot events, every settings page, profiles, slash
 ```
-CI (`.github/workflows/luacheck.yml`) runs the same four commands. The harness uses permissive stubs: it proves the
+CI (`.github/workflows/luacheck.yml`) runs the same five commands. The harness uses permissive stubs: it proves the
 load order and boot path, not in-game behaviour.
 
 **In-game (human, before merge to main):** `/console scriptErrors 1`, BugSack optional, then:
