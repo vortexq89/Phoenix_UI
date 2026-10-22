@@ -116,10 +116,30 @@ S16 = {
  "GroupFinder": (None, {"Remember sign-up note":"api"}),
 }
 
+# S17 (2026-10-22): the 36 open gap rows. Per row: status, or (status, stage) for rows that stay open and move on.
+# link = owned by another page or Edit Mode; api = not possible with the 12.x API (see PLAN_V2 S17 note).
+S17 = {
+ "Tracker": {"Buff bar smooth fill":"api", "Buff bar gradient":"has", "Stack-based fill":"api"},
+ "UnitFrames": {"Click casting (Blizzard Click Cast bindings)":"link", "Overheal shown":"has", "Spell cost prediction":"has",
+   "Pip shape":"has", "Portrait size":"has"},
+ "GroupFrames": {"Dispel colours":"has"},
+ "NamePlates": {"NPC title / guild on friendly":"has"},
+ "Chat": {"Timestamp colour":"has", "Remember last channel":"api", "Emote picker":"has", "Combat log tab hidden":"api"},
+ "Minimap": {"Scale":"link", "Group finder eye":"api", "World map: reveal unexplored":("new", "S25"), "World map scale":"has"},
+ "Tooltip": {"Raid progression line":("new", "S24"), "Item: vendor price":"has", "Item: already known / collected":"has",
+   "Keystone tooltip (affixes, depleted)":"has", "Group finder entry tooltip details":"link"},
+ "Bags": {"Bag bar inside window":"has"},
+ "ItemLevel": {"Character sheet: stats panel restyle":"has"},
+ "DataTexts": {"Currency picker":"has", "Honor bar":"has", "Data bar texture":"has", "Data bar fill direction":"has",
+   "Data bar smooth fill":"has", "Data bar gradient":"has"},
+ "Skins": {"Alerts / toasts":"has", "Skyriding vigor bar":("new", "S24")},
+ "General": {"Power colours override":"has"},
+ "Profiles": {"Per-character overrides":"link"},
+ "MythicPlus": {"Teleport buttons on dungeon list":("new", "S28")},
+}
 
-
-NOW = {"ActionBars": 117, "CooldownText": 15, "Tracker": 92, "UnitFrames": 205, "GroupFrames": 194, "NamePlates": 276, "CastBars": 103, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 59, "Minimap": 48, "Tooltip": 55, "Bags": 55, "ItemLevel": 19, "DataTexts": 68, "Skins": 35, "General": 31, "Profiles": 15, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 38, "GroupFinder": 58, "MythicPlus": 34, "Encounters": 64, "PvP": 10, "Sim": 11, "Diagnostics": 9}
-NOW_FOREVER = {"ActionBars": 116, "CooldownText": 15, "Tracker": 88, "UnitFrames": 205, "GroupFrames": 193, "NamePlates": 270, "CastBars": 113, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 59, "Minimap": 46, "Tooltip": 53, "Bags": 54, "ItemLevel": 19, "DataTexts": 67, "Skins": 33, "General": 31, "Profiles": 11, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 36, "GroupFinder": None, "MythicPlus": None, "Encounters": 9, "PvP": 10, "Sim": None, "Diagnostics": 9}
+NOW = {"ActionBars": 117, "CooldownText": 15, "Tracker": 93, "UnitFrames": 209, "GroupFrames": 194, "NamePlates": 276, "CastBars": 103, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 61, "Minimap": 49, "Tooltip": 58, "Bags": 56, "ItemLevel": 20, "DataTexts": 77, "Skins": 36, "General": 52, "Profiles": 15, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 43, "GroupFinder": 58, "MythicPlus": 34, "Encounters": 64, "PvP": 10, "Sim": 11, "Diagnostics": 9}
+NOW_FOREVER = {"ActionBars": 116, "CooldownText": 15, "Tracker": 89, "UnitFrames": 209, "GroupFrames": 193, "NamePlates": 270, "CastBars": 113, "Auras": 64, "CombatText": 30, "DamageMeter": 24, "SpellHistory": 13, "Chat": 61, "Minimap": 46, "Tooltip": 55, "Bags": 55, "ItemLevel": 20, "DataTexts": 76, "Skins": 34, "General": 52, "Profiles": 11, "Movers": 17, "Quality": 22, "Automation": 15, "AFK": 12, "Bugs": 12, "Quests": 41, "GroupFinder": None, "MythicPlus": None, "Encounters": 9, "PvP": 10, "Sim": None, "Diagnostics": 9}
 
 def apply():
     for m, fx in FIX.items():
@@ -136,6 +156,14 @@ def apply():
         for row in MOD[m]["rows"]:
             if row["name"] in fx: row["status"] = fx[row["name"]]
             elif default and row["status"] != "has": row["status"] = default
+    for m, fx in S17.items():
+        names = {row["name"] for row in MOD[m]["rows"]}
+        assert set(fx) <= names, (m, set(fx) - names)
+        for row in MOD[m]["rows"]:
+            if row["name"] in fx:
+                v = fx[row["name"]]
+                row["status"], stage = (v, None) if isinstance(v, str) else v
+                if stage: row["stage"] = stage
     for m, n in NOW.items(): MOD[m]["now"] = n
     for m, n in NOW_FOREVER.items(): MOD[m]["nowF"] = n
 

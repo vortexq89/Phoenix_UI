@@ -77,8 +77,24 @@ list (and one generated `_Forever.toc`) serves both games.
    Northrend, Outland and the old continents for retail (folders 01–13), one file each.
 2. Dungeon and raid quests (`01 - Dungeons Raids`) for both clients.
 3. Flight masters and points of interest from `TaxiNodes` / `AreaPOI` (DB2) for the arrow's route hints.
-4. The opt-in contribution collector (the toggle ships now, UI only; nothing is recorded) — plan stage S17,
-   once a backend is approved.
+4. ~~The opt-in contribution collector~~ — shipped in S17 as a **local** collector (no upload): see
+   "NPC locations (S17)" below and `docs/plan_v2/research/NPC_DATA.md`.
 
 Each slice is one more entry in `SLICES` in the generator and one line in `Phoenix_UI_Data.toc`; the module
 reads whatever slices the manifest lists and adds an expansion filter row per slice.
+
+## NPC locations (S17)
+
+`build_questdata.py` also writes `NPCs_<Slice>.lua` beside each quest slice: every NPC the AllTheThings database
+places in the slice's zones, packed per map as `npcID,x,y,kind` (x/y in 0.1 %; kind 1 quest giver, 2 vendor,
+3 profession NPC / trainer, 4 rare, 0 other), taken from ATT's `VENDORS` / `PROFESSIONS` / `RARES` headers that
+`att_extract.lua` now records. `NPCs_Collected.lua` holds positions merged from the local collector.
+
+- **Collector:** opt-in (*Record NPC positions*). NPC ID from `UnitCreatureID("npc")` (never from a GUID), map from
+  `C_Map.GetBestMapForUnit`, your own position; vignettes from `C_VignetteInfo`. Open world, out of combat, no
+  secret value; no names, realms or GUIDs. PhoenixUIDB only, never uploaded.
+- **Merge:** `python3 tools/questdata/merge_collected.py --flavor retail|forever <Phoenix_UI.lua> [...]` (add
+  `--dry-run` to see counts). NPCs that the ATT slices already place on that map are skipped; positions are averaged
+  with what the file holds, weighted by sightings. Merging the same SavedVariables file twice counts its sightings
+  twice, so merge each file once.
+

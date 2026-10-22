@@ -514,6 +514,21 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   (`Secret.IsSecret`) first; NPC IDs come from `UnitCreatureID`, never a GUID; inspect is throttled (1.5 s), never in
   combat or with the Inspect window open, cached per GUID for 5 minutes, and refreshes the open tooltip with
   `RefreshData` on `INSPECT_READY`.
+* **NPC locations and gap rows (2.0 S17).** `Modules/Quests/NPCs.lua` builds one NPC index (npcID → spots) from
+  Phoenix_UI_Data's `D.npcs` slices (`NPCs_<Slice>.lua`, AllTheThings facts: quest givers, vendors, profession
+  NPCs, rares), `D.collected` (`NPCs_Collected.lua`, maintainer-merged recordings) and this install's own
+  recordings; the NPC search, `/way`, quest tooltips and townsfolk / rare pins all read it (no second copy).
+  `Modules/Quests/Collector.lua` is opt-in: on gossip / quest / merchant / trainer / taxi events it stores
+  `UnitCreatureID("npc")`, `C_Map.GetBestMapForUnit` and the player position, and vignette IDs with
+  `C_VignetteInfo.GetVignettePosition`, only in the open world, out of combat and when no value is secret
+  (capped at `M.COLLECT_CAP`); `tools/questdata/merge_collected.py` merges SavedVariables files offline. The gap
+  rows only post-hook or add frames: Unit Frames predict cost from `UnitCastingInfo` + `C_Spell.GetSpellPowerCost`
+  (secret-checked) and clip heal prediction in their own frame; `Theme` adds `power.*` / `dispel.*` tokens
+  (`U.PowerColor`, `U.DispelColor`); Chat colours timestamps through the `showTimestamps` CVar (out of combat) and
+  performs emotes with `C_ChatInfo.PerformEmote`; Tooltip item extras come from `C_TooltipInfo` data lines,
+  `C_ToyBox` / `C_MountJournal` / `C_PetJournal` / `C_TransmogCollection` and the keystone link; Minimap sets
+  `WorldMapFrame` scale (windowed only, `ns.Combat:Run`); Item Level post-hooks `PaperDollFrame_UpdateStats` (row
+  art faded, own stripes); Skins post-hooks `AlertFrame:AddAlertFrame` (art faded, own panel child frame).
 * **Remaining modules (2.0 S16).** `Modules/DamageMeter` dresses Blizzard's own meter windows from a
   `hooksecurefunc(window, "InitEntry")` post-hook (recycled entries are styled once and kept themed through
   `Skin:Register`); bar size, class colours, value format and the second window stay in Edit Mode and are linked

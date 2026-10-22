@@ -62,3 +62,12 @@ own clean-room reader). The first slice is Midnight and The War Within for retai
 Forever; files are per slice (`Phoenix_UI_Data/Quests_<Slice>.lua`, ~525 KB together) rather than one
 `QuestData.lua`. TaxiNodes/AreaPOI and dungeon quests are the next slices. Sources, counts, the accuracy check and
 the remaining slices: `docs/QUEST_DATA.md`.
+
+## Implemented (S17, 22 Oct 2026)
+- Sources 1–3 shipped: ATT NPC facts per slice (`NPCs_Midnight.lua` 712, `NPCs_WarWithin.lua` 987,
+  `NPCs_Forever.lua` 2,113 spots), DB2 turn-ins (S14) and runtime APIs (vignettes, quest lines).
+- Source 4 shipped **local only** (re-scoped brief): no uploader channel, no Cloudflare backend, no CC0 publication.
+  The collector writes to the player's own SavedVariables; a maintainer merges their own files with
+  `tools/questdata/merge_collected.py` into `NPCs_Collected.lua` (provenance: Phoenix maintainers' own sightings, MIT).
+- Still not used: Wowhead, Questie / QuestieDB, RareScanner, HandyNotes data, TrinityCore / CMaNGOS / AzerothCore.
+

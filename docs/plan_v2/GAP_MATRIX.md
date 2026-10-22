@@ -1,6 +1,6 @@
 # Phoenix UI — module gap matrix (v2)
 
-Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit + I:\ parity audit). One row per user-facing setting. Composite controls are expanded: a font group is 5 rows (font, size, outline, shadow, colour), a border group is 3–5 rows (style, size, colour, shadow, shadow size), a backdrop is 4 rows, a position block is 5 rows.
+Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit + I:\ parity audit + S17 gap rows). One row per user-facing setting. Composite controls are expanded: a font group is 5 rows (font, size, outline, shadow, colour), a border group is 3–5 rows (style, size, colour, shadow, shadow size), a backdrop is 4 rows, a position block is 5 rows.
 
 **Columns:** *Now* = Phoenix settings today on retail (smoke harness settings count, cog sub-rows included) · *Forever* = the same count on the WoW Forever client (— = page not on Forever) · *Target* = full spec below minus link/api rows · *Has / Part / New* = target rows that Phoenix already has, has in a shallower form, or lacks · *Link / API* = rows owned by another page or Edit Mode (a link row points there) or not possible with the 12.x API; listed, not counted.
 
@@ -16,30 +16,30 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 |---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
 | Action Bars | Action Bars & Cooldowns | 117 | 116 | 117 | 111 | 3 | 3 | 3 | EUI ActionBars 136 controls (BarVisibilityLayout, BarAppearance, Animations, XP/Rep, Menu/Bags) · WindTools ExtraItemBar 27 · MoveAny bar toggles | Own secure bar containers holding Blizzard's action buttons (EUI pattern); Edit Mode bars stay as fallback |
 | Cooldown Text | Action Bars & Cooldowns | 15 | 15 | 12 | 12 | 0 | 0 | 0 | EUI cooldown numbers settings | Blizzard countdown numbers on all cooldown frames (C_DurationUtil text bindings) |
-| Cooldown Manager | Action Bars & Cooldowns | 92 | 88 | 70 | 53 | 9 | 8 | 0 | EUI CooldownManager 152 controls (Bars, BuffBars, SpellPicker, glow conditions) · EUI AuraBuffReminders 49 | Skins and extends Blizzard's Cooldown Manager viewers (Essential, Utility, Buff icons, Buff bars); the only legal 'WeakAuras' in Midnight |
-| Unit Frames | Unit Frames | 205 | 205 | 175 | 131 | 24 | 20 | 2 | EUI UnitFrames 356 controls (SharedBars, SharedAppearance, SharedCastAuras, MiniFrames, TextSlots) + ResourceBars 247 · sArena 416 (arena) · WindTools Quick Focus, Absorb, Role icon | Own secure unit frames (SecureUnitButtonTemplate) for player, target, target-of-target, focus, focus-target, pet, boss 1–5, arena 1–5; Blizzard skin kept as a 'Blizzard frames' mode |
-| Group Frames | Unit Frames | 194 | 193 | 77 | 65 | 5 | 7 | 1 | EUI RaidFrames 247 controls (Frames, VisualBars, VisualIndicators, aura managers) · Blizzard compact raid frame options | Own secure party and raid headers (SecureGroupHeaderTemplate), Blizzard compact frames as fallback |
-| Nameplates | Nameplates | 276 | 270 | 103 | 97 | 5 | 1 | 1 | EUI Nameplates 176 controls (General, DisplayLayout, DisplayBars, Colors, TextColoring) · WindTools friendly outline | Restyles Blizzard's nameplates (they stay Blizzard's secure frames) |
+| Cooldown Manager | Action Bars & Cooldowns | 93 | 89 | 68 | 54 | 9 | 5 | 2 | EUI CooldownManager 152 controls (Bars, BuffBars, SpellPicker, glow conditions) · EUI AuraBuffReminders 49 | Skins and extends Blizzard's Cooldown Manager viewers (Essential, Utility, Buff icons, Buff bars); the only legal 'WeakAuras' in Midnight |
+| Unit Frames | Unit Frames | 209 | 209 | 175 | 135 | 25 | 15 | 3 | EUI UnitFrames 356 controls (SharedBars, SharedAppearance, SharedCastAuras, MiniFrames, TextSlots) + ResourceBars 247 · sArena 416 (arena) · WindTools Quick Focus, Absorb, Role icon | Own secure unit frames (SecureUnitButtonTemplate) for player, target, target-of-target, focus, focus-target, pet, boss 1–5, arena 1–5; Blizzard skin kept as a 'Blizzard frames' mode |
+| Group Frames | Unit Frames | 194 | 193 | 77 | 66 | 5 | 6 | 1 | EUI RaidFrames 247 controls (Frames, VisualBars, VisualIndicators, aura managers) · Blizzard compact raid frame options | Own secure party and raid headers (SecureGroupHeaderTemplate), Blizzard compact frames as fallback |
+| Nameplates | Nameplates | 276 | 270 | 103 | 98 | 5 | 0 | 1 | EUI Nameplates 176 controls (General, DisplayLayout, DisplayBars, Colors, TextColoring) · WindTools friendly outline | Restyles Blizzard's nameplates (they stay Blizzard's secure frames) |
 | Cast Bars | Combat | 103 | 113 | 59 | 53 | 5 | 1 | 0 | EUI ResourceBars CastBarPage 41 + UnitFrames cast section 32 + MythicTimer targeted spell bars 21 | Own cast bars for player, target, focus, pet, boss (UnitCastingInfo is secret only where restricted; text through display sinks) |
 | Buffs & Debuffs | Combat | 64 | 64 | 42 | 41 | 0 | 1 | 0 | EUI PlayerAuraBars 43 + BlizzardSkin aura bits · ElvUI-style aura headers | Restyles Blizzard's player buff and debuff frames (BuffFrame/DebuffFrame); own aura bars optional |
 | Combat Text | Combat | 30 | 30 | 26 | 25 | 1 | 0 | 0 | Blizzard FCT CVars · MSBT-like | Configures Blizzard floating combat text (CVars) + optional Phoenix scrolling areas |
 | Damage Meter | Combat | 24 | 24 | 29 | 22 | 4 | 3 | 7 | EUI DamageMeters 82 | Restyles Blizzard's built-in damage meter (C_DamageMeter, 12.0) |
 | Spell History | Combat | 13 | 13 | 15 | 12 | 2 | 1 | 0 | — | Row of recently cast spells |
-| Chat | Interface | 59 | 59 | 54 | 45 | 4 | 5 | 0 | EUI Chat 57 · WindTools Social (chat bar, emotes, links) 16 · Prat-like features | Restyles Blizzard chat frames and adds tools; no chat replacement |
-| Minimap | Interface | 48 | 46 | 45 | 37 | 1 | 7 | 0 | EUI Minimap 62 · WindTools Maps 29 (rectangle minimap, buttons bar, instance difficulty, world map reveal) | Restyles Blizzard's minimap cluster |
-| Tooltips | Interface | 55 | 53 | 51 | 39 | 2 | 10 | 1 | EUI BlizzardSkin tooltip 23 · WindTools Tooltips 27 · idTip 27 ID kinds | Restyles GameTooltip and adds lines; IDs where idTip-style (BSD-2) |
-| Bags | Interface | 55 | 54 | 48 | 37 | 9 | 2 | 5 | EUI Bags 45 · Baganator-style features | Restyles Blizzard's combined bag + bank; own sorting via C_Container |
-| Item Level | Interface | 19 | 19 | 22 | 17 | 3 | 2 | 0 | EUI BlizzardSkin character sheet 30 · WindTools Item 27 (inspect, already known) | Item level on character, inspect, bags, loot frames |
-| Data Texts | Interface | 68 | 67 | 50 | 33 | 11 | 6 | 0 | EUI DataBars 55 (XP/rep/honor bars) + MinimapDataText · ElvUI datatexts | Own data panels + broker (LDB) feeds |
-| Skins | Interface | 35 | 33 | 37 | 23 | 9 | 5 | 0 | EUI BlizzardSkin 123 (character, popups, tooltips, skyriding, CDM, objective tracker) | Phoenix look for Blizzard windows |
-| Appearance & General | Phoenix | 31 | 31 | 22 | 17 | 4 | 1 | 2 | EUI Fonts 37 + Textures + Colors + Glow + General ~90 | Theme, global fonts/textures/colours, scale, sounds; every module's 'Theme default' points here |
-| Profiles | Phoenix | 15 | 11 | 9 | 6 | 2 | 1 | 0 | EUI Profiles 4 pages (Profiles, Presets, Overrides, FullExport) | Profiles, per-spec switching, import/export strings, presets |
+| Chat | Interface | 61 | 61 | 52 | 47 | 4 | 1 | 2 | EUI Chat 57 · WindTools Social (chat bar, emotes, links) 16 · Prat-like features | Restyles Blizzard chat frames and adds tools; no chat replacement |
+| Minimap | Interface | 49 | 46 | 43 | 38 | 1 | 4 | 2 | EUI Minimap 62 · WindTools Maps 29 (rectangle minimap, buttons bar, instance difficulty, world map reveal) | Restyles Blizzard's minimap cluster |
+| Tooltips | Interface | 58 | 55 | 50 | 42 | 2 | 6 | 2 | EUI BlizzardSkin tooltip 23 · WindTools Tooltips 27 · idTip 27 ID kinds | Restyles GameTooltip and adds lines; IDs where idTip-style (BSD-2) |
+| Bags | Interface | 56 | 55 | 48 | 38 | 9 | 1 | 5 | EUI Bags 45 · Baganator-style features | Restyles Blizzard's combined bag + bank; own sorting via C_Container |
+| Item Level | Interface | 20 | 20 | 22 | 18 | 3 | 1 | 0 | EUI BlizzardSkin character sheet 30 · WindTools Item 27 (inspect, already known) | Item level on character, inspect, bags, loot frames |
+| Data Texts | Interface | 77 | 76 | 51 | 39 | 12 | 0 | 0 | EUI DataBars 55 (XP/rep/honor bars) + MinimapDataText · ElvUI datatexts | Own data panels + broker (LDB) feeds |
+| Skins | Interface | 36 | 34 | 37 | 24 | 9 | 4 | 0 | EUI BlizzardSkin 123 (character, popups, tooltips, skyriding, CDM, objective tracker) | Phoenix look for Blizzard windows |
+| Appearance & General | Phoenix | 52 | 52 | 22 | 18 | 4 | 0 | 2 | EUI Fonts 37 + Textures + Colors + Glow + General ~90 | Theme, global fonts/textures/colours, scale, sounds; every module's 'Theme default' points here |
+| Profiles | Phoenix | 15 | 11 | 8 | 6 | 2 | 0 | 1 | EUI Profiles 4 pages (Profiles, Presets, Overrides, FullExport) | Profiles, per-spec switching, import/export strings, presets |
 | Layout (Movers) | Phoenix | 17 | 17 | 15 | 11 | 3 | 1 | 0 | MoveAny 150 frame toggles · EUI unlock mode (snap, grid, nudge, per-element) | Unlock mode for every Phoenix-owned frame + selected Blizzard frames (no Edit Mode conflicts) |
 | Quality of life | Phoenix | 22 | 22 | 28 | 9 | 7 | 12 | 0 | EUI QoL 75 · WindTools Misc 112 | Small UI tweaks |
 | Automation | Phoenix | 15 | 15 | 17 | 13 | 1 | 3 | 1 | EUI QoL 75 · WindTools Misc 112 | Small automations |
 | AFK screen | Phoenix | 12 | 12 | 4 | 4 | 0 | 0 | 0 | ElvUI AFK | AFK screen |
 | Bugs | Phoenix | 12 | 12 | 12 | 12 | 0 | 0 | 0 | BugSack-like · EUI none | Error catcher (being rebuilt by the other worker) |
-| Quests | Content | 38 | 36 | 39 | 25 | 8 | 6 | 1 | EUI QuestTracker ~30 · WindTools Quest 41 · Questie (ARR/GPL, learn only) | NEW: quest tracker restyle + quest helper (giver/turn-in pins from ATT MIT data, DB2 QuestPOI and runtime C_QuestLine; community data later) |
+| Quests | Content | 43 | 41 | 41 | 25 | 10 | 6 | 1 | EUI QuestTracker ~30 · WindTools Quest 41 · Questie (ARR/GPL, learn only) | NEW: quest tracker restyle + quest helper (giver/turn-in pins from ATT MIT data, DB2 QuestPOI and runtime C_QuestLine; community data later) |
 | Group Finder | Content | 58 | — | 18 | 11 | 4 | 3 | 6 | PremadeGroupsFilter 105 variables (GPL-2, learn only) · EUI GroupFinder · WindTools LFG list | NEW: premade group list filters (PGF-style expressions re-implemented), sign-up helpers |
 | Mythic+ | Content | 34 | — | 32 | 30 | 0 | 2 | 1 | EUI MythicTimer 125 · WindTools keystone tooltips | Own M+ timer (Blizzard Challenge APIs) + keystone tools |
 | Encounters | Content | 64 | 9 | 77 | 63 | 7 | 7 | 5 | Phoenix S3 already deep · EUI none (EUI has no boss mod) | Restyles Blizzard Boss Timeline + warnings (C_EncounterTimeline), BigWigs bars style |
@@ -48,32 +48,32 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Diagnostics | Phoenix | 9 | 9 | 3 | 0 | 3 | 0 | 0 | — | Status page (secret state, conflicts, versions) — exists as a page, not settings |
 | Auction House | Items | 0 | 0 | 4 | 0 | 0 | 4 | 0 | Auctionator | New page (S22): shopping lists, price history from ReplicateItems, undercut and cancel lists; every search, post and cancel is your click |
 | Loadouts | Profiles | 0 | 0 | 1 | 0 | 0 | 1 | 0 | EllesmereUI LoadoutManager | New page (S28): per-spec / per-instance loadouts that switch profile, talents and gear set (out of combat, your confirmation) |
-| **Total** | | **1820** | **1646** | **1326** | **1065** | **137** | **124** | **40** | every addon on I:\ (see PARITY.md) | |
+| **Total** | | **1869** | **1693** | **1321** | **1088** | **141** | **92** | **49** | every addon on I:\ (see PARITY.md) | |
 
 ## Rows by source addon
 
 | Source addon | Rows | has | part | new | link | api |
 |---|---:|---:|---:|---:|---:|---:|
-| EllesmereUI ActionBars | 118 | 106 | 3 | 6 | 2 | 1 |
-| EllesmereUI WindTools | 111 | 79 | 15 | 15 | 1 | 1 |
-| EllesmereUI ResourceBars | 91 | 72 | 11 | 7 | 0 | 1 |
-| EllesmereUI Nameplates | 84 | 79 | 3 | 1 | 0 | 1 |
+| EllesmereUI ActionBars | 118 | 111 | 3 | 1 | 2 | 1 |
+| EllesmereUI WindTools | 112 | 82 | 16 | 12 | 1 | 1 |
+| EllesmereUI ResourceBars | 91 | 74 | 11 | 5 | 0 | 1 |
+| EllesmereUI Nameplates | 84 | 80 | 3 | 0 | 0 | 1 |
 | BigWigs | 83 | 63 | 8 | 8 | 0 | 4 |
-| EllesmereUI UnitFrames | 78 | 67 | 7 | 4 | 0 | 0 |
-| EllesmereUI CooldownManager | 76 | 62 | 8 | 6 | 0 | 0 |
-| EllesmereUI RaidFrames | 66 | 54 | 5 | 6 | 1 | 0 |
+| EllesmereUI UnitFrames | 79 | 69 | 8 | 1 | 1 | 0 |
+| EllesmereUI CooldownManager | 76 | 63 | 8 | 3 | 0 | 2 |
+| EllesmereUI RaidFrames | 66 | 55 | 5 | 5 | 1 | 0 |
 | EllesmereUI QoL | 58 | 43 | 4 | 10 | 0 | 1 |
-| EllesmereUI BlizzardSkin | 57 | 42 | 9 | 6 | 0 | 0 |
+| EllesmereUI BlizzardSkin | 57 | 44 | 9 | 3 | 1 | 0 |
 | EllesmereUI MythicTimer | 55 | 50 | 2 | 2 | 1 | 0 |
-| EllesmereUI Chat | 53 | 45 | 4 | 4 | 0 | 0 |
-| EllesmereUI Bags | 51 | 36 | 8 | 2 | 5 | 0 |
-| EllesmereUI (core pages) | 49 | 36 | 5 | 6 | 2 | 0 |
-| EllesmereUI ForeverEssentials | 48 | 34 | 1 | 13 | 0 | 0 |
+| EllesmereUI Chat | 53 | 46 | 4 | 1 | 0 | 2 |
+| EllesmereUI Bags | 51 | 37 | 8 | 1 | 5 | 0 |
+| EllesmereUI (core pages) | 49 | 37 | 5 | 5 | 2 | 0 |
+| EllesmereUI ForeverEssentials | 48 | 36 | 1 | 11 | 0 | 0 |
 | EllesmereUI DamageMeters | 47 | 34 | 4 | 2 | 6 | 1 |
 | EllesmereUI PlayerAuraBars | 42 | 41 | 0 | 1 | 0 | 0 |
-| sArena Reloaded | 40 | 18 | 8 | 9 | 2 | 3 |
-| EllesmereUI DataBars | 31 | 21 | 9 | 1 | 0 | 0 |
-| EllesmereUI Minimap | 30 | 27 | 1 | 2 | 0 | 0 |
+| sArena Reloaded | 40 | 18 | 8 | 8 | 3 | 3 |
+| EllesmereUI DataBars | 32 | 22 | 10 | 0 | 0 | 0 |
+| EllesmereUI Minimap | 30 | 27 | 1 | 0 | 1 | 1 |
 | MoveAny | 18 | 15 | 2 | 1 | 0 | 0 |
 | EllesmereUI | 16 | 16 | 0 | 0 | 0 | 0 |
 | Questie | 11 | 1 | 6 | 2 | 0 | 2 |
@@ -89,6 +89,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | EllesmereUI Quickdraw | 1 | 0 | 0 | 1 | 0 | 0 |
 | idTip | 1 | 0 | 0 | 1 | 0 | 0 |
 | EllesmereUI Friends | 1 | 0 | 1 | 0 | 0 | 0 |
+| QuestieTrace | 1 | 0 | 1 | 0 | 0 | 0 |
 | EllesmereUI GroupFinder | 1 | 0 | 1 | 0 | 0 | 0 |
 
 ## Action Bars  (`ActionBars`)
@@ -247,7 +248,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Cooldown Manager  (`Tracker`)
 
-*Now 92 (Forever 88) → target 70* · has 53 · part 9 · new 8 · link/api 0
+*Now 93 (Forever 89) → target 68* · has 54 · part 9 · new 5 · link/api 2
 
 **How:** Skins and extends Blizzard's Cooldown Manager viewers (Essential, Utility, Buff icons, Buff bars); the only legal 'WeakAuras' in Midnight
 
@@ -290,8 +291,8 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Buff bars | Bar width / height | slider | 40–800 / 8–60 px | 220 / 20 | live | has | EllesmereUI CooldownManager |  |
 | Buff bars | Buff bar texture | texture | Phoenix bars + LSM, cards with samples | Phoenix Satin | hover | has | EllesmereUI CooldownManager |  |
 | Buff bars | Buff bar fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | part | EllesmereUI CooldownManager | S20 |
-| Buff bars | Buff bar smooth fill | toggle |  | On | live | new | EllesmereUI CooldownManager | S17 |
-| Buff bars | Buff bar gradient | dropdown | None / Horizontal / Vertical | None | live | new | EllesmereUI CooldownManager | S17 |
+| Buff bars | Buff bar smooth fill | toggle |  | On | live | api | EllesmereUI CooldownManager |  |
+| Buff bars | Buff bar gradient | dropdown | None / Horizontal / Vertical | None | live | has | EllesmereUI CooldownManager |  |
 | Buff bars | Bar colour | colour | class / custom | class | live | has | EllesmereUI CooldownManager |  |
 | Buff bars | Bar background | toggle |  | On | live | has | EllesmereUI CooldownManager |  |
 | Buff bars | Bar background texture | texture | Phoenix surfaces + LSM | Solid | hover | part | EllesmereUI CooldownManager | S20 |
@@ -303,7 +304,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Buff bars | Spell name shadow | toggle |  | Off | live | has | EllesmereUI CooldownManager |  |
 | Buff bars | Spell name colour | colour | colour + class colour + theme token | #FFFFFF | live | has | EllesmereUI CooldownManager |  |
 | Buff bars | Icon position | dropdown | Left / Right / Off | Left | live | has | EllesmereUI CooldownManager |  |
-| Buff bars | Stack-based fill | toggle |  | Off | live | new | EllesmereUI CooldownManager | S17 |
+| Buff bars | Stack-based fill | toggle |  | Off | live | api | EllesmereUI CooldownManager |  |
 | Visibility | Fade out of combat | toggle |  | On | world | has | EllesmereUI CooldownManager |  |
 | Visibility | Opacity out of combat | slider | 0–100 % | 40 | world | has | EllesmereUI CooldownManager |  |
 | Visibility | Show only with a target | toggle |  | Off | world | has | EllesmereUI CooldownManager |  |
@@ -328,7 +329,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Unit Frames  (`UnitFrames`)
 
-*Now 205 (Forever 205) → target 175* · has 131 · part 24 · new 20 · link/api 2
+*Now 209 (Forever 209) → target 175* · has 135 · part 25 · new 15 · link/api 3
 
 **How:** Own secure unit frames (SecureUnitButtonTemplate) for player, target, target-of-target, focus, focus-target, pet, boss 1–5, arena 1–5; Blizzard skin kept as a 'Blizzard frames' mode
 
@@ -360,7 +361,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Frame (per unit, with Copy from / Apply to all) | Fade out of combat (player) | toggle |  | Off | world | has | EllesmereUI ResourceBars |  |
 | Frame (per unit, with Copy from / Apply to all) | Out-of-combat opacity | slider | 0–100 % | 100 | world | has | EllesmereUI UnitFrames |  |
 | Frame (per unit, with Copy from / Apply to all) | Show tooltip on hover | dropdown | Always / Out of combat / Never | Out of combat | none | has | EllesmereUI UnitFrames |  |
-| Frame (per unit, with Copy from / Apply to all) | Click casting (Blizzard Click Cast bindings) | toggle |  | On | none | new | EllesmereUI UnitFrames | S17 |
+| Frame (per unit, with Copy from / Apply to all) | Click casting (Blizzard Click Cast bindings) | toggle |  | On | none | link | EllesmereUI UnitFrames |  |
 | Health bar | Health bar height share | slider | 40–100 % | 80 | live | part | EllesmereUI ResourceBars | S18 |
 | Health bar | Health texture | texture | Phoenix bars + LSM, cards with samples | Phoenix Satin | hover | has | EllesmereUI ResourceBars |  |
 | Health bar | Health fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | has | EllesmereUI ResourceBars |  |
@@ -380,7 +381,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Absorbs and heal prediction | Over-absorb glow line | toggle |  | On | live | part | EllesmereUI UnitFrames | S18 |
 | Absorbs and heal prediction | Heal absorb | dropdown | Off / Overlay / Striped | Overlay | hover | has | EllesmereUI UnitFrames |  |
 | Absorbs and heal prediction | Heal prediction | toggle |  | On | live | has | EllesmereUI UnitFrames |  |
-| Absorbs and heal prediction | Overheal shown | slider | 0–50 % | 10 | live | new | EllesmereUI UnitFrames | S17 |
+| Absorbs and heal prediction | Overheal shown | slider | 0–50 % | 10 | live | has | EllesmereUI UnitFrames |  |
 | Absorbs and heal prediction | Prediction colours (mine / others) | colour | 2 colours | green / light green | live | part | EllesmereUI UnitFrames | S18 |
 | Power bar | Show power bar | dropdown | Always / Mana users / Never | Always | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Power bar height | slider | 0–40 px | 6 | live | has | sArena Reloaded |  |
@@ -392,12 +393,12 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Power bar | Power gradient | dropdown | None / Horizontal / Vertical | None | live | part | EllesmereUI UnitFrames | S18 |
 | Power bar | Colour by power type | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Custom power colours | colour | per power type | Blizzard | live | has | EllesmereUI ResourceBars |  |
-| Power bar | Spell cost prediction | toggle |  | On | live | new | EllesmereUI ResourceBars | S17 |
+| Power bar | Spell cost prediction | toggle |  | On | live | has | EllesmereUI ResourceBars |  |
 | Power bar | Mana regen spark | dropdown | Off / Spark / Tick | Off | live | api | EllesmereUI ResourceBars |  |
 | Class power (player) | Show class power | dropdown | Off / Attached / Detached | Attached | live | has | EllesmereUI ResourceBars |  |
 | Class power (player) | Pip height | slider | 2–30 px | 8 | live | has | EllesmereUI ResourceBars |  |
 | Class power (player) | Pip spacing | slider | 0–10 px | 2 | live | has | EllesmereUI ResourceBars |  |
-| Class power (player) | Pip shape | dropdown | Bar / Square / Round | Bar | hover | new | EllesmereUI ResourceBars | S17 |
+| Class power (player) | Pip shape | dropdown | Bar / Square / Round | Bar | hover | has | EllesmereUI ResourceBars |  |
 | Class power (player) | Colour mode | dropdown | Class / Power type / Custom | Power type | live | has | EllesmereUI ResourceBars |  |
 | Class power (player) | Charged colour | colour |  | #4FC3F7 | live | has | EllesmereUI ResourceBars |  |
 | Class power (player) | Empty pip opacity | slider | 0–100 % | 25 | live | has | EllesmereUI ResourceBars |  |
@@ -438,7 +439,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Text tags (left / center / right / top) | Level text (difficulty colour) | toggle |  | On (target) | live | part | sArena Reloaded | S18 |
 | Portrait | Portrait | dropdown | Off / 3D model / 2D / Class icon | Off | hover | has | EllesmereUI UnitFrames |  |
 | Portrait | Portrait position | dropdown | Left / Right / Inside bar (overlay) | Left | live | has | EllesmereUI UnitFrames |  |
-| Portrait | Portrait size | slider | -50–100 % of height | 100 | live | new | EllesmereUI UnitFrames | S17 |
+| Portrait | Portrait size | slider | -50–100 % of height | 100 | live | has | EllesmereUI UnitFrames |  |
 | Portrait | Portrait shape | dropdown | Square / Round | Square | hover | has | EllesmereUI UnitFrames |  |
 | Portrait | 3D camera zoom | slider | 100–300 % | 100 | live | has | EllesmereUI UnitFrames |  |
 | Portrait | Overlay opacity | slider | 0–100 % | 35 | live | has | EllesmereUI UnitFrames |  |
@@ -496,6 +497,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Parity: EllesmereUI UnitFrames | Frame look: nicknames, fade, dark mode, borders, detached bars, threat % | — | Threat % on target and detached power / text bars are missing |  | live | part | EllesmereUI UnitFrames | S18 |
 | Parity: EllesmereUI UnitFrames | Portraits: 2D / 3D / class, shape, rings, dragon art | — | 2D / class portraits exist; 3D model, rings and dragon art do not; size is an open gap row |  | live | part | EllesmereUI UnitFrames | S18 |
 | Parity: EllesmereUI UnitFrames | Separate text bar strip under the frame | — |  |  | live | new | EllesmereUI UnitFrames | S18 |
+| Parity: EllesmereUI UnitFrames | Power bar: position, gradient, text, cost prediction, regen spark | — | S17: cost prediction; regen spark still open |  | live | part | EllesmereUI UnitFrames | S18 |
 | Parity: EllesmereUI WindTools | Click to destroy totems | — | Secure button (DestroyTotem is protected) |  | live | new | EllesmereUI WindTools | S18 |
 | Parity: EllesmereUI WindTools | Modifier-click to set focus (with marker) | — | Secure attribute on frames, out of combat |  | live | new | EllesmereUI WindTools | S18 |
 | Parity: sArena Reloaded | Arena frame layouts (9 presets: mirrored, sizes, power height, crop) | — | Phoenix arena frames have one layout |  | live | new | sArena Reloaded | S18 |
@@ -516,7 +518,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Group Frames  (`GroupFrames`)
 
-*Now 194 (Forever 193) → target 77* · has 65 · part 5 · new 7 · link/api 1
+*Now 194 (Forever 193) → target 77* · has 66 · part 5 · new 6 · link/api 1
 
 **How:** Own secure party and raid headers (SecureGroupHeaderTemplate), Blizzard compact frames as fallback
 
@@ -579,7 +581,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Indicators | Ready check / summon / resurrection | toggle |  | On | live | has | EllesmereUI RaidFrames |  |
 | Indicators | Dispel highlight | dropdown | Off / Border / Overlay / Gradient | Overlay | hover | has | EllesmereUI RaidFrames |  |
 | Indicators | Only dispellable by me | toggle |  | On | live | has | EllesmereUI RaidFrames |  |
-| Indicators | Dispel colours | colour | per type | Blizzard | live | new | EllesmereUI RaidFrames | S17 |
+| Indicators | Dispel colours | colour | per type | Blizzard | live | has | EllesmereUI RaidFrames |  |
 | Indicators | Aggro / threat border | slider | 0–4 px | 2 | live | has | EllesmereUI RaidFrames |  |
 | Indicators | Out-of-range opacity | slider | 10–100 % | 40 | live | has | EllesmereUI RaidFrames |  |
 | Indicators | Missing raid buff icon | toggle |  | Off | live | link | EllesmereUI RaidFrames |  |
@@ -605,7 +607,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Nameplates  (`NamePlates`)
 
-*Now 276 (Forever 270) → target 103* · has 97 · part 5 · new 1 · link/api 1
+*Now 276 (Forever 270) → target 103* · has 98 · part 5 · new 0 · link/api 1
 
 **How:** Restyles Blizzard's nameplates (they stay Blizzard's secure frames)
 
@@ -683,7 +685,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Text | Health text X offset | slider | -200–200 | 0 | live | has | EllesmereUI Nameplates |  |
 | Text | Health text Y offset | slider | -200–200 | 0 | live | has | EllesmereUI Nameplates |  |
 | Text | Level / classification badge | toggle |  | Off | live | has | EllesmereUI Nameplates |  |
-| Text | NPC title / guild on friendly | toggle |  | Off | live | new | EllesmereUI Nameplates | S17 |
+| Text | NPC title / guild on friendly | toggle |  | Off | live | has | EllesmereUI Nameplates |  |
 | Auras | Phoenix aura icons | toggle |  | On | live | has | EllesmereUI Nameplates |  |
 | Auras | Debuffs row: mine / important / all | dropdown | Blizzard filter | Mine | none | has | EllesmereUI Nameplates |  |
 | Auras | Enemy buffs (purgeable / important) | dropdown | Off / Purgeable / Blizzard | Purgeable | none | has | EllesmereUI Nameplates |  |
@@ -953,7 +955,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Chat  (`Chat`)
 
-*Now 59 (Forever 59) → target 54* · has 45 · part 4 · new 5 · link/api 0
+*Now 61 (Forever 61) → target 52* · has 47 · part 4 · new 1 · link/api 2
 
 **How:** Restyles Blizzard chat frames and adds tools; no chat replacement
 
@@ -991,7 +993,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Messages | Chat shadow | toggle |  | Off | live | has | EllesmereUI Chat |  |
 | Messages | Chat colour | colour | colour + class colour + theme token | #FFFFFF | live | has | EllesmereUI Chat |  |
 | Messages | Timestamps | dropdown | Off / HH:MM / HH:MM:SS / 12h | HH:MM | live | has | EllesmereUI Chat |  |
-| Messages | Timestamp colour | colour |  | #808080 | live | new | EllesmereUI Chat | S17 |
+| Messages | Timestamp colour | colour |  | #808080 | live | has | EllesmereUI Chat |  |
 | Messages | Short channel names ([G], [P], [1]) | toggle |  | On | live | has | EllesmereUI Chat |  |
 | Messages | Class-coloured names | toggle |  | On | live | has | EllesmereUI Chat |  |
 | Messages | Clickable URLs | toggle |  | On | live | has | EllesmereUI Chat |  |
@@ -1005,20 +1007,20 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Edit box | Edit box position | dropdown | Below / Above / Top of window | Below | live | has | EllesmereUI Chat |  |
 | Edit box | Edit box style | dropdown | Phoenix / Blizzard | Phoenix | hover | has | EllesmereUI Chat |  |
 | Edit box | Arrow keys without Alt | toggle |  | On | none | has | EllesmereUI Chat |  |
-| Edit box | Remember last channel | toggle |  | On | none | new | EllesmereUI Chat | S17 |
+| Edit box | Remember last channel | toggle |  | On | none | api | EllesmereUI Chat |  |
 | Edit box | History lines | slider | 10–200 | 50 | none | has | EllesmereUI Chat |  |
 | Tools | Chat bar (channel buttons, roll, ready check) | toggle |  | Off | world | has | EllesmereUI Chat |  |
-| Tools | Emote picker | toggle |  | Off | world | new | EllesmereUI WindTools | S17 |
+| Tools | Emote picker | toggle |  | Off | world | has | EllesmereUI WindTools |  |
 | Tools | Whisper sound | dropdown | sound list | Phoenix chime | hover | has | EllesmereUI Chat |  |
 | Tools | Whisper tab per person | toggle |  | Off | none | has | EllesmereUI Chat |  |
-| Tools | Combat log tab hidden | toggle |  | Off | none | new | EllesmereUI Chat | S17 |
+| Tools | Combat log tab hidden | toggle |  | Off | none | api | EllesmereUI Chat |  |
 | Parity: EllesmereUI Chat | Chat sidebar with icon buttons (side, width, icons, free move) | — | Chat bar and side buttons exist; the sidebar layout does not |  | live | part | EllesmereUI Chat | S24 |
 | Parity: EllesmereUI Chat | Tabs inside the panel, tab height / spacing / background / underline / texture | — | Tab font and colours exist; tabs-inside layout and tab textures do not |  | live | part | EllesmereUI Chat | S24 |
 | Parity: EllesmereUI Chat | Restore the last chat lines after /reload | — |  |  | live | new | EllesmereUI Chat | S24 |
 
 ## Minimap  (`Minimap`)
 
-*Now 48 (Forever 46) → target 45* · has 37 · part 1 · new 7 · link/api 0
+*Now 49 (Forever 46) → target 43* · has 38 · part 1 · new 4 · link/api 2
 
 **How:** Restyles Blizzard's minimap cluster
 
@@ -1029,7 +1031,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Shape and size | Shape | dropdown | Round / Square / Rectangle | Square | hover | has | EllesmereUI Minimap |  |
 | Shape and size | Size | slider | 120–400 px | 200 | live | has | EllesmereUI Minimap |  |
 | Shape and size | Rectangle height (shape = rectangle) | slider | 50–100 % | 70 | live | has | EllesmereUI Minimap |  |
-| Shape and size | Scale | slider | 50–200 % | 100 | world | new | EllesmereUI Minimap | S17 |
+| Shape and size | Scale | slider | 50–200 % | 100 | world | link | EllesmereUI Minimap |  |
 | Shape and size | Border style | dropdown | None / Pixel / Thin / Thick / Glow / Phoenix Ember / Inset | Pixel | hover | has | EllesmereUI Minimap |  |
 | Shape and size | Border size | slider | 0–4 px (pixel-perfect) | 1 | live | has | EllesmereUI Minimap |  |
 | Shape and size | Border colour | colour | colour + class colour + quality + theme token | #000000 | live | has | EllesmereUI Minimap |  |
@@ -1058,15 +1060,15 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Elements (each: show, position, size) | Crafting order icon | toggle |  | On | live | has | EllesmereUI Minimap |  |
 | Elements (each: show, position, size) | Instance difficulty badge | dropdown | Phoenix text / Blizzard / Hidden | Phoenix text | hover | has | EllesmereUI WindTools |  |
 | Elements (each: show, position, size) | Expansion / housing button | dropdown | Icon / Hidden | Icon | live | has | EllesmereUI Minimap |  |
-| Elements (each: show, position, size) | Group finder eye | toggle |  | On | live | new | EllesmereUI Minimap | S17 |
+| Elements (each: show, position, size) | Group finder eye | toggle |  | On | live | api | EllesmereUI Minimap |  |
 | Addon buttons | Collect addon buttons | dropdown | Off / Bar / Drawer / Mouseover ring | Drawer | hover | has | EllesmereUI Minimap |  |
 | Addon buttons | Buttons per row | slider | 1–12 | 6 | live | has | EllesmereUI Minimap |  |
 | Addon buttons | Button size | slider | 16–40 px | 24 | live | has | EllesmereUI Minimap |  |
 | Addon buttons | Ignore list | list | button names |  | none | has | EllesmereUI Minimap |  |
 | Map extras | Ping name display | toggle |  | On | none | has | EllesmereUI ForeverEssentials |  |
-| Map extras | World map: reveal unexplored | toggle |  | Off | none | new | EllesmereUI WindTools | S17 |
+| Map extras | World map: reveal unexplored | toggle |  | Off | none | new | EllesmereUI WindTools | S25 |
 | Map extras | World map: player / cursor coords | toggle |  | On | live | has | EllesmereUI ForeverEssentials |  |
-| Map extras | World map scale | slider | 50–150 % | 100 | none | new | EllesmereUI WindTools | S17 |
+| Map extras | World map scale | slider | 50–150 % | 100 | none | has | EllesmereUI WindTools |  |
 | Parity: EllesmereUI ForeverEssentials | World map: fade while moving, reveal unexplored, zone levels, map markers | — | Reveal needs WorldMapOverlay data from DB2 (generated, like quest data) |  | live | new | EllesmereUI ForeverEssentials | S25 |
 | Parity: EllesmereUI ForeverEssentials | Flight timer bar and travel pins (from DB2 TaxiNodes / AreaPOI) | — | Flight times come from a build-time DB2 script, like EUI's own |  | live | new | EllesmereUI ForeverEssentials | S25 |
 | Parity: EllesmereUI Minimap | Addon button bar, extra buttons, M+ portals, friends tooltip, middle-click micro menu | — | Button bin exists; M+ portal buttons, friends tooltip and middle-click menu do not |  | live | part | EllesmereUI Minimap | S25 |
@@ -1074,7 +1076,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Tooltips  (`Tooltip`)
 
-*Now 55 (Forever 53) → target 51* · has 39 · part 2 · new 10 · link/api 1
+*Now 58 (Forever 55) → target 50* · has 42 · part 2 · new 6 · link/api 2
 
 **How:** Restyles GameTooltip and adds lines; IDs where idTip-style (BSD-2)
 
@@ -1116,17 +1118,17 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Unit info | Targeted by (group) | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
 | Unit info | Item level and spec (inspect) | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
 | Unit info | Mythic+ score and best run | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
-| Unit info | Raid progression line | toggle |  | Off | live | new | EllesmereUI WindTools | S17 |
+| Unit info | Raid progression line | toggle |  | Off | live | new | EllesmereUI WindTools | S24 |
 | Unit info | Role icon | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
 | Unit info | Mount the player is on | toggle |  | Off | live | has | EllesmereUI BlizzardSkin |  |
 | Unit info | NPC: reaction-coloured, hide 'PvP' line | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
 | IDs and extras | Show IDs | dropdown | Off / With modifier / Always | With modifier | none | has | EllesmereUI WindTools |  |
 | IDs and extras | ID kinds | list | Spell, Item, NPC, Quest, Achievement, Currency, Mount, Talent, Icon, Vignette, AreaPOI… | Spell, Item, NPC, Quest | none | has | EllesmereUI WindTools |  |
 | IDs and extras | Item: count in bags / bank / warband | toggle |  | On | live | has | EllesmereUI ForeverEssentials |  |
-| IDs and extras | Item: vendor price | toggle |  | On | live | new | EllesmereUI ForeverEssentials | S17 |
-| IDs and extras | Item: already known / collected | toggle |  | On | live | new | EllesmereUI ForeverEssentials | S17 |
-| IDs and extras | Keystone tooltip (affixes, depleted) | toggle |  | On | live | new | EllesmereUI WindTools | S17 |
-| IDs and extras | Group finder entry tooltip details | toggle |  | On | live | new | EllesmereUI BlizzardSkin | S17 |
+| IDs and extras | Item: vendor price | toggle |  | On | live | has | EllesmereUI ForeverEssentials |  |
+| IDs and extras | Item: already known / collected | toggle |  | On | live | has | EllesmereUI ForeverEssentials |  |
+| IDs and extras | Keystone tooltip (affixes, depleted) | toggle |  | On | live | has | EllesmereUI WindTools |  |
+| IDs and extras | Group finder entry tooltip details | toggle |  | On | live | link | EllesmereUI BlizzardSkin |  |
 | Parity: EllesmereUI BlizzardSkin | Tooltip: the unit's buffs as icons | — | C_UnitAuras on other units is secret in combat; out of combat the icons can be drawn |  | live | new | EllesmereUI BlizzardSkin | S24 |
 | Parity: EllesmereUI ForeverEssentials | Shorter stat lines on item tooltips | — |  |  | live | new | EllesmereUI ForeverEssentials | S27 |
 | Parity: EllesmereUI ForeverEssentials | Gathering skill in node tooltips and minimap | — |  |  | live | new | EllesmereUI ForeverEssentials | S27 |
@@ -1137,7 +1139,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Bags  (`Bags`)
 
-*Now 55 (Forever 54) → target 48* · has 37 · part 9 · new 2 · link/api 5
+*Now 56 (Forever 55) → target 48* · has 38 · part 9 · new 1 · link/api 5
 
 **How:** Restyles Blizzard's combined bag + bank; own sorting via C_Container
 
@@ -1186,7 +1188,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Window | Window border shadow size | slider | 0–16 px | 4 | live | has | EllesmereUI Bags |  |
 | Window | Search box | toggle |  | On | live | has | EllesmereUI Bags |  |
 | Window | Gold, currencies footer | toggle |  | On | live | has | EllesmereUI Bags |  |
-| Window | Bag bar inside window | toggle |  | On | live | new | EllesmereUI Bags | S17 |
+| Window | Bag bar inside window | toggle |  | On | live | has | EllesmereUI Bags |  |
 | Behaviour | Sort button | toggle |  | On | none | has | EllesmereUI Bags |  |
 | Behaviour | Sort direction / reverse | dropdown | Blizzard / Reverse | Blizzard | none | has | EllesmereUI Bags |  |
 | Behaviour | Auto sell junk (in Automation) | toggle | see Automation |  | none | has | EllesmereUI Bags |  |
@@ -1201,7 +1203,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Item Level  (`ItemLevel`)
 
-*Now 19 (Forever 19) → target 22* · has 17 · part 3 · new 2 · link/api 0
+*Now 20 (Forever 20) → target 22* · has 18 · part 3 · new 1 · link/api 0
 
 **How:** Item level on character, inspect, bags, loot frames
 
@@ -1227,14 +1229,14 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Look | Enchant text on slot | toggle |  | Off | live | has | EllesmereUI BlizzardSkin |  |
 | Look | Upgrade track (e.g. Hero 4/6) | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
 | Look | Character sheet: average ilvl decimals | slider | 0–2 | 1 | live | has | EllesmereUI BlizzardSkin |  |
-| Look | Character sheet: stats panel restyle | toggle |  | On | live | new | EllesmereUI BlizzardSkin | S17 |
+| Look | Character sheet: stats panel restyle | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
 | Parity: EllesmereUI BlizzardSkin | Character and inspect sheet: stat letters, enchants, durability, crests, season panel, M+ rating, vault shortcut | — | Item level, upgrade track, enchant text and sockets exist; stats-panel restyle, durability, crests and season panel do not |  | live | part | EllesmereUI BlizzardSkin | S23 |
 | Parity: EllesmereUI (core pages) | Crest upgrade calculator window | — | C_ItemUpgrade and crest currencies are readable |  | live | new | EllesmereUI (core pages) | S23 |
 | Parity: EllesmereUI WindTools | Inspect: item icons, quality borders, sockets | — |  |  | live | part | EllesmereUI WindTools | S23 |
 
 ## Data Texts  (`DataTexts`)
 
-*Now 68 (Forever 67) → target 50* · has 33 · part 11 · new 6 · link/api 0
+*Now 77 (Forever 76) → target 51* · has 39 · part 12 · new 0 · link/api 0
 
 **How:** Own data panels + broker (LDB) feeds
 
@@ -1273,15 +1275,15 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Data sources (each slot) | Gold: account-wide totals | toggle |  | On | none | has | EllesmereUI DataBars |  |
 | Data sources (each slot) | Time: 24h / local vs realm | dropdown | Local / Realm · 12h / 24h | Local 24h | live | has | EllesmereUI QoL |  |
 | Data sources (each slot) | Durability: warn below | slider | 0–100 % | 25 | live | has | EllesmereUI QoL |  |
-| Data sources (each slot) | Currency picker | list | currency IDs | Valorstones, crests | none | new | EllesmereUI DataBars | S17 |
+| Data sources (each slot) | Currency picker | list | currency IDs | Valorstones, crests | none | has | EllesmereUI DataBars |  |
 | Experience / reputation / honor bars | Experience bar | toggle |  | On below max level | world | has | EllesmereUI ActionBars |  |
 | Experience / reputation / honor bars | Reputation bar (watched) | toggle |  | On | world | has | EllesmereUI ActionBars |  |
-| Experience / reputation / honor bars | Honor bar | toggle |  | Off | world | new | EllesmereUI ActionBars | S17 |
+| Experience / reputation / honor bars | Honor bar | toggle |  | Off | world | has | EllesmereUI ActionBars |  |
 | Experience / reputation / honor bars | Bar width / height | slider | 100–1200 / 4–30 px | 520 / 10 | live | has | EllesmereUI ActionBars |  |
-| Experience / reputation / honor bars | Data bar texture | texture | Phoenix bars + LSM, cards with samples | Phoenix Satin | hover | new | EllesmereUI ActionBars | S17 |
-| Experience / reputation / honor bars | Data bar fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | new | EllesmereUI ActionBars | S17 |
-| Experience / reputation / honor bars | Data bar smooth fill | toggle |  | On | live | new | EllesmereUI ActionBars | S17 |
-| Experience / reputation / honor bars | Data bar gradient | dropdown | None / Horizontal / Vertical | None | live | new | EllesmereUI ActionBars | S17 |
+| Experience / reputation / honor bars | Data bar texture | texture | Phoenix bars + LSM, cards with samples | Phoenix Satin | hover | has | EllesmereUI ActionBars |  |
+| Experience / reputation / honor bars | Data bar fill direction | dropdown | Left→Right / Right→Left / Bottom→Top / Top→Bottom | Left→Right | live | has | EllesmereUI ActionBars |  |
+| Experience / reputation / honor bars | Data bar smooth fill | toggle |  | On | live | has | EllesmereUI ActionBars |  |
+| Experience / reputation / honor bars | Data bar gradient | dropdown | None / Horizontal / Vertical | None | live | has | EllesmereUI ActionBars |  |
 | Experience / reputation / honor bars | Rested / quest XP overlay | toggle |  | On | live | has | EllesmereUI ActionBars |  |
 | Experience / reputation / honor bars | Bar text | dropdown | Off / Percent / Current / Remaining / Mouseover | Mouseover | live | has | EllesmereUI ActionBars |  |
 | Experience / reputation / honor bars | Bar text font | dropdown | Phoenix fonts + LibSharedMedia | Theme UI font | hover | has | EllesmereUI ActionBars |  |
@@ -1290,12 +1292,13 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Experience / reputation / honor bars | Bar text shadow | toggle |  | Off | live | has | EllesmereUI ActionBars |  |
 | Experience / reputation / honor bars | Bar text colour | colour | colour + class colour + theme token | #FFFFFF | live | has | EllesmereUI ActionBars |  |
 | Parity: EllesmereUI ActionBars | Experience bar: dividers, 5 % lines, rested, quest-XP overlay, gain animation | — | Bar, rested and text exist; dividers, quest-XP overlay (C_QuestLog.GetQuestLogRewardXP) and gain animation do not |  | live | part | EllesmereUI ActionBars | S28 |
+| Parity: EllesmereUI DataBars | Data bar blocks: currency picker, crests, M+ portals, audio channel, menu, plugins | — | S17: currency picker; crests, portals, audio, menu still open |  | live | part | EllesmereUI DataBars | S28 |
 | Parity: EllesmereUI DataBars | Data bar layout: blocks, full-screen extent, snap, text, tooltips, clock, gold | — | Panels and segments exist; block layout and screen-edge bars do not |  | live | part | EllesmereUI DataBars | S28 |
 | Parity: EllesmereUI WindTools | Game bar (micro buttons, time, friends, notifications) | — |  |  | live | part | EllesmereUI WindTools | S28 |
 
 ## Skins  (`Skins`)
 
-*Now 35 (Forever 33) → target 37* · has 23 · part 9 · new 5 · link/api 0
+*Now 36 (Forever 34) → target 37* · has 24 · part 9 · new 4 · link/api 0
 
 **How:** Phoenix look for Blizzard windows
 
@@ -1318,8 +1321,8 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Windows (each toggle) | Calendar / guild / communities | toggle |  | On | live | has | EllesmereUI ForeverEssentials |  |
 | Windows (each toggle) | Settings / addon list | toggle |  | On | live | part | EllesmereUI BlizzardSkin | S24 |
 | Windows (each toggle) | Great vault / keystone | toggle |  | On | live | has | EllesmereUI ForeverEssentials |  |
-| Windows (each toggle) | Alerts / toasts | toggle |  | On | live | new | EllesmereUI BlizzardSkin | S17 |
-| Windows (each toggle) | Skyriding vigor bar | toggle |  | On | live | new | EllesmereUI BlizzardSkin | S17 |
+| Windows (each toggle) | Alerts / toasts | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
+| Windows (each toggle) | Skyriding vigor bar | toggle |  | On | live | new | EllesmereUI BlizzardSkin | S24 |
 | Skin options | Window background | toggle |  | On | live | has | EllesmereUI BlizzardSkin |  |
 | Skin options | Window background texture | texture | Phoenix surfaces + LSM | Solid | hover | part | EllesmereUI BlizzardSkin | S24 |
 | Skin options | Window background colour | colour | colour + theme token | #0B0C0F | live | has | EllesmereUI BlizzardSkin |  |
@@ -1343,7 +1346,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Appearance & General  (`General`)
 
-*Now 31 (Forever 31) → target 22* · has 17 · part 4 · new 1 · link/api 2
+*Now 52 (Forever 52) → target 22* · has 18 · part 4 · new 0 · link/api 2
 
 **How:** Theme, global fonts/textures/colours, scale, sounds; every module's 'Theme default' points here
 
@@ -1367,7 +1370,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Textures and borders | Default border colour | colour |  | #000000 | live | has | EllesmereUI (core pages) |  |
 | Textures and borders | Default shadow | dropdown | None / Soft / Hard | Soft | hover | has | EllesmereUI (core pages) |  |
 | Colours | Class colours override | colour | 13 classes | Blizzard | live | has | EllesmereUI (core pages) |  |
-| Colours | Power colours override | colour | per type | Blizzard | live | new | EllesmereUI (core pages) | S17 |
+| Colours | Power colours override | colour | per type | Blizzard | live | has | EllesmereUI (core pages) |  |
 | Colours | Reaction colours | colour | 4 | Blizzard | live | link | EllesmereUI (core pages) |  |
 | Colours | Dispel colours | colour | 5 | Blizzard | live | link | EllesmereUI (core pages) |  |
 | Glow | Default glow style | dropdown | Pixel / Autocast / Button / Proc | Pixel | hover | part | EllesmereUI (core pages) | S28 |
@@ -1378,7 +1381,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Profiles  (`Profiles`)
 
-*Now 15 (Forever 11) → target 9* · has 6 · part 2 · new 1 · link/api 0
+*Now 15 (Forever 11) → target 8* · has 6 · part 2 · new 0 · link/api 1
 
 **How:** Profiles, per-spec switching, import/export strings, presets
 
@@ -1389,7 +1392,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Profiles | Active profile | dropdown | profiles | Default | none | has | sArena Reloaded |  |
 | Profiles | New / copy / rename / delete | button |  |  | none | has | sArena Reloaded |  |
 | Profiles | Per-spec profile | toggle | + profile per spec | Off | none | has | sArena Reloaded |  |
-| Profiles | Per-character overrides | toggle |  | Off | none | new | sArena Reloaded | S17 |
+| Profiles | Per-character overrides | toggle |  | Off | none | link | sArena Reloaded |  |
 | Profiles | Export (all / selected modules) | button | string + module picker |  | none | has | sArena Reloaded |  |
 | Profiles | Import with preview of changes | button |  |  | live | part | sArena Reloaded | S21 |
 | Profiles | Presets (Phoenix Healer / DPS / Tank / Minimal) | button |  |  | hover | has | sArena Reloaded |  |
@@ -1530,7 +1533,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 
 ## Quests  (`Quests`)
 
-*Now 38 (Forever 36) → target 39* · has 25 · part 8 · new 6 · link/api 1
+*Now 43 (Forever 41) → target 41* · has 25 · part 10 · new 6 · link/api 1
 
 **How:** NEW: quest tracker restyle + quest helper (giver/turn-in pins from ATT MIT data, DB2 QuestPOI and runtime C_QuestLine; community data later)
 
@@ -1566,6 +1569,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Quest helper | Auto pick quest reward (highest sell / sim upgrade) | dropdown | Off / Vendor value / Sim upgrade | Off | none | has | EllesmereUI ForeverEssentials |  |
 | Quest helper | Contribute positions to Phoenix data (opt-in) | toggle |  | Off | none | has | EllesmereUI WindTools |  |
 | Parity: EllesmereUI QuestTracker | Sorting, filtering, auto-track zone quests, completion sounds | — | Announce progress is a scope cut |  | live | new | EllesmereUI QuestTracker | S25 |
+| Parity: EllesmereUI WindTools | Super tracker: auto-track waypoints, middle-click clear, no distance limit, /way box | — | S17: /way and NPC map search; auto-track and middle-click clear still open |  | live | part | EllesmereUI WindTools | S25 |
 | Parity: EllesmereUI WindTools | Tracker text tweaks (dash, colourful progress, %) | — |  |  | live | part | EllesmereUI WindTools | S25 |
 | Parity: EllesmereUI WindTools | Tracker switch buttons | — |  |  | live | new | EllesmereUI WindTools | S25 |
 | Parity: EllesmereUI WindTools | Prey hunt helper | — |  |  | live | new | EllesmereUI WindTools | S25 |
@@ -1578,6 +1582,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Parity: Questie | Auto reject shared quests (battlegrounds, non-friends) | — |  |  | live | new | Questie | S25 |
 | Parity: Questie | Icon limits and distances, locale, reset, journey import | — |  |  | live | part | Questie | S25 |
 | Parity: Questie | My Journey (quest history log) | — |  |  | live | new | Questie | S25 |
+| Parity: QuestieTrace | Opt-in session recorder with privacy filter and export string | — | Phoenix S17 collector: opt-in, NPC IDs + map positions only, merged by tools/; no export string or uploader |  | live | part | QuestieTrace | S28 |
 
 ## Group Finder  (`GroupFinder`)
 
@@ -1655,7 +1660,7 @@ Generated from `data/spec_*.py` by `data/gen_gap.py` (2026-10-22, S16 re-audit +
 | Keystone | Report new keystone | toggle |  | On | none | has | EllesmereUI QoL |  |
 | Keystone | Share keystones with the party | toggle |  | On | none | has | EllesmereUI QoL |  |
 | Keystone | Party keystones window | toggle |  | On | live | has | EllesmereUI QoL |  |
-| Keystone | Teleport buttons on dungeon list | toggle |  | On | live | new | EllesmereUI QoL | S17 |
+| Keystone | Teleport buttons on dungeon list | toggle |  | On | live | new | EllesmereUI QoL | S28 |
 | Parity: EllesmereUI MythicTimer | Run summary window (spec, item level, score, loot, DPS, interrupts, deaths) | — | C_DamageMeter session data is readable after combat |  | live | new | EllesmereUI MythicTimer | S28 |
 
 ## Encounters  (`Encounters`)

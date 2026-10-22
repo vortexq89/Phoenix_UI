@@ -3,6 +3,32 @@
 ## 2.0.0-beta1
 
 ### New
+- **NPC locations and the open gap rows** (plan v2 stage S17).
+  - *Quests › NPCs*: where quest givers, vendors, profession NPCs / trainers, flight masters and rares stand, from
+    AllTheThings (MIT) facts in Phoenix_UI_Data (712 Midnight, 987 War Within, 2,113 WoW Forever NPC spots). One NPC
+    index serves an NPC search (`/pui quests npc <name>`, a search box on the world map), `/way` (`/pway` when TomTom
+    owns `/way`), the giver's place in quest tooltips and townsfolk / rare pins (Phoenix glyphs) on the
+    map and minimap.
+  - *Record NPC positions* (Quests › Automation, opt-in, off by default): NPC ID (`UnitCreatureID`), map and your
+    position when you talk to an NPC, and vignette positions; open world, out of combat, never a secret value; no
+    names, realms or GUIDs; kept in your SavedVariables only, never uploaded. A clear button empties it.
+    `tools/questdata/merge_collected.py` folds a maintainer's own file into `NPCs_Collected.lua`.
+  - *Unit Frames*: overheal past the frame end, spell cost prediction on the player power bar, class power pip shape
+    (bar, square, round), portrait size, `[npctitle]` and `[guild:title]` tags; a link to Blizzard's click casting.
+  - *General*: power colours (16 power types) and dispel colours (magic, curse, disease, poison, bleed) used by unit,
+    group and Blizzard frames.
+  - *Nameplates*: friendly NPC titles (default friendly info tag `[guild:title]`).
+  - *Chat*: timestamp colour, an emote picker on the chat bar.
+  - *Tooltip*: vendor price (only when the game shows none), already known / collected (toys, mounts, pets,
+    appearances), keystone timer and season best (retail); a link to the Group Finder page.
+  - *Data Texts*: currency picker, honor bar, data bar texture, fill direction, smooth fill and gradient.
+  - *Cooldown Manager*: buff bar gradient. *Minimap*: windowed world map scale (retail). *Bags*: a bag bar in the
+    Phoenix window (hover a bag to dim the others). *Item Level*: character sheet stats panel look. *Skins*:
+    alerts and toasts.
+  - Not possible with the 12.x API (listed as `api` in the gap matrix): buff bar smooth / stack fill (the Cooldown
+    Manager owns the timer and stack counts are secret), remembering the last chat channel and hiding the combat
+    log tab (both taint chat), moving the group finder eye (Edit Mode / menu bar). Deferred: world map reveal (S25),
+    raid progression in tooltips and the skyriding vigor skin (S24), Mythic+ teleport buttons (S28).
 - **Remaining modules** (plan v2 stage S16): every page now reaches its plan v2 target.
   - *Damage Meter*: bar texture, reverse fill, shading, name and value fonts, window background and border (style
     library, with shadow size) for Blizzard's meter; what Edit Mode already owns (bar size, class colours, value

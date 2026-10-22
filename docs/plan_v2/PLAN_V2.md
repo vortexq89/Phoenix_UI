@@ -218,6 +218,14 @@ sub-headings. Needs an in-game test (TESTING §13n).*
 *Re-scoped 22 Oct 2026 (brief): no uploader channel or Cloudflare backend. The collector is local and opt-in; data is
 merged by `tools/` into Phoenix_UI_Data slices by the maintainer.*
 
+*Shipped 22 Oct 2026: NPC slices (712 Midnight, 987 War Within, 2,113 Forever spots from ATT), one NPC index for
+search, `/way`, tooltips and townsfolk / rare pins, the local collector and its merge tool. Of the 36 open gap rows,
+23 are `has`, 4 `link` (click casting, minimap scale, group finder tooltip, per-character overrides → Profiles ›
+Characters), 5 `api` (buff bar smooth and stack fill, remember chat channel, hide combat log tab, group finder eye)
+and 4 move on (world map reveal S25, raid progression S24, skyriding vigor S24, Mythic+ teleports S28). Gap matrix:
+1,321 target rows, 1,088 has, 141 part, 92 new, 49 link/api; 1,869 settings on retail, 1,693 on Forever. Needs an
+in-game test (TESTING §13o).*
+
 - NPC spawn data: AllTheThings (MIT) `N|npcID|uiMapID|x|y` lines + DB2 (wago.tools) + runtime APIs → NPC slices in Phoenix_UI_Data; provenance in docs — 1.5 d
 - Opt-in position collector: npcID + uiMapID + your x/y on gossip / quest dialog / vignette, only when nothing is secret, out of combat, open world; no names, realms or GUIDs; SavedVariables → `tools/` merge — 1 d
 - Wire NPC locations into tooltips, quest pins and map search / `/way` waypoint (one owner: Quests) — 1 d

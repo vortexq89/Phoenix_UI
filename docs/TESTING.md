@@ -952,6 +952,33 @@ Start with `/console taintLog 1` and an empty `/pui bugs`.
 - [ ] **13n.10 Taint and Forever.** After 13n.1–13n.9 no blocked-action or taint entry naming Phoenix_UI. On WoW
   Forever: no Mythic+, Sim or Group Finder pages; Great Vault rows hidden; everything else works.
 
+## 13o. NPC locations and the gap rows (2.0 S17)
+
+Start with `/console taintLog 1` and an empty `/pui bugs`.
+
+- [ ] **13o.1 NPC search and /way.** `/pui quests npc` with part of a vendor's name, then the world map search box.
+  `/way 45.2 60.1`. **Expect:** matches with zone and coordinates, a click sets the arrow; `/way` sets a waypoint
+  (with TomTom loaded, use `/pway`); no error for unknown names.
+- [ ] **13o.2 Pins and tooltips.** Turn on *Townsfolk pins* and *Rare pins* in Silvermoon / Dornogal (retail) and
+  Stormwind / Orgrimmar (Forever). **Expect:** Phoenix glyphs on map and minimap; hover shows the NPC kind. A quest
+  tooltip shows where its giver stands.
+- [ ] **13o.3 Collector.** Turn on *Record NPC positions*, talk to a vendor, a quest giver and a flight master, see
+  a rare. **Expect:** `/pui quests collected` counts up; nothing recorded in an instance or in combat; *Clear* empties it;
+  `/reload` keeps it; the SavedVariables hold IDs and coordinates only.
+- [ ] **13o.4 Unit frames.** Heal yourself past full (overheal past the frame end), cast a spell with a cost (cost
+  bar on the power bar), change pip shape and portrait size, use `[npctitle]` on target. **Expect:** all live; the
+  preview matches the frames.
+- [ ] **13o.5 Colours.** General › power and dispel colours. **Expect:** unit frames, group frame dispel highlight and
+  the power bar follow at once; *false* (cleared) goes back to the game's colour.
+- [ ] **13o.6 Chat, Tooltip, Data Texts.** Timestamp colour (Settings › Social timestamps on), emote picker, item
+  tooltips (a toy, a mount, an unknown appearance, a keystone), currency picker and honor bar. **Expect:** each line
+  once, never twice; vendor price only when the game shows none.
+- [ ] **13o.7 Map, bags, character, toasts.** World map scale on the windowed map (full screen stays 1), the bag bar in
+  the Phoenix bag window (hover dims other bags), the character sheet stats panel, an achievement or loot toast with
+  *Alerts and toasts* on. **Expect:** all styled; nothing moves; no taint.
+- [ ] **13o.8 Taint and Forever.** No blocked-action or taint entry naming Phoenix_UI. On WoW Forever: no keystone
+  tooltip or world map scale row; NPC pins and the collector work.
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another
