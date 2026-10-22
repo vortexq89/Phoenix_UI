@@ -111,5 +111,6 @@ ns.IconData = {
         ["bin"] = 99,
         ["encounters"] = 100,
         ["break"] = 101,
+        ["sim"] = 102,
     },
 }

@@ -45,4 +45,6 @@ ICONS = [
     ("mail", "envelope-simple"), ("friends", "users"), ("guild", "users-three"), ("bin", "squares-four"),
     # 2.0 S1: encounters (boss timeline, warnings, pull and break timers)
     ("encounters", "siren"), ("break", "coffee"),
+    # 2.0 S2: sim (SimulationCraft through the Phoenix app)
+    ("sim", "chart-line-up"),
 ]
