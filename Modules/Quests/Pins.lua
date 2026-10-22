@@ -47,6 +47,7 @@ function M:PinsFor(mapID)
             out[#out + 1] = { kind = "turnin", questID = q.id, x = q.turnX, y = q.turnY, record = q }
         end
     end
+    for _, p in ipairs(self:NPCPinsFor(mapID)) do out[#out + 1] = p end
     return out
 end
 
@@ -55,6 +56,12 @@ local function pinTooltip(pin)
     local p = pin.data
     if not p then return end
     GameTooltip:SetOwner(pin, "ANCHOR_RIGHT")
+    if p.npc then
+        GameTooltip:AddLine(p.name, 1, 0.82, 0)
+        GameTooltip:AddLine(M.NPC_LABELS[p.kind] or M.NPC_LABELS.other, 0.8, 0.8, 0.8)
+        GameTooltip:AddLine(L.QUESTS_TIP_CLICK, 0.5, 0.5, 0.5)
+        return GameTooltip:Show()
+    end
     GameTooltip:AddLine(M:QuestName(p.questID) or p.name, 1, 0.82, 0)
     if p.line then GameTooltip:AddLine(p.line, 0.8, 0.8, 0.8) end
     if p.kind == "turnin" then GameTooltip:AddLine(L.QUESTS_TIP_TURNIN, 0.25, 0.81, 0.44) end
@@ -66,7 +73,7 @@ end
 local function pinClick(pin)
     local p, map = pin.data, pin.mapID
     if not (p and map) then return end
-    M:SetTarget(map, p.x, p.y, M:QuestName(p.questID) or p.name)
+    M:SetTarget(map, p.x, p.y, p.questID and M:QuestName(p.questID) or p.name)
 end
 
 local function newPin(parent, pool)
@@ -80,10 +87,25 @@ local function newPin(parent, pool)
     return pin
 end
 
+-- Quest pins use the game's quest atlases; NPC pins (vendor, trainer, rare …) a Phoenix glyph in theme colours
+-- on a second texture, so a pooled pin switches between the two without restyling either.
 local function setKind(pin, kind)
-    if pin.kind ~= kind then
-        pin.kind = kind
+    if pin.kind == kind then return end
+    pin.kind = kind
+    local glyph = not ATLAS[kind] and M.NPC_ICONS[kind]
+    if glyph then
+        if not pin.glyph then
+            pin.glyph = ns.Icons:Create(pin, glyph, 16, "text.primary", "OVERLAY")
+            pin.glyph:SetAllPoints()
+        end
+        ns.Icons:Apply(pin.glyph, glyph)
+        ns.Icons:Tint(pin.glyph, M.NPC_TOKENS[kind] or "text.primary")
+        pin.glyph:Show()
+        pin.icon:Hide()
+    else
+        if pin.glyph then pin.glyph:Hide() end
         pin.icon:SetAtlas(ATLAS[kind] or ATLAS.available)
+        pin.icon:Show()
     end
 end
 

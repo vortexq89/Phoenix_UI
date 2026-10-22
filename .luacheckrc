@@ -50,3 +50,4 @@ exclude_files = {
 files["Locales/*.lua"] = { max_line_length = false }
 -- Generated quest slices (tools/questdata/build_questdata.py): one packed string per map.
 files["Phoenix_UI_Data/Quests_*.lua"] = { max_line_length = false }
+files["Phoenix_UI_Data/NPCs_*.lua"] = { max_line_length = false }

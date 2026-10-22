@@ -71,6 +71,8 @@
     <Script file="Quests\Tracker.lua"/>
     <Script file="Quests\Pins.lua"/>
     <Script file="Quests\Arrow.lua"/>
+    <Script file="Quests\NPCs.lua"/>
+    <Script file="Quests\Collector.lua"/>
     <Script file="Quests\Auto.lua"/>
     <Script file="GroupFinder\Expression.lua"/>
     <Script file="GroupFinder\GroupFinder.lua"/>

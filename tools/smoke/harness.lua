@@ -343,7 +343,10 @@ fire("ADDON_LOADED", NAME)
 fire("PLAYER_LOGIN")
 fire("PLAYER_ENTERING_WORLD", true, false)
 
+-- PUI_ONLY=<text>: run only the tests whose label contains it (quick iteration; check_flavors runs them all)
+local ONLY = os.getenv("PUI_ONLY")
 local function try(label, fn, ...)
+    if ONLY and ONLY ~= "" and label ~= "load on demand" and not label:find(ONLY, 1, true) then return end
     local ok, e = pcall(fn, ...)
     if not ok then errors[#errors + 1] = label .. ": " .. tostring(e) end
 end
@@ -3523,6 +3526,181 @@ try("settings consistency (S16)", function()
     end
 end)
 
+-- S17: NPC locations (data slices, index, search, /way parsing, tooltips, townsfolk / rare pins, map search) and the
+-- opt-in local collector (UnitCreatureID only, open world, out of combat, nothing secret, no names)
+try("NPC locations (S17)", function()
+    local Q = ns.modules.Quests
+    local D = Q:Data()
+    assert(D and type(D.npcs) == "table" and type(D.collected) == "table", "NPC tables missing")
+    local savedMap = env.C_Map
+    local here = RETAIL and 2393 or 1429
+    rawset(env, "C_Map", setmetatable({
+        GetBestMapForUnit = function() return here end,
+        GetPlayerMapPosition = function() return { GetXY = function() return 0.5, 0.5 end } end,
+        GetMapInfo = function(id) return { mapID = id, name = "Zone" .. id } end,
+        CanSetUserWaypointOnMap = function() return true end, SetUserWaypoint = function() end,
+        ClearUserWaypoint = function() end, HasUserWaypoint = function() return false end,
+        GetWorldPosFromMapPos = function() return nil end,
+    }, { __index = savedMap }))
+    Q.npcIndex = nil
+    local index = Q:NPCIndex()
+    local n = 0
+    for _ in pairs(index) do n = n + 1 end
+    assert(n > (RETAIL and 1000 or 1000), "NPC index size " .. n)
+    local s = Q.DecodeNPC("235787,454,703,1", 2393, "midnight")
+    assert(s.id == 235787 and math.abs(s.x - 0.454) < 1e-9 and s.kind == "giver", "decode NPC")
+    assert(Q.DecodeNPC("5,1,2,3,9", 1, "collected").kind == "trainer", "collected record with sightings")
+    -- spot checks against the source data
+    if RETAIL then
+        local spot = Q:NPCSpot(235787)
+        assert(spot and spot.map == 2393, "Lor'themar in Silvermoon")
+        local hits = Q:FindNPCs("lor'themar")
+        assert(#hits >= 1 and hits[1].name:find("Lor'themar", 1, true), "search by name")
+        local vendors = Q:NPCsOnMap(2393, { vendor = true })
+        assert(#vendors > 3, "Silvermoon vendors " .. #vendors)
+    else
+        local spot = Q:NPCSpot(823)
+        assert(spot and spot.map == 1429, "Deputy Willem in Elwynn")
+        local vendors = Q:NPCsOnMap(1429, { vendor = true })
+        assert(#vendors > 3, "Elwynn vendors " .. #vendors)
+        assert(#Q:FindNPCs("Corina") >= 1, "search by name")
+    end
+    assert(#Q:FindNPCs("823") <= 1 and #Q:FindNPCs("") == 0 and #Q:FindNPCs("zzzzqqqq") == 0, "search edge cases")
+    -- /way parsing
+    local m, x, y, t = Q.ParseWay("45.3 70.2 Camp", 37)
+    assert(m == 37 and math.abs(x - 0.453) < 1e-9 and math.abs(y - 0.702) < 1e-9 and t == "Camp", "way x y title")
+    m, x, y, t = Q.ParseWay("#1429 45,3 70,2", 37)
+    assert(m == 1429 and math.abs(x - 0.453) < 1e-9 and t == nil, "way #map with decimal commas")
+    m, x = Q.ParseWay("45.3, 70.2", 37)
+    assert(m == 37 and x, "way comma separated")
+    assert(Q.ParseWay("120 30", 37) == nil and Q.ParseWay("hello", 37) == nil and Q.ParseWay("10 20", nil) == nil, "bad way")
+    assert(Q:Way("45.3 70.2 Camp") == true, "way sets the arrow")
+    local dm, dx, _, dt = Q:Destination()
+    assert(dm == here and math.abs(dx - 0.453) < 1e-9 and dt == "Camp", "arrow target from /way")
+    assert(Q:Way(RETAIL and "lor'themar" or "823") == true, "/way <npc>")
+    assert(Q:Way("nonsense words") == false, "/way usage")
+    Q:OnSlash("npc " .. (RETAIL and "lor'themar" or "823"))
+    Q:OnSlash("way 10 20")
+    Q:OnSlash("collected")
+    Q:OnSlash("clear")
+    assert(Q:Destination() == nil or select(4, Q:Destination()) ~= "Camp", "clear")
+    assert(slashes.way or slashes.pway, "/way registered")
+    -- quest tooltip location line, on and off
+    local added = {}
+    local tt = { AddLine = function(_, text) added[#added + 1] = text end }
+    local q = Q:Record(RETAIL and 86737 or 783)
+    Q.db.npcLocation = true
+    Q:AddQuestLines(tt, q, true)
+    local found = false
+    for _, line in ipairs(added) do if line:find("Zone", 1, true) then found = true end end
+    assert(found, "giver location line")
+    added = {}
+    Q.db.npcLocation = false
+    Q:AddQuestLines(tt, q, true)
+    for _, line in ipairs(added) do assert(not line:find("Zone", 1, true), "location line off") end
+    Q.db.npcLocation = true
+    -- townsfolk / rare pins join the quest pins
+    Q.db.townsfolk, Q.db.rares = false, false
+    assert(#Q:NPCPinsFor(here) == 0, "NPC pins off")
+    Q.db.townsfolk = true
+    local pins = Q:NPCPinsFor(here)
+    assert(#pins > 3 and pins[1].npc and pins[1].kind ~= "rare", "townsfolk pins")
+    Q.db.rares = true
+    assert(#Q:NPCPinsFor(here) >= #pins, "rare pins add")
+    local all = Q:PinsFor(here)
+    local npcPins = 0
+    for _, p in ipairs(all) do if p.npc then npcPins = npcPins + 1 end end
+    assert(npcPins > 0, "NPC pins in PinsFor")
+    Q:DrawWorldMap()
+    Q.db.townsfolk, Q.db.rares = false, false
+    -- world map search box
+    Q:EnableMapSearch()
+    if Q.searchBox then
+        local hits = Q:SearchMap(RETAIL and "lor'" or "Corina")
+        assert(#hits >= 1, "map search results")
+        assert(#Q:SearchMap("x") == 0, "map search needs two letters")
+    end
+    -- preview with every NPC option on and off
+    for _, on in ipairs({ true, false }) do
+        Q.db.townsfolk, Q.db.rares, Q.db.mapSearch, Q.db.npcLocation = on, on, on, on
+        ns.Previews:Create("quests", env.CreateFrame("Frame"), Q, {}):Redraw()
+    end
+    Q.db.townsfolk, Q.db.rares, Q.db.mapSearch, Q.db.npcLocation = false, false, true, true
+    Q:ClearTarget()
+    rawset(env, "C_Map", savedMap)
+end)
+try("local NPC collector (S17)", function()
+    local Q = ns.modules.Quests
+    local SECRET = setmetatable({}, { __tostring = function() return "<secret>" end })
+    local saved = {}
+    for _, k in ipairs({ "C_Map", "UnitCreatureID", "UnitExists", "IsInInstance", "InCombatLockdown", "C_VignetteInfo" }) do
+        saved[k] = rawget(env, k)
+    end
+    local oldIs = ns.Secret.IsSecret
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    local npcID, mapX = 424242, 0.25
+    rawset(env, "C_Map", setmetatable({
+        GetBestMapForUnit = function() return 2393 end,
+        GetPlayerMapPosition = function() return { GetXY = function() return mapX, 0.75 end } end,
+    }, { __index = saved.C_Map }))
+    rawset(env, "UnitCreatureID", function(unit) assert(unit == "npc", "only the NPC you talk to"); return npcID end)
+    rawset(env, "UnitExists", function() return true end)
+    rawset(env, "IsInInstance", function() return false, "none" end)
+    rawset(env, "InCombatLockdown", function() return false end)
+    Q:ClearRecorded()
+    Q.db.contribute = false
+    fire("MERCHANT_SHOW")
+    assert(Q:RecordedCount() == 0 and Q:CollectBlocked() == "off", "off by default records nothing")
+    Q.db.contribute = true
+    fire("MERCHANT_SHOW")
+    local r = Q:Recorded()[npcID] and Q:Recorded()[npcID][2393]
+    assert(r and r.k == 2 and r.x == 0.25 and r.y == 0.75 and r.n == 1, "merchant recorded")
+    mapX = 0.35
+    fire("GOSSIP_SHOW")
+    r = Q:Recorded()[npcID][2393]
+    assert(r.n == 2 and math.abs(r.x - 0.3) < 1e-9 and r.k == 2, "sightings average; gossip keeps the merchant kind")
+    for k, v in pairs(r) do assert(k == "x" or k == "y" or k == "k" or k == "n", "only position facts: " .. k); local _ = v end
+    -- gates: combat, instances, secret IDs and positions
+    rawset(env, "InCombatLockdown", function() return true end)
+    npcID = 1001
+    fire("QUEST_DETAIL")
+    assert(not Q:Recorded()[1001] and Q:CollectBlocked() == "combat", "never in combat")
+    rawset(env, "InCombatLockdown", function() return false end)
+    rawset(env, "IsInInstance", function() return true, "party" end)
+    fire("QUEST_DETAIL")
+    assert(not Q:Recorded()[1001] and Q:CollectBlocked() == "instance", "never in instances")
+    rawset(env, "IsInInstance", function() return false, "none" end)
+    npcID = SECRET
+    assert(Q:RecordInteraction("QUEST_DETAIL") == false, "secret NPC IDs are skipped")
+    npcID, mapX = 1001, SECRET
+    assert(Q:RecordInteraction("QUEST_DETAIL") == false, "secret positions are skipped")
+    mapX = 0.5
+    assert(Q:RecordInteraction("QUEST_DETAIL") == true and Q:Recorded()[1001][2393].k == 1, "quest giver kind")
+    -- recordings join the NPC index and the search by ID
+    Q.npcIndex = nil
+    assert(Q:NPCSpot(1001, 2393).source == "recorded", "recorded spot in the index")
+    -- vignettes: ID and the game's position for them, never the GUID
+    rawset(env, "C_VignetteInfo", {
+        GetVignettes = function() return { "Vignette-0-1", SECRET } end,
+        GetVignetteInfo = function() return { vignetteID = 6001, name = "Rare" } end,
+        GetVignettePosition = function() return { GetXY = function() return 0.1, 0.2 end } end,
+    })
+    fire("VIGNETTES_UPDATED")
+    local v = Q.global.vignettes[6001]
+    assert(v and v.map == 2393 and v.x == 0.1 and v.y == 0.2 and v.name == nil, "vignette recorded without its name")
+    for k in pairs(v) do assert(k == "map" or k == "x" or k == "y", "vignette fields only: " .. k) end
+    -- the cap
+    local cap = Q.COLLECT_CAP
+    Q.COLLECT_CAP = Q:RecordedCount()
+    assert(Q:RecordSpot(777, 2393, 0.1, 0.1, 0) == false, "cap reached")
+    Q.COLLECT_CAP = cap
+    assert(Q:RecordedCount() == 2, "two NPC spots")
+    Q:ClearRecorded()
+    assert(Q:RecordedCount() == 0 and next(Q.global.vignettes) == nil, "clear")
+    Q.db.contribute = false
+    ns.Secret.IsSecret = oldIs
+    for k, val in pairs(saved) do rawset(env, k, val) end
+end)
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

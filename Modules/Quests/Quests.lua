@@ -22,7 +22,11 @@ local M = ns:NewModule("Quests", {
         -- automation
         autoAccept = false, autoTurnIn = false, reward = "off",
         tooltip = true, contribute = false,
+        -- NPC locations (NPCs.lua): giver spot in quest tooltips, townsfolk / rare pins, map search, /way
+        npcLocation = true, townsfolk = false, rares = false, mapSearch = true, waySlash = true,
     },
+    -- local collector recordings (Collector.lua): this install only, never uploaded
+    globalDefaults = { collected = {}, vignettes = {} },
 })
 
 M.DATA_ADDON = "Phoenix_UI_Data"
@@ -40,7 +44,7 @@ for _, s in ipairs(M.SLICES) do SLICE[s.key] = s end
 -- True when any option needs the giver/turn-in data.
 function M:WantsData()
     local db = self.db
-    return db.npcPins or db.turnins or db.tooltip
+    return db.npcPins or db.turnins or db.tooltip or db.townsfolk or db.rares or db.mapSearch
 end
 
 -- Loads Phoenix_UI_Data once; nil (and a reason) when it is missing or disabled.
@@ -59,7 +63,7 @@ function M:Data()
         self.dataError = "INVALID"
         return nil, self.dataError
     end
-    self.data, self.decoded, self.byQuest = D, {}, nil
+    self.data, self.decoded, self.byQuest, self.npcIndex = D, {}, nil, nil
     return D
 end
 
@@ -271,7 +275,10 @@ end
 function M:AddQuestLines(tt, q, header)
     if header then tt:AddLine(self:QuestName(q.id), 1, 0.82, 0) end
     local who = q.npc and q.npc > 0 and self:NPCName(q.npc)
-    if who then tt:AddLine(L.QUESTS_TIP_GIVER:format(who), 0.8, 0.8, 0.8) end
+    if who then
+        tt:AddLine(L.QUESTS_TIP_GIVER:format(who), 0.8, 0.8, 0.8)
+        self:AddNPCLocation(tt, q.npc)
+    end
     if q.minLevel > 0 then tt:AddLine(L.QUESTS_TIP_LEVEL:format(q.minLevel), 0.8, 0.8, 0.8) end
     if q.daily then tt:AddLine(L.QUESTS_TIP_DAILY, 0.3, 0.7, 1) elseif q.weekly then tt:AddLine(L.QUESTS_TIP_WEEKLY, 0.3, 0.7, 1) end
     if q.breadcrumb then tt:AddLine(L.QUESTS_TIP_BREADCRUMB, 0.7, 0.7, 0.7) end
@@ -326,6 +333,9 @@ function M:OnEnable()
     self:EnablePins()
     self:EnableArrow()
     self:EnableAuto()
+    self:EnableCollector()
+    self:EnableMapSearch()
+    self:RegisterWay()
     local function invalidate() self.ctxDirty = true; self:RefreshPins() end
     ns.Events:On("QUEST_TURNED_IN", self, invalidate)
     ns.Events:On("QUEST_ACCEPTED", self, invalidate)
@@ -336,6 +346,7 @@ function M:OnEnable()
 end
 
 function M:OnDisable()
+    if M.searchBox then M.searchBox:Hide() end
     self:DisablePins()
     self:DisableArrow()
 end
@@ -343,6 +354,8 @@ end
 function M:Refresh()
     if self:WantsData() then self:Data() end
     self.decoded = self.data and {} or self.decoded
+    self.npcIndex = nil
+    self:EnableMapSearch()
     self:RefreshTracker()
     self:RefreshPins()
     self:RefreshArrow()

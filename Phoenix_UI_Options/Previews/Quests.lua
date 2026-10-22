@@ -3,14 +3,17 @@ local L, P = ns.L, ns.Previews
 local Skin, Media, Theme = ns.Skin, ns.Media, ns.Theme
 
 --[[ Quests preview: a sample objective tracker (two quests, level tags, difficulty colours, a progress bar),
-    a map tile with giver / daily / turn-in pins at the chosen size, and the waypoint arrow with its
-    distance and ETA. Fixed sample data; every element follows the page's saved settings. ]]
+    a map tile with giver / daily / turn-in pins at the chosen size (plus vendor, trainer, flight master and
+    rare pins, the NPC search box and the giver's location line), and the waypoint arrow with its distance and
+    ETA. Fixed sample data; every element follows the page's saved settings. ]]
 local QUESTS = {
     { title = "PREVIEW_QUEST_1", level = 82, tag = "", color = { 1, 0.82, 0 },
       lines = { { text = "PREVIEW_QUEST_1A" }, { text = "PREVIEW_QUEST_1B" } }, bar = 0.6 },
     { title = "PREVIEW_QUEST_2", level = 80, tag = "+G", color = { 0.25, 0.75, 0.25 }, lines = { { text = "PREVIEW_QUEST_2A" } } },
 }
 local PINS = { { "QuestNormal", 0.3, 0.35 }, { "QuestDaily", 0.66, 0.28 }, { "QuestTurnin", 0.52, 0.7 }, { "QuestNormal", 0.2, 0.74 } }
+-- townsfolk / rare pins (NPCs.lua glyphs and colours): kind, x, y
+local NPC_PINS = { { "vendor", 0.44, 0.22 }, { "trainer", 0.8, 0.5 }, { "flight", 0.14, 0.5 }, { "rare", 0.78, 0.82 } }
 
 P:Register("quests", {
     module = "Quests",
@@ -55,6 +58,17 @@ P:Register("quests", {
             t:SetAtlas(p[1])
             map.pins[i] = t
         end
+        map.npcs = {}
+        for i, p in ipairs(NPC_PINS) do
+            map.npcs[i] = ns.Icons:Create(map, m.NPC_ICONS[p[1]], 16, m.NPC_TOKENS[p[1]], "OVERLAY")
+        end
+        -- the world map's NPC search box
+        map.search = CreateFrame("Frame", nil, map)
+        map.search:SetPoint("TOPLEFT", 6, -6)
+        map.search:SetPoint("TOPRIGHT", -6, -6)
+        map.search:SetHeight(18)
+        map.search.text = P.Caption(map.search, L.QUESTS_SEARCH_NPC)
+        map.search.text:SetPoint("LEFT", 6, 0)
         map.caption = P.Caption(stage, L.QUESTS_PINS)
         map.caption:SetPoint("TOP", map, "BOTTOM", 0, -6)
         -- arrow
@@ -124,6 +138,17 @@ P:Register("quests", {
                 t:SetPoint("CENTER", map, "TOPLEFT", p[2] * 150, -p[3] * 150)
                 t:SetShown((p[1] == "QuestTurnin" and db.turnins) or (p[1] ~= "QuestTurnin" and shown))
             end
+            for i, t in ipairs(map.npcs) do
+                local p = NPC_PINS[i]
+                t:SetSize(size, size)
+                t:ClearAllPoints()
+                t:SetPoint("CENTER", map, "TOPLEFT", p[2] * 150, -p[3] * 150)
+                t:SetShown((p[1] == "rare" and db.rares) or (p[1] ~= "rare" and db.townsfolk))
+            end
+            Skin:Panel(map.search, "sunken")
+            map.search:SetShown(db.mapSearch)
+            -- the giver's spot under the caption, as quest tooltips show it
+            map.caption:SetText(db.npcLocation and L.QUESTS_NPC_AT:format(L.PREVIEW_QUEST_ZONE, 45.4, 70.3) or L.QUESTS_PINS)
             Skin:BorderSpec(map, { style = "theme", size = 1, color = false, shadow = "auto" }, "border.black")
         end
         local function drawArrow(db)

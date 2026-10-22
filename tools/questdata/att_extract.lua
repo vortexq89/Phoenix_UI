@@ -9,7 +9,7 @@
 
     Output lines (fields separated by |, lists by ,):
       Q|questID|uiMapID|x|y|npcIDs|sourceQuests|sourceQuestNumRequired|races|classes|minLevel|flags|timeline|u|file
-      N|npcID|uiMapID|x|y|file
+      N|npcID|uiMapID|x|y|file|header
     x and y are map percentages as the DB writes them (0-100). Unknown names resolve to inert stubs. ]]
 local FLAVOR = assert(arg[1], "usage: att_extract.lua <retail|forever> <shared-dir> <file.lua> ...")
 local shared = assert(arg[2], "usage: att_extract.lua <retail|forever> <shared-dir> <file.lua> ...")
@@ -218,10 +218,18 @@ walk = function(t)
         if num(t.id) and t.id > 0 and type(t.t) == "table" then
             for _, c in ipairs(coordsOf(t.t)) do
                 local map = num(c[3]) or current.map
-                io.write(table.concat({ "N", t.id, map or "", fmt(num(c[1])), fmt(num(c[2])), current.file }, "|"), "\n")
+                io.write(table.concat({ "N", t.id, map or "", fmt(num(c[1])), fmt(num(c[2])), current.file,
+                    current.header or "" }, "|"), "\n")
             end
+            walkChildren(t.t)
+            return
         end
+        -- a header node (n(VENDORS, {...})): its name tells what the NPCs under it are
+        local saved = current.header
+        local name = type(t.id) == "table" and rawget(t.id, "__stub")
+        if type(name) == "string" then current.header = name end
         walkChildren(t.t)
+        current.header = saved
         return
     elseif kind == "hqt" then
         return
