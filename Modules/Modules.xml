@@ -14,6 +14,8 @@
     <Script file="Tooltip\Tooltip.lua"/>
     <Script file="ItemLevel\ItemLevel.lua"/>
     <Script file="Bags\Bags.lua"/>
+    <Script file="Sim\Export.lua"/>
+    <Script file="Sim\Sim.lua"/>
     <Script file="Minimap\Minimap.lua"/>
     <Script file="DataTexts\DataTexts.lua"/>
     <Script file="Movers\Movers.lua"/>

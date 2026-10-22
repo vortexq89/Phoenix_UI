@@ -20,7 +20,7 @@
 #@end-non-debug@
 ## Category: User Interface
 ## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
-## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, Phoenix_UIDB
+## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, Phoenix_UIDB, PhoenixUISimDB
 ## SavedVariablesPerCharacter: Phoenix_UIPerCharDB
 ## OptionalDeps: !BugGrabber, Details
 ## X-License: MIT
@@ -33,4 +33,5 @@ Locales\Locales.xml
 Core\Core.xml
 UI\UI.xml
 Modules\Modules.xml
+Sim\Results.lua
 Core\Init.lua

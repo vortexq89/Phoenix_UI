@@ -16,6 +16,8 @@ globals = {
   "PhoenixUIDB",
   "PhoenixUIBugsDB", -- captured error reports (account-wide; read by the Phoenix Uploader app)
   "Phoenix_UIDB", "Phoenix_UIPerCharDB", -- legacy, read once by the migration then set to nil
+  "PhoenixUISimDB", -- sim requests and results (account-wide; read by the Phoenix app)
+  "PhoenixUISimResults", -- written by the Phoenix app into Sim/Results.lua; imported and cleared at login
   "PhoenixUI_Bridge", -- set only during Phoenix_UI's LoadAddOn("Phoenix_UI_Options") call (UI/Launcher.lua)
 }
 
