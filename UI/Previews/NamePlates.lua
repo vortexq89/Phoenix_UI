@@ -12,6 +12,10 @@ local PLATE_W, PLATE_H, SCALE = 150, 12, 1.25
 P:Register("nameplate", {
     module = "NamePlates",
     height = 110,
+    states = {
+        { key = "low", label = "PREVIEW_STATE_LOW", icon = "warning" },
+        { key = "target", label = "PREVIEW_STATE_TARGET", icon = "nameplates" },
+    },
     build = function(stage, m)
         local plates = {}
         for i, sample in ipairs(SAMPLES) do
@@ -30,7 +34,11 @@ P:Register("nameplate", {
         return function(self)
             local w = self:GetWidth() / SCALE
             local db = m.db
+            local st = self.states
             for i, p in ipairs(plates) do
+                -- "targeted": the hostile plate is selected, the rest dim like unselected plates
+                p.holder:SetScale(st.target and i == 1 and SCALE * 1.12 or SCALE)
+                p.holder:SetAlpha(st.target and i ~= 1 and 0.55 or 1)
                 p.holder:ClearAllPoints()
                 p.holder:SetPoint("CENTER", self, "LEFT", (w * (i - 0.5) / #plates), -4 / SCALE)
                 -- with "Phoenix bar texture" off the real plates keep Blizzard's art; the sample shows a flat fill
@@ -41,7 +49,9 @@ P:Register("nameplate", {
                 p.name:SetTextColor(P.Token(p.sample.token))
                 p.name:SetText(L[p.sample.sample])
                 m:StyleHealthText(p.health, p.bar)
-                p.health:SetText(("%d%%"):format(p.sample.value * 100))
+                local value = (st.low and i == 1) and 0.16 or p.sample.value
+                p.bar:SetValue(value)
+                p.health:SetText(("%d%%"):format(value * 100))
                 p.health:SetShown(db.healthText)
                 m:StyleForces(p.forces)
                 p.forces:SetText(p.sample.forces or "")

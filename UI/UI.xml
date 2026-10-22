@@ -24,6 +24,8 @@
     <Script file="Previews\Chat.lua"/>
     <Script file="Previews\MythicPlus.lua"/>
     <Script file="Previews\General.lua"/>
+    <Script file="Previews\Combat.lua"/>
+    <Script file="Previews\Interface.lua"/>
     <Script file="Config\Window.lua"/>
     <Script file="Config\Groups.lua"/>
     <Script file="Config\Renderer.lua"/>

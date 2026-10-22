@@ -919,6 +919,12 @@ local T = {
     SOUNDS_CREDITS = "Avvisi di unfa, voci del conto alla rovescia di tekgnosis (Jim) e davidbain (David), tutto CC0 da freesound.org. Dettagli in Media/Sounds/SOUNDS.md.",
     SOUND_ALERT_ON_YOU = "Avviso (su di te)",
     SOUND_ALERT_UNDER_YOU = "Avviso (sotto di te)",
+    ---------------------------------------------------------------- 2.0 previews
+    PREVIEW_ZONE = "Lunargenta",
+    PREVIEW_STATE_LOW = "Salute bassa",
+    PREVIEW_STATE_RANGE = "Fuori portata",
+    PREVIEW_STATE_TARGET = "Bersaglio",
+    PREVIEW_STATE_INTERRUPTED = "Interrotto",
 }
 
 ns.RegisterLocale("itIT", T)

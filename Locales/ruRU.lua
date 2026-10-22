@@ -919,6 +919,12 @@ local T = {
     SOUNDS_CREDITS = "Сигналы — unfa, голоса отсчёта — tekgnosis (Jim) и davidbain (David), всё CC0 с freesound.org. Подробности в Media/Sounds/SOUNDS.md.",
     SOUND_ALERT_ON_YOU = "Сигнал (на вас)",
     SOUND_ALERT_UNDER_YOU = "Сигнал (под вами)",
+    ---------------------------------------------------------------- 2.0 previews
+    PREVIEW_ZONE = "Луносвет",
+    PREVIEW_STATE_LOW = "Мало здоровья",
+    PREVIEW_STATE_RANGE = "Вне досягаемости",
+    PREVIEW_STATE_TARGET = "В цели",
+    PREVIEW_STATE_INTERRUPTED = "Прервано",
 }
 
 ns.RegisterLocale("ruRU", T)

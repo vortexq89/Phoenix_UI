@@ -919,6 +919,12 @@ local T = {
     SOUNDS_CREDITS = "경고음 unfa, 카운트다운 음성 tekgnosis(Jim)·davidbain(David), 모두 freesound.org의 CC0입니다. 자세한 내용은 Media/Sounds/SOUNDS.md를 보세요.",
     SOUND_ALERT_ON_YOU = "경고 (내게 걸림)",
     SOUND_ALERT_UNDER_YOU = "경고 (발밑)",
+    ---------------------------------------------------------------- 2.0 previews
+    PREVIEW_ZONE = "실버문",
+    PREVIEW_STATE_LOW = "낮은 생명력",
+    PREVIEW_STATE_RANGE = "사거리 밖",
+    PREVIEW_STATE_TARGET = "대상 지정",
+    PREVIEW_STATE_INTERRUPTED = "차단됨",
 }
 
 ns.RegisterLocale("koKR", T)

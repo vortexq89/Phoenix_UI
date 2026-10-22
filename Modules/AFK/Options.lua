@@ -1,6 +1,7 @@
 local _, ns = ...
 
 ns:RegisterOptions("AFK", {
+    { type = "preview", kind = "afk" },
     { type = "header", label = "AFK_SCREEN" },
     { type = "toggle", key = "spin", label = "AFK_SPIN", desc = "AFK_SPIN_DESC" },
     { type = "button", label = "AFK_PREVIEW", desc = "AFK_PREVIEW_DESC", button = "PREVIEW", icon = "preview",

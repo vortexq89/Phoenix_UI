@@ -3,6 +3,7 @@ local _, ns = ...
 local cdGet, cdSet = ns.Combat.CVarAccessors("countdownForCooldowns")
 
 ns:RegisterOptions("CooldownText", {
+    { type = "preview", kind = "cooldowntext" },
     { type = "header", label = "BLIZZARD_FEATURES" },
     { type = "toggle", label = "CD_NUMBERS", desc = "CD_NUMBERS_DESC", get = cdGet, set = cdSet, combat = true,
       keywords = "countdown omnicc timer" },

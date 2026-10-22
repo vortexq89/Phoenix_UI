@@ -919,6 +919,12 @@ local T = {
     SOUNDS_CREDITS = "Warnungen von unfa, Countdown-Stimmen von tekgnosis (Jim) und davidbain (David), alle CC0 von freesound.org. Details in Media/Sounds/SOUNDS.md.",
     SOUND_ALERT_ON_YOU = "Warnung (auf dir)",
     SOUND_ALERT_UNDER_YOU = "Warnung (unter dir)",
+    ---------------------------------------------------------------- 2.0 previews
+    PREVIEW_ZONE = "Silbermond",
+    PREVIEW_STATE_LOW = "Wenig Gesundheit",
+    PREVIEW_STATE_RANGE = "Außer Reichweite",
+    PREVIEW_STATE_TARGET = "Als Ziel",
+    PREVIEW_STATE_INTERRUPTED = "Unterbrochen",
 }
 
 ns.RegisterLocale("deDE", T)

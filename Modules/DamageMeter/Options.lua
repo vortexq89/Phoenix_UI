@@ -4,6 +4,7 @@ local L = ns.L
 local dmGet, dmSet = ns.Combat.CVarAccessors("damageMeterEnabled")
 
 ns:RegisterOptions("DamageMeter", {
+    { type = "preview", kind = "damagemeter" },
     { type = "header", label = "BLIZZARD_FEATURES" },
     { type = "toggle", label = "DM_ENABLE", desc = "DM_ENABLE_DESC", get = dmGet, set = dmSet, combat = true, keywords = "dps meter" },
     { type = "header", label = "DM_STYLE" },

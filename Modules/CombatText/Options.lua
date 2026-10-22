@@ -12,6 +12,7 @@ local scaleGet, scaleSet = CVar("WorldTextScale_v2", "number")
 local modeGet, modeSet = CVar("floatingCombatTextFloatMode_v2", "number")
 
 ns:RegisterOptions("CombatText", {
+    { type = "preview", kind = "combattext" },
     { type = "description", text = "FCT_INTRO" },
     { type = "header", label = "FCT_OUTGOING" },
     toggle("floatingCombatTextCombatDamage_v2", { label = "FCT_DAMAGE", desc = "FCT_DAMAGE_DESC", keywords = "numbers sct msbt" }),

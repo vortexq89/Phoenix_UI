@@ -22,6 +22,7 @@ local function sizeRow(row, m)
 end
 
 ns:RegisterOptions("Minimap", {
+    { type = "preview", kind = "minimap" },
     { type = "header", label = "MINIMAP_SHAPE", icon = "minimap" },
     { type = "toggle", key = "square", label = "MINIMAP_SQUARE", desc = "MINIMAP_SQUARE_DESC", reload = true },
     { type = "custom", label = "MINIMAP_SIZE", desc = "MINIMAP_SIZE_DESC", get = function() return true end,

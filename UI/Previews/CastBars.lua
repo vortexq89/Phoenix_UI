@@ -12,6 +12,7 @@ local W_BAR, H_BAR = 220, 18
 P:Register("castbar", {
     module = "CastBars",
     height = 132,
+    states = { { key = "interrupted", label = "PREVIEW_STATE_INTERRUPTED", icon = "error" } },
     build = function(stage, m)
         local rows = {}
         for i, state in ipairs(STATES) do
@@ -30,8 +31,9 @@ P:Register("castbar", {
             lag:SetPoint("TOPRIGHT"); lag:SetPoint("BOTTOMRIGHT"); lag:SetWidth(W_BAR * 0.08)
             rows[i] = { bar = bar, icon = icon, text = text, time = time, lag = lag, state = state }
         end
-        return function(_, unit)
+        return function(view, unit)
             local key = (unit == "target" or unit == "focus") and unit or "player"
+            local cut = view.states.interrupted
             local db = m.db
             for i, r in ipairs(rows) do
                 if db.style then
@@ -53,6 +55,14 @@ P:Register("castbar", {
                 r.lag:SetAlpha(0.45)
                 r.text:SetText(L[r.state.sample])
                 r.time:SetText(r.state.time)
+                r.bar:SetValue(r.state.value)
+                if cut and i == 1 then
+                    -- the first bar shows the interrupted flash: full, red, labelled
+                    r.bar:SetValue(1)
+                    r.bar:SetStatusBarColor(Theme:Color("state.danger"))
+                    r.text:SetText(INTERRUPTED)
+                    r.time:SetText("")
+                end
             end
         end
     end,

@@ -815,9 +815,15 @@ try("previews", function()
         local m = assert(ns.modules[def.module], kind .. " preview names no module")
         local stage = ns.Previews:Create(kind, env.CreateFrame("Frame"), m, { scope = { unit = "target" } })
         stage:Redraw()
+        for _, st in ipairs(ns.Previews:States(kind) or {}) do stage.states[st.key] = true end
+        stage:Redraw()
         n = n + 1
     end
-    assert(n >= 1, "no previews registered")
+    assert(n >= 19, "expected a preview for every visual module, have " .. n)
+    -- every visual module's page carries one
+    for _, key in ipairs({ "CooldownText", "SpellHistory", "DamageMeter", "Minimap", "ItemLevel", "Skins", "CombatText", "AFK" }) do
+        assert(ns.Config:Show(key).pinned, key .. " has no preview")
+    end
 end)
 -- 2.0 -> 2.1: flat size keys move into the per-element style tables
 try("style keys move", function()

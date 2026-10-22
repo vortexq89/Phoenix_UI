@@ -919,6 +919,12 @@ local T = {
     SOUNDS_CREDITS = "警报音效：unfa；倒数语音：tekgnosis（Jim）与 davidbain（David），均为 freesound.org 上的 CC0 作品。详见 Media/Sounds/SOUNDS.md。",
     SOUND_ALERT_ON_YOU = "警报（在你身上）",
     SOUND_ALERT_UNDER_YOU = "警报（在你脚下）",
+    ---------------------------------------------------------------- 2.0 previews
+    PREVIEW_ZONE = "银月城",
+    PREVIEW_STATE_LOW = "低生命值",
+    PREVIEW_STATE_RANGE = "超出范围",
+    PREVIEW_STATE_TARGET = "已选中",
+    PREVIEW_STATE_INTERRUPTED = "被打断",
 }
 
 ns.RegisterLocale("zhCN", T)

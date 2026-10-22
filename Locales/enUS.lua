@@ -945,4 +945,10 @@ ns.RegisterLocale("enUS", {
     SOUNDS_CREDITS = "Alerts by unfa, countdown voices by tekgnosis (Jim) and davidbain (David), all CC0 from freesound.org. Details in Media/Sounds/SOUNDS.md.",
     SOUND_ALERT_ON_YOU = "Alert (on you)",
     SOUND_ALERT_UNDER_YOU = "Alert (under you)",
+    ---------------------------------------------------------------- 2.0 previews
+    PREVIEW_ZONE = "Silvermoon City",
+    PREVIEW_STATE_LOW = "Low health",
+    PREVIEW_STATE_RANGE = "Out of range",
+    PREVIEW_STATE_TARGET = "Targeted",
+    PREVIEW_STATE_INTERRUPTED = "Interrupted",
 })

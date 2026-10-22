@@ -15,6 +15,7 @@ local function paint(fs)
     Skin:Text(fs, "combat", nil, M.db.size, "OUTLINE")
     fs:SetTextColor(c.r, c.g, c.b)
 end
+M.PaintCountdown = paint -- shared with the options preview
 
 -- ActionButton_ApplyCooldown runs on every cooldown update of every button; only the first call per
 -- cooldown frame does any work.

@@ -919,6 +919,12 @@ local T = {
     SOUNDS_CREDITS = "Alertas de unfa, vozes de contagem por tekgnosis (Jim) e davidbain (David), tudo CC0 do freesound.org. Detalhes em Media/Sounds/SOUNDS.md.",
     SOUND_ALERT_ON_YOU = "Alerta (em você)",
     SOUND_ALERT_UNDER_YOU = "Alerta (embaixo de você)",
+    ---------------------------------------------------------------- 2.0 previews
+    PREVIEW_ZONE = "Luaprata",
+    PREVIEW_STATE_LOW = "Vida baixa",
+    PREVIEW_STATE_RANGE = "Fora de alcance",
+    PREVIEW_STATE_TARGET = "Alvo",
+    PREVIEW_STATE_INTERRUPTED = "Interrompido",
 }
 
 ns.RegisterLocale("ptBR", T)

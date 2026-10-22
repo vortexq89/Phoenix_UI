@@ -1,6 +1,7 @@
 local _, ns = ...
 
 ns:RegisterOptions("ItemLevel", {
+    { type = "preview", kind = "itemlevel" },
     { type = "header", label = "ITEMLEVEL_WHERE" },
     { type = "toggle", key = "character", label = "ITEMLEVEL_CHARACTER", desc = "ITEMLEVEL_CHARACTER_DESC", keywords = "ilvl gear" },
     { type = "toggle", key = "bags", label = "ITEMLEVEL_BAGS", desc = "ITEMLEVEL_BAGS_DESC", keywords = "ilvl inventory" },

@@ -17,6 +17,10 @@ local SCALE = 1.35
 P:Register("unitframe", {
     module = "UnitFrames",
     height = 120,
+    states = {
+        { key = "low", label = "PREVIEW_STATE_LOW", icon = "warning" },
+        { key = "range", label = "PREVIEW_STATE_RANGE", icon = "opacity" },
+    },
     build = function(stage, m)
         local f = CreateFrame("Frame", nil, stage)
         f:SetSize(236, 62)
@@ -39,8 +43,9 @@ P:Register("unitframe", {
         f.hpText:SetPoint("CENTER")
         f.ppText = P.Text(f.power)
         f.ppText:SetPoint("CENTER")
-        return function(_, unit)
+        return function(view, unit)
             local key = SAMPLES[unit] and unit or "player"
+            local st = view.states
             local s = SAMPLES[key]
             local db = m.db
             f.portrait:SetTexture(s.portrait)
@@ -52,7 +57,10 @@ P:Register("unitframe", {
             end
             m:StyleHealthBar(f.health, key)
             m:StylePowerBar(f.power, key)
-            f.health:SetValue(s.health)
+            local health = st.low and 0.18 or s.health
+            f.health:SetValue(health)
+            -- out of range: the faded look of the real frames (Blizzard's own range alpha)
+            f:SetAlpha(st.range and 0.45 or 1)
             f.power:SetValue(s.power)
             if s.class and db.classColor then
                 f.health:SetStatusBarColor(ns.Util.ClassColor(s.class))
@@ -71,7 +79,7 @@ P:Register("unitframe", {
             Skin:Text(f.level, "unit", "state.warning", 11)
             f.name:SetText(L[s.sample])
             f.level:SetText(s.level)
-            f.hpText:SetText(s.hp)
+            f.hpText:SetText(st.low and ("%d%%"):format(health * 100) or s.hp)
             f.ppText:SetText(("%d%%"):format(s.power * 100))
         end
     end,
