@@ -1,7 +1,7 @@
 local _, ns = ...
 
 --[[ ns.Icons — the Phoenix icon system (Phosphor duotone glyphs, MIT; see Media/Icons/LICENSE).
-    Glyphs are white in three pre-filtered atlas tiers (24/48/96 px cells, Core/IconData.lua). WoW does not
+    Glyphs are white in three pre-filtered atlas tiers (24/48/64 px cells, uncompressed TGA, ≤1024 px, Core/IconData.lua). WoW does not
     mipmap addon TGAs, so every icon picks the smallest tier that covers its size in *physical* pixels and is
     re-evaluated when the UI scale or resolution changes. Colour comes from theme tokens via SetVertexColor.
 

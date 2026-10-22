@@ -82,8 +82,8 @@ same rasterized icon atlas the addon ships. The Mythic+ page shows the in-world 
 
 ### Icons
 
-Every icon in the window, the data bar and Phoenix's own frames comes from one set: 101
-[Phosphor](https://phosphoricons.com) duotone glyphs (MIT), packed into white atlases with 24, 48 and 96 px
+Every icon in the window, the data bar and Phoenix's own frames comes from one set: 102
+[Phosphor](https://phosphoricons.com) duotone glyphs (MIT), packed into white atlases with 24, 48 and 64 px
 cells and tinted by the active theme. Each icon picks the atlas that matches its size in physical pixels,
 so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
 

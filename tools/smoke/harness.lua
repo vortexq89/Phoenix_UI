@@ -1578,7 +1578,12 @@ try("icon tiers", function()
     assert(cell == 48, "16 pt icon at 4K should use 48 px cells, got " .. tostring(cell))
     ns.Icons:Apply(probe, "home", 30)
     _, cell = ns.Icons:GetTier(probe)
-    assert(cell == 96, "30 pt icon at 4K should use 96 px cells, got " .. tostring(cell))
+    assert(cell == 64, "30 pt icon at 4K should use 64 px cells, got " .. tostring(cell))
+    -- the game loads power-of-two textures up to 1024 px per edge; the shipped atlases stay inside that
+    for _, t in ipairs(ns.IconData.tiers) do
+        assert(t.width <= 1024 and t.height <= 1024, t.file .. " is " .. t.width .. "x" .. t.height)
+        assert(t.width >= ns.IconData.cols * t.cell, t.file .. " is narrower than its columns")
+    end
     assert(ns.Icons:Markup("home", 14):find("Icons48", 1, true), "markup should pick the 48 px atlas")
 end)
 

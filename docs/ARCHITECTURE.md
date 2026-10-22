@@ -68,7 +68,7 @@ Phoenix_UI/
 │  ├─ Previews/         -- live previews built from each module's own styling code
 │  ├─ Config/           -- Window, Groups, Renderer (schema → widgets), Search, Home, Profiles, Appearance, Diagnostics, Presets, About
 │  └─ Options/<ModuleName>.lua -- options schema per module (no UI code)
-├─ Media/ Fonts/ Textures/ (surfaces, Emblem64/128/256, Logo512/1024)  Icons/ (Icons24/48/96 atlases + LICENSE)
+├─ Media/ Fonts/ Textures/ (surfaces, Emblem64/128/256, Logo512/1024)  Icons/ (Icons24/48/64 atlases + LICENSE)
 ├─ tools/ check_api.py  check_ids.py  check_locales.py  check_flavors.py  gen_tocs.py  smoke/harness.lua
 │         audit/ (reference generators, PUI_FLAVOR=retail|forever)  ids/  media/
 ├─ .luacheck/ wow_std_12.1.5.lua  reference_12.1.5.json  deprecated_12.1.5.json
@@ -411,14 +411,15 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   live in `tools/media/phosphor/`; `tools/media/icon_map.py` maps Phoenix names (`home`, `cat-combat`, `delete`, `fps` …)
   to glyphs. The list is append-only so atlas cells stay stable. Micro-controls (`close`, `check`, `add`, chevrons,
   `resize`) render the line layer only; the duotone fill is 30 % opacity.
-* **Build:** `python3 tools/media/gen_icons.py` rasterizes white glyphs with cairosvg into three atlases (RLE TGA,
-  power of two, clean alpha): `Icons24` (24 px cells, 256²), `Icons48` (48 px, 512²), `Icons96` (96 px, 1024²),
-  each cell with a transparent gutter so bilinear sampling never bleeds. It also writes `Core/IconData.lua`, the
+* **Build:** `python3 tools/media/gen_icons.py` rasterizes white glyphs with cairosvg into three atlases (uncompressed
+  32-bit TGA, power of two, no edge over 1024 px, 16 columns, clean alpha): `Icons24` (24 px cells, 512×256),
+  `Icons48` (48 px, 1024×512), `Icons64` (64 px, 1024×512), each cell with a transparent gutter so bilinear sampling never bleeds. It also writes `Core/IconData.lua`, the
   emblem (`Emblem64/128/256`) and logo (`Logo512/1024`), and the PNGs used by the doc mockups.
 * **Why tiers:** WoW does not mipmap addon TGAs. `ns.Icons` converts the on-screen size to physical pixels
   (`size × effectiveScale ÷ PixelUtil.GetPixelToUIUnitFactor()`) and picks the smallest tier that covers it, so
   downsampling never exceeds ~2×. A 16-unit icon uses 24 px cells at 1080p and 48 px cells at 4K/1.15; page
-  headers use 96 px cells. Tiers are re-picked on `UI_SCALE_CHANGED`, `DISPLAY_SIZE_CHANGED` and when a frame's
+  headers use 64 px cells. (2.0 shipped a 96 px tier at 1024×2048 in RLE TGA; nothing rendered on the user's
+  12.1.5 client, so the generator now refuses edges over 1024 and writes uncompressed files.) Tiers are re-picked on `UI_SCALE_CHANGED`, `DISPLAY_SIZE_CHANGED` and when a frame's
   own scale changes (data bar).
 * **API:** `Icons:Create(parent, name, size, token, layer)`, `Apply`, `Tint(tex, token, alpha)`,
   `SetState(tex, "hover"|"active"|"danger"|"disabled")`, `Markup(name, size, token)` for FontStrings,
@@ -426,7 +427,7 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   with the theme. Unknown names show the `question` glyph and are recorded in `Icons.missing`.
 * **Checks:** `tools/check_api.py` rejects unknown literal icon names, unused glyphs, missing atlas/brand files,
   dead files under `Media/` and unused `Media.textures` keys. The smoke harness fails on any unknown icon request
-  and asserts the 48/96 px tier choice at 4K.
+  and asserts the 48/64 px tier choice at 4K and that no atlas edge exceeds 1024 px.
 
 ## 15. Error catcher (Bugs)
 

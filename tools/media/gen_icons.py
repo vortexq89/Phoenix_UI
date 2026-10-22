@@ -2,7 +2,8 @@
 """Rasterizes the Phoenix icon set (Phosphor duotone, MIT) and the Phoenix emblem/logo.
 
 Outputs (run from the repo root: python3 tools/media/gen_icons.py):
-  Media/Icons/Icons24.tga, Icons48.tga, Icons96.tga  atlas tiers (white glyphs, RLE TGA, power-of-two)
+  Media/Icons/Icons24.tga, Icons48.tga, Icons64.tga  atlas tiers (white glyphs, uncompressed 32-bit TGA,
+                                                     power-of-two, no edge over 1024 px)
   Media/Icons/LICENSE                                Phosphor licence
   Media/Textures/Emblem64/128/256.tga, Logo512/1024.tga   coloured brand art
   Core/IconData.lua                                  generated manifest (names, tiers, cell geometry)
@@ -26,12 +27,14 @@ SRC = ROOT / "tools" / "media" / "phosphor"
 ICON_OUT = ROOT / "Media" / "Icons"
 TEX_OUT = ROOT / "Media" / "Textures"
 DOC_OUT = ROOT / "docs" / "screenshots" / "assets"
-COLS = 10
+COLS = 16  # 16 x 64 px = 1024: the widest tier stays within the 1024 px edge every client loads
+MAX_EDGE = 1024
 DUOTONE_ALPHA = 0.3  # Phosphor ships 0.2; slightly stronger so the fill reads at 16 px on dark panels
 # Micro-control glyphs keep only the line layer: Phosphor's duotone fill for these is a solid box that reads as a
 # checkbox behind a close "x" or a check mark.
 LINE_ONLY = {"close", "check", "add", "chevron-right", "chevron-down", "chevron-left", "resize"}
-TIERS = [(24, 1), (48, 2), (96, 3)]  # (cell px, gutter px per side)
+TIERS = [(24, 1), (48, 2), (64, 2)]  # (cell px, gutter px per side)
+DOC_COLS, DOC_CELL, DOC_GUTTER = 10, 96, 3  # docs/screenshots/assets/icons96.png (mockups only, not shipped)
 
 
 def pow2(n):
@@ -57,25 +60,36 @@ def render(svg, size):
 
 
 def save_tga(im, path):
+    # Uncompressed, like every other Phoenix texture: RLE TGAs are documented as supported, but the 2.0 atlases
+    # (RLE, 1024x2048) rendered nothing on a 12.1.5 client, so the shipped art uses the most conservative format.
+    if max(im.size) > MAX_EDGE:
+        raise SystemExit(f"{path.name}: {im.size[0]}x{im.size[1]} exceeds {MAX_EDGE} px")
     path.parent.mkdir(parents=True, exist_ok=True)
-    im.save(path, compression="tga_rle")
+    im.save(path, compression=None)
+
+
+def sheet_for(cols, cell, gutter):
+    rows = (len(ICONS) + cols - 1) // cols
+    w, h = pow2(cols * cell), pow2(rows * cell)
+    sheet = Image.new("RGBA", (w, h), (255, 255, 255, 0))
+    for i, (name, glyph) in enumerate(ICONS):
+        col, row = i % cols, i // cols
+        glyph_im = render(white_svg(glyph, name in LINE_ONLY), cell - 2 * gutter)
+        sheet.alpha_composite(glyph_im, (col * cell + gutter, row * cell + gutter))
+    return sheet
 
 
 def atlases():
-    rows = (len(ICONS) + COLS - 1) // COLS
     tiers = []
+    for old in ICON_OUT.glob("Icons*.tga"):
+        old.unlink()
     for cell, gutter in TIERS:
-        w, h = pow2(COLS * cell), pow2(rows * cell)
-        sheet = Image.new("RGBA", (w, h), (255, 255, 255, 0))
-        for i, (name, glyph) in enumerate(ICONS):
-            col, row = i % COLS, i // COLS
-            glyph_im = render(white_svg(glyph, name in LINE_ONLY), cell - 2 * gutter)
-            sheet.alpha_composite(glyph_im, (col * cell + gutter, row * cell + gutter))
+        sheet = sheet_for(COLS, cell, gutter)
         name = f"Icons{cell}"
         save_tga(sheet, ICON_OUT / f"{name}.tga")
-        if cell == 96:
-            sheet.save(DOC_OUT / "icons96.png")
-        tiers.append({"file": name, "cell": cell, "gutter": gutter, "width": w, "height": h})
+        tiers.append({"file": name, "cell": cell, "gutter": gutter, "width": sheet.size[0], "height": sheet.size[1]})
+    DOC_OUT.mkdir(parents=True, exist_ok=True)
+    sheet_for(DOC_COLS, DOC_CELL, DOC_GUTTER).save(DOC_OUT / "icons96.png")
     return tiers
 
 
