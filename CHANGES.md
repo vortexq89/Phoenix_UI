@@ -13,6 +13,11 @@
 - **Translations**: deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW, for every string.
 - `/phoenix testerror` raises a harmless, clearly labelled error to try the bug catcher and the uploader.
 - `docs/TESTING.md`: the in-game checklist for this beta.
+- **Send error reports to the author** (Bugs page, on by default, account-wide): whether Phoenix Uploader may send
+  this account's reports. `/pui bugs share [on|off]`. A one-time chat line on first login says it is on and how to
+  turn it off. Phoenix Uploader 1.1.0 honours it.
+- **Privacy**: reports no longer carry your character name or realm, player GUIDs, BattleTags, Windows user or
+  account folder names; text-like string locals (chat lines and the like) are reduced to their length.
 
 ### Fixed
 - The version no longer reads `@project-version@` in an unpackaged checkout: the source TOC carries `2.0.0-beta1`

@@ -68,6 +68,16 @@ func (s *State) MarkSent(rs []Report) {
 	s.LastUpload = now
 }
 
+// MarkSkipped records reports as handled without sending them (the account opted out).
+func (s *State) MarkSkipped(rs []Report) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	now := time.Now().Unix()
+	for _, r := range rs {
+		s.Sent[r.ID] = SentEntry{Count: r.Count, Seen: now}
+	}
+}
+
 func (s *State) Save() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

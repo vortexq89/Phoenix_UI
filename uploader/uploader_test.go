@@ -176,3 +176,79 @@ func TestCycleEndToEnd(t *testing.T) {
 }
 
 func itoa(n int) string { b, _ := json.Marshal(n); return string(b) }
+
+// "Send error reports to the author" off in the addon: nothing is sent for that account, and what was caught
+// while it was off stays unsent after it is switched back on. A missing flag (older addon builds) means on.
+func TestShareFlag(t *testing.T) {
+	fixture, _ := os.ReadFile(filepath.Join("testdata", "Phoenix_UI.lua"))
+	off := strings.Replace(string(fixture), `["schema"] = 1,`, `["schema"] = 1,`+"\n\t[\"share\"] = false,", 1)
+	on := strings.Replace(string(fixture), `["schema"] = 1,`, `["schema"] = 1,`+"\n\t[\"share\"] = true,", 1)
+	dir := t.TempDir()
+	for name, src := range map[string]string{"missing": string(fixture), "on": on, "off": off} {
+		p := filepath.Join(dir, name+".lua")
+		_ = os.WriteFile(p, []byte(src), 0o644)
+		db, err := ReadBugsDB(p)
+		if err != nil || db.Share != (name != "off") {
+			t.Fatalf("%s: share=%v err=%v", name, db != nil && db.Share, err)
+		}
+	}
+
+	var sent int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var b uploadBody
+		raw, _ := io.ReadAll(r.Body)
+		_ = json.Unmarshal(raw, &b)
+		sent += len(b.Reports)
+		_, _ = w.Write([]byte(`{"ok":true,"accepted":` + itoa(len(b.Reports)) + `,"updated":0,"duplicates":0,"rejected":[]}`))
+	}))
+	defer srv.Close()
+	root := t.TempDir()
+	sv := filepath.Join(root, "_retail_", "WTF", "Account", "ACCOUNT1", "SavedVariables")
+	_ = os.MkdirAll(sv, 0o755)
+	file := filepath.Join(sv, "Phoenix_UI.lua")
+	_ = os.WriteFile(file, []byte(off), 0o644)
+	data := t.TempDir()
+	app, err := NewApp(data, NewLogger(data, nil), []string{filepath.Join(root, "_retail_")}, srv.URL, "k", false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s := app.Cycle(true); s.Err != nil || sent != 0 || s.OptedOut != 1 {
+		t.Fatalf("opted out: %+v sent %d", s, sent)
+	}
+	log, _ := os.ReadFile(filepath.Join(data, "uploader.log"))
+	if !strings.Contains(string(log), "is off in Phoenix UI") {
+		t.Fatalf("opt-out not logged: %s", log)
+	}
+	_ = os.WriteFile(file, []byte(on), 0o644)
+	if s := app.Cycle(true); s.Err != nil || sent != 0 {
+		t.Fatalf("reports caught while off must stay unsent: %+v sent %d", s, sent)
+	}
+	_ = os.WriteFile(file, []byte(strings.Replace(on, `["count"] = 12,`, `["count"] = 13,`, 1)), 0o644)
+	if s := app.Cycle(true); s.Err != nil || sent != 1 {
+		t.Fatalf("new activity after switching on is sent: %+v sent %d", s, sent)
+	}
+}
+
+func TestScrubber(t *testing.T) {
+	acct := filepath.Join(t.TempDir(), "WTF", "Account", "MYACCOUNT")
+	_ = os.MkdirAll(filepath.Join(acct, "Twisting Nether", "Vortexq"), 0o755)
+	_ = os.MkdirAll(filepath.Join(acct, "SavedVariables"), 0o755)
+	s := NewScrubber(filepath.Join(acct, "SavedVariables", "Phoenix_UI.lua"))
+	r := s.Report(Report{
+		Message: `Vortexq-Twisting Nether: Player-1305-0B1C2D3E Vortexqs Me#12345 C:\Users\Vorte\WTF\Account\MYACCOUNT\x MYACCOUNT`,
+		Stack:   "Interface/AddOns/Foo/Foo.lua:1: in function `Vortexq`",
+		Locals:  "unit = \"player\"\nmsg = \"meet me at the bank\"\nwho = \"Vortexq\"\nn = 3\nkept = \"<text, 9 bytes>\"",
+	})
+	for _, bad := range []string{"Vortexq-", "Twisting", "0B1C2D3E", "Me#", "Vorte\\", "MYACCOUNT"} {
+		if strings.Contains(r.Message, bad) {
+			t.Fatalf("%q left in %q", bad, r.Message)
+		}
+	}
+	if !strings.Contains(r.Message, "Vortexqs") || !strings.Contains(r.Stack, "`<player>`") {
+		t.Fatalf("whole words only: %q / %q", r.Message, r.Stack)
+	}
+	want := "unit = \"player\"\nmsg = \"<text, 19 bytes>\"\nwho = \"<player>\"\nn = 3\nkept = \"<text, 9 bytes>\""
+	if r.Locals != want {
+		t.Fatalf("locals:\n%s", r.Locals)
+	}
+}

@@ -208,7 +208,18 @@ PvP, Automation, Quality, Skins, AFK, Movers, Bugs):
 - [ ] **13.3 Dashboard.** Open https://vq8s.com/phoenix/admin and sign in.
   **Expect:** an issue with the message `PHOENIX TEST ERROR - safe to delete …`, your install ID (shown on Bugs → Upload),
   version `2.0.0-beta1` and your locale.
-- [ ] **13.4 Clean up.** On the issue page click **Delete**.
+- [ ] **13.4 Send to the author: default.** First login after installing this build.
+  **Expect:** one chat line saying error reports are sent to the author while Phoenix Uploader runs, and how to turn
+  it off. It does not appear again after `/reload`. On *Bugs → Upload reports to VQ8S.com*, **Send error reports to
+  the author** is on.
+- [ ] **13.5 Switch it off.** Turn it off (or `/pui bugs share off`), `/reload`, then `/phoenix testerror` and `/reload`.
+  **Expect:** `uploader.log` shows `skipping … "Send error reports to the author" is off in Phoenix UI` and nothing
+  new reaches the dashboard. (Needs Phoenix Uploader 1.1.0; the 1.0.0 build ignores the switch.)
+- [ ] **13.6 Switch it back on.** `/pui bugs share on`, `/reload`, `/phoenix testerror` 3 times, `/reload`.
+  **Expect:** the test error arrives with the new count; nothing caught while it was off is sent.
+- [ ] **13.7 Privacy.** Open the test report on the dashboard (or copy one in `/pui bugs`).
+  **Expect:** no character name, realm, BattleTag or Windows user name anywhere in message, stack or locals.
+- [ ] **13.8 Clean up.** On the issue page click **Delete**.
   **Expect:** the issue and its reports are gone, and the Data page audit log lists the deletion.
 
 ## 14. Other client languages

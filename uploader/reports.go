@@ -34,6 +34,7 @@ type BugsDB struct {
 	Account   string
 	Schema    int64
 	InstallID string
+	Share     bool // "Send error reports to the author" in the addon; only an explicit false turns it off
 	Reports   []Report
 	Skipped   int // entries that were not usable reports
 }
@@ -91,7 +92,12 @@ func ReadBugsDB(path string) (*BugsDB, error) {
 	if !ok {
 		return nil, nil
 	}
-	db := &BugsDB{File: path, Account: filepath.Base(filepath.Dir(filepath.Dir(path))), Schema: integer(root, "schema"), InstallID: strings.ToLower(str(root, "installId"))}
+	db := &BugsDB{File: path, Account: filepath.Base(filepath.Dir(filepath.Dir(path))), Schema: integer(root, "schema"), InstallID: strings.ToLower(str(root, "installId")), Share: true}
+	if v, ok := root.Get("share"); ok {
+		if b, isBool := v.(bool); isBool && !b {
+			db.Share = false
+		}
+	}
 	rv, _ := root.Get("reports")
 	rt, _ := rv.(*Table)
 	for _, e := range rt.List() {

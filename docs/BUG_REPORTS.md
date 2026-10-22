@@ -14,6 +14,8 @@ PhoenixUIBugsDB = {
     schema = 1,
     installId = "3f9a0c17be42d905",   -- random 16 hex, created once, no personal data
     session = 42,                     -- +1 on every login and /reload
+    share = true,                     -- "Send error reports to the author"; the uploader skips the account when false
+    shareNotice = true,               -- the one-time chat notice about share has been shown
     reports = {                       -- newest last, capped (default 500)
         {
             id = "3f9a0c17be42d905-42-1",  -- <installId>-<session>-<n>
@@ -47,6 +49,14 @@ PhoenixUIBugsDB = {
 * **Limits**: message 2000 chars, stack and locals 6000 chars each (cut with `…`). Secret values (12.x) are
   never stored; they appear as `<secret value>`. Locals are not collected during a boss encounter.
 * **Flood protection**: at most 10 captures per second (burst 30); skipped repeats are not stored.
+* **share**: on by default and set to `true` on installs from before the setting existed. Only an explicit
+  `false` stops the uploader; a missing value means on. The game writes the file on logout and `/reload`, so a change
+  reaches the uploader from then. Reports caught while it is off are never sent, not even after it is switched back on.
+* **Privacy**: before anything is stored (or hashed) the addon removes this character's name and realm, player
+  GUIDs (`Player-<guid>`), BattleTags, the Windows user folder and the WoW account folder. String locals that look
+  like text (spaces or non-ASCII: chat lines, tooltips, other players' names) become `"<text, N bytes>"`; short
+  token-like values (`"player"`, `"BOTTOMLEFT"`) are kept. The uploader applies the same rules again before sending,
+  and also removes every realm and character name that has a folder under the account.
 * **uploaded** is always `false`; the addon cannot know, and the uploader marks nothing in the file. It keeps its
   own list of sent `id`s; the server dedupes by `id`.
 
@@ -54,4 +64,5 @@ PhoenixUIBugsDB = {
 
 The uploader finds every `WTF\Account\*\SavedVariables\Phoenix_UI.lua`, parses `PhoenixUIBugsDB` and posts new
 reports to `https://vq8s.com/phoenix/api/ingest`. Download it from <https://vq8s.com/phoenix-ui>. The settings page
-*Bugs → Upload reports to VQ8S.com* shows the install ID so players can quote it.
+*Bugs → Upload reports to VQ8S.com* holds the **Send error reports to the author** switch and shows the install ID
+so players can quote it. `/pui bugs share` toggles the switch, `/pui bugs share on|off` sets it.

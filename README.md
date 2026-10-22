@@ -112,7 +112,11 @@ Open the viewer from the data bar, the minimap bug button, a right-click on the 
 Reports are saved to `WTF\Account\<account>\SavedVariables\Phoenix_UI.lua` when you log out or reload. To share
 them with the author, run the **Phoenix Uploader** app for Windows from
 [vq8s.com/phoenix-ui](https://vq8s.com/phoenix-ui): it sends new reports to VQ8S.com. Nothing leaves your PC
-otherwise. The file format is documented in [docs/BUG_REPORTS.md](docs/BUG_REPORTS.md).
+otherwise. **Send error reports to the author** (Bugs page, on by default) decides whether the uploader may send
+this account's reports; turn it off there or with `/pui bugs share off`. What is sent: the error text, call stack,
+locals, addon and game version and client language. Character names, realms, GUIDs, BattleTags, chat text and
+account or Windows user names are removed first. The file format is documented in
+[docs/BUG_REPORTS.md](docs/BUG_REPORTS.md).
 
 ### Movers
 

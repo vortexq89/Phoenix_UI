@@ -31,13 +31,17 @@ type App struct {
 
 // Summary of one cycle.
 type Summary struct {
-	Folders, Files, Reports, Pending, Accepted, Updated, Duplicates, Rejected int
-	Err                                                                       error
+	Folders, Files, Reports, Pending, Accepted, Updated, Duplicates, Rejected, OptedOut int
+	Err                                                                                 error
 }
 
 func (s Summary) String() string {
-	return fmt.Sprintf("%d WoW folder(s), %d file(s), %d report(s), %d new or grown -> accepted %d, updated %d, already there %d, rejected %d",
+	out := fmt.Sprintf("%d WoW folder(s), %d file(s), %d report(s), %d new or grown -> accepted %d, updated %d, already there %d, rejected %d",
 		s.Folders, s.Files, s.Reports, s.Pending, s.Accepted, s.Updated, s.Duplicates, s.Rejected)
+	if s.OptedOut > 0 {
+		out += fmt.Sprintf(", %d account(s) opted out", s.OptedOut)
+	}
+	return out
 }
 
 func NewApp(dataDir string, log *Logger, extraWow []string, endpoint, key string, dry bool) (*App, error) {
@@ -149,6 +153,16 @@ func (a *App) file(path string, s *Summary) bool {
 		return true
 	}
 	s.Reports += len(db.Reports)
+	if !db.Share {
+		// The player turned "Send error reports to the author" off. What was caught meanwhile is marked as handled
+		// so that switching it back on later sends only reports that are new from then on.
+		if p := a.state.Pending(db.Reports); len(p) > 0 {
+			a.state.MarkSkipped(p)
+		}
+		s.OptedOut++
+		a.log.Printf("skipping %s (account %s): \"Send error reports to the author\" is off in Phoenix UI", path, db.Account)
+		return true
+	}
 	pending := a.state.Pending(db.Reports)
 	s.Pending += len(pending)
 	if len(pending) == 0 {
@@ -169,6 +183,10 @@ func (a *App) file(path string, s *Summary) bool {
 		s.Err = &FatalError{errors.New("no ingest key configured (config.json \"ingestKey\")")}
 		a.log.Printf("%v", s.Err)
 		return false
+	}
+	scrub := NewScrubber(path)
+	for i := range pending {
+		pending[i] = scrub.Report(pending[i])
 	}
 	for _, b := range Batches(pending) {
 		res, err := a.up.Send(db.InstallID, b)

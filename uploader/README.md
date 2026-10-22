@@ -26,7 +26,14 @@ the player logs out or types `/reload`. The uploader reads that file and POSTs r
 
 What travels: the report fields of the shared contract (id, hash, kind, message, stack, locals, count, first/last
 seen, session, addon version, interface, build, locale, source) plus the random 16-hex `installId` the addon made.
-No character, realm or account names: the account folder name is only used in the local log.
+No character, realm or account names: the account folder name is only used in the local log. The addon strips
+identity before it stores a report, and the uploader repeats that on what it sends (GUIDs, BattleTags, Windows user
+and account folders, every realm and character folder name of the account, text-like string locals).
+
+**Opt-out**: when `PhoenixUIBugsDB.share` is `false` (*Send error reports to the author* switched off in the addon)
+the account is skipped and the log says so. Reports caught while it is off are marked as handled and never sent.
+A missing `share` (addon builds before 2.0.0-beta1's switch) counts as on. `"disabled": true` in `config.json`
+still stops all uploads from this PC.
 
 ## Command line
 
