@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Resolve the set of Blizzard UI files actually loaded by the Retail (mainline) client
-from wow-ui-source TOCs + XML includes. Writes /workspace/ref/mainline_files.txt"""
+from wow-ui-source TOCs + XML includes. Writes $PUI_REF/mainline_files[_forever].txt (see flavor.py)"""
 import os, re
-REF = os.environ.get("PUI_REF", "/workspace/ref")
-SRC = f"{REF}/wow-ui-source/Interface/AddOns"
-OK = ("mainline", "standard")
+from flavor import UI, OK, GAME, FILES
+SRC = f"{UI}/Interface/AddOns"
 idx = {}
 for r, _, fs in os.walk(SRC):
     for f in fs:
@@ -37,7 +36,7 @@ for addon in sorted(os.listdir(SRC)):
         l = l.strip()
         if not l or l.startswith("#"): continue
         if not allowed(l): continue
-        f = re.sub(r'(\s+\[[^\]]*\])+\s*$', '', l).replace("[Family]", "Mainline").replace("[Game]", "Mainline").replace("\\", "/")
+        f = re.sub(r'(\s+\[[^\]]*\])+\s*$', '', l).replace("[Family]", "Mainline").replace("[Game]", GAME).replace("\\", "/")
         visit(os.path.join(d, f))
-open(f"{REF}/mainline_files.txt", "w").write("\n".join(sorted(files)))
-print(len(files), "mainline files")
+open(FILES, "w").write("\n".join(sorted(files)))
+print(len(files), "files ->", FILES)

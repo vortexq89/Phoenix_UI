@@ -4,6 +4,9 @@
 -- Any "accessing undefined variable" (W113) or "undefined field" (W143) on a Blizzard name means the
 -- API does not exist in 12.1.5 -> fix the code, never whitelist it here.
 stds.wow = dofile(".luacheck/wow_std_12.1.5.lua")
+-- WoW Forever 1.60.1, generated the same way from the forever branch: `luacheck --std lua51+wowf .`
+-- (tools/check_flavors.py runs every check for both games).
+stds.wowf = dofile(".luacheck/wow_std_forever_1.60.1.lua")
 std = "lua51+wow"
 max_line_length = 140
 max_cyclomatic_complexity = 30

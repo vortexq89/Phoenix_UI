@@ -42,3 +42,30 @@ jq '.["GetSpellInfo"]' .luacheck/deprecated_12.1.5.json
 Known limits: widget methods (`StatusBar:SetTimerDuration` …) are not in the std. Verify them in
 `Blizzard_APIDocumentationGenerated/*APIDocumentation.lua`. Colour globals (`*_FONT_COLOR`) come from the C colour DB
 and are whitelisted by pattern.
+
+## WoW Forever (1.60.1)
+
+The same scripts generate Forever's data when `PUI_FLAVOR=forever` (`tools/audit/flavor.py` picks the inputs,
+the `[Game]` value `Camelot`, the game types that load, and the output names):
+
+| Dir | Source | Branch |
+|---|---|---|
+| `wow-ui-source-forever/` | https://github.com/Gethe/wow-ui-source | `forever` (1.60.1 (70450) or newer) |
+| `bir_forever/` | https://github.com/Ketho/BlizzardInterfaceResources | `forever` |
+
+```bash
+export PUI_REF=/workspace/ref PUI_FLAVOR=forever
+lua5.1 tools/audit/dump_api.lua $PUI_REF/wow-ui-source-forever/Interface/AddOns/Blizzard_APIDocumentationGenerated $PUI_REF/api_dump_forever.tsv
+python3 tools/audit/mainline_files.py                      # -> $PUI_REF/mainline_files_forever.txt
+python3 tools/audit/gen_globals.py                         # -> $PUI_REF/wow_std_forever_1.60.1.lua
+python3 tools/audit/gen_reference.py                       # -> .luacheck/reference_forever_1.60.1.json
+cp $PUI_REF/wow_std_forever_1.60.1.lua .luacheck/
+python3 tools/ids/refresh.py --flavor forever --ui-source $PUI_REF/wow-ui-source-forever --enum-source $PUI_REF/bir_forever
+unset PUI_FLAVOR
+python3 tools/check_flavors.py                             # every check, retail and Forever
+```
+
+`.luacheckrc` defines both stds (`wow`, `wowf`); `luacheck --std lua51+wowf .` checks against Forever.
+`PUI_FLAVOR=forever` also switches `tools/check_api.py` and `tools/check_ids.py` to Forever's reference and ID
+snapshot, and `lua5.1 tools/smoke/harness.lua . forever` boots the harness as a 16001 client.
+
