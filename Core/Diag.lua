@@ -33,41 +33,79 @@ end
 local function short(path) return (tostring(path):gsub("^Interface\\AddOns\\[^\\]+\\Media\\", "")) end
 local function round(v) return type(v) == "number" and math.floor(v * 1000 + 0.5) / 1000 or v end
 
+-- obj:method(...) when the object has it; nil when it does not or the call fails. A self-test must never throw,
+-- and widget methods differ between object types (textures have no GetEffectiveAlpha) and client builds.
+local function try(obj, method, ...)
+    local fn = obj and obj[method]
+    if type(fn) ~= "function" then return nil end
+    local ok, a, b, c, d = pcall(fn, obj, ...)
+    if ok then return a, b, c, d end
+end
+
+-- A number or nil, never a secret value (the game may hand those back during combat).
+local function num(v)
+    if type(v) ~= "number" or ns.Secret.IsSecret(v) then return nil end
+    return v
+end
+
+local function fmt4(pattern, a, b, c, d)
+    return pattern:format(num(a) or -1, num(b) or -1, num(c) or -1, num(d) or -1)
+end
+
+-- Textures have no effective alpha of their own: their alpha times the parent frame's effective alpha.
+local function effectiveAlpha(tex)
+    local own = num(try(tex, "GetAlpha")) or 1
+    local parent = try(tex, "GetParent")
+    local inherited = num(try(parent, "GetEffectiveAlpha")) or 1
+    return round(own * inherited)
+end
+
+local function glyph(tex, s)
+    local w, h = try(tex, "GetSize")
+    local parent = try(tex, "GetParent")
+    local loaded = "n/a"
+    if type(tex.IsObjectLoaded) == "function" then loaded = try(tex, "IsObjectLoaded") == true end
+    return {
+        name = tostring(s.name), file = short(try(tex, "GetTexture") or "?"),
+        size = tostring(round(num(w))) .. "x" .. tostring(round(num(h))), loaded = loaded,
+        shown = try(tex, "IsShown") == true, visible = try(tex, "IsVisible") == true, alpha = effectiveAlpha(tex),
+        color = fmt4("%.2f %.2f %.2f %.2f", try(tex, "GetVertexColor")),
+        coords = fmt4("%.3f %.3f %.3f %.3f", try(tex, "GetTexCoord")),
+        layer = tostring(try(tex, "GetDrawLayer") or "?"), parentShown = try(parent, "IsShown") == true,
+    }
+end
+
 -- The glyph textures the settings window created, as the game sees them right now.
 local function glyphs()
     local out, order = {}, {}
-    for tex, s in pairs(ns.Icons:Tracked()) do
-        if s.name then order[#order + 1] = { tex = tex, s = s, vis = tex:IsVisible() } end
+    local tracked = ns.Icons and ns.Icons.Tracked and ns.Icons:Tracked() or {}
+    for tex, s in pairs(tracked) do
+        if type(s) == "table" and s.name then order[#order + 1] = { tex = tex, s = s, vis = try(tex, "IsVisible") == true } end
     end
     table.sort(order, function(a, b) return a.vis and not b.vis end) -- what is on screen first
     for _, o in ipairs(order) do
-        local tex, s = o.tex, o.s
         if #out >= MAX_GLYPHS then break end
-        do
-            local r, g, b, a = tex:GetVertexColor()
-            local l, rr, t, bb = tex:GetTexCoord()
-            local w, h = tex:GetSize()
-            local parent = tex:GetParent()
-            out[#out + 1] = {
-                name = s.name, file = short(tex:GetTexture()), size = tostring(round(w)) .. "x" .. tostring(round(h)),
-                loaded = tex.IsObjectLoaded and tex:IsObjectLoaded() or "n/a",
-                shown = tex:IsShown(), visible = tex:IsVisible(), alpha = round(tex:GetEffectiveAlpha()),
-                color = ("%.2f %.2f %.2f %.2f"):format(r or -1, g or -1, b or -1, a or -1),
-                coords = ("%.3f %.3f %.3f %.3f"):format(l or -1, rr or -1, t or -1, bb or -1),
-                layer = tex:GetDrawLayer(), parentShown = parent and parent:IsShown() or false,
-            }
-        end
+        local ok, entry = pcall(glyph, o.tex, o.s)
+        out[#out + 1] = ok and entry or { name = tostring(o.s.name), error = tostring(entry) }
     end
     return out
+end
+
+local function probe(p)
+    local tex, m = p.tex, p.m
+    local loaded = true
+    if type(tex.IsObjectLoaded) == "function" then loaded = try(tex, "IsObjectLoaded") == true end
+    local w, h = try(tex, "GetSize")
+    w, h = round(num(w)), round(num(h))
+    return { file = short(m.path), kind = m.kind, ok = loaded and w == m.w and h == m.h, loaded = loaded,
+        size = tostring(w) .. "x" .. tostring(h), want = m.w .. "x" .. m.h, id = num(try(tex, "GetTextureFileID")) }
 end
 
 local running
 
 function D:IsRunning() return running == true end
 
-function D:Run(quiet)
-    if running then return end
-    running = true
+local function run(quiet)
     local holder = CreateFrame("Frame", nil, UIParent)
     holder:SetSize(1, 1)
     holder:SetPoint("TOPLEFT", UIParent, "BOTTOMRIGHT", 64, -64) -- off screen, but shown so loads are not deferred
@@ -82,22 +120,22 @@ function D:Run(quiet)
     local function finish()
         local results, failed = {}, 0
         for _, p in ipairs(probes) do
-            local tex, m = p.tex, p.m
-            local loaded = not tex.IsObjectLoaded or tex:IsObjectLoaded()
-            local w, h = tex:GetSize()
-            local ok = loaded and round(w) == m.w and round(h) == m.h
-            if not ok then failed = failed + 1 end
-            results[#results + 1] = { file = short(m.path), kind = m.kind, ok = ok, loaded = loaded,
-                size = tostring(round(w)) .. "x" .. tostring(round(h)), want = m.w .. "x" .. m.h, id = tex:GetTextureFileID() }
+            local ok, r = pcall(probe, p)
+            if not ok then r = { file = short(p.m.path), kind = p.m.kind, ok = false, loaded = false, size = "?",
+                want = p.m.w .. "x" .. p.m.h, error = tostring(r) } end
+            if not r.ok then failed = failed + 1 end
+            results[#results + 1] = r
         end
-        holder:Hide()
+        pcall(holder.Hide, holder)
         local build, _, _, toc = GetBuildInfo()
         local pw, ph = GetPhysicalScreenSize()
+        local okGlyphs, list = pcall(glyphs)
         local report = {
             version = ns.version, time = time(), build = build, toc = toc, flavor = ns.flavor, locale = GetLocale(),
-            screen = tostring(pw) .. "x" .. tostring(ph), uiScale = round(UIParent:GetEffectiveScale()),
+            screen = tostring(pw) .. "x" .. tostring(ph), uiScale = round(num(try(UIParent, "GetEffectiveScale"))),
             media = results, failed = failed, total = #results,
-            window = ns.Config and ns.Config.current or false, glyphs = glyphs(),
+            window = ns.Config and ns.Config.current or false, glyphs = okGlyphs and list or {},
+            glyphError = not okGlyphs and tostring(list) or nil,
         }
         ns.DB.sv.global.diag = report
         running = false
@@ -114,15 +152,35 @@ function D:Run(quiet)
             if not quiet then ns:Print("diag: saved for support; /reload or log out to write it to disk.") end
         end
     end
+    -- finish() is guarded piece by piece; this outer guard only makes sure a run can never stay "running".
+    local function done()
+        local ok, err = pcall(finish)
+        if not ok then
+            running = false
+            ns.DB.sv.global.diag = { version = ns.version, time = time(), error = tostring(err), media = {}, glyphs = {} }
+            if not quiet then ns:Print("diag: the self-test failed (%s).", tostring(err)) end
+        end
+    end
     local function poll()
         waited = waited + STEP
         local pending = false
         for _, p in ipairs(probes) do
-            if p.tex.IsObjectLoaded and not p.tex:IsObjectLoaded() then pending = true; break end
+            if type(p.tex.IsObjectLoaded) == "function" and try(p.tex, "IsObjectLoaded") == false then pending = true; break end
         end
-        if pending and waited < WAIT then C_Timer.After(STEP, poll) else ns.SafeCall(finish) end
+        if pending and waited < WAIT then C_Timer.After(STEP, poll) else done() end
     end
     C_Timer.After(STEP, poll)
+end
+
+function D:Run(quiet)
+    if running then return end
+    running = true
+    local ok, err = pcall(run, quiet)
+    if not ok then
+        running = false
+        ns.DB.sv.global.diag = { version = ns.version, time = time(), error = tostring(err), media = {}, glyphs = {} }
+        if not quiet then ns:Print("diag: the self-test failed (%s).", tostring(err)) end
+    end
 end
 
 -- Once per version, quietly, after the login rush.

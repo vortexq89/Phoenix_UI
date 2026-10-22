@@ -52,8 +52,24 @@ local frameMethods = {
     SetShown = function(self, v) rawset(self, "__shown", v and true or false) end,
     IsShown = function(self) return owned[self] ~= nil and rawget(self, "__shown") ~= false end,
 }
+-- Frame-only methods (SimpleFrameAPI, not SimpleRegion/TextureBase): a texture or font string does not have
+-- them, so calling one is "attempt to call a nil value" in game and must be one here too.
+local FRAME_ONLY = { GetEffectiveAlpha = true, CreateTexture = true, CreateFontString = true, RegisterEvent = true,
+    RegisterUnitEvent = true, UnregisterEvent = true, SetFrameLevel = true, GetFrameLevel = true, SetFrameStrata = true,
+    EnableMouse = true, SetMovable = true, RegisterForDrag = true, GetChildren = true, SetScript = true, HookScript = true }
+local regions = setmetatable({}, { __mode = "k" })
+local function newRegion()
+    local r = newMagic()
+    owned[r] = true
+    regions[r] = true
+    return r
+end
+frameMethods.CreateTexture = function() return newRegion() end
+frameMethods.CreateMaskTexture = function() return newRegion() end
+frameMethods.CreateFontString = function() return newRegion() end
 local mt = {}
 mt.__index = function(self, k)
+    if regions[self] and FRAME_ONLY[k] then return nil end
     if frameMethods[k] then return frameMethods[k] end
     if owned[self] and type(k) == "string" and k:match("^[%l_]") then return nil end
     if type(k) == "string" and defaults[k] ~= nil or (type(k) == "string" and k:match("^Get") and defaults[k] == nil
@@ -673,6 +689,19 @@ try("diag", function()
     assert(type(report) == "table" and report.version == ns.version, "diag wrote no report")
     assert(report.total >= 40 and #report.media == report.total, "diag probed " .. tostring(report.total) .. " files")
     assert(type(report.glyphs) == "table", "diag lacks the glyph list")
+    assert(#report.glyphs > 0, "diag recorded no glyphs although the settings window was built")
+    -- a widget method that throws (or is missing) costs one entry, never the report
+    local bad = env.CreateFrame("Frame"):CreateTexture()
+    bad.GetSize = function() error("boom") end
+    ns.Icons:Apply(bad, "bugs", 16)
+    ns.Icons:Tracked()[bad].name = "bugs"
+    ns.DB.sv.global.diag = nil
+    env.C_Timer.After = function(_, fn) fn() end
+    ns.TestSlash("diag")
+    env.C_Timer.After = after
+    ns.Icons:Tracked()[bad] = nil
+    report = ns.DB.sv.global.diag
+    assert(type(report) == "table" and report.total >= 40, "a throwing glyph lost the diag report")
 end)
 -- every translation listed in Locales.xml loads only on its own client, covers every enUS key and keeps format specifiers
 try("locales", function()
