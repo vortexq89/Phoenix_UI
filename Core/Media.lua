@@ -50,6 +50,13 @@ M.textures = {
     CIRCLE = T .. "Circle",
     ROUNDED = T .. "Rounded",
     FADE_V = T .. "FadeV",
+    -- action button shapes: alpha masks for the icon and swipe, and the matching outline for the border
+    MASK_ROUNDED = T .. "MaskRounded",
+    MASK_CIRCLE = T .. "MaskCircle",
+    MASK_HEX = T .. "MaskHex",
+    RING_ROUNDED = T .. "RingRounded",
+    RING_CIRCLE = T .. "RingCircle",
+    RING_HEX = T .. "RingHex",
 }
 
 -- Keys saved by earlier builds, kept working.

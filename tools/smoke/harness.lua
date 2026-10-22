@@ -1805,6 +1805,111 @@ retailTry("sim", function()
     for k, v in pairs(saved) do rawset(env, k, v) end
 end)
 
+-- action bars (plan v2 S7): pure layout, state drivers, paging macro, short keys, fading, items, glow, depth
+try("action bars layout", function()
+    local M = ns.modules.ActionBars
+    local b = { buttons = 12, rows = 2, width = 40, height = 30, square = false, spacingX = 2, spacingY = 4,
+        grow = "RIGHT", wrap = "DOWN", order = "normal" }
+    local pts, w, h, bw, bh = M.Layout(b, 12)
+    assert(#pts == 12 and w == 6 * 40 + 5 * 2 and h == 2 * 30 + 4 and bw == 40 and bh == 30, "2x6 grid size")
+    assert(pts[1][1] == 0 and pts[1][2] == 0 and pts[7][1] == 0 and pts[7][2] == 34, "second row starts under the first")
+    b.grow, b.wrap = "LEFT", "UP"
+    pts = M.Layout(b, 12)
+    assert(pts[1][1] == 5 * 42 and pts[1][2] == 34, "LEFT/UP should start bottom right")
+    b.grow, b.wrap, b.rows, b.square = "DOWN", "DOWN", 1, true
+    pts, w, h = M.Layout(b, 3)
+    assert(w == 40 and h == 3 * 40 + 2 * 4 and pts[3][2] == 88, "vertical bars stack and square uses the width")
+    b.order = "reversed"
+    pts = M.Layout(b, 3)
+    assert(pts[1][2] == 88 and pts[3][2] == 0, "reversed order fills from the last slot")
+    assert(#M.Layout(b, 0) == 0, "zero buttons")
+    assert(M.BarsEngine.Encode({ { 0, 0 }, { 42.5, -3 } }) == "0.00,0.00;42.50,-3.00;", "snippet encoding")
+    -- the restricted snippet's own pattern reads every encoded point back
+    local n = 0
+    for x, y in ("0.00,0.00;42.50,-3.00;"):gmatch("([%-%d%.]+),([%-%d%.]+);") do n = n + 1; assert(tonumber(x) and tonumber(y)) end
+    assert(n == 2, "LAYOUT snippet pattern does not parse the encoding")
+    assert(M.BarsEngine.Flyout({ grow = "RIGHT" }, 0, 100, 1024, 768) == "UP", "flyouts near the bottom open up")
+    assert(M.BarsEngine.Flyout({ grow = "DOWN" }, 1000, 0, 1024, 768) == "LEFT", "flyouts near the right open left")
+end)
+try("action bars drivers", function()
+    local M = ns.modules.ActionBars
+    local vis = { combat = true, ooc = true, hideVehicle = true, macro = "" }
+    local d = M.VisibilityDriver({ vis = vis })
+    assert(d == "[petbattle] hide; [vehicleui] hide; [overridebar] hide; show", d)
+    vis.ooc, vis.hideVehicle = false, false
+    assert(M.VisibilityDriver({ vis = vis }, "pet") == "[petbattle] hide; [nopet] hide; [combat] show; hide", "pet combat")
+    vis.macro = "  [mod:alt] show; hide "
+    assert(M.VisibilityDriver({ vis = vis }):find("; %[mod:alt%] show; hide$"), "a custom macro replaces the rules")
+    local p = M.PageDriver({ possess = true, forms = true, sky = true, shift = 2, ctrl = 0, alt = 9 })
+    assert(p:find("^%[vehicleui%] vehicle; %[overridebar%] override; %[possessbar%] possess; %[shapeshift%] temp; "), p)
+    assert(p:find("[mod:shift] 2", 1, true) and not p:find("mod:alt", 1, true), "modifier pages are range checked")
+    assert(p:find("[bar:2] p2", 1, true) < p:find("[bonusbar:1] b1", 1, true), "manual pages win over form pages")
+    assert(p:find("[bonusbar:5] b5", 1, true) and p:find("; p1$"), "skyriding and the default page")
+    assert(not M.PageDriver({ sky = true }, false):find("bonusbar:5", 1, true), "skyriding without the feature")
+    local up = M.BarsEngine.PageMacro(1)
+    assert(up == "/changeactionbar [bar:1] 2; [bar:2] 3; [bar:3] 4; [bar:4] 5; [bar:5] 6; 1", up)
+    assert(M.BarsEngine.PageMacro(-1):find("^/changeactionbar %[bar:1%] 6; "), "page down wraps to 6")
+    local v = { alpha = 1, fade = true, oocAlpha = 0.4, mouseover = false }
+    assert(M.TargetAlpha(v, {}) == 0.4 and M.TargetAlpha(v, { combat = true }) == 1, "fade out of combat")
+    v.mouseover = true
+    assert(M.TargetAlpha(v, { combat = true }) == 0 and M.TargetAlpha(v, { hover = true }) == 1, "mouseover")
+    assert(M.TargetAlpha(v, { reveal = true }) == 1, "dragging a spell reveals the bars")
+    assert(M.ShortKey("SHIFT-BUTTON4") == "S-M4" and M.ShortKey("CTRL-ALT-NUMPAD5") == "C-A-N5", "short keys")
+    assert(M.ShortKey("MOUSEWHEELUP") == "WU" and M.ShortKey("Q") == "Q" and M.ShortKey("") == nil, "short keys 2")
+    local ids = M.ParseItems("5512, 5512 ;abc 171267\n0")
+    assert(#ids == 2 and ids[1] == 5512 and ids[2] == 171267, "item list parsing")
+    local G = ns.Glow
+    local x, y, side = G.Perimeter(0, 40, 20); assert(x == 0 and y == 0 and side == "top", "perimeter start")
+    x, y, side = G.Perimeter(50, 40, 20); assert(x == 40 and y == 10 and side == "right", "perimeter right")
+    x, y, side = G.Perimeter(110, 40, 20); assert(x == 0 and y == 10 and side == "left", "perimeter wraps")
+    local owner = env.CreateFrame("Button")
+    for _, style in ipairs({ "pixel", "autocast", "button" }) do
+        G:Show(owner, style, 1, 1, 0, 1)
+        assert(G:IsShown(owner), style .. " glow did not show")
+        G:Hide(owner)
+        assert(not G:IsShown(owner), style .. " glow did not hide")
+    end
+end)
+try("action bars engine", function()
+    local M = ns.modules.ActionBars
+    local B = M.BarsEngine
+    assert(M.DEFAULTS.mode == "phoenix", "Phoenix bars are the default (" .. tostring(M.db.mode) .. ")")
+    for _, def in ipairs(M.BARS) do
+        assert(M.db.bars[def.key] and M.DEFAULTS.bars[def.key], "bar " .. def.key .. " has no saved shape")
+        assert(B.Shown(def, M.db.bars[def.key]) <= def.count, "more buttons than the bar holds")
+    end
+    for _, key in ipairs({ "bar1", "bar2", "bar3" }) do M:RefreshBar(key) end
+    M:RefreshButtons(); M:RefreshItems(); M:RefreshExtras(); M:Refresh()
+    assert(M:FeedbackColor("range") and M:BorderColor(), "feedback colours")
+    -- Layout mode writes bar positions through the store delegate
+    local mv = ns.modules.Movers
+    local e
+    for _, it in ipairs(mv and mv:GetEntries() or {}) do if it.key == "ab.bar2" then e = it end end
+    if M:IsPhoenix() then assert(e and e.store, "bar 2 is not in Layout mode") end
+    if e and e.store then
+        local was = M.db.bars.bar2.y
+        e.store.set({ point = "BOTTOM", x = 10, y = 333 })
+        assert(M.db.bars.bar2.y == 333 and M.db.bars.bar2.x == 10, "a moved bar did not save its offset")
+        e.store.reset()
+        assert(M.db.bars.bar2.y == was and M.db.bars.bar2.x == 0, "resetting a bar did not restore the default")
+    end
+    -- cooldown numbers follow the icon size when scaling is on
+    local C = ns.modules.CooldownText
+    local size, scale = C.db.size, C.db.scale
+    C.db.size, C.db.scale = 16, true
+    assert(C:SizeFor(36) == 16 and C:SizeFor(18) == 8 and C:SizeFor(72) == 32 and C:SizeFor(200) == 32, "SizeFor")
+    C.db.scale = false
+    assert(C:SizeFor(72) == 16, "SizeFor without scaling")
+    C.db.size, C.db.scale = size, scale
+end)
+try("action bars depth", function()
+    local Config = ns.Config
+    for key, target in pairs({ ActionBars = 114, CooldownText = 12 }) do
+        local n = Config.CountSettings(ns.options[key])
+        assert(n >= target and Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
+    end
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

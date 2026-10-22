@@ -25,7 +25,7 @@ Mode cannot reach.
 | System | **General** | Theme (Phoenix Ember, Frost, Fel, Arcane, Class, Custom), fonts, bar texture, font scale, reduce motion; 89 bundled fonts and 24 statusbars shared through LibSharedMedia |
 | | **Bugs** | Catches Lua errors, blocked actions (taint) and Lua warnings from every addon; viewer with search, sessions and copy; data-bar count, minimap indicator, optional chat notice and sound; works alongside BugGrabber/BugSack |
 | Interface | **Skins** | Phoenix styling for the game menu, popups and ready check |
-| | **Action Bars** | Square buttons, readable hotkeys and macro names, out-of-range tint |
+| | **Action Bars** | Phoenix's own secure bars: bars 1–8, pet, stance and a quest/item bar with any number of buttons, lines, size, spacing, grow/wrap, backdrop and border; paging for forms, skyriding and modifiers with optional page arrows; show in/out of combat, fade, mouseover, custom macro; square, rounded, circle or hexagon buttons; range, power and unusable tints; proc and assisted-highlight glows; hotkey, macro and count text with short key names; extra/zone ability style, vehicle exit button, game-menu and bag buttons on mouseover. Bars move in Layout mode. Blizzard bars (Edit Mode) stay one switch away |
 | | **Unit Frames** | Bar texture, class and power colors, fonts for player, target, focus and pet |
 | | **Group Frames** | Party and raid frame bar texture, border, background and name/status fonts, with a live party preview |
 | | **Cast Bars** | Flat cast bars; icon, timer and latency on your own bar |
@@ -38,7 +38,7 @@ Mode cannot reach.
 | | **Minimap** | Square minimap, zone text style, coordinates, a button bin for addon minimap buttons; size stays in Edit Mode |
 | | **Data Bar** | FPS, latency, speed, durability, gold, clock, bug count, free bag slots, item level, friends, guild and mail, in the order you drag them to; movable in Edit Mode |
 | | **Movers** | Move, scale and fade frames Edit Mode does not manage: zone text, error messages, alerts, top-center widgets, boss banner, event toasts, ready check |
-| Combat | **Cooldown Text** | Blizzard's countdown numbers in the Phoenix font |
+| Combat | **Cooldown Text** | Blizzard's countdown numbers in your font, scaled to the icon, with tenths, a minimum duration, hiding on aura icons and optional colour by time left on action buttons |
 | | **Encounters** | Boss timers as Phoenix bars and boss warnings in a Phoenix banner (from the game's own encounter timeline), every Blizzard boss-warning setting, a Test button, pull and break timers shared with DBM/BigWigs users, the countdown voice, and a Phoenix bar style for BigWigs/LittleWigs |
 | | **Combat Text** | Every floating combat text option in one page |
 | | **Damage Meter** | Skin for Blizzard's built-in meter; optional one-click Details! style |
@@ -164,7 +164,7 @@ about you is uploaded; sims run on your PC. Details and every option: [uploader/
 
 ### Movers
 
-Edit Mode places action bars, unit frames, the minimap and most of the HUD. `/pui movers` unlocks the frames it does
+Edit Mode places unit frames, the minimap and most of the HUD. Phoenix action bars (the default) move in **Layout** mode instead: the button in the settings top bar or on the Action Bars page. `/pui movers` unlocks the frames it does
 not cover: drag to move, mouse wheel to scale (Shift: opacity), arrow keys to nudge, right-click to reset, with an
 optional snap grid. Positions are saved per profile. Movers never touches an Edit Mode frame and locks itself in
 combat.

@@ -146,6 +146,29 @@ def borders_and_glows():
         g = g.filter(ImageFilter.GaussianBlur(blur))
         save(Image.merge("RGBA", (Image.new("L", (64, 64), 255),) * 3 + (g,)), name)
 
+# ---------------------------------------------------------------- action button shapes (ActionBars v2)
+# Masks are white with the shape in alpha (MaskTexture), rings are the matching 1/16-wide outline the game tints for
+# the button border. 64x64, drawn at 4x and downsampled, so edges stay soft at any button size.
+def hexagon(n, inset=0.0):
+    c = n / 2; r = n / 2 - inset
+    return [(c + r * math.cos(math.radians(60 * i - 90)), c + r * math.sin(math.radians(60 * i - 90))) for i in range(6)]
+
+def button_shapes():
+    n = 64 * SS; ring = 4 * SS
+    def shape(d, inset, kind, fill):
+        box = [inset, inset, n - 1 - inset, n - 1 - inset]
+        if kind == "Rounded": d.rounded_rectangle(box, radius=14 * SS - inset, fill=fill)
+        elif kind == "Circle": d.ellipse(box, fill=fill)
+        else: d.polygon(hexagon(n, inset + 1 * SS), fill=fill)
+    for kind in ("Rounded", "Circle", "Hex"):
+        mask = Image.new("L", (n, n), 0); shape(ImageDraw.Draw(mask), 0, kind, 255)
+        cut = Image.new("L", (n, n), 0); shape(ImageDraw.Draw(cut), ring, kind, 255)
+        outline = Image.eval(Image.merge("L", (mask,)), lambda v: v)
+        outline = Image.composite(Image.new("L", (n, n), 0), outline, cut)
+        white = Image.new("L", (n, n), 255)
+        save(down(Image.merge("RGBA", (white, white, white, mask)), 64, 64), "Mask" + kind)
+        save(down(Image.merge("RGBA", (white, white, white, outline)), 64, 64), "Ring" + kind)
+
 def lua_str(s): return '"' + s.replace('"', '\\"') + '"'
 
 def write_data():
@@ -163,5 +186,6 @@ def write_data():
 bars()
 bar_set()
 borders_and_glows()
+button_shapes()
 write_data()
 print("textures:", sorted(f for f in os.listdir(OUT) if f.endswith(".tga")))

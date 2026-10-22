@@ -456,6 +456,51 @@ Forever yet, so send errors from `/pui bugs` by hand.
   **Expect:** nothing from Phoenix in `/pui bugs` or `Logs\taint.log`.
   **If anything fails:** the step number, a screenshot and `/pui bugs` → copy.
 
+## 13d. Action bars (2.0 S7)
+
+Phoenix bars are the default. Start with `/console taintLog 1` and an empty `/pui bugs`. Steps marked *combat*
+need a target dummy.
+
+- [ ] **13d.1 First login.** **Expect:** bars 1–4 (bar 4 vertical on the right), the pet bar when you have a pet, the
+  stance bar for classes with forms; Blizzard's art bar is gone. Every spell is where it was. Edit Mode still opens.
+- [ ] **13d.2 Layout.** Bars tab, chip *Bar 1*: Buttons 8, Lines 2, Grow *Left*, Wrap *Up*, spacing 6, *Square* off
+  with height 30. **Expect:** the bar and the pinned preview change together. Shift-click *Bar 2* and change Width:
+  both bars follow. *Show empty buttons* shows the grid; with it off, dragging a spell still reveals the slots.
+- [ ] **13d.3 Layout mode.** Press **Layout mode** on *Move the bars* (or Layout in the top bar). **Expect:** every Phoenix bar, the vehicle
+  exit and the item bar get an overlay; dragging saves; right-click resets that bar to its default. `/reload`: the
+  positions stay. Start combat: Layout mode closes.
+- [ ] **13d.4 Paging (bar 1).** Druid: cat/bear/moonkin/travel swap bar 1; Rogue: stealth. Skyriding mount: the
+  skyriding page. Set *Shift switches to Page 2* and hold Shift. Turn on *Page arrows* and click them in combat.
+  **Expect:** each switch works, also in combat, with no error.
+- [ ] **13d.5 Visibility (combat).** Bar 3: *Out of combat* off → it appears only in combat. Bar 2 *Fade out of
+  combat* 40 %: dims out of combat, full when hovered, in combat, while dragging a spell and with the spellbook open.
+  Bar 5 *Mouseover only* with *Linked bars*. A visibility macro `[mod:alt] show; hide` on bar 6.
+- [ ] **13d.6 Vehicles.** A vehicle quest or a flight path. **Expect:** with *Hide in vehicles* the bars go away and
+  Blizzard's vehicle bar takes over; the Phoenix vehicle exit button leaves the vehicle or lands the flight early.
+- [ ] **13d.7 Buttons.** Buttons tab: each shape (square, rounded, circle, hexagon), border styles, icon zoom.
+  **Expect:** icon, cooldown swipe, highlight and border follow the shape. Out of range (red), not enough power
+  (blue), unusable (grey), with Tint = icon / hotkey / both. Proc glow: Blizzard, pixel lines, sparks, soft glow
+  (a proc spell such as Hot Streak or Sudden Death). Assisted highlight with Blizzard's assisted combat on.
+- [ ] **13d.8 Text.** Short hotkey names: Shift-1 shows **S-1**, mouse button 4 **M4**. Macro names on/off, count
+  font on a stack of potions, cooldown number size on bars (0 = Cooldown Text size), charge numbers.
+- [ ] **13d.9 Extra bars.** An extra action button or a zone ability (garrison/covenant style): Phoenix style, scale,
+  hide art. Game menu and bag buttons *On mouseover*: invisible until hovered, clickable then.
+- [ ] **13d.10 Item bar.** Bars tab, chip *Item bar*, enabled; accept a quest with a usable item, and list `5512` (healthstone)
+  in *Extra items*. **Expect:** both appear, show their count and cooldown, and use the item on click (also in combat).
+- [ ] **13d.11 Cooldown Text.** Cooldown Text page: size 18 with *Scale with icon size*: small pet buttons get smaller
+  numbers. Tenths below 3 s, shortest cooldown 1.5 s (the global cooldown has no number), hide on buff icons.
+  *Colour numbers by time left*: red under 3 s, then the seconds and minutes colours (action buttons only).
+- [ ] **13d.12 Combat and taint (combat).** Change any Action Bars setting in combat. **Expect:** Phoenix says it will
+  apply after combat and does so; no `ADDON_ACTION_BLOCKED`, nothing in `Logs\taint.log` from Phoenix_UI.
+- [ ] **13d.13 Blizzard bars.** *Bars owned by* → *Blizzard (Edit Mode)*, reload. **Expect:** Blizzard's bars back under Edit Mode with
+  Phoenix button styling only; switching back and reloading restores the Phoenix bars and their layout.
+
+Known limits: Edit Mode's *number of buttons* for a Blizzard bar can still hide buttons on the matching Phoenix bar
+(set it to 12); action buttons lock with Blizzard's global *Lock action bars* setting (no per-bar lock); charge
+counts are not hidden at 0 (the value is secret); the item bar needs Phoenix bars; colour by time left is new and
+action-button only.
+  **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13d.12).
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

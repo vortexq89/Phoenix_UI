@@ -12,7 +12,7 @@ This describes the code as it is. If code and this document disagree, fix one of
    The only globals are the SavedVariables, the `SLASH_*` strings created by Blizzard's `RegisterNewSlashCommand`, and
    `GetMinimapShape` (defined by the Minimap module in square mode; minimap-button libraries read it).
 2. **No Ace3 / no embedded third-party addons.** Kept libraries: `LibStub`, `CallbackHandler-1.0`, `LibSharedMedia-3.0` (12000005, interop), `LibEditMode` (current, our own movable frames). Everything else is replaced by our small core or by Blizzard APIs (`C_EncodingUtil`, `MenuUtil`, `C_Timer`, `hooksecurefunc`, `Settings`).
-3. **Blizzard owns layout, we own looks.** Blizzard frames are positioned/sized by **Edit Mode**. Phoenix modules *skin* and *augment* Blizzard frames (textures, fonts, colours, extra text). We do not move or replace protected frames. Our *own* frames (data bar, spell history) are registered with Edit Mode via LibEditMode.
+3. **Blizzard owns layout, we own looks.** Blizzard frames are positioned/sized by **Edit Mode**. Phoenix modules *skin* and *augment* Blizzard frames (textures, fonts, colours, extra text). We do not move or replace protected frames. Our *own* frames (data bar, spell history) are registered with Edit Mode via LibEditMode. **One exception (2.0 S7): action bars.** In Phoenix mode (the default) the ActionBars module owns its bars: Blizzard's bars are parked and their buttons live in Phoenix secure headers laid out by restricted snippets (§13); Blizzard mode hands the bars back to Edit Mode.
 4. **Display-only combat UI.** Under Midnight secret values we never do maths/comparisons on combat data. We hand possible secrets straight to display sinks (`FontString:SetFormattedText`, `Texture:SetTexture`, `UnitHealthPercent` with `CurveConstants.ScaleTo100`) and never test them.
 5. **Declarative options.** Each module declares an options schema once (`Phoenix_UI_Options/Options/<Module>.lua`). The same schema drives its config page and the search index. Defaults live on the module.
 6. **One theme.** Every pixel goes through `ns.Theme` tokens and `ns.Skin` primitives. No module hard-codes a colour, font path or border.
@@ -85,7 +85,7 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 |---|---|---|
 | `General` | Init theme/fonts | Theme preset and accent, fonts, bar texture, reduce motion (locked on) |
 | `Skins` | Skins/* | Game menu, popups and ready check, applied lazily |
-| `ActionBars` | ActionBars | Square button art, hotkey/macro text, out-of-range tint |
+| `ActionBars` | ActionBars | Phoenix-owned secure bars 1–8, pet, stance and an item bar (layout, paging, visibility/fade, Layout-mode positions), button shapes/borders/glows, range/power/unusable tints, hotkey/macro/count text, extra/zone/vehicle-exit, micro and bag menus; Blizzard mode keeps Edit Mode bars (`ActionBars.lua` pure layout + drivers, `Bars.lua` secure engine, `Buttons.lua` styling hooks, `Extras.lua`) |
 | `UnitFrames` | UnitFrames | Bar texture, class and power colors, fonts on player/target/focus/pet |
 | `GroupFrames` | RaidFrames | Texture and fonts on party/raid `CompactUnitFrame`s |
 | `CastBars` | CastBars | Restyle player/target/focus bars; player-only icon, timer and latency zone |
@@ -343,7 +343,7 @@ Settings window v2 (plan v2 stage S6, `Phoenix_UI_Options/Config/Window.lua`). M
 ## 10. Edit Mode support
 
 * Our movable frames register through `ns.EditMode:Register(frame, { name = L.X, default = { point = "CENTER", x = 0, y = 0 }, settings = { … } })`. This wraps **LibEditMode** (`AddFrame`, `AddFrameSettings`, layout callbacks). Positions are stored **per Edit Mode layout** in `global.layouts[layoutName][frameKey]`, so they follow the user's Blizzard layout switches.
-* Blizzard frames: we never call `SetPoint` on frames managed by `EditModeManagerFrame`. Size and position settings for Blizzard systems are left to Edit Mode. Our config page links to it with an "Open Edit Mode" button (`ShowUIPanel(EditModeManagerFrame)` out of combat).
+* Blizzard frames: we never call `SetPoint` on frames managed by `EditModeManagerFrame`. Action bars in Phoenix mode are the exception: their buttons are re-parented by a restricted snippet into Phoenix headers, and the headers are placed by Layout mode (Movers store delegate, `modules.ActionBars.bars.<key>`), not Edit Mode. Edit Mode's own bar settings (e.g. number of buttons shown) can still hide buttons. Size and position settings for Blizzard systems are left to Edit Mode. Our config page links to it with an "Open Edit Mode" button (`ShowUIPanel(EditModeManagerFrame)` out of combat).
 * LibEditMode's `layout` callback re-applies our positions when the user switches layouts.
 
 ---
@@ -421,7 +421,18 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
 * **No per-module XML.** `Modules/Modules.xml` lists `<Module>.lua` (and helpers) for every module; option schemas are listed in `Phoenix_UI_Options/Phoenix_UI_Options.toc`.
 * **No empty locale stubs.** Only `enUS.lua` ships; `ns.RegisterLocale` accepts other locales when translations exist. `tools/check_locales.py` keeps enUS complete and free of unused keys.
 * **Positions:** Edit Mode owns layout. Phoenix-owned frames that belong in Edit Mode (data bar, spell history) register with LibEditMode and are stored per Edit Mode layout. The Movers module (§16) positions only a verified list of Blizzard frames Edit Mode does not manage, plus small Phoenix frames such as the bug indicator; it never touches an Edit Mode system.
-* **Removed with no replacement in Phoenix:** chat emoji, arena dampening display (aura data is restricted in arenas), a Phoenix minimap size slider (Edit Mode owns the size; the Minimap page links to it), mouseover bar fading. Brought back on 12.x APIs: the M+ timer (`MythicPlus/Timer.lua`, non-secret `C_ChallengeMode`/`C_ScenarioInfo` data) and chat history (typed lines only, not received messages). Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
+* **Action bars (2.0 S7).** `Modules/ActionBars/Bars.lua` creates one `SecureHandlerStateTemplate` header per bar
+  (`PhoenixUI_ActionBar_<key>`) and parks Blizzard's bars under a hidden frame. Addon code never touches a Blizzard
+  button: it writes the layout (`"x,y;"` points, size, padding, page, flyout direction, show-empty bit) as header
+  attributes, sets frame refs, and runs the `LAYOUT` restricted snippet with `SecureHandlerExecute`, always through
+  `ns.Combat:Run`. Bar 1 pages through a state driver (`M.PageDriver`: vehicle/override/possess/temp shapeshift,
+  modifier pages, manual pages, skyriding `[bonusbar:5]` behind `ns:Supports("skyriding")`, form bars) and the
+  `_onstate-page` snippet sets every button's `actionpage`. Page arrows are `SecureActionButtonTemplate` macros
+  (`/changeactionbar` with `[bar:n]`). Visibility is a `RegisterStateDriver` macro; fading is alpha only. Styling
+  post-hooks Blizzard's own updates (`UpdateButtonArt`, `UpdateHotkeys`, `UpdateUsable`, the range indicator, the
+  spell alert and assisted-combat managers) so Phoenix never calls a secure button method. Cooldown colour by time
+  left uses `C_DurationUtil` duration text bindings, opt-in and `pcall`-guarded.
+* **Removed with no replacement in Phoenix:** chat emoji, arena dampening display (aura data is restricted in arenas), a Phoenix minimap size slider (Edit Mode owns the size; the Minimap page links to it). Mouseover/out-of-combat bar fading is back with S7 (Phoenix bars). Brought back on 12.x APIs: the M+ timer (`MythicPlus/Timer.lua`, non-secret `C_ChallengeMode`/`C_ScenarioInfo` data) and chat history (typed lines only, not received messages). Combat-log features are replaced by Blizzard options exposed as toggles (Cooldown Manager, floating combat text v2, damage meter, countdown numbers).
 * **Details!:** optional, never a dependency. The Damage Meter page offers a one-click "Style Details!" button that calls Details' public instance API inside `pcall`; it is never applied automatically because it rewrites Details' own saved settings.
 * **Icons (§14):** one Phosphor duotone set via `ns.Icons`; brand art via `ns.Icons:Brand`.
 * **Checks:** `luacheck .` (generated 12.1.5 std), `tools/check_api.py` (methods/events/CVars/templates/atlases vs. the 12.1.5 reference, forbidden patterns, TOC/XML completeness and case), `tools/check_ids.py`, `tools/check_locales.py`, and `tools/smoke/harness.lua` (offline load + boot + every settings page). `tools/check_flavors.py` runs them for retail and again for WoW Forever (§17). All run in `.github/workflows/luacheck.yml`.
@@ -526,8 +537,9 @@ the 12.1.5 FrameXML (`/workspace/ref`).
 | `EventToasts` | `EventToastManagerFrame` | `UpdateAnchor` re-anchors it; re-applied with `hooksecurefunc` |
 | `ReadyCheck` | `ReadyCheckFrame` | Calls `SetAlpha(1)` on show → no alpha |
 | `BugIndicator` | Phoenix minimap bug button | registered with `Movers:Register` |
+| `ab.<bar>`, `ab.vehicle` | Phoenix action bar headers, vehicle exit | `Movers:Register(key, frame, label, store)`: the store delegate (`active/get/set/apply/reset`) saves into `modules.ActionBars.bars.<key>`, not `Movers.frames`; Phoenix mode only |
 
-**Excluded, and why.** Everything with an Edit Mode system: action bars, unit frames, minimap, buffs/debuffs,
+**Excluded, and why.** Everything with an Edit Mode system: Blizzard's action bars (Phoenix bars are ours, above), unit frames, minimap, buffs/debuffs,
 objective tracker, loot, talking head, vehicle seat, vehicle leave button, durability, encounter bar (including
 `UIWidgetPowerBarContainerFrame`/`PlayerPowerBarAlt`), extra abilities, loss of control, raid warnings, timer bars
 (`MirrorTimerContainer`), archaeology bar, status tracking bars, bags, micro menu, chat, tooltip anchor, damage

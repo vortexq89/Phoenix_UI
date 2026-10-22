@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Anim.lua"/>
+    <Script file="Glow.lua"/>
     <Script file="Widgets\Core.lua"/>
     <Script file="Widgets\Button.lua"/>
     <Script file="Widgets\Toggle.lua"/>

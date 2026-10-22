@@ -61,6 +61,7 @@ end
 local function usable(e)
     local f = resolve(e)
     if not f or f:IsForbidden() then return nil end
+    if e.store and e.store.active and not e.store.active() then return nil end
     if not e.owned and M.IsManaged(f) then
         if not e.refused then e.refused = true; ns:Debug("Movers: %s is managed by Edit Mode, skipped", e.key) end
         return nil
@@ -80,9 +81,15 @@ local function remember(e, f)
     e.orig = { points = points, scale = f:GetScale(), alpha = f:GetAlpha() }
 end
 
-local function saved(e) return M.db.frames[e.key] end
+-- A store lets a module keep the position in its own settings (action bars write bars.<key>.point/x/y…) and
+-- place the frame itself: { get() -> {point,x,y,scale,alpha}|nil, set(s), apply(), reset(), active() }.
+local function saved(e)
+    if e.store then return e.store.get() end
+    return M.db.frames[e.key]
+end
 
 local function apply(e)
+    if e.store then return e.store.apply() end
     local f = usable(e)
     if not f then return end
     if blocked(f) then return ns.Combat:Run("movers." .. e.key, apply, e) end
@@ -101,6 +108,7 @@ local function apply(e)
 end
 
 local function restore(e)
+    if e.store then return e.store.reset() end
     local f = resolve(e)
     if not f or not e.orig then return end
     if blocked(f) then return ns.Combat:Run("movers." .. e.key, restore, e) end
@@ -123,16 +131,17 @@ end
 function M:ApplyAll()
     for _, e in ipairs(entries) do
         hookTarget(e)
-        if saved(e) then apply(e) else restore(e) end
+        if e.store then -- the owning module places its own frames
+        elseif saved(e) then apply(e) else restore(e) end
     end
 end
 
--- Phoenix frames (bug indicator …) join the list at runtime.
-function M:Register(key, frame, label)
-    if byKey[key] then byKey[key].target = frame; return end
-    local e = { key = key, target = frame, text = label, owned = true }
+-- Phoenix frames (bug indicator, action bars …) join the list at runtime. `store` is optional (see saved()).
+function M:Register(key, frame, label, store)
+    if byKey[key] then byKey[key].target = frame; byKey[key].store = store or byKey[key].store; return end
+    local e = { key = key, target = frame, text = label, owned = true, store = store }
     entries[#entries + 1], byKey[key] = e, e
-    if self:IsEnabled() and saved(e) then apply(e) end
+    if self:IsEnabled() and saved(e) and not store then apply(e) end
 end
 
 function M:GetEntries() return entries end
@@ -169,7 +178,7 @@ local function commit(e, cx, cy, scale, alpha)
     s.point, s.x, s.y = point ~= "" and point or "CENTER", math.floor(x + 0.5), math.floor(y + 0.5)
     if not e.noScale then s.scale = scale end
     if alpha and not e.noAlpha then s.alpha = alpha end
-    M.db.frames[e.key] = s
+    if e.store then e.store.set(s) else M.db.frames[e.key] = s end
     apply(e)
 end
 
@@ -240,7 +249,7 @@ M.SetFrameScale, M.SetFrameAlpha = setScale, setAlpha
 function M:ResetFrame(key)
     local e = byKey[key]
     if not e then return end
-    self.db.frames[key] = nil
+    if not e.store then self.db.frames[key] = nil end
     restore(e)
     if overlays[key] then syncOverlay(overlays[key]) end
     if toolbar then toolbar:Update() end
@@ -248,7 +257,10 @@ function M:ResetFrame(key)
 end
 
 function M:ResetAll()
-    for _, e in ipairs(entries) do self.db.frames[e.key] = nil; restore(e) end
+    for _, e in ipairs(entries) do
+        if not e.store then self.db.frames[e.key] = nil end
+        restore(e)
+    end
     for _, o in pairs(overlays) do syncOverlay(o) end
     if toolbar then toolbar:Update() end
     ns.Events:Fire("PUI_MOVERS")
@@ -425,7 +437,7 @@ end
 function M:OnDisable()
     self:SetUnlocked(false)
     EventRegistry:UnregisterCallback("EditMode.Enter", self)
-    for _, e in ipairs(entries) do restore(e) end
+    for _, e in ipairs(entries) do if not e.store then restore(e) end end
 end
 
 function M:Refresh()

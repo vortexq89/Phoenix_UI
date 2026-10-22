@@ -6,6 +6,9 @@
     <!-- interface -->
     <Script file="Skins\Skins.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
+    <Script file="ActionBars\Buttons.lua"/>
+    <Script file="ActionBars\Bars.lua"/>
+    <Script file="ActionBars\Extras.lua"/>
     <Script file="UnitFrames\UnitFrames.lua"/>
     <Script file="GroupFrames\GroupFrames.lua"/>
     <Script file="CastBars\CastBars.lua"/>

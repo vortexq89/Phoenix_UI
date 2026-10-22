@@ -3,6 +3,25 @@
 ## 2.0.0-beta1
 
 ### New
+- **Action bars** (plan v2 stage S7): Phoenix now owns its action bars (Action Bars → *Bars owned by*: *Phoenix*, the
+  default; *Blizzard (Edit Mode)* hands them back to Edit Mode after a reload). Bars 1–8, pet, stance and a new **item bar**
+  (usable quest items in your bags plus any item IDs you list). Per bar: buttons, lines, width/height or square,
+  spacing, grow and wrap direction, order, show empty buttons, click-through, anchor, scale, strata, backdrop and
+  border; show in combat / out of combat, fade out of combat, mouseover only (with linked bars), reveal while
+  dragging a spell or with the spellbook open, hide in vehicles, or your own visibility macro. Bar 1 pages for forms
+  and stances, skyriding, vehicles/possession and Shift/Ctrl/Alt pages, with optional page arrows that work in
+  combat. Buttons: square, rounded, circle or hexagon shapes (icon, swipe, highlight and border all follow), icon
+  zoom, any border style, out-of-range / not-enough-power / unusable tints on the icon, hotkey or both, pressed /
+  mouseover / active looks, proc glow and assisted highlight as Blizzard, pixel lines, sparks or soft glow, grey
+  icons on cooldown, swipe opacity, ready flash, global-cooldown swipe, equipped and quality borders, tooltips off
+  in combat or always, Blizzard's lock setting. Text: hotkey (with short names like S-1, M4, N5), macro and count
+  fonts and positions, cooldown number size and charge numbers. Extra: extra/zone ability style, scale and art,
+  a movable vehicle exit button, game-menu and bag buttons always / on mouseover / hidden. Every bar moves in
+  **Layout** mode. Secure and taint safe: Phoenix never calls a Blizzard button's methods; layouts run as
+  restricted snippets out of combat. 116 settings (target 114).
+- **Cooldown Text**: font, size, outline, shadow and colour; scale with the icon; tenths below N seconds; shortest
+  cooldown with numbers; hide on buff/debuff icons; optional colour by time left (almost ready / seconds / minutes)
+  on action buttons. 15 settings (target 12).
 - **WoW Forever** (interface 16001, launches 4 Nov 2026): Phoenix loads on Blizzard's new level 1–60 game through
   its own `Phoenix_UI_Forever.toc` files, same code, same settings format. What Forever does not have is not shown
   rather than left broken: no Mythic+ or Sim pages, no Great Vault card, no Mythic+ rating, enemy forces or Sim

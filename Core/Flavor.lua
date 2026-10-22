@@ -34,6 +34,8 @@ ns.FEATURES = {
     vault = { retail = true },
     -- SimulationCraft models the current retail expansion only.
     sim = { retail = true },
+    -- Skyriding (bonus bar 5 paging on bar 1): Forever's Azeroth has no dragonriding.
+    skyriding = { retail = true },
     -- Boss timeline and warnings: Blizzard_EncounterTimeline / _EncounterWarnings load on "standard" only.
     encounterTimeline = available(C_EncounterTimeline),
     encounterWarnings = available(C_EncounterWarnings),

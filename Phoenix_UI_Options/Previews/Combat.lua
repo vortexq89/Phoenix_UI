@@ -18,7 +18,15 @@ local function button(parent, size, index)
 end
 
 ---------------------------------------------------------------- cooldown numbers
-local CD = { { 3, "12", 0.55 }, { 6, "4", 0.18 }, { 1, "1m", 0.9 }, { 9, "38", 0.7 }, { 11, "2", 0.08 } }
+-- { icon, seconds left, shade }: one expiring, a few in seconds, one in minutes, one below the decimals line
+local CD = { { 3, 12, 0.55 }, { 6, 4, 0.18 }, { 1, 75, 0.9 }, { 9, 38, 0.7 }, { 11, 2.4, 0.08 } }
+
+-- What Blizzard's countdown would print for `left` seconds with these settings.
+local function countdown(db, left)
+    if left >= 60 then return ("%dm"):format(math.floor(left / 60 + 0.5)) end
+    if db.decimals > 0 and left < db.decimals then return ("%.1f"):format(left) end
+    return tostring(math.floor(left + 0.5))
+end
 
 P:Register("cooldowntext", {
     module = "CooldownText",
@@ -33,12 +41,18 @@ P:Register("cooldowntext", {
             buttons[i] = b
         end
         return function(self)
+            local db = m.db
             local w = self:GetWidth()
             for i, b in ipairs(buttons) do
+                local left = CD[i][2]
                 b:ClearAllPoints()
                 b:SetPoint("CENTER", self, "LEFT", w * (i - 0.5) / #buttons, 0)
-                m.PaintCountdown(b.text)
-                b.text:SetText(CD[i][2])
+                m.PaintCountdown(b.text, m:SizeFor(44))
+                b.text:SetText(countdown(db, left))
+                if db.byRemaining then
+                    local which = (left < db.expiring and "expiring") or (left < 60 and "seconds") or "minutes"
+                    b.text:SetTextColor(m:ColorOf(which))
+                end
             end
         end
     end,
