@@ -28,6 +28,7 @@ PhoenixUIBugsDB = {
             addonVersion = "2.0.0", interface = 120105, build = "12.1.5.70448", locale = "enUS",
             source = "Foo",                 -- "Phoenix_UI" | "<addon folder>" | "Blizzard" | "Unknown"
             uploaded = false,
+            reported = true,                -- optional: the player marked it in the viewer; not sent, ignore
         },
     },
 }
@@ -35,7 +36,8 @@ PhoenixUIBugsDB = {
 
 ## Field notes
 
-* **kind**: `error` = Lua error from the error handler (or BugGrabber); `taint` = `ADDON_ACTION_BLOCKED` /
+* **kind**: `error` = Lua error from the error handler (or BugGrabber, read through its
+  `BugGrabber.BugGrabbed` EventRegistry event); `taint` = `ADDON_ACTION_BLOCKED` /
   `ADDON_ACTION_FORBIDDEN` (message `"[EVENT] AddOn 'X' tried to call the protected function 'F'."`);
   `warning` = `LUA_WARNING`.
 * **hash**: two 32-bit polynomial hashes over the message and the first three stack lines, after removing

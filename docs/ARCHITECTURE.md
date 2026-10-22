@@ -457,17 +457,33 @@ VQ8S.com; see `docs/BUG_REPORTS.md`.
   them in `Errors.dropped`.
 * **Attribution.** `source` is the first `Interface/AddOns/<name>/` in the message or stack (`Blizzard_*` →
   `"Blizzard"`), else `"Unknown"`.
-* **BugGrabber.** `!BugGrabber` is an OptionalDep, so it loads first and replaces `seterrorhandler` with a no-op.
-  When the global `BugGrabber` exists we stand down (no handler, no events), subscribe to
-  `BugGrabber_BugGrabbed` and import this session's entries from `BugGrabber:GetDB()` at login. BugSack keeps
-  working unchanged.
+* **BugGrabber.** `!BugGrabber` is an OptionalDep, so it loads first, installs its handler and replaces
+  `seterrorhandler` with a no-op (it also takes over the blocked-action and warning events). When the global
+  `BugGrabber` exists we stand down (no handler, no events) and consume its results. BugGrabber 12.x has no
+  CallbackHandler: every capture, new or repeat, ends in
+  `EventRegistry:TriggerEvent("BugGrabber.BugGrabbed", tostring(errorTable))`, and `BugGrabber:GetErrorByID(id)`
+  returns the table. Each announcement counts once (a weak map ties BugGrabber's table to our report). At
+  ADDON_LOADED we import this session's entries from `BugGrabber:GetDB()` that were caught before we loaded.
+  `LUA_WARNING: ` entries become `warning`, `[ADDON_ACTION_…]` entries `taint`. Older BugGrabber builds with
+  `setupCallbacks`/`RegisterCallback` still get the `BugGrabber_BugGrabbed` callback. Without BugSack, Phoenix
+  triggers `BugGrabber.DisplayRegistered` (as BugSack does) so BugGrabber stops printing its own chat line.
+  (2.0 only knew the CallbackHandler event; with BugGrabber 12.x the sack stayed empty.) BugGrabber and BugSack
+  are All Rights Reserved: Phoenix only uses their public interface, no code is copied.
+* **Before we load.** Without BugGrabber, Blizzard's `HandleLuaError` (the handler we chain to) has already put
+  earlier errors into `ScriptErrorsFrame.errorData` (or `ScriptErrors.unhandledErrors` before the frame exists);
+  they are imported once, just before our handler goes in, with their counts.
+* **Scope.** `scope = "all"` (default) or `"phoenix"`: only reports whose `source` is `Phoenix_UI` are kept.
+* **Status.** `Errors:GetMode()` (`buggrabber`/`handler`), `Errors:OwnsHandler()`; `Bugs:CaptureState()` adds
+  `lost` when another addon replaced our handler. Shown on the Bugs page and in the viewer footer.
 * **Storage.** `PhoenixUIBugsDB` (account-wide): `schema`, random 16-hex `installId`, `session` incremented once
   per login/reload, `reports` newest last, capped (default 500, 100–500 in settings). Reports captured before
   ADDON_LOADED are buffered and placed on open.
 * **UI.** Listeners are notified on the next frame (`C_Timer.After(0)`), never inside someone else's error path.
-  The viewer (`PhoenixUI_Bugs`, closes on Escape) lists reports with a search box and session filter
-  (this/previous/all), shows a detail pane with a selectable report text (Copy selects it for Ctrl+C), prev/next,
-  clear and a link to the upload settings. A data-bar segment, a minimap indicator (movable via Movers) and the
+  The viewer (`PhoenixUI_Bugs`, closes on Escape) lists reports with a search box, an addon filter and a session
+  filter (this/previous/all or any past session with reports), shows a detail pane with a selectable report text
+  (Copy selects it for Ctrl+C), delete and mark-as-reported (`reported = true`, dimmed in the list; ignored by
+  the uploader), prev/next, clear (the session, or exactly what the filters show) and a link to the upload
+  settings. A data-bar segment, a minimap indicator (movable via Movers) and the
   addon-compartment entry (right-click) show the count and pulse on new errors. Optional chat notice with an
   `addon:Phoenix_UI:bugs` link and an optional sound (10 s gap).
 * **Blizzard popup.** The "Blizzard error window" option is the `scriptErrors` CVar, which

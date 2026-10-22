@@ -11,14 +11,15 @@ local M = ns:NewModule("Bugs", {
     label = "BUGS", desc = "BUGS_DESC", category = "system", order = 20,
     defaults = {
         chat = true, sound = "none", flash = true, indicator = "errors",
-        warnings = true, taint = true,
+        warnings = true, taint = true, scope = "all",
     },
     globalDefaults = { maxReports = 500 },
 })
 
 local LINK = "addon:" .. ADDON .. ":bugs"
 local SOUND_GAP = 10 -- seconds between notification sounds
-local SOUNDS = { chime = SOUNDKIT.TELL_MESSAGE, alert = SOUNDKIT.RAID_WARNING }
+local SOUNDS = { chime = SOUNDKIT.TELL_MESSAGE, alert = SOUNDKIT.RAID_WARNING, bell = SOUNDKIT.UI_BNET_TOAST,
+    alarm = SOUNDKIT.ALARM_CLOCK_WARNING_3 }
 local indicator, lastSound, lastNotice = nil, 0, {}
 
 function M:Counts()
@@ -145,6 +146,22 @@ end
 
 function M:ApplyKinds()
     Errors:SetKinds({ error = true, warning = self.db.warnings, taint = self.db.taint })
+    Errors:SetScope(self.db.scope)
+end
+
+-- Where captures come from, for the options page and the viewer: "buggrabber", "handler" or "lost" (another
+-- addon replaced the error handler after Phoenix loaded, so only events still arrive).
+function M:CaptureState()
+    local mode = Errors:GetMode()
+    if mode == "buggrabber" then return "buggrabber" end
+    return Errors:OwnsHandler() and "handler" or "lost"
+end
+
+-- With BugGrabber but no BugSack, BugGrabber prints its own "captured, click the link" line for every error;
+-- Phoenix is the display then, so it says so (BugSack does the same) and the chat notice is ours.
+local function claimDisplay()
+    if Errors:GetMode() ~= "buggrabber" or C_AddOns.IsAddOnLoaded("BugSack") then return end
+    EventRegistry:TriggerEvent("BugGrabber.DisplayRegistered")
 end
 
 function M:OnEnable()
@@ -155,6 +172,7 @@ function M:OnEnable()
     if movers then movers:Register("BugIndicator", indicator, L.BUGS_INDICATOR) end
     EventRegistry:RegisterCallback("SetItemRef", onLink, self)
     if Errors:TakeShareNotice() then ns:Print(L.BUGS_SHARE_NOTICE) end
+    claimDisplay()
     self:Refresh()
 end
 

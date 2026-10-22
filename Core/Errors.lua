@@ -9,9 +9,16 @@ local ADDON, ns = ...
       crash reporter keep working, and so does any other catcher that was installed before us.
     * ADDON_ACTION_BLOCKED / ADDON_ACTION_FORBIDDEN (kind "taint") and LUA_WARNING (kind "warning")
       arrive as synchronous events.
-    * BugGrabber (an OptionalDep, so it loads first) replaces seterrorhandler with a no-op and listens to
-      those events itself. We then subscribe to its BugGrabber_BugGrabbed callback and import the errors
-      it caught earlier this session instead of installing anything.
+    * BugGrabber (an OptionalDep, so it loads first) owns the handler: it calls seterrorhandler once and then
+      replaces the global with a no-op, and handles those events itself. We consume its results instead of
+      fighting it. BugGrabber 12.x (no CallbackHandler any more) announces every capture, new or repeat, with
+      EventRegistry:TriggerEvent("BugGrabber.BugGrabbed", tostring(errorTable)); older builds fired
+      BugGrabber_BugGrabbed(errorTable) through CallbackHandler. Each announcement counts once. The errors it
+      caught this session before we loaded are imported when the SavedVariables bind.
+    * Errors from before Phoenix loaded, without BugGrabber: Blizzard's handler (the one we chain to) already
+      kept them in ScriptErrorsFrame.errorData (or ScriptErrors.unhandledErrors before that frame exists); they
+      are imported once, here, before our handler goes in.
+    * Scope: "all" (every addon, the default) or "phoenix" (only Phoenix UI's own errors).
 
     Midnight: an error raised by tainted code may carry a secret message; secrets are never stored,
     compared or concatenated (they become SECRET_TEXT), and |K strings are neutralised like Blizzard does.
@@ -29,12 +36,14 @@ local SCHEMA = 1
 E.cap = 500         -- reports kept in PhoenixUIBugsDB (oldest dropped first)
 E.dropped = 0       -- captures refused by the throttle this session
 E.mode = "handler"  -- "handler" or "buggrabber"
+E.imported = 0      -- reports taken over from BugGrabber or Blizzard's error frame this session
 
 local db              -- PhoenixUIBugsDB once bound
 local buffer = {}     -- reports caught before the SavedVariables are available
 local bySession = {}  -- hash -> report, this session only
 local active = true   -- capture switch; the chain to the previous handler never stops
 local kinds = { error = true, warning = true, taint = true }
+local scope = "all"   -- "all" | "phoenix"
 local capturing, seq = false, 0
 local tokens, refilled = BURST, 0
 local listener, queued, flushScheduled = nil, {}, false
@@ -241,10 +250,13 @@ local function add(kind, h, message, stack, locals, source, count)
 end
 
 -- Public entry for already-captured text (events, BugGrabber, tests). Returns the report.
+local function inScope(source) return scope ~= "phoenix" or source == ADDON end
+
 function E:Record(kind, message, stack, locals, source, count)
     if not active or not kinds[kind] then return nil end
     -- source is worked out before scrubbing: an addon folder is never personal, a "<player>" in its name would be wrong
     source = source or E.Source(readable(message, MAX_MESSAGE), readable(stack, MAX_STACK))
+    if not inScope(source) then return nil end
     message, stack = clean(message, MAX_MESSAGE), clean(stack, MAX_STACK)
     local h = E.Hash(message, stack)
     return bump(h, count) or add(kind, h, message, stack, clean(locals, MAX_LOCALS, true), source, count)
@@ -260,10 +272,12 @@ local function capture(msg)
     local level = errHeight and (GetCallstackHeight() - (errHeight - 1)) or 4
     local message, stack = readable(msg, MAX_MESSAGE), readable(debugstack(level), MAX_STACK)
     local source = E.Source(message, stack)
+    if not inScope(source) then return end
     message, stack = scrub(message), scrub(stack)
     local h = E.Hash(message, stack)
     if bump(h) then return end
-    local locals = inEncounter() and "" or clean(debuglocals(level), MAX_LOCALS, true)
+    -- skipFunctionsAndUserdata, like Blizzard's own handler: shorter dumps, nothing that cannot be read anyway
+    local locals = inEncounter() and "" or clean(debuglocals(level, true), MAX_LOCALS, true)
     add("error", h, message, stack, locals, source)
 end
 
@@ -294,37 +308,113 @@ local function onEvent(_, event, a, b)
 end
 
 ---------------------------------------------------------------- BugGrabber coexistence
-local function fromBugGrabber(err, count)
-    if type(err) ~= "table" or type(err.message) ~= "string" then return end
-    local kind = err.message:find("ADDON_ACTION_", 1, true) and "taint" or "error"
-    E:Record(kind, err.message, err.stack, err.locals, nil, count)
+local seenBG = setmetatable({}, { __mode = "k" }) -- BugGrabber error table -> our report (this session)
+
+-- BugGrabber stores LUA_WARNING text with a prefix and blocked actions in its own (localised) sentence, which
+-- always starts with the event name in brackets.
+local function bugGrabberKind(message)
+    if message:find("^LUA_WARNING: ") then return "warning", message:sub(14) end
+    if message:find("^%[ADDON_ACTION_") then return "taint", message end
+    return "error", message
 end
+
+local function fromBugGrabber(err)
+    if type(err) ~= "table" then return end
+    local known = seenBG[err]
+    if known and bySession[known.hash] == known then
+        known.count = known.count + 1
+        known.lastSeen = time()
+        notify(known, false)
+        return known
+    end
+    local message = err.message
+    if type(message) ~= "string" or Secret.IsSecret(message) then return end
+    local kind, text = bugGrabberKind(message)
+    local stack = type(err.stack) == "string" and err.stack or nil
+    local locals = type(err.locals) == "string" and err.locals or nil
+    local r = E:Record(kind, text, stack, kind == "error" and not inEncounter() and locals or "", nil, 1)
+    if r then seenBG[err] = r end
+    return r
+end
+E.FromBugGrabber = fromBugGrabber -- smoke tests
+
+-- BugGrabber 12.x: the payload is tostring(errorTable); BugGrabber:GetErrorByID finds the table again.
+local function onBugGrabbed(_, id)
+    if not active or capturing or type(id) ~= "string" then return end
+    local BG = BugGrabber
+    if type(BG) ~= "table" or type(BG.GetErrorByID) ~= "function" then return end
+    capturing = true
+    local ok, err = pcall(BG.GetErrorByID, BG, id)
+    if ok then pcall(fromBugGrabber, err) end
+    capturing = false
+end
+E.OnBugGrabbed = onBugGrabbed -- smoke tests
 
 local function importBugGrabber()
     local BG = BugGrabber
+    if type(BG) ~= "table" or type(BG.GetDB) ~= "function" or type(BG.GetSessionId) ~= "function" then return end
     local ok, list = pcall(BG.GetDB, BG)
     local okSession, session = pcall(BG.GetSessionId, BG)
     if not ok or not okSession or type(list) ~= "table" then return end
     for _, err in ipairs(list) do
-        if err.session == session then fromBugGrabber(err, tonumber(err.counter) or 1) end
+        if type(err) == "table" and err.session == session and not seenBG[err] then
+            if pcall(fromBugGrabber, err) and seenBG[err] then E.imported = E.imported + 1 end
+        end
     end
 end
+
+---------------------------------------------------------------- errors from before we loaded (no BugGrabber)
+local BLIZZARD_WARNING = 1 -- WarningMessageType, a file local in Blizzard_ScriptErrorsFrame.lua
+
+local function importBlizzard()
+    local frame = ScriptErrorsFrame
+    local data = type(frame) == "table" and frame.errorData
+    if type(data) == "table" then
+        for _, e in ipairs(data) do
+            if type(e) == "table" then
+                local kind = e.messageType == BLIZZARD_WARNING and "warning" or "error"
+                local ok, r = pcall(E.Record, E, kind, e.message, e.stack, e.locals, nil, tonumber(e.count) or 1)
+                if ok and r then E.imported = E.imported + 1 end
+            end
+        end
+    end
+    local pending = type(ScriptErrors) == "table" and ScriptErrors.unhandledErrors
+    if type(pending) == "table" then
+        for _, e in ipairs(pending) do
+            if type(e) == "table" then
+                local ok, r = pcall(E.Record, E, "error", e.errorMessage, e.stack, e.locals)
+                if ok and r then E.imported = E.imported + 1 end
+            end
+        end
+    end
+end
+E.ImportBlizzard = importBlizzard -- smoke tests
 
 local BG = BugGrabber
 if type(BG) == "table" then
     E.mode = "buggrabber"
-    -- BugGrabber does not embed CallbackHandler; setupCallbacks makes RegisterCallback appear when one is loaded.
-    if not BG.RegisterCallback and BG.setupCallbacks then pcall(BG.setupCallbacks) end
-    if BG.RegisterCallback then
-        BG.RegisterCallback(E, "BugGrabber_BugGrabbed", function(_, err) fromBugGrabber(err) end)
+    if BG.setupCallbacks or BG.RegisterCallback then
+        -- BugGrabber before 12.x: CallbackHandler, available once a display addon has embedded it
+        if not BG.RegisterCallback and BG.setupCallbacks then pcall(BG.setupCallbacks) end
+        if BG.RegisterCallback then
+            BG.RegisterCallback(E, "BugGrabber_BugGrabbed", function(_, err)
+                if active and not capturing then pcall(fromBugGrabber, err) end
+            end)
+        end
+    elseif EventRegistry and EventRegistry.RegisterCallback then
+        EventRegistry:RegisterCallback("BugGrabber.BugGrabbed", onBugGrabbed, E)
     end
 else
+    pcall(importBlizzard)
     previous = geterrorhandler()
     seterrorhandler(handler)
     ns.Events:On("ADDON_ACTION_BLOCKED", E, onEvent)
     ns.Events:On("ADDON_ACTION_FORBIDDEN", E, onEvent)
     ns.Events:On("LUA_WARNING", E, onEvent)
 end
+
+-- True while our handler is the one the game calls (an addon loaded after us may have replaced it).
+function E:OwnsHandler() return self.mode == "handler" and geterrorhandler() == handler end
 
 ---------------------------------------------------------------- binding and queries
 local function newInstallId()
@@ -366,6 +456,9 @@ end
 
 function E:IsActive() return active end
 function E:SetKinds(t) kinds = t end
+function E:SetScope(v) scope = v == "phoenix" and "phoenix" or "all" end
+function E:GetScope() return scope end
+function E:GetMode() return self.mode end
 function E:SetListener(fn) listener = fn end
 function E:GetSession() return db and db.session or 0 end
 function E:GetInstallId() return db and db.installId or "" end
@@ -392,10 +485,39 @@ function E:CountSession()
     return unique, total
 end
 
--- scope: "session" (this session) or "all".
-function E:Clear(scope)
+-- Remove one report (viewer). Its hash may be caught again this session as a new report.
+function E:Delete(r)
     local list = self:GetReports()
-    if scope == "all" then
+    for i = #list, 1, -1 do
+        if list[i] == r then table.remove(list, i) end
+    end
+    if bySession[r.hash] == r then bySession[r.hash] = nil end
+end
+
+-- "Mark as reported": a flag of the player's own (the uploader ignores it; it sends by id, see BUG_REPORTS.md).
+function E:SetReported(r, on) r.reported = on and true or nil end
+
+-- Sessions that have reports, newest first: { session, count, firstSeen }.
+function E:Sessions()
+    local by, out = {}, {}
+    for _, r in ipairs(self:GetReports()) do
+        local s = by[r.session]
+        if not s then
+            s = { session = r.session, count = 0, firstSeen = r.firstSeen }
+            by[r.session] = s
+            out[#out + 1] = s
+        end
+        s.count = s.count + 1
+        if r.firstSeen < s.firstSeen then s.firstSeen = r.firstSeen end
+    end
+    table.sort(out, function(a, b) return a.session > b.session end)
+    return out
+end
+
+-- scope: "session" (this session) or "all".
+function E:Clear(which)
+    local list = self:GetReports()
+    if which == "all" then
         wipe(list)
     else
         local session = self:GetSession()
