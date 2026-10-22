@@ -501,6 +501,58 @@ counts are not hidden at 0 (the value is secret); the item bar needs Phoenix bar
 action-button only.
   **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13d.12).
 
+## 13e. Unit frames (2.0 S8)
+
+Phoenix frames are the default. Start with `/console taintLog 1` and an empty `/pui bugs`. Steps marked *combat*
+need a target dummy; *group* needs a party or a follower dungeon.
+
+- [ ] **13e.1 First login.** **Expect:** Phoenix player and target frames left and right of centre, the pet frame
+  under the player frame when you have a pet; Blizzard's player, target, focus and boss frames are gone. Click a
+  frame: left click targets, right click opens the unit menu (set focus from it: the focus frame appears).
+- [ ] **13e.2 Test frames.** Unit Frames → **Show test frames** (or Test in the top bar). **Expect:** every frame,
+  including five boss frames, with sample names, bars, auras and icons where the real ones sit. Press again to
+  hide. Start combat: they hide by themselves.
+- [ ] **13e.3 Per-frame settings.** Chip *Target*: width 260, height 50, portrait *3D model* on the left, power
+  *Below the frame*. **Expect:** the target frame and the pinned preview change together. Shift-click *Focus* and
+  change the width: both follow. *Apply to: All* on a row copies it to every frame.
+- [ ] **13e.4 Layout mode.** Press **Move frames**. **Expect:** each Phoenix frame (and the boss group as one) has
+  an overlay; drag, snap, right-click to reset. `/reload`: the positions stay.
+- [ ] **13e.5 Health colours (combat).** Health colour *By health left* on the target: green at full, yellow at
+  half, red when low (the colours are in *Health colour steps*). *Dark mode bar*: the lost part shows the colour.
+  Shield yourself (Power Word: Shield, Ignore Pain …): a striped shield after the health; a heal absorb debuff
+  shows dark at the end.
+- [ ] **13e.6 Text tags.** Health text `[health:current] / [health:max] ([health:percent])`, extra text
+  `[level] [classification]`. **Expect:** the numbers update in combat with no error; 1234567 reads 1.2M (or
+  123万 with East Asian numbers). Dead targets show *Dead*, players who log off *Offline*.
+- [ ] **13e.7 Class resource.** Rogue or feral druid in cat form: combo points (charged points coloured). Death
+  knight: six runes, sorted by time left. Brewmaster: the stagger bar turns yellow then red under heavy damage.
+  Paladin, warlock, evoker, Windwalker monk, Arcane mage likewise. *Hide when idle* hides it out of combat.
+- [ ] **13e.8 Icons (group).** Raid markers on yourself and the target, leader crown, role icon, combat and resting
+  marks, an elite or rare target star, a ready check (ready / not ready / waiting), the threat glow when a mob
+  attacks you.
+- [ ] **13e.9 Auras.** Target a mob and debuff it: your debuffs bright, other players' greyed, dispel colours on
+  magic/curse/poison/disease. Buffs above the frame, 8 per row. Point at an icon: its tooltip.
+- [ ] **13e.10 Range and fading (group).** A party member more than 40 yards away as focus fades to the range
+  opacity. *Fade out of combat* on the player frame: dims at full health with no target, comes back on hover.
+- [ ] **13e.11 Boss frames.** Any dungeon boss (or a world boss). **Expect:** boss frames with their cast bars
+  (Blizzard's bars, placed under each Phoenix frame), the encounter power bar where a boss has one, the target
+  mark on the boss you have targeted.
+- [ ] **13e.12 Arena.** Turn on *Show this frame* for *Arena*, reload, and enter a skirmish. **Expect:** arena
+  frames with PvP trinket and specialization; with arena off (the default) Blizzard's arena frames stay.
+- [ ] **13e.13 Vehicles.** A vehicle quest. **Expect:** the player frame shows the vehicle, the pet frame you; on
+  leaving they swap back.
+- [ ] **13e.14 Combat and taint (combat).** Change size or position settings in combat. **Expect:** Phoenix says it
+  will apply after combat and does; no `ADDON_ACTION_BLOCKED`, nothing in `Logs\taint.log` from Phoenix_UI.
+- [ ] **13e.15 Blizzard frames.** *Unit frames* → *Blizzard frames, reskinned*, reload. **Expect:** Blizzard's frames
+  back under Edit Mode with the 1.x skin options; the test button shows sample Blizzard-position frames.
+  Switching back and reloading restores the Phoenix frames and their layout.
+
+Known limits: arena diminishing returns are not shown (the 12.x crowd-control data is secret to addons, use
+Blizzard's arena frames for it); enemy range is not known in combat (enemy frames stay solid then); spell cost
+prediction is not drawn; the cast bars are still Blizzard's until S9; the player cast bar stays where Edit Mode
+puts it.
+  **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13e.14).
+
 ## 14. Other client languages
 
 Phoenix ships deDE, frFR, esES/esMX, ptBR, ruRU, itIT, koKR, zhCN and zhTW. To test a language without another

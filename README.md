@@ -26,7 +26,7 @@ Mode cannot reach.
 | | **Bugs** | Catches Lua errors, blocked actions (taint) and Lua warnings from every addon; viewer with search, sessions and copy; data-bar count, minimap indicator, optional chat notice and sound; works alongside BugGrabber/BugSack |
 | Interface | **Skins** | Phoenix styling for the game menu, popups and ready check |
 | | **Action Bars** | Phoenix's own secure bars: bars 1–8, pet, stance and a quest/item bar with any number of buttons, lines, size, spacing, grow/wrap, backdrop and border; paging for forms, skyriding and modifiers with optional page arrows; show in/out of combat, fade, mouseover, custom macro; square, rounded, circle or hexagon buttons; range, power and unusable tints; proc and assisted-highlight glows; hotkey, macro and count text with short key names; extra/zone ability style, vehicle exit button, game-menu and bag buttons on mouseover. Bars move in Layout mode. Blizzard bars (Edit Mode) stay one switch away |
-| | **Unit Frames** | Bar texture, class and power colors, fonts for player, target, focus and pet |
+| | **Unit Frames** | Phoenix's own secure frames for player, target, target of target, focus, focus target, pet, boss 1–5 and (optional) arena 1–5: health, power, class resource (combo points, runes, stagger …) and encounter power bars; absorbs, heal absorbs and incoming heals; text tags (`[name]`, `[health:current-percent]` …) with per-text fonts; 2D, 3D or class portraits; raid marker, leader, role, PvP, combat, resting, elite, threat and ready-check icons; buffs and debuffs with dispel colours; range and out-of-combat fade; class, reaction, health-curve or theme colours; any border style; per-frame settings with apply to all, Test frames and Layout mode. Built for 12.x secret values. Blizzard's frames (reskinned) stay one switch away |
 | | **Group Frames** | Party and raid frame bar texture, border, background and name/status fonts, with a live party preview |
 | | **Cast Bars** | Flat cast bars; icon, timer and latency on your own bar |
 | | **Buffs & Debuffs** | Cropped icons, crisp borders, readable timers and stacks |
@@ -164,7 +164,7 @@ about you is uploaded; sims run on your PC. Details and every option: [uploader/
 
 ### Movers
 
-Edit Mode places unit frames, the minimap and most of the HUD. Phoenix action bars (the default) move in **Layout** mode instead: the button in the settings top bar or on the Action Bars page. `/pui movers` unlocks the frames it does
+Edit Mode places the minimap and most of the HUD. Phoenix action bars and unit frames (the defaults) move in **Layout** mode instead: the button in the settings top bar, on the Action Bars page or on the Unit Frames page. `/pui movers` unlocks the frames it does
 not cover: drag to move, mouse wheel to scale (Shift: opacity), arrow keys to nudge, right-click to reset, with an
 optional snap grid. Positions are saved per profile. Movers never touches an Edit Mode frame and locks itself in
 combat.

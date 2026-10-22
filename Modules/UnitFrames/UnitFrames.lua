@@ -1,319 +1,447 @@
 local _, ns = ...
-local Theme, Skin, Secret, Media, Style = ns.Theme, ns.Skin, ns.Secret, ns.Media, ns.Style
+local Style, Secret = ns.Style, ns.Secret
 
---[[ UnitFrames: Phoenix bar textures, class-coloured health and themed text on Blizzard's
-    Player/Target/Focus/Pet and Boss 1-5 frames, with per-frame texture, border, background and text styles,
-    portraits (game, class icon or hidden), status icons (leader, raid marker, PvP), aura icon crop, border
-    and stack font, and a range fade.
-    Values are never read: health may be secret, colours are not. The range fade hands UnitInRange's
-    (secret) answer straight to Region:SetAlphaFromBoolean. Arena enemies are CompactUnitFrames and take
-    the Group Frames style. Test frames are plain Phoenix frames drawn by the options preview code. ]]
-local UNITS = { "player", "target", "focus", "pet", "boss" }
-local FRAMES_OF = {
-    player = { "PlayerFrame" }, target = { "TargetFrame" }, focus = { "FocusFrame" }, pet = { "PetFrame" },
-    boss = { "Boss1TargetFrame", "Boss2TargetFrame", "Boss3TargetFrame", "Boss4TargetFrame", "Boss5TargetFrame" },
-}
+--[[ UnitFrames v2 (plan v2 S8): Phoenix-owned unit frames with a Blizzard fallback.
 
-local function unitDefaults(nameSize)
+    mode "phoenix"   Phoenix builds its own secure unit buttons (SecureUnitButtonTemplate) for the player, target,
+                     target of target, focus, focus target, pet, boss 1-5 and (opt-in) arena 1-5, and parks
+                     Blizzard's frames in a hidden frame. Left click targets, right click opens the unit menu,
+                     Blizzard click bindings and Clique work (ClickCastFrames). Unit Watch shows a frame only while
+                     its unit exists; every protected change runs out of combat (ns.Combat:Run).
+    mode "blizzard"  Blizzard keeps its frames; Phoenix only dresses them (Blizzard.lua, the 2.0 behaviour).
+
+    Files: UnitFrames.lua (saved shape, tags, colours and geometry: pure functions shared with the preview and
+    the smoke test), Build.lua (one frame's widgets and layout; the preview builds the very same frame without the
+    secure template), Update.lua (every element's update, fed either by the game or by plain sample data),
+    Spawn.lua (secure buttons, Blizzard parking, events, Test frames, Layout-mode movers), Blizzard.lua.
+
+    Secret values (12.x): health, power, absorbs, auras and many unit facts can be secret in combat. They only ever
+    reach sinks that accept them (StatusBar:SetValue/SetMinMaxValues, FontString:SetFormattedText,
+    Texture:SetSpriteSheetCell, Region:SetAlphaFromBoolean, Cooldown:SetCooldownFromDurationObject), through
+    APIs built for them (UnitHealthPercent with a curve, AbbreviateNumbers, C_UnitAuras.Get*). We never compare,
+    add or test one; a value we must branch on goes through `plain()` first and falls back when it is secret.
+    Switching mode needs a reload: parked Blizzard frames are only handed back by a fresh UI. ]]
+
+local UNITS = { "player", "target", "targettarget", "focus", "focustarget", "pet", "boss", "arena" }
+local GROUP = { boss = 5, arena = 5 }
+local TOKENS = {}
+for _, key in ipairs(UNITS) do
+    if GROUP[key] then
+        TOKENS[key] = {}
+        for i = 1, GROUP[key] do TOKENS[key][i] = key .. i end
+    else
+        TOKENS[key] = { key }
+    end
+end
+-- the frames Blizzard mode dresses (Blizzard.lua); the others only exist as Phoenix frames
+local LEGACY = { player = true, target = true, focus = true, pet = true, boss = true }
+-- small frames: no castbar anchor, no class power
+local SMALL = { targettarget = true, focustarget = true, pet = true }
+
+local function unit(o)
+    local ns_ = o.text or 12
     return {
-        texture = "",                                   -- "" = the theme's bar texture
-        border = Style.Border({ style = "none" }),
-        background = Style.Background({ alpha = 0 }),
-        name = Style.Text(nameSize),
-        health = Style.Text(nameSize - 1),
-        power = Style.Text(nameSize - 2),
-        portrait = "game",                              -- game | class | hide
-        icons = { leader = true, marker = true, pvp = true },
+        enabled = o.enabled ~= false,
+        width = o.w, height = o.h, point = o.point or "CENTER", x = o.x, y = o.y,
+        strata = "LOW", scale = 1, spacing = 34, growth = "DOWN",
+        -- look (texture / border / background are the 2.0 keys, still read by Blizzard mode)
+        texture = "",
+        border = Style.Border({ style = "pixel", color = false }),
+        background = Style.Background({ alpha = 0.8 }),
+        highlight = true, targetBorder = o.targetBorder or false,
+        rangeFade = o.range or false, rangeAlpha = 0.5,
+        oocFade = false, oocAlpha = 0.35,
+        tooltip = "always",
+        bar = {
+            color = o.color or "class", fixed = false, dark = false, gradient = 0.2, smooth = true,
+            reverse = false, vertical = false, bg = "dark", bgAlpha = 0.8, bgColor = false,
+        },
+        absorb = { show = true, style = "striped", alpha = 0.6, position = "attached", healAbsorb = true, prediction = true },
+        powerBar = {
+            show = o.power or "always", height = o.ph or 7, position = "inside", texture = "", smooth = true,
+            color = "type", fixed = false, gap = 1, alt = o.alt ~= false,
+        },
+        tags = { name = o.nameTag or "[name]", health = o.healthTag or "[health:percent]",
+                 power = o.powerTag or "", info = o.infoTag or "" },
+        nameLength = o.nameLength or 18, nameColor = o.nameColor or "white", hideFull = false,
+        name = Style.Text(ns_, { anchor = "LEFT", outline = "OUTLINE", shadow = false }),
+        health = Style.Text(ns_ - 1, { anchor = "RIGHT", outline = "OUTLINE", shadow = false }),
+        power = Style.Text(ns_ - 3, { anchor = "RIGHT", outline = "OUTLINE", shadow = false }),
+        info = Style.Text(ns_ - 2, { anchor = "TOPLEFT", outline = "OUTLINE", shadow = false, y = 10, show = o.infoTag ~= nil }),
+        portrait = o.portrait or "hide",                -- game (2D) | model (3D) | class | hide
+        portraitPos = o.portraitPos or "left", portraitShape = "square", portraitZoom = 0.08, portraitAlpha = 1,
+        portraitBorder = Style.Border({ style = "pixel" }),
+        icons = {
+            leader = o.leader ~= false, marker = true, pvp = false, markerSize = 16, markerAnchor = "TOP",
+            role = o.role or false, combat = o.combat or false, resting = o.resting or false,
+            elite = o.elite or false, threat = o.threat or false, ready = o.ready ~= false, size = 14,
+        },
+        auras = {
+            buffs = o.buffs or "off", debuffs = o.debuffs or "off", size = o.auraSize or 20, perRow = 8, max = o.auraMax or 8,
+            spacing = 2, growth = "RIGHT", gap = 3, buffFilter = "all", debuffFilter = "all",
+            dispel = true, desat = true, zoom = 0.08, swipe = true, tooltips = true,
+            border = Style.Border({ style = "pixel" }),
+            duration = Style.Text(9, { outline = "OUTLINE", shadow = false, anchor = "CENTER" }),
+            count = Style.Text(10, { outline = "OUTLINE", shadow = false, anchor = "BOTTOMRIGHT", x = 1, y = 1 }),
+        },
+        cast = { attach = o.cast or "none", height = 14, gap = 4 },
+        trinket = o.trinket or false, spec = o.spec or false,
     }
 end
 
+local DEFAULTS = {
+    mode = "phoenix",
+    units = {
+        player = unit({ w = 236, h = 46, x = -290, y = -190, portrait = "game", text = 13, combat = true, resting = true,
+                        role = true, infoTag = "[level]", healthTag = "[health:current-percent]", powerTag = "[power:current]" }),
+        target = unit({ w = 236, h = 46, x = 290, y = -190, portrait = "game", portraitPos = "right", text = 13, range = true,
+                        elite = true, threat = true, cast = "below", buffs = "above", debuffs = "below",
+                        infoTag = "[level] [classification]",
+                        healthTag = "[health:current-percent]", powerTag = "[power:percent]" }),
+        targettarget = unit({ w = 120, h = 24, x = 474, y = -190, text = 11, power = "off", range = true, leader = false,
+                              healthTag = "", nameLength = 12 }),
+        focus = unit({ w = 180, h = 36, x = -470, y = 40, text = 12, range = true, portrait = "game", cast = "below", debuffs = "below",
+                       auraSize = 18, auraMax = 6 }),
+        focustarget = unit({ w = 110, h = 22, x = -320, y = 40, text = 10, power = "off", range = true, leader = false,
+                             healthTag = "", nameLength = 12 }),
+        pet = unit({ w = 120, h = 22, x = -350, y = -232, text = 10, portrait = "game", power = "always", ph = 4, range = true,
+                     leader = false,
+                     healthTag = "", nameLength = 12, color = "reaction" }),
+        boss = unit({ point = "RIGHT", w = 200, h = 40, x = -260, y = 200, text = 12, portrait = "game", portraitPos = "right",
+                      color = "reaction", cast = "below",
+                      debuffs = "left", auraSize = 22, auraMax = 4, range = true, healthTag = "[health:percent]" }),
+        arena = unit({ enabled = false, point = "RIGHT", w = 200, h = 40, x = -260, y = 100, text = 12, cast = "below",
+                       range = true, trinket = true, spec = true, debuffs = "left", auraSize = 22, auraMax = 4,
+                       healthTag = "[health:percent]" }),
+    },
+    -- colours (every frame)
+    colors = {
+        low = false, mid = false, high = false, tapped = false, dead = false, offline = false,
+        absorb = false, healAbsorb = false, myHeal = false, otherHeal = false, fixed = false, charged = false,
+    },
+    numbers = "short", decimals = 1, percentDecimals = 0,
+    -- class resource (player only): combo points, holy power, chi, soul shards, arcane charges, essence, runes …
+    classPower = {
+        show = "attached", height = 6, spacing = 2, color = "power", emptyAlpha = 0.25, runesSorted = true,
+        stagger = true, hideFull = false, border = Style.Border({ style = "pixel" }),
+    },
+    -- Blizzard mode (Blizzard.lua): the 2.0 skin of Blizzard's own frames
+    texture = true, classColor = true, powerColor = true, fonts = true,
+    range = { enabled = false, alpha = 0.45 },
+    auras = { style = true, zoom = 0.08, border = Style.Border({ style = "none" }),
+        count = Style.Text(10, { outline = "OUTLINE", shadow = false }) },
+}
 local M = ns:NewModule("UnitFrames", {
     label = "UNITFRAMES", desc = "UNITFRAMES_DESC", category = "interface", order = 20, reloadOnToggle = true,
-    defaults = {
-        texture = true, classColor = true, powerColor = true, fonts = true,
-        units = { player = unitDefaults(12), target = unitDefaults(12), focus = unitDefaults(12), pet = unitDefaults(11),
-                  boss = unitDefaults(11) },
-        range = { enabled = false, alpha = 0.45 },
-        auras = { style = true, zoom = 0.08, border = Style.Border({ style = "none" }),
-            count = Style.Text(10, { outline = "OUTLINE", shadow = false }) },
-    },
+    defaults = DEFAULTS,
 })
-M.UNITS = UNITS
-M.FRAMES_OF = FRAMES_OF
-
-local healthBars, manaBars = {}, {}   -- bar -> unit key
+M.UNITS, M.TOKENS, M.GROUP, M.LEGACY, M.SMALL, M.DEFAULTS = UNITS, TOKENS, GROUP, LEGACY, SMALL, DEFAULTS
 
 local function plain(v) return not Secret.IsSecret(v) end
+M.plain = plain
 
----------------------------------------------------------------- style (shared with the options preview)
+function M:IsPhoenix() return self.db.mode == "phoenix" end
 function M:Unit(key) return self.db.units[key] or self.db.units.player end
-
-function M:BarTexture(key)
-    local u = self:Unit(key)
-    return u.texture ~= "" and Media:Bar(u.texture) or Theme:Bar()
+-- the settings key of a unit token: boss3 -> boss, targettarget -> targettarget
+function M.KeyOf(token)
+    if type(token) ~= "string" then return nil end
+    local base = token:match("^(%a+)%d$")
+    if base and GROUP[base] then return base end
+    return TOKENS[token] and token or nil
 end
 
-function M:StyleHealthBar(bar, key)
-    if self.db.texture then bar:SetStatusBarTexture(self:BarTexture(key)) end
-    local u = self:Unit(key)
-    Skin:BorderSpec(bar, u.border, "border.black")
-    Skin:Backdrop(bar, u.background, "bg.sunken")
-end
-
-function M:StylePowerBar(bar, key)
-    if self.db.texture then bar:SetStatusBarTexture(self:BarTexture(key)) end
-end
-
--- texts: { name = fs, health = { fs, … }, power = { fs, … } }; Blizzard keeps placing them.
-function M:StyleTexts(texts, key)
-    if not self.db.fonts then return end
-    local u = self:Unit(key)
-    if texts.name then Skin:TextSpec(texts.name, u.name, "unit") end
-    for _, fs in ipairs(texts.health or {}) do Skin:TextSpec(fs, u.health, "unit") end
-    for _, fs in ipairs(texts.power or {}) do Skin:TextSpec(fs, u.power, "unit") end
-end
-
----------------------------------------------------------------- Blizzard frames
-local function colorHealth(bar, unit)
-    if not (M:IsEnabled() and M.db.classColor) or not healthBars[bar] then return end
-    unit = unit or bar.unit
-    if not plain(unit) or not unit then return end
-    local isPlayer = UnitIsPlayer(unit)
-    if not plain(isPlayer) or not isPlayer then return end
-    local _, classFile = UnitClass(unit)
-    if plain(classFile) and classFile then bar:SetStatusBarColor(ns.Util.ClassColor(classFile)) end
-end
-
-local function onHealthUpdate(bar, unit)
-    local key = healthBars[bar]
-    if not key then return end
-    M:StyleHealthBar(bar, key)
-    colorHealth(bar, unit)
-end
-
-local function onManaType(bar)
-    local key = M:IsEnabled() and manaBars[bar]
-    if not key then return end
-    M:StylePowerBar(bar, key)
-    if M.db.powerColor and bar.unit and plain(bar.unit) then
-        local _, token = UnitPowerType(bar.unit)
-        local info = plain(token) and token and PowerBarColor[token]
-        if info and info.r then bar:SetStatusBarColor(info.r, info.g, info.b) end
+---------------------------------------------------------------- numbers
+-- Breakpoints for AbbreviateNumbers (it accepts secret numbers): 1.2k with one decimal, 1k with none.
+local abbrev = {}
+function M.AbbrevOptions(decimals)
+    decimals = math.max(0, math.min(2, decimals or 1))
+    if abbrev[decimals] then return abbrev[decimals] end
+    local f = 10 ^ decimals
+    local data = {}
+    for _, step in ipairs({ { 1e12, "T" }, { 1e9, "B" }, { 1e6, "M" }, { 1e3, "K" } }) do
+        local n, letter = step[1], step[2]
+        data[#data + 1] = { breakpoint = n * 10, abbreviation = letter, significandDivisor = n, fractionDivisor = 1,
+            abbreviationIsGlobal = false }
+        data[#data + 1] = { breakpoint = n, abbreviation = letter, significandDivisor = n / f, fractionDivisor = f,
+            abbreviationIsGlobal = false }
     end
+    abbrev[decimals] = { breakpointData = data }
+    return abbrev[decimals]
 end
 
-local function textsOf(frame)
-    local hb, mb = frame.healthbar, frame.manabar
-    return {
-        name = frame.name,
-        health = hb and { hb.TextString, hb.LeftText, hb.RightText } or {},
-        power = mb and { mb.TextString, mb.LeftText, mb.RightText } or {},
-    }
+local ASIAN = { koKR = true, zhCN = true, zhTW = true }
+-- A number for display: "short" (12.3K), "full" (12,345) or "asian" (万/億). Never compared or added.
+function M:Number(n)
+    local mode = self.db.numbers
+    if mode == "full" then return BreakUpLargeNumbers(n) end
+    if mode == "asian" then
+        return AbbreviateNumbers(n, { locale = ASIAN[GetLocale()] and GetLocale() or "zhCN" })
+    end
+    return AbbreviateNumbers(n, M.AbbrevOptions(self.db.decimals))
 end
 
----------------------------------------------------------------- portraits and status icons
-local keyOfFrame = {} -- unit frame -> unit key
+---------------------------------------------------------------- tags
+--[[ A tag string ("[name]  [health:percent]") compiles once into a format string and a list of value getters;
+    the text is then fs:SetFormattedText(fmt, values…). Format strings accept secret values, so a secret health
+    or power number flows straight through without being read. Literal text keeps its place; "%" is escaped.
+    Getters receive (frame, source) where source is the frame's data source (Update.lua). ]]
+local TAGS = {}
+M.TAGS = TAGS
+-- fmt uses "%s" for text and "%P" for a percentage (becomes "%.Nf%%" with the chosen decimals)
+local function tag(name, fmt, ...) TAGS[name] = { fmt = fmt, fns = { ... } } end
+local function num(kind) return function(f, s) return s:HealthText(f, kind) end end
+local function pnum(kind) return function(f, s) return s:PowerText(f, kind) end end
+local function hpct(f, s) return s:HealthPercent(f) end
+local function ppct(f, s) return s:PowerPercent(f) end
 
-local function contextual(frame)
-    local content = frame.PlayerFrameContent or frame.TargetFrameContent
-    return content and (content.PlayerFrameContentContextual or content.TargetFrameContentContextual)
-end
+tag("name", "%s", function(f, s) return s:Name(f) end)
+tag("name:short", "%s", function(f, s) return s:Name(f, 8) end)
+tag("level", "%s", function(f, s) return s:Level(f) end)
+tag("classification", "%s", function(f, s) return s:Classification(f) end)
+tag("class", "%s", function(f, s) return s:ClassName(f) end)
+tag("status", "%s", function(f, s) return s:Status(f) end)
+tag("group", "%s", function(f, s) return s:Group(f) end)
+tag("afk", "%s", function(f, s) return s:Away(f) end)
+tag("health:current", "%s", num("current"))
+tag("health:max", "%s", num("max"))
+tag("health:percent", "%P", hpct)
+tag("health:current-max", "%s / %s", num("current"), num("max"))
+tag("health:current-percent", "%s | %P", num("current"), hpct)
+tag("health:deficit", "-%s", num("deficit"))
+tag("absorbs", "%s", function(f, s) return s:AbsorbText(f) end)
+tag("power:current", "%s", pnum("current"))
+tag("power:max", "%s", pnum("max"))
+tag("power:percent", "%P", ppct)
+tag("power:current-max", "%s / %s", pnum("current"), pnum("max"))
+tag("altpower", "%s", function(f, s) return s:AltPowerText(f) end)
+-- list for the options help, in a stable order
+M.TAG_LIST = { "name", "name:short", "level", "classification", "class", "status", "group", "afk", "health:current",
+    "health:max", "health:percent", "health:current-max", "health:current-percent", "health:deficit", "absorbs",
+    "power:current", "power:max", "power:percent", "power:current-max", "altpower" }
+M.MAX_TAG_VALUES = 8
 
-local function applyIcons(frame, key)
-    local ctx = contextual(frame)
-    if not ctx then return end
-    local icons = M:Unit(key).icons
-    local on = M:IsEnabled()
-    local function set(region, show) if region then region:SetAlpha((not on or show) and 1 or 0) end end
-    set(ctx.LeaderIcon, icons.leader); set(ctx.GuideIcon, icons.leader)
-    set(ctx.RaidTargetIcon, icons.marker)
-    set(ctx.PvpIcon, icons.pvp); set(ctx.PrestigePortrait, icons.pvp); set(ctx.PrestigeBadge, icons.pvp)
-end
-
--- After Blizzard draws the portrait: class icon for players, or hidden.
-local function onPortrait(frame)
-    local key = keyOfFrame[frame]
-    local tex = key and frame.portrait
-    if not tex or not M:IsEnabled() then return end
-    local mode = M:Unit(key).portrait
-    tex:SetAlpha(mode == "hide" and 0 or 1)
-    if mode ~= "class" then return end
-    local unit = frame.unit
-    if not unit or not plain(unit) then return end
-    local isPlayer = UnitIsPlayer(unit)
-    if not plain(isPlayer) or not isPlayer then return end
-    local _, classFile = UnitClass(unit)
-    local atlas = plain(classFile) and classFile and GetClassAtlas(classFile)
-    if atlas then tex:SetAtlas(atlas) end
-end
-
----------------------------------------------------------------- aura rows (target, focus, boss)
--- Blizzard's aura container lays out its buttons from secret aura data; after each ApplyLayout we only
--- dress the buttons it holds: icon crop, an optional border on a child frame of ours, the stack font.
-local auraHosts = setmetatable({}, { __mode = "k" })
-local styledAura = setmetatable({}, { __mode = "k" })
-local auraGen = 1
-
-function M:StyleAuraIcon(button, icon, count)
-    local a = self.db.auras
-    Skin:IconFrame(button, icon, a.border, a.zoom)
-    if count then Skin:TextSpec(count, a.count, "number", "text.primary") end
-end
-
-local function afterAuraLayout(container)
-    if not (M:IsEnabled() and M.db.auras.style) or not container.auraPools then return end
-    for button in container.auraPools:EnumerateActive() do
-        if styledAura[button] ~= auraGen and button.Icon and not button:IsForbidden() then
-            styledAura[button] = auraGen
-            ns.SafeCall(M.StyleAuraIcon, M, button, button.Icon, button.Count)
+local compiled = {}
+--[[ -> { fmt = "…", getters = { fn, … }, empty = bool, percent = bool }. Unknown tags stay as literal text; values
+    beyond MAX_TAG_VALUES are dropped. `decimals` sets the percentage precision. ]]
+function M.CompileTags(str, decimals)
+    str = type(str) == "string" and str or ""
+    decimals = math.max(0, math.min(2, tonumber(decimals) or 0))
+    local key = decimals .. "\1" .. str
+    local c = compiled[key]
+    if c then return c end
+    local pct = "%%." .. decimals .. "f%%%%"
+    local parts, getters = {}, {}
+    local pos = 1
+    while pos <= #str do
+        local a, b, name = str:find("%[([%w:%-]+)%]", pos)
+        local literal = str:sub(pos, (a or (#str + 1)) - 1)
+        if literal ~= "" then parts[#parts + 1] = (literal:gsub("%%", "%%%%")) end
+        if not a then break end
+        local t = TAGS[name]
+        if t and #getters + #t.fns <= M.MAX_TAG_VALUES then
+            parts[#parts + 1] = (t.fmt:gsub("%%P", pct))
+            for _, fn in ipairs(t.fns) do getters[#getters + 1] = fn end
+        else
+            parts[#parts + 1] = (("[" .. name .. "]"):gsub("%%", "%%%%"))
         end
+        pos = b + 1
     end
+    local fmt = table.concat(parts)
+    c = { fmt = fmt, getters = getters, empty = fmt == "" }
+    compiled[key] = c
+    return c
 end
 
-local function hookAuras(frame)
-    local content = frame.TargetFrameContent
-    local container = content and content.TargetFrameContentContextual and content.TargetFrameContentContextual.Auras
-    if not container or auraHosts[container] or not container.ApplyLayout then return end
-    auraHosts[container] = true
-    hooksecurefunc(container, "ApplyLayout", afterAuraLayout)
+-- Fills fs from a compiled tag string; the values are handed over unread.
+function M.ApplyTags(fs, c, f, s)
+    if c.empty then fs:SetText(""); return end
+    local g = c.getters
+    if #g == 0 then fs:SetText((c.fmt:gsub("%%%%", "%%"))); return end
+    local v = {}
+    for i = 1, M.MAX_TAG_VALUES do v[i] = g[i] and g[i](f, s) or "" end
+    fs:SetFormattedText(c.fmt, v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8])
 end
 
----------------------------------------------------------------- range fade (friendly group members only)
-local RANGED = { target = true, focus = true, pet = true }
-local rangeDriver
-local function rangeTick()
-    for frame, key in pairs(keyOfFrame) do
-        if RANGED[key] and frame:IsShown() then
-            local unit = frame.unit
-            local grouped = false
-            if unit and plain(unit) then
-                local party, raid = UnitInParty(unit), UnitInRaid(unit)
-                grouped = (plain(party) and party) or (plain(raid) and raid ~= nil)
-            end
-            if grouped then
-                frame:SetAlphaFromBoolean(UnitInRange(unit), 1, M.db.range.alpha)
-            else
-                frame:SetAlpha(1)
-            end
-        end
+---------------------------------------------------------------- colours
+local TOKEN = {
+    low = "state.danger", mid = "state.warning", high = "state.success", tapped = "text.muted", dead = "text.disabled",
+    offline = "text.disabled", absorb = "text.primary", healAbsorb = "state.danger", myHeal = "state.success",
+    otherHeal = "state.success", fixed = "bg.raised", charged = "accent.primary",
+}
+M.COLOR_TOKENS = TOKEN
+function M:Color(which)
+    return ns.Skin:SpecColor(self.db.colors[which], TOKEN[which])
+end
+
+-- Plain colour of a unit's reaction (hostile red … friendly green). nil when it cannot be read.
+function M.ReactionColor(reaction)
+    if not plain(reaction) or type(reaction) ~= "number" then return nil end
+    local c = FACTION_BAR_COLORS and FACTION_BAR_COLORS[reaction]
+    if c then return c.r, c.g, c.b end
+    return nil
+end
+
+function M.PowerColor(token, kind)
+    if plain(token) and token and PowerBarColor then
+        local c = PowerBarColor[token] or (plain(kind) and PowerBarColor[kind])
+        if c and c.r then return c.r, c.g, c.b end
     end
+    return 0.31, 0.45, 0.85
 end
 
-function M:UpdateRange()
-    local on = self:IsEnabled() and self.db.range.enabled
-    if on and not rangeDriver then
-        rangeDriver = CreateFrame("Frame")
-        local acc = 0
-        rangeDriver:SetScript("OnUpdate", function(_, elapsed)
-            acc = acc + elapsed
-            if acc >= 0.2 then acc = 0; rangeTick() end
+-- A health colour curve (low -> mid -> high) evaluated by UnitHealthPercent(unit, true, curve), so the
+-- colour follows secret health without our code reading it. Rebuilt when a colour setting changes.
+local healthCurve
+function M:HealthCurve()
+    if healthCurve ~= nil then return healthCurve or nil end
+    healthCurve = false
+    if C_CurveUtil and C_CurveUtil.CreateColorCurve then
+        local ok, c = pcall(function()
+            local curve = C_CurveUtil.CreateColorCurve()
+            curve:SetType(Enum.LuaCurveType.Linear)
+            curve:AddPoint(0, CreateColor(self:Color("low")))
+            curve:AddPoint(0.5, CreateColor(self:Color("mid")))
+            curve:AddPoint(1, CreateColor(self:Color("high")))
+            return curve
         end)
+        if ok and c then healthCurve = c end
     end
-    if rangeDriver then rangeDriver:SetShown(on) end
-    if not on then
-        for frame, key in pairs(keyOfFrame) do if RANGED[key] then frame:SetAlpha(1) end end
-    end
+    return healthCurve or nil
 end
 
-local function eachFrame(fn)
-    for _, key in ipairs(UNITS) do
-        for _, name in ipairs(FRAMES_OF[key]) do
-            local frame = _G[name]
-            if frame then fn(frame, key) end
+-- The plain colour the health curve would give at fraction p (preview, sample frames, tests).
+function M:CurveColor(p)
+    p = math.max(0, math.min(1, p or 1))
+    local a, b, t
+    if p < 0.5 then a, b, t = { self:Color("low") }, { self:Color("mid") }, p / 0.5
+    else a, b, t = { self:Color("mid") }, { self:Color("high") }, (p - 0.5) / 0.5 end
+    return a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t, a[3] + (b[3] - a[3]) * t
+end
+
+-- An alpha curve: 0 at full health, 1 below it ("hide when full" health text).
+local fullCurve
+function M.FullCurve()
+    if fullCurve ~= nil then return fullCurve or nil end
+    fullCurve = false
+    if C_CurveUtil and C_CurveUtil.CreateCurve then
+        local ok, c = pcall(function()
+            local curve = C_CurveUtil.CreateCurve()
+            curve:SetType(Enum.LuaCurveType.Step)
+            curve:AddPoint(0, 1)
+            curve:AddPoint(0.9999, 0)
+            return curve
+        end)
+        if ok and c then fullCurve = c end
+    end
+    return fullCurve or nil
+end
+
+function M:ResetCurves() healthCurve = nil end
+
+---------------------------------------------------------------- geometry (pure)
+--[[ Where a frame's parts go, in frame units from its TOPLEFT (x right, y down):
+    returns { health = {x, y, w, h}, power = {…}|nil, portrait = {…}|nil, classPower = {…}|nil }.
+    The portrait takes a square at one side ("left"/"right") or fills the health bar ("overlay"); the power bar
+    sits inside the frame at the bottom ("inside"), hangs under it ("below") or is hidden. ]]
+function M.Geometry(u, opts)
+    opts = opts or {}
+    local W, H = u.width, u.height
+    local pb = u.powerBar
+    local showPower = pb.show ~= "off" and not opts.noPower
+    local ph = showPower and math.max(1, math.min(pb.height, H - 6)) or 0
+    local g = {}
+    local x0, w = 0, W
+    if u.portrait ~= "hide" and u.portraitPos ~= "overlay" then
+        local size = H
+        if u.portraitPos == "right" then
+            g.portrait = { W - size, 0, size, size }
+        else
+            g.portrait = { 0, 0, size, size }
+            x0 = size + 1
+        end
+        w = W - size - 1
+    end
+    if showPower and pb.position == "inside" then
+        local gap = pb.gap or 1
+        g.health = { x0, 0, w, H - ph - gap }
+        g.power = { x0, H - ph, w, ph }
+    else
+        g.health = { x0, 0, w, H }
+        if showPower then g.power = { x0 + 4, H + (pb.gap or 1), w - 8, ph } end
+    end
+    if u.portrait ~= "hide" and u.portraitPos == "overlay" then g.portrait = { g.health[1], 0, g.health[3], g.health[4] } end
+    if opts.classPower then
+        local cp = opts.classPower
+        if cp.show == "attached" then
+            g.classPower = { x0, -(cp.height + 2), w, cp.height }
+        elseif cp.show == "detached" then
+            g.classPower = { x0, H + ((g.power and pb.position ~= "inside") and (ph + 6) or 4), w, cp.height }
         end
     end
+    return g
 end
 
+-- Slots of n pips across width w with spacing s: { {x, w}, … } (pixel-rounded, the last one takes the rest).
+function M.Pips(n, w, s)
+    local out = {}
+    if n < 1 then return out end
+    local each = math.floor((w - (n - 1) * s) / n)
+    local x = 0
+    for i = 1, n do
+        local width = (i == n) and (w - x) or each
+        out[i] = { x, width }
+        x = x + each + s
+    end
+    return out
+end
+
+-- Aura slot offsets for n icons of size `size`, `perRow` per line, growing along `growth` ("RIGHT"/"LEFT"), lines
+-- stacking away from the frame (up when the row sits above, down otherwise).
+function M.AuraSlots(n, size, perRow, spacing, growth, up)
+    local out = {}
+    perRow = math.max(1, perRow)
+    for i = 1, n do
+        local col, row = (i - 1) % perRow, math.floor((i - 1) / perRow)
+        local x = col * (size + spacing)
+        if growth == "LEFT" then x = -x end
+        local y = row * (size + spacing)
+        out[i] = { x, up and y or -y }
+    end
+    return out
+end
+
+---------------------------------------------------------------- lifecycle
 function M:OnEnable()
-    eachFrame(function(frame, key)
-        keyOfFrame[frame] = key
-        if frame.healthbar then healthBars[frame.healthbar] = key end
-        if frame.manabar then manaBars[frame.manabar] = key end
-        Skin:Register(frame, function(f) M:StyleTexts(textsOf(f), key) end)
-        hookAuras(frame)
-    end)
-    hooksecurefunc("UnitFrameHealthBar_Update", onHealthUpdate)
-    hooksecurefunc("UnitFrameManaBar_UpdateType", onManaType)
-    hooksecurefunc("UnitFramePortrait_Update", onPortrait)
-    self:Refresh()
-    ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
+    if self:IsPhoenix() then
+        self:EnablePhoenix()  -- Spawn.lua
+    else
+        self:EnableBlizzard() -- Blizzard.lua
+    end
     ns.Events:On("PLAYER_REGEN_DISABLED", self, function() M:ShowTest(false) end)
 end
 
 function M:OnDisable()
     self:ShowTest(false)
-    self:UpdateRange()
-    eachFrame(applyIcons)
+    if not self:IsPhoenix() then self:DisableBlizzard() end
 end
 
 function M:Refresh()
-    for bar in pairs(healthBars) do onHealthUpdate(bar) end
-    for bar in pairs(manaBars) do onManaType(bar) end
-    eachFrame(function(frame, key)
-        if healthBars[frame.healthbar] then self:StyleTexts(textsOf(frame), key) end
-        applyIcons(frame, key)
-        if frame.portrait and frame.unit and frame:IsShown() then
-            if self:Unit(key).portrait ~= "class" then UnitFramePortrait_Update(frame) end
-            onPortrait(frame)
-        end
-    end)
-    self:UpdateRange()
-    auraGen = auraGen + 1
-    for container in pairs(auraHosts) do afterAuraLayout(container) end
+    self:ResetCurves()
+    if self:IsPhoenix() then self:RefreshPhoenix() else self:RefreshBlizzard() end
     if self.testShown then self:ShowTest(true) end
 end
 
----------------------------------------------------------------- test frames
--- Plain frames at the real frames' places, drawn by the options preview with your styles. Out of combat only.
-local tests = {}
-local TEST_UNITS = { { "target", "TargetFrame" }, { "focus", "FocusFrame" }, { "boss", "Boss1TargetFrame", 1 },
-    { "boss", "Boss2TargetFrame", 2 }, { "boss", "Boss3TargetFrame", 3 } }
-
-local function testFrame(i)
-    local t = tests[i]
-    if t then return t end
-    local def = ns.Previews and ns.Previews.kinds.unitframe
-    if not def then return nil end
-    t = CreateFrame("Frame", nil, UIParent)
-    t:SetSize(236 * 1.35, 62 * 1.35)
-    t:SetFrameStrata("HIGH")
-    t.states = {}
-    t.draw = def.build(t, M)
-    t.tag = t:CreateFontString(nil, "OVERLAY")
-    t.tag:SetPoint("BOTTOMRIGHT", t, "TOPRIGHT", -6, -10)
-    tests[i] = t
-    return t
+function M:OnSettingChanged(path)
+    if type(path) == "string" and path:find("^colors") then self:ResetCurves() end
+    self:Refresh()
 end
 
+-- Test frames: Phoenix frames filled with sample data where the real ones sit (out of combat only).
 function M:ShowTest(show)
     if show and InCombatLockdown() then return false end
     self.testShown = show and true or nil
-    for i, spec in ipairs(TEST_UNITS) do
-        local key, name, index = spec[1], spec[2], spec[3]
-        local t = show and testFrame(i) or tests[i]
-        if t then
-            if show then
-                local real = _G[name]
-                t:ClearAllPoints()
-                t:SetScale((real and real:GetEffectiveScale() or 1) / UIParent:GetEffectiveScale() * 0.75)
-                local x, y
-                if real then x, y = real:GetCenter() end
-                if x and y then
-                    local k = real:GetEffectiveScale() / t:GetEffectiveScale()
-                    t:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x * k, y * k)
-                else
-                    t:SetPoint("RIGHT", UIParent, "RIGHT", -120, 160 - (index or 0) * 90)
-                end
-                t.states.low = index == 2
-                t.states.range = key == "focus" and self.db.range.enabled
-                ns.SafeCall(t.draw, t, key)
-                Skin:Text(t.tag, "small", "accent.primary")
-                t.tag:SetText(ns.L.UF_TEST_TAG:format(index and (ns.L.UF_BOSS .. " " .. index) or ns.L["UF_" .. key:upper()]))
-                t:Show()
-            else
-                t:Hide()
-            end
-        end
+    if self:IsPhoenix() then
+        return self:ShowPhoenixTest(show)
     end
-    return true
+    return self:ShowBlizzardTest(show)
 end

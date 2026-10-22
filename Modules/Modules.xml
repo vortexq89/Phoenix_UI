@@ -10,6 +10,10 @@
     <Script file="ActionBars\Bars.lua"/>
     <Script file="ActionBars\Extras.lua"/>
     <Script file="UnitFrames\UnitFrames.lua"/>
+    <Script file="UnitFrames\Blizzard.lua"/>
+    <Script file="UnitFrames\Build.lua"/>
+    <Script file="UnitFrames\Update.lua"/>
+    <Script file="UnitFrames\Spawn.lua"/>
     <Script file="GroupFrames\GroupFrames.lua"/>
     <Script file="CastBars\CastBars.lua"/>
     <Script file="Auras\Auras.lua"/>

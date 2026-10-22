@@ -3,6 +3,33 @@
 ## 2.0.0-beta1
 
 ### New
+- **Unit frames** (plan v2 stage S8): Phoenix now draws its own player, target, target of target, focus, focus
+  target, pet and boss 1–5 frames, plus optional arena 1–5 frames (Unit Frames → *Unit frames*: *Phoenix frames*,
+  the default; *Blizzard frames, reskinned* keeps the game's frames with the 1.x skin after a reload). Per frame
+  (chips with Shift multi-edit and *Apply to: All*): show, size, scale, strata, position, stacking for boss/arena,
+  bar texture, any border style, background, mouseover highlight, a target mark on boss/arena frames, unit
+  tooltips always / out of combat / never, range fade and fade out of combat. Health: class, reaction, by health
+  left (three-step colour curve), fixed or theme colour, dark mode, shading, smooth bars, fill from the right,
+  vertical bars, background style; absorb shields (striped or solid, after health or from the right edge), heal
+  absorbs and incoming heals; state colours (tapped, dead, offline). Power: always / mana users only / off, inside
+  or below the frame, height, gap, texture, colour, smooth, and the encounter (alternate) power bar. Class
+  resource on the player: combo points (charged ones coloured), holy power, soul shards, chi, arcane charges,
+  essence, runes (sorted by time left) and a Brewmaster stagger bar, attached or on its own mover, pip border,
+  spacing, empty opacity, hide when idle. **Text tags**: four texts per frame (name, health, power, extra) written
+  with tags such as `[name]`, `[health:current-percent]`, `[power:percent]`, `[status]` (20 tags, up to 8 per
+  text), each with its own font, size, outline, colour and position; name length and colour, hide health text at
+  full, number style (12.3K, 12,345 or 万/億) and decimals. Portraits: 2D, live 3D model, class icon or none, left,
+  right or behind the health bar, square or circle, opacity and border. Icons: raid marker (size and place),
+  leader, role, PvP, combat, resting, elite/rare star, threat glow and ready check. Auras: buffs and debuffs above
+  or below (all / mine / raid), size, per row, most, spacing, grow direction, dispel-type colours, grey for other
+  players' debuffs on enemies, icon zoom and border, time-left sweep and text, stack count, tooltips. Arena: PvP
+  trinket and specialization. A cast bar anchor per frame (below / above / not attached) where Blizzard's own
+  target, focus and boss cast bars sit until Phoenix cast bars arrive (S9). Every frame moves in **Layout** mode;
+  **Test frames** shows all of them with sample data; the page has a live pinned preview with low-health,
+  out-of-range and combat states. Frames are secure unit buttons (left click targets, right click opens the unit
+  menu, Clique and Blizzard click bindings work) and are built for 12.x secret values: health colour and
+  percentages come from `UnitHealthPercent` curves and every number goes straight into the game's text and bar
+  functions, never compared or added in addon code. 200 settings (target 150).
 - **Action bars** (plan v2 stage S7): Phoenix now owns its action bars (Action Bars → *Bars owned by*: *Phoenix*, the
   default; *Blizzard (Edit Mode)* hands them back to Edit Mode after a reload). Bars 1–8, pet, stance and a new **item bar**
   (usable quest items in your bags plus any item IDs you list). Per bar: buttons, lines, width/height or square,

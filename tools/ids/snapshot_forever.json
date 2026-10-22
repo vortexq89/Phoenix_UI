@@ -8,6 +8,18 @@
    "height": 64,
    "width": 64
   },
+  "UI-HUD-UnitFrame-Player-CombatIcon": {
+   "height": 16,
+   "width": 16
+  },
+  "UI-HUD-UnitFrame-Player-Group-LeaderIcon": {
+   "height": 16,
+   "width": 16
+  },
+  "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star": {
+   "height": 26,
+   "width": 26
+  },
   "classicon-deathknight": {
    "height": 128,
    "width": 128
@@ -193,17 +205,11 @@
   "Interface\\Icons\\Achievement_BG_winWSG": {
    "fileDataID": 236396
   },
-  "Interface\\Icons\\Achievement_Boss_Ragnaros": {
-   "fileDataID": 254652
-  },
   "Interface\\Icons\\Achievement_Character_Human_Male": {
    "fileDataID": 236448
   },
   "Interface\\Icons\\Achievement_GuildPerk_EverybodysFriend": {
    "fileDataID": 442272
-  },
-  "Interface\\Icons\\ClassIcon_Mage": {
-   "fileDataID": 626001
   },
   "Interface\\Icons\\INV_Chest_Plate04": {
    "fileDataID": 132739
@@ -292,9 +298,6 @@
   "Interface\\Icons\\Spell_Frost_IceStorm": {
    "fileDataID": 135857
   },
-  "Interface\\Icons\\Spell_Frost_SummonWaterElemental_2": {
-   "fileDataID": 135862
-  },
   "Interface\\Icons\\Spell_Holy_MagicalSentry": {
    "fileDataID": 135932
   },
@@ -315,6 +318,9 @@
   },
   "Interface\\Minimap\\MinimapArrow": {
    "fileDataID": 136431
+  },
+  "Interface\\TargetingFrame\\UI-RaidTargetingIcons": {
+   "fileDataID": 137009
   },
   "Interface\\TargetingFrame\\UI-StatusBar": {
    "fileDataID": 137012

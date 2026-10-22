@@ -1549,6 +1549,7 @@ end)
 try("paired cells", function()
     local C = ns.Config
     local page = C:Show("UnitFrames")
+    if page.tabs then page.tabs.onChange(page.tabs, 1) end -- the Frames tab: size and position rows pair up
     rawset(page.scroll.child, "GetWidth", function() return 1100 end)
     page:Layout()
     local cells = 0
@@ -1908,6 +1909,86 @@ try("action bars depth", function()
         local n = Config.CountSettings(ns.options[key])
         assert(n >= target and Config.DEPTH[key] == target, ("%s has %d of %d settings"):format(key, n, target))
     end
+end)
+
+
+-- unit frames (S8): tag compiler, number breakpoints, pure geometry, Phoenix frames, movers, cast bar hook, depth
+try("unit frame tags", function()
+    local M = ns.modules.UnitFrames
+    local c = M.CompileTags("[name] 100% [health:percent]", 1)
+    assert(c.fmt == "%s 100%% %.1f%%", "tag format: " .. tostring(c.fmt))
+    assert(#c.getters == 2 and not c.empty, "tag getters")
+    assert(M.CompileTags("[nope]", 0).fmt == "[nope]", "unknown tags stay literal")
+    assert(M.CompileTags("", 0).empty, "an empty tag string is empty")
+    assert(M.CompileTags("[name]", 0) == M.CompileTags("[name]", 0), "compiled tags are cached")
+    local many = M.CompileTags(("[name]"):rep(12), 0)
+    assert(#many.getters == M.MAX_TAG_VALUES, "more than 8 values are dropped")
+    for _, name in ipairs(M.TAG_LIST) do assert(M.TAGS[name], "listed tag missing: " .. name) end
+    local data = M.AbbrevOptions(1).breakpointData
+    assert(#data == 8 and data[1].breakpoint == 1e13 and data[2].fractionDivisor == 10, "abbreviation breakpoints")
+    assert(M.AbbrevOptions(0).breakpointData[2].fractionDivisor == 1, "no-decimal breakpoints")
+end)
+try("unit frame geometry", function()
+    local M = ns.modules.UnitFrames
+    local u = M.db.units.player
+    local g = M.Geometry({ width = 200, height = 40, portrait = "game", portraitPos = "left",
+        powerBar = { show = "always", height = 8, position = "inside", gap = 1 } })
+    assert(g.portrait[3] == 40 and g.health[1] == 41 and g.health[3] == 159, "portrait on the left")
+    assert(g.power[2] == 32 and g.power[4] == 8 and g.health[4] == 31, "inside power bar")
+    g = M.Geometry({ width = 200, height = 40, portrait = "hide", powerBar = { show = "off", height = 8 } })
+    assert(not g.portrait and not g.power and g.health[3] == 200, "no portrait, no power")
+    local pips = M.Pips(5, 100, 2)
+    assert(#pips == 5 and pips[1][2] == 18 and pips[5][1] + pips[5][2] == 100, "pips fill the width")
+    local slots = M.AuraSlots(10, 20, 8, 2, "LEFT", true)
+    assert(slots[2][1] == -22 and slots[9][1] == 0 and slots[9][2] == 22, "aura slots wrap and grow")
+    assert(M.ClassPowerKind("ROGUE") == "ComboPoints" and M.ClassPowerKind("DRUID", nil, "ENERGY") == "ComboPoints"
+        and M.ClassPowerKind("DRUID", nil, "MANA") == nil and M.ClassPowerKind("MONK", 268) == "Stagger"
+        and M.ClassPowerKind("WARRIOR") == nil, "class power kinds")
+    assert(M.KeyOf("boss3") == "boss" and M.KeyOf("targettarget") == "targettarget" and M.KeyOf("raid1") == nil, "KeyOf")
+    assert(u.enabled and M.DEFAULTS.units.arena.enabled == false, "arena frames are off by default")
+end)
+try("unit frames phoenix", function()
+    local M = ns.modules.UnitFrames
+    assert(M:IsPhoenix(), "Phoenix frames are the default")
+    for _, key in ipairs({ "player", "target", "targettarget", "focus", "focustarget", "pet", "boss" }) do
+        local list = M.frames[key]
+        assert(list and list[1] and list[1].layoutDone, key .. " frame was not built")
+        assert(list[1].watched, key .. " is not a secure unit button")
+    end
+    assert(#M.frames.boss == 5, "five boss frames")
+    for _, f in ipairs(M.frames.arena or {}) do assert(not f.watched, "an arena frame is watched while off") end
+    local movers = ns:GetModule("Movers")
+    local e = movers and movers:GetEntry("uf.player")
+    assert(e and e.store and e.store.active(), "the player frame has no mover")
+    local st = e.store.get()
+    e.store.set({ point = st.point, x = st.x + 5, y = st.y }); assert(M.db.units.player.x == st.x + 5, "mover set")
+    e.store.reset(); assert(M.db.units.player.x == M.DEFAULTS.units.player.x, "mover reset")
+    assert(M:CastBarAnchor("target") and M:CastBarAnchor("boss", 3), "no cast bar anchor for S9")
+    -- a sample frame builds, lays out and updates with every element on
+    local f = M:Build(env.UIParent, "target", { sample = M.SampleData("target", 1) })
+    M:Layout(f); M:UpdateAll(f)
+    local u = M.db.units.target
+    for _, mode in ipairs({ "class", "reaction", "health", "fixed", "theme" }) do u.bar.color = mode; M:UpdateHealth(f, M.Sample) end
+    for _, mode in ipairs({ "model", "class", "hide", "game" }) do u.portrait = mode; M:Layout(f); M:UpdatePortrait(f, M.Sample) end
+    u.bar.color = M.DEFAULTS.units.target.bar.color
+    local p = M:Build(env.UIParent, "player", { sample = M.SampleData("player", 1) })
+    M:Layout(p); M:UpdateAll(p)
+    for _, n in ipairs({ "full", "asian", "short" }) do M.db.numbers = n; assert(M:Number(12345) ~= nil, "number " .. n) end
+    assert(M:ShowTest(true) and M.testShown and M.frames.boss[2].sample, "Phoenix test frames")
+    assert(M:ShowTest(false) and not M.testShown and not M.frames.boss[2].sample, "Phoenix test frames did not hide")
+end)
+try("unit frames blizzard fallback", function()
+    local M = ns.modules.UnitFrames
+    M.db.mode = "blizzard"
+    assert(M:ShowTest(true) and M.testShown, "Blizzard-mode test frames")
+    assert(M:ShowTest(false) and not M.testShown, "Blizzard-mode test frames did not hide")
+    M:RefreshBlizzard(); M:UpdateBlizzardRange()
+    M.db.mode = "phoenix"
+end)
+try("unit frames depth (S8)", function()
+    local n = ns.Config.CountSettings(ns.options.UnitFrames)
+    assert(n >= 150 and ns.Config.DEPTH.UnitFrames == 150, ("UnitFrames has %d of 150 settings"):format(n))
+    print(("  UnitFrames settings: %d"):format(n))
 end)
 
 fire("PLAYER_LOGOUT")
