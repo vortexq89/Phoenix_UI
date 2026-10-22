@@ -36,15 +36,56 @@ local Live = {}
 M.Live = Live
 
 function Live:Exists(f) return yes(UnitExists(f.unit)) end
+-- A plain name's nickname (General list "Name=Nick"), else the name itself.
+function M.Nickname(name)
+    if not plain(name) or type(name) ~= "string" then return name end
+    local nicks = M.db and M.db.nicknames
+    if type(nicks) ~= "string" or nicks == "" then return name end
+    return M.ParseNicknames(nicks)[name] or name
+end
 function Live:Name(f, n)
     local name = UnitName(f.unit)
     if name == nil then return "" end
-    return M.Truncate(name, n or M:Unit(f.unitKey).nameLength)
+    return M.Truncate(M.Nickname(name), n or M:Unit(f.unitKey).nameLength)
 end
 function Live:Level(f)
     local lvl = UnitEffectiveLevel(f.unit)
     if plain(lvl) and type(lvl) == "number" and lvl <= 0 then return "??" end
     return lvl or ""
+end
+-- The level in the game's difficulty colour (plain levels only; a secret one is drawn as is).
+function M.ColorLevel(lvl)
+    if not plain(lvl) or type(lvl) ~= "number" then return lvl or "" end
+    if lvl <= 0 then return "|cffff2020??|r" end
+    local c = GetCreatureDifficultyColor and GetCreatureDifficultyColor(lvl)
+    if not c then return tostring(lvl) end
+    return ("|cff%02x%02x%02x%d|r"):format(math.floor(c.r * 255), math.floor(c.g * 255), math.floor(c.b * 255), lvl)
+end
+function Live:LevelColored(f) return M.ColorLevel(UnitEffectiveLevel(f.unit)) end
+-- The player's threat on the unit as a percentage (0-100; may be secret: it only reaches the format string).
+function Live:ThreatPercent(f)
+    if f.unit == "player" then return 0 end
+    local _, _, pct = UnitDetailedThreatSituation("player", f.unit)
+    if pct == nil then return 0 end
+    return pct
+end
+-- An arena enemy's specialization (its name), from the arena opponent spec; "" elsewhere.
+function M.ArenaSpecID(unit)
+    local index = type(unit) == "string" and tonumber(unit:match("^arena(%d)$"))
+    local specID = index and GetArenaOpponentSpec and GetArenaOpponentSpec(index)
+    if plain(specID) and type(specID) == "number" and specID > 0 then return specID end
+    return nil
+end
+function Live:SpecName(f)
+    local specID = M.ArenaSpecID(f.unit)
+    if not specID then return "" end
+    local _, name = GetSpecializationInfoByID(specID)
+    return name or ""
+end
+function Live:TargetName(f)
+    local name = UnitName(f.unit .. "target")
+    if name == nil then return "" end
+    return M.Truncate(M.Nickname(name), M:Unit(f.unitKey).nameLength)
 end
 function Live:Classification(f)
     local c = UnitClassification(f.unit)
@@ -119,8 +160,8 @@ function Live:HealthPercent(f) return ScaleTo100 and UnitHealthPercent(f.unit, t
 function Live:AbsorbText(f) return M:Number(UnitGetTotalAbsorbs(f.unit)) end
 function Live:Absorbs(f) return UnitGetTotalAbsorbs(f.unit) end
 function Live:HealAbsorbs(f) return UnitGetTotalHealAbsorbs(f.unit) end
-function Live:IncomingHeals(f)
-    local v = UnitGetIncomingHeals(f.unit)
+function Live:IncomingHeals(f, mine)
+    local v = UnitGetIncomingHeals(f.unit, mine and "player" or nil)
     if plain(v) and v == nil then return 0 end
     return v
 end
@@ -167,6 +208,12 @@ function Live:HealthFraction() return nil end
 function Live:Leader(f) return yes(UnitIsGroupLeader(f.unit)) end
 function Live:RaidMarker(f) return GetRaidTargetIndex(f.unit) end
 function Live:Role(f)
+    -- arena enemies have no group role: their spec's role
+    local specID = M.ArenaSpecID(f.unit)
+    if specID and GetSpecializationRoleByID then
+        local role = GetSpecializationRoleByID(specID)
+        return plain(role) and role ~= "NONE" and role or nil
+    end
     local r = UnitGroupRolesAssigned(f.unit)
     return plain(r) and r ~= "NONE" and r or nil
 end
@@ -200,12 +247,32 @@ function Live:InRange(f)
     if u == "player" then return true end
     local grouped = yes(UnitInParty(u)) or (plain(UnitInRaid(u)) and UnitInRaid(u) ~= nil)
     if grouped then return UnitInRange(u) end -- may be secret: only ever passed to SetAlphaFromBoolean
+    -- a spell picked for range (arena: a 40 yd spell) answers in combat too; its answer may be secret
+    local spell = M:Unit(f.unitKey).rangeSpell
+    if type(spell) == "string" and spell ~= "" and C_Spell and C_Spell.IsSpellInRange then
+        local ok, near = pcall(C_Spell.IsSpellInRange, tonumber(spell) or spell, u)
+        if ok and near ~= nil then return near end
+    end
     if InCombatLockdown() then return true end -- distance checks on other units are combat-restricted
     local ok, near = pcall(CheckInteractDistance, u, 4)
     if ok and plain(near) then return near and true or false end
     return true
 end
 function Live:IsTarget(f) return f.unit ~= "target" and yes(UnitIsUnit(f.unit, "target")) end
+function Live:IsFocus(f) return f.unit ~= "focus" and yes(UnitIsUnit(f.unit, "focus")) end
+-- Who of my group targets this unit: class files of the player and party members (max 5).
+function Live:TargetedBy(f)
+    local out = {}
+    for _, who in ipairs({ "player", "party1", "party2", "party3", "party4" }) do
+        if yes(UnitExists(who)) and yes(UnitIsUnit(who .. "target", f.unit)) then
+            local _, file = UnitClass(who)
+            out[#out + 1] = plain(file) and file or "PRIEST"
+        end
+    end
+    return out
+end
+-- Out of sight (stealth, arena pillars): the unit exists but cannot be seen.
+function Live:Hidden(f) return not yes(UnitIsVisible(f.unit)) end
 
 ---------------------------------------------------------------- sample source
 -- f.sample = { name, level, class, classification, hp, hpMax, absorb, healAbsorb, heal, power, powerMax, powerToken,
@@ -214,7 +281,7 @@ local Sample = {}
 M.Sample = Sample
 local function sv(f) return f.sample or {} end
 function Sample:Exists() return true end
-function Sample:Name(f, n) return M.Truncate(sv(f).name or "", n or M:Unit(f.unitKey).nameLength) end
+function Sample:Name(f, n) return M.Truncate(M.Nickname(sv(f).name or ""), n or M:Unit(f.unitKey).nameLength) end
 function Sample:Level(f) return sv(f).level or "" end
 function Sample:Classification(f) return CLASSIFICATION[sv(f).classification or ""] or "" end
 function Sample:RawClassification(f) return sv(f).classification or "normal" end
@@ -245,7 +312,11 @@ function Sample:HealthFraction(f) local s = sv(f); return (s.hp or 0) / math.max
 function Sample:AbsorbText(f) return M:Number(sv(f).absorb or 0) end
 function Sample:Absorbs(f) return sv(f).absorb or 0 end
 function Sample:HealAbsorbs(f) return sv(f).healAbsorb or 0 end
-function Sample:IncomingHeals(f) return sv(f).heal or 0 end
+function Sample:IncomingHeals(f, mine)
+    local s = sv(f)
+    if mine then return s.myHeal or math.floor((s.heal or 0) * 0.6) end
+    return s.heal or 0
+end
 function Sample:SpellCost(f) return sv(f).cost end
 function Sample:PowerType(f)
     local t = sv(f).powerToken or "MANA"
@@ -279,6 +350,13 @@ function Sample:Threat(f) return sv(f).threat end
 function Sample:ReadyCheck(f) return sv(f).ready end
 function Sample:InRange(f) return not sv(f).far end
 function Sample:IsTarget(f) return sv(f).isTarget or false end
+function Sample:IsFocus(f) return sv(f).isFocus or false end
+function Sample:TargetedBy(f) return sv(f).targetedBy or {} end
+function Sample:Hidden(f) return sv(f).stealth or false end
+function Sample:ThreatPercent(f) return sv(f).threatPct or 0 end
+function Sample:LevelColored(f) return M.ColorLevel(sv(f).level) end
+function Sample:SpecName(f) return sv(f).specName or "" end
+function Sample:TargetName(f) return sv(f).targetName or "" end
 
 function M:SourceOf(f) return f.sample and Sample or Live end
 
@@ -363,6 +441,9 @@ function M:UpdatePrediction(f, src)
     f.HealPred:SetShown(ab.prediction)
     f.HealPred:SetMinMaxValues(0, max)
     f.HealPred:SetValue(ab.prediction and src:IncomingHeals(f) or 0)
+    f.HealMine:SetShown(ab.prediction)
+    f.HealMine:SetMinMaxValues(0, max)
+    f.HealMine:SetValue(ab.prediction and src:IncomingHeals(f, true) or 0)
 end
 
 ---------------------------------------------------------------- power
@@ -391,14 +472,31 @@ function M:UpdatePower(f, src)
         r, g, b = M.PowerColor(token, kind)
     end
     f.Power:SetStatusBarColor(r, g, b)
+    M.PowerGradient(f.Power, pb.gradient, r, g, b)
     f.Power.bg:SetVertexColor(r * 0.25, g * 0.25, b * 0.25, 0.9)
     self:UpdateCost(f, src, kind)
     self:UpdateAltPower(f, src)
 end
 
+-- A power fill that darkens along its length ("horizontal") or height ("vertical"); "none" is flat.
+function M.PowerGradient(bar, mode, r, g, b)
+    local tex = bar:GetStatusBarTexture()
+    if not (tex and tex.SetGradient) then return end
+    if mode == "horizontal" or mode == "vertical" then
+        tex:SetVertexColor(1, 1, 1)
+        tex:SetGradient(mode == "horizontal" and "HORIZONTAL" or "VERTICAL", CreateColor(r * 0.55, g * 0.55, b * 0.55, 1),
+            CreateColor(r, g, b, 1))
+        bar.gradientOn = true
+    elseif bar.gradientOn then
+        tex:SetGradient("HORIZONTAL", CreateColor(r, g, b, 1), CreateColor(r, g, b, 1))
+        bar.gradientOn = nil
+    end
+end
+
 function M:UpdateCost(f, src, kind)
     local pb = self:Unit(f.unitKey).powerBar
-    local cost = pb.cost and f.Power:IsShown() and src:SpellCost(f, kind) or nil
+    -- (the cost is drawn back from a left-to-right fill's end only)
+    local cost = pb.cost and f.Power:IsShown() and (pb.direction or "RIGHT") == "RIGHT" and src:SpellCost(f, kind) or nil
     f.CostPred:SetShown(cost ~= nil)
     if cost then
         f.CostPred:SetMinMaxValues(0, src:PowerMax(f))
@@ -464,12 +562,22 @@ function M:UpdateTexts(f, src)
     end
     M.ApplyTags(f.PowerText, c.power, f, src)
     M.ApplyTags(f.InfoText, c.info, f, src)
+    if f.Strip:IsShown() and f.compiledStrip then M.ApplyTags(f.Strip.text, f.compiledStrip, f, src) end
 end
 
 ---------------------------------------------------------------- portrait
+-- The game's art for an elite (winged gold), rare elite (gold) or rare (silver star) portrait; nil for others.
+local PORTRAIT_ART = { elite = "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged",
+    worldboss = "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged", rareelite = "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold",
+    rare = "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star" }
+M.PORTRAIT_ART = PORTRAIT_ART
+
 function M:UpdatePortrait(f, src)
     local u = self:Unit(f.unitKey)
     if not f.PortraitHolder:IsShown() then return end
+    local art = u.portraitArt and u.portraitPos ~= "overlay" and PORTRAIT_ART[src:RawClassification(f)]
+    if art then f.PortraitArt:SetAtlas(art) end
+    f.PortraitArt:SetShown(art and true or false)
     local mode = u.portrait
     if mode == "model" then
         if f.sample then
@@ -521,9 +629,12 @@ local function marker(f, src, ic)
     if ic.marker then M.ShowMarker(f.Marker, src:RaidMarker(f)) else f.Marker:Hide() end
 end
 
-local function roleAndStates(f, src, ic)
+local function roleAndStates(f, src, ic, u)
     f.Leader:SetShown(ic.leader and src:Leader(f))
-    local role = ic.role and src:Role(f)
+    -- arena: the healer badge shows the role icon for healers even with role icons off
+    local healerOnly = not ic.role and u.widgets and u.widgets.healer
+    local role = (ic.role or healerOnly) and src:Role(f)
+    if healerOnly and role ~= "HEALER" then role = nil end
     if role then f.Role:SetAtlas(GetMicroIconForRole(role)) end
     f.Role:SetShown(role and true or false)
     f.Combat:SetShown(ic.combat and src:InCombat(f))
@@ -583,7 +694,7 @@ function M:UpdateIndicators(f, src)
     local u = self:Unit(f.unitKey)
     local ic = u.icons
     marker(f, src, ic)
-    roleAndStates(f, src, ic)
+    roleAndStates(f, src, ic, u)
     elite(f, src, ic)
     threatAndReady(f, src, ic)
     f.TargetMark:SetShown(u.targetBorder and src:IsTarget(f))
@@ -594,6 +705,7 @@ function M:UpdateRange(f, src)
     local u = self:Unit(f.unitKey)
     local alpha = 1
     if u.oocFade and not f.sample and not InCombatLockdown() then alpha = u.oocAlpha end
+    if f.Trinket then alpha = self:ArenaAlpha(f, alpha) end
     if not u.rangeFade then f:SetAlpha(alpha); return end
     local inRange = src:InRange(f)
     if plain(inRange) then
@@ -825,12 +937,75 @@ function M.ReadClassPower()
              charged = plain(points) and points or nil }
 end
 
+-- Thin dark lines between the pips of a resource drawn as one bar (or bar pips without spacing): n slots across
+-- the bar's length; vertical bars stack them up the height.
+local function separators(cp, n, show)
+    cp.seps = cp.seps or {}
+    local vertical = M.db.classPower.orientation == "VERTICAL"
+    local used = 0
+    if show and type(n) == "number" and n > 1 and n <= 10 then
+        local len = vertical and cp:GetHeight() or cp:GetWidth()
+        for i = 1, n - 1 do
+            local t = cp.seps[i]
+            if not t then
+                t = cp:CreateTexture(nil, "OVERLAY", nil, 6)
+                t:SetTexture(ns.Media.textures.WHITE)
+                cp.seps[i] = t
+            end
+            t:ClearAllPoints()
+            local at = math.floor(len * i / n + 0.5)
+            if vertical then
+                t:SetPoint("BOTTOMLEFT", cp, "BOTTOMLEFT", 0, at); t:SetPoint("BOTTOMRIGHT", cp, "BOTTOMRIGHT", 0, at)
+                t:SetHeight(1)
+            else
+                t:SetPoint("TOPLEFT", cp, "TOPLEFT", at, 0); t:SetPoint("BOTTOMLEFT", cp, "BOTTOMLEFT", at, 0)
+                t:SetWidth(1)
+            end
+            t:SetVertexColor(0, 0, 0, 0.85)
+            t:Show()
+            used = i
+        end
+    end
+    for i = used + 1, #cp.seps do cp.seps[i]:Hide() end
+end
+M.ClassPowerSeparators = separators
+
+-- The count over the resource (plain or secret: it only reaches the format string).
+local function countText(cp, info)
+    local db = M.db.classPower
+    local spec = db.text
+    if not (spec and spec.show) or info.runes or info.kind == "Stagger" then
+        if cp.text then cp.text:Hide() end
+        return
+    end
+    if not cp.text then
+        cp.textLayer = CreateFrame("Frame", nil, cp)
+        cp.textLayer:SetAllPoints()
+        cp.textLayer:SetFrameLevel(cp:GetFrameLevel() + 8)
+        cp.text = cp.textLayer:CreateFontString(nil, "OVERLAY")
+    end
+    Skin:TextSpec(cp.text, spec, "number", "text.primary")
+    Skin:Place(cp.text, cp, spec)
+    cp.text:SetFormattedText("%d", info.cur or 0)
+    cp.text:Show()
+end
+
+-- Out-of-combat fade and "hide when full" (plain counts only); sample frames never fade.
+local function cpAlpha(cp, info, sample)
+    local db = M.db.classPower
+    local full = not info.runes and plain(info.cur) and plain(info.max) and info.cur == info.max
+    local ooc = not InCombatLockdown()
+    if sample then cp:SetAlpha(1); return end
+    cp:SetAlpha(((db.hideFull and full and ooc) or (db.fade and ooc)) and 0 or 1)
+end
+
 -- one bar for stagger, or when the count or maximum is secret (pips would need a compare)
 local function drawSingle(cp, info, live)
     local db = M.db.classPower
     for _, p in ipairs(cp.pips) do p:Hide() end
     local bar = cp.bar
     bar:Show()
+    bar:SetOrientation(db.orientation == "VERTICAL" and "VERTICAL" or "HORIZONTAL")
     if info.kind == "Stagger" and live then
         bar:SetMinMaxValues(0, UnitHealthMax("player"))
         bar:SetValue(UnitStagger("player") or 0)
@@ -842,6 +1017,7 @@ local function drawSingle(cp, info, live)
     end
     bar.bg:SetVertexColor(0, 0, 0, 0.6)
     Skin:BorderSpec(bar, db.border, "border.black")
+    separators(cp, plain(info.max) and info.max or nil, db.separators and info.kind ~= "Stagger")
 end
 
 local function runeOrder(runes, n, sorted)
@@ -870,20 +1046,31 @@ local function drawPips(cp, info)
     local db = M.db.classPower
     cp.bar:Hide()
     local n = math.max(1, math.min(10, info.max or 5))
-    local slots = M.Pips(n, cp:GetWidth(), db.spacing)
+    local vertical = db.orientation == "VERTICAL"
+    local slots = M.Pips(n, vertical and cp:GetHeight() or cp:GetWidth(), db.spacing)
+    local hot = db.threshold > 0 and not info.runes and (info.cur or 0) >= db.threshold
     local order = runeOrder(info.runes, n, db.runesSorted)
     local chargedSet = {}
     for _, i in ipairs(info.charged or {}) do chargedSet[i] = true end
-    local now, height = GetTime(), cp:GetHeight()
+    local now, height = GetTime(), vertical and cp:GetWidth() or cp:GetHeight()
     for i = 1, n do
         local p = pip(cp, i)
         local x, y, w, h = M.PipRect(db.shape, slots[i][1], slots[i][2], height)
         p:ClearAllPoints()
-        p:SetPoint("TOPLEFT", cp, "TOPLEFT", x, y)
-        p:SetSize(w, h)
+        if vertical then
+            -- pips stack from the bottom: the slot runs up the height, the rect's y is the cross offset
+            p:SetPoint("BOTTOMLEFT", cp, "BOTTOMLEFT", -y, x)
+            p:SetSize(h, w)
+            p:SetOrientation("VERTICAL")
+        else
+            p:SetPoint("TOPLEFT", cp, "TOPLEFT", x, y)
+            p:SetSize(w, h)
+            p:SetOrientation("HORIZONTAL")
+        end
         local round = db.shape == "round"
         pipMask(p, round)
         local r, g, b = cpColor(info.kind, chargedSet[i])
+        if hot and not chargedSet[i] then r, g, b = M:Color("threshold") end
         p:SetStatusBarColor(r, g, b)
         p.bg:SetVertexColor(r * 0.2, g * 0.2, b * 0.2, 0.85)
         Skin:BorderSpec(p, round and NO_PIP_BORDER or db.border, "border.black")
@@ -893,8 +1080,7 @@ local function drawPips(cp, info)
         p:Show()
     end
     for i = n + 1, #cp.pips do cp.pips[i]:Hide() end
-    local full = not info.runes and info.cur == info.max
-    cp:SetAlpha((db.hideFull and full and not InCombatLockdown()) and 0 or 1)
+    separators(cp, n, db.separators and db.shape == "bar" and db.spacing == 0)
 end
 
 -- Lays out and fills the class resource (sample frames carry classPowerKind / classPower / classPowerMax).
@@ -910,7 +1096,7 @@ function M:UpdateClassPower(f)
         info = M.ReadClassPower()
     end
     local was = f.classPowerActive
-    f.classPowerActive = db.show ~= "off" and info ~= nil
+    f.classPowerActive = (f.detached or db.show ~= "off") and info ~= nil
     if was ~= f.classPowerActive and not f.noLayout and not (f.secure and InCombatLockdown()) then self:Layout(f) end
     f.hasRunes = info and info.runes ~= nil
     cp:SetShown(f.classPowerActive)
@@ -918,22 +1104,219 @@ function M:UpdateClassPower(f)
     local single = info.kind == "Stagger" or not plain(info.cur) or not plain(info.max)
         or (not info.runes and type(info.max) ~= "number")
     if single then drawSingle(cp, info, not f.sample) else drawPips(cp, info) end
+    countText(cp, info)
+    cpAlpha(cp, info, f.sample)
 end
 
 ---------------------------------------------------------------- arena
+--[[ Racial abilities by race file: the spell whose icon the racial slot shows and its cooldown (seconds) once we see
+    it used. Arena enemies' casts are often secret: then the icon stays without a cooldown. ]]
+local RACIALS = {
+    Human = { 59752, 180 }, -- spellIDs(retail): Will to Survive
+    Scourge = { 7744, 120 }, -- spellIDs(retail): Will of the Forsaken
+    Dwarf = { 20594, 120 }, -- spellIDs(retail): Stoneform
+    Gnome = { 20589, 60 }, -- spellIDs(retail): Escape Artist
+    NightElf = { 58984, 120 }, -- spellIDs(retail): Shadowmeld
+    Tauren = { 20549, 90 }, -- spellIDs(retail): War Stomp
+    Troll = { 26297, 180 }, -- spellIDs(retail): Berserking
+    Orc = { 20572, 120 }, -- spellIDs(retail): Blood Fury
+    BloodElf = { 28730, 120 }, -- spellIDs(retail): Arcane Torrent
+    Draenei = { 59542, 180 }, -- spellIDs(retail): Gift of the Naaru
+    Goblin = { 69070, 90 }, -- spellIDs(retail): Rocket Jump
+    Worgen = { 68992, 120 }, -- spellIDs(retail): Darkflight
+    Pandaren = { 107079, 120 }, -- spellIDs(retail): Quaking Palm
+    Dracthyr = { 368970, 90 }, -- spellIDs(retail): Tail Swipe
+}
+M.RACIALS = RACIALS
+
+--[[ The class icon's aura: crowd control on the enemy first, then its big defensive, then an important buff.
+    Each kind is one filtered list (C_UnitAuras.GetUnitAuras); the first entry is drawn. ]]
+local ICON_AURAS = { { "HARMFUL|CROWD_CONTROL", "cc" }, { "HELPFUL|BIG_DEFENSIVE", "defensive" },
+    { "HELPFUL|IMPORTANT", "important" } }
+M.ICON_AURAS = ICON_AURAS
+
+function M.FindIconAura(unit)
+    if not (C_UnitAuras and C_UnitAuras.GetUnitAuras) then return nil end
+    for _, entry in ipairs(ICON_AURAS) do
+        local ok, list = pcall(C_UnitAuras.GetUnitAuras, unit, entry[1], 1)
+        if ok and type(list) == "table" and list[1] then return list[1], entry[2] end
+    end
+    return nil
+end
+
+local function classIcon(f, u, src)
+    local ci = f.ClassIcon
+    if not (ci and u.classIcon) then return end
+    local file = src:ClassFile(f)
+    local specID = f.sample and f.sample.specID or M.ArenaSpecID(f.unit)
+    local atlas = file and GetClassAtlas and GetClassAtlas(file)
+    if atlas then
+        ci.Icon:SetAtlas(atlas)
+    elseif specID then
+        local _, _, _, icon = GetSpecializationInfoByID(specID)
+        if icon then ci.Icon:SetTexture(icon) end
+    end
+    -- the aura on top
+    local aura, kind
+    if not u.classIconAuras then
+        aura = nil
+    elseif f.sample then
+        local sa = f.sample.iconAura
+        if sa then aura, kind = sa, sa.kind end
+    else
+        aura, kind = M.FindIconAura(f.unit)
+    end
+    ci.Aura:SetShown(aura ~= nil)
+    ci.Glow:SetShown(aura ~= nil and u.auraGlow)
+    if not aura then ci.Cooldown:Clear(); return end
+    ci.Aura:SetTexture(aura.icon)
+    if f.sample then
+        ci.Cooldown:SetCooldown(GetTime() - (aura.elapsed or 0), aura.duration or 6)
+    else
+        local ok, d = pcall(C_UnitAuras.GetAuraDuration, f.unit, aura.auraInstanceID)
+        if ok and d then ci.Cooldown:SetCooldownFromDurationObject(d) else ci.Cooldown:Clear() end
+    end
+    if u.auraGlow then
+        Skin:BorderSpec(ci.Glow, { style = "solid", size = 2, color = false, shadow = "none" }, M.COLOR_TOKENS[kind] or "state.danger")
+        local c = M.db.colors[kind]
+        if type(c) == "table" then Skin:BorderSpec(ci.Glow, { style = "solid", size = 2, color = c, shadow = "none" }, "state.danger") end
+    end
+end
+
+local function racial(f, u)
+    if not (f.Racial and u.racial) then return end
+    local race
+    if f.sample then race = f.sample.race else
+        local _, file = UnitRace(f.unit)
+        race = plain(file) and file or nil
+    end
+    local entry = race and RACIALS[race]
+    f.Racial:SetShown(entry ~= nil)
+    if not entry then return end
+    local icon = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(entry[1])
+    if icon then f.Racial.Icon:SetTexture(icon) end
+    if f.sample and f.sample.racialUsed then f.Racial.Cooldown:SetCooldown(GetTime() - f.sample.racialUsed, entry[2]) end
+end
+
+-- A seen cast of an arena enemy's racial (plain spell IDs only) starts the racial's cooldown.
+function M:OnArenaCast(f, spellID)
+    if not (f and f.Racial and plain(spellID)) then return end
+    for _, entry in pairs(RACIALS) do
+        if entry[1] == spellID then f.Racial.Cooldown:SetCooldown(GetTime(), entry[2]); return end
+    end
+end
+
+local function widgets(f, u, src)
+    local w = u.widgets or {}
+    f.FocusMark:SetShown(w.focus and src:IsFocus(f) or false)
+    local list = w.targets and src:TargetedBy(f) or {}
+    for i, p in ipairs(f.Targets.pips) do
+        local file = list[i]
+        if file then p:SetVertexColor(ns.Util.ClassColor(file)) end
+        p:SetShown(file ~= nil)
+    end
+end
+
+-- The sample DR tray (Test frames and the preview): plain icons in the real tray's place and look.
+local DR_SAMPLE = { { icon = "Interface\\Icons\\Spell_Nature_Polymorph", elapsed = 4, duration = 18 },
+    { icon = "Interface\\Icons\\Ability_Rogue_KidneyShot", elapsed = 11, duration = 18, immune = true },
+    { icon = "Interface\\Icons\\Spell_Shadow_Possession", elapsed = 15, duration = 18 } }
+M.DR_SAMPLE = DR_SAMPLE
+
+function M.DrawSampleDR(f, u)
+    local dr = u.dr
+    local box = f.DR
+    local n = (f.sample and f.sample.dr) or 0
+    for i = 1, math.max(n, #box.samples) do
+        local b = box.samples[i]
+        if i <= n then
+            if not b then
+                b = CreateFrame("Frame", nil, box)
+                b.Icon = b:CreateTexture(nil, "ARTWORK")
+                b.Icon:SetAllPoints()
+                b.Cooldown = CreateFrame("Cooldown", nil, b, "CooldownFrameTemplate")
+                b.Cooldown:SetAllPoints()
+                b.Cooldown:SetReverse(true)
+                b.Immune = CreateFrame("Frame", nil, b)
+                b.Immune:SetAllPoints()
+                b.Immune:SetFrameLevel(b.Cooldown:GetFrameLevel() + 2)
+                b.isPhoenixSample = true
+                box.samples[i] = b
+            end
+            local s = DR_SAMPLE[(i - 1) % #DR_SAMPLE + 1]
+            M.PlaceDRItem(b, box, i, dr)
+            b.Icon:SetTexture(s.icon)
+            M.StyleDRItem(b, dr)
+            b.Cooldown:SetCooldown(GetTime() - s.elapsed, s.duration)
+            b.Immune:SetShown(dr.immune and s.immune or false)
+            b:Show()
+        elseif b then
+            b:Hide()
+        end
+    end
+end
+
+-- Item i of a DR tray: grows away from the frame (left of a left tray, right of a right one).
+function M.PlaceDRItem(item, box, i, dr)
+    item:ClearAllPoints()
+    item:SetSize(dr.size, dr.size)
+    local off = (i - 1) * (dr.size + dr.spacing)
+    if box.side == "RIGHT" then
+        item:SetPoint("LEFT", box, "LEFT", off, 0)
+    else
+        item:SetPoint("RIGHT", box, "RIGHT", -off, 0)
+    end
+end
+
+-- The DR look on any tray item (ours or the game's): zoom, border, countdown font, immune border.
+function M.StyleDRItem(item, dr)
+    if item.Icon then Skin:IconZoom(item.Icon, dr.zoom) end
+    local edge = M.DREdge(item)
+    Skin:BorderSpec(edge, dr.border, "border.black")
+    local cd = item.Cooldown
+    local fs = cd and cd.GetCountdownFontString and cd:GetCountdownFontString()
+    if fs then
+        Skin:TextSpec(fs, dr.text, "number", "text.primary")
+        cd:SetHideCountdownNumbers(dr.text.show == false)
+    end
+    local immune = item.isPhoenixSample and item.Immune
+    if immune then Skin:BorderSpec(immune, { style = "solid", size = 2, color = false, shadow = "none" }, "state.danger") end
+end
+
+-- Our border frame on a tray item (a child frame: nothing is written into the game's own item).
+local edges = setmetatable({}, { __mode = "k" })
+function M.DREdge(item)
+    local e = edges[item]
+    if not e then
+        e = CreateFrame("Frame", nil, item)
+        e:SetAllPoints()
+        edges[item] = e
+    end
+    return e
+end
+
 function M:UpdateArena(f)
     if not f.Trinket then return end
     local u = self:Unit("arena")
+    local src = self:SourceOf(f)
     f.Trinket:SetShown(u.trinket)
     f.Spec:SetShown(u.spec)
+    classIcon(f, u, src)
+    racial(f, u)
+    widgets(f, u, src)
     if f.sample then
-        if u.trinket then f.Trinket.Icon:SetTexture(f.sample.trinketIcon or M.SAMPLE_ICONS.watch) end
+        if u.trinket then
+            f.Trinket.Icon:SetTexture(f.sample.trinketIcon or M.SAMPLE_ICONS.watch)
+            if f.sample.trinketUsed then f.Trinket.Cooldown:SetCooldown(GetTime() - f.sample.trinketUsed, 120) end
+        end
         if u.spec then f.Spec.Icon:SetTexture(f.sample.specIcon or M.SAMPLE_ICONS.sentry) end
+        M.DrawSampleDR(f, u)
         return
     end
-    if u.trinket and C_PvP and C_PvP.GetArenaCrowdControlInfo then
+    M.DrawSampleDR(f, u) -- (no sample: hides the sample icons)
+    if u.trinket and not f.trinketAdopted and C_PvP and C_PvP.GetArenaCrowdControlInfo then
         local ok, spellID, start, duration = pcall(C_PvP.GetArenaCrowdControlInfo, f.unit)
-        -- restricted (secret) in rated play: then the trinket keeps its last known state
+        -- restricted (secret) in rated play: then the game's own trinket (adopted, Arena.lua) draws it
         if ok and plain(spellID) and spellID then
             local icon = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(spellID)
             if icon then f.Trinket.Icon:SetTexture(icon) end
@@ -942,14 +1325,21 @@ function M:UpdateArena(f)
             end
         end
     end
-    if u.spec and GetArenaOpponentSpec then
-        local index = tonumber(f.unit:match("%d+"))
-        local specID = index and GetArenaOpponentSpec(index)
-        if plain(specID) and type(specID) == "number" and specID > 0 then
+    if u.spec then
+        local specID = M.ArenaSpecID(f.unit)
+        if specID then
             local _, _, _, icon = GetSpecializationInfoByID(specID)
             if icon then f.Spec.Icon:SetTexture(icon) end
         end
     end
+end
+
+-- Stealth: an arena enemy out of sight keeps its frame, faded.
+function M:ArenaAlpha(f, alpha)
+    if not f.Trinket then return alpha end
+    local u = self:Unit("arena")
+    if self:SourceOf(f):Hidden(f) then return math.min(alpha, u.stealthAlpha or 0.45) end
+    return alpha
 end
 
 ---------------------------------------------------------------- everything

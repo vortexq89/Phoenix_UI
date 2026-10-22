@@ -90,6 +90,11 @@ function M:Build(parent, key, opts)
     -- header children: the header owns their size and place (protected), so Layout leaves both alone and may run in combat
     f.headerChild = opts.frame and true or nil
 
+    -- a bar texture under everything (the background's texture: any LibSharedMedia statusbar)
+    f.BgTex = texture(f, "BACKGROUND", 2)
+    f.BgTex:SetAllPoints()
+    f.BgTex:Hide()
+
     -- bars
     f.Health = statusBar(f, 1)
     f.Health.bg = texture(f.Health, "BACKGROUND")
@@ -104,6 +109,11 @@ function M:Build(parent, key, opts)
     f.HealPred = statusBar(f.PredClip)
     f.HealPred:SetPoint("TOPLEFT", f.Health:GetStatusBarTexture(), "TOPRIGHT")
     f.HealPred:SetPoint("BOTTOMLEFT", f.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
+    -- my own heals over everyone's (both start at the fill's end, so others show past mine without any sums)
+    f.HealMine = statusBar(f.PredClip)
+    f.HealMine:SetFrameLevel(f.HealPred:GetFrameLevel() + 1)
+    f.HealMine:SetPoint("TOPLEFT", f.Health:GetStatusBarTexture(), "TOPRIGHT")
+    f.HealMine:SetPoint("BOTTOMLEFT", f.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
     f.Absorb = statusBar(f.Health)
     f.HealAbsorb = statusBar(f.Health)
     f.HealAbsorb:SetReverseFill(true)
@@ -141,6 +151,20 @@ function M:Build(parent, key, opts)
     f.PortraitMask = f.PortraitHolder:CreateMaskTexture()
     f.PortraitMask:SetAllPoints(f.Portrait)
     f.PortraitMask:SetTexture(Media.textures.MASK_CIRCLE, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+    -- a ring around a round portrait and the game's elite / rare art at its corner
+    f.PortraitRing = f.PortraitHolder:CreateTexture(nil, "OVERLAY", nil, 1)
+    f.PortraitRing:SetTexture(Media.textures.RING_CIRCLE)
+    f.PortraitRing:Hide()
+    f.PortraitArt = f.PortraitHolder:CreateTexture(nil, "OVERLAY", nil, 2)
+    f.PortraitArt:Hide()
+
+    -- the text strip under the frame
+    f.Strip = CreateFrame("Frame", nil, f)
+    f.Strip.bg = texture(f.Strip, "BACKGROUND")
+    f.Strip.bg:SetAllPoints()
+    f.Strip.text = f.Strip:CreateFontString(nil, "OVERLAY")
+    f.Strip.text:SetWordWrap(false)
+    f.Strip:Hide()
 
     -- texts sit above every bar
     f.TextLayer = CreateFrame("Frame", nil, f)
@@ -211,8 +235,51 @@ function M:Build(parent, key, opts)
         f.ClassPower:Hide()
     end
 
-    -- arena: PvP trinket and specialization
+    -- arena: class icon (with its CC / defensive / important aura), PvP trinket, racial, specialization, the DR
+    -- tray's holder, the focus mark and the "who targets this enemy" pips
+    f.ClassIcon, f.Racial, f.DR, f.FocusMark, f.Targets = false, false, false, false, false
     if key == "arena" then
+        f.ClassIcon = CreateFrame("Frame", nil, f)
+        f.ClassIcon.Icon = f.ClassIcon:CreateTexture(nil, "ARTWORK")
+        f.ClassIcon.Icon:SetAllPoints()
+        f.ClassIcon.Aura = f.ClassIcon:CreateTexture(nil, "ARTWORK", nil, 1)
+        f.ClassIcon.Aura:SetAllPoints()
+        f.ClassIcon.Aura:Hide()
+        f.ClassIcon.Cooldown = CreateFrame("Cooldown", nil, f.ClassIcon, "CooldownFrameTemplate")
+        f.ClassIcon.Cooldown:SetAllPoints()
+        f.ClassIcon.Cooldown:SetDrawEdge(false)
+        f.ClassIcon.Cooldown:SetReverse(true)
+        f.ClassIcon.Glow = CreateFrame("Frame", nil, f.ClassIcon)
+        f.ClassIcon.Glow:SetPoint("TOPLEFT", -2, 2)
+        f.ClassIcon.Glow:SetPoint("BOTTOMRIGHT", 2, -2)
+        f.ClassIcon.Glow:SetFrameLevel(f.ClassIcon.Cooldown:GetFrameLevel() + 2)
+        f.ClassIcon.Glow:Hide()
+        f.ClassIcon:Hide()
+        f.Racial = CreateFrame("Frame", nil, f)
+        f.Racial.Icon = f.Racial:CreateTexture(nil, "ARTWORK")
+        f.Racial.Icon:SetAllPoints()
+        f.Racial.Cooldown = CreateFrame("Cooldown", nil, f.Racial, "CooldownFrameTemplate")
+        f.Racial.Cooldown:SetAllPoints()
+        f.Racial:Hide()
+        f.DR = CreateFrame("Frame", nil, f)
+        f.DR:SetSize(1, 1)
+        f.DR.samples = {}
+        f.FocusMark = CreateFrame("Frame", nil, f)
+        f.FocusMark:SetPoint("TOPLEFT", -1, 1)
+        f.FocusMark:SetPoint("BOTTOMRIGHT", 1, -1)
+        f.FocusMark:SetFrameLevel(f:GetFrameLevel() + 7)
+        f.FocusMark:Hide()
+        f.Targets = CreateFrame("Frame", nil, f.TextLayer)
+        f.Targets:SetSize(1, 1)
+        f.Targets.pips = {}
+        for i = 1, 5 do
+            local p = texture(f.Targets, "OVERLAY", 4)
+            p:SetSize(6, 6)
+            p:SetPoint("TOPRIGHT", f.Targets, "TOPRIGHT", -(i - 1) * 8, 0)
+            p:Hide()
+            f.Targets.pips[i] = p
+        end
+
         f.Trinket = CreateFrame("Frame", nil, f)
         f.Trinket.Icon = f.Trinket:CreateTexture(nil, "ARTWORK")
         f.Trinket.Icon:SetAllPoints()
@@ -291,8 +358,7 @@ local function auraOffset(f, u, container, where, other, rows)
         return lift + stacked
     end
     local castBelow = u.cast.attach == "below" and not M.SMALL[f.unitKey] and f.unitKey ~= "player"
-    local hanging = (u.powerBar.show ~= "off" and u.powerBar.position == "below") and (u.powerBar.height + 2) or 0
-    return hanging + (castBelow and (u.cast.height + u.cast.gap) or 0) + stacked
+    return M.Hanging(u) + (castBelow and (u.cast.height + u.cast.gap) or 0) + stacked
 end
 
 local function layoutAuras(f, u, container, where, other)
@@ -320,6 +386,34 @@ local function layoutAuras(f, u, container, where, other)
     container.up = where == "above"
     container.leftGrow = leftGrow
     layoutAuraButtons(container, a, where == "above", leftGrow)
+end
+
+local function layoutBgTexture(f, u)
+    local name = u.bgTexture or ""
+    f.BgTex:SetShown(name ~= "")
+    if name == "" then return end
+    f.BgTex:SetTexture(Media:Bar(name))
+    local r, g, b = Skin:SpecColor(u.background.color, "bg.sunken")
+    f.BgTex:SetVertexColor(r, g, b, u.background.alpha or 0.8)
+end
+
+local function layoutStrip(f, u)
+    local st = u.strip
+    local strip = f.Strip
+    strip:SetShown(st and st.show or false)
+    if not (st and st.show) then return end
+    strip:ClearAllPoints()
+    local hanging = (u.powerBar.show ~= "off" and u.powerBar.position == "below") and (u.powerBar.height + 2) or 0
+    strip:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 0, -(hanging + (st.gap or 1)))
+    strip:SetPoint("TOPRIGHT", f, "BOTTOMRIGHT", 0, -(hanging + (st.gap or 1)))
+    strip:SetHeight(st.height)
+    strip.bg:SetVertexColor(Theme:Color("bg.sunken"))
+    strip.bg:SetAlpha(u.background.alpha or 0.8)
+    Skin:BorderSpec(strip, u.border, "border.black")
+    Skin:TextSpec(strip.text, st.text, "unit", "text.secondary")
+    Skin:Place(strip.text, strip, st.text)
+    strip.text:SetWidth(math.max(20, u.width - 8))
+    f.compiledStrip = M.CompileTags(st.tag, M.db.percentDecimals)
 end
 
 local function layoutHealth(self, f, u, g, key)
@@ -350,8 +444,12 @@ local function layoutPrediction(self, f, u, g, key)
     local fillTex = self:BarTexture(key)
     f.HealPred:SetSize(hw, hh)
     f.HealPred:SetStatusBarTexture(fillTex)
-    f.HealPred:SetStatusBarColor(self:Color("myHeal"))
+    f.HealPred:SetStatusBarColor(self:Color("otherHeal"))
     f.HealPred:SetAlpha(0.5)
+    f.HealMine:SetSize(hw, hh)
+    f.HealMine:SetStatusBarTexture(fillTex)
+    f.HealMine:SetStatusBarColor(self:Color("myHeal"))
+    f.HealMine:SetAlpha(0.6)
     local ab = u.absorb
     local over = M.OverhealWidth(u, hw)
     f.PredClip:ClearAllPoints()
@@ -385,6 +483,10 @@ local function layoutPower(self, f, u, g, key)
     if g.power then
         place(f.Power, f, g.power)
         f.Power:SetStatusBarTexture(self:BarTexture(key, "power"))
+        -- fill direction: left to right (default), right to left, bottom to top, top to bottom
+        local dir = pb.direction or "RIGHT"
+        f.Power:SetOrientation((dir == "UP" or dir == "DOWN") and "VERTICAL" or "HORIZONTAL")
+        f.Power:SetReverseFill(dir == "LEFT" or dir == "DOWN")
         f.Power:SetFrameLevel(f:GetFrameLevel() + (inside and 1 or 3))
         Skin:BorderSpec(f.Power, inside and NO_BORDER or u.border, "border.black")
         Skin:Backdrop(f.Power, { alpha = inside and 0 or 0.9, color = false, style = "solid" }, "bg.sunken")
@@ -412,6 +514,21 @@ local function layoutPortrait(f, u, g)
     local round = u.portraitShape == "circle" and not overlay
     if round then f.Portrait:AddMaskTexture(f.PortraitMask) else f.Portrait:RemoveMaskTexture(f.PortraitMask) end
     Skin:BorderSpec(f.PortraitHolder, (overlay or round) and NO_BORDER or u.portraitBorder, "border.black")
+    -- the ring hugs a round portrait (a square one keeps its border); its colour is the border's
+    local ring = round and u.portraitRing
+    f.PortraitRing:SetShown(ring and true or false)
+    if ring then
+        f.PortraitRing:ClearAllPoints()
+        f.PortraitRing:SetPoint("TOPLEFT", f.PortraitHolder, "TOPLEFT", -2, 2)
+        f.PortraitRing:SetPoint("BOTTOMRIGHT", f.PortraitHolder, "BOTTOMRIGHT", 2, -2)
+        f.PortraitRing:SetVertexColor(Skin:SpecColor(u.portraitBorder.color, "accent.primary"))
+    end
+    f.PortraitArt:ClearAllPoints()
+    local size = math.floor(g.portrait[4] * 0.8 + 0.5)
+    local right = u.portraitPos == "right"
+    f.PortraitArt:SetPoint("CENTER", f.PortraitHolder, right and "TOPRIGHT" or "TOPLEFT", right and -2 or 2, -2)
+    f.PortraitArt:SetSize(size, size)
+    if not u.portraitArt or overlay then f.PortraitArt:Hide() end
 end
 
 local function layoutTexts(self, f, u, g)
@@ -450,23 +567,89 @@ local function layoutIndicators(f, u)
     Skin:BorderSpec(f.TargetMark, { style = "solid", size = 1, color = false, shadow = "none" }, "accent.primary")
 end
 
+-- The side the arena icons sit on (RIGHT, or LEFT when mirrored) and the other side (the DR tray's).
+function M.ArenaSides(u)
+    if u.mirrored then return "LEFT", "RIGHT" end
+    return "RIGHT", "LEFT"
+end
+
+-- How far a side's aura row reaches out of the frame (the DR tray starts past it).
+function M.AuraReach(u, side)
+    local a = u.auras
+    local reach = 0
+    for _, kind in ipairs({ "buffs", "debuffs" }) do
+        if a[kind] == side:lower() then
+            reach = math.max(reach, math.min(a.max, a.perRow) * (a.size + a.spacing) - a.spacing + a.gap)
+        end
+    end
+    return reach
+end
+
+local function chainIcon(region, prev, f, side, size, first)
+    region:ClearAllPoints()
+    if side == "RIGHT" then
+        region:SetPoint("TOPLEFT", first and f or prev, "TOPRIGHT", 3, 0)
+    else
+        region:SetPoint("TOPRIGHT", first and f or prev, "TOPLEFT", -3, 0)
+    end
+    region:SetSize(size, size)
+end
+
+local function layoutArena(self, f, u)
+    local size = u.height
+    local side, drSide = M.ArenaSides(u)
+    local zoom = u.iconZoom or 0.08
+    local prev, first = nil, true
+    local function add(region, show, s)
+        region:SetShown(show)
+        if not show then return end
+        chainIcon(region, prev, f, side, s or size, first)
+        prev, first = region, false
+    end
+    add(f.ClassIcon, u.classIcon)
+    add(f.Trinket, u.trinket)
+    add(f.Racial, u.racial)
+    for _, r in ipairs({ f.ClassIcon, f.Trinket, f.Racial }) do
+        Skin:IconZoom(r.Icon, zoom)
+        Skin:BorderSpec(r, u.border, "border.black")
+    end
+    Skin:IconZoom(f.ClassIcon.Aura, zoom)
+    -- the spec badge sits on the class icon's corner, or joins the row when there is no class icon
+    f.Spec:ClearAllPoints()
+    local small = math.max(10, math.floor(size * 0.45 + 0.5))
+    if u.classIcon then
+        f.Spec:SetPoint("BOTTOMRIGHT", f.ClassIcon, "BOTTOMRIGHT", 2, -2)
+        f.Spec:SetSize(small, small)
+        f.Spec:SetFrameLevel(f.ClassIcon.Glow:GetFrameLevel() + 1)
+    else
+        add(f.Spec, u.spec, small)
+    end
+    Skin:IconZoom(f.Spec.Icon, zoom)
+    Skin:BorderSpec(f.Spec, u.border, "border.black")
+    -- the DR tray: the other side, past that side's auras
+    local dr = u.dr
+    f.DR:ClearAllPoints()
+    local reach = M.AuraReach(u, drSide) + (dr.gap or 4)
+    if drSide == "LEFT" then
+        f.DR:SetPoint("RIGHT", f, "LEFT", -reach, 0)
+    else
+        f.DR:SetPoint("LEFT", f, "RIGHT", reach, 0)
+    end
+    f.DR:SetSize(dr.size, dr.size)
+    f.DR.side = drSide
+    f.DR:SetShown(dr.show)
+    Skin:BorderSpec(f.FocusMark, { style = "solid", size = 1, color = false, shadow = "none" }, "state.info")
+    f.Targets:ClearAllPoints()
+    f.Targets:SetPoint("TOPRIGHT", f.Health, "TOPRIGHT", -2, -2)
+end
+
 local function layoutExtras(self, f, u, g, key)
     if f.ClassPower then
         if g.classPower then place(f.ClassPower, f, g.classPower) end
         f.ClassPower.bar:SetStatusBarTexture(self:BarTexture(key, "power"))
     end
     if not f.Trinket then return end
-    local size = u.height
-    f.Trinket:ClearAllPoints()
-    f.Trinket:SetPoint("TOPLEFT", f, "TOPRIGHT", 3, 0)
-    f.Trinket:SetSize(size, size)
-    Skin:IconZoom(f.Trinket.Icon, 0.08)
-    Skin:BorderSpec(f.Trinket, u.border, "border.black")
-    f.Spec:ClearAllPoints()
-    f.Spec:SetPoint("TOPLEFT", f.Trinket, "TOPRIGHT", 3, 0)
-    f.Spec:SetSize(size * 0.6, size * 0.6)
-    Skin:IconZoom(f.Spec.Icon, 0.08)
-    Skin:BorderSpec(f.Spec, u.border, "border.black")
+    layoutArena(self, f, u)
 end
 
 -- The frame's size, bars, texts and indicators from its settings. Secure frames: out of combat only.
@@ -481,12 +664,14 @@ function M:Layout(f)
     end
     Skin:Backdrop(f, u.background, "bg.sunken")
     Skin:BorderSpec(f, u.border, "border.black")
+    layoutBgTexture(f, u)
     layoutHealth(self, f, u, g, key)
     layoutPrediction(self, f, u, g, key)
     layoutPower(self, f, u, g, key)
     layoutPortrait(f, u, g)
     layoutTexts(self, f, u, g)
     layoutIndicators(f, u)
+    layoutStrip(f, u)
     self:LayoutCastAnchor(f, u)
     layoutAuras(f, u, f.Buffs, u.auras.buffs, u.auras.debuffs)
     layoutAuras(f, u, f.Debuffs, u.auras.debuffs, u.auras.buffs)
@@ -505,7 +690,7 @@ function M:LayoutCastAnchor(f, u)
         a.active = false
         return
     end
-    local hanging = (u.powerBar.show ~= "off" and u.powerBar.position == "below") and (u.powerBar.height + 2) or 0
+    local hanging = M.Hanging(u)
     if where == "above" then
         a:SetPoint("BOTTOMLEFT", f, "TOPLEFT", 0, u.cast.gap)
     else

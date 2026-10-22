@@ -7,12 +7,17 @@ local Skin = ns.Skin
     it relied on combat-log/aura data that 12.x restricts.
     S16: the countdown is its own toggle with a font, and a queue pop sound plays on the chosen channel (so
     it is heard with game sound off when the channel is Master). Arena frames, objective placement and
-    battleground auto release stay on their own pages (Unit Frames, Movers, Automation) and are linked. ]]
+    battleground auto release stay on their own pages (Unit Frames, Movers, Automation) and are linked.
+    S18: a Shadowsight timer for arenas — the eyes spawn a fixed time after the gates open; the match clock
+    (C_PvP.GetActiveMatchDuration, counting from the Engaged state) gives the countdown. Retail only (feature
+    "arena"); its own Layout-mode mover. ]]
 local M = ns:NewModule("PvP", {
     label = "PVP", desc = "PVP_DESC", category = "combat", order = 50, reloadOnToggle = true,
     defaults = {
         safeQueue = true, showTimer = true, tabBinder = false, surrender = true, queueSound = "",
         timer = ns.Style.Text(14, { outline = "OUTLINE", shadow = false }),
+        shadowsight = { enabled = false, delay = 90, shown = 15, point = "TOP", x = 0, y = -120,
+                        text = ns.Style.Text(14, { outline = "OUTLINE", shadow = false }) },
     },
 })
 
@@ -42,10 +47,6 @@ end
 function M:StyleTimer(fs)
     fs = fs or (timer and timer.text)
     if fs then Skin:TextSpec(fs, self.db.timer, "number", "accent.primary") end
-end
-
-function M:Refresh()
-    self:StyleTimer()
 end
 
 -- Runs after PVPReadyDialog_Display has laid out the buttons, so the Enter button is re-centred the
@@ -86,6 +87,72 @@ local function surrender()
     end
 end
 
+---------------------------------------------------------------- Shadowsight (arena)
+local ENGAGED = Enum and Enum.PvPMatchState and Enum.PvPMatchState.Engaged or 3
+
+-- The timer's text for `elapsed` seconds into the match: the countdown, "up" for `shown` seconds, then nothing.
+function M.ShadowsightText(elapsed, delay, shown)
+    if type(elapsed) ~= "number" then return nil end
+    local left = delay - elapsed
+    if left > 0 then return L.PVP_SHADOWSIGHT_IN:format(math.floor(left / 60), math.floor(left % 60)) end
+    if left > -shown then return L.PVP_SHADOWSIGHT_UP end
+    return nil
+end
+
+local sight
+local function sightStore()
+    return {
+        active = function() return M:IsEnabled() and M.db.shadowsight.enabled and ns:Supports("arena") end,
+        get = function() local c = M.db.shadowsight; return { point = c.point, x = c.x, y = c.y } end,
+        set = function(v) local c = M.db.shadowsight; c.point, c.x, c.y = v.point or c.point, v.x or c.x, v.y or c.y end,
+        apply = function() M:PlaceShadowsight() end,
+        reset = function()
+            local d, c = M.defaults.shadowsight, M.db.shadowsight
+            c.point, c.x, c.y = d.point, d.x, d.y
+            M:PlaceShadowsight()
+        end,
+    }
+end
+
+local function sightTick(self, elapsed)
+    self.acc = (self.acc or 0) + elapsed
+    if self.acc < 0.2 then return end
+    self.acc = 0
+    local c = M.db.shadowsight
+    local text
+    if self.sample then
+        text = M.ShadowsightText(52, c.delay, c.shown)
+    elseif c.enabled and IsActiveBattlefieldArena and IsActiveBattlefieldArena() and C_PvP.GetActiveMatchState
+        and C_PvP.GetActiveMatchState() == ENGAGED then
+        text = M.ShadowsightText(C_PvP.GetActiveMatchDuration(), c.delay, c.shown)
+    end
+    self.text:SetText(text or "")
+    self.icon:SetShown(text ~= nil)
+end
+
+function M:PlaceShadowsight()
+    if not sight then return end
+    local c = self.db.shadowsight
+    sight:ClearAllPoints()
+    sight:SetPoint(c.point, UIParent, c.point, c.x, c.y)
+    Skin:TextSpec(sight.text, c.text, "number", "accent.primary")
+    sight:SetShown(c.enabled and ns:Supports("arena"))
+end
+
+local function buildShadowsight()
+    sight = CreateFrame("Frame", "PhoenixUI_Shadowsight", UIParent)
+    sight:SetSize(180, 22)
+    sight.text = sight:CreateFontString(nil, "OVERLAY")
+    sight.text:SetPoint("CENTER", 10, 0)
+    sight.icon = ns.Icons:Create(sight, "preview", 16, "accent.primary", "OVERLAY")
+    sight.icon:SetPoint("RIGHT", sight.text, "LEFT", -5, 0)
+    sight:SetScript("OnUpdate", sightTick)
+    M.shadowsightFrame = sight
+    local movers = ns:GetModule("Movers")
+    if movers then movers:Register("pvp.shadowsight", sight, L.PVP_SHADOWSIGHT, sightStore()) end
+    M:PlaceShadowsight()
+end
+
 -- reloadOnToggle: OnEnable runs at most once per session.
 function M:OnEnable()
     hooksecurefunc("PVPReadyDialog_Display", onDisplay)
@@ -93,8 +160,11 @@ function M:OnEnable()
     local function deferTab() ns.Combat:Run("pvp.tab", applyTab) end
     ns.Events:On("PLAYER_ENTERING_WORLD", self, deferTab)
     ns.Events:On("ZONE_CHANGED_NEW_AREA", self, deferTab)
+    if ns:Supports("arena") then buildShadowsight() end
 end
 
 function M:Refresh()
     ns.Combat:Run("pvp.tab", applyTab)
+    self:StyleTimer()
+    self:PlaceShadowsight()
 end

@@ -4,12 +4,16 @@ local M = ns.modules.CastBars
 local extras = M.extras
 
 --[[ Player extras beside the cast bar.
-    GCD bar   a thin bar on the player cast bar's edge, fed the global cooldown's duration object
-              (C_Spell.GetSpellCooldownDuration) and faded out through SetAlphaFromBoolean(duration:IsZero()).
+    GCD bar   a thin bar on the player cast bar's edge, or (S18) a standalone bar with its own width and
+              Layout-mode mover, fed the global cooldown's duration object (C_Spell.GetSpellCooldownDuration) and
+              faded out through SetAlphaFromBoolean(duration:IsZero()).
     Swing     WoW Forever only (ns:Supports("swingTimer")): PLAYER_SWING gives each swing's length (main hand,
-              off hand, ranged); a main bar and a thin off-hand bar fill over it. Its own Layout-mode mover. ]]
+              off hand, ranged); a main bar and a thin off-hand bar fill over it. Its own Layout-mode mover.
+              S18: optional "MH" / "OH" labels, and a range cue that dims the bars while the target is out of
+              melee reach (C_Spell.IsSpellInRange of Auto Attack; an unknown answer keeps them lit). ]]
 
 local GCD_SPELL = 61304 -- spellIDs(retail): Global Cooldown
+local AUTO_ATTACK = 6603 -- spellIDs: Auto Attack
 local Enum_ = Enum or {}
 local TIMER = Enum_.StatusBarTimerDirection or {}
 local INTERP = Enum_.StatusBarInterpolation or {}
@@ -40,9 +44,29 @@ local function gcdUpdate(g)
     if okZ then g:SetAlphaFromBoolean(zero, 0, 1) end
 end
 
+local function gcdStore()
+    return {
+        active = function() return M:IsEnabled() and M:IsPhoenix() and M.db.gcd.enabled and M.db.gcd.attach == "free"
+            and ns:Supports("gcdBar") end,
+        get = function() local c = M.db.gcd; return { point = c.point, x = c.x, y = c.y } end,
+        set = function(v) local c = M.db.gcd; c.point, c.x, c.y = v.point or c.point, v.x or c.x, v.y or c.y end,
+        apply = function() M:RefreshExtras() end,
+        reset = function()
+            local d, c = M.DEFAULTS.gcd, M.db.gcd
+            c.point, c.x, c.y = d.point, d.x, d.y
+            M:RefreshExtras()
+        end,
+    }
+end
+
 local function buildGCD()
     local holder = M.holders.player
     local g = statusBar(holder)
+    -- the standalone bar's own holder (Layout mode moves it)
+    g.free = CreateFrame("Frame", "PhoenixUI_CB_gcd", UIParent)
+    g.free:SetSize(260, 4)
+    local movers = ns:GetModule("Movers")
+    if movers then movers:Register("cb.gcd", g.free, L.CB_GCD, gcdStore()) end
     g.elapsed = 0
     g:SetScript("OnUpdate", function(self, e)
         self.elapsed = self.elapsed + e
@@ -59,12 +83,23 @@ local function layoutGCD()
     if not g then return end
     local c = M.db.gcd
     local p = M.bars.player and M.bars.player[1]
-    g:SetShown(c.enabled and ns:Supports("gcdBar") and M:Bar("player").enabled and p ~= nil)
+    local free = c.attach == "free"
+    g:SetShown(c.enabled and ns:Supports("gcdBar") and (free or (M:Bar("player").enabled and p ~= nil)))
+    g.free:SetShown(g:IsShown() and free)
     if not g:IsShown() then return end
     g:ClearAllPoints()
-    g:SetPoint("TOPLEFT", p.Bar, "BOTTOMLEFT", 0, -c.gap)
-    g:SetPoint("TOPRIGHT", p.Bar, "BOTTOMRIGHT", 0, -c.gap)
-    g:SetHeight(c.height)
+    if free then
+        g:SetParent(g.free)
+        g.free:ClearAllPoints()
+        g.free:SetPoint(c.point, UIParent, c.point, c.x, c.y)
+        g.free:SetSize(c.width, c.height)
+        g:SetAllPoints(g.free)
+    else
+        g:SetParent(M.holders.player)
+        g:SetPoint("TOPLEFT", p.Bar, "BOTTOMLEFT", 0, -c.gap)
+        g:SetPoint("TOPRIGHT", p.Bar, "BOTTOMRIGHT", 0, -c.gap)
+        g:SetHeight(c.height)
+    end
     look(g, "text.secondary", "gcd")
 end
 
@@ -83,8 +118,21 @@ local function swingStore()
     }
 end
 
+-- Out of melee reach? true / false, or nil when the game cannot say (no target, a secret answer).
+function M.SwingOutOfRange()
+    if not (C_Spell and C_Spell.IsSpellInRange) or not UnitExists("target") then return nil end
+    local ok, near = pcall(C_Spell.IsSpellInRange, AUTO_ATTACK, "target")
+    if not ok or not M.plain(near) or near == nil then return nil end
+    return not near
+end
+
 local function swingTick(self)
     local now = GetTime()
+    if M.db.swing.rangeCue and not self.sample then
+        self:SetAlpha(M.SwingOutOfRange() and 0.35 or 1)
+    else
+        self:SetAlpha(1)
+    end
     local any = false
     for _, bar in ipairs({ self.main, self.off }) do
         if bar.start then
@@ -105,6 +153,8 @@ local function buildSwing()
     s.main = statusBar(s)
     s.off = statusBar(s)
     s.text = s.main:CreateFontString(nil, "OVERLAY")
+    s.mainLabel = s.main:CreateFontString(nil, "OVERLAY")
+    s.offLabel = s.off:CreateFontString(nil, "OVERLAY")
     s:SetScript("OnUpdate", swingTick)
     s:Hide()
     extras.swing = s
@@ -131,6 +181,14 @@ local function layoutSwing()
     Skin:TextSpec(s.text, c.text, "number", "text.primary")
     Skin:Place(s.text, s.main, c.text)
     s.text:SetShown(c.text.show ~= false)
+    for _, pair in ipairs({ { s.mainLabel, s.main, L.CB_SWING_MH }, { s.offLabel, s.off, L.CB_SWING_OH } }) do
+        local fs, b, label = pair[1], pair[2], pair[3]
+        Skin:Text(fs, "small", "text.secondary", math.max(7, math.min(11, b:GetHeight() + 2)))
+        fs:ClearAllPoints()
+        fs:SetPoint("LEFT", b, "LEFT", 3, 0)
+        fs:SetText(label)
+        fs:SetShown(c.labels and (b ~= s.off or c.offhand))
+    end
     if not (c.enabled and ns:Supports("swingTimer")) then s:Hide() end
 end
 

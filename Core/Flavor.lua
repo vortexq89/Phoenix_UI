@@ -56,6 +56,11 @@ ns.FEATURES = {
     -- Quest data slices (Phoenix_UI_Data): each client lists only the expansions it has data for.
     questSliceRetail = { retail = true },
     questSliceForever = { forever = true },
+    -- Arena frames, the game's DR tray and trinket (CompactArenaFrame: "ExcludeLoadGameType camelot"), arena-only
+    -- timers (Shadowsight) and the spec bars (Ironfur, Ignore Pain, Sweeping Strikes, Soul Fragments, Ebon Might are
+    -- retail spells): Forever's level-60 Azeroth has no arenas and none of those talents.
+    arena = { retail = true },
+    specBars = { retail = true },
     -- Boss timeline and warnings: Blizzard_EncounterTimeline / _EncounterWarnings load on "standard" only.
     encounterTimeline = available(C_EncounterTimeline),
     encounterWarnings = available(C_EncounterWarnings),

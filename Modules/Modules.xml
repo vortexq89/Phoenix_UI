@@ -14,6 +14,8 @@
     <Script file="UnitFrames\Build.lua"/>
     <Script file="UnitFrames\Update.lua"/>
     <Script file="UnitFrames\Spawn.lua"/>
+    <Script file="UnitFrames\Arena.lua"/>
+    <Script file="UnitFrames\Resources.lua"/>
     <Script file="GroupFrames\GroupFrames.lua"/>
     <Script file="GroupFrames\Blizzard.lua"/>
     <Script file="GroupFrames\Headers.lua"/>

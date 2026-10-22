@@ -22,8 +22,8 @@ local Style, Secret = ns.Style, ns.Secret
     add or test one; a value we must branch on goes through `plain()` first and falls back when it is secret.
     Switching mode needs a reload: parked Blizzard frames are only handed back by a fresh UI. ]]
 
-local UNITS = { "player", "target", "targettarget", "focus", "focustarget", "pet", "boss", "arena" }
-local GROUP = { boss = 5, arena = 5 }
+local UNITS = { "player", "target", "targettarget", "focus", "focustarget", "pet", "boss", "arena", "arenapet" }
+local GROUP = { boss = 5, arena = 5, arenapet = 5 }
 local TOKENS = {}
 for _, key in ipairs(UNITS) do
     if GROUP[key] then
@@ -36,7 +36,7 @@ end
 -- the frames Blizzard mode dresses (Blizzard.lua); the others only exist as Phoenix frames
 local LEGACY = { player = true, target = true, focus = true, pet = true, boss = true }
 -- small frames: no castbar anchor, no class power
-local SMALL = { targettarget = true, focustarget = true, pet = true }
+local SMALL = { targettarget = true, focustarget = true, pet = true, arenapet = true }
 
 local function unit(o)
     local ns_ = o.text or 12
@@ -45,22 +45,23 @@ local function unit(o)
         width = o.w, height = o.h, point = o.point or "CENTER", x = o.x, y = o.y,
         strata = "LOW", scale = 1, spacing = 34, growth = "DOWN",
         -- look (texture / border / background are the 2.0 keys, still read by Blizzard mode)
-        texture = "",
+        texture = "", bgTexture = "",
         border = Style.Border({ style = "pixel", color = false }),
         background = Style.Background({ alpha = 0.8 }),
         highlight = true, targetBorder = o.targetBorder or false,
-        rangeFade = o.range or false, rangeAlpha = 0.5,
+        rangeFade = o.range or false, rangeAlpha = 0.5, rangeSpell = "",
         oocFade = false, oocAlpha = 0.35,
         tooltip = "always",
         bar = {
             color = o.color or "class", fixed = false, dark = false, gradient = 0.2, smooth = true,
-            reverse = false, vertical = false, bg = "dark", bgAlpha = 0.8, bgColor = false,
+            reverse = false, vertical = false, bg = "dark", bgAlpha = 0.8, bgColor = false, share = 1,
         },
         absorb = { show = true, style = "striped", alpha = 0.6, position = "attached", healAbsorb = true, prediction = true,
                    overheal = 0 },
         powerBar = {
             show = o.power or "always", height = o.ph or 7, position = "inside", texture = "", smooth = true,
             color = "type", fixed = false, gap = 1, alt = o.alt ~= false, cost = o.cost or false,
+            width = 0, direction = "RIGHT", gradient = "none",
         },
         tags = { name = o.nameTag or "[name]", health = o.healthTag or "[health:percent]",
                  power = o.powerTag or "", info = o.infoTag or "" },
@@ -71,8 +72,11 @@ local function unit(o)
         info = Style.Text(ns_ - 2, { anchor = "TOPLEFT", outline = "OUTLINE", shadow = false, y = 10, show = o.infoTag ~= nil }),
         portrait = o.portrait or "hide",                -- game (2D) | model (3D) | class | hide
         portraitPos = o.portraitPos or "left", portraitShape = "square", portraitZoom = 0.08, portraitAlpha = 1,
-        portraitSize = 1,
+        portraitSize = 1, portraitRing = false, portraitArt = false,
         portraitBorder = Style.Border({ style = "pixel" }),
+        -- a strip of text under the frame (its own tag string)
+        strip = { show = false, height = 14, tag = "[level] [class]", gap = 1,
+                  text = Style.Text(ns_ - 2, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) },
         icons = {
             leader = o.leader ~= false, marker = true, pvp = false, markerSize = 16, markerAnchor = "TOP",
             role = o.role or false, combat = o.combat or false, resting = o.resting or false,
@@ -89,6 +93,27 @@ local function unit(o)
         cast = { attach = o.cast or "none", height = 14, gap = 4 },
         trinket = o.trinket or false, spec = o.spec or false,
     }
+end
+
+--[[ Arena extras (S18, sArena parity), only on the arena key: the class icon with its CC / defensive / important
+    aura, the trinket and racial, the game's DR tray (restyled), widgets, click actions and the stealth fade. ]]
+local function arenaExtras(u)
+    u.strip.tag = "[spec]"
+    u.layout = "phoenix"
+    u.mirrored = false
+    u.testCount = 3
+    u.stealthAlpha = 0.45
+    u.classIcon = true
+    u.classIconAuras = true
+    u.auraGlow = true
+    u.iconZoom = 0.08
+    u.racial = true
+    u.dr = { show = true, size = 24, spacing = 2, gap = 4, zoom = 0.08, immune = true, mineOnly = false,
+             border = Style.Border({ style = "pixel" }),
+             text = Style.Text(10, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) }
+    u.widgets = { healer = true, focus = true, targets = true }
+    u.click = { left = "target", right = "togglemenu", middle = "focus", leftText = "", rightText = "", middleText = "" }
+    return u
 end
 
 local DEFAULTS = {
@@ -112,20 +137,46 @@ local DEFAULTS = {
         boss = unit({ point = "RIGHT", w = 200, h = 40, x = -260, y = 200, text = 12, portrait = "game", portraitPos = "right",
                       color = "reaction", cast = "below",
                       debuffs = "left", auraSize = 22, auraMax = 4, range = true, healthTag = "[health:percent]" }),
-        arena = unit({ enabled = false, point = "RIGHT", w = 200, h = 40, x = -260, y = 100, text = 12, cast = "below",
+        arena = arenaExtras(unit({ enabled = false, point = "RIGHT", w = 200, h = 40, x = -260, y = 100, text = 12, cast = "below",
                        range = true, trinket = true, spec = true, debuffs = "left", auraSize = 22, auraMax = 4,
-                       healthTag = "[health:percent]" }),
+                       healthTag = "[health:percent]", targetBorder = true })),
+        arenapet = unit({ enabled = false, point = "RIGHT", w = 90, h = 18, x = -520, y = 100, text = 9, power = "off",
+                          range = true, leader = false, healthTag = "", nameLength = 10, color = "reaction" }),
     },
+    -- nicknames: "Name=Nick, Other=Nick2" (plain names only)
+    nicknames = "",
+    -- modifier-click focus on every Phoenix unit frame, with an optional raid marker
+    quickFocus = { key = "none", marker = 0 },
+    --[[ Detached player resource bars (S18): health, power (with a druid's mana while shapeshifted), the class
+        resource and the spec bar stacked in one movable block; missing ones collapse. ]]
+    resources = {
+        enabled = false, point = "CENTER", x = 0, y = -170, width = 220, spacing = 2, strata = "MEDIUM", scale = 1,
+        texture = "", border = Style.Border({ style = "pixel" }), background = Style.Background({ alpha = 0.8 }),
+        health = { show = true, height = 12, tag = "[health:percent]",
+                   text = Style.Text(10, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) },
+        power = { show = true, height = 8, tag = "[power:current]", mana = true,
+                  text = Style.Text(9, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) },
+        class = { show = true, height = 8 },
+        spec = { show = true, height = 6 },
+        collapse = true, combatOnly = false, oocAlpha = 1, previewClass = "",
+    },
+    -- the player's totems as buttons: right click destroys one (a secure button)
+    totems = { style = "blizzard", size = 28, spacing = 4, growth = "RIGHT", point = "CENTER", x = 0, y = -214, zoom = 0.08,
+               border = Style.Border({ style = "pixel" }),
+               duration = Style.Text(10, { anchor = "BOTTOM", outline = "OUTLINE", shadow = false, y = -2 }) },
     -- colours (every frame)
     colors = {
         low = false, mid = false, high = false, tapped = false, dead = false, offline = false,
         absorb = false, healAbsorb = false, myHeal = false, otherHeal = false, fixed = false, charged = false,
+        threshold = false, cc = false, defensive = false, important = false, focus = false,
     },
     numbers = "short", decimals = 1, percentDecimals = 0,
     -- class resource (player only): combo points, holy power, chi, soul shards, arcane charges, essence, runes …
     classPower = {
         show = "attached", height = 6, spacing = 2, color = "power", emptyAlpha = 0.25, runesSorted = true,
         stagger = true, hideFull = false, shape = "bar", border = Style.Border({ style = "pixel" }),
+        orientation = "HORIZONTAL", separators = false, threshold = 0, fade = false,
+        text = Style.Text(10, { anchor = "CENTER", outline = "OUTLINE", shadow = false, show = false }),
     },
     -- Blizzard mode (Blizzard.lua): the 2.0 skin of Blizzard's own frames
     texture = true, classColor = true, powerColor = true, fonts = true,
@@ -133,6 +184,9 @@ local DEFAULTS = {
     auras = { style = true, zoom = 0.08, border = Style.Border({ style = "none" }),
         count = Style.Text(10, { outline = "OUTLINE", shadow = false }) },
 }
+-- arena pets sit beside their arena frame (off: their own stack and mover)
+DEFAULTS.units.arenapet.attach = true
+
 local M = ns:NewModule("UnitFrames", {
     label = "UNITFRAMES", desc = "UNITFRAMES_DESC", category = "interface", order = 20, reloadOnToggle = true,
     defaults = DEFAULTS,
@@ -231,10 +285,16 @@ tag("power:max", "%s", pnum("max"))
 tag("power:percent", "%P", ppct)
 tag("power:current-max", "%s / %s", pnum("current"), pnum("max"))
 tag("altpower", "%s", function(f, s) return s:AltPowerText(f) end)
+-- S18: the player's threat on the unit, the level in its difficulty colour, an arena enemy's spec, the unit's target
+tag("threat", "%P", function(f, s) return s:ThreatPercent(f) end)
+tag("level:color", "%s", function(f, s) return s:LevelColored(f) end)
+tag("spec", "%s", function(f, s) return s:SpecName(f) end)
+tag("target", "%s", function(f, s) return s:TargetName(f) end)
 -- list for the options help, in a stable order
 M.TAG_LIST = { "name", "name:short", "level", "classification", "class", "status", "group", "afk", "guild", "guild:title", "npctitle",
     "health:current", "health:max", "health:percent", "health:current-max", "health:current-percent", "health:deficit", "absorbs",
-    "power:current", "power:max", "power:percent", "power:current-max", "altpower" }
+    "power:current", "power:max", "power:percent", "power:current-max", "altpower", "threat", "level:color", "spec",
+    "target" }
 M.MAX_TAG_VALUES = 8
 
 local compiled = {}
@@ -283,7 +343,8 @@ end
 local TOKEN = {
     low = "state.danger", mid = "state.warning", high = "state.success", tapped = "text.muted", dead = "text.disabled",
     offline = "text.disabled", absorb = "text.primary", healAbsorb = "state.danger", myHeal = "state.success",
-    otherHeal = "state.success", fixed = "bg.raised", charged = "accent.primary",
+    otherHeal = "state.info", fixed = "bg.raised", charged = "accent.primary", threshold = "state.warning",
+    cc = "state.danger", defensive = "state.success", important = "state.warning", focus = "state.info",
 }
 M.COLOR_TOKENS = TOKEN
 function M:Color(which)
@@ -364,6 +425,13 @@ function M:ResetCurves() healthCurve = nil end
     returns { health = {x, y, w, h}, power = {…}|nil, portrait = {…}|nil, classPower = {…}|nil }.
     The portrait takes a square at one side ("left"/"right") or fills the health bar ("overlay"); the power bar
     sits inside the frame at the bottom ("inside"), hangs under it ("below") or is hidden. ]]
+-- An inside power bar's height when the health bar takes a share (40-100 %) of the frame; else its own height.
+function M.SharedPowerHeight(u, H, ph)
+    local share = u.bar and tonumber(u.bar.share) or 1
+    if share >= 1 then return ph end
+    return math.max(1, math.min(H - 6, math.floor(H * (1 - math.max(0.4, share)) + 0.5) - (u.powerBar.gap or 1)))
+end
+
 function M.Geometry(u, opts)
     opts = opts or {}
     local W, H = u.width, u.height
@@ -384,13 +452,18 @@ function M.Geometry(u, opts)
         end
         w = W - size - 1
     end
+    if showPower and pb.position == "inside" then ph = M.SharedPowerHeight(u, H, ph) end
     if showPower and pb.position == "inside" then
         local gap = pb.gap or 1
         g.health = { x0, 0, w, H - ph - gap }
         g.power = { x0, H - ph, w, ph }
     else
         g.health = { x0, 0, w, H }
-        if showPower then g.power = { x0 + 4, H + (pb.gap or 1), w - 8, ph } end
+        if showPower then
+            -- a detached width (0 = the frame's, inset 4 px a side) centres the bar under the health bar
+            local pw = (pb.width or 0) > 0 and math.min(pb.width, 400) or (w - 8)
+            g.power = { x0 + math.floor((w - pw) / 2 + 0.5), H + (pb.gap or 1), pw, ph }
+        end
     end
     if u.portrait ~= "hide" and u.portraitPos == "overlay" then g.portrait = { g.health[1], 0, g.health[3], g.health[4] } end
     if opts.classPower then
@@ -402,6 +475,57 @@ function M.Geometry(u, opts)
         end
     end
     return g
+end
+
+-- How far below the frame its hanging parts reach (power bar below, text strip): cast bars and auras clear it.
+function M.Hanging(u)
+    local h = (u.powerBar.show ~= "off" and u.powerBar.position == "below") and (u.powerBar.height + 2) or 0
+    if u.strip and u.strip.show then h = h + u.strip.height + (u.strip.gap or 1) end
+    return h
+end
+
+--[[ "Name=Nick, Other = Nick two" -> { Name = "Nick", Other = "Nick two" } (whitespace trimmed, bad pairs skipped). ]]
+local nickCache = { src = nil, map = {} }
+function M.ParseNicknames(str)
+    if type(str) ~= "string" then return {} end
+    if nickCache.src == str then return nickCache.map end
+    local map = {}
+    for pair in str:gmatch("[^,;\n]+") do
+        local name, nick = pair:match("^%s*(.-)%s*=%s*(.-)%s*$")
+        if name and name ~= "" and nick and nick ~= "" then map[name] = nick end
+    end
+    nickCache.src, nickCache.map = str, map
+    return map
+end
+
+--[[ Arena layout presets (S18): each sets the arena frame's shape; the icons and DR follow `mirrored`. ]]
+M.ARENA_LAYOUTS = {
+    phoenix = { width = 200, height = 40, ph = 7, portrait = "hide", mirrored = false, zoom = 0.08, spacing = 34 },
+    mirrored = { width = 200, height = 40, ph = 7, portrait = "hide", mirrored = true, zoom = 0.08, spacing = 34 },
+    compact = { width = 160, height = 28, ph = 4, portrait = "hide", mirrored = false, zoom = 0.08, spacing = 24 },
+    tall = { width = 190, height = 56, ph = 10, portrait = "hide", mirrored = false, zoom = 0.08, spacing = 40 },
+    wide = { width = 260, height = 36, ph = 6, portrait = "hide", mirrored = false, zoom = 0.08, spacing = 30 },
+    slim = { width = 220, height = 22, ph = 0, portrait = "hide", mirrored = false, zoom = 0.08, spacing = 22 },
+    portrait = { width = 210, height = 44, ph = 7, portrait = "class", mirrored = false, zoom = 0.08, spacing = 34 },
+    gladiator = { width = 200, height = 48, ph = 10, portrait = "game", mirrored = true, zoom = 0.08, spacing = 36 },
+    cropped = { width = 180, height = 34, ph = 5, portrait = "hide", mirrored = false, zoom = 0.2, spacing = 28 },
+}
+M.ARENA_LAYOUT_ORDER = { "phoenix", "mirrored", "compact", "tall", "wide", "slim", "portrait", "gladiator", "cropped" }
+
+-- Writes a preset into the arena settings (size, power height, portrait, mirroring, icon crop).
+function M.ApplyArenaLayout(u, name)
+    local p = M.ARENA_LAYOUTS[name]
+    if not (u and p) then return false end
+    u.layout = name
+    u.width, u.height, u.spacing = p.width, p.height, p.spacing
+    u.powerBar.show = p.ph > 0 and "always" or "off"
+    if p.ph > 0 then u.powerBar.height = p.ph end
+    u.portrait = p.portrait
+    u.portraitPos = p.mirrored and "right" or "left"
+    u.mirrored = p.mirrored
+    u.iconZoom = p.zoom
+    if u.dr then u.dr.zoom = p.zoom; u.dr.size = math.max(16, math.min(36, p.height - 8)) end
+    return true
 end
 
 -- Slots of n pips across width w with spacing s: { {x, w}, … } (pixel-rounded, the last one takes the rest).

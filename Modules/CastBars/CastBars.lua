@@ -73,8 +73,9 @@ local DEFAULTS = {
     },
     -- player extras
     latency = true, ticks = true, customTicks = "", empower = true,
-    gcd = { enabled = false, height = 4, gap = 2 },
-    swing = { enabled = false, width = 260, height = 8, point = "BOTTOM", x = 0, y = 200, offhand = true,
+    gcd = { enabled = false, height = 4, gap = 2, attach = "castbar", width = 260, point = "BOTTOM", x = 0, y = 214 },
+    swing = { enabled = false, width = 260, height = 8, point = "BOTTOM", x = 0, y = 200, offhand = true, labels = false,
+              rangeCue = false,
               text = Style.Text(9, { anchor = "RIGHT", outline = "OUTLINE", shadow = false }) },
     colors = { latency = false, tick = false, stage = false, kick = false, gcd = false, swing = false, glow = false },
     -- Blizzard mode (Blizzard.lua): the 2.0 skin of Blizzard's own bars

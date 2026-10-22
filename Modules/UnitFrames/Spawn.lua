@@ -44,6 +44,8 @@ local function parkFrame(name)
     end
 end
 
+M.ParkFrame = function(name) if parking then parkFrame(name) end end
+
 local function parkBlizzard()
     if not parking then
         parking = CreateFrame("Frame", "PhoenixUI_UnitFrameParking", UIParent)
@@ -134,6 +136,7 @@ local function secureSetup(f, token)
     f:SetAttribute("unit", token)
     f:SetAttribute("*type1", "target")
     f:SetAttribute("*type2", "togglemenu")
+    M.ApplyClicks(f)
     if token == "player" or token == "pet" then f:SetAttribute("toggleForVehicle", true) end
     f:RegisterForClicks("AnyUp")
     f:EnableMouse(true)
@@ -184,7 +187,13 @@ local function placeNow(key)
         M:Layout(f)
         f:ClearAllPoints()
         local off = (i - 1) * step
-        if u.growth == "UP" then f:SetPoint("BOTTOMLEFT", holder, "BOTTOMLEFT", 0, off)
+        local owner = u.attach and key == "arenapet" and frames.arena and frames.arena[i]
+        if owner then
+            -- beside its arena frame, on the side away from the arena icons
+            local side = M.ArenaSides(M:Unit("arena"))
+            if side == "RIGHT" then f:SetPoint("TOPRIGHT", owner, "TOPLEFT", -4, 0)
+            else f:SetPoint("TOPLEFT", owner, "TOPRIGHT", 4, 0) end
+        elseif u.growth == "UP" then f:SetPoint("BOTTOMLEFT", holder, "BOTTOMLEFT", 0, off)
         elseif u.growth == "RIGHT" then f:SetPoint("TOPLEFT", holder, "TOPLEFT", off, 0)
         elseif u.growth == "LEFT" then f:SetPoint("TOPRIGHT", holder, "TOPRIGHT", -off, 0)
         else f:SetPoint("TOPLEFT", holder, "TOPLEFT", 0, -off) end
@@ -225,10 +234,14 @@ local HANDLER = {
     end,
     texts = function(f) local s = M:SourceOf(f); M:UpdateTexts(f, s); M:UpdateHealth(f, s); M:UpdateIndicators(f, s) end,
     portrait = function(f) M:UpdatePortrait(f, M:SourceOf(f)) end,
-    auras = function(f) M:UpdateAuras(f) end,
+    auras = function(f)
+        M:UpdateAuras(f)
+        if f.ClassIcon then M:UpdateArena(f) end -- the class icon's CC / defensive aura
+    end,
     threat = function(f) M:UpdateIndicators(f, M:SourceOf(f)) end,
     -- spell cost prediction: only the player frame with the option on listens further
-    cast = function(f)
+    cast = function(f, unit, _, spellID)
+        if f.Racial and unit ~= "player" then M:OnArenaCast(f, spellID); return end
         if f.unit ~= "player" or not M:Unit(f.unitKey).powerBar.cost then return end
         local s = M:SourceOf(f)
         M:UpdateCost(f, s, (s:PowerType(f)))
@@ -245,14 +258,15 @@ local function watchUnit(f, unit, extra)
     f.unit = unit
     if not unit then return end
     local function add(group, ev, fn)
-        ns.Events:OnUnit(ev, f.ev, function()
+        ns.Events:OnUnit(ev, f.ev, function(_, _, ...)
             if not f:IsVisible() then return end
-            if fn then ns.SafeCall(fn, f) end
+            if fn then ns.SafeCall(fn, f, ...) end
             if f.onUnitEvent then ns.SafeCall(f.onUnitEvent, f, group, ev) end
         end, unit)
     end
     for group, list in pairs(UNIT_EVENTS) do
-        if group ~= "cast" or unit == "player" then
+        -- casts: the player's (spell cost) and arena enemies' (a seen racial starts its cooldown)
+        if group ~= "cast" or unit == "player" or unit:find("^arena%d$") then
             for _, ev in ipairs(list) do add(group, ev, HANDLER[group]) end
         end
     end
@@ -282,6 +296,8 @@ local tickers
 local function tick()
     -- unit tokens without their own events (target of target, focus target) and range
     for _, key in ipairs({ "targettarget", "focustarget" }) do updateKey(key) end
+    -- arena widgets: who targets whom has no event of its own
+    for _, f in ipairs(frames.arena or {}) do if f:IsVisible() then ns.SafeCall(M.UpdateArena, M, f) end end
     eachFrame(function(f)
         if f:IsVisible() then
             M:UpdateRange(f, M:SourceOf(f))
@@ -295,7 +311,7 @@ local function registerEvents()
     local E = ns.Events
     E:On("PLAYER_TARGET_CHANGED", M, function() updateKey("target"); updateKey("targettarget"); eachFrame(function(f)
         if f:IsVisible() then M:UpdateIndicators(f, M:SourceOf(f)) end end) end)
-    E:On("PLAYER_FOCUS_CHANGED", M, function() updateKey("focus"); updateKey("focustarget") end)
+    E:On("PLAYER_FOCUS_CHANGED", M, function() updateKey("focus"); updateKey("focustarget"); updateKey("arena") end)
     E:On("UNIT_PET", M, function() updateKey("pet") end)
     E:On("INSTANCE_ENCOUNTER_ENGAGE_UNIT", M, function() updateKey("boss") end)
     E:On("ARENA_OPPONENT_UPDATE", M, function() updateKey("arena") end)
@@ -328,6 +344,12 @@ local totemHooked, totemPlacing
 local function placeTotems()
     local tf, p = TotemFrame, byToken.player
     if type(tf) ~= "table" or not p or tf:IsForbidden() or InCombatLockdown() then return end
+    if M.db.totems.style ~= "blizzard" then
+        -- Phoenix's totem bar (Resources.lua) or none: the game's stays out of sight
+        tf:SetAlpha(0)
+        return
+    end
+    tf:SetAlpha(1)
     totemPlacing = true
     if tf:GetParent() ~= UIParent then tf:SetParent(UIParent) end
     tf:ClearAllPoints()
@@ -352,9 +374,12 @@ local function spawn()
     spawned = true
     parkBlizzard()
     for _, key in ipairs(M.UNITS) do spawnKey(key) end
+    -- arena pets anchor to the arena frames: those are placed first
     for _, key in ipairs(M.UNITS) do placeNow(key) end
     lendSpellbars()
     adoptTotems()
+    M:SetupArena()     -- Arena.lua: the game's DR trays and trinkets on our arena frames
+    M:SpawnResources() -- Resources.lua: detached resource bars and the totem bar
     registerEvents()
     vehicleSwap()
 end
@@ -368,6 +393,9 @@ function M:RefreshPhoenix()
     for _, key in ipairs(M.UNITS) do self:Place(key) end
     ns.Combat:Run("uf.spellbars", lendSpellbars)
     ns.Combat:Run("uf.totems", placeTotems)
+    ns.Combat:Run("uf.clicks", M.ApplyAllClicks)
+    M:RefreshArena()
+    M:RefreshResources()
 end
 
 ---------------------------------------------------------------- Test frames
@@ -410,7 +438,17 @@ local function sample(key, i)
         arena = { name = L.UF_SAMPLE_ARENA:format(i), class = ({ "WARRIOR", "MAGE", "PRIEST", "ROGUE", "DRUID" })[i] or "MAGE",
                   hp = ({ 410000, 260000, 380000, 180000, 300000 })[i] or 300000, hpMax = 450000, power = 60, powerMax = 100,
                   powerToken = ({ "RAGE", "MANA", "MANA", "ENERGY", "MANA" })[i] or "MANA",
+                  race = ({ "Orc", "Human", "Draenei", "NightElf", "Tauren" })[i] or "Human",
+                  specName = ({ L.UF_SAMPLE_SPEC_ARMS, L.UF_SAMPLE_SPEC_FROST, L.UF_SAMPLE_SPEC_DISC, L.UF_SAMPLE_SPEC_SUB,
+                               L.UF_SAMPLE_SPEC_RESTO })[i] or "",
+                  role = (i == 3 or i == 5) and "HEALER" or "DAMAGER",
+                  dr = ({ 2, 1, 3, 0, 1 })[i] or 0, trinketUsed = i == 2 and 40 or nil, racialUsed = i == 1 and 20 or nil,
+                  iconAura = ({ { icon = ICON.storm, kind = "cc", duration = 6, elapsed = 2 }, nil,
+                                { icon = ICON.shield, kind = "defensive", duration = 8, elapsed = 3 } })[i],
+                  isTarget = i == 1, isFocus = i == 2, targetedBy = i == 1 and { class, "PRIEST" } or {},
+                  stealth = i == 4, targetName = UnitName("player") or "Phoenix",
                   debuffs = { { icon = ICON.flame, duration = 6, elapsed = 1, dispel = "Magic" } } },
+        arenapet = { name = L.PREVIEW_UNIT_PET, reaction = 2, hp = 120000, hpMax = 160000 },
     }
     return base[key] or base.target
 end
@@ -420,8 +458,9 @@ function M:ShowPhoenixTest(show)
     if not spawned then return show and false or true end
     for _, key in ipairs(M.UNITS) do
         local u = self:Unit(key)
+        local limit = (key == "arena" or key == "arenapet") and (M:Unit("arena").testCount or 5) or #frames[key]
         for i, f in ipairs(frames[key]) do
-            if show and u.enabled then
+            if show and u.enabled and i <= limit then
                 if f.watched then UnregisterUnitWatch(f); f.watched = nil end
                 f.sample = sample(key, i)
                 tests[f] = true
