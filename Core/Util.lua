@@ -39,6 +39,17 @@ function U.StripDefaults(dst, defaults)
 end
 
 -- "a.b.c" path helpers for option schemas.
+-- Deep equality for saved values (numbers compared with a small tolerance so slider rounding is not a change).
+function U.Equal(a, b)
+    if a == b then return true end
+    local ta, tb = type(a), type(b)
+    if ta == "number" and tb == "number" then return math.abs(a - b) < 1e-4 end
+    if ta ~= "table" or tb ~= "table" then return false end
+    for k, v in pairs(a) do if not U.Equal(v, b[k]) then return false end end
+    for k in pairs(b) do if a[k] == nil then return false end end
+    return true
+end
+
 function U.GetPath(tbl, path)
     for key in path:gmatch("[^%.]+") do
         if type(tbl) ~= "table" then return nil end

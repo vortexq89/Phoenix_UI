@@ -5,6 +5,7 @@
     <Script file="Widgets\Toggle.lua"/>
     <Script file="Widgets\Slider.lua"/>
     <Script file="Widgets\Dropdown.lua"/>
+    <Script file="Widgets\MediaPicker.lua"/>
     <Script file="Widgets\ColorSwatch.lua"/>
     <Script file="Widgets\Input.lua"/>
     <Script file="Widgets\Scroll.lua"/>
@@ -24,10 +25,13 @@
     <Script file="Previews\MythicPlus.lua"/>
     <Script file="Previews\General.lua"/>
     <Script file="Config\Window.lua"/>
+    <Script file="Config\Groups.lua"/>
     <Script file="Config\Renderer.lua"/>
     <Script file="Config\Search.lua"/>
     <Script file="Config\Home.lua"/>
     <Script file="Config\Profiles.lua"/>
+    <Script file="Config\Appearance.lua"/>
+    <Script file="Config\Diagnostics.lua"/>
     <Script file="Config\About.lua"/>
     <Script file="Config\Blizzard.lua"/>
 </Ui>

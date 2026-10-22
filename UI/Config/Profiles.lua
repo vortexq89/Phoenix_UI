@@ -189,6 +189,13 @@ local function buildSchema()
     return schema
 end
 
+-- one schema for the page and for search, so a search result focuses the very row it names
+local schema
+local function getSchema()
+    schema = schema or buildSchema()
+    return schema
+end
+
 Config:RegisterPage("profiles", function(parent)
-    return Config.BuildSchemaPage(parent, page, buildSchema())
-end)
+    return Config.BuildSchemaPage(parent, page, getSchema())
+end, { label = page.label, icon = page.icon, object = page, schema = getSchema })

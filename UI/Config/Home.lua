@@ -23,7 +23,8 @@ local function moduleCard(parent, m)
     c.label:SetText(L[m.label])
     c.cat = W.Text(c, "small", "text.muted")
     c.cat:SetPoint("TOPLEFT", c.label, "BOTTOMLEFT", 0, -3)
-    c.cat:SetText(L["CAT_" .. m.category:upper()]:upper())
+    local group = Config:GroupOf(m.key)
+    c.cat:SetText((group and L[group.label] or L["CAT_" .. m.category:upper()]):upper())
     c.desc = W.Text(c, "desc", "text.secondary")
     c.desc:SetWordWrap(true)
     c.desc:SetMaxLines(2)
@@ -309,4 +310,4 @@ local function build(parent)
     return page
 end
 
-Config:RegisterPage("home", build)
+Config:RegisterPage("home", build, { label = "HOME", icon = "home" })

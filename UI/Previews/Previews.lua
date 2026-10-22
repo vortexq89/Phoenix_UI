@@ -8,11 +8,19 @@ local W, Skin, Theme, Media = ns.Widgets, ns.Skin, ns.Theme, ns.Media
     the real frames, and redrawn on every PUI_SETTING_CHANGED of its module, on theme changes and when
     the page's unit selector moves.
 
-    ns.Previews:Register(kind, { height = px, build = function(stage, m) -> redraw(stage, unit) }) ]]
+    ns.Previews:Register(kind, { height = px, states = { {key, label, icon} }?,
+        build = function(stage, m) -> redraw(stage, unit) }) ]]
 local P = { kinds = {} }
 ns.Previews = P
 
 function P:Register(kind, def) self.kinds[kind] = def end
+
+-- def.states = { { key, label, icon }, ... }: sample states the page can switch on (low health, casting …).
+-- The draw function reads them from stage.states[key].
+function P:States(kind)
+    local def = self.kinds[kind]
+    return def and def.states and #def.states > 0 and def.states or nil
+end
 
 -- Sample data shared by the previews (spell and item icons are stock game art).
 P.SAMPLE = {
@@ -65,6 +73,7 @@ function P:Create(kind, parent, m, page)
     local stage = CreateFrame("Frame", nil, parent)
     stage:SetHeight(def and def.height or 120)
     stage:SetClipsChildren(true)
+    stage.states = {}
     stage.floor = W.Texture(stage, "BACKGROUND", 1, Media.textures.FADE_V)
     stage.floor:SetPoint("BOTTOMLEFT"); stage.floor:SetPoint("BOTTOMRIGHT")
     stage.floor:SetHeight(60)

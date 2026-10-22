@@ -10,8 +10,7 @@ ICONS = [
     ("pvp", "sword"), ("chat", "chat-circle-dots"), ("afk", "moon-stars"), ("quality", "magic-wand"),
     ("automation", "robot"), ("mythicplus", "key"), ("profiles", "user-switch"), ("about", "info"),
     # sidebar categories
-    ("cat-system", "gear-six"), ("cat-interface", "layout"), ("cat-combat", "crosshair"), ("cat-social", "users"),
-    ("cat-utility", "wrench"), ("cat-phoenix", "fire"),
+    ("cat-combat", "crosshair"), ("cat-utility", "wrench"), ("cat-phoenix", "fire"),
     # actions and controls
     ("search", "magnifying-glass"), ("close", "x"), ("reload", "arrow-clockwise"), ("editmode", "arrows-out-cardinal"),
     ("check", "check"), ("chevron-right", "caret-right"), ("chevron-down", "caret-down"), ("export", "export"),
@@ -38,4 +37,7 @@ ICONS = [
     ("keyboard", "keyboard"),
     # options: sub-option cogs, fonts page
     ("cog", "gear-six"), ("fonts", "text-aa"),
+    # 2.0 Phase 2: layout groups, previews, tools
+    ("hide", "eye-slash"), ("diagnostics", "pulse"), ("maps", "map-trifold"),
+    ("presets", "sparkle"), ("textures", "image-square"), ("items", "backpack"), ("tracker", "timer"),
 ]

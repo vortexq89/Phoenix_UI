@@ -40,6 +40,11 @@ local frameMethods = {
     UnregisterAllEvents = function(self) self.__events = {} end,
     IsEventRegistered = function(self, ev) return self.__events and self.__events[ev] or false end,
     CreateAnimationGroup = function() return newMagic() end,
+    -- visibility is tracked so layout code (collapsed groups, hidden rows) can be asserted
+    Show = function(self) rawset(self, "__shown", true) end,
+    Hide = function(self) rawset(self, "__shown", false) end,
+    SetShown = function(self, v) rawset(self, "__shown", v and true or false) end,
+    IsShown = function(self) return owned[self] ~= nil and rawget(self, "__shown") ~= false end,
 }
 local mt = {}
 mt.__index = function(self, k)
@@ -678,6 +683,131 @@ try("search", function()
     assert(page.tab == 2, "focusing a Text-tab option did not switch tabs")
     ns.Config:Search("")
 end)
+-- layout: 13 groups; every module and built-in page sits in exactly one; every option row is reachable
+try("layout coverage", function()
+    local C = ns.Config
+    local groups, seen = C:Groups(), {}
+    assert(#C.GROUPS == 13, "expected 13 sidebar groups, have " .. #C.GROUPS)
+    for _, g in ipairs(groups) do
+        for _, key in ipairs(g.entries) do
+            assert(not seen[key], key .. " is listed in two groups")
+            seen[key] = g.key
+        end
+    end
+    for _, m in ipairs(ns.moduleList) do
+        if not m.hidden then assert(seen[m.key], "module " .. m.key .. " is not in the sidebar") end
+    end
+    for key in pairs(C.builders) do assert(seen[key], "page " .. key .. " is not in the sidebar") end
+    -- every labelled option of every page owns a row (cog options a row in their popover)
+    local rows = 0
+    for key in pairs(seen) do
+        local page = C:Show(key)
+        assert(C.navRows[key] and C.navRows[key]:IsShown(), key .. ": its sidebar row is hidden after Show")
+        local schema = ns.options[key] or page.schema
+        local owned = {}
+        for _, r in ipairs(page.rows or {}) do
+            owned[r.item] = true
+            for _, sub in ipairs(r.item.cog or {}) do owned[sub] = true end
+        end
+        for _, item in ipairs(schema or {}) do
+            if item.label and item.type ~= "tab" and item.type ~= "header" and item.type ~= "scope" and item.type ~= "preview" then
+                assert(owned[item], key .. ": option " .. tostring(item.label) .. " has no row")
+                rows = rows + 1
+            end
+        end
+    end
+    assert(rows > 200, "only " .. rows .. " option rows reached")
+    -- groups fold and unfold; the group of the shown page opens by itself
+    C:ToggleGroup("combat", false)
+    C:Show("SpellHistory")
+    assert(C.navRows.SpellHistory:IsShown(), "showing a page did not open its group")
+end)
+-- search: multi-word queries, group names and built-in pages
+try("search pages and groups", function()
+    local C = ns.Config
+    local function find(q, pred)
+        C:Search(q)
+        for _, r in ipairs(C.results.rows) do if r:IsShown() and pred(r.entry) then return r.entry end end
+    end
+    assert(find("unit frames texture", function(e) return e.key == "UnitFrames" and e.item end), "multi-word search failed")
+    assert(find("export", function(e) return e.key == "profiles" and e.item end), "profiles page rows are not searchable")
+    local e = find(ns.L.GROUP_TOOLTIPS:lower(), function(x) return x.key == "ItemLevel" end)
+    assert(e, "a group name does not find its pages")
+    C:Search("")
+end)
+-- resets: a row, a card and a whole module go back to their defaults; the module keeps its on/off state
+try("resets", function()
+    local C, U = ns.Config, ns.Util
+    local m = ns.modules.NamePlates
+    local page = C:Show("NamePlates")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.key == "bar" then row = r end end
+    assert(row and row.reset, "the nameplate texture row has no reset arrow")
+    ns.DB:Set(m, "bar", "Neon")
+    assert(row:IsModified(), "a changed row is not reported as modified")
+    scripts[row].OnMouseUp(row, "RightButton")
+    assert(m.db.bar == m.defaults.bar, "right-click did not reset the row")
+    ns.DB:Set(m, "bar", "Neon")
+    if page.tabs then page.tabs.onChange(page.tabs, 1) end
+    page:Layout()
+    assert(row.card.reset and row.card.reset:IsShown(), "the card reset button is hidden on a changed card")
+    row.card.reset.onClick(row.card.reset); row.card.reset.onClick(row.card.reset)
+    assert(m.db.bar == m.defaults.bar, "the card reset did not reset its rows")
+    local enabled = m.db.enabled
+    ns.DB:Set(m, "bar", "Tube"); ns.DB:Set(m, "health.size", 17)
+    local hb = page.header.reset
+    hb.onClick(hb); hb.onClick(hb)
+    assert(m.db.bar == m.defaults.bar and m.db.health.size == m.defaults.health.size, "module reset missed keys")
+    assert(m.db.enabled == enabled, "module reset changed the enabled state")
+    assert(U.Equal({ a = 1, b = { 2 } }, { a = 1, b = { 2 } }) and not U.Equal({ a = 1 }, { a = 1, b = 2 }), "U.Equal")
+end)
+-- hover preview: pointing at a picker entry writes only the profile table, silently, and leaving restores it
+try("hover preview", function()
+    local C = ns.Config
+    local m = ns.modules.NamePlates
+    local page = C:Show("NamePlates")
+    assert(page.pinned and page.preview, "NamePlates has no pinned preview")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.key == "bar" then row = r end end
+    local before, fired = m.db.bar, 0
+    local probe = {}
+    ns.Events:Listen("PUI_SETTING_CHANGED", probe, function() fired = fired + 1 end)
+    row.control.onHover(row.control, "Neon")
+    assert(m.db.bar == "Neon", "hover did not reach the preview's settings")
+    row.control.onHover(row.control, "Tube")
+    row.control.onHover(row.control, nil)
+    assert(m.db.bar == before, "hover was not undone")
+    assert(fired == 0, "hover fired PUI_SETTING_CHANGED")
+    row.control.onHover(row.control, "Neon")
+    C.EndHoverPreview()
+    assert(m.db.bar == before, "EndHoverPreview did not restore")
+    -- the pinned card folds and sticks
+    page.pinned.fold.onClick(page.pinned.fold)
+    assert(page.pinned.collapsed and not page.pinned.pane:IsShown(), "the preview did not fold")
+    page.pinned.fold.onClick(page.pinned.fold)
+    page:Stick()
+end)
+-- card pickers: every kind opens, filters, renders cards and picks
+try("media pickers", function()
+    local W = ns.Widgets
+    for _, kind in ipairs({ "font", "statusbar", "sound" }) do
+        local d = W:MediaPicker(env.CreateFrame("Frame"), kind, function() return ns.Media:List(kind) end)
+        local picked
+        d.onChange = function(_, v) picked = v end
+        d:SetValue(ns.Media:List(kind)[1].value)
+        scripts[d].OnClick(d)
+        assert(d.open, kind .. " picker did not open")
+        local p = ns.Widgets.MediaPickerPopup()
+        assert(#p.visible == #ns.Media:List(kind), kind .. ": not every entry is listed")
+        p.filter.onChange(p.filter, p.filters[2].value)
+        assert(#p.visible > 0 and #p.visible <= #ns.Media:List(kind), kind .. ": filter emptied the list")
+        local card = p.cards[1]
+        assert(card and card:IsShown(), kind .. ": no card rendered")
+        scripts[card].OnClick(card)
+        assert(picked == card.item.value, kind .. ": clicking a card did not pick it")
+    end
+    assert(#ns.Media:List("sound") >= 2 and ns.Media:Voice("Jim", 3):find("Countdown\\Jim\\3.ogg", 1, true), "sounds")
+end)
 -- previews: every kind builds and redraws with its module's settings, and with a unit picked
 try("previews", function()
     local n = 0
@@ -726,6 +856,21 @@ fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels
 for name in pairs(ns.Icons and ns.Icons.missing or {}) do errors[#errors + 1] = "unknown icon: " .. name end
+try("icon fallback", function()
+    local I = ns.Icons
+    -- the stub client "fails" every probe, so the automatic source must switch to game icons
+    ns.DB.sv.global.diag = { version = ns.version, media = { { kind = "icons", ok = false } } }
+    I:SetSource("auto")
+    assert(I.game, "a failed atlas in /pui diag did not switch to game icons")
+    local probe = env.CreateFrame("Frame"):CreateTexture()
+    I:Apply(probe, "close", 16)
+    assert(I:Markup("home", 14):find("Interface\\Icons\\", 1, true), "game markup should use a stock icon")
+    I:SetSource("phoenix")
+    assert(not I.game and ns.DB.sv.global.icons == "phoenix", "choosing Phoenix glyphs did not stick")
+    local page = ns.Config:Show("diagnostics")
+    assert(ns.Config.DiagReport():find("Phoenix UI", 1, true), "diagnostics report is empty")
+    assert(page.rows and #page.rows > 5, "diagnostics page has no rows")
+end)
 try("icon tiers", function()
     local probe = env.CreateFrame("Frame"):CreateTexture()
     ns.Icons:Apply(probe, "home", 16) -- 16 * 1 / (768/2160) = 45 px -> 48 px cells

@@ -63,6 +63,8 @@ end
 
 local running
 
+function D:IsRunning() return running == true end
+
 function D:Run(quiet)
     if running then return end
     running = true
@@ -99,6 +101,7 @@ function D:Run(quiet)
         }
         ns.DB.sv.global.diag = report
         running = false
+        ns.Events:Fire("PUI_DIAG_DONE", report)
         local glyphNote = #report.glyphs > 0 and (" · %d settings glyphs recorded"):format(#report.glyphs)
             or " · open /pui first to include the settings window"
         if not quiet or failed > 0 then

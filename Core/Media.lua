@@ -31,8 +31,8 @@ M.bars = ns.TextureData.bars
 -- CC0 sounds (Media/Sounds/SOUNDS.md). Keys are saved settings; names are the LibSharedMedia names.
 local S = ns.C.MEDIA .. "Sounds\\"
 M.sounds = {
-    { key = "AlertOnYou", name = "Phoenix: Alert (on you)", path = S .. "AlertOnYou.ogg" },
-    { key = "AlertUnderYou", name = "Phoenix: Alert (under you)", path = S .. "AlertUnderYou.ogg" },
+    { key = "AlertOnYou", name = "Phoenix: Alert (on you)", label = "SOUND_ALERT_ON_YOU", path = S .. "AlertOnYou.ogg" },
+    { key = "AlertUnderYou", name = "Phoenix: Alert (under you)", label = "SOUND_ALERT_UNDER_YOU", path = S .. "AlertUnderYou.ogg" },
 }
 -- Countdown voices: M:Voice(key, n) -> the file that says n (1-10).
 M.voices = { { key = "Jim", name = "Jim" }, { key = "David", name = "David" } }
@@ -109,7 +109,7 @@ function M:List(kind)
     local out, seen = {}, {}
     if kind == "sound" then
         for _, m in ipairs(self.sounds) do
-            out[#out + 1] = { value = m.key, label = m.name:gsub("^Phoenix: ", ""), sound = m.path, group = "Phoenix" }
+            out[#out + 1] = { value = m.key, label = ns.L[m.label], sound = m.path, group = "Phoenix" }
             seen[m.name] = true
         end
         for _, name in ipairs(LSM:List("sound")) do
@@ -122,7 +122,8 @@ function M:List(kind)
     if kind == "font" then
         for _, m in ipairs(self.fonts) do
             if not (self.needsCyrillic and not m.cyrillic) then
-                out[#out + 1] = { value = m.key, label = m.name:gsub("^Phoenix ", ""), font = m.path, group = m.family }
+                out[#out + 1] = { value = m.key, label = m.name:gsub("^Phoenix ", ""), font = m.path, group = m.family,
+                    category = m.category }
             end
             seen[m.name] = true
         end

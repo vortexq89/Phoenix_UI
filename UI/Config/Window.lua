@@ -3,7 +3,9 @@ local L = ns.L
 local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
 
 --[[ The standalone Phoenix UI configuration window (ARCHITECTURE §9).
-    Built lazily on first open. Pages: "home", "profiles", "about" and one per module key. ]]
+    Built lazily on first open. Pages: one per module key plus the built-in pages registered with
+    Config:RegisterPage (home, fonts, textures, sounds, presets, profiles, diagnostics, about). The sidebar is
+    grouped by Config.GROUPS (Groups.lua). ]]
 local Config = {}
 ns.Config = Config
 Config.pages, Config.builders, Config.navRows = {}, {}, {}
@@ -11,16 +13,14 @@ Config.pages, Config.builders, Config.navRows = {}, {}, {}
 local HEADER_H, SIDEBAR_W, FOOTER_H = 56, 216, 40
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
 local MIN_W, MIN_H, MAX_W, MAX_H = 860, 540, 1600, 1100
-local DEFAULT_W, DEFAULT_H = 1000, 660
-local CATEGORY_LABEL = {
-    system = "CAT_SYSTEM", interface = "CAT_INTERFACE", combat = "CAT_COMBAT", social = "CAT_SOCIAL", utility = "CAT_UTILITY",
-}
-local CATEGORY_ICON = {
-    system = "cat-system", interface = "cat-interface", combat = "cat-combat", social = "cat-social", utility = "cat-utility",
-}
+local DEFAULT_W, DEFAULT_H = 1100, 720
 
-function Config:RegisterPage(key, builder)
+-- info = { label = L key, icon = name, object = module-like page table, schema = table or function } names the
+-- page in the sidebar and lets search index its rows.
+Config.pageInfo = {}
+function Config:RegisterPage(key, builder, info)
     self.builders[key] = builder
+    if info then self.pageInfo[key] = info end
 end
 
 ---------------------------------------------------------------- frame
@@ -99,39 +99,53 @@ local function buildHeader(f)
     end)
 end
 
-local function navRow(parent, key, label, icon)
+-- One sidebar row. kind: "entry" (a page, indented under its group), "group" (a collapsible heading) or
+-- "single" (a group with one page: the heading itself opens it).
+local function navRow(parent, key, label, icon, kind)
     local r = CreateFrame("Button", nil, parent)
     r:SetHeight(32)
-    r.key = key
+    r.key, r.kind = key, kind
     r.bg = W.Texture(r, "BACKGROUND")
     r.bg:SetPoint("TOPLEFT", 8, 0); r.bg:SetPoint("BOTTOMRIGHT", -8, 0)
     r.bar = W.Texture(r, "ARTWORK")
     r.bar:SetPoint("TOPLEFT", r.bg, "TOPLEFT"); r.bar:SetPoint("BOTTOMLEFT", r.bg, "BOTTOMLEFT")
     r.bar:SetWidth(2)
-    r.icon = W.Icon(r, icon, 16)
-    r.icon:SetPoint("LEFT", 22, 0)
-    r.label = W.Text(r, "body", "text.secondary")
-    r.label:SetPoint("LEFT", r.icon, "RIGHT", 10, 0)
+    local entry = kind == "entry"
+    r.icon = W.Icon(r, icon, entry and 14 or 16)
+    r.icon:SetPoint("LEFT", entry and 40 or 20, 0)
+    r.label = W.Text(r, entry and "body" or "heading", "text.secondary")
+    r.label:SetPoint("LEFT", r.icon, "RIGHT", entry and 9 or 10, 0)
     r.label:SetPoint("RIGHT", -30, 0)
-    r.label:SetText(label)
+    r.label:SetText(entry and label or label:upper())
     r.dot = W:Dot(r, 6)
     r.dot:SetPoint("RIGHT", -20, 0)
+    if kind == "group" then
+        r.chevron = W.Icon(r, "chevron-right", 10)
+        r.chevron:SetPoint("RIGHT", -20, 0)
+        r.dot:Hide()
+    end
+    local font = entry and "body" or "heading"
     function r:Paint()
         local m = ns.modules[self.key]
-        if self.active then
+        local lit = self.active or (self.kind == "group" and self.childActive and not self.expanded)
+        if lit then
             W.Color(self.bg, "accent.soft")
             self.bar:SetVertexColor(1, 1, 1, 1)
             Skin:Gradient(self.bar, "VERTICAL", "accent.secondary", "accent.primary")
             self.bar:Show()
             W.Color(self.icon, "accent.primary")
-            Skin:Text(self.label, "body", "text.primary")
+            Skin:Text(self.label, font, "text.primary")
         else
             W.Color(self.bg, "bg.hover", self.hover and 0.9 or 0)
             self.bar:Hide()
-            W.Color(self.icon, self.hover and "text.primary" or "text.muted")
-            Skin:Text(self.label, "body", self.hover and "text.primary" or "text.secondary")
+            local on = self.hover or self.childActive
+            W.Color(self.icon, (self.childActive and "accent.primary") or (on and "text.primary") or "text.muted")
+            Skin:Text(self.label, font, on and "text.primary" or "text.secondary")
         end
-        if m and not m.locked then
+        if self.chevron then
+            ns.Icons:Apply(self.chevron, self.expanded and "chevron-down" or "chevron-right", 10)
+            W.Color(self.chevron, self.hover and "text.primary" or "text.muted")
+        elseif m and not m.locked then
             local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning")
                 or (m:IsEnabled() and "state.success") or "text.muted"
             W.Color(self.dot, token, m:IsEnabled() and 1 or 0.5)
@@ -144,26 +158,10 @@ local function navRow(parent, key, label, icon)
     r:SetScript("OnLeave", function(self) self.hover = false; self:Paint() end)
     r:SetScript("OnClick", function(self)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-        Config:Show(self.key)
+        if self.kind == "group" then Config:ToggleGroup(self.group.key) else Config:Show(self.key) end
     end)
     Skin:Register(r, function(self) self:Paint() end)
-    Config.navRows[key] = r
     return r
-end
-
-local function groupLabel(parent, text, icon)
-    local g = CreateFrame("Frame", nil, parent)
-    g:SetSize(SIDEBAR_W - 40, 16)
-    g.icon = W.Icon(g, icon, 12, "text.muted")
-    g.icon:SetPoint("LEFT", 0, 0)
-    g.text = W.Text(g, "heading", "text.muted")
-    g.text:SetPoint("LEFT", g.icon, "RIGHT", 7, 0)
-    g.text:SetText(text:upper())
-    Skin:Register(g, function(self)
-        Skin:Text(self.text, "heading", "text.muted")
-        W.Color(self.icon, "accent.primary", 0.75)
-    end)
-    return g
 end
 
 local function buildSidebar(f)
@@ -184,32 +182,88 @@ local function buildSidebar(f)
     local scroll = W:Scroll(sb)
     scroll:SetPoint("TOPLEFT", 0, -10)
     scroll:SetPoint("BOTTOMRIGHT", -8, 10)
+    sb.scroll = scroll
     local c = scroll.child
-    local y = 0
-    local function add(widget, h, x)
-        widget:SetPoint("TOPLEFT", c, "TOPLEFT", x or 0, -y)
-        if widget.SetPoint and widget.GetObjectType and widget:GetObjectType() == "Button" then
-            widget:SetPoint("TOPRIGHT", c, "TOPRIGHT", 0, -y)
-        end
-        y = y + h
-    end
-    add(navRow(c, "home", L.HOME, "home"), 34)
-    for _, cat in ipairs(ns.categories) do
-        local any = false
-        for _, m in ipairs(ns.moduleList) do if m.category == cat and not m.hidden then any = true end end
-        if any then
-            y = y + 10
-            add(groupLabel(c, L[CATEGORY_LABEL[cat]], CATEGORY_ICON[cat]), 22, 20)
-            for _, m in ipairs(ns.moduleList) do
-                if m.category == cat and not m.hidden then add(navRow(c, m.key, L[m.label], m.icon), 32) end
+    Config.groupRows = {}
+    for _, g in ipairs(Config:Groups()) do
+        local single = #g.entries == 1
+        local head
+        if single then
+            local key = g.entries[1]
+            local label = g.key == "home" and L.HOME or L[g.label]
+            head = navRow(c, key, label, g.icon, "single")
+            Config.navRows[key] = head
+        else
+            head = navRow(c, g.key, L[g.label], g.icon, "group")
+            head.children = {}
+            for _, key in ipairs(g.entries) do
+                local label, icon = Config:EntryInfo(key)
+                local row = navRow(c, key, label, icon, "entry")
+                row.group = g
+                Config.navRows[key] = row
+                head.children[#head.children + 1] = row
             end
         end
+        head.group = g
+        Config.groupRows[#Config.groupRows + 1] = head
     end
-    y = y + 10
-    add(groupLabel(c, L.CAT_PHOENIX, "cat-phoenix"), 22, 20)
-    add(navRow(c, "profiles", L.PROFILES, "profiles"), 32)
-    add(navRow(c, "about", L.ABOUT, "about"), 32)
+    Config:LayoutSidebar()
+end
+
+local function groupStore()
+    local s = uiStore()
+    if type(s.groups) ~= "table" then s.groups = {} end
+    return s.groups
+end
+
+-- Stacks the group headings and the entries of expanded groups.
+function Config:LayoutSidebar()
+    if not self.frame then return end
+    local c = self.frame.sidebar.scroll.child
+    local open = groupStore()
+    local y = 0
+    for i, head in ipairs(self.groupRows) do
+        if i > 1 then y = y + 2 end
+        head:ClearAllPoints()
+        head:SetPoint("TOPLEFT", c, "TOPLEFT", 0, -y)
+        head:SetPoint("TOPRIGHT", c, "TOPRIGHT", 0, -y)
+        y = y + 32
+        if head.children then
+            head.expanded = open[head.group.key] == true
+            head.childActive = false
+            for _, row in ipairs(head.children) do
+                if row.key == self.current then head.childActive = true end
+                row:SetShown(head.expanded)
+                if head.expanded then
+                    row:ClearAllPoints()
+                    row:SetPoint("TOPLEFT", c, "TOPLEFT", 0, -y)
+                    row:SetPoint("TOPRIGHT", c, "TOPRIGHT", 0, -y)
+                    y = y + 30
+                end
+            end
+            if head.expanded then y = y + 4 end
+        end
+        head:Paint()
+    end
     c:SetHeight(y + 8)
+    self.frame.sidebar.scroll:UpdateBar()
+end
+
+function Config:ToggleGroup(key, expand)
+    local open = groupStore()
+    if expand == nil then expand = not open[key] end
+    open[key] = expand or nil
+    self:LayoutSidebar()
+end
+
+-- Opens the group that holds key (used when a page is shown from search, a link or /pui).
+function Config:RevealEntry(key)
+    local g = self:GroupOf(key)
+    if g and #g.entries > 1 then
+        local open = groupStore()
+        if not open[g.key] then open[g.key] = true end
+    end
+    self:LayoutSidebar()
 end
 
 local function buildFooter(f)
@@ -323,6 +377,7 @@ function Config:Build()
 
     f:SetScript("OnShow", function()
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
+        if self.InvalidateSearch then self:InvalidateSearch() end
         self:UpdateFooter()
         for _, row in pairs(self.navRows) do row:Paint() end
         if self.current and self.pages[self.current] and self.pages[self.current].Refresh then self.pages[self.current]:Refresh() end
@@ -384,6 +439,7 @@ function Config:Show(key)
         row.active = (k == key)
         row:Paint()
     end
+    self:RevealEntry(key)
     if page.Refresh then page:Refresh() end
     if page.Layout then page:Layout() end
     if self.results then self.results:Hide() end

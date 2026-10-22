@@ -65,7 +65,10 @@ local function getPopup()
     popup:SetScript("OnHide", function(self)
         self:UnregisterEvent("GLOBAL_MOUSE_DOWN")
         self.search:ClearFocus()
-        if self.owner then self.owner:SetOpen(false) end
+        if self.owner then
+            self.owner:SetOpen(false)
+            if self.owner.onHover then self.owner.onHover(self.owner, nil) end
+        end
     end)
 
     function popup:Row(i)
@@ -83,8 +86,18 @@ local function getPopup()
         r.icon:SetPoint("LEFT", 10, 0)
         r.check = W.Icon(r, "check", 12, "accent.primary")
         r.check:SetPoint("RIGHT", -8, 0)
-        r:SetScript("OnEnter", function(b) if not b.heading then W.Color(b.hl, "bg.hover") end end)
-        r:SetScript("OnLeave", function(b) W.Color(b.hl, "bg.hover", 0) end)
+        -- owner.onHover(owner, value) previews an entry while it is pointed at; nil ends the preview
+        r:SetScript("OnEnter", function(b)
+            if b.heading then return end
+            W.Color(b.hl, "bg.hover")
+            local owner = popup.owner
+            if owner and owner.onHover then owner.onHover(owner, b.value) end
+        end)
+        r:SetScript("OnLeave", function(b)
+            W.Color(b.hl, "bg.hover", 0)
+            local owner = popup.owner
+            if owner and owner.onHover and not popup:IsMouseOver() then owner.onHover(owner, nil) end
+        end)
         r:SetScript("OnClick", function(b)
             if b.heading then return end
             local owner = popup.owner
@@ -169,6 +182,10 @@ local function getPopup()
     W.PopoverKeepOpen(popup) -- choosing from a list inside a cog popover keeps the popover open
     return popup
 end
+
+-- The shared list, for pickers that host a dropdown inside their own popup.
+function W.DropdownListIsMouseOver() return popup ~= nil and popup:IsShown() and popup:IsMouseOver() end
+function W.HideDropdownList() if popup then popup:Hide() end end
 
 -- items: { {value=, label=, icon=?, group=?, font=?, texture=?}, ... } or function() -> items.
 -- preview: nil | "font" | "bar"

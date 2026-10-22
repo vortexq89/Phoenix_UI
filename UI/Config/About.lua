@@ -54,4 +54,4 @@ for _, item in ipairs(tail) do schema[#schema + 1] = item end
 
 Config:RegisterPage("about", function(parent)
     return Config.BuildSchemaPage(parent, page, schema)
-end)
+end, { label = page.label, icon = page.icon, object = page, schema = schema })

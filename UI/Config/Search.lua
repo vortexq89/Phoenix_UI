@@ -3,40 +3,73 @@ local L = ns.L
 local W, Skin = ns.Widgets, ns.Skin
 local Config = ns.Config
 
---[[ Global search across every module's option schema. Results overlay the content area;
-    clicking a result opens the page, scrolls to the row and flashes it. ]]
+--[[ Global search across every page's option schema: modules and built-in pages, with their sidebar group
+    and tab in the path, so "unit frames portrait" or "tools profiles" both land. Results overlay the content
+    area; clicking a result opens the page (expanding its sidebar group), switches to the row's tab, scrolls it
+    into view and flashes it. ]]
 local MAX_RESULTS, RESULT_H = 40, 44
 local index
 
+-- Every page (module or built-in) with its schema: modules first in sidebar order, then built-in pages.
+local function sources()
+    local out = {}
+    for _, g in ipairs(Config:Groups()) do
+        for _, key in ipairs(g.entries) do
+            local m = ns.modules[key]
+            if m then
+                out[#out + 1] = { key = key, object = m, schema = ns.options[key] or {}, group = g }
+            else
+                local info = Config.pageInfo[key]
+                if info then
+                    local schema = info.schema
+                    if type(schema) == "function" then schema = schema() end
+                    out[#out + 1] = { key = key, object = info.object or info, schema = schema or {}, group = g }
+                end
+            end
+        end
+    end
+    return out
+end
+
+-- Rebuilt on the first query after the window opens, so pages and modules added later are found too.
 local function buildIndex()
     index = {}
-    for _, m in ipairs(ns.moduleList) do
-        if not m.hidden then
-            local mLabel = L[m.label]
-            local mDesc = L[m.desc] or ""
-            index[#index + 1] = { module = m, label = mLabel, path = mDesc, haystack = (mLabel .. " " .. mDesc):lower() }
-            local section = mLabel
-            local function add(item, where)
-                local label = L[item.label]
-                local hay = table.concat({ label, item.desc and L[item.desc] or "", item.keywords or "", where, mLabel }, " ")
-                index[#index + 1] = {
-                    module = m, item = item, label = label, path = mLabel .. "  ›  " .. where, haystack = hay:lower(),
-                }
-            end
-            for _, item in ipairs(ns.options[m.key] or {}) do
-                if item.type == "header" or item.type == "tab" then
-                    section = L[item.label]
-                elseif item.label and item.type ~= "scope" and item.type ~= "preview" then
-                    add(item, section)
-                    -- sub-options behind a cog are found too; the result flashes their row
-                    for _, sub in ipairs(item.cog or {}) do
-                        if sub.label then add(sub, section .. "  ›  " .. L[item.label]) end
-                    end
+    for _, src in ipairs(sources()) do
+        local m = src.object
+        local mLabel = L[m.label] or m.label
+        local gLabel = L[src.group.label] or ""
+        local root = (src.group.entries[2] and gLabel ~= mLabel) and (gLabel .. "  ›  " .. mLabel) or mLabel
+        local mDesc = m.desc and L[m.desc] or ""
+        index[#index + 1] = { key = src.key, icon = m.icon, label = mLabel, path = root,
+            haystack = (mLabel .. " " .. mDesc .. " " .. gLabel):lower() }
+        local section = mLabel
+        local tab
+        local function add(item, where)
+            local label = L[item.label] or item.label
+            local hay = table.concat({ label, item.desc and L[item.desc] or "", item.keywords or "", where, mLabel, gLabel }, " ")
+            index[#index + 1] = {
+                key = src.key, icon = m.icon, item = item, label = label, path = root .. "  ›  " .. where,
+                haystack = hay:lower(),
+            }
+        end
+        for _, item in ipairs(src.schema) do
+            if item.type == "tab" then
+                tab = L[item.label] or item.label
+                section = tab
+            elseif item.type == "header" then
+                section = tab and (tab .. "  ›  " .. (L[item.label] or item.label)) or (L[item.label] or item.label)
+            elseif item.label and item.type ~= "scope" and item.type ~= "preview" then
+                add(item, section)
+                -- sub-options behind a cog are found too; the result flashes their row
+                for _, sub in ipairs(item.cog or {}) do
+                    if sub.label then add(sub, section .. "  ›  " .. (L[item.label] or item.label)) end
                 end
             end
         end
     end
 end
+
+function Config:InvalidateSearch() index = nil end
 
 local function resultRow(parent, i)
     local r = CreateFrame("Button", nil, parent)
@@ -72,7 +105,7 @@ local function resultRow(parent, i)
         local e = self.entry
         Config.frame.header.search:SetValue("")
         Config:Search("")
-        local page = Config:Show(e.module.key)
+        local page = Config:Show(e.key)
         if e.item and page.Focus then C_Timer.After(0.05, function() page:Focus(e.item) end) end
     end)
     return r
@@ -104,16 +137,22 @@ function Config:Search(query)
         return
     end
     if not index then buildIndex() end
+    local words = {}
+    for w in query:gmatch("%S+") do words[#words + 1] = w end
     local f = getResults()
     local n = 0
     for _, e in ipairs(index) do
         if n >= MAX_RESULTS then break end
-        if e.haystack:find(query, 1, true) then
+        local hit = true
+        for _, w in ipairs(words) do
+            if not e.haystack:find(w, 1, true) then hit = false; break end
+        end
+        if hit then
             n = n + 1
             local row = f.rows[n] or resultRow(f.scroll.child, n)
             f.rows[n] = row
             row.entry = e
-            ns.Icons:Apply(row.icon, e.module.icon, 14)
+            ns.Icons:Apply(row.icon, e.icon or "search", 14)
             row.label:SetText(e.label)
             row.path:SetText(e.path)
             row:Paint()
