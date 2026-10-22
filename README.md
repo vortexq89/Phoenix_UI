@@ -28,8 +28,8 @@ Mode cannot reach.
 | | **Action Bars** | Phoenix's own secure bars: bars 1–8, pet, stance and a quest/item bar with any number of buttons, lines, size, spacing, grow/wrap, backdrop and border; paging for forms, skyriding and modifiers with optional page arrows; show in/out of combat, fade, mouseover, custom macro; square, rounded, circle or hexagon buttons; range, power and unusable tints; proc and assisted-highlight glows; hotkey, macro and count text with short key names; extra/zone ability style, vehicle exit button, game-menu and bag buttons on mouseover. Bars move in Layout mode. Blizzard bars (Edit Mode) stay one switch away |
 | | **Unit Frames** | Phoenix's own secure frames for player, target, target of target, focus, focus target, pet, boss 1–5 and (optional) arena 1–5: health, power, class resource (combo points, runes, stagger …) and encounter power bars; absorbs, heal absorbs and incoming heals; text tags (`[name]`, `[health:current-percent]` …) with per-text fonts; 2D, 3D or class portraits; raid marker, leader, role, PvP, combat, resting, elite, threat and ready-check icons; buffs and debuffs with dispel colours; range and out-of-combat fade; class, reaction, health-curve or theme colours; any border style; per-frame settings with apply to all, Test frames and Layout mode. Built for 12.x secret values. Blizzard's frames (reskinned) stay one switch away |
 | | **Group Frames** | Party and raid frame bar texture, border, background and name/status fonts, with a live party preview |
-| | **Cast Bars** | Flat cast bars; icon, timer and latency on your own bar |
-| | **Buffs & Debuffs** | Cropped icons, crisp borders, readable timers and stacks |
+| | **Cast Bars** | Phoenix's own cast bars for player, target, focus, pet, boss and arena, on the unit frames or free: interruptible/locked/channel colours, kick-ready tick, spark, latency, channel ticks, empower stages, spell target, GCD bar (retail) and swing timer (Forever); icon, name and time options, Test casts and Layout mode. Secret-safe for 12.x; Blizzard's bars (reskinned) stay one switch away |
+| | **Buffs & Debuffs** | Your buffs, debuffs and weapon enchants on Phoenix aura containers: size, square or wide icons, rows, grow, sort, own first, type borders, swipe, timer formats and colours by time left, right-click cancel in combat, private aura anchors, Test auras and Layout mode. Blizzard's frames (reskinned) stay one switch away |
 | | **Nameplates** | Bar texture, a health percent that works in restricted content, Mythic+ enemy forces per mob; nameplate visibility toggles |
 | | **Tooltip** | Dark style, class and quality borders, health bar, target, role and IDs, Mythic+ rating, cursor anchor, hide in combat |
 | | **Item Level** | Item levels on the character sheet and bags |
@@ -164,7 +164,7 @@ about you is uploaded; sims run on your PC. Details and every option: [uploader/
 
 ### Movers
 
-Edit Mode places the minimap and most of the HUD. Phoenix action bars and unit frames (the defaults) move in **Layout** mode instead: the button in the settings top bar, on the Action Bars page or on the Unit Frames page. `/pui movers` unlocks the frames it does
+Edit Mode places the minimap and most of the HUD. Phoenix action bars, unit frames, cast bars and aura blocks (the defaults) move in **Layout** mode instead: the button in the settings top bar, on the Action Bars page or on the Unit Frames page. `/pui movers` unlocks the frames it does
 not cover: drag to move, mouse wheel to scale (Shift: opacity), arrow keys to nudge, right-click to reset, with an
 optional snap grid. Positions are saved per profile. Movers never touches an Edit Mode frame and locks itself in
 combat.

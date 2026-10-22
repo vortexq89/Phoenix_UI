@@ -10,7 +10,8 @@ local M = ns.modules.UnitFrames
     the ClickCastFrames table. Size, place, scale and strata are protected: they change out of combat only.
     Blizzard's player, target (with its target of target), focus and boss frames are parked in a hidden frame
     (events off, hidden, re-parented); arena frames only when Phoenix's arena frames are on. Their cast bars are
-    lent to the Phoenix frames (cast bar anchor) until S9 brings Phoenix cast bars. ]]
+    lent to the Phoenix frames (cast bar anchor) unless Phoenix's Cast Bars (S9) draw that unit: then the Phoenix
+    bar sits on the anchor and Blizzard's stays parked. ]]
 
 local frames, holders, byToken = {}, {}, {}
 M.frames, M.holders, M.byToken = frames, holders, byToken
@@ -57,8 +58,9 @@ local function parkBlizzard()
 end
 
 ---------------------------------------------------------------- cast bar anchors (S9 hook-up point)
--- S9's Phoenix cast bars call M:CastBarAnchor(key, index) for the frame to sit on. Until then Blizzard's own
--- target, focus and boss cast bars are lent to the anchor: they keep their own events and drawing.
+-- Phoenix cast bars (Modules/CastBars) call M:CastBarAnchor(key, index) for the frame to sit on. Units the Cast Bars
+-- module does not draw (it is off, in Blizzard mode, or that bar is off) get Blizzard's own target, focus and boss
+-- cast bar lent to the anchor instead: it keeps its own events and drawing.
 function M:CastBarAnchor(key, index)
     local list = frames[key]
     local f = list and list[index or 1]
@@ -76,9 +78,15 @@ local function anchorSpellbar(bar)
     placing[bar] = nil
 end
 
+local function castBarsOwn(key)
+    local cb = ns.modules.CastBars
+    return cb and cb.Owns and cb:Owns(key)
+end
+
 local function lendSpellbars()
     for key, names in pairs(SPELLBARS) do
         local u = M:Unit(key)
+        if castBarsOwn(key) then names = {} end
         for i, name in ipairs(names) do
             local bar = _G[name]
             local f = frames[key] and frames[key][i]
@@ -188,6 +196,8 @@ local function placeNow(key)
         end
         M:UpdateAll(f)
     end
+    -- Phoenix cast bars re-fit the anchors
+    ns.Events:Fire("PUI_UF_LAYOUT", key)
 end
 
 function M:Place(key)

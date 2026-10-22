@@ -3,6 +3,33 @@
 ## 2.0.0-beta1
 
 ### New
+- **Cast bars** (plan v2 stage S9): Phoenix now draws its own cast bars for the player, target, focus, pet, boss
+  1–5 and arena 1–5 (Cast Bars → *Bars drawn by*: *Phoenix*, the default; *Blizzard (skinned)* keeps the game's
+  bars with the 1.x skin). The player bar replaces Edit Mode's. Each bar sits on its Phoenix unit frame's cast bar
+  anchor (Unit Frames → *Cast bar*) or on its own mover in Layout mode. Per bar (chips with Shift multi-edit and
+  *Apply to: All*): show, size, placement, texture, border, background, reverse and smooth fill, class colour for
+  your own casts; fill colours for interruptible casts, channels and casts that cannot be interrupted, plus
+  kick-not-ready, interrupted and finished colours; spark; spell icon left, right, outside the bar or off, with a
+  shield on locked casts; spell name (length limit), time (left, elapsed, left/total, elapsed/total or none) and
+  spell target texts with their own fonts; hold time and an interrupted/finished flash. Player extras: latency
+  zone, channel ticks (built-in counts plus your own `spellID:ticks` list), empower stages, a global cooldown bar
+  (retail) and a **swing timer** with off-hand bar (WoW Forever). Enemy bars: an interrupt-ready tick where your
+  interrupt comes off cooldown, a glow on casts the game marks as important and a red edge on casts aimed at you.
+  **Test casts** loops a sample on every bar; the page has a live preview (casting, channel, empower, locked,
+  interrupted). Built for 12.x secret values: timing comes from `UnitCastingDuration` duration objects
+  (`SetTimerDuration`), colours from `SetVertexColorFromBoolean`/`EvaluateColorFromBoolean`, the time text from
+  duration text bindings, never a compare in addon code. 100 settings on retail, 110 on WoW Forever (target 55).
+- **Buffs & debuffs** (plan v2 stage S9): Phoenix shows your buffs, debuffs and weapon enchants on its own aura
+  containers (Buffs & Debuffs → *Auras drawn by*: *Phoenix*, the default; *Blizzard (skinned)* keeps BuffFrame and
+  DebuffFrame with the 1.x skin). Per block (Buffs / Debuffs): show, icon size, square or wide icons, icons per
+  row, rows, spacing, grow direction and where new rows go, sort by time left / name / order applied, ascending or
+  descending, your own auras first or mixed in; borders by debuff type (also on buffs if you like), cooldown
+  swipe (reversible), grey debuff art; timer format (short, clock, seconds), tenths under a threshold and colours
+  by time left (a game colour curve, secret auras too), stack and timer fonts; right-click cancels buffs (in combat
+  too); tooltips always or out of combat. Weapon enchants with the buffs, as their own block or hidden. Private
+  aura anchors (boss mechanics the game draws itself) with count, swipe and countdown numbers. Every block moves in
+  Layout mode; **Test auras** fills them with samples; the page has a live preview. **Test frames** in the top bar
+  now also starts test casts and test auras.
 - **Unit frames** (plan v2 stage S8): Phoenix now draws its own player, target, target of target, focus, focus
   target, pet and boss 1–5 frames, plus optional arena 1–5 frames (Unit Frames → *Unit frames*: *Phoenix frames*,
   the default; *Blizzard frames, reskinned* keeps the game's frames with the 1.x skin after a reload). Per frame

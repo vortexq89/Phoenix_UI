@@ -356,11 +356,50 @@
   }
  },
  "spells": {
+  "10": {
+   "name": "Blizzard"
+  },
+  "1120": {
+   "name": "Drain Soul"
+  },
+  "12051": {
+   "name": "Evocation"
+  },
+  "15407": {
+   "name": "Mind Flay"
+  },
+  "15487": {
+   "name": "Silence"
+  },
+  "1766": {
+   "name": "Kick"
+  },
+  "19244": {
+   "name": "Spell Lock"
+  },
+  "2139": {
+   "name": "Counterspell"
+  },
+  "5143": {
+   "name": "Arcane Missiles"
+  },
+  "6552": {
+   "name": "Pummel"
+  },
   "6603": {
    "name": "Attack"
   },
+  "689": {
+   "name": "Drain Life"
+  },
+  "72": {
+   "name": "Shield Bash"
+  },
   "75": {
    "name": "Auto Shot"
+  },
+  "8042": {
+   "name": "Earth Shock"
   }
  }
 }

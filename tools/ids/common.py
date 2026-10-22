@@ -32,7 +32,8 @@ LITERAL_PATH = re.compile(r'"(Interface\\\\(?!AddOns\\\\)[A-Za-z0-9_\\-]+(?:\\\\
 PREFIX_DEF = re.compile(r'^\s*local\s+([\w\s,]+?)\s*=\s*((?:"[^"]*"\s*,?\s*)+)$')
 ATLAS_CALL = re.compile(r'(?:SetAtlas|CreateAtlasMarkup)\(\s*"([^"]+)"')
 ATLAS_TABLE = re.compile(r'local\s+\w*ATLAS\w*\s*=\s*\{([^}]*)\}')
-SPELL_LINE = re.compile(r'--\s*spellIDs:')
+# `-- spellIDs(retail):` / `-- spellIDs(forever):` lines hold IDs one game only uses (checked against that snapshot only).
+SPELL_LINE = re.compile(r'--\s*spellIDs(?:\((retail|forever)\))?:')
 FILEID_LINE = re.compile(r'--\s*fileID:')
 SOUNDKIT = re.compile(r'SOUNDKIT\.([A-Z0-9_]+)')
 ENUM_ROW = re.compile(r'kind\s*=\s*"(\w+)"\s*,\s*fallback\s*=\s*(\d+)')
@@ -48,7 +49,8 @@ def norm(path):
     return path.replace("/", "\\").replace("\\\\", "\\").lower()
 
 
-def scan():
+def scan(flavor=None):
+    flavor = flavor or os.environ.get("PUI_FLAVOR", "retail")
     """-> dict kind -> {value: [ 'file:line', ... ]}"""
     refs = {k: {} for k in ("files", "atlases", "spells", "soundkits", "enums", "fileids")}
 
@@ -85,7 +87,8 @@ def scan():
             if FILEID_LINE.search(line):
                 for n in re.findall(r'\b(\d{4,})\b', line.split("--", 1)[0]):
                     add("fileids", int(n), where)
-            if SPELL_LINE.search(line):
+            sl = SPELL_LINE.search(line)
+            if sl and sl.group(1) in (None, flavor):
                 body = line.split("--", 1)[0]
                 for n in re.findall(r'\[(\d+)\]|\b(\d{2,})\b', body):
                     v = n[0] or n[1]

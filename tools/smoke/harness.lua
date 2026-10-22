@@ -1991,6 +1991,155 @@ try("unit frames depth (S8)", function()
     print(("  UnitFrames settings: %d"):format(n))
 end)
 
+-- cast bars (S9): pure helpers, Phoenix bars and parking, anchors, test casts, live cast events, depth
+try("cast bar helpers", function()
+    local M = ns.modules.CastBars
+    assert(M.FormatTime("remaining", 1, 1.25, 3) == "1.2" or M.FormatTime("remaining", 1, 1.25, 3) == "1.3", "remaining")
+    assert(M.FormatTime("both", 0, 1, 3) == "1 / 3" and M.FormatTime("elapsedTotal", 1, 1, 3) == "2.0 / 3.0", "both / elapsed")
+    assert(M.FormatTime("none", 1, 1, 3) == "" and M.FormatTime("elapsed", 0, 0.4, 2) == "2", "none / elapsed")
+    local t = M.ParseTicks("15407:4, 5143=3 junk 99:0 12:31")
+    assert(t[15407] == 4 and t[5143] == 3 and t[99] == nil and t[12] == nil, "tick list parsing")
+    M.db.customTicks = "15407:4"
+    assert(M:TickCount(15407) == 4 and M:TickCount(5143) == M.TICKS[5143] and M:TickCount(1) == nil, "custom ticks override")
+    M.db.customTicks = ""
+    local o = M.TickOffsets(4, 200)
+    assert(#o == 3 and o[1] == 50 and o[3] == 150 and #M.TickOffsets(1, 200) == 0, "tick offsets")
+    local st = M.StageOffsets({ 0.25, 0.25, 0.5 }, 100)
+    assert(#st == 2 and st[1] == 25 and st[2] == 50, "empower stage offsets")
+    assert(M.LatencyShare(100, 2) == 0.05 and M.LatencyShare(5000, 2) == 1 and M.LatencyShare(nil, 2) == 0, "latency share")
+    assert(M.CutName("Pyroblast", 4) == "Pyro…" and M.CutName("Pyro", 0) == "Pyro", "name cut")
+    local g = M.Geometry({ icon = "left", iconGap = 2 }, 200, 20)
+    assert(g.icon[3] == 20 and g.bar[1] == 22 and g.bar[3] == 178, "icon inside on the left")
+    g = M.Geometry({ icon = "right", iconDetached = true, iconSize = 30, iconGap = 4 }, 200, 20)
+    assert(g.icon[1] == 204 and g.icon[2] == -5 and g.bar[3] == 200, "detached icon on the right")
+    assert(not M.Geometry({ icon = "off" }, 200, 20).icon, "no icon")
+    assert(M.KeyOf("boss2") == "boss" and M.KeyOf("player") == "player" and M.KeyOf("raid1") == nil, "KeyOf")
+    for _, kind in ipairs({ "cast", "channel", "locked", "notReady", "interrupted", "success" }) do
+        assert(M:StateColor("target", kind), "state colour " .. kind)
+    end
+end)
+try("cast bars phoenix", function()
+    local M = ns.modules.CastBars
+    assert(M:IsPhoenix(), "Phoenix cast bars are the default")
+    for _, key in ipairs(M.KEYS) do
+        local list = M.bars[key]
+        assert(list and #list == (M.COUNT[key] or 1), key .. " bars were not built")
+        assert(list[1].layoutDone, key .. " bar was not laid out")
+    end
+    assert(M:Owns("player") and M:Owns("target") and M:Owns("boss"), "the module owns its bars")
+    local movers = ns:GetModule("Movers")
+    local e = movers and movers:GetEntry("cb.player")
+    assert(e and e.store, "the player cast bar has no mover")
+    local before = M.db.bars.player.x
+    local st = e.store.get()
+    e.store.set({ point = st.point, x = st.x + 7, y = st.y }); assert(M.db.bars.player.x == st.x + 7, "mover set")
+    e.store.reset(); assert(M.db.bars.player.x == before or M.db.bars.player.x == M.DEFAULTS.bars.player.x, "mover reset")
+    assert(M.AnchorOf("target", 1), "the target bar should sit on the Unit Frames anchor")
+    M.db.bars.target.attach = "free"; M:Refresh()
+    assert(not M.AnchorOf("target", 1), "a free bar must not use the anchor")
+    M.db.bars.target.attach = "frame"; M:Refresh()
+    -- test casts on every bar, then off again
+    assert(M:ShowTest(true) and M.testShown and M.bars.boss[3].sample, "test casts")
+    for _, key in ipairs(M.KEYS) do
+        for _, f in ipairs(M.bars[key]) do M.OnBarUpdate(f, 0.2); M.OnBarUpdate(f, 5) end
+    end
+    assert(M:ShowTest(false) and not M.testShown and not M.bars.boss[3].sample, "test casts did not stop")
+    -- the preview path: a frozen sample on a free-standing bar, the interrupted flash, every time format
+    local f = M:BuildBar(env.UIParent, "target", { preview = true })
+    for _, kind in ipairs(M.TIME_FORMATS) do
+        M.db.bars.target.timeFormat = kind
+        M:LayoutBar(f, 200, 18)
+        M:StartSample(f, { kind = "channel", total = 3, elapsed = 1, kick = 0.5, frozen = true, ticks = 5 })
+    end
+    M.db.bars.target.timeFormat = "remaining"
+    f.sample = nil; M:EndCast(f, "interrupted"); M:EndCast(f, "success")
+    local p = M:BuildBar(env.UIParent, "player", { preview = true })
+    M:LayoutBar(p, 200, 18)
+    M:StartSample(p, { kind = "empower", total = 3, elapsed = 1, stages = { 0.3, 0.3, 0.4 }, frozen = true })
+    M:StartSample(p, { kind = "channel", total = 3, elapsed = 1, ticks = 5, latency = 0.1, frozen = true })
+    -- live events: the stub client returns opaque values for every cast query; nothing may error
+    for _, ev in ipairs(M.CAST_EVENTS) do M:OnCastEvent(M.bars.target[1], ev, "target") end
+    M:OnCastEvent(M.bars.player[1], "UNIT_SPELLCAST_START", "player")
+    M:OnCastEvent(M.bars.player[1], "UNIT_SPELLCAST_STOP", "player")
+    for _, ev in ipairs({ "PLAYER_TARGET_CHANGED", "PLAYER_FOCUS_CHANGED", "UNIT_PET", "INSTANCE_ENCOUNTER_ENGAGE_UNIT",
+        "ARENA_OPPONENT_UPDATE", "PLAYER_ENTERING_WORLD" }) do fire(ev, "player") end
+end)
+try("cast bars blizzard fallback", function()
+    local M = ns.modules.CastBars
+    M.db.mode = "blizzard"
+    assert(M:ShowTest(true) and M:ShowTest(false), "Blizzard-mode test casts")
+    M:RefreshBlizzard()
+    M.db.mode = "phoenix"
+end)
+try("cast bars depth (S9)", function()
+    local n = ns.Config.CountSettings(ns.options.CastBars)
+    assert(n >= 55 and ns.Config.DEPTH.CastBars == 55, ("CastBars has %d of 55 settings"):format(n))
+    print(("  CastBars settings: %d"):format(n))
+end)
+-- auras (S9): header attributes, slots, time formats, headers and buttons, test auras, depth
+try("aura helpers", function()
+    local M = ns.modules.Auras
+    local h = M:Header("buffs")
+    local f = M.Flow(h)
+    assert(f.point == "TOPRIGHT" and f.horizontal == "Left" and f.vertical == "Down", "buffs flow left and down")
+    assert(f.lineSize == h.perRow * h.size + (h.perRow - 1) * h.hSpacing, "rows wrap after perRow buttons")
+    local method, dir = M.SortMethod({ sort = "TIME", separateOwn = 1, direction = "+" })
+    assert(method == "Expiration" and dir == "Normal", "time, own first")
+    method, dir = M.SortMethod({ sort = "NAME", separateOwn = 0, direction = "-" })
+    assert(method == "NameOnly" and dir == "Reverse", "name, mixed, reversed")
+    assert(M.SortMethod({ sort = "INDEX", separateOwn = 0 }) == "AuraInstanceIDOnly", "applied order")
+    local up = { size = 30, perRow = 4, rows = 2, hSpacing = 2, vSpacing = 10, growth = "RIGHT", wrap = "UP" }
+    local point, x, y = M.Layout(up)
+    assert(point == "BOTTOMLEFT" and x == 32 and y == 40, "right and up")
+    local slots = M.Slots(up, 6)
+    assert(#slots == 6 and slots[5][1] == 0 and slots[5][2] == 40 and slots[4][1] == 96, "slots wrap")
+    assert(#M.Slots(up, 20) == 8, "slots stop at rows x per row")
+    local w, ht = M.HolderSize(up)
+    assert(w == 126 and ht == 70, "holder size")
+    assert(M.FormatDuration("short", 5, 7300) == "3h" and M.FormatDuration("short", 5, 125) == "3m", "short hours/minutes")
+    assert(M.FormatDuration("short", 5, 4.25) == "4.2" or M.FormatDuration("short", 5, 4.25) == "4.3", "tenths")
+    assert(M.FormatDuration("clock", 0, 3723) == "1:02:03" and M.FormatDuration("clock", 0, 245) == "4:05", "clock")
+    assert(M.FormatDuration("seconds", 0, 844.2) == "845" and M.FormatDuration("short", 0, 0) == "", "seconds / none")
+    assert(#M.Breakpoints("short", 5) >= 3, "duration breakpoints")
+    M.db.shape = "wide"; assert(M.Height({ size = 40 }) == 28, "wide buttons"); M.db.shape = "square"
+end)
+try("auras phoenix", function()
+    local M = ns.modules.Auras
+    assert(M:IsPhoenix(), "Phoenix auras are the default")
+    assert(M.containers.buffs and M.containers.debuffs and M.containers.enchants, "the aura containers were not created")
+    local movers = ns:GetModule("Movers")
+    for _, k in ipairs({ "auras.buffs", "auras.debuffs", "auras.enchants", "auras.private" }) do
+        assert(movers and movers:GetEntry(k), "no mover " .. k)
+    end
+    assert(M:ShowTest(true) and M.testShown, "test auras")
+    assert(M:ShowTest(false) and not M.testShown, "test auras did not hide")
+    for _, mode in ipairs({ "separate", "hide", "buffs" }) do M.db.enchants = mode; M:Refresh() end
+    M.db.private.enabled = false; M:Refresh(); M.db.private.enabled = true; M:Refresh()
+    local b = M:Dress(env.CreateFrame("Button"), "debuffs")
+    M:Style(b)
+    for _, s in ipairs(M.SAMPLES.debuffs) do M:ShowSample(b, s, "debuffs") end
+    -- a container button: the initializer dresses it and hands its widgets to the container
+    for _, kind in ipairs({ "buffs", "debuffs", "enchant" }) do
+        local btn = env.CreateFrame("Button")
+        M.Initializer(kind)(btn)
+        assert(btn.puiNative and M.buttons[btn] == kind, "container button not dressed: " .. kind)
+    end
+    M.db.shape = "wide"; M.db.typeBorder = true; M.db.buffTypes = true; M:Refresh()
+    M.db.shape = "square"; M.db.buffTypes = false; M.db.colorByTime = false; M:Refresh(); M.db.colorByTime = true
+end)
+try("auras blizzard fallback", function()
+    local M = ns.modules.Auras
+    M.db.mode = "blizzard"
+    assert(M:ShowTest(true) and M:ShowTest(false), "Blizzard-mode test auras")
+    M:RefreshBlizzard()
+    M.db.mode = "phoenix"
+end)
+try("auras depth (S9)", function()
+    local n = ns.Config.CountSettings(ns.options.Auras)
+    assert(n >= 41 and ns.Config.DEPTH.Auras == 41, ("Auras has %d of 41 settings"):format(n))
+    print(("  Auras settings: %d"):format(n))
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

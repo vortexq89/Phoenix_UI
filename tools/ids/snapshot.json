@@ -356,11 +356,89 @@
   }
  },
  "spells": {
+  "106839": {
+   "name": "Skull Bash"
+  },
+  "113656": {
+   "name": "Fists of Fury"
+  },
+  "115175": {
+   "name": "Soothing Mist"
+  },
+  "116705": {
+   "name": "Spear Hand Strike"
+  },
+  "117952": {
+   "name": "Crackling Jade Lightning"
+  },
+  "119910": {
+   "name": "Spell Lock"
+  },
+  "147362": {
+   "name": "Counter Shot"
+  },
+  "15407": {
+   "name": "Mind Flay"
+  },
+  "15487": {
+   "name": "Silence"
+  },
+  "1766": {
+   "name": "Kick"
+  },
+  "183752": {
+   "name": "Disrupt"
+  },
+  "187707": {
+   "name": "Muzzle"
+  },
+  "2139": {
+   "name": "Counterspell"
+  },
+  "234153": {
+   "name": "Drain Life"
+  },
+  "257044": {
+   "name": "Rapid Fire"
+  },
+  "351338": {
+   "name": "Quell"
+  },
+  "356995": {
+   "name": "Disintegrate"
+  },
+  "47528": {
+   "name": "Mind Freeze"
+  },
+  "47540": {
+   "name": "Penance"
+  },
+  "5143": {
+   "name": "Arcane Missiles"
+  },
+  "57994": {
+   "name": "Wind Shear"
+  },
+  "61304": {
+   "name": "Global Cooldown"
+  },
+  "6552": {
+   "name": "Pummel"
+  },
   "6603": {
    "name": "Auto Attack"
   },
   "75": {
    "name": "Auto Shot"
+  },
+  "755": {
+   "name": "Health Funnel"
+  },
+  "78675": {
+   "name": "Solar Beam"
+  },
+  "96231": {
+   "name": "Rebuke"
   }
  }
 }

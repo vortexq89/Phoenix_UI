@@ -549,9 +549,60 @@ need a target dummy; *group* needs a party or a follower dungeon.
 
 Known limits: arena diminishing returns are not shown (the 12.x crowd-control data is secret to addons, use
 Blizzard's arena frames for it); enemy range is not known in combat (enemy frames stay solid then); spell cost
-prediction is not drawn; the cast bars are still Blizzard's until S9; the player cast bar stays where Edit Mode
-puts it.
+prediction is not drawn; cast bars are Phoenix's since S9 (13f).
   **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13e.14).
+
+## 13f. Cast bars and buffs/debuffs (2.0 S9)
+
+Phoenix bars and auras are the default. Start with `/console taintLog 1` and an empty `/pui bugs`. *Combat* steps
+need a target dummy; *group* needs a party or a follower dungeon.
+
+- [ ] **13f.1 First login.** **Expect:** your cast bar under the Phoenix player frame (Edit Mode's player cast bar
+  is gone), target and focus bars under their frames; your buffs top right and debuffs below them in Phoenix icons;
+  Blizzard's buff and debuff frames are gone.
+- [ ] **13f.2 Test casts and auras.** Cast Bars → **Toggle test casts**, Buffs & Debuffs → **Toggle test auras**
+  (or Test in the top bar for both plus test frames). **Expect:** every enabled bar loops a sample cast; both aura
+  blocks fill with samples (timers, stacks, type borders). Press again to hide.
+- [ ] **13f.3 Casting (combat).** Cast a spell with a cast time, a channel (Mind Flay, Drain Life, Arcane Missiles
+  …) and, on an evoker, an empowered spell. **Expect:** the fill and spark move smoothly, the time text counts,
+  latency shows at the end of your bar, channel ticks and empower stage marks sit where they should; moving
+  interrupts the cast: the bar flashes the interrupted colour and holds for the hold time.
+- [ ] **13f.4 Enemy casts (combat).** A caster mob or dungeon boss. **Expect:** interruptible casts in the normal
+  colour, locked casts in the locked colour with a shield on the icon; while your interrupt cools down the bar
+  turns *Kick not ready* and a tick marks where it comes back; a red edge when the cast is aimed at you; a glow on
+  important casts. Boss bars under each boss frame.
+- [ ] **13f.5 Per-bar settings.** Chip *Target*: *Free (own mover)*, width 300, icon *Right*, time *Left / total*.
+  **Expect:** the bar and the preview change together; Shift-click *Focus* and change the height: both follow.
+  *Attached* bars take width/height from Unit Frames → *Cast bar*.
+- [ ] **13f.6 Layout mode.** Press **Move frames**. **Expect:** overlays for free cast bars, the swing timer
+  (Forever) and the buff, debuff, weapon enchant (when *Own block*) and private aura blocks; drag, right-click to
+  reset, `/reload`: the positions stay.
+- [ ] **13f.7 Aura layout.** Buffs: 6 per row, 2 rows, grow left, new rows down, sort by name descending, own first,
+  *Wide* icons. **Expect:** the icons re-flow (out of combat), wide icons cropped; timers in the chosen format,
+  tenths and the expiring colour under the threshold; stacks on stacking buffs.
+- [ ] **13f.8 Cancel and tooltips (combat).** Right-click a buff, in and out of combat: it is removed. Tooltips
+  *Out of combat*: no tooltip in combat. Debuffs never cancel.
+- [ ] **13f.9 Debuff types.** Get a magic, curse, poison or disease debuff (or a bleed). **Expect:** the border in the
+  type colour; *Grey debuff icons* greys the art.
+- [ ] **13f.10 Weapon enchants.** Apply a poison, oil or imbue. **Expect:** it shows with the buffs, as its own
+  block or not at all, per *Weapon enchants*; right-click removes it.
+- [ ] **13f.11 Private auras (group).** A boss with private auras (most current raid and dungeon bosses).
+  **Expect:** the game draws them on Phoenix's anchors, with swipe and numbers per the settings.
+- [ ] **13f.12 Swing timer (WoW Forever).** Auto-attack a dummy with two weapons. **Expect:** the main and off-hand
+  bars fill over each swing; the row is not offered on retail.
+- [ ] **13f.13 Combat and taint (combat).** Change aura grid settings in combat. **Expect:** Phoenix applies them after
+  combat; no `ADDON_ACTION_BLOCKED`, nothing in `Logs\taint.log` from Phoenix_UI.
+- [ ] **13f.14 Blizzard mode.** Set both pages to *Blizzard (skinned)*, reload. **Expect:** the game's cast bars
+  and buff frames back under Edit Mode with the 1.x skin; switching back and reloading restores the Phoenix ones.
+
+Known limits: the aura containers (`CustomAuraContainerTemplate`, new in 12.x) replace secure aura headers, which
+the 12.x and Forever clients load on Classic only; they are new and not yet tested in a live client, every call
+is guarded and `/pui debug` says when something is missing (Phoenix then leaves Blizzard's buff frames in place).
+"Own auras last" and tooltips *never* are not offered (the containers sort own-first or mixed only). Debuffs have
+no right-click cancel. Built-in tick counts are a starting point (talents change them; use *Own tick counts*).
+There is no separate list of spells targeting you. Blizzard's arena cast bars are not shown when Phoenix arena
+frames are off. The GCD bar is retail-only (Forever has no global cooldown spell).
+  **If anything fails:** the step number, a screenshot and `/pui bugs` → copy (and `Logs\taint.log` for 13f.13).
 
 ## 14. Other client languages
 

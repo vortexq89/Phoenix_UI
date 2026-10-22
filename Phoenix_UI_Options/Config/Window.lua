@@ -57,13 +57,24 @@ local function profileItems()
     return out
 end
 
+-- Test frames: unit frames, cast bars and auras together; the unit frames' state leads (one button, one state).
+local TEST_MODULES = { "UnitFrames", "CastBars", "Auras" }
 local function toggleTestFrames()
-    local uf = ns.modules.UnitFrames
-    if not (uf and uf:IsEnabled() and uf.ShowTest) then
+    local live = {}
+    for _, name in ipairs(TEST_MODULES) do
+        local m = ns.modules[name]
+        if m and m:IsEnabled() and m.ShowTest then live[#live + 1] = m end
+    end
+    if #live == 0 then
         Config:SetStatus(L.TEST_FRAMES_OFF, "state.warning", "warning")
         return
     end
-    if not uf:ShowTest(not uf.testShown) then Config:SetStatus(L.UF_TEST_COMBAT, "state.warning", "warning") end
+    local show = not live[1].testShown
+    local ok = true
+    for _, m in ipairs(live) do
+        if (m.testShown and true or false) ~= show and not m:ShowTest(show) then ok = false end
+    end
+    if not ok then Config:SetStatus(L.UF_TEST_COMBAT, "state.warning", "warning") end
 end
 
 local function layoutMode(f)

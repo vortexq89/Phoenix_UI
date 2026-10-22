@@ -39,6 +39,11 @@ CLIENT_EXTRA = {"AddDoubleLine", "AddLine", "NumLines", "SetOwner", "CreateFromE
 THIRD_PARTY = {"GetInstance", "SetBarSettings", "SetBarTextSettings", "InstanceColor", "AttributeMenu",
                "GetButtonList", "GetMinimapButton"}  # LibDBIcon-1.0 (embedded by other addons)
 EXTRA_METHODS = LUA_METHODS | CLIENT_EXTRA | THIRD_PARTY
+# Events that exist in one supported client only, registered behind an ns:Supports feature check: allowed when the
+# other client's reference has them (PLAYER_SWING: WoW Forever's swing timer, ns:Supports("swingTimer")).
+GATED_EVENTS = {"PLAYER_SWING"}
+OTHER_REF = {"retail": "reference_forever_1.60.1.json", "forever": "reference_12.1.5.json"}[FLAVOR]
+OTHER_EVENTS = set(json.loads((ROOT / ".luacheck" / OTHER_REF).read_text(encoding="utf-8"))["events"])
 # Phoenix-internal messages travel through Events:Fire/Listen, never through the client.
 INTERNAL_EVENT = re.compile(r"^PUI_")
 FORBIDDEN = [
@@ -87,7 +92,7 @@ for path in sources:
             report(path, bare, m.start(), f"unknown method :{name}()")
     for m in re.finditer(r"(?:Events:On(?:Unit)?|Register(?:Unit)?Event|EventRegistry:RegisterFrameEventAndCallback)\(\s*\"(\w+)\"", code):
         ev = m.group(1)
-        if ev not in EVENTS and not INTERNAL_EVENT.match(ev):
+        if ev not in EVENTS and not INTERNAL_EVENT.match(ev) and not (ev in GATED_EVENTS and ev in OTHER_EVENTS):
             report(path, code, m.start(), f"unknown event {ev}")
     for m in re.finditer(r"(?:GetCVar(?:Bool|Default)?|SetCVar|CVarAccessors)\(\s*\"(\w+)\"", code):
         if m.group(1).lower() not in CVARS:

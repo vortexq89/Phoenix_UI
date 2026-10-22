@@ -2,7 +2,7 @@
 """Game-ID check: every hard-coded game reference in Phoenix exists in the pinned 12.1.5 snapshot.
 
 Covers interface file paths (Interface\\Icons\\..., Interface\\Buttons\\...), atlas names (SetAtlas,
-CreateAtlasMarkup, *ATLAS tables, GetClassAtlas results), spell IDs (lines tagged `-- spellIDs: Name, Name`;
+CreateAtlasMarkup, *ATLAS tables, GetClassAtlas results), spell IDs (lines tagged `-- spellIDs: Name, Name`, or `-- spellIDs(retail|forever):` for one game;
 the names must match the client's SpellName in order), SOUNDKIT constants, Enum fallbacks and numeric
 fileDataIDs. The snapshot (tools/ids/snapshot.json) is generated from wago.tools DB2 + Blizzard UI source by
 tools/ids/refresh.py; this check runs offline. Exit 1 on any finding.
@@ -22,7 +22,7 @@ import common  # noqa: E402
 SNAP_FLAVOR = os.environ.get("PUI_FLAVOR", "retail")
 SNAP = json.loads(common.snapshot_path(SNAP_FLAVOR).read_text(encoding="utf-8"))
 problems = []
-refs = common.scan()
+refs = common.scan(SNAP_FLAVOR)
 
 
 def check(kind, key, where, snap_key=None):
@@ -47,13 +47,13 @@ for sid, where in sorted(refs["spells"].items()):
     check("spells", sid, where, str(sid))
 for f in common.lua_files():
     for i, line in enumerate(f.read_text(encoding="utf-8").split("\n"), 1):
-        m = re.search(r"--\s*spellIDs:\s*(.+)$", line)
-        if not m:
+        m = re.search(r"--\s*spellIDs(?:\((retail|forever)\))?:\s*(.+)$", line)
+        if not m or m.group(1) not in (None, SNAP_FLAVOR):
             continue
         ids = [int(a or b) for a, b in re.findall(r"\[(\d+)\]|\b(\d{2,})\b", line.split("--", 1)[0])]
         # a name the other game spells differently reads "Retail Name (Forever: Forever Name)"
         names = []
-        for n in m.group(1).split(","):
+        for n in m.group(2).split(","):
             alt = re.match(r"^(.*?)\s*\(Forever:\s*(.*?)\)$", n.strip())
             names.append((alt.group(2) if SNAP_FLAVOR == "forever" else alt.group(1)) if alt else n.strip())
         actual = [SNAP["spells"].get(str(s), {}).get("name") for s in ids]

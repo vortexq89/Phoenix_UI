@@ -12,7 +12,7 @@ This describes the code as it is. If code and this document disagree, fix one of
    The only globals are the SavedVariables, the `SLASH_*` strings created by Blizzard's `RegisterNewSlashCommand`, and
    `GetMinimapShape` (defined by the Minimap module in square mode; minimap-button libraries read it).
 2. **No Ace3 / no embedded third-party addons.** Kept libraries: `LibStub`, `CallbackHandler-1.0`, `LibSharedMedia-3.0` (12000005, interop), `LibEditMode` (current, our own movable frames). Everything else is replaced by our small core or by Blizzard APIs (`C_EncodingUtil`, `MenuUtil`, `C_Timer`, `hooksecurefunc`, `Settings`).
-3. **Blizzard owns layout, we own looks.** Blizzard frames are positioned/sized by **Edit Mode**. Phoenix modules *skin* and *augment* Blizzard frames (textures, fonts, colours, extra text). We do not move or replace protected frames. Our *own* frames (data bar, spell history) are registered with Edit Mode via LibEditMode. **One exception (2.0 S7): action bars.** In Phoenix mode (the default) the ActionBars module owns its bars: Blizzard's bars are parked and their buttons live in Phoenix secure headers laid out by restricted snippets (§13); Blizzard mode hands the bars back to Edit Mode. **Second exception (2.0 S8): unit frames.** In Phoenix mode (the default) the UnitFrames module draws its own secure unit buttons for player, target, target of target, focus, focus target, pet, boss 1–5 and (opt-in) arena 1–5, and parks Blizzard's frames (§13); Blizzard mode keeps the game's frames and only skins them.
+3. **Blizzard owns layout, we own looks.** Blizzard frames are positioned/sized by **Edit Mode**. Phoenix modules *skin* and *augment* Blizzard frames (textures, fonts, colours, extra text). We do not move or replace protected frames. Our *own* frames (data bar, spell history) are registered with Edit Mode via LibEditMode. **One exception (2.0 S7): action bars.** In Phoenix mode (the default) the ActionBars module owns its bars: Blizzard's bars are parked and their buttons live in Phoenix secure headers laid out by restricted snippets (§13); Blizzard mode hands the bars back to Edit Mode. **Second exception (2.0 S8): unit frames.** In Phoenix mode (the default) the UnitFrames module draws its own secure unit buttons for player, target, target of target, focus, focus target, pet, boss 1–5 and (opt-in) arena 1–5, and parks Blizzard's frames (§13); Blizzard mode keeps the game's frames and only skins them. **Third exception (2.0 S9): cast bars and player auras.** Phoenix mode draws plain (non-secure) cast bars and replaces the player's Edit Mode cast bar, and shows the player's buffs, debuffs and weapon enchants on Blizzard's addon aura containers (`CustomAuraContainerTemplate`), parking `BuffFrame`/`DebuffFrame` (§13); Blizzard mode skins the game's frames.
 4. **Display-only combat UI.** Under Midnight secret values we never do maths/comparisons on combat data. We hand possible secrets straight to display sinks (`FontString:SetFormattedText`, `Texture:SetTexture`, `UnitHealthPercent` with `CurveConstants.ScaleTo100`) and never test them.
 5. **Declarative options.** Each module declares an options schema once (`Phoenix_UI_Options/Options/<Module>.lua`). The same schema drives its config page and the search index. Defaults live on the module.
 6. **One theme.** Every pixel goes through `ns.Theme` tokens and `ns.Skin` primitives. No module hard-codes a colour, font path or border.
@@ -88,8 +88,8 @@ File and include names are **case-exact** (the audit found 52 Windows-only inclu
 | `ActionBars` | ActionBars | Phoenix-owned secure bars 1–8, pet, stance and an item bar (layout, paging, visibility/fade, Layout-mode positions), button shapes/borders/glows, range/power/unusable tints, hotkey/macro/count text, extra/zone/vehicle-exit, micro and bag menus; Blizzard mode keeps Edit Mode bars (`ActionBars.lua` pure layout + drivers, `Bars.lua` secure engine, `Buttons.lua` styling hooks, `Extras.lua`) |
 | `UnitFrames` | UnitFrames (`UnitFrames.lua` core/tags/colours/geometry, `Build.lua` frame parts and layout, `Update.lua` secret-safe updates, `Spawn.lua` secure buttons/events/parking/test, `Blizzard.lua` 1.x skin for Blizzard mode) | Phoenix-owned player/target/ToT/focus/focus-target/pet/boss/arena frames; Blizzard-frame skin fallback |
 | `GroupFrames` | RaidFrames | Texture and fonts on party/raid `CompactUnitFrame`s |
-| `CastBars` | CastBars | Restyle player/target/focus bars; player-only icon, timer and latency zone |
-| `Auras` | Buffs | Cropped icons and themed timers on BuffFrame/DebuffFrame |
+| `CastBars` | CastBars (`CastBars.lua` defaults/helpers/interrupts, `Bar.lua` bar parts and geometry, `Update.lua` secret-safe cast updates and samples, `Spawn.lua` holders/movers/events/parking/test, `Extras.lua` GCD and swing timer, `Blizzard.lua` 1.x skin) | Phoenix-owned player/target/focus/pet/boss/arena cast bars; Blizzard-bar skin fallback |
+| `Auras` | Buffs (`Auras.lua` defaults and layout helpers, `Containers.lua` aura containers/parking/private anchors/test, `Blizzard.lua` 1.x skin) | Player buffs/debuffs/weapon enchants on aura containers; BuffFrame/DebuffFrame skin fallback |
 | `NamePlates` | NamePlates | Bar texture, secret-safe health percent, Mythic+ enemy forces per mob (`C_ScenarioInfo.GetUnitCriteriaProgressValues`, shown through `C_StringUtil`) |
 | `Tooltip` | Tooltip, idTip | Skin, cursor anchor, class/quality borders, target/role/ID lines, Mythic+ rating |
 | `Chat` | Chat | Clickable URLs with a copy popup, copy-chat window, typed-line history (arrow keys, kept across reloads in `global.history`), Shift/Ctrl wheel scrolling |
@@ -344,7 +344,7 @@ Settings window v2 (plan v2 stage S6, `Phoenix_UI_Options/Config/Window.lua`). M
 
 * Our movable frames register through `ns.EditMode:Register(frame, { name = L.X, default = { point = "CENTER", x = 0, y = 0 }, settings = { … } })`. This wraps **LibEditMode** (`AddFrame`, `AddFrameSettings`, layout callbacks). Positions are stored **per Edit Mode layout** in `global.layouts[layoutName][frameKey]`, so they follow the user's Blizzard layout switches.
 * Blizzard frames: we never call `SetPoint` on frames managed by `EditModeManagerFrame`. Action bars in Phoenix mode are the exception: their buttons are re-parented by a restricted snippet into Phoenix headers, and the headers are placed by Layout mode (Movers store delegate, `modules.ActionBars.bars.<key>`), not Edit Mode. Edit Mode's own bar settings (e.g. number of buttons shown) can still hide buttons. Size and position settings for Blizzard systems are left to Edit Mode. Our config page links to it with an "Open Edit Mode" button (`ShowUIPanel(EditModeManagerFrame)` out of combat).
-* Unit frames in Phoenix mode are the second exception: Blizzard's player, target, focus and boss frames are parked (events off, hidden, re-parented to a hidden frame out of combat); the Phoenix frames are placed by Layout mode (store delegate saving into `modules.UnitFrames.units.<key>`). Blizzard's target, focus and boss cast bars are lent to each Phoenix frame's cast anchor until S9.
+* Unit frames in Phoenix mode are the second exception: Blizzard's player, target, focus and boss frames are parked (events off, hidden, re-parented to a hidden frame out of combat); the Phoenix frames are placed by Layout mode (store delegate saving into `modules.UnitFrames.units.<key>`). Blizzard's target, focus and boss cast bars are lent to each Phoenix frame's cast anchor in Blizzard cast bar mode; in Phoenix mode (S9) Phoenix bars use the anchors and the player's Edit Mode cast bar is parked. Phoenix buff/debuff blocks (S9) move in Layout mode, not Edit Mode (`BuffFrame`/`DebuffFrame` are parked).
 * LibEditMode's `layout` callback re-applies our positions when the user switches layouts.
 
 ---
@@ -439,6 +439,26 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   curve; counts from `GetAuraApplicationDisplayCount`; durations from `GetAuraDuration` duration objects. Class
   pips fall back to one bar when the count is secret. Not built: arena diminishing returns (secret payloads), spell
   cost prediction.
+* **Cast bars (2.0 S9).** `Modules/CastBars` builds plain StatusBars (no secure template: cast bars are never
+  clicked) per unit key, on the unit frame's `CastBarAnchor` or a free holder (`Movers:Register`, `cb.<key>`).
+  `PlayerCastingBarFrame`, and in Phoenix mode the spell bars S8 lent to the anchors, are parked out of combat.
+  Secret values: the fill and time come from `UnitCastingDuration`/`UnitChannelDuration` duration objects
+  (`StatusBar:SetTimerDuration`, `C_DurationUtil` text bindings); interruptible vs locked colours use
+  `SetVertexColorFromBoolean`/`EvaluateColorFromBoolean` on `notInterruptible`; the kick tick is a second
+  StatusBar driven by `C_Spell.GetSpellCooldownDuration` of the first known interrupt (per-game ID lists); the
+  important-cast glow and the targeted edge use `SetAlphaFromBoolean`. Latency, ticks and empower stages are drawn
+  only from plain values (`Secret.IsSecret` guards). Swing timer: `PLAYER_SWING` behind `ns:Supports("swingTimer")`
+  (Forever); the GCD bar behind `gcdBar` (retail).
+* **Player auras (2.0 S9).** Secure aura headers (`SecureAuraHeader.lua`) load with `[AllowLoadGameType classic]`
+  only, so on 12.1.5 and Forever 1.60.1 `Modules/Auras/Containers.lua` uses `CreateFrame("AuraContainer", …,
+  "CustomAuraContainerTemplate")` (Blizzard_AuraContainer): one container per block, `AddAuraGroup` with the
+  filter, `AuraContainerSortMethod`/`AuraContainerSortDirection`, flow layout, max frame count and
+  `AddItemEnchantment` for weapon enchants. Buttons are dressed in `initializeFrame` (icon, duration text with a
+  colour curve binding, cooldown, count, dispel-type textures, cancel button, tooltip anchor); after that the game
+  restricts access while auras are secret, so every later restyle runs in `pcall`. Cancelling is Blizzard's own
+  OnClick (works in combat). Container settings change through `ns.Combat:Run`. Private aura anchors use
+  `C_UnitAuras.AddPrivateAuraAnchor`. If the container API is missing, Phoenix leaves `BuffFrame`/`DebuffFrame`
+  alone and says so in debug.
 * **Action bars (2.0 S7).** `Modules/ActionBars/Bars.lua` creates one `SecureHandlerStateTemplate` header per bar
   (`PhoenixUI_ActionBar_<key>`) and parks Blizzard's bars under a hidden frame. Addon code never touches a Blizzard
   button: it writes the layout (`"x,y;"` points, size, padding, page, flyout direction, show-empty bit) as header
@@ -556,6 +576,8 @@ the 12.1.5 FrameXML (`/workspace/ref`).
 | `ReadyCheck` | `ReadyCheckFrame` | Calls `SetAlpha(1)` on show → no alpha |
 | `BugIndicator` | Phoenix minimap bug button | registered with `Movers:Register` |
 | `uf.<unit>` | Phoenix unit frame holders (player, target, targettarget, focus, focustarget, pet, boss, arena) | store delegate saving into `modules.UnitFrames.units.<key>` (point, x, y, scale); Phoenix mode only |
+| `cb.<key>`, `cb.swing` | Phoenix free cast bars (player, target, focus, pet, boss, arena) and the Forever swing timer | store delegate saving into `modules.CastBars.bars.<key>` / `swing`; Phoenix mode only |
+| `auras.buffs`, `auras.debuffs`, `auras.enchants`, `auras.private` | Phoenix aura blocks | store delegate saving into `modules.Auras.headers.<key>`; Phoenix mode only |
 | `ab.<bar>`, `ab.vehicle` | Phoenix action bar headers, vehicle exit | `Movers:Register(key, frame, label, store)`: the store delegate (`active/get/set/apply/reset`) saves into `modules.ActionBars.bars.<key>`, not `Movers.frames`; Phoenix mode only |
 
 **Excluded, and why.** Everything with an Edit Mode system: Blizzard's action bars (Phoenix bars are ours, above), unit frames, minimap, buffs/debuffs,

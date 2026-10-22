@@ -36,6 +36,10 @@ ns.FEATURES = {
     sim = { retail = true },
     -- Skyriding (bonus bar 5 paging on bar 1): Forever's Azeroth has no dragonriding.
     skyriding = { retail = true },
+    -- Swing timer: PLAYER_SWING and C_SwingTimer exist on WoW Forever only (Blizzard_SwingTimer).
+    swingTimer = { forever = true },
+    -- GCD bar: the Global Cooldown spell (61304) is not in Forever's spell table.
+    gcdBar = { retail = true },
     -- Boss timeline and warnings: Blizzard_EncounterTimeline / _EncounterWarnings load on "standard" only.
     encounterTimeline = available(C_EncounterTimeline),
     encounterWarnings = available(C_EncounterWarnings),

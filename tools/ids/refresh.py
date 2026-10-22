@@ -68,7 +68,7 @@ def main():
     cache = pathlib.Path(a.cache) if a.cache else None
     if cache:
         cache.mkdir(parents=True, exist_ok=True)
-    refs = common.scan()
+    refs = common.scan(a.flavor)
 
     manifest = {}
     for r in table("ManifestInterfaceData", build, cache):
