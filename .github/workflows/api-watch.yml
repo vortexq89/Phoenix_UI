@@ -1,0 +1,39 @@
+name: api-watch
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  api-watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua 5.1
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - name: Fetch Blizzard UI source (live, ptr, forever)
+        run: |
+          git clone --filter=blob:none --no-checkout --branch live https://github.com/Gethe/wow-ui-source.git /tmp/wowsrc
+          git -C /tmp/wowsrc fetch origin ptr forever
+      - name: Rebuild Data/ApiCatalog.json
+        run: python3 .tools/api_catalog.py --src /tmp/wowsrc
+      - name: Manifest still resolves against the new catalog
+        run: |
+          python3 .tools/manifest.py
+          python3 .tools/guardrails.py
+      - name: Open a PR when the catalog changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet; then echo "catalog unchanged"; exit 0; fi
+          branch="api-watch/$(date -u +%Y%m%d)"
+          git config user.name "phoenix-api-watch"
+          git config user.email "api-watch@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add Data/ApiCatalog.json Data/ApiManifest.lua Data/SchemaIndex.lua
+          git commit -m "api: refresh ApiCatalog from wow-ui-source"
+          git push origin "$branch"
+          gh pr create --base main-v2 --head "$branch" --title "api: refresh ApiCatalog from wow-ui-source" --label api-drift \
+            --body "Automated catalog refresh. Guardrails ran against the new catalog in this job." || true

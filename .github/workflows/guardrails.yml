@@ -1,0 +1,17 @@
+name: guardrails
+on:
+  push:
+  pull_request:
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua 5.1
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - name: Guardrails
+        run: python3 .tools/guardrails.py
+      - name: Smoke suite (offline harness, retail)
+        run: lua5.1 .tools/harness/run_tests.lua
+      - name: Smoke suite (offline harness, Forever)
+        run: PUI_FLAVOR=forever lua5.1 .tools/harness/run_tests.lua

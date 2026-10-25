@@ -1,0 +1,11 @@
+name: manifest
+on:
+  push:
+  pull_request:
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Data/ApiManifest.lua and Data/SchemaIndex.lua are current
+        run: python3 .tools/manifest.py --check
