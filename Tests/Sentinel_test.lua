@@ -95,6 +95,15 @@ Tests:Add("Sentinel", "export string decodes to the same contract v2 payload", f
   t:eq(#back.reports, 1, "one report")
   t:eq(back.reports[1].kind, "error", "kind")
   t:ok(#back.installId >= 16, "install id")
+  local id = back.reports[1].id
+  t:ok(id:find("^" .. back.installId .. "%-%d+%-%d+$") ~= nil, "id is <installId>-<session>-<n>")
+  Hook.Simulate("Interface/AddOns/Phoenix_UI/Core/Fake.lua:20: another one", CORE_STACK, "")
+  local again = S.Export:Payload()
+  local stable = false
+  for i = 1, #again.reports do if again.reports[i].id == id then stable = true end end
+  t:ok(stable, "an incident keeps its report id when others are added")
+  t:eq(S.Export.StableN("0000000a"), 10, "hex hash -> n")
+  t:ok(S.Export.StableN("test-1-2") < 4294967296, "non-hex hash -> bounded n")
   t:eq(S.Export:Build(), nil, "export refused without opt-in")
 end)
 

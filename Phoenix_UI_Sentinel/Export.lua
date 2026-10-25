@@ -171,11 +171,23 @@ function Export.FromJSON(s)
 end
 
 -- Contract v2 ---------------------------------------------------------------
-local function report(inc, db, n)
+-- Report ids are stable across exports so the service dedupes re-sends:
+-- <installId>-<session>-<n> with n = the incident hash read as hex (8 digits ->
+-- at most 10 decimal digits), 0 for the session heartbeat, the run time for tests.
+function Export.StableN(hash)
+  local n = tonumber(hash, 16)
+  if n and #hash <= 8 then return n end
+  n = 0
+  for i = 1, #hash do n = (n * 31 + hash:byte(i)) % 4294967296 end
+  return n
+end
+
+local function report(inc, db)
+  local session = inc.lastSession or inc.session
   return {
-    id = db.installId .. "-" .. inc.session .. "-" .. n,
+    id = string.format("%s-%d-%d", db.installId, session, Export.StableN(inc.hash)),
     hash = inc.hash, kind = inc.kind, message = inc.message, stack = inc.stack, locals = inc.locals,
-    count = inc.count, firstSeen = inc.firstSeen, lastSeen = inc.lastSeen, session = inc.lastSession or inc.session,
+    count = inc.count, firstSeen = inc.firstSeen, lastSeen = inc.lastSeen, session = session,
     addonVersion = inc.addonVersion, interface = inc.interface, build = inc.build, locale = inc.locale,
     source = "sentinel", module = inc.module, severity = inc.severity, track = inc.track,
     context = inc.context, extra = inc.extra, apiFamily = inc.apiFamily,
@@ -192,13 +204,13 @@ function Export:Payload()
     local inc = db.incidents[hashes[i]]
     if REPORT_KINDS[inc.kind] then
       n = n + 1
-      reports[n] = report(inc, db, n)
+      reports[n] = report(inc, db)
     end
   end
   for i = 1, #db.heartbeats do
     local hb = db.heartbeats[i]
     n = n + 1
-    reports[n] = { id = db.installId .. "-" .. hb.session .. "-" .. n, kind = "heartbeat", hash = "heartbeat-" .. hb.session,
+    reports[n] = { id = db.installId .. "-" .. hb.session .. "-0", kind = "heartbeat", hash = "heartbeat-" .. hb.session,
       message = "session health", count = 1, firstSeen = hb.at, lastSeen = hb.at, session = hb.session,
       addonVersion = hb.version, interface = hb.interface, build = hb.build, source = "sentinel",
       module = "Core", track = hb.track, context = hb }
@@ -206,7 +218,7 @@ function Export:Payload()
   for i = 1, #db.tests do
     local t = db.tests[i]
     n = n + 1
-    reports[n] = { id = db.installId .. "-" .. t.session .. "-" .. n, kind = "test", hash = "test-" .. t.session .. "-" .. i,
+    reports[n] = { id = string.format("%s-%d-%d", db.installId, t.session, t.at or i), kind = "test", hash = "test-" .. t.session .. "-" .. i,
       message = t.summary, count = 1, firstSeen = t.at, lastSeen = t.at, session = t.session,
       addonVersion = t.version, build = t.build, source = "sentinel", module = "Tests", context = t }
   end
