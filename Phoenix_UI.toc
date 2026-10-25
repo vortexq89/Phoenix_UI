@@ -12,12 +12,16 @@ Core\Kernel.lua
 Core\Schema.lua
 Core\DB.lua
 Core\Locale.lua
+Core\Theme.lua
+Core\Media.lua
 Core\CombatQueue.lua
 Core\Ticker.lua
 Core\Budget.lua
 Core\API.lua
 Core\Slash.lua
 Core\SentinelHook.lua
+Core\Layout.lua
+Core\OptionsHost.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Tests\Runner.lua
@@ -27,3 +31,5 @@ Tests\DB_test.lua
 Tests\CombatQueue_test.lua
 Tests\Ticker_test.lua
 Tests\Sentinel_test.lua
+Tests\Theme_test.lua
+Tests\Layout_test.lua

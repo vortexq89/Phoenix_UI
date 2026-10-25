@@ -5,8 +5,10 @@ local S = PUI.Sentinel
 local Toast = {}
 S.Toast = Toast
 
-local ACCENT = { 1, 0.49, 0.04 } -- ember #FF7D0A
-local SURFACE = { 0.055, 0.055, 0.063, 0.95 } -- surface.0 #0E0E10
+PUI.Layout:RegisterElement("sentinel.toast", {
+  label = "Sentinel notice", owner = "Sentinel", size = { 380, 74 },
+  default = { point = "TOP", x = 0, y = -120 },
+})
 
 local function button(parent, text, onClick)
   local b = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
@@ -19,16 +21,14 @@ end
 function Toast:Build()
   local f = PUI:CreateFrame("Frame", "PhoenixUISentinelToast", UIParent, nil, "Sentinel")
   f:SetSize(380, 74)
-  f:SetPoint("TOP", UIParent, "TOP", 0, -120)
+  PUI.Layout:Place(f, "sentinel.toast")
   f:SetFrameStrata("DIALOG")
-  local bg = f:CreateTexture(nil, "BACKGROUND")
-  bg:SetAllPoints()
-  bg:SetColorTexture(SURFACE[1], SURFACE[2], SURFACE[3], SURFACE[4])
+  PUI.Theme:Backdrop(f, "surface.0")
   local bar = f:CreateTexture(nil, "ARTWORK")
   bar:SetPoint("TOPLEFT")
   bar:SetPoint("BOTTOMLEFT")
   bar:SetWidth(3)
-  bar:SetColorTexture(ACCENT[1], ACCENT[2], ACCENT[3], 1)
+  PUI.Theme:Paint(bar, "accent")
   f.text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
   f.text:SetPoint("TOPLEFT", 12, -10)
   f.text:SetPoint("TOPRIGHT", -10, -10)

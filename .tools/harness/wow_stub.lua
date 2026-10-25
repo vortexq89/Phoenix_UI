@@ -32,6 +32,18 @@ function Region:SetText(t) self.text = t end
 function Region:GetText() return self.text end
 function Region:SetFormattedText(fmt, ...) self.text = string.format(fmt, ...) end
 function Region:CreateTexture() return newObject("Texture") end
+function Region:SetSize(w, h) self.width, self.height = w, h end
+function Region:SetWidth(w) self.width = w end
+function Region:SetHeight(h) self.height = h end
+function Region:GetWidth() return rawget(self, "width") or 0 end
+function Region:GetHeight() return rawget(self, "height") or 0 end
+function Region:GetFrameLevel() return rawget(self, "level") or 1 end
+function Region:SetFrameLevel(l) self.level = l end
+function Region:SetChecked(v) self.checked = v end
+function Region:GetChecked() return rawget(self, "checked") end
+function Region:SetValue(v) self.value = v end
+function Region:GetValue() return rawget(self, "value") end
+function Region:SetColorTexture(r, g, b, a) self.color = { r, g, b, a } end
 function Region:CreateFontString() return newObject("FontString") end
 function Region:CreateAnimationGroup()
   local g = newObject("AnimationGroup")
@@ -51,6 +63,18 @@ function CreateFrame(frameType, name, parent, template)
   return f
 end
 UIParent = CreateFrame("Frame", "UIParent")
+UIParent:SetSize(1920, 1080)
+GameTooltip = CreateFrame("GameTooltip", "GameTooltip")
+function CreateFont(name)
+  local f = { name = name }
+  function f:SetFont(path, size, flags) self.path, self.size, self.flags = path, size, flags end
+  function f:GetFont() return self.path, self.size, self.flags end
+  _G[name] = f
+  return f
+end
+RAID_CLASS_COLORS = { MAGE = { r = 0.25, g = 0.78, b = 0.92 } }
+function IsShiftKeyDown() return false end
+function IsControlKeyDown() return false end
 UISpecialFrames = {}
 SlashCmdList = {}
 ChatFontSmall = {}
@@ -210,12 +234,12 @@ end
 C_AddOns = {
   IsAddOnLoaded = function(n) if type(n) == "number" then return n <= 2 end return H.loaded[n] == true end,
   LoadAddOn = function(n)
-    if n ~= "Phoenix_UI_Sentinel" then return false, "MISSING" end
+    if n ~= "Phoenix_UI_Sentinel" and n ~= "Phoenix_UI_Options" then return false, "MISSING" end
     H.loadAddon(n)
     return true
   end,
   GetAddOnMetadata = function(_, key) return metadata[key] end,
-  GetNumAddOns = function() return 2 end,
+  GetNumAddOns = function() return 2 end, -- Integrity/Drift scan; Options loads on demand
   GetAddOnInfo = function(i) return i == 1 and "Phoenix_UI" or "Phoenix_UI_Sentinel" end,
 }
 

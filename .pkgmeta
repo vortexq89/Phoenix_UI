@@ -2,6 +2,7 @@ package-as: Phoenix_UI
 
 move-folders:
   Phoenix_UI/Phoenix_UI_Sentinel: Phoenix_UI_Sentinel
+  Phoenix_UI/Phoenix_UI_Options: Phoenix_UI_Options
 
 externals:
   Libs/LibStub:

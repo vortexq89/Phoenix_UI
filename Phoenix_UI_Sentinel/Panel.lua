@@ -5,8 +5,6 @@ local S = PUI.Sentinel
 local Panel = {}
 S.Panel = Panel
 
-local SURFACE = { 0.055, 0.055, 0.063, 0.97 }
-local LINE = { 0.165, 0.165, 0.184, 1 }
 
 local COLLECTED = "Collected locally: Phoenix errors (message, stack, locals), taint blocks, settings problems, "
   .. "missing game APIs, your class/spec/level, zone and difficulty, combat flag, group size, Phoenix settings, "
@@ -36,9 +34,7 @@ function Panel:Build()
   f:SetScript("OnDragStart", f.StartMoving)
   f:SetScript("OnDragStop", f.StopMovingOrSizing)
   tinsert(UISpecialFrames, "PhoenixUISentinelPanel")
-  local bg = f:CreateTexture(nil, "BACKGROUND")
-  bg:SetAllPoints()
-  bg:SetColorTexture(SURFACE[1], SURFACE[2], SURFACE[3], SURFACE[4])
+  PUI.Theme:Backdrop(f, "surface.0")
   local title = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
   title:SetPoint("TOPLEFT", 14, -12)
   title:SetText("Phoenix UI - Sentinel")
@@ -57,7 +53,7 @@ function Panel:Build()
   sep:SetHeight(1)
   sep:SetPoint("TOPLEFT", info, "BOTTOMLEFT", 0, -8)
   sep:SetPoint("RIGHT", -14, 0)
-  sep:SetColorTexture(LINE[1], LINE[2], LINE[3], LINE[4])
+  PUI.Theme:Paint(sep, "line")
 
   local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
   scroll:SetPoint("TOPLEFT", sep, "BOTTOMLEFT", 0, -8)

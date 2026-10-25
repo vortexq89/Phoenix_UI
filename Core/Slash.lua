@@ -1,6 +1,7 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- /pui command router. Phase 1 has no options renderer: /pui prints the
--- available commands; /pui set|get|list give live access to every schema key.
+-- /pui command router. /pui alone opens the options window (Core/OptionsHost);
+-- /pui help prints the commands; /pui set|get|list give live access to every
+-- visible schema key.
 local Slash = { commands = {} }
 PUI.Slash = Slash
 
@@ -25,7 +26,7 @@ end
 Slash:Register("list", function()
   for i = 1, #PUI.Schema.keys do
     local key = PUI.Schema.keys[i]
-    out(key .. " = " .. tostring(PUI.Schema:Get(key)) .. "  (" .. PUI.Schema.defs[key].mode .. ")")
+    if not PUI.Schema.defs[key].hidden then out(key .. " = " .. tostring(PUI.Schema:Get(key)) .. "  (" .. PUI.Schema.defs[key].mode .. ")") end
   end
 end, "list every setting and its value")
 
@@ -38,7 +39,7 @@ end, "<key>: show one setting")
 Slash:Register("set", function(rest)
   local key, raw = rest:match("^(%S+)%s+(.+)$")
   local def = key and PUI.Schema:Def(key)
-  if not def then return out("usage: /pui set <key> <value>") end
+  if not def or def.hidden then return out("usage: /pui set <key> <value>") end
   local value = parseValue(def, raw)
   local ok, why = value ~= nil, "unreadable value"
   if ok then ok, why = PUI.Schema:Validate(def, value) end
@@ -48,16 +49,20 @@ Slash:Register("set", function(rest)
 end, "<key> <value>: change a setting live")
 
 local function help()
-  out("v" .. (C_AddOns.GetAddOnMetadata(PUI.ADDON_NAME, "Version") or "?") .. " - the options window arrives in a later phase. Commands:")
+  out("v" .. (C_AddOns.GetAddOnMetadata(PUI.ADDON_NAME, "Version") or "?") .. " - commands:")
   local words = {}
   for word in pairs(Slash.commands) do words[#words + 1] = word end
   table.sort(words)
   for i = 1, #words do out("/pui " .. words[i] .. " - " .. (Slash.commands[words[i]].help or "")) end
 end
 
+Slash:Register("help", help, "list the commands")
+
 SLASH_PHOENIXUI1 = "/pui"
 SlashCmdList.PHOENIXUI = function(msg)
   local word, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
   local cmd = Slash.commands[(word or ""):lower()]
-  if cmd then cmd.fn(rest or "") else help() end
+  if cmd then cmd.fn(rest or "")
+  elseif word == "" and Slash.default then Slash.default()
+  else help() end
 end

@@ -52,6 +52,7 @@ end
 
 -- Runs every case (optionally only one suite); calls done(results) at the end.
 function Tests:Run(filter, done, quiet)
+  PUI.OptionsHost:Load() -- registers the options/Studio cases (the child is load-on-demand)
   local results = { pass = 0, fail = 0, cases = {} }
   local idx = 0
   local started = debugprofilestop()

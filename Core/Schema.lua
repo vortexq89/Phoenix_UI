@@ -1,12 +1,22 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- Settings schema registry. Every user-facing setting is one entry with
 -- default, label, tooltip, mode and a live apply(value). The options renderer
--- (later phase) and Sentinel's integrity check both read this registry.
+-- (Phoenix_UI_Options) and Sentinel's integrity check both read this registry.
+-- type "layout" holds a table (Studio positions); it is always hidden from the
+-- renderer and from /pui list, and is stored as a copy.
 local Schema = { defs = {}, keys = {} }
 PUI.Schema = Schema
 
 local MODES = { simple = true, advanced = true }
-local TYPES = { toggle = "boolean", range = "number", select = "string", text = "string" }
+local TYPES = { toggle = "boolean", range = "number", select = "string", text = "string", layout = "table" }
+
+local function copy(v)
+  if type(v) ~= "table" then return v end
+  local out = {}
+  for k, x in pairs(v) do out[k] = copy(x) end
+  return out
+end
+Schema.Copy = copy
 
 local function sortKeys()
   local list = {}
@@ -26,6 +36,7 @@ function Schema:Register(key, def)
   assert(type(def.apply) == "function", key .. ": apply(value) required")
   assert(self:Validate(def, def.default), key .. ": default fails validation")
   def.key = key
+  if def.type == "layout" then def.hidden = true end
   self.defs[key] = def
   sortKeys()
 end
@@ -62,7 +73,8 @@ function Schema:Get(key)
   if not def then error("unknown setting '" .. tostring(key) .. "'", 2) end
   if def.get then return def.get() end
   local v = PUI.DB:GetRaw(key)
-  if v == nil then return def.default end
+  if v == nil then v = def.default end
+  if def.type == "layout" then return copy(v) end
   return v
 end
 
@@ -72,7 +84,10 @@ function Schema:Set(key, value)
   if not def then error("unknown setting '" .. tostring(key) .. "'", 2) end
   local ok, why = self:Validate(def, value)
   if not ok then error("invalid value for '" .. key .. "': " .. why, 2) end
-  if def.set then
+  if def.type == "layout" then
+    value = copy(value)
+    PUI.DB:SetRaw(key, (not PUI.DB.DeepEqual(value, def.default)) and value or nil)
+  elseif def.set then
     def.set(value)
   elseif value == def.default then
     PUI.DB:SetRaw(key, nil)
@@ -80,7 +95,7 @@ function Schema:Set(key, value)
     PUI.DB:SetRaw(key, value)
   end
   def.apply(value)
-  PUI:Log("setting", key, value)
+  PUI:Log("setting", key, def.type == "layout" and "<layout>" or value)
   PUI.Kernel:Fire("SETTING_CHANGED", key, value)
 end
 
@@ -96,7 +111,20 @@ function Schema:Snapshot(owner)
   local out = {}
   for i = 1, #self.keys do
     local def = self.defs[self.keys[i]]
-    if owner == nil or def.owner == owner then out[def.key] = self:Get(def.key) end
+    if (owner == nil or def.owner == owner) and def.type ~= "layout" then out[def.key] = self:Get(def.key) end
   end
   return out
+end
+
+-- Resets one key to its default (live). Returns false for unknown keys.
+function Schema:Reset(key)
+  local def = self.defs[key]
+  if not def or def.get then return false end
+  self:Set(key, copy(def.default))
+  return true
+end
+
+function Schema:IsDefault(key)
+  local def = self.defs[key]
+  return def ~= nil and PUI.DB.DeepEqual(self:Get(key), def.default)
 end
