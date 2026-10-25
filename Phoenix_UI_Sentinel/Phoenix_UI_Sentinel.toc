@@ -1,0 +1,23 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Sentinel
+## Notes: Phoenix UI diagnostics: error, taint, secret-value, settings and API-drift capture.
+## Author: VortexQ8
+## Version: @project-version@
+## LoadOnDemand: 1
+## Dependencies: Phoenix_UI
+## SavedVariables: PhoenixUISentinelDB
+
+Init.lua
+Ring.lua
+SecretTag.lua
+Capture.lua
+Taint.lua
+Integrity.lua
+Drift.lua
+Perf.lua
+Heartbeat.lua
+SafeMode.lua
+Export.lua
+Toast.lua
+Panel.lua
+Slash.lua
