@@ -1,0 +1,22 @@
+package-as: Phoenix_UI
+
+move-folders:
+  Phoenix_UI/Phoenix_UI_Sentinel: Phoenix_UI_Sentinel
+
+externals:
+  Libs/LibStub:
+    url: https://repos.curseforge.com/wow/libstub/trunk
+    tag: latest
+  Libs/CallbackHandler-1.0:
+    url: https://repos.curseforge.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+    tag: latest
+  Libs/LibDeflate:
+    url: https://github.com/SafeteeWoW/LibDeflate
+    tag: latest
+
+ignore:
+  - .tools
+  - .github
+  - docs
+  - Data/ApiCatalog.json
+  - README.md
