@@ -20,4 +20,5 @@ ignore:
   - .github
   - docs
   - Data/ApiCatalog.json
+  - companion
   - README.md

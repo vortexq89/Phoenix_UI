@@ -7,7 +7,7 @@ Phoenix UI tooling.
 import os, re
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-SKIP_DIRS = {".git", ".github", ".tools", "docs", "Libs", "node_modules"}
+SKIP_DIRS = {".git", ".github", ".tools", "docs", "Libs", "node_modules", "companion"}  # companion: desktop app, not addon code
 
 
 def lua_files(root=ROOT):
