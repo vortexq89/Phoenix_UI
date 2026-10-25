@@ -15,3 +15,5 @@ jobs:
         run: lua5.1 .tools/harness/run_tests.lua
       - name: Smoke suite (offline harness, Forever)
         run: PUI_FLAVOR=forever lua5.1 .tools/harness/run_tests.lua
+      - name: Companion tests
+        run: cd companion && python3 -m unittest discover -s tests -t .
