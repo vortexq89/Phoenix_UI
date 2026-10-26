@@ -54,3 +54,16 @@ Tests:Add("Locale", "English is free; other languages load the locale child and 
   local keys = PUI.Locale:Harvest()
   t:ok(#keys > 100, "harvest finds the schema strings")
 end)
+
+Tests:Add("Entry", "game menu, compartment and minimap entry points", function(t)
+  local E, Schema = PUI.Entry, PUI.Schema
+  t:ok(type(_G.PhoenixUI_OnAddonCompartmentClick) == "function", "compartment function")
+  t:ok(E.mini ~= nil, "minimap button built (default on)")
+  Schema:Set("general.minimapAngle", { angle = 90 })
+  t:eq(Schema:Get("general.minimapAngle").angle, 90, "angle stored")
+  Schema:Set("general.minimapButton", false)
+  t:eq(E.mini:IsShown(), false, "hidden live")
+  Schema:Set("general.minimapButton", true)
+  t:eq(E.mini:IsShown(), true, "shown live")
+  t:eq(PUI.Ticker:IsRegistered("entry.minimapDrag"), false, "no ticker unless dragging")
+end)
