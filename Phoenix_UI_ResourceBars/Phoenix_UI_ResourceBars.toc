@@ -1,0 +1,10 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Resource Bars
+## Notes: Phoenix UI personal resource bars: health, power, class resource, cast, global cooldown and totems.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+ClassResource.lua
+ResourceBars.lua
+Tests\ResourceBars_test.lua

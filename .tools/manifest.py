@@ -23,6 +23,11 @@ ENGINE_GLOBALS = {
     "CreateFrame", "InCombatLockdown", "IsInGroup", "GetNumGroupMembers", "securecallfunction",
     "hooksecurefunc", "seterrorhandler", "geterrorhandler", "debugstack", "debuglocals",
     "wipe", "tinsert", "date", "time",
+    # Phase 2 (present in both wow_globals_12.1.5 and wow_globals_forever_1.60.1;
+    # FrameXML ones in SecureStateDriver.lua / SharedXML on live and forever).
+    "GetBindingKey", "GetBindingText", "SetOverrideBindingClick", "ClearOverrideBindings",
+    "PickupAction", "PlaceAction", "IsModifiedClick", "RegisterStateDriver", "UnregisterStateDriver",
+    "RegisterUnitWatch", "UnregisterUnitWatch", "GameTooltip_SetDefaultAnchor", "CreateColor",
 }
 
 CALL_RE = re.compile(r"(?<![\w.:])([A-Za-z_]\w*)(?!\s*=[^=])(?!\w)")

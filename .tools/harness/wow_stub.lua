@@ -147,7 +147,8 @@ function InCombatLockdown() return H.inCombat == true end
 function GetLocale() return "enUS" end
 function UnitName() return "Tester", nil end
 function GetRealmName() return "HarnessRealm" end
-function UnitClass() return "Mage", "MAGE", 8 end
+H.class = "MAGE"
+function UnitClass() return "Class", H.class, 8 end
 function UnitLevel() return 80 end
 function GetInstanceInfo() return "Dornogal", "none", 0 end
 function GetNumGroupMembers() return 0 end
@@ -273,7 +274,12 @@ end
 function Region:SetText(t) self.text = t end
 function Region:SetParent(p) self.parent = p end
 function Region:GetParent() return rawget(self, "parent") end
-function Region:SetAttribute(k, v) self.attributes = rawget(self, "attributes") or {}; self.attributes[k] = v end
+function Region:SetAttribute(k, v)
+  self.attributes = rawget(self, "attributes") or {}
+  self.attributes[k] = v
+  local fn = self.scripts.OnAttributeChanged
+  if fn then fn(self, k, v) end
+end
 function Region:GetAttribute(k) local a = rawget(self, "attributes"); return a and a[k] end
 function Region:SetShown(v) self.shown = v and true or false end
 function Region:SetAlpha(a) self.alpha = a end
@@ -320,6 +326,9 @@ function ClearOverrideBindings(owner) for k, v in pairs(H.overrideBindings) do i
 H.bindings = { ACTIONBUTTON1 = "1", ACTIONBUTTON2 = "2", MULTIACTIONBAR1BUTTON1 = "SHIFT-1" }
 function GetBindingKey(command) return H.bindings[command] end
 function GetBindingText(key) return key end
+function PickupAction(slot) H.picked = slot end
+function PlaceAction(slot) H.placed = slot end
+function IsModifiedClick() return false end
 
 -- Blizzard frames that get parked/restored.
 for _, n in ipairs({ "PlayerFrame", "TargetFrame", "FocusFrame", "PetFrame", "BossTargetFrameContainer", "MainActionBar",
@@ -343,7 +352,11 @@ function UnitHealthPercent(u, pred, curve)
   return maybe(80)
 end
 function UnitPower(u) return maybe(50) end
-function UnitPowerMax(u) return maybe(100) end
+function UnitPowerMax(u, ptype)
+  if ptype == 16 then return H.powerMax16 or 4 end
+  if ptype ~= nil then return H.powerMaxByType and H.powerMaxByType[ptype] or 0 end
+  return maybe(100)
+end
 function UnitPowerPercent() return maybe(50) end
 function UnitPowerType() return 0, "MANA", 0, 0, 1 end
 function UnitName(u) return maybe(u == "player" and "Tester" or "Dummy"), nil end
@@ -366,7 +379,7 @@ function UnitChannelDuration() return nil end
 function UnitStagger() return maybe(0) end
 function UnitPartialPower() return maybe(0) end
 function GetComboPoints() return maybe(0) end
-function GetRuneCooldown(i) return 0, 10, true end
+function GetRuneCooldown(i) if H.secretMode then return H.secret(100), H.secret(10), H.secret(i <= 3) end return 100, 10, i <= 3 end
 function SetPortraitTexture(tex, unit) tex.portraitUnit = unit end
 function AbbreviateNumbers(n) if H.secrets[n] ~= nil then return H.secret("abbr") end return tostring(n) end
 function CreateUnitHealPredictionCalculator()
@@ -377,7 +390,7 @@ function CreateUnitHealPredictionCalculator()
   return c
 end
 function UnitGetDetailedHealPrediction(unit, healer, calc) calc.lastUnit = unit end
-function CreateColor(r, g, b, a) return { r = r, g = g, b = b, a = a, GetRGB = function(self) return self.r, self.g, self.b end } end
+function CreateColor(r, g, b, a) return { r = r, g = g, b = b, a = a, GetRGB = function(self) return self.r, self.g, self.b end, GetRGBA = function(self) return self.r, self.g, self.b, self.a end } end
 C_ClassColor = { GetClassColor = function(token) if token == nil then return nil end return CreateColor(0.25, 0.78, 0.92, 1) end }
 local function curve(isColor)
   local c = { points = {}, isColor = isColor }
@@ -396,15 +409,22 @@ Enum.PowerType = { Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, R
   LunarPower = 8, HolyPower = 9, Maelstrom = 11, Chi = 12, Insanity = 13, ArcaneCharges = 16, Fury = 17, Pain = 18, Essence = 19 }
 H.spec = 1
 C_SpecializationInfo.GetSpecialization = function() return H.spec end
-C_Spell = { GetSpellCooldownDuration = function() return { gcd = true } end }
+function H.duration(tag)
+  return { tag = tag, IsZero = function() return maybe(false) end, SetTimeFromStart = function(self, s, d) self.start, self.length = s, d end }
+end
+C_Spell = { GetSpellCooldownDuration = function() return H.duration("gcd") end }
+C_DurationUtil = { CreateDuration = function() return H.duration("custom") end }
+function GetNumTotemSlots() return 4 end
+function GetTotemInfo(i) return maybe(i == 1), maybe("Totem"), 0, 0, 136000 end
+function GetTotemDuration(i) return H.duration("totem" .. i) end
 
 -- Action bars.
 H.actions = { [1] = 136243, [2] = 135812, [61] = 132242 }
 C_ActionBar = {
   HasAction = function(id) return H.actions[id] ~= nil end,
   GetActionTexture = function(id) return H.actions[id] end,
-  GetActionCooldownDuration = function() return { cd = true } end,
-  GetActionChargeDuration = function() return { charge = true } end,
+  GetActionCooldownDuration = function() return H.duration("cd") end,
+  GetActionChargeDuration = function() return H.duration("charge") end,
   GetActionDisplayCount = function() return maybe("") end,
   GetActionText = function() return maybe("") end,
   IsUsableAction = function() return maybe(true), maybe(false) end,
@@ -412,7 +432,7 @@ C_ActionBar = {
   IsCurrentAction = function() return maybe(false) end,
   IsAutoRepeatAction = function() return maybe(false) end,
   EnableActionRangeCheck = function(id, on) H.rangeChecks = H.rangeChecks or {}; H.rangeChecks[id] = on end,
-  FindSpellActionButtons = function(spell) if spell == 133 then return { 2 } end return {} end,
+  FindSpellActionButtons = function(spell) if spell == 133 then return { 62 } end return {} end,
   GetActionBarPage = function() return 1 end,
   GetBonusBarOffset = function() return 0 end,
 }

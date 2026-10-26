@@ -2,6 +2,7 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- /pui test cases for Unit Frames. Tests that enable the module restore every
 -- touched setting and the module toggle in cleanup.
 local _, ns = ...
+local H = rawget(_G, "HARNESS") -- the offline harness, nil in game
 local Tests, Schema, CQ, Ticker = PUI.Tests, PUI.Schema, PUI.CombatQueue, PUI.Ticker
 local UF, E = ns.UF, ns.Elements
 
@@ -55,10 +56,10 @@ Tests:Add("UnitFrames", "enabling builds secure buttons and parks Blizzard frame
   t:ok(units.target and units.boss5, "target and boss frames built")
   t:eq(PUI.Layout:Frame("uf.player"), b, "placed through Layout (Studio)")
   t:ok(ns.Blizzard.IsParked("player"), "Blizzard player frame parked")
-  if HARNESS then
+  if H then
     t:eq(PlayerFrame:GetParent(), ns.Blizzard.hider, "PlayerFrame reparented to the hider")
-    t:eq(HARNESS.stateDrivers[UF.hider].visibility, "[petbattle] hide; show", "pet battle state driver")
-    t:ok(HARNESS.unitWatch[units.target.button], "target visibility via unit watch")
+    t:eq(H.stateDrivers[UF.hider].visibility, "[petbattle] hide; show", "pet battle state driver")
+    t:ok(H.unitWatch[units.target.button], "target visibility via unit watch")
     t:ok(units.target.tracker:IsEventRegistered("UNIT_HEALTH"), "health channel registered")
     t:ok(units.target.tracker:IsEventRegistered("UNIT_SPELLCAST_START"), "cast channel on for target")
     t:eq(units.player.tracker:IsEventRegistered("UNIT_SPELLCAST_START"), false, "cast channel off for player")
@@ -75,10 +76,10 @@ Tests:Add("UnitFrames", "settings apply live (size, text, channels, source)", fu
   Schema:Set("uf.player.width", 260)
   t:eq(o.button:GetWidth(), 260, "width applied")
   Schema:Set("uf.player.text.left", "health:percent")
-  if HARNESS then t:eq(o.texts.left:GetText(), "80%", "text zone re-rendered") end
+  if H then t:eq(o.texts.left:GetText(), "80%", "text zone re-rendered") end
   Schema:Set("uf.player.portrait", "2d")
   t:ok(o.portrait:IsShown(), "portrait shown")
-  if HARNESS then t:ok(o.tracker:IsEventRegistered("UNIT_PORTRAIT_UPDATE"), "portrait channel registered on demand") end
+  if H then t:ok(o.tracker:IsEventRegistered("UNIT_PORTRAIT_UPDATE"), "portrait channel registered on demand") end
   Schema:Set("uf.player.source", "blizzard")
   t:eq(o.live, false, "Phoenix player frame off")
   t:eq(ns.Blizzard.IsParked("player"), false, "Blizzard player frame restored")
@@ -101,9 +102,9 @@ end)
 
 Tests:Add("UnitFrames", "secret values only reach widgets", function(t)
   local units = enable(t, "uf.colorMode", "uf.player.text.left", "uf.player.text.right", "uf.healPrediction")
-  if not HARNESS then return end
-  HARNESS.secretMode, HARNESS.casting = true, true
-  t:cleanup(function() HARNESS.secretMode, HARNESS.casting = false, false end)
+  if not H then return end
+  H.secretMode, H.casting = true, true
+  t:cleanup(function() H.secretMode, H.casting = false, false end)
   Schema:Set("uf.healPrediction", true)
   for _, mode in ipairs({ "class", "reaction", "gradient", "accent" }) do
     Schema:Set("uf.colorMode", mode)
@@ -125,12 +126,12 @@ Tests:Add("UnitFrames", "disabling releases events, drivers and Blizzard frames"
   t:eq(Ticker:IsRegistered("uf.polled"), false, "ticker gone")
   for unit, o in pairs(units) do
     t:eq(o.live, false, unit .. " not live")
-    if HARNESS then t:eq(next(o.tracker.events), nil, unit .. " tracker silent") end
+    if H then t:eq(next(o.tracker.events), nil, unit .. " tracker silent") end
   end
   t:eq(ns.Blizzard.IsParked("player"), false, "Blizzard frames restored")
-  if HARNESS then
+  if H then
     t:eq(PlayerFrame:GetParent(), UIParent, "PlayerFrame back on UIParent")
-    t:eq(HARNESS.stateDrivers[UF.hider].visibility, nil, "state driver removed")
-    t:eq(HARNESS.unitWatch[units.target.button], nil, "unit watch removed")
+    t:eq(H.stateDrivers[UF.hider].visibility, nil, "state driver removed")
+    t:eq(H.unitWatch[units.target.button], nil, "unit watch removed")
   end
 end)
