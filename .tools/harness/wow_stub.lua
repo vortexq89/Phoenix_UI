@@ -822,6 +822,31 @@ function UnitThreatSituation(a, b) if H.unitThreat[a] ~= nil then return maybe(H
 for k, v in pairs({ nameplateMotion = "0", nameplateGlobalScale = "1", nameplateOverlapV = "1.1", nameplateMaxDistance = "41",
   nameplateSelectedScale = "1.2" }) do H.cvars[k] = v end
 
+
+-- Step 6: action bars (stance/pet/vehicle/items), cooldown manager, resource bars.
+H.actionInfo = {}
+function GetActionInfo(slot) local a = H.actionInfo[slot]; if a then return a[1], a[2] end return nil end
+C_ActionBar.GetActionLossOfControlCooldownDuration = function() return H.duration("loc") end
+H.forms = {}
+function GetNumShapeshiftForms() return #H.forms end
+function GetShapeshiftFormInfo(i) local f = H.forms[i]; if f then return f.icon, maybe(f.active), true, f.spell end return nil end
+function GetShapeshiftFormCooldown() return maybe(0), maybe(0), 1 end
+H.petActions = {}
+function GetPetActionInfo(i) local p = H.petActions[i]; if p then return maybe(p.name), p.texture, p.isToken, maybe(p.active), true, maybe(p.auto) end return nil end
+function GetPetActionCooldown() return maybe(0), maybe(0), 1 end
+H.inventory = {}
+function GetInventoryItemID(_, slot) return H.inventory[slot] end
+function GetInventoryItemCooldown() return 0, 0, 1 end
+H.itemCounts, H.itemSpells = { [5512] = 2 }, {}
+C_Item.GetItemCount = function(id) return H.itemCounts[id] or 0 end
+C_Item.GetItemIconByID = function(id) return 1000 + id end
+C_Item.GetItemCooldown = function() return 0, 0, 1 end
+C_Item.GetItemSpell = function(id) return H.itemSpells[id] end
+H.assistSpell = nil
+C_AssistedCombat = { GetNextCastSpell = function() return H.assistSpell end }
+function Region:IsMouseOver() return rawget(self, "mouseOver") == true end
+for _, n in ipairs({ "StanceBar", "PetActionBar" }) do local f = CreateFrame("Frame", n, UIParent); f.parent = UIParent end
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
   AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }

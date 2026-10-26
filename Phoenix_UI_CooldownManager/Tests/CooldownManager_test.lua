@@ -59,3 +59,58 @@ Tests:Add("CooldownManager", "presets and the !PUI_CDM share string", function(t
   t:eq(Schema:Get("cdm.essential.size"), 50, "value restored from the string")
   t:eq(CDM.Import("!PUI_UF" .. str), nil, "foreign strings refused")
 end)
+
+-- Step 6 ---------------------------------------------------------------------------
+Tests:Add("CooldownManager", "restyle: border in a side table, zoom, numbers; centred rows", function(t)
+  if not H then return end
+  enable(t, "cdm.border", "cdm.essential.growth", "cdm.cdText")
+  local f = H.cdItems.EssentialCooldownViewer[1]
+  local sk = CDM.skins[f]
+  t:ok(sk and #sk == 4, "four border edges kept outside the Blizzard frame")
+  t:eq(rawget(f, "phoenixBorder"), nil, "no fields written on the Blizzard frame")
+  Schema:Set("cdm.border", 0)
+  t:eq(sk[1]:IsShown(), false, "border 0 hides it live")
+  Schema:Set("cdm.essential.growth", "center")
+  local x = H.cdItems.EssentialCooldownViewer[3].point[4]
+  t:ok(x < 0, "first icon of a centred row starts left of the anchor")
+  t:eq(H.cdItems.EssentialCooldownViewer[3].point[1], "TOP", "centred rows anchor at TOP")
+  t:eq(Schema:Def("cdm.essential.size").overridable, true, "layout can differ per specialization")
+end)
+
+Tests:Add("CooldownManager", "dedupe with action bars, missing-from-bars and tracked buffs", function(t)
+  if not H then return end
+  enable(t, "cdm.hideOnBars")
+  local items = H.cdItems.EssentialCooldownViewer
+  rawset(items[1], "GetSpellID", function() return 133 end) -- on slot 62 in the harness
+  rawset(items[2], "GetSpellID", function() return 999 end) -- on no bar
+  local buff = H.cdItems.BuffIconCooldownViewer[1]
+  rawset(buff, "GetSpellID", function() return 4242 end)
+  t:cleanup(function() rawset(items[1], "GetSpellID", nil); rawset(items[2], "GetSpellID", nil); rawset(buff, "GetSpellID", nil) end)
+  local missing = CDM.MissingFromBars()
+  t:eq(#missing, 1, "one tracked cooldown is on no bar")
+  t:eq(missing[1], 999, "the right one")
+  t:eq(#CDM.Items(EssentialCooldownViewer), 3, "dedupe off keeps every icon")
+  Schema:Set("cdm.hideOnBars", true)
+  t:eq(#CDM.Items(EssentialCooldownViewer), 2, "icon already on a bar left out")
+  t:eq(items[1]:GetAlpha(), 0, "left-out icon is alpha 0 (never hidden or reparented)")
+  Schema:Set("cdm.hideOnBars", false)
+  t:eq(items[1]:GetAlpha(), 1, "restored when the setting is off")
+  local tracked = CDM.TrackedBuffSpellIDs()
+  t:eq(tracked[1], 4242, "tracked buff ids for the Player Aura Bars dedupe")
+  H.secretMode = true
+  rawset(items[2], "GetSpellID", function() return H.secret(999) end)
+  t:eq(#CDM.MissingFromBars(), 0, "a secret spell id is never compared")
+  H.secretMode = false
+end)
+
+Tests:Add("CooldownManager", "custom bar shows the shared item list (display only)", function(t)
+  if not H then return end
+  enable(t, "cdm.custom.enabled", "items.list")
+  Schema:Set("cdm.custom.enabled", true)
+  t:ok(CDM.customFrame and CDM.customFrame:IsShown(), "custom bar shown")
+  t:eq(CDM.custom[1].icon.texture, 1000 + 5512, "first item from PUI.ItemList")
+  t:eq(CDM.custom[1].count:GetText(), "2", "count")
+  t:eq(rawget(CDM.custom[1], "secure"), nil, "not a secure (clickable) frame")
+  Schema:Set("items.list", { "211880" })
+  t:eq(CDM.custom[1]:IsShown(), false, "list change applies live (missing item hidden)")
+end)

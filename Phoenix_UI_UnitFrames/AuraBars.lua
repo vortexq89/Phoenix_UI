@@ -135,3 +135,9 @@ function AB.Off()
     ns.Blizzard.Restore("debuffs")
   end
 end
+
+-- The Cooldown Manager's tracked buffs changed: re-apply the dedupe live.
+PUI.Kernel:On("CDM_TRACKED_CHANGED", function()
+  local UF = ns.UF
+  if cfg.dedupeCDM and UF and UF.active then AB.Apply() end
+end)

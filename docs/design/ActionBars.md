@@ -19,3 +19,12 @@ Child addon `Phoenix_UI_ActionBars`, module `ActionBars`, off by default. Ten ba
 
 ## Not in this phase (reported)
 13-14 buttons per bar (an action page holds 12 slots, so buttons 13-14 would duplicate slots), per-button overrides, assisted-combat highlight, flyouts, micro menu, bag bar, stance/pet/possess/extra/zone/encounter bars, quick keybind mode, Blizzard/Classic looks. Blizzard's OverrideActionBar still appears in vehicles alongside the paged bar 1.
+
+## Step 6 (feat/bars)
+Files: `Buttons.lua` (button skin and painter shared with the preview), `Special.lua` (stance, pet, vehicle exit, item bar), `KeybindMode.lua`, `ActionBars.lua` (bars, drivers, schema).
+- Visibility: `ab.barN.show` (PUI.Visibility rule). `AB.VisibilityDriver(i)` turns the combat, vehicle, pet battle, mounted and skyriding parts into macro conditions; `AB.WatchedRule(i)` hands content, group, spec and resting to PUI.Visibility, whose callback re-registers the driver (`hide`) out of combat. `ab.barN.visibility` (raw) wins when set.
+- Paging: `AB.PageDriver(i)`; bar 1 `formPaging`, `skyridingPaging`; any bar `pageMod` + `pageModTo`. One `_onstate-page` snippet for all bars.
+- Fade: `fade` (secure `[combat]` driver), `mouseover` (insecure SetAlpha on hover, allowed on protected frames), `alpha`, `ab.mouseoverLinked`.
+- Keys: redirects via `PUI.Bindings` owner `ActionBars`; keybind mode keys in `ab.binds` via owner `ActionBars.keys`.
+- Special bars: `ab.stance|pet|vehicle|items.*`; item list from `PUI.ItemList` (Core `items.*`).
+- Conflict notice: `core.coexist.actionbars` through `PUI.Coexist`.

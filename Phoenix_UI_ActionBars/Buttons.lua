@@ -1,20 +1,59 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- Action buttons (PUI_V2 5.6): SecureActionButtonTemplate buttons with
--- original visuals. The secure "action" attribute is the single source of
+-- Action buttons (plan 5.4, mockup 05): SecureActionButtonTemplate buttons
+-- with original visuals. The secure "action" attribute is the single source of
 -- truth; OnAttributeChanged (an insecure observer) refreshes visuals when the
 -- paging snippet moves a button to another slot. Engine values that may be
--- secret (usable, in range, counts, cooldown durations) only reach widgets:
--- SetVertexColor from EvaluateColorFromBoolean, SetAlphaFromBoolean,
--- SetText and SetCooldownFromDurationObject.
+-- secret (usable, mana, in range, counts, cooldown durations, loss of
+-- control) only reach widgets: SetVertexColor from EvaluateColorFromBoolean,
+-- SetAlphaFromBoolean, SetText and SetCooldownFromDurationObject. Nothing here
+-- compares or does arithmetic on them (G1).
 local _, ns = ...
 local Theme, Media, Secret = PUI.Theme, PUI.Media, PUI.Secret
 local OWNER = "ActionBars"
 
-local Btn = { all = {}, bySlot = {}, glowing = {} }
+local Btn = { all = {}, bySlot = {}, glowing = {}, assisted = {} }
 ns.Buttons = Btn
 
+-- Look settings shared by every Phoenix button (and the options preview).
+local S = {
+  tooltips = true, hotkeys = true, keyAbbrev = true, hotkeySize = 11, hotkeyColor = { r = 0.92, g = 0.92, b = 0.95, a = 1 },
+  macroText = true, macroSize = 10, countSize = 12, showEmpty = false, lock = true,
+  cdText = true, cdTextSize = 14, cdEdge = true, swipeAlpha = 0.8, dimOnCooldown = false, dimAlpha = 0.45,
+  lossOfControl = true, rangeMode = "overlay",
+  rangeColor = { r = 0.9, g = 0.2, b = 0.2, a = 0.5 }, unusableColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 },
+  manaColor = { r = 0.35, g = 0.45, b = 1, a = 1 }, neverDim = {},
+  zoom = 0.08, border = 1, borderColor = { r = 0, g = 0, b = 0, a = 1 },
+  procGlow = "pulse", procColor = { r = 1, g = 0.78, b = 0.25, a = 1 },
+  assist = false, assistColor = { r = 0.3, g = 0.85, b = 1, a = 1 },
+}
+ns.settings = S
+Btn.S = S
+
 local WHITE = CreateColor(1, 1, 1, 1)
-local DIM = CreateColor(0.4, 0.4, 0.4, 1)
+local function color(c) return CreateColor(c.r, c.g, c.b, c.a or 1) end
+
+-- Keybind text abbreviations (original table): modifiers become one letter,
+-- mouse and numpad names are shortened so the text fits small buttons.
+local ABBREV = {
+  { "ALT%-", "A" }, { "CTRL%-", "C" }, { "SHIFT%-", "S" }, { "META%-", "M" },
+  { "MOUSEWHEELUP", "WU" }, { "MOUSEWHEELDOWN", "WD" }, { "MIDDLEMOUSE", "M3" }, { "BUTTON(%d+)", "M%1" },
+  { "NUMPADPLUS", "N+" }, { "NUMPADMINUS", "N-" }, { "NUMPADMULTIPLY", "N*" }, { "NUMPADDIVIDE", "N/" },
+  { "NUMPADDECIMAL", "N." }, { "NUMPAD", "N" }, { "SPACEBAR", "Sp" }, { "SPACE", "Sp" }, { "BACKSPACE", "Bs" },
+  { "CAPSLOCK", "Caps" }, { "INSERT", "Ins" }, { "DELETE", "Del" }, { "HOME", "Hm" }, { "PAGEUP", "PU" },
+  { "PAGEDOWN", "PD" }, { "ENTER", "Ent" }, { "TAB", "Tab" }, { "ESCAPE", "Esc" },
+}
+function Btn.Abbrev(key)
+  if type(key) ~= "string" or key == "" then return "" end
+  local out = key:upper()
+  for _, r in ipairs(ABBREV) do out = out:gsub(r[1], r[2]) end
+  return out
+end
+
+function Btn.KeyText(key)
+  if not key or not S.hotkeys then return "" end
+  if S.keyAbbrev then return Btn.Abbrev(key) end
+  return GetBindingText(key, true) or key
+end
 
 local function text(b, justify, point, x, y, role)
   local fs = b:CreateFontString(nil, "OVERLAY")
@@ -25,11 +64,16 @@ local function text(b, justify, point, x, y, role)
   return fs
 end
 
+local function setFontSize(fs, size)
+  local path, _, flags = fs:GetFont()
+  if path then fs:SetFont(path, size, flags) end
+end
+
 local function slotOf(b) return b:GetAttribute("action") end
 
 local function index(b, slot)
   local old = b.slot
-  if old == slot then return end
+  if old == (slot or false) then return end
   if old and Btn.bySlot[old] then
     Btn.bySlot[old][b] = nil
     if next(Btn.bySlot[old]) == nil then
@@ -37,7 +81,7 @@ local function index(b, slot)
       C_ActionBar.EnableActionRangeCheck(old, false)
     end
   end
-  b.slot = slot
+  b.slot = slot or false
   if slot then
     Btn.bySlot[slot] = Btn.bySlot[slot] or {}
     Btn.bySlot[slot][b] = true
@@ -53,15 +97,20 @@ local function onAttributeChanged(b, name, value)
 end
 
 local function onEnter(b)
-  if not b.slot or not ns.settings.tooltips then return end
+  if b.onHover then b.onHover(b, true) end
+  if not b.slot or not S.tooltips then return end
   GameTooltip_SetDefaultAnchor(GameTooltip, b)
   GameTooltip:SetAction(b.slot)
   GameTooltip:Show()
 end
-local function onLeave() GameTooltip:Hide() end
+local function onLeave(b)
+  if b.onHover then b.onHover(b, false) end
+  GameTooltip:Hide()
+end
+Btn.OnEnter, Btn.OnLeave = onEnter, onLeave
 
 local function onDragStart(b)
-  if InCombatLockdown() or not b.slot or (ns.settings.lock and not IsModifiedClick("PICKUPACTION")) then return end
+  if InCombatLockdown() or not b.slot or (S.lock and not IsModifiedClick("PICKUPACTION")) then return end
   PickupAction(b.slot)
   Btn.Update(b)
 end
@@ -72,42 +121,83 @@ local function onReceiveDrag(b)
   Btn.Update(b)
 end
 
--- Creates one secure button (out of combat). name is global for keybind clicks.
-function Btn.Create(header, name, id)
-  local b = PUI:CreateFrame("Button", name, header, "SecureActionButtonTemplate", OWNER)
-  b:SetID(id)
-  b:SetAttribute("type", "action")
-  b:SetAttribute("checkselfcast", true)
-  b:SetAttribute("checkfocuscast", true)
-  b:RegisterForClicks("AnyUp", "AnyDown") -- the template honours ActionButtonUseKeyDown
-  b:RegisterForDrag("LeftButton", "RightButton")
+-- Visual skeleton shared by action, stance, pet and item buttons.
+function Btn.Skin(b)
+  -- Plain fields start as false (never read through to the frame's methods).
+  b.slot, b.live, b.bindKey, b.extraKey, b.glowOn, b.assistOn, b.entry, b.autocast = false, false, false, false, false, false, false, false
+  b.onHover = b.onHover or false
   b.bg = Theme:Backdrop(b, "surface.1")
   b.icon = b:CreateTexture(nil, "ARTWORK")
-  b.icon:SetPoint("TOPLEFT", 1, -1)
-  b.icon:SetPoint("BOTTOMRIGHT", -1, 1)
-  b.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+  b.dim = b:CreateTexture(nil, "ARTWORK", nil, 2) -- "dim while on cooldown" veil
+  b.dim:SetAllPoints(b.icon)
+  b.dim:SetColorTexture(0, 0, 0, 1)
+  b.dim:SetAlpha(0)
   b.range = b:CreateTexture(nil, "OVERLAY")
   b.range:SetAllPoints(b.icon)
-  Theme:Paint(b.range, "danger", 0.45)
   b.range:SetAlpha(0)
   b.current = b:CreateTexture(nil, "OVERLAY")
   b.current:SetAllPoints(b.icon)
   Theme:Paint(b.current, "accent", 0.25)
   b.current:SetAlpha(0)
-  b.glow = Theme:Outline(b, "spark", 1)
-  for _, e in ipairs(b.glow) do e:Hide() end
-  b.outline = Theme:Outline(b, "line")
+  b.edges = {}
+  for i = 1, 4 do b.edges[i] = b:CreateTexture(nil, "OVERLAY", nil, 1) end
   b.cooldown = PUI:CreateFrame("Cooldown", nil, b, "CooldownFrameTemplate", OWNER)
   b.cooldown:SetAllPoints(b.icon)
   b.charge = PUI:CreateFrame("Cooldown", nil, b, "CooldownFrameTemplate", OWNER)
   b.charge:SetAllPoints(b.icon)
   b.charge:SetDrawSwipe(false)
+  b.loc = PUI:CreateFrame("Cooldown", nil, b, "CooldownFrameTemplate", OWNER) -- loss of control (red swipe)
+  b.loc:SetAllPoints(b.icon)
+  b.loc:SetSwipeColor(0.85, 0.1, 0.1, 0.65)
+  b.loc:SetHideCountdownNumbers(true)
   b.count = text(b, "RIGHT", "BOTTOMRIGHT", -2, 2, "number")
   b.hotkey = text(b, "RIGHT", "TOPRIGHT", -2, -2, "small")
   b.macro = text(b, "CENTER", "BOTTOM", 0, 2, "small")
   local hl = b:CreateTexture(nil, "HIGHLIGHT")
   hl:SetAllPoints(b.icon)
   Theme:Paint(hl, "text.primary", 0.15)
+  Btn.ApplyLook(b)
+end
+
+-- Applies the shared look (zoom, border, fonts, cooldown text) to one button.
+function Btn.ApplyLook(b)
+  local z, px = S.zoom, S.border
+  b.icon:ClearAllPoints()
+  b.icon:SetPoint("TOPLEFT", px, -px)
+  b.icon:SetPoint("BOTTOMRIGHT", -px, px)
+  b.icon:SetTexCoord(z, 1 - z, z, 1 - z)
+  local c = S.borderColor
+  local e, w = b.edges, math.max(px, 0.01)
+  e[1]:ClearAllPoints(); e[1]:SetPoint("TOPLEFT"); e[1]:SetPoint("TOPRIGHT"); e[1]:SetHeight(w)
+  e[2]:ClearAllPoints(); e[2]:SetPoint("BOTTOMLEFT"); e[2]:SetPoint("BOTTOMRIGHT"); e[2]:SetHeight(w)
+  e[3]:ClearAllPoints(); e[3]:SetPoint("TOPLEFT"); e[3]:SetPoint("BOTTOMLEFT"); e[3]:SetWidth(w)
+  e[4]:ClearAllPoints(); e[4]:SetPoint("TOPRIGHT"); e[4]:SetPoint("BOTTOMRIGHT"); e[4]:SetWidth(w)
+  for i = 1, 4 do e[i]:SetColorTexture(c.r, c.g, c.b, c.a or 1); e[i]:SetShown(px > 0) end
+  local r = S.rangeColor
+  b.range:SetColorTexture(r.r, r.g, r.b, S.rangeMode == "overlay" and (r.a or 0.5) or 0)
+  b.cooldown:SetHideCountdownNumbers(not S.cdText)
+  b.cooldown:SetDrawEdge(S.cdEdge)
+  b.cooldown:SetSwipeColor(0, 0, 0, S.swipeAlpha)
+  local cdText = b.cooldown.GetCountdownFontString and b.cooldown:GetCountdownFontString()
+  if cdText then setFontSize(cdText, S.cdTextSize) end
+  setFontSize(b.hotkey, S.hotkeySize)
+  local hc = S.hotkeyColor
+  b.hotkey:SetTextColor(hc.r, hc.g, hc.b, hc.a or 1)
+  setFontSize(b.macro, S.macroSize)
+  setFontSize(b.count, S.countSize)
+end
+
+-- Creates one secure action button (out of combat). name is global for keybind clicks.
+function Btn.Create(header, name, id)
+  local b = PUI:CreateFrame("Button", name, header, "SecureActionButtonTemplate", OWNER)
+  b.onHover = false
+  b:SetID(id)
+  b:SetAttribute("type", "action")
+  b:SetAttribute("checkselfcast", true)
+  b:SetAttribute("checkfocuscast", true)
+  b:RegisterForClicks("AnyUp", "AnyDown") -- the template honours ActionButtonUseKeyDown
+  b:RegisterForDrag("LeftButton", "RightButton")
+  Btn.Skin(b)
   b:SetScript("OnAttributeChanged", onAttributeChanged)
   b:SetScript("OnEnter", onEnter)
   b:SetScript("OnLeave", onLeave)
@@ -118,24 +208,57 @@ function Btn.Create(header, name, id)
 end
 
 -- Visual refreshers ---------------------------------------------------------------
+-- "Never dim" list (plan 13.5 parity): spells usable on a condition (e.g.
+-- Swiftmend) keep full colour. The action's spell id is plain data.
+function Btn.NeverDim(slot)
+  if #S.neverDim == 0 then return false end
+  local kind, id = GetActionInfo(slot)
+  if Secret.IsSecret(kind) or Secret.IsSecret(id) or kind ~= "spell" then return false end
+  for _, v in ipairs(S.neverDim) do if tonumber(v) == id then return true end end
+  return false
+end
+
 function Btn.UpdateUsable(b)
   local slot = b.slot
   if not slot then return end
-  local usable = C_ActionBar.IsUsableAction(slot)
-  local color = C_CurveUtil.EvaluateColorFromBoolean(usable, WHITE, DIM)
-  b.icon:SetVertexColor(color:GetRGBA())
+  if Btn.NeverDim(slot) then b.icon:SetVertexColor(1, 1, 1, 1) return end
+  local usable, noMana = C_ActionBar.IsUsableAction(slot)
+  -- usable -> white; else not enough mana -> mana colour; else unusable colour.
+  local otherwise = C_CurveUtil.EvaluateColorFromBoolean(noMana, color(S.manaColor), color(S.unusableColor))
+  local c = C_CurveUtil.EvaluateColorFromBoolean(usable, WHITE, otherwise)
+  b.icon:SetVertexColor(c:GetRGBA())
 end
 
 function Btn.UpdateRange(b, inRange)
-  if type(inRange) == "nil" then b.range:SetAlpha(0) return end
+  if S.rangeMode == "off" or type(inRange) == "nil" then
+    b.range:SetAlpha(0)
+    if S.rangeMode == "tint" then Btn.UpdateUsable(b) end
+    return
+  end
+  if S.rangeMode == "tint" then
+    local c = C_CurveUtil.EvaluateColorFromBoolean(inRange, WHITE, color(S.rangeColor))
+    b.icon:SetVertexColor(c:GetRGBA())
+    return
+  end
   b.range:SetAlphaFromBoolean(inRange, 0, 1)
 end
 
 function Btn.UpdateCooldown(b)
   local slot = b.slot
   if not slot then return end
-  b.cooldown:SetCooldownFromDurationObject(C_ActionBar.GetActionCooldownDuration(slot), true)
+  local d = C_ActionBar.GetActionCooldownDuration(slot)
+  b.cooldown:SetCooldownFromDurationObject(d, true)
   b.charge:SetCooldownFromDurationObject(C_ActionBar.GetActionChargeDuration(slot), true)
+  if S.lossOfControl then
+    b.loc:SetCooldownFromDurationObject(C_ActionBar.GetActionLossOfControlCooldownDuration(slot), true)
+  else
+    b.loc:Clear()
+  end
+  if S.dimOnCooldown and type(d) ~= "nil" then
+    b.dim:SetAlphaFromBoolean(d:IsZero(), 0, S.dimAlpha)
+  else
+    b.dim:SetAlpha(0)
+  end
 end
 
 function Btn.UpdateCount(b)
@@ -149,12 +272,23 @@ function Btn.UpdateState(b)
 end
 
 function Btn.UpdateHotkey(b)
-  local key = b.bindKey
-  b.hotkey:SetText(key and ns.settings.hotkeys and GetBindingText(key, true) or "")
+  b.hotkey:SetText(Btn.KeyText(b.extraKey or b.bindKey))
+end
+
+-- Proc and assisted-combat glows on PUI.Glow (C-side animation, G2).
+function Btn.PaintGlow(b)
+  if b.glowOn and S.procGlow ~= "none" then
+    PUI.Glow:Start(b, S.procGlow, S.procColor)
+  elseif b.assistOn and S.assist then
+    PUI.Glow:Start(b, "solid", S.assistColor)
+  else
+    PUI.Glow:Stop(b)
+  end
 end
 
 function Btn.SetGlow(b, on)
-  for _, e in ipairs(b.glow) do e:SetShown(on) end
+  b.glowOn = on and true or false
+  Btn.PaintGlow(b)
 end
 
 function Btn.Update(b)
@@ -167,22 +301,27 @@ function Btn.Update(b)
     b.macro:SetText("")
     b.cooldown:Clear()
     b.charge:Clear()
+    b.loc:Clear()
+    b.dim:SetAlpha(0)
     b.range:SetAlpha(0)
     b.current:SetAlpha(0)
-    Btn.SetGlow(b, false)
-    b.bg:SetAlpha(ns.settings.showEmpty and 1 or 0)
-    for _, e in ipairs(b.outline) do e:SetShown(ns.settings.showEmpty) end
+    b.glowOn, b.assistOn = false, false
+    Btn.PaintGlow(b)
+    b.bg:SetAlpha(S.showEmpty and 1 or 0)
+    for _, e in ipairs(b.edges) do e:SetShown(S.showEmpty and S.border > 0) end
   else
     b.icon:SetTexture(C_ActionBar.GetActionTexture(slot))
     b.icon:Show()
     b.bg:SetAlpha(1)
-    for _, e in ipairs(b.outline) do e:Show() end
-    if ns.settings.macroText then b.macro:SetText(C_ActionBar.GetActionText(slot)) else b.macro:SetText("") end
+    for _, e in ipairs(b.edges) do e:SetShown(S.border > 0) end
+    if S.macroText then b.macro:SetText(C_ActionBar.GetActionText(slot)) else b.macro:SetText("") end
     Btn.UpdateUsable(b)
     Btn.UpdateCooldown(b)
     Btn.UpdateCount(b)
     Btn.UpdateState(b)
-    Btn.SetGlow(b, Btn.glowing[slot] == true)
+    b.glowOn = Btn.glowing[slot] == true
+    b.assistOn = Btn.assisted[slot] == true
+    Btn.PaintGlow(b)
   end
   Btn.UpdateHotkey(b)
 end
@@ -210,6 +349,21 @@ function Btn.Glow(spellID, on)
     Btn.glowing[slot] = on or nil
     Btn.ForSlot(slot, Btn.SetGlow, on)
   end
+end
+
+-- Assisted combat (Blizzard's rotation helper): highlight the slots holding
+-- the suggested spell. Polled through one Ticker entry only while on.
+local function setAssist(b, on) b.assistOn = on; Btn.PaintGlow(b) end
+function Btn.Assist()
+  local spell = S.assist and C_AssistedCombat.GetNextCastSpell(true) or nil
+  if Secret.IsSecret(spell) then spell = nil end
+  if spell == Btn.assistSpell then return end
+  Btn.assistSpell = spell
+  local old = Btn.assisted
+  Btn.assisted = {}
+  for _, slot in ipairs(spell and C_ActionBar.FindSpellActionButtons(spell) or {}) do Btn.assisted[slot] = true end
+  for slot in pairs(old) do Btn.ForSlot(slot, setAssist, false) end
+  for slot in pairs(Btn.assisted) do Btn.ForSlot(slot, setAssist, true) end
 end
 
 Btn.slotOf = slotOf
