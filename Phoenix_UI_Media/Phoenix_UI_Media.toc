@@ -1,0 +1,11 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Media
+## Notes: Phoenix UI media library: fonts (Latin, Cyrillic, Greek, Arabic, Chinese, Japanese, Korean), bar textures, backgrounds, borders, glows, icons and sounds. Licences in LICENSES.md.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE. Bundled media keep their own licences (LICENSES.md).
+## X-Website: https://www.vq8s.com/phoenix-ui
+## Dependencies: Phoenix_UI
+
+Manifest.lua
+Tests\Media_test.lua

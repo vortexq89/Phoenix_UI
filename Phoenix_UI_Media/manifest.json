@@ -1,0 +1,2961 @@
+[
+ {
+  "file": "Fonts/Roboto-Regular.ttf",
+  "type": "font",
+  "name": "Roboto",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/roboto",
+  "author": "Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400, \"wdth\": 100}"
+ },
+ {
+  "file": "Fonts/Roboto-Bold.ttf",
+  "type": "font",
+  "name": "Roboto Bold",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/roboto",
+  "author": "Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 700, \"wdth\": 100}"
+ },
+ {
+  "file": "Fonts/RobotoCondensed-Regular.ttf",
+  "type": "font",
+  "name": "Roboto Condensed",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/robotocondensed",
+  "author": "Copyright 2011 Google Inc. All Rights Reserved.",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400}"
+ },
+ {
+  "file": "Fonts/RobotoCondensed-Bold.ttf",
+  "type": "font",
+  "name": "Roboto Condensed Bold",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/robotocondensed",
+  "author": "Copyright 2011 Google Inc. All Rights Reserved.",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 700}"
+ },
+ {
+  "file": "Fonts/Inter-Regular.ttf",
+  "type": "font",
+  "name": "Inter",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/inter",
+  "author": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400, \"opsz\": 14}"
+ },
+ {
+  "file": "Fonts/Inter-SemiBold.ttf",
+  "type": "font",
+  "name": "Inter SemiBold",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/inter",
+  "author": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 600, \"opsz\": 14}"
+ },
+ {
+  "file": "Fonts/OpenSans-Regular.ttf",
+  "type": "font",
+  "name": "Open Sans",
+  "coverage": "Latin, Cyrillic, Greek, Hebrew",
+  "source": "https://github.com/google/fonts/tree/main/ofl/opensans",
+  "author": "Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400, \"wdth\": 100}"
+ },
+ {
+  "file": "Fonts/OpenSans-Bold.ttf",
+  "type": "font",
+  "name": "Open Sans Bold",
+  "coverage": "Latin, Cyrillic, Greek, Hebrew",
+  "source": "https://github.com/google/fonts/tree/main/ofl/opensans",
+  "author": "Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 700, \"wdth\": 100}"
+ },
+ {
+  "file": "Fonts/Lato-Regular.ttf",
+  "type": "font",
+  "name": "Lato",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/lato",
+  "author": "Copyright (c) 2011-2015 by tyPoland Lukasz Dziedzic (http://www.typoland.com/) with Reserved Font Name \"Lato\". Licensed under the SIL Open Font License, Version 1.1 (http://scripts.sil.org/OFL).",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Lato-Black.ttf",
+  "type": "font",
+  "name": "Lato Black",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/lato",
+  "author": "Copyright (c) 2011-2015 by tyPoland Lukasz Dziedzic (http://www.typoland.com/) with Reserved Font Name \"Lato\". Licensed under the SIL Open Font License, Version 1.1 (http://scripts.sil.org/OFL).",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Montserrat-Medium.ttf",
+  "type": "font",
+  "name": "Montserrat",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/montserrat",
+  "author": "Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 500}"
+ },
+ {
+  "file": "Fonts/Montserrat-Bold.ttf",
+  "type": "font",
+  "name": "Montserrat Bold",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/montserrat",
+  "author": "Copyright 2011 The Montserrat Project Authors (https://github.com/JulietaUla/Montserrat)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 700}"
+ },
+ {
+  "file": "Fonts/Oswald-Medium.ttf",
+  "type": "font",
+  "name": "Oswald",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/oswald",
+  "author": "Copyright 2016 The Oswald Project Authors (https://github.com/googlefonts/OswaldFont)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 500}"
+ },
+ {
+  "file": "Fonts/Poppins-Medium.ttf",
+  "type": "font",
+  "name": "Poppins",
+  "coverage": "Latin, Devanagari",
+  "source": "https://github.com/google/fonts/tree/main/ofl/poppins",
+  "author": "Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Poppins-Bold.ttf",
+  "type": "font",
+  "name": "Poppins Bold",
+  "coverage": "Latin, Devanagari",
+  "source": "https://github.com/google/fonts/tree/main/ofl/poppins",
+  "author": "Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Exo2-SemiBold.ttf",
+  "type": "font",
+  "name": "Exo 2",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/exo2",
+  "author": "Copyright 2013 The Exo 2 Project Authors (https://github.com/googlefonts/Exo-2.0)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 600}"
+ },
+ {
+  "file": "Fonts/Rajdhani-SemiBold.ttf",
+  "type": "font",
+  "name": "Rajdhani",
+  "coverage": "Latin, Devanagari",
+  "source": "https://github.com/google/fonts/tree/main/ofl/rajdhani",
+  "author": "Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Teko-Medium.ttf",
+  "type": "font",
+  "name": "Teko",
+  "coverage": "Latin, Devanagari",
+  "source": "https://github.com/google/fonts/tree/main/ofl/teko",
+  "author": "Copyright 2023 The Teko Project Authors (https://www.github.com/googlefonts/teko)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 500}"
+ },
+ {
+  "file": "Fonts/BebasNeue-Regular.ttf",
+  "type": "font",
+  "name": "Bebas Neue",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/bebasneue",
+  "author": "Copyright 2019 The Bebas Neue Project Authors (https://github.com/dharmatype/Bebas-Neue)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/BarlowCondensed-SemiBold.ttf",
+  "type": "font",
+  "name": "Barlow Condensed",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/barlowcondensed",
+  "author": "Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/SourceSans3-Regular.ttf",
+  "type": "font",
+  "name": "Source Sans 3",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/sourcesans3",
+  "author": "© 2023 Adobe (http://www.adobe.com/), with Reserved Font Name ‘Source’",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400}"
+ },
+ {
+  "file": "Fonts/NotoSans-Regular.ttf",
+  "type": "font",
+  "name": "Noto Sans",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosans",
+  "author": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400, \"wdth\": 100}"
+ },
+ {
+  "file": "Fonts/NotoSans-Bold.ttf",
+  "type": "font",
+  "name": "Noto Sans Bold",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosans",
+  "author": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 700, \"wdth\": 100}"
+ },
+ {
+  "file": "Fonts/NotoSansArabic-Regular.ttf",
+  "type": "font",
+  "name": "Noto Sans Arabic",
+  "coverage": "Arabic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosansarabic",
+  "author": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/arabic)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400, \"wdth\": 100}"
+ },
+ {
+  "file": "Fonts/Cairo-Medium.ttf",
+  "type": "font",
+  "name": "Cairo",
+  "coverage": "Arabic, Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/cairo",
+  "author": "Copyright 2009 The Cairo Project Authors (https://github.com/Gue3bara/Cairo)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 500, \"slnt\": 0}"
+ },
+ {
+  "file": "Fonts/Tajawal-Medium.ttf",
+  "type": "font",
+  "name": "Tajawal",
+  "coverage": "Arabic, Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/tajawal",
+  "author": "(c) 2017 by Boutros International. All rights reserved.",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/NotoSansSC-Regular.ttf",
+  "type": "font",
+  "name": "Noto Sans SC",
+  "coverage": "Simplified Chinese, Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosanssc",
+  "author": "(c) 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400}"
+ },
+ {
+  "file": "Fonts/NotoSansKR-Regular.ttf",
+  "type": "font",
+  "name": "Noto Sans KR",
+  "coverage": "Korean, Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosanskr",
+  "author": "(c) 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400}"
+ },
+ {
+  "file": "Fonts/NotoSansJP-Regular.ttf",
+  "type": "font",
+  "name": "Noto Sans JP",
+  "coverage": "Japanese, Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosansjp",
+  "author": "(c) 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 400}"
+ },
+ {
+  "file": "Fonts/PTSans-Regular.ttf",
+  "type": "font",
+  "name": "PT Sans",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/ptsans",
+  "author": "Copyright © 2009 ParaType Ltd. All rights reserved.",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/PTSans-Bold.ttf",
+  "type": "font",
+  "name": "PT Sans Bold",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/ptsans",
+  "author": "Copyright © 2009 ParaType Ltd. All rights reserved.",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/FiraSans-Medium.ttf",
+  "type": "font",
+  "name": "Fira Sans",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/firasans",
+  "author": "Digitized data copyright 2012-2016, The Mozilla Foundation and Telefonica S.A.",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Nunito-SemiBold.ttf",
+  "type": "font",
+  "name": "Nunito",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/nunito",
+  "author": "Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 600}"
+ },
+ {
+  "file": "Fonts/ChakraPetch-SemiBold.ttf",
+  "type": "font",
+  "name": "Chakra Petch",
+  "coverage": "Latin, Thai",
+  "source": "https://github.com/google/fonts/tree/main/ofl/chakrapetch",
+  "author": "Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Orbitron-SemiBold.ttf",
+  "type": "font",
+  "name": "Orbitron",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/orbitron",
+  "author": "Copyright 2018 The Orbitron Project Authors (https://github.com/theleagueof/orbitron), with Reserved Font Name: \"Orbitron\".",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 600}"
+ },
+ {
+  "file": "Fonts/RussoOne-Regular.ttf",
+  "type": "font",
+  "name": "Russo One",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/russoone",
+  "author": "Copyright (c) 2011-2012, Jovanny Lemonad (jovanny.ru), with Reserved Font Name \"Russo\"",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/BlackOpsOne-Regular.ttf",
+  "type": "font",
+  "name": "Black Ops One",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/blackopsone",
+  "author": "Copyright 2022 The PinyonScript Project Authors (https://github.com/SorkinType/Black-Ops)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Cinzel-SemiBold.ttf",
+  "type": "font",
+  "name": "Cinzel",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/cinzel",
+  "author": "Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 600}"
+ },
+ {
+  "file": "Fonts/Marcellus-Regular.ttf",
+  "type": "font",
+  "name": "Marcellus",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/marcellus",
+  "author": "Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved\rFont Name \"Marcellus\"",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/RobotoMono-Medium.ttf",
+  "type": "font",
+  "name": "Roboto Mono",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/robotomono",
+  "author": "Copyright 2015 The Roboto Mono Project Authors (https://github.com/googlefonts/robotomono)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 500}"
+ },
+ {
+  "file": "Fonts/JetBrainsMono-Medium.ttf",
+  "type": "font",
+  "name": "JetBrains Mono",
+  "coverage": "Latin, Cyrillic, Greek",
+  "source": "https://github.com/google/fonts/tree/main/ofl/jetbrainsmono",
+  "author": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 500}"
+ },
+ {
+  "file": "Fonts/PressStart2P-Regular.ttf",
+  "type": "font",
+  "name": "Press Start 2P",
+  "coverage": "Latin, Cyrillic",
+  "source": "https://github.com/google/fonts/tree/main/ofl/pressstart2p",
+  "author": "Copyright 2012 The Press Start 2P Project Authors (cody@zone38.net), with Reserved Font Name \"Press Start 2P\"",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Fonts/Bangers-Regular.ttf",
+  "type": "font",
+  "name": "Bangers",
+  "coverage": "Latin",
+  "source": "https://github.com/google/fonts/tree/main/ofl/bangers",
+  "author": "Copyright 2010 The Bangers Project Authors (https://github.com/googlefonts/bangers)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none"
+ },
+ {
+  "file": "Statusbar/Flat.tga",
+  "type": "statusbar",
+  "name": "Flat",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Gradient.tga",
+  "type": "statusbar",
+  "name": "Gradient",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/GradientReverse.tga",
+  "type": "statusbar",
+  "name": "Gradient Reverse",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Gloss.tga",
+  "type": "statusbar",
+  "name": "Gloss",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Smooth.tga",
+  "type": "statusbar",
+  "name": "Smooth",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Satin.tga",
+  "type": "statusbar",
+  "name": "Satin",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Glass.tga",
+  "type": "statusbar",
+  "name": "Glass",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Beveled.tga",
+  "type": "statusbar",
+  "name": "Beveled",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/InnerShadow.tga",
+  "type": "statusbar",
+  "name": "Inner Shadow",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/EdgeLight.tga",
+  "type": "statusbar",
+  "name": "Edge Light",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Striped.tga",
+  "type": "statusbar",
+  "name": "Striped",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Hatched.tga",
+  "type": "statusbar",
+  "name": "Hatched",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Ridged.tga",
+  "type": "statusbar",
+  "name": "Ridged",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Grain.tga",
+  "type": "statusbar",
+  "name": "Grain",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/GrainGradient.tga",
+  "type": "statusbar",
+  "name": "Grain Gradient",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Halftone.tga",
+  "type": "statusbar",
+  "name": "Halftone",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/MinimalLine.tga",
+  "type": "statusbar",
+  "name": "Minimal Line",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/DualTone.tga",
+  "type": "statusbar",
+  "name": "Dual Tone",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/SoftFade.tga",
+  "type": "statusbar",
+  "name": "Soft Fade",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Metal.tga",
+  "type": "statusbar",
+  "name": "Metal",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Pill.tga",
+  "type": "statusbar",
+  "name": "Pill",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Statusbar/Scanline.tga",
+  "type": "statusbar",
+  "name": "Scanline",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Solid.tga",
+  "type": "background",
+  "name": "Solid",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Noise.tga",
+  "type": "background",
+  "name": "Noise",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Carbon.tga",
+  "type": "background",
+  "name": "Carbon",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Diagonal.tga",
+  "type": "background",
+  "name": "Diagonal",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Grid.tga",
+  "type": "background",
+  "name": "Grid",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Dots.tga",
+  "type": "background",
+  "name": "Dots",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Checker.tga",
+  "type": "background",
+  "name": "Checker",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Brushed.tga",
+  "type": "background",
+  "name": "Brushed",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Waves.tga",
+  "type": "background",
+  "name": "Waves",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Plaid.tga",
+  "type": "background",
+  "name": "Plaid",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Hex.tga",
+  "type": "background",
+  "name": "Hex",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Background/Vignette.tga",
+  "type": "background",
+  "name": "Vignette",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Border/Pixel1px.tga",
+  "type": "border",
+  "name": "Pixel 1px",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Border/Pixel2px.tga",
+  "type": "border",
+  "name": "Pixel 2px",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Border/Thick3px.tga",
+  "type": "border",
+  "name": "Thick 3px",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Border/DoubleLine.tga",
+  "type": "border",
+  "name": "Double Line",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Border/SoftEdge.tga",
+  "type": "border",
+  "name": "Soft Edge",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Border/GlowEdge.tga",
+  "type": "border",
+  "name": "Glow Edge",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/SoftCircle.tga",
+  "type": "glow",
+  "name": "Soft Circle",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/HardCircle.tga",
+  "type": "glow",
+  "name": "Hard Circle",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/Ring.tga",
+  "type": "glow",
+  "name": "Ring",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/RingGlow.tga",
+  "type": "glow",
+  "name": "Ring Glow",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/SquareGlow.tga",
+  "type": "glow",
+  "name": "Square Glow",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/Spark.tga",
+  "type": "glow",
+  "name": "Spark",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/StarBurst.tga",
+  "type": "glow",
+  "name": "Star Burst",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/Diamond.tga",
+  "type": "glow",
+  "name": "Diamond",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/FadeHorizontal.tga",
+  "type": "glow",
+  "name": "Fade Horizontal",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/FadeVertical.tga",
+  "type": "glow",
+  "name": "Fade Vertical",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/CornerShadow.tga",
+  "type": "glow",
+  "name": "Corner Shadow",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Glow/Highlight.tga",
+  "type": "glow",
+  "name": "Highlight",
+  "source": "generated by .tools/media/textures.py",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "n/a"
+ },
+ {
+  "file": "Icons/crossed_swords.tga",
+  "type": "icon",
+  "name": "Crossed Swords",
+  "source": "https://game-icons.net/1x1/lorc/crossed-swords.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/shield.tga",
+  "type": "icon",
+  "name": "Shield",
+  "source": "https://game-icons.net/1x1/sbed/shield.html",
+  "author": "sbed",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/heart_plus.tga",
+  "type": "icon",
+  "name": "Heart Plus",
+  "source": "https://game-icons.net/1x1/zeromancer/heart-plus.html",
+  "author": "zeromancer",
+  "licence": "CC0 1.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/fire_ring.tga",
+  "type": "icon",
+  "name": "Fire Ring",
+  "source": "https://game-icons.net/1x1/lorc/fire-ring.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/snowflake_1.tga",
+  "type": "icon",
+  "name": "Snowflake 1",
+  "source": "https://game-icons.net/1x1/lorc/snowflake-1.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/poison_bottle.tga",
+  "type": "icon",
+  "name": "Poison Bottle",
+  "source": "https://game-icons.net/1x1/lorc/poison-bottle.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/crown.tga",
+  "type": "icon",
+  "name": "Crown",
+  "source": "https://game-icons.net/1x1/lorc/crown.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/hourglass.tga",
+  "type": "icon",
+  "name": "Hourglass",
+  "source": "https://game-icons.net/1x1/lorc/hourglass.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/stopwatch.tga",
+  "type": "icon",
+  "name": "Stopwatch",
+  "source": "https://game-icons.net/1x1/lorc/stopwatch.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/alarm_clock.tga",
+  "type": "icon",
+  "name": "Alarm Clock",
+  "source": "https://game-icons.net/1x1/delapouite/alarm-clock.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/trophy_cup.tga",
+  "type": "icon",
+  "name": "Trophy Cup",
+  "source": "https://game-icons.net/1x1/delapouite/trophy-cup.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/sword_wound.tga",
+  "type": "icon",
+  "name": "Sword Wound",
+  "source": "https://game-icons.net/1x1/lorc/sword-wound.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/bleeding_wound.tga",
+  "type": "icon",
+  "name": "Bleeding Wound",
+  "source": "https://game-icons.net/1x1/lorc/bleeding-wound.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/health_potion.tga",
+  "type": "icon",
+  "name": "Health Potion",
+  "source": "https://game-icons.net/1x1/delapouite/health-potion.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/magic_swirl.tga",
+  "type": "icon",
+  "name": "Magic Swirl",
+  "source": "https://game-icons.net/1x1/lorc/magic-swirl.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/sun.tga",
+  "type": "icon",
+  "name": "Sun",
+  "source": "https://game-icons.net/1x1/lorc/sun.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/moon.tga",
+  "type": "icon",
+  "name": "Moon",
+  "source": "https://game-icons.net/1x1/lorc/moon.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/stars_stack.tga",
+  "type": "icon",
+  "name": "Stars Stack",
+  "source": "https://game-icons.net/1x1/delapouite/stars-stack.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/eye_target.tga",
+  "type": "icon",
+  "name": "Eye Target",
+  "source": "https://game-icons.net/1x1/delapouite/eye-target.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/target_arrows.tga",
+  "type": "icon",
+  "name": "Target Arrows",
+  "source": "https://game-icons.net/1x1/lorc/target-arrows.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/radar_sweep.tga",
+  "type": "icon",
+  "name": "Radar Sweep",
+  "source": "https://game-icons.net/1x1/lorc/radar-sweep.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/cog.tga",
+  "type": "icon",
+  "name": "Cog",
+  "source": "https://game-icons.net/1x1/lorc/cog.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/gears.tga",
+  "type": "icon",
+  "name": "Gears",
+  "source": "https://game-icons.net/1x1/lorc/gears.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/padlock.tga",
+  "type": "icon",
+  "name": "Padlock",
+  "source": "https://game-icons.net/1x1/lorc/padlock.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/open_book.tga",
+  "type": "icon",
+  "name": "Open Book",
+  "source": "https://game-icons.net/1x1/lorc/open-book.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/scroll_unfurled.tga",
+  "type": "icon",
+  "name": "Scroll Unfurled",
+  "source": "https://game-icons.net/1x1/lorc/scroll-unfurled.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/treasure_map.tga",
+  "type": "icon",
+  "name": "Treasure Map",
+  "source": "https://game-icons.net/1x1/lorc/treasure-map.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/compass.tga",
+  "type": "icon",
+  "name": "Compass",
+  "source": "https://game-icons.net/1x1/lorc/compass.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/flag_objective.tga",
+  "type": "icon",
+  "name": "Flag Objective",
+  "source": "https://game-icons.net/1x1/delapouite/flag-objective.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/checked_shield.tga",
+  "type": "icon",
+  "name": "Checked Shield",
+  "source": "https://game-icons.net/1x1/lorc/checked-shield.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/broken_shield.tga",
+  "type": "icon",
+  "name": "Broken Shield",
+  "source": "https://game-icons.net/1x1/lorc/broken-shield.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/halt.tga",
+  "type": "icon",
+  "name": "Halt",
+  "source": "https://game-icons.net/1x1/skoll/halt.html",
+  "author": "skoll",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/chat_bubble.tga",
+  "type": "icon",
+  "name": "Chat Bubble",
+  "source": "https://game-icons.net/1x1/delapouite/chat-bubble.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/speaker.tga",
+  "type": "icon",
+  "name": "Speaker",
+  "source": "https://game-icons.net/1x1/delapouite/speaker.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/music_spell.tga",
+  "type": "icon",
+  "name": "Music Spell",
+  "source": "https://game-icons.net/1x1/lorc/music-spell.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/bell_shield.tga",
+  "type": "icon",
+  "name": "Bell Shield",
+  "source": "https://game-icons.net/1x1/lorc/bell-shield.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/beer_stein.tga",
+  "type": "icon",
+  "name": "Beer Stein",
+  "source": "https://game-icons.net/1x1/lorc/beer-stein.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/potion_ball.tga",
+  "type": "icon",
+  "name": "Potion Ball",
+  "source": "https://game-icons.net/1x1/lorc/potion-ball.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/crystal_ball.tga",
+  "type": "icon",
+  "name": "Crystal Ball",
+  "source": "https://game-icons.net/1x1/lorc/crystal-ball.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/diamond_hard.tga",
+  "type": "icon",
+  "name": "Diamond Hard",
+  "source": "https://game-icons.net/1x1/lorc/diamond-hard.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/gold_bar.tga",
+  "type": "icon",
+  "name": "Gold Bar",
+  "source": "https://game-icons.net/1x1/willdabeast/gold-bar.html",
+  "author": "willdabeast",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/coins.tga",
+  "type": "icon",
+  "name": "Coins",
+  "source": "https://game-icons.net/1x1/delapouite/coins.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/backpack.tga",
+  "type": "icon",
+  "name": "Backpack",
+  "source": "https://game-icons.net/1x1/delapouite/backpack.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/anvil.tga",
+  "type": "icon",
+  "name": "Anvil",
+  "source": "https://game-icons.net/1x1/lorc/anvil.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/hammer_drop.tga",
+  "type": "icon",
+  "name": "Hammer Drop",
+  "source": "https://game-icons.net/1x1/lorc/hammer-drop.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/bow_arrow.tga",
+  "type": "icon",
+  "name": "Bow Arrow",
+  "source": "https://game-icons.net/1x1/delapouite/bow-arrow.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/wizard_staff.tga",
+  "type": "icon",
+  "name": "Wizard Staff",
+  "source": "https://game-icons.net/1x1/lorc/wizard-staff.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/dragon_head.tga",
+  "type": "icon",
+  "name": "Dragon Head",
+  "source": "https://game-icons.net/1x1/faithtoken/dragon-head.html",
+  "author": "faithtoken",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/wolf_head.tga",
+  "type": "icon",
+  "name": "Wolf Head",
+  "source": "https://game-icons.net/1x1/lorc/wolf-head.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/eagle_emblem.tga",
+  "type": "icon",
+  "name": "Eagle Emblem",
+  "source": "https://game-icons.net/1x1/lorc/eagle-emblem.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/flame.tga",
+  "type": "icon",
+  "name": "Flame",
+  "source": "https://game-icons.net/1x1/carl-olsen/flame.html",
+  "author": "carl-olsen",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/dripping_sword.tga",
+  "type": "icon",
+  "name": "Dripping Sword",
+  "source": "https://game-icons.net/1x1/lorc/dripping-sword.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/run.tga",
+  "type": "icon",
+  "name": "Run",
+  "source": "https://game-icons.net/1x1/lorc/run.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/sprint.tga",
+  "type": "icon",
+  "name": "Sprint",
+  "source": "https://game-icons.net/1x1/lorc/sprint.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/person.tga",
+  "type": "icon",
+  "name": "Person",
+  "source": "https://game-icons.net/1x1/delapouite/person.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/cancel.tga",
+  "type": "icon",
+  "name": "Cancel",
+  "source": "https://game-icons.net/1x1/sbed/cancel.html",
+  "author": "sbed",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/check_mark.tga",
+  "type": "icon",
+  "name": "Check Mark",
+  "source": "https://game-icons.net/1x1/delapouite/check-mark.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/info.tga",
+  "type": "icon",
+  "name": "Info",
+  "source": "https://game-icons.net/1x1/delapouite/info.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/arrow_dunk.tga",
+  "type": "icon",
+  "name": "Arrow Dunk",
+  "source": "https://game-icons.net/1x1/lorc/arrow-dunk.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/pin.tga",
+  "type": "icon",
+  "name": "Pin",
+  "source": "https://game-icons.net/1x1/delapouite/pin.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/aura.tga",
+  "type": "icon",
+  "name": "Aura",
+  "source": "https://game-icons.net/1x1/lorc/aura.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/bolt_shield.tga",
+  "type": "icon",
+  "name": "Bolt Shield",
+  "source": "https://game-icons.net/1x1/lorc/bolt-shield.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/spell_book.tga",
+  "type": "icon",
+  "name": "Spell Book",
+  "source": "https://game-icons.net/1x1/delapouite/spell-book.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/heart_shield.tga",
+  "type": "icon",
+  "name": "Heart Shield",
+  "source": "https://game-icons.net/1x1/delapouite/heart-shield.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/fist.tga",
+  "type": "icon",
+  "name": "Fist",
+  "source": "https://game-icons.net/1x1/lorc/fist.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/mailed_fist.tga",
+  "type": "icon",
+  "name": "Mailed Fist",
+  "source": "https://game-icons.net/1x1/lorc/mailed-fist.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/ninja_mask.tga",
+  "type": "icon",
+  "name": "Ninja Mask",
+  "source": "https://game-icons.net/1x1/lorc/ninja-mask.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/hood.tga",
+  "type": "icon",
+  "name": "Hood",
+  "source": "https://game-icons.net/1x1/lorc/hood.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/archer.tga",
+  "type": "icon",
+  "name": "Archer",
+  "source": "https://game-icons.net/1x1/delapouite/archer.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/pointy_hat.tga",
+  "type": "icon",
+  "name": "Pointy Hat",
+  "source": "https://game-icons.net/1x1/lorc/pointy-hat.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/wizard_face.tga",
+  "type": "icon",
+  "name": "Wizard Face",
+  "source": "https://game-icons.net/1x1/delapouite/wizard-face.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/hooded_assassin.tga",
+  "type": "icon",
+  "name": "Hooded Assassin",
+  "source": "https://game-icons.net/1x1/darkzaitzev/hooded-assassin.html",
+  "author": "darkzaitzev",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/visored_helm.tga",
+  "type": "icon",
+  "name": "Visored Helm",
+  "source": "https://game-icons.net/1x1/lorc/visored-helm.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/rose.tga",
+  "type": "icon",
+  "name": "Rose",
+  "source": "https://game-icons.net/1x1/lorc/rose.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/skull_crossed_bones.tga",
+  "type": "icon",
+  "name": "Skull Crossed Bones",
+  "source": "https://game-icons.net/1x1/lorc/skull-crossed-bones.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/death_skull.tga",
+  "type": "icon",
+  "name": "Death Skull",
+  "source": "https://game-icons.net/1x1/sbed/death-skull.html",
+  "author": "sbed",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/ghost.tga",
+  "type": "icon",
+  "name": "Ghost",
+  "source": "https://game-icons.net/1x1/lorc/ghost.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/key.tga",
+  "type": "icon",
+  "name": "Key",
+  "source": "https://game-icons.net/1x1/lorc/key.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/locked_chest.tga",
+  "type": "icon",
+  "name": "Locked Chest",
+  "source": "https://game-icons.net/1x1/lorc/locked-chest.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/world.tga",
+  "type": "icon",
+  "name": "World",
+  "source": "https://game-icons.net/1x1/lorc/world.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/castle.tga",
+  "type": "icon",
+  "name": "Castle",
+  "source": "https://game-icons.net/1x1/delapouite/castle.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/tower_flag.tga",
+  "type": "icon",
+  "name": "Tower Flag",
+  "source": "https://game-icons.net/1x1/delapouite/tower-flag.html",
+  "author": "delapouite",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/campfire.tga",
+  "type": "icon",
+  "name": "Campfire",
+  "source": "https://game-icons.net/1x1/lorc/campfire.html",
+  "author": "lorc",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Icons/hearts.tga",
+  "type": "icon",
+  "name": "Hearts",
+  "source": "https://game-icons.net/1x1/skoll/hearts.html",
+  "author": "skoll",
+  "licence": "CC BY 3.0",
+  "changes": "rendered white on transparent, 64x64 TGA"
+ },
+ {
+  "file": "Sounds/KIS_back_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Back 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_back_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Back 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_back_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Back 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_back_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Back 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_bong_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Bong 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_click_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Click 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_click_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Click 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_click_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Click 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_click_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Click 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_click_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Click 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_close_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Close 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_close_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Close 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_close_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Close 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_close_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Close 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_confirmation_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Confirmation 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_confirmation_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Confirmation 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_confirmation_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Confirmation 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_confirmation_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Confirmation 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_drop_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Drop 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_drop_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Drop 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_drop_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Drop 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_drop_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Drop 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_006.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 6",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_007.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 7",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_error_008.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Error 8",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glass_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glass 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glass_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glass 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glass_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glass 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glass_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glass 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glass_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glass 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glass_006.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glass 6",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glitch_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glitch 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glitch_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glitch 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glitch_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glitch 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_glitch_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Glitch 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_006.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 6",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_007.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 7",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_008.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 8",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_maximize_009.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Maximize 9",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_006.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 6",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_007.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 7",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_008.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 8",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_minimize_009.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Minimize 9",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_open_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Open 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_open_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Open 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_open_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Open 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_open_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Open 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_pluck_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Pluck 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_pluck_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Pluck 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_question_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Question 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_question_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Question 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_question_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Question 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_question_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Question 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scratch_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scratch 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scratch_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scratch 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scratch_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scratch 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scratch_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scratch 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scratch_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scratch 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scroll_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scroll 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scroll_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scroll 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scroll_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scroll 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scroll_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scroll 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_scroll_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Scroll 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_006.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 6",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_007.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 7",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_select_008.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Select 8",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_switch_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Switch 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_switch_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Switch 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_switch_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Switch 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_switch_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Switch 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_switch_005.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Switch 5",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_switch_006.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Switch 6",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_switch_007.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Switch 7",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_tick_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Tick 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_tick_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Tick 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_tick_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Tick 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_toggle_001.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Toggle 1",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_toggle_002.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Toggle 2",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_toggle_003.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Toggle 3",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KIS_toggle_004.ogg",
+  "type": "sound",
+  "name": "Interface Sounds: Toggle 4",
+  "source": "https://kenney.nl/assets/interface-sounds",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_click1.ogg",
+  "type": "sound",
+  "name": "UI Audio: Click 1",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_click2.ogg",
+  "type": "sound",
+  "name": "UI Audio: Click 2",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_click3.ogg",
+  "type": "sound",
+  "name": "UI Audio: Click 3",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_click4.ogg",
+  "type": "sound",
+  "name": "UI Audio: Click 4",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_click5.ogg",
+  "type": "sound",
+  "name": "UI Audio: Click 5",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_mouseclick1.ogg",
+  "type": "sound",
+  "name": "UI Audio: Mouseclick 1",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_mouserelease1.ogg",
+  "type": "sound",
+  "name": "UI Audio: Mouserelease 1",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_rollover1.ogg",
+  "type": "sound",
+  "name": "UI Audio: Rollover 1",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_rollover2.ogg",
+  "type": "sound",
+  "name": "UI Audio: Rollover 2",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_rollover3.ogg",
+  "type": "sound",
+  "name": "UI Audio: Rollover 3",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_rollover4.ogg",
+  "type": "sound",
+  "name": "UI Audio: Rollover 4",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_rollover5.ogg",
+  "type": "sound",
+  "name": "UI Audio: Rollover 5",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_rollover6.ogg",
+  "type": "sound",
+  "name": "UI Audio: Rollover 6",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch1.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 1",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch10.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 10",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch11.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 11",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch12.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 12",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch2.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 2",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch3.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 3",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch4.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 4",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch5.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 5",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch6.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 6",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch7.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 7",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch8.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 8",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KUI_switch9.ogg",
+  "type": "sound",
+  "name": "UI Audio: Switch 9",
+  "source": "https://kenney.nl/assets/ui-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookClose.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Close",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookFlip1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Flip 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookFlip2.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Flip 2",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookFlip3.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Flip 3",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookOpen.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Open",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookPlace1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Place 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookPlace2.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Place 2",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_bookPlace3.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Book Place 3",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_chop.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Chop",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_cloth1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Cloth 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_creak1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Creak 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_doorClose_1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Door Close 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_doorOpen_1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Door Open 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_drawKnife1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Draw Knife 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_handleCoins.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Handle Coins",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_handleCoins2.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Handle Coins 2",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_knifeSlice.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Knife Slice",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_metalClick.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Metal Click",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_metalLatch.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Metal Latch",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ },
+ {
+  "file": "Sounds/KRPG_metalPot1.ogg",
+  "type": "sound",
+  "name": "RPG Audio: Metal Pot 1",
+  "source": "https://kenney.nl/assets/rpg-audio",
+  "author": "Kenney (kenney.nl)",
+  "licence": "CC0 1.0",
+  "changes": "renamed"
+ }
+]

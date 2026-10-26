@@ -13,6 +13,7 @@ Checks every Lua file and TOC in the repository:
   api          C_* calls exist in Data/ApiCatalog.json for live; Forever-missing ones must be IS_FOREVER-gated
   media        every Interface/AddOns/Phoenix_UI* media path exists
   ascii        ASCII only outside Locales/
+  mediamanifest every Phoenix_UI_Media file has a manifest entry with an allowed licence; TGAs power-of-two
   toc          Interface 120100/120105/16001, Author VortexQ8, listed files exist
 
 Exception tag: "-- guardrails-allow: <check> YYYY-MM-DD approver=<name> reason=<text>" on the line above.
@@ -189,6 +190,19 @@ def check_files(root, files, rep, catalog):
                 rep.add("pcall", "%s:%d" % (luascan.rel(f, root), ln), "malformed exception tag (needs check, date, approver, reason)")
 
 
+def check_media_manifest(root, rep):
+    rep.ran("mediamanifest")
+    if not os.path.isdir(os.path.join(root, "Phoenix_UI_Media")):
+        return
+    sys.path.insert(0, os.path.join(root, ".tools", "media"))
+    import importlib
+    mm = importlib.import_module("manifest")
+    mm.CHILD = os.path.join(root, "Phoenix_UI_Media"); mm.MEDIA = os.path.join(mm.CHILD, "Media"); mm.MANIFEST = os.path.join(mm.CHILD, "manifest.json")
+    problems, _ = mm.check()
+    for p in problems:
+        rep.add("mediamanifest", "Phoenix_UI_Media", p)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=luascan.ROOT)
@@ -201,6 +215,7 @@ def main():
     check_compile_and_limits(root, files, rep)
     check_toc(root, rep)
     check_files(root, files, rep, catalog)
+    check_media_manifest(root, rep)
     if catalog is None and files:
         rep.add("api", "Data/ApiCatalog.json", "missing (run .tools/api_catalog.py)")
     by = {}

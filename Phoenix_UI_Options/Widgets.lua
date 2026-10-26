@@ -124,6 +124,39 @@ function build.text(row)
 end
 
 -- Select popup (one level only, PUI_V2 18.2) ------------------------------------
+-- Long lists wrap into columns. Media pickers preview their entry: fonts render
+-- in their own face, bar textures show a strip, sounds play on hover.
+local POPUP_ROWS = 20
+local previewFonts = {}
+
+function Widgets.Preview(b, def, value)
+  local kind = def.preview
+  if b.strip then b.strip:Hide() end
+  b.label:SetFontObject(Media:FontObject("small"))
+  b.previewSound = nil
+  if kind == "font" then
+    local path = Media:Font(value)
+    local obj = previewFonts[path]
+    if not obj then
+      obj = CreateFont("PhoenixUIPreviewFont" .. (#Media.fontOrder + 1) .. "_" .. tostring(value):gsub("%W", ""))
+      obj:SetFont(path, 12, "")
+      previewFonts[path] = obj
+    end
+    b.label:SetFontObject(obj)
+  elseif kind == "statusbar" then
+    if not b.strip then
+      b.strip = b:CreateTexture(nil, "ARTWORK")
+      b.strip:SetPoint("TOPLEFT", 2, -2)
+      b.strip:SetPoint("BOTTOMRIGHT", -2, 2)
+      b.strip:SetVertexColor(0.35, 0.55, 0.85, 0.85)
+    end
+    b.strip:SetTexture(Media:Path("statusbar", value) or Media:Texture(value))
+    b.strip:Show()
+  elseif kind == "sound" then
+    b.previewSound = value
+  end
+end
+
 local popup
 function Widgets.OpenChoices(anchor, key)
   local def = Schema:Def(key)
@@ -142,20 +175,25 @@ function Widgets.OpenChoices(anchor, key)
     if i <= #choices then
       if not b then
         b = Widgets.Button(popup, "", 176, nil)
-        b:SetPoint("TOPLEFT", 2, -2 - (i - 1) * 22)
+        local col, rowi = math.floor((i - 1) / POPUP_ROWS), (i - 1) % POPUP_ROWS
+        b:SetPoint("TOPLEFT", 2 + col * 178, -2 - rowi * 22)
+        b:HookScript("OnEnter", function(self) if self.previewSound then Media:PlaySound(self.previewSound) end end)
         popup.buttons[i] = b
       end
       local value = choices[i]
       b:SetLabel(Model.Format(def, value) .. (value == Schema:Get(key) and "  *" or ""))
+      Widgets.Preview(b, def, value)
       b:SetScript("OnClick", function() popup:Hide(); Model.Commit(key, value) end)
       b:Show()
     elseif b then
       b:Hide()
     end
   end
-  popup:SetSize(180, #choices * 22 + 4)
+  local cols = math.max(1, math.ceil(#choices / POPUP_ROWS))
+  popup:SetSize(cols * 178 + 2, math.min(#choices, POPUP_ROWS) * 22 + 4)
   popup:ClearAllPoints()
   popup:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, -2)
+  popup:SetClampedToScreen(true)
   popup:Show()
   Widgets.popup = popup
 end

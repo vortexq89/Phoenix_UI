@@ -191,7 +191,7 @@ PUI.ApiManifest = {
     ["OpenAllBags"] = { owners = { "Vault" } },
     ["PickupAction"] = { owners = { "ActionBars" } },
     ["PlaceAction"] = { owners = { "ActionBars" } },
-    ["PlaySound"] = { owners = { "Ascent", "Chat", "Flow", "GroupFinder", "Loadouts", "QuestTracker", "Reminders" } },
+    ["PlaySound"] = { owners = { "Ascent", "Chat", "Core", "Flow", "Loadouts", "Media" } },
     ["QuestMapFrame_OpenToQuestDetails"] = { owners = { "QuestTracker" } },
     ["RegisterStateDriver"] = { owners = { "ActionBars", "RaidFrames", "UnitFrames" } },
     ["RegisterUnitWatch"] = { owners = { "UnitFrames" } },

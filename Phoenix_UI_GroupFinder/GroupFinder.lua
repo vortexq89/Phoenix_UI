@@ -154,7 +154,7 @@ function GF.OnResults()
       if d and d.fits and not GF.Dimmed(d) then fresh = true end
     end
   end
-  if fresh and GF.primed then PlaySound(SOUNDKIT.RAID_WARNING) end
+  if fresh and GF.primed then PUI.Media:Alert(SOUNDKIT.RAID_WARNING) end
   GF.primed = true
 end
 

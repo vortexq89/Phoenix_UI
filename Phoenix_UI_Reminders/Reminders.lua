@@ -124,7 +124,7 @@ function RM.Show(out)
       end
     end
   end
-  if newCount > 0 and s.sound then PlaySound(SOUNDKIT.RAID_WARNING) end
+  if newCount > 0 and s.sound then PUI.Media:Alert(SOUNDKIT.RAID_WARNING) end
   RM.missing = out
 end
 
