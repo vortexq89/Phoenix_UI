@@ -124,6 +124,7 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 ### 1.S Settings model for every module (EllesmereUI-style live preview — user direction t53u)
 - Every setting applies live, with no /reload. A key that can't be live-applied can't exist (G25).
 - Every page opens with a **live preview drawn by the module's real paint code**, fed fixed sample values (fake roster, cycling auras, sample casts, sample numbers). No second preview implementation.
+- **Every design choice is a user setting (D-MOD-DEF, user direction t71u):** each look, layout or behaviour shown in a mockup is a setting with Simple and Advanced options; defaults are only first-install starting points, never fixed design.
 - **Simple first, advanced expandable**: the common rows show by default; depth sits behind a per-row cog or an "Advanced" expander.
 - **No code required, ever.** Wherever a power-user expression or raw tag exists, a visual builder produces it (tag chips, filter builder, trigger builder, rule rows).
 - Every disabled control says why; every feature has its own reset; changed values show a reset dot and tint.
@@ -1244,6 +1245,7 @@ Source: `pui_study/others/RetailUI_MERGED.md` (feature by feature: Blizzard API 
 | D-RETAIL-REF | Where to get a retail 12.x reference (Blizzard UI source + generated API docs) for the LuaLS workspace and guardrail data? | **Decided 2026-10-26:** the Blizzard interface export from your own retail client (12.1.0+, 4,022 files), staged read-only and studied (§19); generated lists in `retail_ref/`. Later sources if needed: warcraft.wiki.gg 12.0.1–12.1.7 API pages, wago.tools. |
 | D-AURA-OWNER | Who owns `CustomAuraContainer`? | **Decided 2026-10-26:** the Auras module (PUI.Auras). Private-aura container anchors are an option for raid frames, configured through PUI.Auras (§1.O). |
 | D-SET-UI | Settings panel mockups (7 screens): auto profile switching default, per-page Arena filter, floating vs docked panel? | **Decided 2026-10-26:** auto profile switching by content (Raid, Arena, Mythic+) on by default; no per-page Arena filter, arena options stay under Combat/Arena; floating window as in the mockups (§1.S). Mockups await final approval. |
+| D-MOD-DEF | Module mockups batch 1 (5 screens): default unit-frame style, friendly plates in instances, arena DR tray position? | **Decided 2026-10-26:** every design choice is a user setting (Simple + Advanced), defaults are first-install only (§1.S). Unit frames default Ember, Glass and other looks selectable; arena DR tray default right of the trinket, adjustable (right, left, under cast bar, free offset); friendly plates name-only vs health bars per content (open world, dungeon, raid, arena, battleground), each switchable. |
 | D-MOCK | Mockups for every new page (Cast History, Diagnostics, profiler, ledger page, visibility picker, filter builder) before UI code. | Required by standing rule. |
 
 ## 14. Appendix — current schema keys by owner (448)
