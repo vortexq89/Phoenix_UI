@@ -20,23 +20,33 @@ P.MANAGED = { "UnitFrames", "RaidFrames", "ClickCast", "Nameplates", "ActionBars
 
 -- Layout presets: Studio positions (relative to UIParent) for the main elements.
 P.LAYOUTS = {
-  phoenix = { label = "Phoenix", positions = {} },
-  centered = { label = "Centered", positions = {
-    ["uf.player"] = { point = "CENTER", x = -220, y = -160 },
-    ["uf.target"] = { point = "CENTER", x = 220, y = -160 },
-    ["rb.stack"] = { point = "CENTER", x = 0, y = -210 },
-    ["cdm.essential"] = { point = "CENTER", x = 0, y = -250 },
-    ["cdm.utility"] = { point = "CENTER", x = 0, y = -295 },
-  } },
-  healer = { label = "Healer", positions = {
+  classic = { label = "Ember Classic", badge = "Popular", art = "classic",
+    desc = "Familiar layout, cleaner. Frames left and right of centre.", positions = {} },
+  healer = { label = "Healer Focus", badge = "Recommended", art = "healer",
+    desc = "Raid grid at centre, player and target flanking it.", positions = {
     ["rf.party"] = { point = "CENTER", x = 0, y = -230 },
     ["rf.raid"] = { point = "CENTER", x = 0, y = -230 },
     ["uf.player"] = { point = "CENTER", x = -330, y = -120 },
     ["uf.target"] = { point = "CENTER", x = 330, y = -120 },
     ["cdm.essential"] = { point = "CENTER", x = 0, y = -140 },
   } },
+  minimal = { label = "Minimal Ash", badge = "Clean", art = "minimal",
+    desc = "Everything compact under your character.", positions = {
+    ["uf.player"] = { point = "CENTER", x = -160, y = -150 },
+    ["uf.target"] = { point = "CENTER", x = 160, y = -150 },
+    ["rb.stack"] = { point = "CENTER", x = 0, y = -195 },
+    ["cdm.essential"] = { point = "CENTER", x = 0, y = -235 },
+    ["cdm.utility"] = { point = "CENTER", x = 0, y = -278 },
+  } },
 }
-P.LAYOUT_ORDER = { "phoenix", "centered", "healer" }
+P.LAYOUT_ORDER = { "classic", "healer", "minimal" }
+-- Roles the wizard offers as cards (design step 3); pvp/minimal stay for /pui.
+P.WIZARD_ROLES = { "healer", "tank", "dps" }
+P.ROLE_TEXT = {
+  healer = "Raid frames centred, dispel highlights, mana focus",
+  tank = "Threat on plates, defensives tracked, big target frame",
+  dps = "Cast bars, procs and cooldowns in your eye line",
+}
 
 -- Looks: accent colour and whether Blizzard windows get Phoenix skins.
 P.LOOKS = {

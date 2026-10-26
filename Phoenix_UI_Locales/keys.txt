@@ -457,6 +457,7 @@ Marks items that beat what you wear with a star.
 Marks the group leader.
 Marks units related to one of your active quests.
 Marks upgrades in Phoenix bags (Vault).
+Material of Phoenix UI windows: Obsidian Glass, Charcoal Solid or Ash Light.
 Max camera distance
 Merchant
 Meter type
@@ -830,6 +831,7 @@ Width of the pet frame in pixels.
 Width of the player frame in pixels.
 Width of the target frame in pixels.
 Width of the target of target frame in pixels.
+Window panels
 Wisdom
 Writes the buff name under each icon.
 Writes the item level on equippable items.
