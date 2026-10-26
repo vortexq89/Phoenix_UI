@@ -18,12 +18,12 @@ end
 -- A StatusBar with a background, painted fill and the current bar texture.
 function Bars:Create(parent, owner, layer)
   local bar = PUI:CreateFrame("StatusBar", nil, parent, nil, owner)
-  bar:SetStatusBarTexture(Media:Texture(self.texture))
+  bar:SetStatusBarTexture(Bars:TexturePath())
   bar:SetMinMaxValues(0, 1)
   bar:SetValue(0)
   local bg = bar:CreateTexture(nil, layer or "BACKGROUND")
   bg:SetAllPoints()
-  bg:SetTexture(Media:Texture(self.texture))
+  bg:SetTexture(Bars:TexturePath())
   bar.bg = bg
   self:SetBackground(bar)
   self.all[bar] = true
@@ -90,8 +90,10 @@ function Bars.PowerColor(bar, unit)
   if c then bar:SetStatusBarColor(c.r, c.g, c.b) else Bars.TokenColor(bar, "accent") end
 end
 
+function Bars:TexturePath() return Media:Path("statusbar", self.texture) or Media:Texture(self.texture) end
+
 function Bars:Retexture()
-  local path = Media:Texture(self.texture)
+  local path = Bars:TexturePath()
   for bar in pairs(self.all) do
     bar:SetStatusBarTexture(path)
     bar.bg:SetTexture(path)
@@ -104,10 +106,11 @@ Bars.texture = "flat"
 Bars.backgroundAlpha = 0.6
 
 Media:RegisterTexture("smooth", "Interface\\TargetingFrame\\UI-StatusBar")
-Bars.TEXTURES = { "flat", "smooth" }
+Media:Register("statusbar", "smooth", "Interface\\TargetingFrame\\UI-StatusBar")
+Bars.TEXTURES = function() return Media:List("statusbar") end
 
 PUI.Schema:Register("bars.texture", {
-  type = "select", default = "flat", choices = Bars.TEXTURES,
+  type = "select", default = "flat", choices = Bars.TEXTURES, preview = "statusbar",
   label = "Bar texture", tooltip = "Texture for every Phoenix health, power, cast and resource bar.",
   mode = "simple", owner = "Theme", searchTags = { "texture", "bars" },
   apply = function(value)

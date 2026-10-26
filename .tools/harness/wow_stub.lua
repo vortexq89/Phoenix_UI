@@ -572,6 +572,7 @@ UIErrorsFrame = CreateFrame("MessageFrame", "UIErrorsFrame", UIParent)
 C_PartyInfo = { DoCountdown = call("DoCountdown") }
 SOUNDKIT.RAID_WARNING = 8959
 SOUNDKIT.IG_QUEST_LIST_COMPLETE = 878
+PlaySoundFile = function() return true end
 H.quests = {}
 H.questLog = {}
 C_QuestLog.GetNumQuestWatches = function() return #H.quests end

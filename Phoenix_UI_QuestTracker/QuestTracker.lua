@@ -194,7 +194,7 @@ function QT.CheckCompletions()
     local id = C_QuestLog.GetQuestIDForQuestWatchIndex(i)
     if id then
       local done = C_QuestLog.IsComplete(id) and true or false
-      if done and QT.complete[id] == false and s.sound then PlaySound(SOUNDKIT.IG_QUEST_LIST_COMPLETE) end
+      if done and QT.complete[id] == false and s.sound then PUI.Media:Alert(SOUNDKIT.IG_QUEST_LIST_COMPLETE) end
       QT.complete[id] = done
     end
   end

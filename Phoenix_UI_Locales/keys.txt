@@ -27,6 +27,7 @@ Adds the player's current Mythic+ score.
 Adds the spell or item ID line.
 Adventure Guide
 Aggro border
+Alert sound
 All bags in one window with search, sort, item levels and junk selling.
 All tracked quests, only those in progress, or only those ready to turn in.
 Allow Sentinel reports to leave this computer (export string and Companion upload). Nothing is shared while off.
@@ -426,6 +427,7 @@ Lays out the game's Cooldown Viewer icons and bars in Phoenix rows (the game sti
 Leader icon
 Leader score
 Leader scores, missing roles, role fit and declined memory in the group finder. Stands down when Premade Groups Filter is loaded.
+Lists Phoenix fonts, textures and sounds in other addons' pickers (LibSharedMedia), when one of them loads it.
 Lists what you picked recently first when the search is empty.
 Loadouts
 Local time under the minimap.
@@ -651,6 +653,7 @@ Sentinel notice
 Settings
 Settings profile used by this character. Switching applies every setting immediately.
 Share diagnostics
+Share with other addons
 Short channel names
 Show
 Show Studio grid
@@ -721,6 +724,7 @@ Smooth resource bars
 Snap to grid
 Sort quests by
 Sound
+Sound for Phoenix alerts (reminders, group finder, quest complete). None keeps each module's own sound.
 Spacing of the Studio pixel grid, in UI pixels.
 Spec, talent loadout and gear set per kind of content, checked when you zone in.
 Spell and item IDs
