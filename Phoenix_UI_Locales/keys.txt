@@ -695,7 +695,7 @@ Shows macro names on action buttons.
 Shows predicted incoming heals after the health fill.
 Shows raid buffs someone in your group can give that you are missing.
 Shows raid target markers beside plates.
-Shows the Phoenix UI button on the minimap edge. Left-click opens options, right-click opens Studio, drag to move.
+Shows the Phoenix UI button on the minimap edge. Left-click opens options, right-click opens Studio, Shift-click opens Sentinel, drag to move.
 Shows the PvP flag icon on unit frames.
 Shows the bound key on each action button.
 Shows the cast bar in the resource stack.

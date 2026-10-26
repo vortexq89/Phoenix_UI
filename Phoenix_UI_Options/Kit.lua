@@ -267,6 +267,18 @@ function Kit.Segmented(parent, choices, labels, onPick)
     f.buttons[i] = b
   end
   f:SetWidth(x + 1)
+  function f:SetLabels(list)
+    local cx = 3
+    for i, b in ipairs(self.buttons) do
+      b.text:SetText(list[i] or "")
+      local w = math.max(48, (b.text:GetStringWidth() or 0) + 26)
+      b:SetWidth(w)
+      b:ClearAllPoints()
+      b:SetPoint("LEFT", cx, 0)
+      cx = cx + w + 2
+    end
+    self:SetWidth(cx + 1)
+  end
   function f:SetValue_(value)
     for _, b in ipairs(self.buttons) do
       local on = b.value == value

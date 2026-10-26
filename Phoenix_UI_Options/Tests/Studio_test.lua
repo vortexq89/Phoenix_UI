@@ -49,6 +49,35 @@ Tests:Add("Studio", "refused in combat; save writes only moved elements; exit di
   t:same(f.point, { "TOP", 100, -50 }, "element at the saved position")
 end)
 
+Tests:Add("Studio", "toolbar filter, grid cycle, inspector fields and mirror", function(t)
+  Tests.LayoutElement(t, "tests.box")
+  local probe = CQ.InCombat
+  local grid, show = Schema:Get("studio.gridSize"), Schema:Get("studio.showGrid")
+  t:cleanup(function()
+    CQ.InCombat = probe
+    if Studio:IsOpen() then Studio:Exit(true) end
+    Schema:Set("studio.gridSize", grid); Schema:Set("studio.showGrid", show)
+  end)
+  CQ.InCombat = function() return false end
+  Studio:Open()
+  t:eq(Studio.Category("tests.box"), "info", "unknown owners file under Info")
+  Studio.filter = "bars"; Studio:ApplyFilter()
+  t:ok(not Studio.movers["tests.box"]:IsShown(), "filter hides other categories")
+  Studio.filter = "all"; Studio:ApplyFilter()
+  t:ok(Studio.movers["tests.box"]:IsShown(), "All shows every element")
+  Schema:Set("studio.gridSize", 64); Schema:Set("studio.showGrid", true)
+  Studio:CycleGrid()
+  t:eq(Schema:Get("studio.showGrid"), false, "64 cycles to off")
+  Studio:CycleGrid()
+  t:eq(Schema:Get("studio.gridSize"), 8, "off cycles to 8")
+  Studio:Select("tests.box")
+  t:ok(Studio.inspector:IsShown(), "inspector opens on select")
+  t:eq(Studio.inspector.x:GetText(), "0", "x field")
+  Studio.session:Move("tests.box", 40, -50, "LEFT")
+  Studio:PlaceMover("tests.box")
+  t:same(Studio.session:Get("tests.box"), { point = "LEFT", x = 40, y = -50 }, "moved")
+end)
+
 Tests:Add("Studio", "combat suspends and resumes the session", function(t)
   local probe = CQ.InCombat
   t:cleanup(function() CQ.InCombat = probe; if Studio.overlay then Studio:Exit(true) end end)
