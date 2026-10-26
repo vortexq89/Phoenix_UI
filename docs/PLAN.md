@@ -1001,7 +1001,7 @@ Merge, push live and install follow the existing rules.
 | Loadout manager: auto-swap per instance/difficulty, gear+talents, warnings, announce | P | | N | |
 | Upgrade calculator (crests) | M | | Y | |
 | Forever: auto uprank, map fade/reveal/levels, classic windows, simplified stats, best quest reward, pet auto-summon, junk window, fishing, loot feed, macro manager, flight timer, threat | P | | N | |
-| Party mode celebrations (EUI fun) | M | Deferred | N | |
+| Party mode celebrations (EUI fun) | M | Planned as Celebrations (step 10), opt-in, every trigger toggleable, reduced-motion aware (parity audit) | N | |
 | Error viewer (BugSack parity: sessions, counts, copy, sound) | B | Sentinel already exceeds (taint, perf, shareable reports) | N | |
 | SimC export | M | Deferred / link to Simulationcraft | N | |
 
@@ -1094,6 +1094,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Absorb styles, heal absorb, max-health reduction, heal prediction, glow line | P | | N | |
 | Class power (bars/circles) on player frame | P | | N | |
 | Visibility: fade OOC, resting alpha, show when missing health; dark mode; dynamic health colour | P | | N | |
+| **EUI parity additions (audit 2026-10-26)**: vertical (bottom-to-top) fill; level coloured by difficulty; threat % position + colour by status; Blizzard-coloured target name; portrait mirror, NPC class-art choice, class-colour ring and second outer ring; lockout-debuff hide preset (Sated/Exhaustion/Temporal Displacement) | M | per-row preview | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Raid & Party** (EUI 343 controls; ours 23+3)
 | Feature | St | Phoenix better | Mock | Check |
@@ -1108,6 +1109,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Range fading, ghost-aura safety net, healer mana text, ping marker, role/leader/combat icons, ready check | P | | N | |
 | Frame-provider API for external trackers | M | with plugin API | N | |
 | Preview: fake roster, cycling auras, size preview | P | state toggles | Y | |
+| **EUI parity additions (audit 2026-10-26)**: Mythic 20-player cap (groups 1–4) and benched members ignored in custom sizes; Thorns-on-tanks missing-buff rule, role shown as text, hide role icons in combat; status colours; healer-mana layout (row gap, stack direction, names); wrap direction + free-move positions for pet/extra/boss groups | M | auto tier | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Nameplates** (EUI 210; ours 17)
 | Feature | St | Phoenix better | Mock | Check |
@@ -1121,6 +1123,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Friendly system: name-only riding Blizzard name, subtitle/guild, class colours, faction badge, click-through, CVar enable/disable path | P | ledger (F4) | N | |
 | Range: distance text, out-of-range alpha (F8 Range) | M | | N | |
 | Class power on target plate, stacking/inset CVars re-applied, hide enemy OOC | M | | N | |
+| **EUI parity additions (audit 2026-10-26)**: neutral & minor enemy colours, modify-out-of-combat colours; classic tank-aggro mode and threat gap on target; stacking speed; hide enemy name while casting; cast lockout shown as CC icon; quest objective text replaces quest icon; hide duplicate Blood Plague; Sunder Armor stacks | M | rules engine | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Action Bars** (EUI 147; ours 105)
 | Feature | St | Phoenix better | Mock | Check |
@@ -1134,6 +1137,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | XP/Rep/House Favor bars: styles, dividers, smart ticks, quest-XP overlay, text positions (XP/h, session) | P | | Y | |
 | Vehicle exit, override controller, micro/bag holders, extra action button holder | P | | N | |
 | First-install capture of the user's Edit Mode layout | M | | N | |
+| **EUI parity additions (audit 2026-10-26)**: never-dim list for usable-on-condition spells (Swiftmend default, replaces EUI's single toggle) | M | list, not one spell | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Cooldown Manager** (EUI 198; ours 22)
 | Feature | St | Phoenix better | Mock | Check |
@@ -1144,6 +1148,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Fake-active, custom icons, ready sound, state effects, charge text | M | | N | |
 | Bar glows (active/missing/usable/stacks/AND/hero tree), proc glows, pandemic sync | M | condition chips | Y | |
 | Rotation assist icon, mirror key presses, focus kick bar | M | | N | |
+| **EUI parity additions (audit 2026-10-26)**: per-row icon size offsets, dim bar out of combat; crafted-quality rank on tracked items; charges/stacks-only mode | M | condition chips | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Resource Bars** (EUI 285; ours 18)
 | Feature | St | Phoenix better | Mock | Check |
@@ -1152,6 +1157,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Cast bar (ticks, empower, latency), GCD bar, totem bar, swing timer (Forever) on duration objects | P | engine fills | N | |
 | Spec helpers: Ironfur, Ignore Pain, Ebon Might, Arcane Soul, Warrior charges (hidden aura slots) | M | data pack | N | restricted |
 | Blizzard class art re-host, anchors/stack, border-around-all | M | | N | |
+| **EUI parity additions (audit 2026-10-26)**: cast bar: grey fill when target out of range, own colour for non-interruptible casts, total-duration text; GCD bar: instance only, instant casts only, deplete fill; swing timer: off-hand as spark on main-hand bar, ranged movement guide | M | engine fills | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **HUD: Minimap / Data Bars / Tooltip** (EUI 83 + 70 + skin)
 | Feature | St | Phoenix better | Mock | Check |
@@ -1159,6 +1165,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Minimap collector (scan, blacklist, flyout grid, free move), indicators (vault, portals, friends, calendar lockouts), micro menu on middle click | M | search | Y | |
 | Data bars engine: N bars from templates, 20+ blocks incl. LDB, layout solver, themes, heartbeat | M | | Y | |
 | Tooltip: anchor modes + mover, visibility with peek modifier, health strip, IDs | P | | N | |
+| **EUI parity additions (audit 2026-10-26)**: minimap friends tooltip cap with notes on a second line, Omnium Folio show/scale, mail icon position; data-bar volume/audio-channel block, silver/copper toggle, 24 h / local clock; skin: resurrect-accept glow, accent bar, bar fill opacity, link colour; character sheet socket panel with gem stat letters, season panel + Great Vault button, PvP item level, tertiary stat letters, stat-section layout; full skyriding bar (hide in combat, speed bar, Second Wind, Whirling Surge, vigor style, chime, thrill colours, speed text) | M | search | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Chat / Vault / Quest / Group Finder / Friends**
 | Feature | St | Phoenix better | Mock | Check |
@@ -1168,6 +1175,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Quest tracker skin by hooks, item hotkey, auto accept/turn-in, visibility | P | | N | |
 | Group finder filters (dungeon/delve/raid boss/region), applications bar, cancel oldest | P | expression filter | Y | |
 | Friends skin | M | | N | |
+| **EUI parity additions (audit 2026-10-26)**: chat: lock main chat size, separate sidebar, free-move sidebar icons; Vault: nest by expansion, hide empty slots when grouped, armory slot packing, open with character window; tracker: hide in raid, top line, announce progress, quest tools; Friends: class icon theme, class-colour names, border, accent tabs, faction banners, region icons, BattleTag copy box, status orb (Online/AFK/DND), invite-search dropdown, auto-accept friend/guild invites (OFF) | M | rule categories | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Combat tools / QoL**
 | Feature | St | Phoenix better | Mock | Check |
@@ -1178,6 +1186,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | QoL toggles (~40) | P (Flow) | all OFF | N | |
 | Alerts anchor, battle res + lust icons, cursor rings, movement alert, raid tools band, self combat text, shifter, waypoint, upgrade calc, auto logging, /keys | M | | Y (cursor, raid tools) | |
 | Radial palette (Quickdraw idea) with secure in-combat selection | M | | Y | backlog after parity |
+| **EUI parity additions (audit 2026-10-26)**: reminders: explicit class presets (rogue poisons, paladin, shaman, warlock right demon + own Soulstone, missing/passive pet), Inky Black Potion, show without item in bags, show below key level / pre-key, cursor-attached important-buff strip, Forever camp benefits + Well Fed; meter: always show player, reset-data keybind, rows 8/15/N, hide rank numbers, forced K/M/B units; QoL: hide item transforms, disable right click in combat, secondary stat display, guild chat privacy cover, rested indicator, environment ping, Artisan payouts kept closed, Warcraft Recorder compatibility, centre reticle, cursor only-when-hidden, sated/ready bloodlust states; Studio movers for loot windows and top-bar event text; Quickdraw nests, visible-icon cap, appearance options; Forever active stance icon, gathering skill on tooltips, name format; loadouts per saved instance/boss, content-type defaults and assignment list; Celebrations (party mode) with every trigger, opt-in | M | all OFF by default | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Options / onboarding / locales**
 | Feature | St | Phoenix better | Mock | Check |
@@ -1186,6 +1195,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Global search (F6), profile export/import, profile sync groups | P/M | diff before import | Y | |
 | First-install module picker + look picker, one-time announcements, video guide links | P | | Y | |
 | Translations for 8 locales + Arabic generated from schema | M | | N | key coverage ≥95% |
+| **EUI parity additions (audit 2026-10-26)**: Fonts page: a font/size/outline row for every text element of every module (inherit global by default), icon-text outline, outline renderer choice; aura tooltip max-duration filter and anchor (cursor/position) | M | override badges | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 ### 15.4 Revised order (replaces §13.12; §11 phases keep their acceptance rules)
 1. In-game check of current build (unchanged).
@@ -1206,6 +1216,9 @@ Read by hand so far: DamageMeters main file and Lifecycle (full), the Window ref
 - **Embers segment engine (new F-level item for Embers):** one shared refresh ticker, combat-only and visible-only; refresh floor 0.5 s; fetch-time spike guard (defer paint when the API takes >1.5 ms); segment token; `ENCOUNTER_START` as a hard boundary; kill vs wipe freeze rules; group-still-fighting poll with a 5 s failsafe; teammate-pulled-first pre-warm; PvP match end; post-combat declassify refresh at +0.5 s; source-key snapshot on `ADDON_RESTRICTION_STATE_CHANGED`. All timing goes through `PUI.Ticker` in our version.
 - **Correction (F1):** aura container creation is legal in combat on current 12.1 builds, so pools are warm caches, not hard limits. While auras are secret, anchoring to aura buttons is restricted, so restyles must make zero button calls when nothing changed. Added to F1's acceptance: "restyle inside an M+ key with unchanged anchors produces no restriction errors".
 - **Correction (Nameplates):** you can't read per-aura dispellability in restricted content, so purge glow must be done by engine group (Dispellable token).
+
+### 15.6 EllesmereUI parity audit (2026-10-26, user direction t72u)
+Every EllesmereUI option section (≈2,000 labelled controls in 288 sections, from `pui_study/ellesmere/*` §3 tables) was checked against this plan and `Feature_Catalogue.md`. Result: 181 feature rows, 125 matched, 47 weaker, 9 missing; all 56 gaps are now fixed in place (the "EUI parity additions" rows in §15.3, the Party mode row in §13.11, and (p) lines in the catalogue). Full table: `pui_study/others/EllesmereUI_parity.md`. Rule: Phoenix must offer every EllesmereUI option, each as a user setting with Simple and Advanced views (D-MOD-DEF), plus the "Phoenix better" column; a module is not parity-complete until every row of its audit table is Built.
 
 ## 16. Finished-study integration (2026-10-26)
 Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied addon). From Auctionator only general player-visible UX ideas are used (D-AUC decided 2026-10-26); no code-level internals, bug lists or API patterns; ElvUI is ignored per the user (t53u). No code was copied; all notes describe behaviour only.
