@@ -9,11 +9,18 @@
 ## Category: Phoenix UI
 ## Group: Phoenix_UI
 ## LoadOnDemand: 1
-## Dependencies: Phoenix_UI
+## Dependencies: Phoenix_UI, Phoenix_UI_Media
 
 Model.lua
+Assets.lua
+Kit.lua
 Widgets.lua
+Nav.lua
 Panel.lua
+PageView.lua
+Previews.lua
+Dashboard.lua
+ThemePage.lua
 StudioModel.lua
 Studio.lua
 Tests\Options_test.lua
