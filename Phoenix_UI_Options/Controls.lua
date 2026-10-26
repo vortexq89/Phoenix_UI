@@ -261,6 +261,79 @@ function Widgets.ListMove(list, i, dir)
   return list
 end
 
+-- Composers: a structured "add" row for list settings whose items have a
+-- grammar (def.composer = name). The composer calls add(text); the list's
+-- itemValidate decides, and a refusal is shown under the row.
+Widgets.composers = Widgets.composers or {}
+
+-- Click-cast composer: [modifiers] [mouse button or key] [action] [spell / macro / item] [Add].
+local CC_MODS = { "none", "shift", "ctrl", "alt", "ctrl-shift", "alt-shift", "alt-ctrl" }
+local CC_MOD_LABELS = { none = "No modifier", shift = "Shift", ctrl = "Ctrl", alt = "Alt", ["ctrl-shift"] = "Ctrl + Shift",
+  ["alt-shift"] = "Alt + Shift", ["alt-ctrl"] = "Alt + Ctrl" }
+local CC_TRIGGERS = { "1", "2", "3", "4", "5", "key" }
+local CC_ACTIONS = { "spell", "target", "menu", "focus", "assist", "macro", "item" }
+function Widgets.composers.clickcast(parent, def, add)
+  local CC = PUI.ClickCast
+  local c = CreateFrame("Frame", nil, parent)
+  c:SetHeight(28)
+  local state = { mods = "none", trigger = "1", key = nil, action = "spell" }
+  local function pick(label, width, choices, labelOf, field_)
+    local b = Kit.Button(c, "", width, nil, "secondary")
+    b:SetHeight(26)
+    local function refresh() b:SetText(labelOf(state[field_])) end
+    b:SetScript("OnClick", function(self)
+      Widgets.OpenMenu(self, choices, labelOf, state[field_], function(v) state[field_] = v; refresh(); c:Refresh() end)
+    end)
+    refresh()
+    b.refresh = refresh
+    return b
+  end
+  c.mods = pick("Modifier", 112, CC_MODS, function(v) return CC_MOD_LABELS[v] end, "mods")
+  c.mods:SetPoint("LEFT", 0, 0)
+  c.trigger = pick("Button", 128, CC_TRIGGERS, function(v)
+    if v == "key" then return state.key and ("Key " .. state.key) or "Press a key..." end
+    return CC and CC.BUTTON_LABELS[v] or v
+  end, "trigger")
+  c.trigger:SetPoint("LEFT", c.mods, "RIGHT", 6, 0)
+  -- Key capture when "key" is picked: the next key press is the binding.
+  c.trigger:SetScript("OnKeyDown", function(self, key)
+    if state.trigger ~= "key" then return end
+    if key == "ESCAPE" then self:EnableKeyboard(false) return end
+    if key:find("SHIFT") or key:find("CTRL") or key:find("ALT") then return end
+    state.key = key
+    self:EnableKeyboard(false)
+    self.refresh()
+  end)
+  c.action = pick("Action", 116, CC_ACTIONS, function(v) return CC and CC.ACTION_LABELS[v] or v end, "action")
+  c.action:SetPoint("LEFT", c.trigger, "RIGHT", 6, 0)
+  c.value = field(c, 150)
+  c.value:SetJustifyH("LEFT")
+  c.value:SetTextInsets(8, 8, 0, 0)
+  c.value:SetHeight(26)
+  c.value:SetPoint("LEFT", c.action, "RIGHT", 6, 0)
+  c.add = Kit.Button(c, "+  Add", 80, nil, "primary")
+  c.add:SetHeight(26)
+  c.add:SetPoint("LEFT", c.value, "RIGHT", 6, 0)
+  function c:Refresh()
+    local needsValue = state.action == "spell" or state.action == "macro" or state.action == "item"
+    c.value:SetShown(needsValue)
+    c.trigger:EnableKeyboard(state.trigger == "key" and state.key == nil)
+  end
+  local function submit()
+    if not CC then return end
+    local button = state.trigger == "key" and state.key or state.trigger
+    if not button then return end
+    local mods = {}
+    for part in string.gmatch(state.mods, "[^-]+") do if part ~= "none" then mods[part] = true end end
+    if add(CC.Compose(mods, button, state.action, c.value:GetText())) then c.value:SetText("") end
+  end
+  c.add:SetScript("OnClick", submit)
+  c.value:SetScript("OnEnterPressed", function(self) self:ClearFocus(); submit() end)
+  c.value:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+  c:Refresh()
+  return c
+end
+
 function build.list(row, def)
   row.stacked = true
   local f = CreateFrame("Frame", nil, row)
@@ -319,6 +392,17 @@ function build.list(row, def)
   end)
   f.empty = Kit.Text(f, "small", "muted")
   f.empty:SetText("Nothing yet.")
+  f.err = Kit.Text(f, "small", "err")
+  local composer
+  if def.composer and Widgets.composers[def.composer] then
+    composer = Widgets.composers[def.composer](f, def, function(v)
+      local okItem, why = true, nil
+      if def.itemValidate then okItem, why = def.itemValidate(v) end
+      f.err:SetText(okItem and "" or tostring(why))
+      if okItem then addValue(v) end
+      return okItem
+    end)
+  end
   row.control = f
   function row:Show_(list)
     for i = 1, math.max(#list, #f.items) do
@@ -342,7 +426,17 @@ function build.list(row, def)
     local full = def.maxItems and #list >= def.maxItems
     f.add:ClearAllPoints()
     f.input:ClearAllPoints()
-    if def.itemChoices then
+    if composer then
+      f.input:Hide()
+      f.add:Hide()
+      composer:ClearAllPoints()
+      composer:SetPoint("TOPLEFT", 0, y)
+      composer:SetPoint("RIGHT")
+      composer:Show()
+      f.err:ClearAllPoints()
+      f.err:SetPoint("TOPLEFT", composer, "BOTTOMLEFT", 2, -4)
+      y = y - 16
+    elseif def.itemChoices then
       f.input:Hide()
       f.add:SetPoint("TOPLEFT", 0, y)
     else

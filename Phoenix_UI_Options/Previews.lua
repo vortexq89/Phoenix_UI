@@ -5,6 +5,7 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- Display only: nothing here touches protected frames or secret values.
 local Options, Theme = PUI.Options, PUI.Theme
 local Schema, Kit, A = PUI.Schema, Options.Kit, Options.Assets
+local Model = Options.Model
 local Previews = {}
 local state = setmetatable({}, { __mode = "k" }) -- card -> { uf, icons, rb, cast }
 local function st(card) state[card] = state[card] or {}; return state[card] end
@@ -275,12 +276,98 @@ function Previews.ResourceBars(card)
   end
 end
 
+-- Raid & Party (mockup 03): sample members drawn by the module's own element
+-- builder and painter (RF.Elements), so the preview always matches the game.
+-- The Party tab shows 5 members; raid tabs show that tier's layout (scaled
+-- to fit); other tabs show the active tier. Buttons: test on screen (5 / 20 /
+-- 40) and "Load heal preset" for the corner indicators.
+local function rfTools(card)
+  local RF = PUI.RaidFrames
+  local s = st(card)
+  if not s.rfTest then
+    s.rfTest = {}
+    local x = 16
+    for _, n in ipairs({ 5, 20, 40 }) do
+      local b = Kit.Button(card, "Test " .. n, 74, function()
+        if not (RF and RF.active) then note(card, "Turn Raid & Party on first.", "warn") return end
+        local on = not (RF.test and RF.testCount == n)
+        local ok, why = RF.SetTestMode(on, n)
+        if not ok then note(card, "Test mode: " .. tostring(why), "err") end
+        Previews.Update("RaidFrames", card)
+      end, "secondary")
+      b:SetPoint("BOTTOMLEFT", x, 14)
+      x = x + 80
+      s.rfTest[n] = b
+    end
+    s.rfPreset = Kit.Button(card, "Load heal preset", 140, function()
+      local _, class = UnitClass("player")
+      local preset = RF and RF.Indicators.PresetFor(class)
+      if not preset then note(card, "No heal preset for your class; add spells by hand.", "warn") return end
+      Model.Commit("rf.corners", preset)
+      note(card, #preset .. " corner indicators loaded for your class.", "ok")
+    end, "secondary")
+    s.rfPreset:SetPoint("BOTTOMRIGHT", -16, 14)
+  end
+  for n, b in pairs(s.rfTest) do
+    b:SetText((RF and RF.test and RF.testCount == n) and ("Hide " .. n) or ("Test " .. n))
+    b:Show()
+  end
+  s.rfPreset:Show()
+end
+
+function Previews.RaidFrames(card, tab)
+  local RF = PUI.RaidFrames
+  if not (RF and RF.Elements) then return end
+  local S = RF.settings
+  local tier = (tab == "party" or tab == "small" or tab == "medium" or tab == "large") and tab or RF.tier or "medium"
+  local t = S.tiers[tier]
+  local count = tier == "party" and 5 or (tier == "small" and 10 or 20)
+  local s = st(card)
+  if not s.rfHolder then
+    s.rfHolder = CreateFrame("Frame", nil, card)
+    s.rfHolder:SetPoint("TOPLEFT", 18, -56)
+    s.rfHolder:SetSize(1, 1)
+    s.rf = {}
+  end
+  -- Scale the whole grid to fit inside the card (384 x 250).
+  local cols = math.ceil(count / t.perColumn)
+  local vertical = t.orientation == "vertical"
+  local w = vertical and (cols * (t.width + t.groupSpacing)) or (math.min(count, t.perColumn) * (t.width + t.spacing))
+  local h = vertical and (math.min(count, t.perColumn) * (t.height + t.spacing)) or (cols * (t.height + t.groupSpacing))
+  local scale = math.min(1, 384 / math.max(1, w), 250 / math.max(1, h))
+  s.rfHolder:SetScale(scale)
+  s.rfHolder:Show()
+  for i = 1, math.max(count, #s.rf) do
+    local o = s.rf[i]
+    if i <= count then
+      if not o then
+        o = { button = CreateFrame("Frame", nil, s.rfHolder), test = true }
+        RF.Elements.Build(o)
+        s.rf[i] = o
+      end
+      o.button:SetSize(t.width, t.height)
+      o.button:ClearAllPoints()
+      local x, y = RF.TestPosition(i, t)
+      o.button:SetPoint("TOPLEFT", s.rfHolder, "TOPLEFT", math.abs(x), -math.abs(y))
+      RF.Elements.Layout(o, S, t.width, t.height)
+      RF.Elements.PaintSample(o, S, i)
+      o.button:Show()
+    elseif o then
+      o.button:Hide()
+    end
+  end
+  rfTools(card)
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {} }) do
     for _, f in pairs(list) do f:Hide() end
   end
   if st(card).cast then st(card).cast:Hide() end
   if st(card).testBtn then st(card).testBtn:Hide(); st(card).copyBtn:Hide() end
+  if st(card).rfHolder then st(card).rfHolder:Hide() end
+  for _, b in pairs(st(card).rfTest or {}) do b:Hide() end
+  if st(card).rfPreset then st(card).rfPreset:Hide() end
 end
 
 function Previews.Update(owner, card, key)
@@ -291,7 +378,7 @@ function Previews.Update(owner, card, key)
 end
 
 -- wrap builders so switching page/tab always starts clean
-for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars" }) do
+for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end

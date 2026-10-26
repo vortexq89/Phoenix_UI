@@ -231,7 +231,7 @@ Every lint rule above ships with a self-proof fixture that must fail (QDB). Full
 | Role-check accept, sign-up confirm, role per spec | Group Finder, Flow role-check confirm, BigWigs auto-role | **Group Finder** queue helper; "auto from spec" is a mode of the one role-per-spec setting. |
 | Queue-pop countdown, queue status | Group Finder, Skins queue popup timer, Minimap queue eye | **Group Finder**; Skins and Minimap reuse it. |
 | Arena match timer, dampening, Shadowsight | Arena, Flow dampening display | **Arena**. |
-| Party⇄arena targeting dots | Arena, Raid frames | One **Arena** targeting service; raid frames display it. |
+| Party⇄arena targeting dots | Arena, Raid frames | One **Arena** targeting service; raid frames display it. Built as `PUI.Targeting` (Core/Targeting.lua) for Arena to reuse. |
 | Junk definition, sell junk, auto-sell | Vault, Flow sell junk | **Vault** (rules define junk). Flow's row links here. |
 | Gold ledger, currencies | Vault, Data Bars gold/currency blocks | **Vault** (has offline alts); Data Bars blocks read it. |
 | Equipment sets | Vault builder, Loadouts | **Loadouts**; Vault shows set names and opens Loadouts. |
@@ -357,7 +357,10 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Auras only through PUI.Auras (F1); `C_UnitAuras.AddAuraSound` for gain sounds.
 - **Study (WAPI):** cast bar is one castID-matched state machine (casting/channeling/empowered/hold/fade), queries its own unit on show, uses duration-object timers (12.x secret-safe), unit-scoped events only.
 
-### 5.2 Raid & Party — 23 keys (RaidFrames.lua, Elements.lua) + ClickCast (3 keys)
+### 5.2 Raid & Party — step 4 built (RaidFrames.lua, Elements.lua, Indicators.lua, ClickCast.lua)
+
+- **Step 4 status (feat/groupframes):** size tiers with auto/fixed choice and Mythic cap; sorting; role icon/letter, dispel highlight (border/glow/tint, mine/all, type colours); debuff/buff/defensive containers and corner indicators on PUI.Auras with healer presets; private-aura anchors; enemy-target dots from `PUI.Targeting`; click-cast list editor with composer and ledger reservations; range, absorbs, heal-absorb and incoming heals via `PUI.Prediction` with overflow marks; test mode and where-to-show per content; live Options preview. The table below is the pre-step-4 snapshot; §15.3 rows carry the current status.
+
 
 | Feature | Status | Evidence |
 |---|---|---|
@@ -1137,31 +1140,31 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Feature | St | Phoenix better | Mock | Specific check |
 |---|---|---|---|---|
 | Channel-painter engine, RegisterUnitEvent per token, vehicle at registration, same-frame dedupe, ToT/FoT on one Ticker sub | P | perf readout | N | 40 events/s without dropped paints |
-| Auras via F1 per class group (buffs/debuffs/dispellable/own/CC), caps, sort, dispel slots, purgeable glow | P (buff/debuff containers per frame with plain filters, count, size, per row, side, sort; dispel slots/purge glow open) | shared filter registry with Raid | Y | restricted content |
+| Auras via F1 per class group (buffs/debuffs/dispellable/own/CC), caps, sort, dispel slots, purgeable glow | B (buff/debuff containers per frame with plain filters, count, size, per row, side, sort; dispel slots as a third engine group `uf.<unit>.dispel.*`; purge glow `uf.purgeGlow` gated on a known offensive dispel) | shared filter registry with Raid | Y | restricted content |
 | Player Aura Bars (buffs, debuffs) + custom aura bars with named filters, 10 presets, match any/all, per-spec | P (two movable icon rows on PUI.Auras, Blizzard BuffFrame/DebuffFrame parked via FrameLedger, CDM dedupe setting; named bars/presets open) | — | Y | |
 | Mini frames (companion), boss1-5 with range dimming, pet, ToT, FoT | B (range fade on PUI.Range, boss growth/spacing, test frames `/pui uftest`, Copy settings from...) | `/pui test boss` | Y | |
 | Text slots + tags + nicknames + decimals + smart power % | P | live token editor | Y | |
 | Portraits 2D/3D/class, attached/detached, masks, borders | B (looks Ember/Glass/Blizzard-like/Classic-like, each part its own setting; square/round mask, side) | Phoenix masks | Y | |
 | Castbar kick tick, interrupt colours, important cast | B (PUI.CastBar on target/focus/pet/boss: icon, name, timer, shield, own-interrupt, colours, fade) | | N | |
-| Absorb styles, heal absorb, max-health reduction, heal prediction, glow line | P | | N | |
+| Absorb styles, heal absorb, max-health reduction, heal prediction, glow line | P (absorb and heal-absorb overflow marks from the calculator's clamped flags, `uf.overflow`; max-health reduction open) | | N | |
 | Class power (bars/circles) on player frame | B (Resource Bars hosted under the player frame: attach / keep separate, gap) | | N | |
 | Visibility: fade OOC, resting alpha, show when missing health; dark mode; dynamic health colour | P (where-to-show rule + hidden alpha, dark mode, gradient/class/reaction/custom colour; missing-health rule open) | | N | |
-| **EUI parity additions (audit 2026-10-26)**: vertical (bottom-to-top) fill; level coloured by difficulty; threat % position + colour by status; Blizzard-coloured target name; portrait mirror, NPC class-art choice, class-colour ring and second outer ring; lockout-debuff hide preset (Sated/Exhaustion/Temporal Displacement) | P (vertical fill, difficulty level colour, threat glow, Blizzard-coloured name built; portrait rings and lockout preset open) | per-row preview | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
+| **EUI parity additions (audit 2026-10-26)**: vertical (bottom-to-top) fill; level coloured by difficulty; threat % position + colour by status; Blizzard-coloured target name; portrait mirror, NPC class-art choice, class-colour ring and second outer ring; lockout-debuff hide preset (Sated/Exhaustion/Temporal Displacement) | P (lockout preset built: `uf.<unit>.auras.debuffs.hideLockouts` via `PUI.Auras.LOCKOUTS`; vertical fill, difficulty level colour, threat glow, Blizzard-coloured name built; portrait rings and lockout preset open) | per-row preview | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
-**Raid & Party** (EUI 343 controls; ours 23+3)
+**Raid & Party** (EUI 343 controls; ours ~100 `rf.*` + click-cast)
 | Feature | St | Phoenix better | Mock | Check |
 |---|---|---|---|---|
-| Per-group + flat headers, party header, raid size tiers | P | auto tier | Y | 5/10/20/40 |
-| Buff Manager indicators (icon/square/bar/health colour/border/frame alpha), healer spell DB per spec, filters, ≤20 per spec | M | drag-to-corner editor on replica | Y | |
-| Debuff Manager tiles, match any/all, shown-on-modifier, per spec | M | | Y | |
-| Click-cast: frame path + hovercast path, global defaults, per spec | P | conflict detector | Y | combat-safe rebinds |
+| Per-group + flat headers, party header, raid size tiers | B (4 tiers party/≤10/≤20/≤40, each with size, orientation, spacing, per column, growth; auto or fixed tier) | auto tier | Y | 5/10/20/40 |
+| Buff Manager indicators (icon/square/bar/health colour/border/frame alpha), healer spell DB per spec, filters, ≤20 per spec | P (corner indicators `rf.corners` with per-class heal presets, buff/debuff/defensive containers on PUI.Auras; bar/health-colour indicator types and per-spec lists open) | drag-to-corner editor on replica | Y | |
+| Debuff Manager tiles, match any/all, shown-on-modifier, per spec | P (debuff container with raid/all/dispellable/important/CC filters, lockout preset; tiles per instance open) | | Y | |
+| Click-cast: frame path + hovercast path, global defaults, per spec | B (list editor with composer, `cc.list` overridable per spec, hovercast keys reserved in PUI.Bindings, conflict text) | conflict detector | Y | combat-safe rebinds |
 | Grid Mode / Compact Mode shared outlines | M | | Y | |
 | Extra Frames (chosen members), friendly boss frames, party targets, pets (header/beside owner) | M | | Y | |
-| Sort: self first, prioritize class, FrameSort shim | P | | N | |
-| Range fading, ghost-aura safety net, healer mana text, ping marker, role/leader/combat icons, ready check | P | | N | |
+| Sort: self first, prioritize class, FrameSort shim | P (group/role/class/name sort, role order, party sort; FrameSort shim open) | | N | |
+| Range fading, ghost-aura safety net, healer mana text, ping marker, role/leader/combat icons, ready check | P (range on PUI.Range, absorbs/heal-absorb/incoming via PUI.Prediction with overflow marks, role icon/letter, leader, marker, status; ping/ready check open) | | N | |
 | Frame-provider API for external trackers | M | with plugin API | N | |
-| Preview: fake roster, cycling auras, size preview | P | state toggles | Y | |
-| **EUI parity additions (audit 2026-10-26)**: Mythic 20-player cap (groups 1–4) and benched members ignored in custom sizes; Thorns-on-tanks missing-buff rule, role shown as text, hide role icons in combat; status colours; healer-mana layout (row gap, stack direction, names); wrap direction + free-move positions for pet/extra/boss groups | M | auto tier | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
+| Preview: fake roster, cycling auras, size preview | B (options preview per tier from the module's own painter; `/pui rftest 5|10|20|40` and Test 5/20/40 buttons) | state toggles | Y | |
+| **EUI parity additions (audit 2026-10-26)**: Mythic 20-player cap (groups 1–4) and benched members ignored in custom sizes; Thorns-on-tanks missing-buff rule, role shown as text, hide role icons in combat; status colours; healer-mana layout (row gap, stack direction, names); wrap direction + free-move positions for pet/extra/boss groups | P (Mythic cap, role as text, hide role icons in combat built; Thorns rule, healer-mana layout, pet/extra groups open) | auto tier | N | every row's setting visible, searchable, live, resettable; Simple + Advanced (D-MOD-DEF) |
 
 **Nameplates** (EUI 210; ours 17)
 | Feature | St | Phoenix better | Mock | Check |

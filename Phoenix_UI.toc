@@ -40,6 +40,8 @@ Core\Dialogs.lua
 Core\CastBar.lua
 Core\Auras.lua
 Core\Overrides.lua
+Core\Prediction.lua
+Core\Targeting.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Tests\Runner.lua
