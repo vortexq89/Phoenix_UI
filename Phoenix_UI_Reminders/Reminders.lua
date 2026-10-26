@@ -157,7 +157,7 @@ end
 
 for i, name in ipairs(ROWS) do
   Layout:RegisterElement("rm." .. name, { label = "Reminders: " .. name, owner = OWNER, size = { 36 * POOL, 36 },
-    default = { point = "TOP", x = 0, y = -160 - (i - 1) * 56 } })
+    default = { point = "TOP", x = 0, y = -24 - (i - 1) * 56 } })
 end
 
 local schema = {}

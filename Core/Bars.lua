@@ -90,7 +90,10 @@ function Bars.PowerColor(bar, unit)
   if c then bar:SetStatusBarColor(c.r, c.g, c.b) else Bars.TokenColor(bar, "accent") end
 end
 
-function Bars:TexturePath() return Media:Path("statusbar", self.texture) or Media:Texture(self.texture) end
+function Bars:TexturePath()
+  if self.texture:find("^Phoenix ") and not C_AddOns.IsAddOnLoaded("Phoenix_UI_Media") then return Media:Texture("flat") end
+  return Media:Path("statusbar", self.texture) or Media:Texture(self.texture)
+end
 
 function Bars:Retexture()
   local path = Bars:TexturePath()
@@ -102,15 +105,18 @@ function Bars:Retexture()
   PUI.Kernel:Fire("BARS_CHANGED")
 end
 
-Bars.texture = "flat"
+Bars.texture = "Phoenix Smooth"
 Bars.backgroundAlpha = 0.6
 
 Media:RegisterTexture("smooth", "Interface\\TargetingFrame\\UI-StatusBar")
 Media:Register("statusbar", "smooth", "Interface\\TargetingFrame\\UI-StatusBar")
+-- Default bar (mockup 15). Registered here so the default validates before
+-- Phoenix_UI_Media loads; TexturePath falls back to flat if Media is off.
+Media:Register("statusbar", "Phoenix Smooth", "Interface\\AddOns\\Phoenix_UI_Media\\Media\\Textures\\StatusBar\\Smooth.tga")
 Bars.TEXTURES = function() return Media:List("statusbar") end
 
 PUI.Schema:Register("bars.texture", {
-  type = "select", default = "flat", choices = Bars.TEXTURES, preview = "statusbar",
+  type = "select", default = "Phoenix Smooth", choices = Bars.TEXTURES, preview = "statusbar",
   label = "Bar texture", tooltip = "Texture for every Phoenix health, power, cast and resource bar.",
   mode = "simple", owner = "Theme", searchTags = { "texture", "bars" },
   apply = function(value)

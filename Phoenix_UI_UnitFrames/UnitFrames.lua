@@ -17,17 +17,17 @@ PUI.UnitFrames = UF
 
 local BOSSES = { "boss1", "boss2", "boss3", "boss4", "boss5" }
 local GROUPS = {
-  player = { label = "Player", units = { "player" }, w = 220, h = 44, p = 8, pos = { "CENTER", -300, -200 },
+  player = { label = "Player", units = { "player" }, w = 220, h = 44, p = 8, pos = { "CENTER", -165, -100 },
     texts = { "name", "none", "health:current-percent", "power:current" }, cast = false, reverse = false },
-  target = { label = "Target", units = { "target" }, w = 220, h = 44, p = 8, pos = { "CENTER", 300, -200 },
+  target = { label = "Target", units = { "target" }, w = 220, h = 44, p = 8, pos = { "CENTER", 165, -100 },
     texts = { "level:name", "none", "health:current-percent", "power:current" }, cast = true, reverse = true },
-  focus = { label = "Focus", units = { "focus" }, w = 170, h = 32, p = 4, pos = { "CENTER", -300, -290 },
+  focus = { label = "Focus", units = { "focus" }, w = 170, h = 32, p = 4, pos = { "CENTER", -345, -60 },
     texts = { "name", "none", "health:percent", "none" }, cast = true, reverse = false },
-  pet = { label = "Pet", units = { "pet" }, w = 120, h = 24, p = 4, pos = { "CENTER", -380, -250 },
+  pet = { label = "Pet", units = { "pet" }, w = 120, h = 24, p = 4, pos = { "CENTER", -345, -100 },
     texts = { "name", "none", "health:percent", "none" }, cast = false, reverse = false },
-  targettarget = { label = "Target of target", units = { "targettarget" }, w = 120, h = 24, p = 0, pos = { "CENTER", 470, -200 },
+  targettarget = { label = "Target of target", units = { "targettarget" }, w = 120, h = 24, p = 0, pos = { "CENTER", 345, -100 },
     texts = { "name", "none", "health:percent", "none" }, cast = false, reverse = true, polled = true },
-  focustarget = { label = "Focus target", units = { "focustarget" }, w = 120, h = 24, p = 0, pos = { "CENTER", -130, -290 },
+  focustarget = { label = "Focus target", units = { "focustarget" }, w = 120, h = 24, p = 0, pos = { "CENTER", -480, -60 },
     texts = { "name", "none", "health:percent", "none" }, cast = false, reverse = false, polled = true },
   boss = { label = "Boss", units = BOSSES, w = 180, h = 36, p = 6, pos = { "RIGHT", -120, 160 },
     texts = { "name", "none", "health:percent", "none" }, cast = true, reverse = true },

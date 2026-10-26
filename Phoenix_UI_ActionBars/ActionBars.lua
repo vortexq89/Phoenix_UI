@@ -22,8 +22,8 @@ ns.settings = settings
 -- Bar definitions: action page (1 is paged), Blizzard binding prefix, stock frame.
 local DEFS = {
   { page = 1, bind = "ACTIONBUTTON", stock = "MainActionBar", on = true, pos = { "BOTTOM", 0, 40 } },
-  { page = 6, bind = "MULTIACTIONBAR1BUTTON", stock = "MultiBarBottomLeft", on = true, pos = { "BOTTOM", 0, 80 } },
-  { page = 5, bind = "MULTIACTIONBAR2BUTTON", stock = "MultiBarBottomRight", on = true, pos = { "BOTTOM", 0, 120 } },
+  { page = 6, bind = "MULTIACTIONBAR1BUTTON", stock = "MultiBarBottomLeft", on = true, pos = { "BOTTOM", 0, 74 } },
+  { page = 5, bind = "MULTIACTIONBAR2BUTTON", stock = "MultiBarBottomRight", on = true, pos = { "BOTTOM", 0, 108 } },
   { page = 3, bind = "MULTIACTIONBAR3BUTTON", stock = "MultiBarRight", on = false, pos = { "RIGHT", -40, 0 }, vertical = true },
   { page = 4, bind = "MULTIACTIONBAR4BUTTON", stock = "MultiBarLeft", on = false, pos = { "RIGHT", -80, 0 }, vertical = true },
   { page = 13, bind = "MULTIACTIONBAR5BUTTON", stock = "MultiBar5", on = false, pos = { "BOTTOM", 0, 160 } },

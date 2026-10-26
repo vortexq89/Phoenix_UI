@@ -261,7 +261,7 @@ function QT.Sync()
   end
 end
 
-Layout:RegisterElement("qt.tracker", { label = "Quest tracker", owner = OWNER, size = { WIDTH, 200 }, default = { point = "RIGHT", x = -40, y = 120 } })
+Layout:RegisterElement("qt.tracker", { label = "Quest tracker", owner = OWNER, size = { WIDTH, 200 }, default = { point = "TOPRIGHT", x = -19, y = -360 } })
 
 local schema = {}
 QT.schema = schema
