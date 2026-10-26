@@ -55,3 +55,67 @@ Tests:Add("Reminders", "class buffs need a known spell", function(t)
   H.auras[2823] = { spellId = 2823 }
   t:eq(#RM.Evaluate().class, 1, "lethal applied")
 end)
+
+-- Step 8c ------------------------------------------------------------------------
+Tests:Add("Reminders", "my own list: id or id:label, click to cast when known", function(t)
+  if not H or PUI.IS_FOREVER then return end
+  enable(t, "rm.customList", "rm.custom", "rm.click")
+  local rows = RM.ParseCustom({ "1459", " 6673 : Shout ", "junk" })
+  t:eq(#rows, 2, "bad lines skipped")
+  t:eq(rows[2].label, "Shout", "label kept")
+  Schema:Set("rm.custom", true)
+  Schema:Set("rm.click", true)
+  H.known[6673] = true
+  Schema:Set("rm.customList", { "6673:Shout" })
+  local out = RM.Evaluate()
+  t:eq(out.custom[1].spell, 6673, "missing custom buff listed")
+  RM.Show(out)
+  local icon = RM.pools.custom.icons[1]
+  t:eq(icon.frame:GetAttribute("spell"), 6673, "secure click casts it")
+  H.auras[6673] = { spellId = 6673 }
+  t:eq(#RM.Evaluate().custom, 0, "gone once the buff is up")
+end)
+
+Tests:Add("Reminders", "pet reminder by class and spec; where grid and key limit explain why", function(t)
+  if not H or PUI.IS_FOREVER then return end
+  enable(t, "rm.pet", "rm.where", "rm.keyBelow")
+  local class, spec = H.class, H.specIndex
+  t:cleanup(function() H.class = class; H.specIndex = spec; H.units.pet = nil; H.mplus = nil; H.content = nil end)
+  Schema:Set("rm.pet", true)
+  H.class, H.specIndex = "HUNTER", 1
+  t:eq(RM.Evaluate().pet[1].key, "pet", "hunter without a pet reminded")
+  H.units.pet = true
+  t:eq(#RM.Evaluate().pet, 0, "pet out: nothing")
+  H.units.pet = nil
+  H.specIndex = 2
+  RM.Evaluate()
+  t:ok(RM.why.pet:find("without a pet", 1, true), "marksmanship explained")
+  H.class = "MAGE"
+  RM.Evaluate()
+  t:ok(RM.why.pet:find("no pet", 1, true), "class without pets explained")
+  local where = Schema:Get("rm.where")
+  where.raid.world = false
+  Schema:Set("rm.where", where)
+  t:same({ RM.Allowed("raid", "world") }, { false, "turned off for " .. (PUI.Profiles.CONTENT_LABEL.world or "world") }, "grid turns a group off per content")
+  t:eq(RM.Allowed("class", "world"), true, "other groups untouched")
+  Schema:Set("rm.keyBelow", 10)
+  H.mplus = { mapID = 501, level = 12, limit = 1800, elapsed = 0, deaths = 0, lost = 0 }
+  local ok, why = RM.Allowed("class", "mythicplus")
+  t:eq(ok, false, "high keys skipped")
+  t:ok(why:find("12", 1, true), "with the level in the reason")
+end)
+
+Tests:Add("Reminders", "live preview follows icon settings", function(t)
+  if not H then return end
+  if not PUI.OptionsHost:Load() then return end
+  local saved = Schema:Get("rm.pet")
+  t:cleanup(function() Schema:Set("rm.pet", saved) end)
+  local P = PUI.Options.Previews
+  local card = CreateFrame("Frame")
+  Schema:Set("rm.pet", true)
+  P.Reminders(card)
+  local n = P.State(card).rmIcons
+  Schema:Set("rm.pet", false)
+  P.Reminders(card)
+  t:eq(P.State(card).rmIcons, n - 1, "pet icon follows the setting")
+end)

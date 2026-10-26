@@ -36,6 +36,8 @@ end
 
 -- True when the Phoenix module may run: nothing else loaded, or the user chose Phoenix.
 function Coexist:Allows(id)
+  local e = self.entries[id]
+  if e and e.soft then return true end
   if #self:Loaded(id) == 0 then return true end
   return self:Choice(id) == "phoenix"
 end
@@ -66,21 +68,34 @@ end
 function Coexist:Define(id, spec)
   assert(type(id) == "string" and id ~= "", "Coexist:Define needs an id")
   assert(type(spec) == "table" and spec.module and spec.job and type(spec.addons) == "table", "Coexist:Define needs module, job, addons")
-  local e = { id = id, module = spec.module, job = spec.job, addons = spec.addons }
+  local e = { id = id, module = spec.module, job = spec.job, addons = spec.addons, soft = spec.soft == true }
   if not self.entries[id] then self.order[#self.order + 1] = id end
   self.entries[id] = e
-  local def = { type = "select", default = "ask", choices = self.CHOICES, choiceLabels = self.CHOICE_LABELS,
+  local labels = self.CHOICE_LABELS
+  if e.soft then labels = { ask = "Ask me", phoenix = "Phoenix shows it too", other = "Leave it to the other addon" } end
+  local tip = e.soft and ("When " .. table.concat(spec.addons, ", ") .. " is loaded, choose whether Phoenix also does this. Neither addon is turned off.")
+  local def = { type = "select", default = "ask", choices = self.CHOICES, choiceLabels = labels,
     label = spec.job .. ": when another addon does this",
-    tooltip = "When " .. table.concat(spec.addons, ", ") .. " is loaded, choose whether Phoenix or that addon keeps the job. "
-      .. "Phoenix keeps it: the other addon is turned off from the next load. The other addon keeps it: this Phoenix module stays off.",
+    tooltip = tip or ("When " .. table.concat(spec.addons, ", ") .. " is loaded, choose whether Phoenix or that addon keeps the job. "
+      .. "Phoenix keeps it: the other addon is turned off from the next load. The other addon keeps it: this Phoenix module stays off."),
     mode = "simple", searchTags = { "conflict", "addon", "coexist", "bartender", "dominos" },
     apply = function(v)
-      if v == "phoenix" then
+      if v == "phoenix" and not e.soft then
         for _, name in ipairs(self:Loaded(id)) do C_AddOns.DisableAddOn(name) end
       end
       reevaluate(e)
     end }
   return "core.coexist." .. id, def
+end
+
+-- Soft entries (spec.soft = true) cover one feature that overlaps, not a whole
+-- module: the Phoenix module always runs and the other addon is never turned
+-- off. "phoenix" means Phoenix shows that feature, "other" means it stays quiet
+-- and the other addon does it. Coexist:Yields(id) -> true when Phoenix should
+-- leave that feature to the other addon (still "ask", or "other").
+function Coexist:Yields(id)
+  if #self:Loaded(id) == 0 then return false end
+  return self:Choice(id) ~= "phoenix"
 end
 
 -- Shows one notice per entry per session for entries still on "ask" whose
@@ -92,7 +107,7 @@ function Coexist:Notify()
     if text and not self.asked[id] and self:Choice(id) == "ask" and Schema:Def("module." .. e.module) and Schema:Get("module." .. e.module) then
       self.asked[id] = true
       PUI.Dialogs:Confirm({ title = "Phoenix UI: " .. e.job, text = text,
-        accept = "Phoenix keeps it", cancel = "Keep " .. self:Loaded(id)[1],
+        accept = e.soft and "Phoenix shows it too" or "Phoenix keeps it", cancel = (e.soft and "Leave it to " or "Keep ") .. self:Loaded(id)[1],
         onAccept = function() self:Pick(id, "phoenix") end,
         onCancel = function() self:Pick(id, "other") end })
     end

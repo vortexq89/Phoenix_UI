@@ -525,7 +525,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Data bars: user-created bars from templates; layout solver; secure blocks (travel, spec popups) built out of combat, never Hide/Show secure content in combat; gold ledger with confirm; filtered currency refresh; locale-safe text.
 - **Study (WAPI):** tooltips refresh through the owner's update on the shared throttle; padding only on meaningful change; comparison side by free space.
 
-### 5.8 Quest Tracker — 8 keys
+### 5.8 Quest Tracker — step 8c built (QuestTracker.lua; 25 keys + 3 conflict choices)
 
 - **B:** sort, filter, auto-track zone, auto quest, sound, collapsed, hide Blizzard.
 - **M:** quest-item SecureActionButton; Wowhead links; M+ objective collapse; progress colours (verify); auto-share.
@@ -539,6 +539,8 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Study (QDB):** retail quest data from live APIs only (quest log, task quests, map); QuestieDB data is Classic-only and not reused; UiMapID/AreaID/MapID kept as distinct types; never match by name when an ID exists.
 
 - **All-addons parity additions (audit 2026-10-26, `pui_study/others/AllAddons_parity.md`; each a setting with Simple + Advanced views) — Quest Tracker (Questie, WindTools):** Tracker options: quest level, completed handling, hide in pet battles, minimise in combat/instances, click shortcuts, padding, colours, fonts → Added these rows with click-binding conflict check; Auto accept/turn-in with modifier and rules (trivial, repeatable, PvP) → Added rule set with pause modifier; Quest progress announce to party → Added via the shared announcement router (off by default); Sounds on objective progress / complete / quest complete → Added; Party members' quest objectives in tooltips → Added (addon-comm, lockdown-aware).
+
+- **Step 8c status (feat/embers-ascent, stacked on feat/chat-vault):** Blizzard tracker kept but told to add no modules (ObjectiveTrackerManager:SetCanAddModules(false), restored on disable). Owner of /way and super tracking (`/pui way` always; `/way` only when TomTom is not loaded; soft conflict choice qt.waypoints). Waypoint line on top, Ascent M+ block docked on top with quests folded during keys, progress colours, finished quests glow/fade/hide, quest level, Wowhead link via the copy box, announcements via the router (quest topic). Hard conflict: Kaliel's Tracker; soft: Questie. **Deferred:** quest-item SecureActionButtons; auto-share.
 
 ### 5.9 Skins — 30 keys
 
@@ -617,7 +619,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - screenshot on achievement;
   - WindTools-harvest list (spec 23).
 
-### 5.13 Reminders — 7 keys
+### 5.13 Reminders — step 8c built (Reminders.lua, Pack.lua v2; 15 keys)
 
 - **B:** raid/class rows, custom, size, sound, text, only grouped (pack data).
 - **M:** consumables pack depth, talents by zone, per-reminder sound/icon.
@@ -625,7 +627,9 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Study additions (§16, 2026-10-26):**
   - One declarative reminder engine (class/spec/talent/content/combat-safe rule rows, per-section "where to show" via 1.19, sounds); secure pool out of combat, visual-only icons in combat; pre-combat aura snapshot; UNIT_IN_RANGE_UPDATE instead of polling; "why hidden" overlay in preview.
 
-### 5.14 Embers — 10 keys (LoD)
+- **Step 8c status:** groups raid/class/pet/custom; own list as `spellID[:label]`; per-group "where" grid by content type; skip keys at or above a level; ready-check override; click-to-cast secure buttons (out of combat); pulse glow; why-hidden notes (`/pui rm why`) and live preview. **Deferred:** season consumable IDs (pack empty), talents by zone, per-reminder sound/icon. **Verify in game:** paladin aura and hunter Marksmanship no-pet spec.
+
+### 5.14 Embers — step 8c built (Embers.lua, Window.lua, Recap.lua; Core/Timer.lua; 41 keys + conflict choice)
 
 - **B:** windows up to 5, meter type, segments, boss-only, max segments, graph, report, rows, look; export; history/compare (tests).
 - **M:** death recap window (sole owner; Ascent links), window snapping, per-spec icons (verify), Forever threat meter, encounter history markers.
@@ -635,7 +639,9 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Meter windows over C_DamageMeter with the §15.5 segment engine; secret-guarded amounts *and* durations (past segments too); per-window cog; show/hide-all hotkey through the Binding ledger.
   - Spell history is **not** built here: Embers links to Cast History (§5.21, §1.O).
 
-### 5.15 Ascent — 8 keys
+- **Step 8c status:** up to 4 windows (was 5; migration `0008c_embers_keys` clamps and moves embers.meter → embers.w1.meter, look "bars" → "phoenix"), per-window meter and fight (Current/Overall/Saved), Threat window type, pinned own row with real rank, side-aware spell breakdown flyout, death recap window (owner, C_DeathRecap), interrupts and run totals for Ascent, best pull of the same boss (header, ghost marker, % result after the pull, optional report via the router meter topic), forced number units, shared combat timer (PUI.CombatTimer, Ticker job only during a fight). Conflict notice: Details, Skada, Recount. **Deferred:** show/hide-all and reset hotkeys (Binding ledger), Pulse page UI for the timer, Forever threat meter, window snapping.
+
+### 5.15 Ascent — step 8c built (Ascent.lua, Display.lua, Keystones.lua, Summary.lua; 32 keys + conflict choices)
 
 - **B:** timer, splits, records, sounds, TTS, notes, hide Blizzard, scale.
 - **M:** forces current-pull preview (verify), death log, score projection, vault planner, kick tracker, run summary card.
@@ -644,6 +650,8 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Study additions (§16, 2026-10-26):**
   - M+ timer: completion time from `C_ChallengeMode.GetChallengeCompletionInfo` (GetWorldElapsedTime can be secret/stale — the "99:99" bug); Ticker job only while a key is active; next-threshold countdown colour; per-run summary with rating deltas; IDs not English difficulty names.
   - Alerts, battle res, Bloodlust, cursor ring, combat logging per content, target distance (PUI.Range); every UnitClass/unit read secret-checked.
+
+- **Step 8c status:** keystones owner (`/keys` and `/pui keys`: yours, alts, group via hidden PUIKEYS channel; `!keys` reply via the Keystones topic; auto-slot on the keystone receptacle, default on), timer bar with +3/+2 marks and pace line, enemy forces owner (tooltips and plates read AS.UnitForces; soft choice for MythicDungeonTools), boss splits vs best, deaths list opening the Embers recap, kicks from Embers, battle res + Bloodlust widget (docked or standalone), end-of-run summary card (popup/chat/off, auto-close on the Ticker), docks in the Quest Tracker or stands alone. Conflict notice: WarpDeplete, MythicPlusTimer, AngryKeystones. **Deferred:** forces current-pull preview, score projection, vault planner.
 
 ### 5.16 Oracle (5), Wisdom (6), Loadouts (5), GroupFinder (9)
 

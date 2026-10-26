@@ -1,6 +1,6 @@
 ## Interface: 120100, 120105, 16001
 ## Title: Phoenix UI - Embers
-## Notes: Phoenix UI damage meter on Blizzard's own meter data: windows, saved segments, graphs, death recap, report and export.
+## Notes: Phoenix UI damage meter on Blizzard's own meter data: up to four windows, your row pinned, spell breakdown, death recap, threat, best-pull compare, saved segments, report and export.
 ## Author: VortexQ8
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
@@ -12,4 +12,5 @@
 
 Embers.lua
 Window.lua
+Recap.lua
 Tests\Embers_test.lua
