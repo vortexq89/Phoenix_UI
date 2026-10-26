@@ -263,7 +263,7 @@ local function onDisable()
   if f then f:Hide() end
 end
 
-Layout:RegisterElement("ascent.timer", { label = "Mythic+ timer", owner = OWNER, size = { 240, 150 }, default = { point = "RIGHT", x = -40, y = 120 } })
+Layout:RegisterElement("ascent.timer", { label = "Mythic+ timer", owner = OWNER, size = { 240, 150 }, default = { point = "TOPRIGHT", x = -19, y = -207 } })
 
 local schema = {}
 AS.schema = schema

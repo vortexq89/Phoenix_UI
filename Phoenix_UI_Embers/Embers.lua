@@ -289,7 +289,7 @@ schema["embers.segments"] = { type = "layout", default = {}, mode = "advanced", 
 
 for i = 1, 5 do
   PUI.Layout:RegisterElement("embers.window" .. i, { label = "Embers window " .. i, owner = OWNER, size = { 240, 180 },
-    default = { point = "BOTTOMRIGHT", x = -20 - (i - 1) * 250, y = 220 } })
+    default = { point = "BOTTOMRIGHT", x = -19 - (i - 1) * 250, y = 45 } })
 end
 
 PUI.Slash:Register("embers", function(rest)

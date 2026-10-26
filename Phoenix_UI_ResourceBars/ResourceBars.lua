@@ -306,7 +306,7 @@ for _, name in ipairs(ORDER) do
 end
 
 Layout:RegisterElement("rb.stack", { label = "Resource bars", owner = OWNER, size = { 240, 30 },
-  default = { point = "CENTER", x = 0, y = -160 } })
+  default = { point = "CENTER", x = 0, y = -178 } })
 
 RB.module = PUI:RegisterModule(OWNER, {
   label = "Resource bars",

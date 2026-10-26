@@ -16,8 +16,8 @@ ns.CDM = CDM
 PUI.CooldownManager = CDM
 
 local VIEWERS = {
-  essential = { global = "EssentialCooldownViewer", label = "Essential cooldowns", size = 40, perRow = 8, pos = { "CENTER", 0, -120 } },
-  utility = { global = "UtilityCooldownViewer", label = "Utility cooldowns", size = 32, perRow = 8, pos = { "CENTER", 0, -170 } },
+  essential = { global = "EssentialCooldownViewer", label = "Essential cooldowns", size = 40, perRow = 8, pos = { "CENTER", 0, -215 } },
+  utility = { global = "UtilityCooldownViewer", label = "Utility cooldowns", size = 32, perRow = 8, pos = { "CENTER", 0, -146 } },
   buffIcon = { global = "BuffIconCooldownViewer", label = "Buff icons", size = 32, perRow = 8, pos = { "CENTER", 0, -60 } },
   buffBar = { global = "BuffBarCooldownViewer", label = "Buff bars", size = 200, perRow = 1, pos = { "CENTER", 260, -60 }, bars = true },
 }

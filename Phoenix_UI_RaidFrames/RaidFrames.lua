@@ -33,8 +33,8 @@ local SORTS = {
 RF.SORTS = SORTS
 local KINDS = {
   party = { max = 5, visibility = function() return s.showSolo and "[group:raid] hide; show" or "[group:raid] hide; [group:party] show; hide" end,
-    pos = { "LEFT", 40, 120 } },
-  raid = { max = 40, visibility = function() return "[group:raid] show; hide" end, pos = { "TOPLEFT", 40, -200 } },
+    pos = { "TOPLEFT", 27, -213 } },
+  raid = { max = 40, visibility = function() return "[group:raid] show; hide" end, pos = { "TOPLEFT", 27, -213 } },
 }
 RF.KINDS = KINDS
 
