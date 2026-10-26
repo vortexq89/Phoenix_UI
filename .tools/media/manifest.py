@@ -13,8 +13,8 @@ MEDIA = os.path.join(CHILD, "Media")
 MANIFEST = os.path.join(CHILD, "manifest.json")
 ALLOWED = {"SIL OFL 1.1", "CC0 1.0", "CC BY 3.0", "CC BY 4.0", "MIT", "Apache 2.0", "Original (Phoenix UI)"}
 EXT = {"font": (".ttf", ".otf"), "sound": (".ogg",), "statusbar": (".tga",), "background": (".tga",),
-       "border": (".tga",), "glow": (".tga",), "icon": (".tga",)}
-KIND_ORDER = ["font", "statusbar", "background", "border", "glow", "icon", "sound"]
+       "border": (".tga",), "glow": (".tga",), "icon": (".tga",), "moduleicon": (".tga",), "texture": (".tga",)}
+KIND_ORDER = ["font", "statusbar", "background", "border", "glow", "icon", "moduleicon", "texture", "sound"]
 
 
 def ascii_text(s):
@@ -48,7 +48,8 @@ def write_md(entries):
              "- Sounds: Kenney (www.kenney.nl), CC0 1.0.",
              "- Icons: Icons made by %s from game-icons.net, CC BY 3.0 (zeromancer: CC0). Rendered white on transparent." %
              ", ".join(sorted({e["author"] for e in entries if e["type"] == "icon"})),
-             "- Bar textures, backgrounds, borders and glows: original procedural work for Phoenix UI (.tools/media/textures.py).", ""]
+             "- Bar textures, backgrounds, borders and glows: original procedural work for Phoenix UI (.tools/media/textures.py).",
+             "- Phoenix design set (logo, module icons, ability preview icons, Phoenix statusbars, panels, nine-slices, controls, glows, overlays, hero and preset art, Phoenix_* sounds): original Phoenix UI work, All Rights Reserved; not licensed for reuse outside Phoenix UI.", ""]
     for lic in sorted(by):
         lines += ["## %s (%d files)" % (lic, len(by[lic])), "", "| File | Name | Author | Source |", "|---|---|---|---|"]
         for e in sorted(by[lic], key=lambda e: e["file"]):
