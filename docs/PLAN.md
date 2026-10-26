@@ -1,4 +1,4 @@
-# Phoenix UI — Master Audit and Plan (main-v2 @ c6213ce, updated 2026-10-26 with I:\ competitor study §13 and EllesmereUI deep study §15)
+# Phoenix UI — Master Audit and Plan (main-v2 @ c6213ce, updated 2026-10-26 with I:\ competitor study §13, EllesmereUI deep study §15 and the finished-study integration §16)
 
 Audit and plan only. No code was changed for this document.
 Sources:
@@ -25,6 +25,8 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 ---
 
 ## 0. One-page summary — the biggest gaps
+
+> **2026-10-26 finished-study integration (§16).** The whole I:\ study is finished (Auctionator excluded pending D-AUC; ElvUI ignored per the user). The settings model for every module is now the EllesmereUI-style live preview (§1.S). The 25 cross-cutting rules are guardrails G1–G25 (§1.G). 23 missing items were added as rows 1.19–1.36 and in §5 and §11 (Phase F0, N, O). Ownership is fixed by the matrix in §1.O. Open questions are in §17 Decisions pending.
 
 > **2026-10-26 deep-study correction:** the top gaps are now the 12.1 aura container engine (F1), the Blizzard-viewer CDM model, the per-spec/condition Overrides layer (F2) and Studio v2 anchor/size-match parity (F3). See §15.1 for what changed and §15.4 for the new order.
 
@@ -96,6 +98,88 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 | 1.17 | Controller/gamepad navigation | M | — | spec 5.17 | L |
 | 1.18 | Performance: per-module CPU readout on pages | M | Sentinel Perf.lua samples, not shown in options | spec 8/11 | S |
 
+| 1.19 | **Load-conditions / shared visibility engine** (`PUI.Visibility`): one "where to show" model for every module (instance type, difficulty, combat, spec, group, resting, vehicle, skyriding, pet battle) with a chip picker and a "why hidden right now" readout | M | per-module visibility only | replaces bespoke collectors (EUI-ABR, TGCD, MA, QST); event-driven state + priority chain, coalesced on the Ticker | M |
+| 1.20 | **Binding ledger + cross-module keybind conflict check** (Action Bars, Click-cast, Quickdraw, QoL keys, Embers hotkeys) | M | F4 covers CVars only | owner-tagged SetOverrideBinding*, set+save out of combat; one checker warns at capture time and on a ledger page | M |
+| 1.21 | **FrameLedger** for approved takeovers: record parent, points, shown, alpha; restore on disable/uninstall | M | not numbered before | G4/G6; ledger page with owner and restore button | S |
+| 1.22 | **Ledger page + "Uninstall Phoenix"**: lists every CVar/binding/frame entry and restores only values that are still ours, to the user's prior value | M | — | G6 | S |
+| 1.23 | **Async data service** (items, spells, talent strings): owner + generation + timeout; one talent-string service with validated serialisation version; never mutates live config | M | — | fixes SIMC `/simc` silent hang and WT ID-table hang (G20) | S |
+| 1.24 | **Versioned import schema**: `!PUI_` envelope validated against a schema version, size-bounded, deep-copied, merge-or-replace with a preview count, private exclusions (gold ledger never exported) | P | extends 1.10 | G19 | M |
+| 1.25 | **Plain-text search runner**: generation-tagged Ticker jobs with budget, cancelled on new query; quoted = exact, numeric = ID then prefix | M | — | G11; used by Ctrl+K, IDs, Quest/DB search, pickers | S |
+| 1.26 | **Shared copy dialog** (select-all, explicit hint, no key sniffing) and **chat link handler** via `LinkUtil.RegisterLinkHandler` (existence-checked) or `addon:` links; never hook SetItemRef | M | — | used by SIMC export, chat URL copy, Diagnostics, "open this Phoenix page" links | S |
+| 1.27 | **Own confirm dialogs, no StaticPopup** (avoid rectangles of shown Blizzard popups) | M | — | G5 | S |
+| 1.28 | **Season data file** `PUI.Season` (current season IDs, dungeons, crests, affix IDs) with live-API fill; nothing hard-coded in modules | M | — | WT/EUI-BS hard-coded season tables went stale | S |
+| 1.29 | **Shared services** `PUI.Mouse` (one cursor poll), `PUI.Range` (refcounted), `PUI.Glow` (C-side AnimationGroups, shared prefix schema), `PUI.Format` (BreakUpLargeNumbers, locale) | P | F8 named them | owners per §1.O | M |
+| 1.30 | **Staged boot**: Ticker-budgeted index slices, fail-closed module status row with an action button, heavy dispatchers start one tick later inside a login budget | P | Kernel boots modules | QST fail-closed pattern, declared deferral | S |
+| 1.31 | **Diagnostics `PUI.Diag`** (see §5.17a) | M | Sentinel capture exists | coexist with BugGrabber | M |
+| 1.32 | **Developer profiler `/pui profile`** (see §5.17b) | M | Sentinel perf sampler only | opt-in, zero cost off | M |
+| 1.33 | **Lint suite inside `/pui test`**: implicit globals, undefined refs, OnUpdate, Blizzard frame writes, unescaped gsub replacements, pattern-from-input; schema coverage (every key visible, searchable, live-applied, resettable) | M | guardrail scripts partial | G15, G25 | M |
+| 1.34 | **Ownership matrix** (§1.O) enforced by review and by a registry check (one owner per service/feature) | M | — | no duplication or overlap | S |
+| 1.35 | **Coexistence detector** (BigWigs, BugGrabber, PGF, FrameSort, Masque, SimulationCraft): yield their frames/CVars, integrate via public APIs, never write their settings | P | ad hoc PGF stand-down | G22; generalises 1.15 | S |
+| 1.36 | **Phoenix chat hyperlinks** ("open this page") and **Blizzard Settings entry** (one "Open Phoenix" button, opens our panel next frame) | P | — | WT pattern, original code | S |
+
+### 1.S Settings model for every module (EllesmereUI-style live preview — user direction t53u)
+- Every setting applies live, with no /reload. A key that can't be live-applied can't exist (G25).
+- Every page opens with a **live preview drawn by the module's real paint code**, fed fixed sample values (fake roster, cycling auras, sample casts, sample numbers). No second preview implementation.
+- **Simple first, advanced expandable**: the common rows show by default; depth sits behind a per-row cog or an "Advanced" expander.
+- **No code required, ever.** Wherever a power-user expression or raw tag exists, a visual builder produces it (tag chips, filter builder, trigger builder, rule rows).
+- Every disabled control says why; every feature has its own reset; changed values show a reset dot and tint.
+- Widget contract: slider with typed input; keybind capture with conflict warning (1.20); colour picker whose Cancel restores the old colour and commits debounced while dragging; Escape reverts, Enter commits (G10); keyboard/controller focus.
+- This replaces any ElvUI-style reference: ElvUI is ignored by the user's direction.
+
+### 1.G Guardrails (cross-cutting rules G1–G25, from the finished study)
+These are in force for every PR alongside the standing rules (original code only; live apply; no OnUpdate outside the Ticker; secret values to widgets only; done = guardrails + `/pui test` + in-game check). "Source" names the behaviour seen in the studied addons that each rule prevents; no code was copied.
+
+| # | Rule | Source (bug it prevents) |
+|---|---|---|
+| G1 | **Secret values go only to widgets** (SetValue, SetText, SetFormattedText, a colour curve, an engine container). Never compare them, do arithmetic on them, or use them as table keys. Use `issecretvalue`/`canaccessvalue` before any logic, and place the check *before* any `or ""`-style coercion. | WT's IsSecretValue was implemented as a nil check. Unguarded compares in EUI-RB (icicles, stagger, Devourer, Maelstrom), EUI-RF (lossPct, display name) and EUI-DM (pcall wrapped only the read). EUI-AB's count froze after a coercion-before-check throw. |
+| G2 | **No OnUpdate.** All timing runs through PUI.Ticker, with self-disarming subscriptions. Animations use C-side AnimationGroups or duration objects (SetTimerDuration, SetCooldownFromDurationObject). Fixed-step animation is banned. | EUI-RB's 0.016 s fixed step slowed animation at low FPS, and it ran 4×60 Hz tickers per bar. AQ and QST polled forever. MA, EUI-OPT popups and EUI-CH idle fade used OnUpdate. |
+| G3 | **Protected work goes through CombatQueue.** Drain is event-driven (PLAYER_REGEN_ENABLED) with a frame budget, and entries are deduplicated by key, so ten "update tracker" calls become one. | QST polled at 10 Hz. WT's TaskManager had no dedupe. EUI-DB hid/showed secure content in combat (ADDON_ACTION_BLOCKED). |
+| G4 | **No edits to Blizzard frames, globals or shared metatables.** This means no SetScript, function replacement or reparenting of Blizzard secure frames. Use hooksecurefunc/HookScript only, and keep per-frame state in external weak tables, never fields on Blizzard frames. Any approved takeover goes through FrameLedger (record parent, points, shown state and alpha; restore on disable). | AQ replaced a global dialog function. WT nop'd map-pin mixins and extended the FontString metatable. SAR reparented CompactArenaFrame with no restore. EUI-BG's hooks are permanent with no undo. BW caches unhooked globals "in case others hook them". EUI-UF: a `.unit` field taints PingManager. |
+| G5 | **Never toggle Edit Mode from code, and never enter StaticPopup lists.** Phoenix uses its own confirm and copy dialogs and avoids the rectangles of shown Blizzard popups. | SAR's Edit Mode toggle caused the MirrorTimer bug. QT flagged StaticPopup as an Edit Mode taint vector. |
+| G6 | **Every CVar, binding and frame takeover is ledgered.** Writes are owner-tagged and restored to the user's *prior* value, never to a hard-coded "1" or a default. Persistent CVars are never re-asserted at login. | EUI-BS forced UberTooltips at every login. EUI-OPT (D2b) set scriptErrors=0 by default. BW wrote encounter CVars without a ledger. SAR forced DR/PvP colour CVars. EUI-QOL lost its weSetCVar flag after reload. BW's reset left an override binding active. |
+| G7 | **Errors are never hidden by default.** Error suppression is opt-in and visible. | EUI-OPT (D2b) set scriptErrors=0 at every login. |
+| G8 | **One settings scope per data set.** Seed flags, positions and links live in the same scope as the data they describe. | EUI-BG seed flags were account-wide while the data was per profile, so new profiles were never seeded. EUI unlock links were global while positions were per profile. EUI-BS mixed scopes. |
+| G9 | **Read-time override layering** (`condition → spec → profile → default`), never swap-and-harvest of live values. Transitions are guarded so they always reset their latch on error. | EUI's spec-override data loss, `_condBusy` freezing until /reload, override values leaking onto shared entries. |
+| G10 | **Save before apply, and revert on every hide path.** Each popup or editor holds a draft and commits or discards it as a single transaction. Escape *reverts* and Enter commits. A colour picker's Cancel restores the old colour. | EUI-OPT inputs: Escape actually committed. MSBT popups wrote caller tables directly. EUI-FE closing a window mid-commit rolled back a learn. EUI-OPT font change saved before the reload prompt, leaving the screen out of step. |
+| G11 | **Plain-text search everywhere.** Use `find(s, q, 1, true)`. Quoted means exact; numeric means exact ID first, then prefix. User input is never used as a Lua pattern. Searches are generation-tagged Ticker jobs with a budget and are cancelled when a new query starts. | QST slash command crashed on `/q (`. PGF article filter used `|`, which Lua patterns don't support. |
+| G12 | **Escape every substitution.** Any user or game text placed into a gsub replacement is %-escaped. | MSBT %e/%a/%t replacements. SAR's `@arena` substring bug rewrote arenapet. |
+| G13 | **Maps: open with `C_Map.OpenWorldMap(mapID)`, never SetMapID on the frame.** Use `C_Map.GetMapChildrenInfo` plus GetMapRectOnMap for zone↔continent transforms, cached lazily per session. Nothing static ships. | Questie.md Pass 4b (QuestieCompat: OpenWorldMap and GetMapChildrenInfo usage) and QT #6. |
+| G14 | **Never mutate Blizzard UI state in order to read it.** Use ByID APIs (reputation, trade skill) and never expand or collapse headers. Never write Blizzard LFG tables, the AH saved filter, or Blizzard_CombatLog filters. | QT #3. EUI-FE scanned only expanded rep headers. AQ cleared `LFGListFrame.declines`. PGF wrote back the results table. EUI-QOL wrote the AH filter. MSBT wrote a combat-log filter. |
+| G15 | **No globals.** Lint for implicit globals and undefined references. Forward-declared locals are fine. | EUI-CDM `GetBarData`, `FOCUSKICK_BAR_KEY`, `_focusKickIsHealer`; EUI-UF `_cpExpectedParent`; EUI-BG `sidebarChild`; EUI-BS `dialog`; MSBT undefined validator; BS and MA global names. (MSBT bug 1 was retracted: lesson learned.) |
+| G16 | **Locale-safe logic.** Use IDs, enums and Blizzard global strings. Never match English chat or tooltip text, and never truncate by bytes. | EUI-QOL Hero/Myth scan, QST loot strings, SAR healer names, PGF affix names, MSBT English summaries, EUI-DB byte truncation and hard-coded ",". |
+| G17 | **Versioned, idempotent, snapshot-first migrations.** Never inside constructors or import paths. Never force-reset a user subtree (D-WT-MIGRATE-1 recommends "never"). | EUI-DB factory silently migrated. SAR ran 12 flag migrations and forced drResetTime. EUI-RF migrated every profile at every login. WT migrated only the active profile. |
+| G18 | **Pure reads.** A getter never writes defaults, prints anything or mutates the profile. Hot paths never write saved settings. | MA IsEnabled had side effects. EUI-RB Enhancement threshold was written from the update path. EUI-OPT mouseover mode mutated the profile. |
+| G19 | **Copy means deep copy.** Profiles and imports are deep-copied, validated against a versioned schema and bounded in size. There is a merge-or-replace choice with a preview count. | MA profile copy created an alias. MSBT copy overwrote an existing profile. BS received payloads with no size limit or allow-list. |
+| G20 | **Async with owner, generation and timeout.** Item and spell loads carry the requesting view's generation plus a timeout. Stale results are dropped, and a never-firing callback can't block a window. | SIMC `/simc` silently never opened (bug 8). WT's ID table never completed on an invalid ID. MSBT stale timers (the generation counter is a good pattern). |
+| G21 | **Event-driven, demand-gated modules.** No events are registered while a feature is off or empty, and none outside their content (for example arena). Hooks are installed once and gated by the enable flag. | WT UnhookAll was a no-op. EUI-CDM demand gate (good). SAR zero-cost-outside-arena (good). QST forever tickers. |
+| G22 | **Coexist; don't compete.** Detect BigWigs, BugGrabber, PGF, FrameSort, Masque and SimulationCraft. Yield the frames and CVars they own, and integrate through their public APIs. Never write another addon's settings (D-WT-COMPAT-1). | BW frame ownership. BGr/BS contract. PGF stand-down. |
+| G23 | **Pixel-perfect integer maths.** Compute sizes in physical pixels, then multiply by the scale. Centre snapping is parity-aware. | EUI-CDM float-dust bug (3×21.666 → 81). EUI-RB 1 px drift on spec swap. |
+| G24 | **Stable keys, not indexes**, for selection, journal entries and profiles. Avoid `pairs` order wherever order matters. | MSBT index selection. EUI-FE and PGF nondeterministic `pairs`. QST journal. |
+| G25 | **Every setting is schema-declared.** Each one carries an apply target and a struct/style/geo/filter tag. The page, search, defaults, reset and fingerprint are all generated from that one declaration, so a key that is never live-applied can't exist. | EUI-RF FP lists were maintained by hand. EUI-OPT duplicated defaults (pushed default 3 vs 2; pipWidth 214 vs 220). Shift X/Y stored nil at 0. Two swatches edited one key. |
+
+### 1.O Ownership matrix (one owner each — no duplication or overlap)
+| Feature | Claimed by | Owner / resolution |
+|---|---|---|
+| Spell/cast history | EUI-DM Spell History, TGCD | **Cast History (B11)** owns it. Embers only links to it. |
+| Cast bars | Unit Frames, Resource Bars, Nameplates, Arena | One castbar **element** in Core (paint + dispatcher). Modules instantiate it, and the 13-event dispatcher is shared. |
+| Aura display | UF, Raid, Plates, Arena, Player Aura Bars, CDM buff bars | **PUI.Auras (B7.1)** is the engine. Surfaces only configure it. CDM buff bars stay on Blizzard viewer data (no own aura calls). |
+| Range | Raid fade, plates, target distance, Arena | **PUI.Range** service, refcounted. |
+| Visibility / "where to show" | Every module | **B1.4** load-conditions engine. |
+| Glows | Action Bars, CDM, Raid, Arena | **PUI.Glow**. |
+| Movers | Studio, MA-style window mover, per-module unlock | **Studio (B3)** registry. Modules register; none build their own drag. |
+| M+ timer | Ascent (EUI-MT), QST challenge timer | **Ascent** owns it. The quest tracker shows nothing for keys. |
+| Encounter timers / warnings | Pulse, BigWigs | Pulse is active only without a boss mod. With BigWigs, stand down and bridge (R22). |
+| Group-finder filtering | GroupFinder, PGF | Phoenix stands down its filter layer when PGF loads (kept: queue QoL B16.2, unless overlapping). |
+| Error capture | Diagnostics, BugGrabber/BugSack | Coexist: become a display on BugGrabber's callback. |
+| Profiles | TGCD, MSBT, SAR, MA (own stores) | Only the **Core profiles**. Modules hold no profile store. |
+| Key bindings | Action Bars, Click-cast, Quickdraw, QoL FPS key, DM hotkeys | **Binding ledger** plus one conflict checker across all of them. |
+| CVars | Nameplates, Arena, Combat Text, QoL, Flow | **CVar ledger**. With BigWigs loaded, its encounter CVars are excluded. |
+| Group-age tooltip line | AQ, PGF, Phoenix GF | One line from GroupFinder. Skipped when PGF is loaded. |
+| Number formatting | DM, Data Bars, Combat Text, UF tags | **PUI.Format**. |
+| Copy box | SIMC, WT, Chat URL copy | One shared copy dialog. |
+| XP/Rep bars | Action Bars (EUI-AB), Data Bars | **Data Bars** owns the blocks. The XP/Rep bar is a Data Bars template. |
+
+
 ## 2. Options window (mockups 01–04) and tabs
 
 | # | Feature | Status | Evidence | Size |
@@ -161,6 +245,11 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 | 4.16 | Safe-area/HUD-zone guides | M | — | S |
 | 4.17 | Chat, minimap and buff frames as movers | M | not Layout elements | M |
 
+- **Study additions (§16):**
+  - Mover registry entries {key, label, frameGetter, kind, defaultPoint, minSize, resizable, active, options schema}; drag on Ticker/animation callbacks (no OnUpdate); positions as centre offsets in UIParent units snapped by parity (G23); combat moves parked via CombatQueue; Edit Mode never toggled from code (G5); undo/redo; anchor cycles reported, not hidden by pcall; position links in the same scope as positions (G8).
+  - **Window mover (new):** move/scale Blizzard panels, registry keyed by Blizzard_* LoD addon (ADDON_LOADED), Phoenix overlay handle on the title region, HookScript + FrameLedger only, no reparenting of aura containers.
+  - **Importers from other mover addons (new):** one-shot, read-only, user-triggered.
+
 ## 5. Module-by-module audit
 
 Each table lists what exists against the spec. "Competitor extra" lists parity items from ElvUI/EUI/Plater/Cell/Bartender/Baganator/Prat/Leatrix that the spec did not already name.
@@ -190,6 +279,13 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Studio elements | B | `uf.player` … `uf.boss` |
 | Competitor extra | — | ElvUI: "fader" (combat/target/hover), heal-absorb overlay, pvp trinket/classbar on frame, threat glow, ToT inline, aura filters per unit with priority lists; EUI: aura bars with filtering |
 
+- **Study additions (§16, 2026-10-26):**
+  - Unit engine: one tracker per unit with RegisterUnitEvent, painters per channel, vehicle handled at registration; unit kept in secure attributes only (never a `.unit` field — taints PingManager); secure unit-menu proxy for the 12.1 togglemenu bug.
+  - Cast bar is the shared Core castbar element (§1.O) on UNIT_SPELLCAST_* events; aura bottom reserve from live geometry in physical pixels (G23).
+  - Text tags without code: token chips + format dropdown; raw tag field optional for power users; secret-safe formatters (UnitHealthPercent with a curve → SetFormattedText) so a secret value never shows 0.
+  - Per-frame visibility via 1.19 (fade out of combat, resting alpha, show when health missing, solo/party/raid).
+  - Auras only through PUI.Auras (F1); `C_UnitAuras.AddAuraSound` for gain sounds.
+
 ### 5.2 Raid & Party — 23 keys (RaidFrames.lua, Elements.lua) + ClickCast (3 keys)
 
 | Feature | Status | Evidence |
@@ -208,6 +304,12 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Preview | M | — |
 | Competitor extra | — | Cell/VuhDo/Grid2: corner indicators editor, raid debuff tiles per instance (data pack), buff tracking per role, health gradient colours, mouseover highlight, "spotlight" frames, layout per group size (5/10/20/40) |
 
+- **Study additions (§16, 2026-10-26):**
+  - SecureGroupHeader; range fading via PUI.Range; absorb coalescer; FrameSort provider shim; health % via safe paths only; per-frame state in external weak tables; migrations versioned, never every login over all profiles (G17).
+  - Indicator manager page (70/30: list left, live preview right, spec selector, healer-spec presets) over F1 containers + a declarative indicator list. Honest notes where 12.1 secrecy blocks a mode ("missing/allPresent", frame alpha) instead of silent fallback.
+  - Click-cast + Hovercast: global / options / per-spec columns, conflict warning via 1.20, WrapScript or persistent secure button, all changes via CombatQueue.
+  - Aura-icon tooltip on modifier (secure motion eater).
+
 ### 5.3 Nameplates — 17 keys (Nameplates.lua, Plate.lua)
 
 | Feature | Status |
@@ -223,6 +325,13 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Totem/pet compact plates | M |
 | Preview | M |
 | Competitor extra | Plater: per-NPC colour tables (importable), cast-target name where public, "focus" indicator, health % colouring thresholds, quest progress text on plate |
+
+- **Study additions (§16, 2026-10-26):**
+  - Own plate pool with prewarm; overlays created lazily for target/focus only; quest mobs via C_TooltipInfo (cached, locale-safe); friendly name-only mode rides Blizzard's own name FontString.
+  - Visibility CVars written only on explicit intent, via the CVar ledger; never re-asserted at login (G6).
+  - Aura lanes: pre-created container bundle attached/detached on NAME_PLATE_UNIT_ADDED/REMOVED; purge glow by engine group.
+  - Cast dispatcher: the 13 SPELLCAST events registered once globally and shared with every castbar (§1.O); kick-ready tick, interrupted flash, cast target.
+  - NPC rules engine as visual rule rows (NPC, colour, scale, glow).
 
 ### 5.4 Action Bars — 105 keys (ActionBars.lua, Buttons.lua)
 
@@ -243,6 +352,13 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Preview | B (icons) |
 | Competitor extra | Bartender/Dominos: per-bar alpha/padding/flip, "hide in pet battle/vehicle" presets, cooldown text options, keybind abbreviations |
 
+- **Study additions (§16, 2026-10-26):**
+  - Secure controller with restricted map; showgrid bitmask; state-driver paging; SetOverrideBindingClick through the Binding ledger (1.20); range via ACTION_RANGE_CHECK_UPDATE; bar dormancy.
+  - Counts guarded by secret checks *before* any coercion (count-freeze bug); durations straight to SetCooldownFromDurationObject, never memo compares (stale swipe); assisted-combat slot spam excluded.
+  - Preview uses the real button paint (no drifting second implementation); apply-to-all has undo and never copies mouseoverAlpha into transparent bars; shape change never overwrites fonts.
+  - Micro/bag bar: own buttons calling Blizzard toggles, vehicle and pet-battle visibility. XP/Rep/House Favor bar is a **Data Bars template** (§1.O).
+  - Game Menu button inside the Esc menu (standing rule, D1).
+
 ### 5.5 Cooldown Manager — 22 keys
 
 | Feature | Status |
@@ -259,6 +375,11 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Per-spell import | M |
 | Preview | M |
 
+- **Study additions (§16, 2026-10-26):**
+  - Hooks OnCooldownIDSet and pool Acquire, queues re-anchor; never SetParent/SetScale/Hide on viewer frames (unclaimed frames get alpha 0); all state in weak external tables.
+  - Demand-gated; "store not ready" held and retried; talent debounce; integer-pixel layout (G23); flicker fixed by UnitIsUnit checks; schema-driven re-evaluation instead of once-per-login flags.
+  - Spell Picker page (add/swap/move/replace) with live preview and presets; Focus Kick bar; Mirror Key Presses; pandemic sync with nameplates. Buff bars stay on Blizzard viewer data.
+
 ### 5.6 Resource Bars — 18 keys (ResourceBars.lua, ClassResource.lua)
 
 | Feature | Status |
@@ -270,6 +391,11 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Coverage of 20+ resources | P (ClassResource.lua; verify each class in game) |
 | Empower pips, latency on the cast bar | M |
 | Preview | B |
+
+- **Study additions (§16, 2026-10-26):**
+  - Colour curves (Step ColorCurve) and hidden one-slot aura containers for spec helpers: zero Lua per frame; memoised ticks; smoothing via C-side animation, never fixed-step (G2); one Ticker subscription per bar group, not 4×60 Hz per bar.
+  - Threshold bands drawn on the preview with their meaning stated; growth settings that are live (no dead keys).
+  - GCD, swing, totem and cast bars on duration objects; a GCD change applies only its own target.
 
 ### 5.7 HUD: Minimap (7), Tooltip (6), Data Bars (7) — Phoenix_UI_HUD
 
@@ -286,16 +412,32 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Blocks: professions, travel/hearth, micro menu, currency, crests, vault, audio, friends/guild, mail, CPU, M+ score, LDB host | M |
 | Previews | M |
 
+- **Study additions (§16, 2026-10-26):**
+  - **Tooltip IDs (27 kinds)** + derived IDs (icon, use-spell, enchant, bonus, gems) merged per kind; four groups (Items, Spells, World, Collections), each kind toggleable and searchable; bonus/trait IDs off by default; secret guards before compares; skipped in pet battles.
+  - Tooltip info via one TooltipDataProcessor post-call; never force UberTooltips; locale-safe stat names.
+  - Minimap: border on a dedicated host re-anchored each pass; addon-button collector flyout; first-install capture.
+  - Data bars: user-created bars from templates; layout solver; secure blocks (travel, spec popups) built out of combat, never Hide/Show secure content in combat; gold ledger with confirm; filtered currency refresh; locale-safe text.
+
 ### 5.8 Quest Tracker — 8 keys
 
 - **B:** sort, filter, auto-track zone, auto quest, sound, collapsed, hide Blizzard.
 - **M:** quest-item SecureActionButton; Wowhead links; M+ objective collapse; progress colours (verify); auto-share.
+
+- **Study additions (§16, 2026-10-26):**
+  - HookScript only; pooled rows grown on demand; one per-character collapse set keyed by questID; timer job only while a timed quest exists; auto-quest popups inside the tracker; capability-gated right-click menu with explained disabled entries; never ReloadUI on enable/disable.
+  - **Map rules (G13):** open maps with `C_Map.OpenWorldMap(mapID)`; zone↔continent transforms via `C_Map.GetMapChildrenInfo` + GetMapRectOnMap, cached lazily; a **map-lines service**; pin removal O(n) with icon limits; private tooltip for gamepad hover without OnUpdate.
+  - **Quest item delete-protection:** tooltip warning line or our own confirm overlay (no StaticPopup, G5).
+  - Quest/DB search via the plain-text runner (1.25). M+ timer is owned by Ascent, not the tracker.
 
 ### 5.9 Skins — 30 keys
 
 - **B:** 25 window toggles plus Details/Pawn/WeakAuras/Plater toggles.
 - **P:** the quality of each pack is unverified in game; Primitives are in Skins.lua. Tooltip/dialog/HUD/chat-bubble skins are not keyed.
 - **M:** Questie/Auctionator via Skin API; guild bank skin.
+
+- **Study additions (§16, 2026-10-26):**
+  - Style-aware window skins and character/inspect sheet (ilvl, enchants, upgrade track, gems): borders deduplicated on INSPECT_READY; gem flyout respects socket type; no auto-equip without an option and a combat guard; level tables from PUI.Season (1.28).
+  - Friends skin: search, class icons.
 
 ### 5.10 Chat — 6 keys
 
@@ -315,6 +457,10 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - chat bar / smart tab;
   - channel colour editor.
 
+- **Study additions (§16, 2026-10-26):**
+  - Blizzard chat stays the data plane; lines bridged to our display via an AddMessage post-hook; never hook FCF_* or reparent chat widgets; idle fade on the Ticker.
+  - URL copy via the shared copy dialog (1.26); class names in bodies; history across reload (never stores secret text); search. Documented limit: secret args skip chat filters.
+
 ### 5.11 Vault — 6 keys
 
 - **B:** grid/list/compact mode, columns, ilvl, junk, new glow.
@@ -329,6 +475,9 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - equipment-set builder;
   - sell-junk button (verify);
   - stack splitter.
+
+- **Study additions (§16, 2026-10-26):**
+  - Categories by Enum.ItemClass; bag ranges from Constants.InventoryConstants; keyed on links/IDs, names filled later; seed flags in the same scope as data (G8); one pin semantic; gold wipe needs confirm; restore path and trim.
 
 ### 5.12 Flow — 21 keys (spec ~40)
 
@@ -347,15 +496,26 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **B:** raid/class rows, custom, size, sound, text, only grouped (pack data).
 - **M:** consumables pack depth, talents by zone, per-reminder sound/icon.
 
+- **Study additions (§16, 2026-10-26):**
+  - One declarative reminder engine (class/spec/talent/content/combat-safe rule rows, per-section "where to show" via 1.19, sounds); secure pool out of combat, visual-only icons in combat; pre-combat aura snapshot; UNIT_IN_RANGE_UPDATE instead of polling; "why hidden" overlay in preview.
+
 ### 5.14 Embers — 10 keys (LoD)
 
 - **B:** windows up to 5, meter type, segments, boss-only, max segments, graph, report, rows, look; export; history/compare (tests).
 - **M:** death recap window, window snapping, per-spec icons (verify), Forever threat meter, encounter history markers.
 
+- **Study additions (§16, 2026-10-26):**
+  - Meter windows over C_DamageMeter with the §15.5 segment engine; secret-guarded amounts *and* durations (past segments too); per-window cog; show/hide-all hotkey through the Binding ledger.
+  - Spell history is **not** built here: Embers links to Cast History (§5.21, §1.O).
+
 ### 5.15 Ascent — 8 keys
 
 - **B:** timer, splits, records, sounds, TTS, notes, hide Blizzard, scale.
 - **M:** forces current-pull preview (verify), death log, score projection, vault planner, kick tracker, run summary card.
+
+- **Study additions (§16, 2026-10-26):**
+  - M+ timer: completion time from `C_ChallengeMode.GetChallengeCompletionInfo` (GetWorldElapsedTime can be secret/stale — the "99:99" bug); Ticker job only while a key is active; next-threshold countdown colour; per-run summary with rating deltas; IDs not English difficulty names.
+  - Alerts, battle res, Bloodlust, cursor ring, combat logging per content, target distance (PUI.Range); every UnitClass/unit read secret-checked.
 
 ### 5.16 Oracle (5), Wisdom (6), Loadouts (5), GroupFinder (9)
 
@@ -372,6 +532,12 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - **B:** role fit, rating, missing roles, declined memory, dim, sound, PGF stand-down.
   - **M:** filter presets per dungeon, quick signup on Enter, persistent note (verify).
 
+- **Study additions (§16, 2026-10-26):**
+  - **GroupFinder filters:** visual filter builder (role counts, rating sliders, lockout, friends) that *generates* an expression; optional expression field with plain-text validation; sort picker with stable comparator; delve tiers, raid bosses, group age, new/declined colouring; decorates our own overlay rows, never writes Blizzard results/decline tables (G14); cached activity map by ID; read-only in restricted states.
+  - **Queue QoL:** role-check auto-accept, sign-up auto-confirm (Shift bypass), per-spec role override, declined/delisted colouring with timer, persistent sign-up note; event-driven only, no global function replacement, no SetScript on ScrollBox; auto-enter is a user-confirmed big button or sound, never a synthetic click.
+  - PGF present: stand down per D-PGF (§17); one group-age tooltip line, skipped when PGF loads.
+  - **Export hub (Wisdom):** calls SimulationcraftAPI when present, never duplicates it; uses the async data service (1.23) and the shared copy dialog.
+
 ### 5.17 Sentinel — 8 keys (+ Companion, website)
 
 - **B:**
@@ -383,6 +549,10 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - **B:** ingest + D1 + admin `/phoenix/*` pages deployed (#15–#19).
   - **M:** public `/status`, `/sentinel` pages generated from data (verify which exist).
 
+- **5.17a Diagnostics `PUI.Diag` (new, M):** if BugGrabber is present, subscribe to its BugGrabbed callback and register as a display; otherwise own handler with a token-bucket throttle. Viewer with sessions, prev/next, counter, links. Store non-secret text only; no gsub on possibly-secret text. Send-to-player off (D-DIAG-SEND). Privacy kit for exports (GUID-kind allow-list, whole-word name redaction, system-string allow-list). Opt-in dev recorder (change-only streams, orphan-session recovery). `/pui safe` bisect mode restoring CVars via the ledger (D-WT-DEBUG-1). Errors never hidden by default (G7).
+- **5.17b Profiler `/pui profile` (new, M):** opt-in, zero cost off; samples module entry points registered through the Phoenix API (no _G/frame traversal); GetTimePreciseSec; active-slice timing for Ticker jobs; measurement generations; frame-free report builder (self vs inclusive, grouped tree, honest "N hidden"); interleaved A/B helper; hot-primitive exclusions declared once; feeds the per-page CPU chip (1.18).
+- **5.17c `/pui test` depth:** pure-Lua view-model tests with mock widgets; unit-tested aura partition solver and Classify functions; lint suite (1.33); schema coverage.
+
 ### 5.18 Theme & Media
 
 - **B:**
@@ -390,6 +560,10 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - accent (11) and panel material;
   - module icons 64/128.
 - **M:** border styles picker (6), shape masks (8), class/role icon sets, dark-mode/faction themes.
+
+- **Study additions (§16, 2026-10-26):**
+  - Media library: openly licensed or our own only, highest quality; LSM registration of licensed media only; global Fonts/Textures/Colours/Glows pages with preview; font change applies live.
+  - Looks axis (Phoenix / Blizzard-like / Classic) as StyleCards; accessibility palettes and reduced motion (1.16).
 
 ### 5.19 Locales — 837 keys, 9 languages at about 2%
 
@@ -411,7 +585,13 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | **Pulse** (C_EncounterTimeline bars, next-three HUD, pull/break, private-aura sounds, per-boss options, BigWigs/DBM stand-down) | M (paused) | 6.8 | XL |
 | **Arena Frames** (spec icons, trinkets/racials gated by issecretvalue probe, DR, dampening, test mode, layouts, "no longer possible" list) | M (paused) | 6.9 | XL |
 | **Spark** SCT (C_CombatText; scroll areas, animations, merge, school colours, notifications; MSBT stand-down) | M (paused) | 6.10 | L |
+| **Cast History** (new; spell-history strip or fading icons; castGUID-keyed state machine start/channel/empower/succeed/stop/interrupted with secret-safe early-out; pooled icon ring; blocklist picker by ID; "where to show" via 1.19; Studio mover; Core profiles only; owns spell history for Embers too) | M | — | M |
 | Raid Tools (markers, ready check, pull, notes ooc) | M | 22.13 | M |
+
+**Deepened Tier 1 entries (§16):**
+- **Pulse:** `C_EncounterTimeline` natively, never index-walking a fixed timer list (so a fight that outruns the list still warns); active only without a boss mod. With BigWigs loaded: stand down, keep its encounter frames and CVars (excluded from the CVar ledger), offer the BigWigs bar-style/profile bridge. Countdowns cancel their own timers only; emphasised fade honours settings.
+- **Arena:** own secure buttons (click attributes via CombatQueue, `@arena` substitution escaped, G12); secret-first spec display through the Blizzard role-map helper; health/power to widgets only; ArenaMatch state service (Idle/Prep/Engaged/Ended) on PVP_MATCH_STATE_CHANGED; zero events outside arena; 1 Hz Ticker match timers; DR from Blizzard DR APIs or opt-in ledger-restored mirror (D-ARENA-DR); optional FrameSort numbering; PvP colour CVar via ledger; layout presets as schema styles over one paint function, test mode uses that paint; never toggles Edit Mode or reparents CompactArenaFrame; relative frame levels.
+- **Spark:** attribution from UNIT_COMBAT plus own casts with confidence (trust a guess only once confirmed, nil when ambiguous); pooled text lines on the Ticker; escaped formatters; per-frame dedupe (no double heals, no double loot); Blizzard SCT via CVar ledger only; never writes Blizzard_CombatLog filters; area cards with live preview of sample numbers; visual trigger builder (health, power, aura, cooldown) without code.
 | Council | M | Tier 2 | XL |
 
 ## 6. Deferred list (consolidated)
@@ -523,6 +703,11 @@ Merge, push live and install follow the existing rules.
 - 1.6 manager, 1.10 serializer/export/import (whole/module/CDM/layout), 1.7 spec auto-switch, then enable Import/Export in the wizard and dashboard.
 - Accept: round-trip export→import equals the source (T); the switch is deferred in combat (T + I); malformed strings are rejected safely.
 
+**Phase B+ — Foundations from the finished study (L; before module depth)**
+- 1.19 visibility engine, 1.20 Binding ledger + conflict check, 1.21/1.22 FrameLedger + ledger page, 1.23 async data, 1.24 versioned import schema, 1.25 search runner, 1.26 copy dialog + link handler, 1.27 own confirm dialogs, 1.28 PUI.Season, 1.29 shared services, 1.30 staged boot, 1.33 lint suite, 1.34 ownership check, 1.35 coexistence detector.
+- Settings model §1.S applied to the options shell: live preview slot, simple/advanced expander, disabled-reason tooltips, per-feature reset.
+- Accept: G1–G25 enforced by the lint suite where mechanical (T); every ledger restores the prior value after disable (T + I); keybind conflict warning shown across modules (I).
+
 **Phase C — Options editor widgets (M–L)**
 - Colour picker, border picker, keybind capture, list editor, rule editor, aura picker, tag editor, cog popups, deep links, reset-all, CPU readout.
 - Accept: each widget is schema-driven with an apply function, and has a T test per widget type.
@@ -562,8 +747,12 @@ Merge, push live and install follow the existing rules.
 - Skins audit in game.
 
 **Phase I — New modules (XL each)**
-- Pulse → Arena → Spark → Raid Tools.
+- Pulse → Arena → Spark → **Cast History** → Raid Tools (deepened entries in §5.21).
 - Each gets its mockup first, a "not possible on 12.1.5" list, and stand-down rules.
+
+**Phase N — Diagnostics and profiler (M)**
+- §5.17a `PUI.Diag` with BugGrabber coexistence, privacy kit, recorder, `/pui safe`; §5.17b `/pui profile`; §5.17c test depth.
+- Accept: with BugGrabber loaded Phoenix registers as a display and installs no handler (T + I); profiler off = zero hooks (T); report totals match within 5% on an A/B run (I).
 
 **Phase J — Locales and accessibility (M–L)**
 - Translation workflow (export keys, community PR).
@@ -957,13 +1146,34 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 9. HUD (minimap collector, data-bar engine), Chat engine, Vault views, Embers/Ascent depth, Reminders.
 10. QoL systems, Pulse/Arena/Spark, radial palette.
 11. Translations, plugins, release.
-Every step: mockups first where Mock = Y; each PR updates this section's St column and `CHANGELOG.md`.
+Step 2 now also includes §11 Phase B+ (1.19–1.36); step 10 adds Cast History; Diagnostics/profiler (Phase N) run after step 9. Every step: mockups first where Mock = Y; each PR updates this section's St column and `CHANGELOG.md`.
 
 ### 15.5 Hand-read corrections (pass 2, 2026-10-26)
 Read by hand so far: DamageMeters main file and Lifecycle (full), the Window refresh core, and the first 260 lines of Nameplates AuraContainers. The tracking column is `hand_read` in `COVERAGE.tsv`. The remaining module files are still parse-only and are tracked as `no` (see the report).
 - **Embers segment engine (new F-level item for Embers):** one shared refresh ticker, combat-only and visible-only; refresh floor 0.5 s; fetch-time spike guard (defer paint when the API takes >1.5 ms); segment token; `ENCOUNTER_START` as a hard boundary; kill vs wipe freeze rules; group-still-fighting poll with a 5 s failsafe; teammate-pulled-first pre-warm; PvP match end; post-combat declassify refresh at +0.5 s; source-key snapshot on `ADDON_RESTRICTION_STATE_CHANGED`. All timing goes through `PUI.Ticker` in our version.
 - **Correction (F1):** aura container creation is legal in combat on current 12.1 builds, so pools are warm caches, not hard limits. While auras are secret, anchoring to aura buttons is restricted, so restyles must make zero button calls when nothing changed. Added to F1's acceptance: "restyle inside an M+ key with unchanged anchors produces no restriction errors".
 - **Correction (Nameplates):** you can't read per-aura dispellability in restricted content, so purge glow must be done by engine group (Dispellable token).
+
+## 16. Finished-study integration (2026-10-26)
+Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied addon). Auctionator-derived content is **excluded** pending D-AUC; ElvUI is ignored per the user (t53u). No code was copied; all notes describe behaviour only.
+- Guardrails G1–G25 merged into §1.G; ownership matrix §1.O; settings model §1.S.
+- 18 new foundation rows 1.19–1.36; Study additions in §4 and §5.1–§5.18; new §5.17a–c; Cast History and deepened Pulse/Arena/Spark in §5.21; Phases B+ and N in §11.
+- Coverage of the 23 "not yet in plan" items: Cast History (§5.21), Diagnostics (§5.17a, 1.31), `/pui profile` (§5.17b, 1.32), visibility engine (1.19), Binding ledger + conflict check (1.20), FrameLedger (1.21), window mover + importers (§4), GF queue QoL + filter builder (§5.16), Tooltip IDs (§5.7), Arena internals (§5.21), Spark attribution + triggers (§5.21), BigWigs coexistence + C_EncounterTimeline (§5.21, 1.35), AddAuraSound (§5.1), copy dialog/link handler/no-StaticPopup (1.26, 1.27), map rules + delete-protection (§5.8), search runner + escaped substitution (1.25, G12), versioned import schema (1.24), lint suite (1.33), export hub (§5.16), async data (1.23), errors-not-hidden + no CVar re-assert (G6, G7), PUI.Season (1.28), ownership matrix (§1.O).
+
+## 17. Decisions pending
+| ID | Question | Recommendation |
+|---|---|---|
+| D-AUC | May Auctionator study notes be used at all? (Its files ask AI tools not to use its code as a reference.) Until answered, nothing from it is in this plan, including a shared market-price API. | Keep excluded unless you approve. |
+| D-WT-DEBUG-1 | Offer `/pui safe` bisect mode? | Yes. |
+| D-WT-COMPAT-1 | Conflict picker for overlapping addons, never writing their settings? | Yes. |
+| D-WT-MIGRATE-1 | Never force-reset a user subtree? | Yes, never. |
+| D-PGF | With PGF loaded, stand down the whole filter layer or only the expression filter? | Whole filter layer; keep queue QoL. |
+| D-DIAG-SEND | Allow sending error reports to another player? | No, or bounded with an allow-list. |
+| D-ARENA-DR | If Blizzard DR APIs aren't exposed, build an opt-in ledger-restored mirror? | Your call. |
+| D-SARENA-STEALTH | Keep the cosmetic "assume regen in stealth" option? | Your call. |
+| D-LIC | Licence questions on the VortexQ8-tagged forks (PGF, MSBT, SAR, AQ, idTip). | Pending. |
+| D-STAGE | Stage QuestieDB-master and WoW-API-main (not studied) by zipping them on your drive? | Awaiting your permission. |
+| D-MOCK | Mockups for every new page (Cast History, Diagnostics, profiler, ledger page, visibility picker, filter builder) before UI code. | Required by standing rule. |
 
 ## 14. Appendix — current schema keys by owner (448)
 
