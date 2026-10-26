@@ -161,6 +161,7 @@ PUI.SchemaIndex = {
   ["flow.release"] = { module = "Flow", file = "Phoenix_UI_Flow/Flow.lua" },
   ["flow.reloadSlash"] = { module = "Flow", file = "Phoenix_UI_Flow/Flow.lua" },
   ["flow.repair"] = { module = "Flow", file = "Phoenix_UI_Flow/Flow.lua" },
+  ["flow.savedCVars"] = { module = "Flow", file = "Phoenix_UI_Flow/Flow.lua" },
   ["flow.sellJunk"] = { module = "Flow", file = "Phoenix_UI_Flow/Flow.lua" },
   ["flow.skipCinematics"] = { module = "Flow", file = "Phoenix_UI_Flow/Flow.lua" },
   ["layout.positions"] = { module = "Studio", file = "Core/Layout.lua" },

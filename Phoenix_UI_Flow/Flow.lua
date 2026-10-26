@@ -212,19 +212,26 @@ function FL.Sync()
   if s.hideErrors then hookOnce("errors", function() hooksecurefunc(UIErrorsFrame, "AddMessage", FL.OnError) end) end
 end
 
--- CVars: saved on first change, restored when the toggle or module goes off.
+-- CVars: the original value is saved (in the profile, so it survives a
+-- reload) on first change and restored when the toggle or module goes off.
 local CVARS = { maxCamera = { name = "cameraDistanceMaxZoomFactor", on = "2.6" } }
 FL.CVARS = CVARS
 function FL.ApplyCVars()
+  if not Schema:Def("flow.savedCVars") then return end
+  local saved = Schema:Get("flow.savedCVars")
+  local changed = false
   for key, c in pairs(CVARS) do
     if FL.active and s[key] then
-      if FL.saved[c.name] == nil then FL.saved[c.name] = C_CVar.GetCVar(c.name) end
+      if saved[c.name] == nil then saved[c.name] = C_CVar.GetCVar(c.name) or ""; changed = true end
       C_CVar.SetCVar(c.name, c.on)
-    elseif FL.saved[c.name] ~= nil then
-      C_CVar.SetCVar(c.name, FL.saved[c.name])
-      FL.saved[c.name] = nil
+    elseif saved[c.name] ~= nil then
+      C_CVar.SetCVar(c.name, saved[c.name])
+      saved[c.name] = nil
+      changed = true
     end
   end
+  if changed then Schema:Set("flow.savedCVars", saved) end
+  FL.saved = saved
 end
 
 -- Slash shortcuts (Phoenix slash: /pui rl, /pui cd N).
@@ -266,6 +273,8 @@ toggle("combatLog", "Combat log in raids and M+", "Turns /combatlog on in raids 
 toggle("maxCamera", "Max camera distance", "Raises the camera zoom limit; restored when turned off.")
 toggle("reloadSlash", "/pui rl", "Enables /pui rl to reload the UI.")
 toggle("countdown", "/pui cd", "Enables /pui cd <seconds> for a pull countdown.")
+schema["flow.savedCVars"] = { type = "layout", default = {}, mode = "advanced", owner = OWNER, label = "Saved game settings",
+  tooltip = "Original values of game settings Flow changed, restored when the switch is turned off.", apply = function() end }
 
 FL.module = PUI:RegisterModule(OWNER, {
   label = "Flow", tooltip = "Automations: repair, junk, release, invites, cinematics, quick loot and more. Each one off until you turn it on.",

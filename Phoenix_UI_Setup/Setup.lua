@@ -239,6 +239,8 @@ function SU.Uninstall(confirm)
     Slash.Print("This restores the game settings Phoenix changed and disables every Phoenix addon. Type /pui uninstall confirm")
     return false
   end
+  -- Modules that changed game settings put them back when they turn off.
+  if Schema:Def("module.Flow") then Schema:Set("module.Flow", false) end
   for name, value in pairs(SU.State().cvars or {}) do C_CVar.SetCVar(name, value) end
   saveState({ cvars = {} })
   for _, name in ipairs(SU.PhoenixAddOns()) do C_AddOns.DisableAddOn(name) end
