@@ -521,7 +521,13 @@ C_Map = { GetBestMapForUnit = function() return 2339 end,
   GetPlayerMapPosition = function() return { GetXY = function() return maybe(0.5), maybe(0.25) end } end }
 Enum.TooltipDataType = { Item = 0, Spell = 1, Unit = 2 }
 H.tooltipCalls = {}
-TooltipDataProcessor = { AddTooltipPostCall = function(kind, fn) H.tooltipCalls[kind] = fn end }
+H.tooltipFns = {}
+TooltipDataProcessor = { AddTooltipPostCall = function(kind, fn)
+  local list = H.tooltipFns[kind] or {}
+  H.tooltipFns[kind] = list
+  list[#list + 1] = fn
+  H.tooltipCalls[kind] = function(...) for i = 1, #list do list[i](...) end end
+end }
 function Region:AddLine(t) self.lines = rawget(self, "lines") or {}; self.lines[#self.lines + 1] = t end
 function Region:GetUnit() return "Tester", "player" end
 function Region:SetOwner(owner, anchor) self.owner, self.anchor = owner, anchor end
@@ -846,6 +852,56 @@ H.assistSpell = nil
 C_AssistedCombat = { GetNextCastSpell = function() return H.assistSpell end }
 function Region:IsMouseOver() return rawget(self, "mouseOver") == true end
 for _, n in ipairs({ "StanceBar", "PetActionBar" }) do local f = CreateFrame("Frame", n, UIParent); f.parent = UIParent end
+
+
+-- Step 8a: minimap, data bars, tooltip (queue provider, wallet, IDs).
+function GetZonePVPInfo() return H.zonePvp or "sanctuary" end
+function GetGameTime() return 21, 5 end
+H.friends = { { name = "Vex", connected = true, area = "Silvermoon", notes = "arena partner" }, { name = "Off", connected = false } }
+H.bnet = { { accountName = "Lumi#1", note = "", gameAccountInfo = { isOnline = true, clientProgram = "WoW", characterName = "Lumi", areaName = "Dornogal" } } }
+C_FriendList.GetNumFriends = function() return #H.friends end
+C_FriendList.GetFriendInfoByIndex = function(i) return H.friends[i] end
+C_FriendList.GetNumOnlineFriends = function() local n = 0; for _, f in ipairs(H.friends) do if f.connected then n = n + 1 end end; return n end
+function BNGetNumFriends() return #H.bnet, #H.bnet end
+C_BattleNet.GetFriendAccountInfo = function(i) return H.bnet[i] end
+C_WeeklyRewards = { HasAvailableRewards = function() return H.vaultReady == true end }
+C_Calendar = { GetNumPendingInvites = function() return H.invites or 0 end }
+H.bf = {}
+function GetMaxBattlefieldID() return #H.bf end
+function GetBattlefieldStatus(i) return H.bf[i] and H.bf[i].status or "none" end
+function GetBattlefieldPortExpiration(i) return H.bf[i] and H.bf[i].expires or 0 end
+LE_LFG_CATEGORY_LFD = 1
+function GetLFGMode() return H.lfgMode end
+C_LFGList.GetActiveEntryInfo = function() return H.lfgEntry end
+H.currencies = { [3008] = { name = "Valorstones", quantity = 2410, maxQuantity = 3000, iconFileID = 1 } }
+H.backpack = { { currencyTypesID = 3008, name = "Valorstones", quantity = 2410, iconFileID = 1 } }
+C_CurrencyInfo.GetCurrencyInfo = function(id) return H.currencies[id] end
+C_CurrencyInfo.GetBackpackCurrencyInfo = function(i) return H.backpack[i] end
+C_Reputation = { GetWatchedFactionData = function() return H.watched end }
+function UnitHonor() return 300 end
+function UnitHonorMax() return 1000 end
+function UnitHonorLevel() return 52 end
+function IsInGuild() return true end
+function GetNumGuildMembers() return 50, 23 end
+function HasNewMail() return H.mail == true end
+function IsPlayerAtEffectiveMaxLevel() return H.maxLevel == true end
+function GetXPExhaustion() return 40 end
+H.mountOf = {}
+C_MountJournal.GetMountFromItem = function(id) return H.mountOf[id] end
+C_MountJournal.GetMountFromSpell = function(id) return H.mountOf[id] end
+C_TransmogCollection = { GetItemInfo = function() return 7463, 98765 end }
+C_Item.GetItemInfo = function(id) return "Voidforged Greatblade", "link", 4, 678, 0, "", "", 1, "", 1, 0, 0, 0, 0, 10, 0 end
+Enum.TooltipDataType = { Item = 0, Spell = 1, Unit = 2, Currency = 5, Quest = 23, Achievement = 13, Mount = 10, Macro = 25 }
+ItemRefTooltip = CreateFrame("GameTooltip", "ItemRefTooltip")
+GameTooltipStatusBar = CreateFrame("StatusBar", "GameTooltipStatusBar")
+H.zoom = 0
+function Region:GetZoom() return H.zoom end
+function Region:SetZoom(z) H.zoom = z end
+function Region:GetZoomLevels() return 5 end
+function Region:GetNumPoints() return 0 end
+function Region:NumLines() return #(rawget(self, "lines") or {}) end
+function Region:AddDoubleLine(a, b) self.lines = rawget(self, "lines") or {}; self.lines[#self.lines + 1] = { a, b } end
+C_UnitAuras.GetAuraDataByAuraInstanceID = function(unit, id) return H.auraSource and { sourceUnit = maybe(H.auraSource) } end
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
