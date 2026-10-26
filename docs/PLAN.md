@@ -871,7 +871,8 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 | Feature | St | Phoenix better | Mock | Check |
 |---|---|---|---|---|
 | Plate pool + prewarm, NamePlateDriverFrame suppression | P | | N | 40 plates |
-| Container bundle pool (player debuffs, important buffs, CC) with Blizzard nameplate filter rule, show-all toggle, tracked auras popup | M | F1 | Y | restricted |
+| Container bundle pool (player debuffs, important buffs, CC) with Blizzard nameplate filter rule, show-all toggle, tracked auras popup; warm pool 16, pre-warm to 25 when zoning in, grows on demand in combat; layout fingerprint skips engine setters | M | F1 | Y | restricted; 25-plate M+ pull with no missing auras |
+| Purge glow per **group** (Dispellable token split Magic / enrage) gated on the player's offensive dispel | M | | N | arena (restricted) |
 | Global cast dispatcher, kick tick + kick window, interrupted flash, cast target, important cast | P | | N | |
 | Colour rules: class/reaction/threat context/quest (C_TooltipInfo cache)/focus/debuff lists per class | M | unified Rules engine with priority | Y | |
 | Lazy target/focus overlays (arrows, glow, low health, near aggro, focus letter), non-target alpha, hover | P | | Y | |
@@ -929,7 +930,7 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 **Combat tools / QoL**
 | Feature | St | Phoenix better | Mock | Check |
 |---|---|---|---|---|
-| Embers on `C_DamageMeter` (≤5 windows, breakdown, timer, spell history) | P | | Y | secret numbers via setters |
+| Embers on `C_DamageMeter`: 8 meter types, Current/Overall + historical session IDs, source breakdowns, death recap via `C_DeathRecap`, ≤5 windows, standalone timer, spell history | P | segment engine (see 15.5) | Y | secret numbers via setters; chain-pull, wipe-with-survivors, arena round end, feign death |
 | Ascent: run summary/history, target/focus cast bars, targeted spell bars | P | | Y | |
 | Reminders: combat-safe raid buffs vs OOC checks, secure click-to-use, where-to-show, talent reminders, ready-check mana | P | season data pack | Y | |
 | QoL toggles (~40) | P (Flow) | all OFF | N | |
@@ -957,6 +958,12 @@ Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guard
 10. QoL systems, Pulse/Arena/Spark, radial palette.
 11. Translations, plugins, release.
 Every step: mockups first where Mock = Y; each PR updates this section's St column and `CHANGELOG.md`.
+
+### 15.5 Hand-read corrections (pass 2, 2026-10-26)
+Read by hand so far: DamageMeters main file and Lifecycle (full), the Window refresh core, and the first 260 lines of Nameplates AuraContainers. The tracking column is `hand_read` in `COVERAGE.tsv`. The remaining module files are still parse-only and are tracked as `no` (see the report).
+- **Embers segment engine (new F-level item for Embers):** one shared refresh ticker, combat-only and visible-only; refresh floor 0.5 s; fetch-time spike guard (defer paint when the API takes >1.5 ms); segment token; `ENCOUNTER_START` as a hard boundary; kill vs wipe freeze rules; group-still-fighting poll with a 5 s failsafe; teammate-pulled-first pre-warm; PvP match end; post-combat declassify refresh at +0.5 s; source-key snapshot on `ADDON_RESTRICTION_STATE_CHANGED`. All timing goes through `PUI.Ticker` in our version.
+- **Correction (F1):** aura container creation is legal in combat on current 12.1 builds, so pools are warm caches, not hard limits. While auras are secret, anchoring to aura buttons is restricted, so restyles must make zero button calls when nothing changed. Added to F1's acceptance: "restyle inside an M+ key with unchanged anchors produces no restriction errors".
+- **Correction (Nameplates):** you can't read per-aura dispellability in restricted content, so purge glow must be done by engine group (Dispellable token).
 
 ## 14. Appendix — current schema keys by owner (448)
 

@@ -5,6 +5,7 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 ## Unreleased (canary)
 
 ### Docs
+- docs: plan §15.5, the first hand-read corrections from the EllesmereUI study: Embers segment engine on `C_DamageMeter`/`C_DeathRecap`, aura container pools are combat-legal warm caches, aura button anchor restriction, purge glow by engine group.
 - docs: EllesmereUI deep study (937 files, 764,729 lines, 3,113 option controls) folded into the single plan as §15: self-evaluation of §13, new foundations (12.1 aura container engine, Blizzard-viewer Cooldown Manager model, per-spec/condition Overrides, Studio anchor and size-match links, CVar ledger), full per-section feature tables with status and acceptance, revised order. ElvUI, Plater, Cell, Bartender, Details and WeakAuras dropped as references.
 - docs: single master plan in `docs/PLAN.md` (feature audit per section, I:\ competitor study, decisions on the in-menu Game Menu row and action-bar defaults, ordered phases) and this changelog. (#17)
 
