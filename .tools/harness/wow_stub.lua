@@ -478,6 +478,66 @@ for _, n in ipairs({ "PartyFrame", "CompactRaidFrameContainer", "CompactRaidFram
   local f = CreateFrame("Frame", n, UIParent); f.parent = UIParent
 end
 
+-- Phase 4: cooldown viewer, minimap, tooltip, data bars, chat.
+function hooksecurefunc(a, b, c)
+  local tbl, name, fn = a, b, c
+  if type(a) == "string" then tbl, name, fn = _G, a, b end
+  local orig = rawget(tbl, name) or tbl[name]
+  rawset(tbl, name, function(...) local r = { orig(...) }; fn(...); return unpack(r) end)
+end
+H.cdItems = {}
+for _, n in ipairs({ "EssentialCooldownViewer", "UtilityCooldownViewer", "BuffIconCooldownViewer", "BuffBarCooldownViewer" }) do
+  local v = CreateFrame("Frame", n, UIParent)
+  H.cdItems[n] = {}
+  for i = 1, 3 do local f = CreateFrame("Frame", nil, v); f.layoutIndex = 4 - i; H.cdItems[n][i] = f end
+  rawset(v, "GetItemFrames", function() return H.cdItems[n] end)
+  rawset(v, "RefreshLayout", function() H.cdRefreshed = (H.cdRefreshed or 0) + 1 end)
+  rawset(v, "Layout", function() end)
+end
+Minimap = CreateFrame("Minimap", "Minimap", UIParent)
+Minimap:SetSize(198, 198)
+function Region:SetMaskTexture(t) self.mask = t end
+MinimapCluster = CreateFrame("Frame", "MinimapCluster", UIParent)
+MinimapCluster.BorderTop = CreateFrame("Frame", nil, MinimapCluster)
+MinimapCluster.ZoneTextButton = CreateFrame("Button", nil, MinimapCluster)
+MinimapCompassTexture = CreateFrame("Frame", "MinimapCompassTexture", Minimap)
+function GetMinimapZoneText() return "Dornogal" end
+C_Map = { GetBestMapForUnit = function() return 2339 end,
+  GetPlayerMapPosition = function() return { GetXY = function() return maybe(0.5), maybe(0.25) end } end }
+Enum.TooltipDataType = { Item = 0, Spell = 1, Unit = 2 }
+H.tooltipCalls = {}
+TooltipDataProcessor = { AddTooltipPostCall = function(kind, fn) H.tooltipCalls[kind] = fn end }
+function Region:AddLine(t) self.lines = rawget(self, "lines") or {}; self.lines[#self.lines + 1] = t end
+function Region:GetUnit() return "Tester", "player" end
+function Region:SetOwner(owner, anchor) self.owner, self.anchor = owner, anchor end
+function GetGuildInfo() return maybe("Phoenix"), maybe("Officer") end
+C_PlayerInfo = { GetPlayerMythicPlusRatingSummary = function() return { currentSeasonScore = maybe(2500) } end }
+function GetMoney() return 1234567 end
+C_Container = { GetContainerNumFreeSlots = function() return 10 end }
+function GetInventoryItemDurability(slot) if slot == 5 then return 30, 100 end return nil end
+function GetAverageItemLevel() return 640, 638.5 end
+function UnitXP() return 50 end
+function UnitXPMax() return 200 end
+SOUNDKIT = { TELL_MESSAGE = 3081 }
+H.sounds = {}
+function PlaySound(id) H.sounds[#H.sounds + 1] = id end
+function FlashClientIcon() H.flashed = true end
+for i = 1, 2 do
+  local c = CreateFrame("ScrollingMessageFrame", "ChatFrame" .. i, UIParent)
+  c.FontStringContainer = CreateFrame("Frame", nil, c)
+  c.offset = 0
+  rawset(c, "AddMessage", function(self, msg) self.last = msg end)
+  rawset(c, "SetScrollOffset", function(self, o) self.offset = o end)
+  rawset(c, "GetScrollOffset", function(self) return self.offset end)
+  rawset(c, "GetFont", function() return "Fonts\\FRIZQT__.TTF", 14, "" end)
+  rawset(c, "GetMaxLines", function() return 128 end)
+  rawset(c, "GetJustifyH", function() return "LEFT" end)
+  rawset(c, "GetSpacing", function() return 0 end)
+end
+function Region:AddMessage(msg) self.messages = rawget(self, "messages") or {}; self.messages[#self.messages + 1] = msg end
+function Region:SetScrollOffset(o) self.offset = o end
+function Region:GetScrollOffset() return rawget(self, "offset") or 0 end
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
 setmetatable(_G, {

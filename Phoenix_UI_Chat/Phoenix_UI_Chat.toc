@@ -1,0 +1,9 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Chat
+## Notes: Phoenix UI chat: a taint-safe mirror of the game's chat frames with timestamps, channel abbreviations, keyword alerts and copy.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Chat.lua
+Tests\Chat_test.lua

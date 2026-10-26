@@ -8,6 +8,9 @@ move-folders:
   Phoenix_UI/Phoenix_UI_ActionBars: Phoenix_UI_ActionBars
   Phoenix_UI/Phoenix_UI_Nameplates: Phoenix_UI_Nameplates
   Phoenix_UI/Phoenix_UI_RaidFrames: Phoenix_UI_RaidFrames
+  Phoenix_UI/Phoenix_UI_CooldownManager: Phoenix_UI_CooldownManager
+  Phoenix_UI/Phoenix_UI_HUD: Phoenix_UI_HUD
+  Phoenix_UI/Phoenix_UI_Chat: Phoenix_UI_Chat
 
 externals:
   Libs/LibStub:
