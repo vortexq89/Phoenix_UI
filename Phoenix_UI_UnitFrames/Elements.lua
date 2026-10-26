@@ -28,9 +28,24 @@ local function overlayBar(o, parent)
   local bar = Bars:Create(parent, OWNER, "BACKGROUND")
   bar.bg:SetAlpha(0)
   bar:SetFrameLevel(o.health:GetFrameLevel() + 1)
-  bar:SetPoint("TOP", parent, "TOP")
-  bar:SetPoint("BOTTOM", parent, "BOTTOM")
   return bar
+end
+
+-- Anchors a prediction segment to the end (after = true) or the inside edge of
+-- the health fill, mirrored when the bar fills right to left.
+local function anchorSegment(o, bar, after, reverse)
+  local near, far = "LEFT", "RIGHT"
+  if reverse then near, far = "RIGHT", "LEFT" end
+  bar:ClearAllPoints()
+  bar:SetPoint("TOP", o.health, "TOP")
+  bar:SetPoint("BOTTOM", o.health, "BOTTOM")
+  if after then
+    bar:SetPoint(near, o.fill, far)
+    bar:SetReverseFill(reverse == true)
+  else
+    bar:SetPoint(far, o.fill, far)
+    bar:SetReverseFill(not reverse)
+  end
 end
 
 -- Builds every child once. o = { unit, group, button }.
@@ -44,15 +59,12 @@ function E.Build(o)
 
   -- Prediction segments start where the health fill ends and are clipped by the bar.
   local fill = o.health:GetStatusBarTexture()
+  o.fill = fill
   o.incoming = overlayBar(o, o.health)
-  o.incoming:SetPoint("LEFT", fill, "RIGHT")
   Bars.Color(o.incoming, 0.3, 0.9, 0.4, 0.5)
   o.absorb = overlayBar(o, o.health)
-  o.absorb:SetPoint("LEFT", fill, "RIGHT")
   Bars.Color(o.absorb, 0.85, 0.9, 1, 0.55)
   o.healAbsorb = overlayBar(o, o.health)
-  o.healAbsorb:SetPoint("RIGHT", fill, "RIGHT")
-  o.healAbsorb:SetReverseFill(true)
   Bars.TokenColor(o.healAbsorb, "danger", 0.45)
 
   local textLayer = PUI:CreateFrame("Frame", nil, b, nil, OWNER)
@@ -151,6 +163,9 @@ function E.Layout(o, c)
   o.texts.power:SetShown(power > 0)
   Bars:SetFill(o.health, c.reverse, false)
   Bars:SetFill(o.power, c.reverse, false)
+  anchorSegment(o, o.incoming, true, c.reverse)
+  anchorSegment(o, o.absorb, true, c.reverse)
+  anchorSegment(o, o.healAbsorb, false, c.reverse)
   local w = c.width - 2
   o.incoming:SetWidth(w)
   o.absorb:SetWidth(w)
