@@ -65,17 +65,18 @@ WIDGET_SYSTEMS = set()
 
 
 def schema_index():
+    """Authoritative key list: load the addons under the offline harness and ask
+    the schema registry (keys built in loops are included; tickers are not)."""
+    import subprocess
+    env = dict(os.environ, PUI_ROOT=ROOT, PUI_FLAVOR="retail")
+    res = subprocess.run(["lua5.1", os.path.join(ROOT, ".tools", "harness", "schema_dump.lua")],
+                         cwd=ROOT, env=env, capture_output=True, text=True, check=True)
     keys = {}
-    pat = re.compile(r'(?:Register|toggle)\(\s*"([a-z]+\.[A-Za-z0-9_.]+)"')
-    for path in luascan.lua_files():
-        r = luascan.rel(path)
-        if r.startswith("Tests/") or r.startswith("Data/"):
+    for line in res.stdout.splitlines():
+        if not line.strip():
             continue
-        src = luascan.strip(open(path, encoding="utf-8").read(), keep_strings=True)
-        for key in pat.findall(src):
-            prefix = key.split(".")[0]
-            module = {"core": "Core", "sentinel": "Sentinel"}.get(prefix, key.split(".")[1] if prefix == "module" else prefix)
-            keys[key] = {"module": module, "file": r}
+        key, owner, path = line.split("\t")
+        keys[key] = {"module": owner, "file": path}
     return dict(sorted(keys.items()))
 
 

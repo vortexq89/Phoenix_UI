@@ -4,6 +4,11 @@ local here = (arg and arg[0] or ""):match("^(.*)[/\\]") or "."
 local H = dofile(here .. "/wow_stub.lua")
 
 H.loadAddon("Phoenix_UI")
+-- Non-LoD children load right after the parent, as the client does.
+for _, child in ipairs({ "Phoenix_UI_UnitFrames", "Phoenix_UI_ResourceBars", "Phoenix_UI_ActionBars" }) do
+  local fh = io.open(H.root .. "/" .. child .. "/" .. child .. ".toc")
+  if fh then fh:close(); H.loadAddon(child) end
+end
 H.fire("PLAYER_LOGIN")
 for _ = 1, 3 do H.step() end
 

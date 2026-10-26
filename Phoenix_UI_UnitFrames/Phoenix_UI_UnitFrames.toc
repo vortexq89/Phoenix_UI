@@ -1,0 +1,12 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Unit Frames
+## Notes: Phoenix UI unit frames: player, target, focus, pet, target of target, focus target and boss frames.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Tags.lua
+Elements.lua
+Blizzard.lua
+UnitFrames.lua
+Tests\UnitFrames_test.lua

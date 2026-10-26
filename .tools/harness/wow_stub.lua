@@ -243,8 +243,182 @@ C_AddOns = {
   GetAddOnInfo = function(i) return i == 1 and "Phoenix_UI" or "Phoenix_UI_Sentinel" end,
 }
 
+-- Phase 2: secure templates, unit/bar/action APIs ------------------------------
+-- Secret simulation: H.secret(v) returns an opaque value that raises on any
+-- comparison, arithmetic, concatenation, indexing or length, like 12.x secrets.
+local SecretMT = {}
+local function refuse(what) return function() error("harness: attempted " .. what .. " on a secret value", 2) end end
+SecretMT.__index = refuse("index")
+SecretMT.__newindex = refuse("index")
+SecretMT.__eq, SecretMT.__lt, SecretMT.__le = refuse("compare"), refuse("compare"), refuse("compare")
+SecretMT.__add, SecretMT.__sub, SecretMT.__mul, SecretMT.__div = refuse("arithmetic"), refuse("arithmetic"), refuse("arithmetic"), refuse("arithmetic")
+SecretMT.__mod, SecretMT.__pow, SecretMT.__unm = refuse("arithmetic"), refuse("arithmetic"), refuse("arithmetic")
+SecretMT.__concat, SecretMT.__len = refuse("concatenate"), refuse("length")
+SecretMT.__tostring = function() return "<harness secret>" end
+SecretMT.__metatable = false
+function H.secret(v) local o = newproxy(true); local mt = getmetatable(o); for k, f in pairs(SecretMT) do mt[k] = f end; H.secrets[o] = v; return o end
+H.secrets = setmetatable({}, { __mode = "k" })
+function issecretvalue(v) return H.secrets[v] ~= nil end
+H.secretMode = false
+local function maybe(v) if H.secretMode and v ~= nil then return H.secret(v) end return v end
+local function anySecret(...)
+  for i = 1, select("#", ...) do if H.secrets[(select(i, ...))] ~= nil then return true end end
+  return false
+end
+
+function Region:SetFormattedText(fmt, ...)
+  if anySecret(...) then self.text = "<secret-formatted>" return end
+  self.text = string.format(fmt, ...)
+end
+function Region:SetText(t) self.text = t end
+function Region:SetParent(p) self.parent = p end
+function Region:GetParent() return rawget(self, "parent") end
+function Region:SetAttribute(k, v) self.attributes = rawget(self, "attributes") or {}; self.attributes[k] = v end
+function Region:GetAttribute(k) local a = rawget(self, "attributes"); return a and a[k] end
+function Region:SetShown(v) self.shown = v and true or false end
+function Region:SetAlpha(a) self.alpha = a end
+function Region:GetAlpha() return rawget(self, "alpha") or 1 end
+function Region:SetScale(v) self.scale = v end
+function Region:GetScale() return rawget(self, "scale") or 1 end
+function Region:SetMinMaxValues(lo, hi) self.min, self.max = lo, hi end
+function Region:SetStatusBarColor(r, g, b, a) self.barColor = { r, g, b, a } end
+function Region:GetStatusBarTexture()
+  local t = rawget(self, "barTexture")
+  if not t then t = newObject("Texture"); self.barTexture = t end
+  return t
+end
+function Region:SetTimerDuration(d, interp, dir) self.timer = { d, interp, dir } end
+function Region:SetAlphaFromBoolean(flag, a, b) self.alphaFlag = flag end
+function Region:SetCooldownFromDurationObject(d) self.cooldown = d end
+function Region:SetTexture(t) self.texture = t end
+function Region:SetSpriteSheetCell(cell) self.cell = cell end
+function Region:SetVertexColor(r, g, b, a) self.vertex = { r, g, b, a } end
+function Region:IsProtected() return rawget(self, "secure") == true end
+function Region:SetPoint(p, rel, rp, x, y) self.point = { p, rel, rp, x, y } end
+function Region:GetName() return rawget(self, "name") end
+function Region:SetID(id) self.id = id end
+function Region:GetID() return rawget(self, "id") or 0 end
+function Region:CreateTexture() return newObject("Texture") end
+
+local baseCreateFrame = CreateFrame
+function CreateFrame(frameType, name, parent, template)
+  local f = baseCreateFrame(frameType, name, parent, template)
+  f.name, f.template, f.parent = name, template, parent
+  if template and (template:find("Secure") or template:find("ActionButtonTemplate")) then f.secure = true end
+  return f
+end
+
+H.stateDrivers, H.unitWatch = {}, {}
+function RegisterStateDriver(frame, state, values) H.stateDrivers[frame] = H.stateDrivers[frame] or {}; H.stateDrivers[frame][state] = values end
+function UnregisterStateDriver(frame, state) if H.stateDrivers[frame] then H.stateDrivers[frame][state] = nil end end
+function RegisterUnitWatch(frame) H.unitWatch[frame] = true end
+function UnregisterUnitWatch(frame) H.unitWatch[frame] = nil end
+function GameTooltip_SetDefaultAnchor() end
+H.overrideBindings = {}
+function SetOverrideBindingClick(owner, prio, key, button, mouse) H.overrideBindings[key] = { owner = owner, button = button, mouse = mouse } end
+function ClearOverrideBindings(owner) for k, v in pairs(H.overrideBindings) do if v.owner == owner then H.overrideBindings[k] = nil end end end
+H.bindings = { ACTIONBUTTON1 = "1", ACTIONBUTTON2 = "2", MULTIACTIONBAR1BUTTON1 = "SHIFT-1" }
+function GetBindingKey(command) return H.bindings[command] end
+function GetBindingText(key) return key end
+
+-- Blizzard frames that get parked/restored.
+for _, n in ipairs({ "PlayerFrame", "TargetFrame", "FocusFrame", "PetFrame", "BossTargetFrameContainer", "MainActionBar",
+  "MultiBarBottomLeft", "MultiBarBottomRight", "MultiBarRight", "MultiBarLeft", "MultiBar5", "MultiBar6", "MultiBar7",
+  "PlayerCastingBarFrame" }) do
+  local f = CreateFrame("Frame", n, UIParent)
+  f.parent = UIParent
+end
+TargetFrame.totFrame = CreateFrame("Frame", nil, TargetFrame); TargetFrame.totFrame.parent = TargetFrame
+FocusFrame.totFrame = CreateFrame("Frame", nil, FocusFrame); FocusFrame.totFrame.parent = FocusFrame
+
+-- Units: "player" and "target" exist with fixed values; values are secret in secretMode.
+H.units = { player = true, target = true }
+local function exists(u) return H.units[u] == true end
+function UnitExists(u) return exists(u) end
+function UnitHealth(u) return maybe(exists(u) and 800 or 0) end
+function UnitHealthMax(u) return maybe(exists(u) and 1000 or 0) end
+function UnitHealthMissing(u) return maybe(exists(u) and 200 or 0) end
+function UnitHealthPercent(u, pred, curve)
+  if curve and curve.isColor then return CreateColor(0.5, 0.5, 0.1, 1) end
+  return maybe(80)
+end
+function UnitPower(u) return maybe(50) end
+function UnitPowerMax(u) return maybe(100) end
+function UnitPowerPercent() return maybe(50) end
+function UnitPowerType() return 0, "MANA", 0, 0, 1 end
+function UnitName(u) return maybe(u == "player" and "Tester" or "Dummy"), nil end
+function UnitEffectiveLevel() return maybe(80) end
+function UnitClassification() return maybe("normal") end
+function UnitIsPlayer(u) return maybe(u == "player") end
+function UnitSelectionColor() return maybe(1), maybe(0.2), maybe(0.2), 1 end
+function UnitIsConnected() return maybe(true) end
+function UnitIsDeadOrGhost() return maybe(false) end
+function UnitIsGroupLeader() return maybe(false) end
+function UnitAffectingCombat() return maybe(false) end
+function UnitIsPVP() return maybe(false) end
+function UnitFactionGroup() return "Horde", "Horde" end
+function IsResting() return false end
+function GetRaidTargetIndex() if H.secretMode then return H.secret(3) end return nil end
+function UnitCastingInfo(u) if H.casting then return maybe("Fireball"), nil, 135812, 0, 1, false, "id", maybe(false), 133 end return nil end
+function UnitChannelInfo() return nil end
+function UnitCastingDuration() if H.casting then return { duration = true } end return nil end
+function UnitChannelDuration() return nil end
+function UnitStagger() return maybe(0) end
+function UnitPartialPower() return maybe(0) end
+function GetComboPoints() return maybe(0) end
+function GetRuneCooldown(i) return 0, 10, true end
+function SetPortraitTexture(tex, unit) tex.portraitUnit = unit end
+function AbbreviateNumbers(n) if H.secrets[n] ~= nil then return H.secret("abbr") end return tostring(n) end
+function CreateUnitHealPredictionCalculator()
+  local c = {}
+  function c:GetIncomingHeals() return maybe(10), 0, 0, false end
+  function c:GetDamageAbsorbs() return maybe(20), false end
+  function c:GetHealAbsorbs() return maybe(5), false end
+  return c
+end
+function UnitGetDetailedHealPrediction(unit, healer, calc) calc.lastUnit = unit end
+function CreateColor(r, g, b, a) return { r = r, g = g, b = b, a = a, GetRGB = function(self) return self.r, self.g, self.b end } end
+C_ClassColor = { GetClassColor = function(token) if token == nil then return nil end return CreateColor(0.25, 0.78, 0.92, 1) end }
+local function curve(isColor)
+  local c = { points = {}, isColor = isColor }
+  function c:SetType(t) self.type = t end
+  function c:AddPoint(x, y) self.points[#self.points + 1] = { x, y } end
+  return c
+end
+C_CurveUtil = { CreateCurve = function() return curve(false) end, CreateColorCurve = function() return curve(true) end,
+  EvaluateColorFromBoolean = function(b, t, f) return t end }
+CurveConstants = { ScaleTo100 = curve(false), ZeroToOne = curve(false), Reverse = curve(false) }
+PowerBarColor = { MANA = { r = 0, g = 0, b = 1 } }
+Enum.StatusBarInterpolation = { Immediate = 0, ExponentialEaseOut = 1 }
+Enum.StatusBarTimerDirection = { ElapsedTime = 0, RemainingTime = 1 }
+Enum.LuaCurveType = { Linear = 0, Step = 1 }
+Enum.PowerType = { Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, Runes = 5, RunicPower = 6, SoulShards = 7,
+  LunarPower = 8, HolyPower = 9, Maelstrom = 11, Chi = 12, Insanity = 13, ArcaneCharges = 16, Fury = 17, Pain = 18, Essence = 19 }
+H.spec = 1
+C_SpecializationInfo.GetSpecialization = function() return H.spec end
+C_Spell = { GetSpellCooldownDuration = function() return { gcd = true } end }
+
+-- Action bars.
+H.actions = { [1] = 136243, [2] = 135812, [61] = 132242 }
+C_ActionBar = {
+  HasAction = function(id) return H.actions[id] ~= nil end,
+  GetActionTexture = function(id) return H.actions[id] end,
+  GetActionCooldownDuration = function() return { cd = true } end,
+  GetActionChargeDuration = function() return { charge = true } end,
+  GetActionDisplayCount = function() return maybe("") end,
+  GetActionText = function() return maybe("") end,
+  IsUsableAction = function() return maybe(true), maybe(false) end,
+  IsActionInRange = function() return maybe(true) end,
+  IsCurrentAction = function() return maybe(false) end,
+  IsAutoRepeatAction = function() return maybe(false) end,
+  EnableActionRangeCheck = function(id, on) H.rangeChecks = H.rangeChecks or {}; H.rangeChecks[id] = on end,
+  FindSpellActionButtons = function(spell) if spell == 133 then return { 2 } end return {} end,
+  GetActionBarPage = function() return 1 end,
+  GetBonusBarOffset = function() return 0 end,
+}
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
-local OPTIONAL = { BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
+local OPTIONAL = { ClickCastFrames = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end
