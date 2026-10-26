@@ -1,0 +1,53 @@
+Phoenix UI
+Copyright (c) 2026 VortexQ8. All rights reserved.
+
+SOURCE-VISIBLE, ALL RIGHTS RESERVED LICENCE
+
+1. Viewing. You may view and read the source code of Phoenix UI in its public
+   repository and install unmodified copies of official releases for your own
+   personal use in World of Warcraft.
+
+2. Restrictions. Without prior written permission from VortexQ8 you may not:
+   (a) redistribute, publish, upload or mirror Phoenix UI or any part of it,
+       in original or modified form, on any website, addon platform or other
+       channel;
+   (b) modify Phoenix UI or create derivative works based on it, including
+       forks, renamed copies, repackaged or "rebranded" versions;
+   (c) copy any part of the source code, artwork or other assets into another
+       project;
+   (d) sell, sublicense or otherwise commercially exploit Phoenix UI.
+
+3. Contributions. By submitting a contribution (pull request, patch, data pack,
+   translation, artwork or any other material) to the Phoenix UI repository,
+   you keep the copyright in your contribution and grant VortexQ8 a perpetual,
+   worldwide, non-exclusive, royalty-free, irrevocable licence to use,
+   reproduce, modify, distribute, sublicense and include your contribution in
+   Phoenix UI and related works under any terms. You confirm that you have the
+   right to grant this licence and that your contribution does not contain
+   code or assets from other projects unless their licence permits it and the
+   attribution is included.
+
+4. Third-party libraries. Phoenix UI uses the following libraries, fetched as
+   packaging externals and not covered by this licence. Each keeps its own
+   licence and copyright notice:
+   - LibStub (public domain)
+   - CallbackHandler-1.0 (BSD-style licence, Ace3 project)
+   - LibDeflate (zlib licence, Haoqian He)
+   Libraries that later phases may add (LibSharedMedia-3.0, LibDataBroker-1.1,
+   LibDBIcon-1.0, LibCustomGlow-1.0) will be listed here with their licences
+   when they are added.
+
+5. Media. Phoenix UI ships only original artwork, CC0 assets, and fonts under
+   the SIL Open Font License (OFL) or the Ubuntu Font Licence (UFL). Each
+   font's licence text is shipped next to the font file. The current release
+   contains no third-party media.
+
+6. Game content. World of Warcraft and related names and assets are
+   trademarks of Blizzard Entertainment, Inc. Phoenix UI is not affiliated
+   with or endorsed by Blizzard Entertainment.
+
+7. No warranty. Phoenix UI is provided "as is", without warranty of any kind.
+   In no event shall the author be liable for any claim, damages or other
+   liability arising from the use of the software.
+
+For permissions, contact VortexQ8 through the Phoenix UI repository.

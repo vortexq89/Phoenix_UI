@@ -1,0 +1,11 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - HUD
+## Notes: Phoenix UI minimap, tooltip and data bars.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Minimap.lua
+Tooltip.lua
+DataBars.lua
+Tests\HUD_test.lua

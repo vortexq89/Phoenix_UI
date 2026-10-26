@@ -1,0 +1,36 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI
+## Notes: Phoenix UI core: kernel, settings, combat queue, ticker and Sentinel diagnostics.
+## Author: VortexQ8
+## Version: @project-version@
+## SavedVariables: PhoenixUIDB
+## OptionalDeps: !BugGrabber
+
+Core\ClientGate.lua
+Core\Secret.lua
+Core\Kernel.lua
+Core\Schema.lua
+Core\DB.lua
+Core\Locale.lua
+Core\Theme.lua
+Core\Media.lua
+Core\Bars.lua
+Core\CombatQueue.lua
+Core\Ticker.lua
+Core\Budget.lua
+Core\API.lua
+Core\Slash.lua
+Core\SentinelHook.lua
+Core\Layout.lua
+Core\OptionsHost.lua
+Data\ApiManifest.lua
+Data\SchemaIndex.lua
+Tests\Runner.lua
+Tests\ClientGate_test.lua
+Tests\Kernel_test.lua
+Tests\DB_test.lua
+Tests\CombatQueue_test.lua
+Tests\Ticker_test.lua
+Tests\Sentinel_test.lua
+Tests\Theme_test.lua
+Tests\Layout_test.lua

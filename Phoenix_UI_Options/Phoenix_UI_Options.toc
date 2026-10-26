@@ -1,0 +1,15 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Options
+## Notes: Phoenix UI options window and Studio layout editor.
+## Author: VortexQ8
+## Version: @project-version@
+## LoadOnDemand: 1
+## Dependencies: Phoenix_UI
+
+Model.lua
+Widgets.lua
+Panel.lua
+StudioModel.lua
+Studio.lua
+Tests\Options_test.lua
+Tests\Studio_test.lua

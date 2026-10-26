@@ -1,0 +1,13 @@
+name: manifest
+on:
+  push:
+  pull_request:
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lua 5.1 (schema index is read from the loaded registry)
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - name: Data/ApiManifest.lua and Data/SchemaIndex.lua are current
+        run: python3 .tools/manifest.py --check
