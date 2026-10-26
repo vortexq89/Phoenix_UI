@@ -6,7 +6,7 @@ local Tests, Schema, CQ = PUI.Tests, PUI.Schema, PUI.CombatQueue
 local SU, P = ns.SU, ns.P
 
 local function snapshot(t)
-  local keys = { "setup.state", "layout.positions", "theme.accent", "core.locale" }
+  local keys = { "setup.state", "layout.positions", "theme.accent", "theme.panel", "core.locale" }
   for _, m in ipairs(P.MANAGED) do if Schema:Def("module." .. m) then keys[#keys + 1] = "module." .. m end end
   local saved = {}
   for i = 1, #keys do saved[i] = Schema:Get(keys[i]) end
@@ -49,9 +49,22 @@ Tests:Add("Setup", "wizard navigation and cycling", function(t)
   SU.OpenWizard()
   CQ.Drain()
   t:ok(SU.frame:IsShown(), "wizard open")
-  SU.Go(1); SU.Go(1)
+  t:eq(SU.step, 0, "opens on the welcome page")
+  t:ok(SU.frame.pages.welcome:IsShown(), "welcome shown")
+  SU.Go(1); SU.Go(1); SU.Go(1)
   t:eq(SU.STEPS[SU.step], "role", "third step")
+  SU.choices.role = "dps"
   SU.Cycle("role", 1)
-  t:eq(SU.choices.role, "pvp", "cycled from dps to pvp")
-  SU.frame:Hide()
+  t:eq(SU.choices.role, "healer", "cycled from dps to healer")
+  SU.Go(1); SU.Go(1)
+  t:eq(SU.STEPS[SU.step], "look", "look step")
+  SU.frame.pages.look.swatches[5]:GetScript("OnClick")()
+  t:eq(Schema:Get("theme.accent"), "frost", "accent previews live")
+  SU.choices.scale = 0.7
+  SU.Go(1)
+  t:ok(SU.frame.pages.finish:IsShown(), "finish page after applying")
+  t:eq(H.cvars.uiScale, "0.7", "fine-tuned scale applied")
+  t:eq(SU.State().wizardDone, true, "done without a reload")
+  SU.Go(1)
+  t:ok(not SU.frame:IsShown(), "enter the game closes")
 end)

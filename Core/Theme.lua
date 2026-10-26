@@ -14,15 +14,19 @@ end
 -- Design spec v1 section 2: bg0-3, text/text2/muted, acc/acc2/gold, states.
 local TOKENS = {
   flame = "FF5500", ember = "FF7A1A", spark = "F4C46A", ash = "121212", smoke = "1E1E1E", void = "FF5468", life = "3DDC97",
-  frost = "5AB4FF", arcane = "B07CFF",
+  frost = "5AB4FF", arcane = "B07CFF", gold = "F4C46A", crimson = "E5506A", jade = "1FC8B0",
   bg0 = "0A0B0E", bg1 = "101217", bg2 = "161820", bg3 = "1D2029",
   ["surface.0"] = "0E0F14", ["surface.1"] = "101217", ["surface.2"] = "1D2029", line = "2A2C33", line2 = "34363E",
   ["text.primary"] = "ECE8E2", ["text.secondary"] = "B9B6B0", muted = "7D808B",
-  acc2 = "FFA94D", gold = "F4C46A", ok = "3DDC97", warn = "FFC24B", err = "FF5468", info = "5AB4FF",
+  acc2 = "FFA94D", ok = "3DDC97", warn = "FFC24B", err = "FF5468", info = "5AB4FF",
   danger = "FF5468", success = "3DDC97",
 }
 Theme.TOKENS = TOKENS
-Theme.ACCENTS = { "ember", "flame", "spark", "void", "life", "frost", "arcane", "class" }
+Theme.ACCENTS = { "ember", "flame", "spark", "void", "life", "frost", "arcane", "gold", "crimson", "jade", "class" }
+-- The seven the design shows (wizard step 5, Theme page), in order.
+Theme.DESIGN_ACCENTS = { "ember", "gold", "crimson", "arcane", "frost", "jade", "class" }
+Theme.ACCENT_LABELS = { ember = "Ember", flame = "Flame", spark = "Spark", void = "Void", life = "Life", frost = "Frost",
+  arcane = "Arcane", gold = "Gold", crimson = "Crimson", jade = "Jade", class = "Class" }
 
 local accent = { hex(TOKENS.ember) }
 Theme.accent = accent
@@ -93,6 +97,36 @@ PUI.Schema:Register("theme.panelAlpha", {
   apply = function(value)
     Theme.panelAlpha = value
     Theme:Repaint()
+    for tex in pairs(Theme.panelFills) do Theme:PanelFill(tex) end
+  end,
+})
+
+-- Window panel material (design: Obsidian Glass, Charcoal Solid, Ash Light).
+-- Windows register their fill texture; the setting swaps it live.
+Theme.PANELS = { "obsidian", "charcoal", "ash" }
+Theme.PANEL_LABELS = { obsidian = "Obsidian Glass", charcoal = "Charcoal Solid", ash = "Ash Light" }
+Theme.PANEL_PATHS = {
+  obsidian = "Interface\\AddOns\\Phoenix_UI_Media\\Media\\Textures\\Panel\\ObsidianGlass",
+  charcoal = "Interface\\AddOns\\Phoenix_UI_Media\\Media\\Textures\\Panel\\Charcoal",
+  ash = "Interface\\AddOns\\Phoenix_UI_Media\\Media\\Textures\\Panel\\Ash",
+}
+Theme.panel = "obsidian"
+Theme.panelFills = setmetatable({}, { __mode = "k" })
+
+function Theme:PanelFill(tex)
+  self.panelFills[tex] = true
+  tex:SetTexture(self.PANEL_PATHS[self.panel])
+  tex:SetVertexColor(1, 1, 1, self.panelAlpha)
+  return tex
+end
+
+PUI.Schema:Register("theme.panel", {
+  type = "select", default = "obsidian", choices = Theme.PANELS,
+  label = "Window panels", tooltip = "Material of Phoenix UI windows: Obsidian Glass, Charcoal Solid or Ash Light.",
+  mode = "simple", owner = "Theme", searchTags = { "glass", "background", "panel" },
+  apply = function(value)
+    Theme.panel = Theme.PANEL_PATHS[value] and value or "obsidian"
+    for tex in pairs(Theme.panelFills) do Theme:PanelFill(tex) end
   end,
 })
 

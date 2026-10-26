@@ -12,4 +12,5 @@
 
 Presets.lua
 Setup.lua
+Wizard.lua
 Tests\Setup_test.lua

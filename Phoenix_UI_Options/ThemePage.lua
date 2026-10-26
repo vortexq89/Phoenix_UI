@@ -11,7 +11,7 @@ Options.ThemePage = TP
 Options.views = Options.views or {}
 
 local COL_W, PAD = 340, 20
-local MORE = { "theme.panelAlpha", "media.numberFont", "bars.backgroundAlpha", "media.shareLSM" }
+local MORE = { "theme.panel", "theme.panelAlpha", "media.numberFont", "bars.backgroundAlpha", "media.shareLSM" }
 
 local function pickRow(parent, h)
   local b = CreateFrame("Button", nil, parent)
@@ -43,10 +43,10 @@ end
 
 local function buildAccent(v, c)
   v.swatches = {}
-  for i, name in ipairs(Theme.ACCENTS) do
+  for i, name in ipairs(Theme.DESIGN_ACCENTS) do
     local s = CreateFrame("Button", nil, c)
     s:SetSize(30, 30)
-    s:SetPoint("TOPLEFT", 18 + (i - 1) * 38, -44)
+    s:SetPoint("TOPLEFT", 18 + (i - 1) * 42, -44)
     s.tex = Kit.Icon(s, A.knob, 30)
     s.tex:SetPoint("CENTER")
     s.tex:SetVertexColor(Theme:ResolveAccent(name))

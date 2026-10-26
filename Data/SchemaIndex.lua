@@ -344,6 +344,7 @@ PUI.SchemaIndex = {
   ["studio.showGrid"] = { module = "Studio", file = "Core/OptionsHost.lua" },
   ["studio.snap"] = { module = "Studio", file = "Core/OptionsHost.lua" },
   ["theme.accent"] = { module = "Theme", file = "Core/Theme.lua" },
+  ["theme.panel"] = { module = "Theme", file = "Core/Theme.lua" },
   ["theme.panelAlpha"] = { module = "Theme", file = "Core/Theme.lua" },
   ["tt.anchor"] = { module = "Tooltip", file = "Phoenix_UI_HUD/Tooltip.lua" },
   ["tt.combat"] = { module = "Tooltip", file = "Phoenix_UI_HUD/Tooltip.lua" },
