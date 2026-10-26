@@ -2957,5 +2957,1690 @@
   "author": "Kenney (kenney.nl)",
   "licence": "CC0 1.0",
   "changes": "renamed"
+ },
+ {
+  "file": "Icons/Modules/64/actionbars.tga",
+  "type": "moduleicon",
+  "name": "Module 64/actionbars",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/arena.tga",
+  "type": "moduleicon",
+  "name": "Module 64/arena",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/ascent.tga",
+  "type": "moduleicon",
+  "name": "Module 64/ascent",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/chat.tga",
+  "type": "moduleicon",
+  "name": "Module 64/chat",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/clickcast.tga",
+  "type": "moduleicon",
+  "name": "Module 64/clickcast",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/cooldowns.tga",
+  "type": "moduleicon",
+  "name": "Module 64/cooldowns",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/dashboard.tga",
+  "type": "moduleicon",
+  "name": "Module 64/dashboard",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/databars.tga",
+  "type": "moduleicon",
+  "name": "Module 64/databars",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/embers.tga",
+  "type": "moduleicon",
+  "name": "Module 64/embers",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/flow.tga",
+  "type": "moduleicon",
+  "name": "Module 64/flow",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/general.tga",
+  "type": "moduleicon",
+  "name": "Module 64/general",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/groupfinder.tga",
+  "type": "moduleicon",
+  "name": "Module 64/groupfinder",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/loadouts.tga",
+  "type": "moduleicon",
+  "name": "Module 64/loadouts",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/locales.tga",
+  "type": "moduleicon",
+  "name": "Module 64/locales",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/minimap.tga",
+  "type": "moduleicon",
+  "name": "Module 64/minimap",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/nameplates.tga",
+  "type": "moduleicon",
+  "name": "Module 64/nameplates",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/oracle.tga",
+  "type": "moduleicon",
+  "name": "Module 64/oracle",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/profiles.tga",
+  "type": "moduleicon",
+  "name": "Module 64/profiles",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/pulse.tga",
+  "type": "moduleicon",
+  "name": "Module 64/pulse",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/quests.tga",
+  "type": "moduleicon",
+  "name": "Module 64/quests",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/raid.tga",
+  "type": "moduleicon",
+  "name": "Module 64/raid",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/reminders.tga",
+  "type": "moduleicon",
+  "name": "Module 64/reminders",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/resource.tga",
+  "type": "moduleicon",
+  "name": "Module 64/resource",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/sentinel.tga",
+  "type": "moduleicon",
+  "name": "Module 64/sentinel",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/setup.tga",
+  "type": "moduleicon",
+  "name": "Module 64/setup",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/skins.tga",
+  "type": "moduleicon",
+  "name": "Module 64/skins",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/spark.tga",
+  "type": "moduleicon",
+  "name": "Module 64/spark",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/studio.tga",
+  "type": "moduleicon",
+  "name": "Module 64/studio",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/theme.tga",
+  "type": "moduleicon",
+  "name": "Module 64/theme",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/tooltip.tga",
+  "type": "moduleicon",
+  "name": "Module 64/tooltip",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/unitframes.tga",
+  "type": "moduleicon",
+  "name": "Module 64/unitframes",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/vault.tga",
+  "type": "moduleicon",
+  "name": "Module 64/vault",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/64/wisdom.tga",
+  "type": "moduleicon",
+  "name": "Module 64/wisdom",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/actionbars_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/actionbars_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/arena_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/arena_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/ascent_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/ascent_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/chat_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/chat_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/clickcast_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/clickcast_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/cooldowns_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/cooldowns_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/dashboard_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/dashboard_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/databars_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/databars_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/embers_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/embers_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/flow_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/flow_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/general_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/general_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/groupfinder_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/groupfinder_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/loadouts_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/loadouts_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/locales_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/locales_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/minimap_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/minimap_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/nameplates_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/nameplates_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/oracle_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/oracle_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/profiles_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/profiles_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/pulse_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/pulse_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/quests_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/quests_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/raid_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/raid_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/reminders_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/reminders_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/resource_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/resource_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/sentinel_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/sentinel_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/setup_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/setup_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/skins_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/skins_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/spark_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/spark_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/studio_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/studio_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/theme_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/theme_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/tooltip_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/tooltip_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/unitframes_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/unitframes_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/vault_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/vault_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/Disabled/wisdom_64.tga",
+  "type": "moduleicon",
+  "name": "Module Disabled/wisdom_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/actionbars.tga",
+  "type": "moduleicon",
+  "name": "Module 128/actionbars",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/arena.tga",
+  "type": "moduleicon",
+  "name": "Module 128/arena",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/ascent.tga",
+  "type": "moduleicon",
+  "name": "Module 128/ascent",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/chat.tga",
+  "type": "moduleicon",
+  "name": "Module 128/chat",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/clickcast.tga",
+  "type": "moduleicon",
+  "name": "Module 128/clickcast",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/cooldowns.tga",
+  "type": "moduleicon",
+  "name": "Module 128/cooldowns",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/dashboard.tga",
+  "type": "moduleicon",
+  "name": "Module 128/dashboard",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/databars.tga",
+  "type": "moduleicon",
+  "name": "Module 128/databars",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/embers.tga",
+  "type": "moduleicon",
+  "name": "Module 128/embers",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/flow.tga",
+  "type": "moduleicon",
+  "name": "Module 128/flow",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/general.tga",
+  "type": "moduleicon",
+  "name": "Module 128/general",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/groupfinder.tga",
+  "type": "moduleicon",
+  "name": "Module 128/groupfinder",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/loadouts.tga",
+  "type": "moduleicon",
+  "name": "Module 128/loadouts",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/locales.tga",
+  "type": "moduleicon",
+  "name": "Module 128/locales",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/minimap.tga",
+  "type": "moduleicon",
+  "name": "Module 128/minimap",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/nameplates.tga",
+  "type": "moduleicon",
+  "name": "Module 128/nameplates",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/oracle.tga",
+  "type": "moduleicon",
+  "name": "Module 128/oracle",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/profiles.tga",
+  "type": "moduleicon",
+  "name": "Module 128/profiles",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/pulse.tga",
+  "type": "moduleicon",
+  "name": "Module 128/pulse",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/quests.tga",
+  "type": "moduleicon",
+  "name": "Module 128/quests",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/raid.tga",
+  "type": "moduleicon",
+  "name": "Module 128/raid",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/reminders.tga",
+  "type": "moduleicon",
+  "name": "Module 128/reminders",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/resource.tga",
+  "type": "moduleicon",
+  "name": "Module 128/resource",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/sentinel.tga",
+  "type": "moduleicon",
+  "name": "Module 128/sentinel",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/setup.tga",
+  "type": "moduleicon",
+  "name": "Module 128/setup",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/skins.tga",
+  "type": "moduleicon",
+  "name": "Module 128/skins",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/spark.tga",
+  "type": "moduleicon",
+  "name": "Module 128/spark",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/studio.tga",
+  "type": "moduleicon",
+  "name": "Module 128/studio",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/theme.tga",
+  "type": "moduleicon",
+  "name": "Module 128/theme",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/tooltip.tga",
+  "type": "moduleicon",
+  "name": "Module 128/tooltip",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/unitframes.tga",
+  "type": "moduleicon",
+  "name": "Module 128/unitframes",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/vault.tga",
+  "type": "moduleicon",
+  "name": "Module 128/vault",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Modules/128/wisdom.tga",
+  "type": "moduleicon",
+  "name": "Module 128/wisdom",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_chiji_64.tga",
+  "type": "icon",
+  "name": "Ability ab_chiji_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_cocoon_64.tga",
+  "type": "icon",
+  "name": "Ability ab_cocoon_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_envelop_64.tga",
+  "type": "icon",
+  "name": "Ability ab_envelop_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_essence_64.tga",
+  "type": "icon",
+  "name": "Ability ab_essence_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_fist_64.tga",
+  "type": "icon",
+  "name": "Ability ab_fist_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_kick_64.tga",
+  "type": "icon",
+  "name": "Ability ab_kick_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_lotus_64.tga",
+  "type": "icon",
+  "name": "Ability ab_lotus_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_renew_64.tga",
+  "type": "icon",
+  "name": "Ability ab_renew_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_roll_64.tga",
+  "type": "icon",
+  "name": "Ability ab_roll_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_shield_64.tga",
+  "type": "icon",
+  "name": "Ability ab_shield_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_tea_64.tga",
+  "type": "icon",
+  "name": "Ability ab_tea_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Icons/Abilities/ab_vivify_64.tga",
+  "type": "icon",
+  "name": "Ability ab_vivify_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Art/Hero_Backdrop.tga",
+  "type": "texture",
+  "name": "Art/Hero_Backdrop",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Art/Preset_EmberClassic.tga",
+  "type": "texture",
+  "name": "Art/Preset_EmberClassic",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Art/Preset_HealerFocus.tga",
+  "type": "texture",
+  "name": "Art/Preset_HealerFocus",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Art/Preset_MinimalAsh.tga",
+  "type": "texture",
+  "name": "Art/Preset_MinimalAsh",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Checkbox_Check.tga",
+  "type": "texture",
+  "name": "Controls/Checkbox_Check",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Checkbox_Off.tga",
+  "type": "texture",
+  "name": "Controls/Checkbox_Off",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Checkbox_On.tga",
+  "type": "texture",
+  "name": "Controls/Checkbox_On",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Chevron_Down.tga",
+  "type": "texture",
+  "name": "Controls/Chevron_Down",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Knob.tga",
+  "type": "texture",
+  "name": "Controls/Knob",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Slider_Track.tga",
+  "type": "texture",
+  "name": "Controls/Slider_Track",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Thumb_Ring.tga",
+  "type": "texture",
+  "name": "Controls/Thumb_Ring",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Controls/Toggle_Track.tga",
+  "type": "texture",
+  "name": "Controls/Toggle_Track",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Logo/Logo_Full_512.tga",
+  "type": "texture",
+  "name": "Logo/Logo_Full_512",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Logo/Logo_Glyph_256.tga",
+  "type": "texture",
+  "name": "Logo/Logo_Glyph_256",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Logo/Logo_MonoDark_256.tga",
+  "type": "texture",
+  "name": "Logo/Logo_MonoDark_256",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Logo/Logo_MonoWhite_256.tga",
+  "type": "texture",
+  "name": "Logo/Logo_MonoWhite_256",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Logo/PhoenixUI_Icon_128.tga",
+  "type": "texture",
+  "name": "Logo/PhoenixUI_Icon_128",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Logo/PhoenixUI_Icon_64.tga",
+  "type": "texture",
+  "name": "Logo/PhoenixUI_Icon_64",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Bars/AbsorbStripes.tga",
+  "type": "texture",
+  "name": "Bars/AbsorbStripes",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Bars/CastSpark.tga",
+  "type": "texture",
+  "name": "Bars/CastSpark",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Bars/HealPrediction.tga",
+  "type": "texture",
+  "name": "Bars/HealPrediction",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Bars/OverAbsorbGlow.tga",
+  "type": "texture",
+  "name": "Bars/OverAbsorbGlow",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Unit/Dispel_Overlay.tga",
+  "type": "texture",
+  "name": "Unit/Dispel_Overlay",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Unit/Gloss_Top.tga",
+  "type": "texture",
+  "name": "Unit/Gloss_Top",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Unit/Plate_Border.tga",
+  "type": "texture",
+  "name": "Unit/Plate_Border",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Unit/Plate_Threat_Glow.tga",
+  "type": "texture",
+  "name": "Unit/Plate_Threat_Glow",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Unit/Raid_Highlight.tga",
+  "type": "texture",
+  "name": "Unit/Raid_Highlight",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Unit/Shade_Bottom.tga",
+  "type": "texture",
+  "name": "Unit/Shade_Bottom",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Panel/Ash.tga",
+  "type": "background",
+  "name": "Phoenix Ash",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Panel/Charcoal.tga",
+  "type": "background",
+  "name": "Phoenix Charcoal",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Panel/ObsidianGlass.tga",
+  "type": "background",
+  "name": "Phoenix Obsidian Glass",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Aurora.tga",
+  "type": "statusbar",
+  "name": "Phoenix Aurora",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Brushed.tga",
+  "type": "statusbar",
+  "name": "Phoenix Brushed",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Carbon.tga",
+  "type": "statusbar",
+  "name": "Phoenix Carbon",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Ember.tga",
+  "type": "statusbar",
+  "name": "Phoenix Ember",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Fade.tga",
+  "type": "statusbar",
+  "name": "Phoenix Fade",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Flat.tga",
+  "type": "statusbar",
+  "name": "Phoenix Flat",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Glass.tga",
+  "type": "statusbar",
+  "name": "Phoenix Glass",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Pearl.tga",
+  "type": "statusbar",
+  "name": "Phoenix Pearl",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Ridge.tga",
+  "type": "statusbar",
+  "name": "Phoenix Ridge",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Satin.tga",
+  "type": "statusbar",
+  "name": "Phoenix Satin",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Smooth.tga",
+  "type": "statusbar",
+  "name": "Phoenix Smooth",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/SoftGlow.tga",
+  "type": "statusbar",
+  "name": "Phoenix Soft Glow",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/StatusBar/Striped.tga",
+  "type": "statusbar",
+  "name": "Phoenix Striped",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Border_1px.tga",
+  "type": "texture",
+  "name": "NineSlice/Border_1px",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Border_Soft.tga",
+  "type": "texture",
+  "name": "NineSlice/Border_Soft",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Button_Primary_R16.tga",
+  "type": "texture",
+  "name": "NineSlice/Button_Primary_R16",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Button_Secondary_R16.tga",
+  "type": "texture",
+  "name": "NineSlice/Button_Secondary_R16",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Card_R24.tga",
+  "type": "texture",
+  "name": "NineSlice/Card_R24",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Control_R16.tga",
+  "type": "texture",
+  "name": "NineSlice/Control_R16",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Panel_R28.tga",
+  "type": "texture",
+  "name": "NineSlice/Panel_R28",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Shadow_Soft.tga",
+  "type": "texture",
+  "name": "NineSlice/Shadow_Soft",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/NineSlice/Shadow_Tight.tga",
+  "type": "texture",
+  "name": "NineSlice/Shadow_Tight",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Cooldown/Edge.tga",
+  "type": "texture",
+  "name": "Cooldown/Edge",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Cooldown/Swipe.tga",
+  "type": "texture",
+  "name": "Cooldown/Swipe",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Cooldown/Swipe_Rounded.tga",
+  "type": "texture",
+  "name": "Cooldown/Swipe_Rounded",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Glow/Hover.tga",
+  "type": "texture",
+  "name": "Glow/Hover",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Glow/ProcRing.tga",
+  "type": "texture",
+  "name": "Glow/ProcRing",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Glow/Radial.tga",
+  "type": "texture",
+  "name": "Glow/Radial",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Glow/TargetOutline.tga",
+  "type": "texture",
+  "name": "Glow/TargetOutline",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Sounds/Phoenix_EmberChime.ogg",
+  "type": "sound",
+  "name": "Phoenix: Ember Chime",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_Error.ogg",
+  "type": "sound",
+  "name": "Phoenix: Error",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_ProcAlert.ogg",
+  "type": "sound",
+  "name": "Phoenix: Proc Alert",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_ReadyCheck.ogg",
+  "type": "sound",
+  "name": "Phoenix: Ready Check",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_RisingWhoosh.ogg",
+  "type": "sound",
+  "name": "Phoenix: Rising Whoosh",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_SoftBell.ogg",
+  "type": "sound",
+  "name": "Phoenix: Soft Bell",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_Success.ogg",
+  "type": "sound",
+  "name": "Phoenix: Success",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_ToggleOff.ogg",
+  "type": "sound",
+  "name": "Phoenix: Toggle Off",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_ToggleOn.ogg",
+  "type": "sound",
+  "name": "Phoenix: Toggle On",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_UIClick.ogg",
+  "type": "sound",
+  "name": "Phoenix: UIClick",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_Warning.ogg",
+  "type": "sound",
+  "name": "Phoenix: Warning",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Sounds/Phoenix_WhisperPing.ogg",
+  "type": "sound",
+  "name": "Phoenix: Whisper Ping",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "renamed with Phoenix_ prefix"
+ },
+ {
+  "file": "Border/PhoenixLine.tga",
+  "type": "border",
+  "name": "Phoenix Line",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "backdrop edge strip cut from Textures/NineSlice/Border_1px.tga"
+ },
+ {
+  "file": "Border/PhoenixSoft.tga",
+  "type": "border",
+  "name": "Phoenix Soft",
+  "source": "Phoenix UI design package v3 (pui_design/src)",
+  "author": "Phoenix UI (VortexQ8)",
+  "licence": "Original (Phoenix UI)",
+  "changes": "backdrop edge strip cut from Textures/NineSlice/Border_Soft.tga"
+ },
+ {
+  "file": "Fonts/Inter-Bold.ttf",
+  "type": "font",
+  "name": "Inter Bold",
+  "source": "https://github.com/google/fonts/tree/main/ofl/inter",
+  "author": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)",
+  "licence": "SIL OFL 1.1",
+  "changes": "static instance {\"wght\": 700, \"opsz\": 14}",
+  "coverage": "Latin, Cyrillic, Greek"
+ },
+ {
+  "file": "Fonts/Rajdhani-Bold.ttf",
+  "type": "font",
+  "name": "Rajdhani Bold",
+  "source": "https://github.com/google/fonts/tree/main/ofl/rajdhani",
+  "author": "Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com)",
+  "licence": "SIL OFL 1.1",
+  "changes": "none",
+  "coverage": "Latin, Devanagari"
  }
 ]

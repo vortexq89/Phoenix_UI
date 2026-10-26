@@ -3,7 +3,7 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- Addon Compartment entry (TOC AddonCompartmentFunc) and a minimap button.
 -- All three are Phoenix-owned frames; Blizzard frames are only hooked with
 -- HookScript (no fields written, no secure functions replaced).
-local Entry = { ICON = "Interface\\AddOns\\Phoenix_UI\\Media\\PhoenixIcon" }
+local Entry = { ICON = "Interface\\AddOns\\Phoenix_UI\\Media\\Logo\\PhoenixUI_Icon_64" }
 PUI.Entry = Entry
 
 function Entry:Open(button)
