@@ -1,4 +1,4 @@
-# Phoenix UI — Master Audit and Plan (main-v2 @ c6213ce, updated 2026-10-26 with I:\ competitor study, §13)
+# Phoenix UI — Master Audit and Plan (main-v2 @ c6213ce, updated 2026-10-26 with I:\ competitor study §13 and EllesmereUI deep study §15)
 
 Audit and plan only. No code was changed for this document.
 Sources:
@@ -25,6 +25,8 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 ---
 
 ## 0. One-page summary — the biggest gaps
+
+> **2026-10-26 deep-study correction:** the top gaps are now the 12.1 aura container engine (F1), the Blizzard-viewer CDM model, the per-spec/condition Overrides layer (F2) and Studio v2 anchor/size-match parity (F3). See §15.1 for what changed and §15.4 for the new order.
 
 > **Update 2026-10-26 (competitor study, §13).** Every addon on I:\ was studied (EllesmereUI suite first). Biggest new gaps vs EllesmereUI: global Fonts/Textures/Colors/Glows pages; action-bar appearance/paging/keybind/visibility builder; unit-frame text slots and portraits; raid indicator editor and assigned buff/debuff managers; nameplate slot layout and colour rules; CDM spell picker, buff bars and glow conditions; GCD/swing/totem bars; minimap button collector and data-bar blocks; bag categories; M+ run summary; threat, battle-res, cursor and movement tools; Quickdraw menus. Decisions D1 (Game Menu row inside the Esc menu, taint-safe) and D2 (action-bar defaults = EllesmereUI/ElvUI and beyond) are in §13.D. New phases A+…I+ are in §13.12.
 
@@ -582,6 +584,8 @@ Merge, push live and install follow the existing rules.
 
 ## 13. Competitor study (I:\ drive, read-only, 2026-10-26) and per-section parity + "better than"
 
+> **Superseded in part by §15 (deep study, same day).** Where §13 and §15 differ, §15 wins. ElvUI/Plater/Cell/Bartender/Details/WeakAuras rows are no longer references.
+
 **Method.** Every addon folder on `I:\` was read in place (copies of .lua/.toc/.xml only, into a scratch area on the box, never into the repo; nothing on `I:\` was modified). For EllesmereUI the option pages were parsed control by control (section headers, control type, label) and the runtime files read for how settings apply, how defaults are set and how the game menu entry is built. Other addons were read for their feature set and presentation. **No code is copied; every Phoenix item below is an original implementation** under Section 3 doctrine and 20.2 rules (no OnUpdate outside PUI.Ticker, CombatQueue for protected work, 150 locals/50 upvalues, behaviour defaults OFF, every setting = schema + apply, gated APIs).
 
 **Addons present and studied:** EllesmereUI (core + 23 children: ActionBars, AuraBuffReminders, Bags, BlizzardSkin, Chat, CooldownManager, DamageMeters, DataBars, ForeverEssentials, Friends, GroupFinder, Locales, Minimap, MythicTimer, Nameplates, Options, QoL, QuestTracker, Quickdraw, RaidFrames, ResourceBars, UnitFrames, WindTools shell), BugSack + !BugGrabber, BigWigs (+ Core/Options/Plugins + 20 content packs), LittleWigs (+ 10 packs), sArena_Reloaded, MoveAny, TrufiGCD, MikScrollingBattleText, PremadeGroupsFilter, idTip, Auctionator, AutoQueue, Simulationcraft, Questie / QuestieDB / QuestieTrace, WoW-API (reference only).
@@ -771,6 +775,188 @@ Merge, push live and install follow the existing rules.
 - **Phase I+:** QoL/Forever 13.11. M–L.
 Each phase ships as stacked PRs; each PR updates `docs/PLAN.md` statuses and `CHANGELOG.md`.
 
+
+## 15. EllesmereUI deep study (2026-10-26, second pass) — corrections and full per-section feature tables
+
+**Scope and method.** EllesmereUI core + 23 children on `I:\` (read-only; nothing on `I:\` modified; nothing copied into the repo). **937 files, 764,729 lines** (Lua/XML/TOC), every file parsed line by line into inventories (events, C_ APIs, global APIs, CVars, hooks, default literals, every options control with label/range/key/tooltip — **3,113 controls**) and every file and section header read; core runtime files of AuraKit, CDM, Chat engine, Unit Frame engine read by hand. Per-module study notes live on the box at `/workspace/pui_study/ellesmere/<module>.md` with `COVERAGE.tsv` (937/937 files marked read). ElvUI, Plater, Cell, Bartender, Details and WeakAuras are **dropped as references** (user decision 2026-10-26); rows in §13 citing them are superseded by this section. **Ideas only; every Phoenix implementation stays original.**
+
+| Module | Files | Lines | Controls |
+|---|---|---|---|
+| EllesmereUI (core) | 81 | 84,927 | 154 |
+| Options | 99 | 157,236 | 30 (+ the per-module pages below) |
+| UnitFrames | 32 | 33,094 | 598 |
+| RaidFrames | 37 | 43,730 | 343 |
+| Nameplates | 20 | 17,716 | 210 |
+| ActionBars | 30 | 22,475 | 147 |
+| CooldownManager | 45 | 39,237 | 198 |
+| ResourceBars | 24 | 18,508 | 285 |
+| AuraBuffReminders | 14 | 7,722 | 62 |
+| DamageMeters | 12 | 8,982 | 96 |
+| MythicTimer | 5 | 8,129 | 135 |
+| QoL | 16 | 19,719 | 256 |
+| Bags | 18 | 17,198 | 52 |
+| Chat | 15 | 10,941 | 62 |
+| Minimap | 11 | 6,915 | 83 |
+| DataBars | 21 | 12,070 | 70 |
+| BlizzardSkin | 24 | 37,416 | 143 |
+| QuestTracker | 6 | 3,885 | 38 |
+| Quickdraw | 15 | 10,394 | 37 |
+| Friends | 2 | 3,272 | 9 |
+| GroupFinder | 4 | 4,365 | 6 |
+| ForeverEssentials | 26 | 10,276 | 99 |
+| Locales | 11 | 70,744 | — |
+| WindTools shell | 369 | 115,778 | — |
+| **Total** | **937** | **764,729** | **3,113** |
+
+### 15.1 Self-evaluation: what the previous plan (§13) got wrong or missed
+1. **Auras architecture was wrong.** §13 planned a Lua aura scanner + "filter rule builder". In 12.1 auras are secret in restricted content; EUI renders *all* auras (unit frames, raid, nameplates, player aura bars, CDM decimals, Ebon Might/Arcane Soul) through Blizzard's new **`AuraContainer` frame (`CustomAuraContainerTemplate`, `Blizzard_AuraContainer`)** with engine-side filters, sorting, duration text and bars. Phoenix has zero use of it. This is now the #1 foundation item (F1).
+2. **Cooldown Manager approach was wrong.** §13 listed CDM as a spell picker on our own tracking. EUI never tracks cooldowns itself: it **restyles and re-anchors Blizzard's Cooldown Viewer children** (hooks on `OnCooldownIDSet`, pool Acquire, viewer Layout; alpha-0 unclaimed; weak side tables) because that is the only secret-safe data source. Our CDM (202 lines) only positions viewers.
+3. **Missed the Spec/Conditional Overrides system** (~10k lines): per-spec and per-condition values for any setting inside one profile, "Editing as" sessions, gold borders on overridden rows, promote-to-profile. §13 only had "spec auto-switch profiles".
+4. **Missed Unlock Mode depth**: anchor-to-element and **width/height match links** (elements follow each other's size and position), grow-direction-aware anchors, combat-parked moves, Edit Mode anchor guard, Blizzard-owned frame overlays. §13 said "Studio already". Studio (#15) has snap, grid, nudge, undo/redo and an anchor grid, but no element-to-element anchors, size matching or resizing.
+5. **Damage meter source**: Midnight addons have no combat log; EUI uses `C_DamageMeter` sessions (secret in combat; rendered via setters). §13 did not state the data source; Embers must be checked against this.
+6. **Chat**: missed the only taint-safe reskin route (AddMessage post-hook bridge into our own ScrollingMessageFrame + ghost tabs over Blizzard's invisible strip) and the measured taint rules (never hook FCF_*, never reparent chat widgets, never write fields).
+7. **Raid frames**: missed Click-Cast hovercast path, Buff Manager indicator types (icon/square/bar/health colour/border/frame alpha), Debuff Manager tiles with match-any/all, Grid Mode, Extra Frames, friendly boss frames, party targets, size tiers, FrameSort shim, frame-provider API.
+8. **Unit frames**: missed the channel-painter engine model, Player Aura Bars + custom aura bars with named filters, mini frames, boss range dimming.
+9. **Nameplates**: missed per-plate container bundle pool, global cast dispatcher, quest mob detection via `C_TooltipInfo`, friendly name-only system riding Blizzard's FontString, debuff colour lists per class.
+10. **Resource bars**: missed engine-driven duration fills (`SetTimerDuration`), hidden-aura-slot displays for secret buffs, colour-curve thresholds, Blizzard class art re-host.
+11. **Data bars** are a **user-built multi-bar + block engine** (any number of bars, 20+ block types, layout solver, LDB), not 7 fixed keys. **Bags** have three views (grid/compact bin-packing/list), category engine and bank parity. **QoL** has ~40 toggles + 12 separate systems. **Quickdraw** (radial/fan/grid palette with secure in-combat selection) was not in the plan. **Mythic timer** has run summary/history, target/focus cast bars and targeted-spell bars. **Reminders** split combat-safe vs OOC-only with secure click-to-use icons.
+12. **Onboarding/ops** missed: ClientGate first-file failsafe, Uninstall/CVar restore ledger for every module, global fuzzy search, profile sync groups, first-install module picker + style picker, one-time feature announcements, video guides, three looks (EUI/Blizzard/Classic).
+13. **Locales**: EUI ships 8 near-complete translations (70.7k lines). Our 2% is the largest content gap; Arabic is ours to add.
+
+### 15.2 New and corrected foundation items (build before module parity)
+| ID | Item | St | Phoenix better | Mock | Acceptance |
+|---|---|---|---|---|---|
+| F1 | `PUI.Auras` on 12.1 `AuraContainer`: canonical filter builder (cached, sorted tokens), add-only groups toggled by cap, flow layout (anchor/growth/padding/line size/axis) with API-generation fallback, processing policy, scheduler-spread construction, restriction-aware restyle queue (`C_Secrets.ShouldAurasBeSecret`), engine duration text (`C_DurationUtil` binding + `C_StringUtil` formatters) and bars, engine-hosted glows | M | One shared engine for UF, Raid, Plates, Player aura bars, CDM decimals, spec helpers; per-container perf readout in Sentinel | N | G, T (filter canonicalisation, cap toggling), IG: auras correct in M+ key and raid boss (restricted) with zero Lua errors; Ticker shows no per-frame Lua |
+| F2 | Overrides layer: per-spec-group and per-condition overlays on any `overridable` schema key; "Editing as" banner; gold dot on overridden rows; promote to profile; list page | M | Generic on schema (no per-module forks), diff view | Y | G, T (resolve order profile→spec→condition), IG: swap spec in town and in combat (deferred) |
+| F3 | Studio v2 parity: anchor-to-element, width/height match links, resize handles, grow-direction anchors, combat-parked moves (CombatQueue), Edit Mode guard, save/revert banner (snap, grid, nudge, undo/redo already Built in #15) | P | Undo/redo (EUI has revert only) + layout presets | Y | IG: anchor UF to CDM bar, resize CDM, UF follows; combat enter mid-drag safe |
+| F4 | `PUI.CVars` ledger: owner-tagged CVar writes, restore when a module turns off and on "Uninstall Phoenix" | P (Flow only) | Visible ledger page | N | T, IG: disable Nameplates → CVars back |
+| F5 | ClientGate hardening: refuse migrations on unknown interface | P | — | N | T |
+| F6 | Global search over `SchemaIndex` with deep-link + flash | P | Ctrl+K palette | N | IG |
+| F7 | Schema-driven page renderer (DualRow, cog popups, apply-to-all links, reset dot, changed tint, disabled-gate tooltip) | P | 100% coverage from schema | Y | every schema key visible on a page |
+| F8 | Shared services: `PUI.Mouse` (one cursor poll as Ticker subscriber), `PUI.Range`, `PUI.Visibility` dispatcher, `PUI.Glow` | M | zero cost unsubscribed | N | T |
+| F9 | Looks axis (Phoenix / Blizzard-like / Classic) | M | after parity | Y | backlog |
+
+### 15.3 Per-section feature tables (status vs main-v2 b5c2682)
+Legend as §13: St **B/P/M**; Mock **Y/N**; every row's acceptance = **G** guardrails+manifest, **T** `/pui test` incl. a unit test, **IG** in-game check on 12.1.5 retail and Forever with zero Sentinel incidents, plus the row's specific check.
+
+**Unit Frames** (EUI 598 controls; ours 89 keys)
+| Feature | St | Phoenix better | Mock | Specific check |
+|---|---|---|---|---|
+| Channel-painter engine, RegisterUnitEvent per token, vehicle at registration, same-frame dedupe, ToT/FoT on one Ticker sub | P | perf readout | N | 40 events/s without dropped paints |
+| Auras via F1 per class group (buffs/debuffs/dispellable/own/CC), caps, sort, dispel slots, purgeable glow | M | shared filter registry with Raid | Y | restricted content |
+| Player Aura Bars (buffs, debuffs) + custom aura bars with named filters, 10 presets, match any/all, per-spec | M | — | Y | |
+| Mini frames (companion), boss1-5 with range dimming, pet, ToT, FoT | P | `/pui test boss` | Y | |
+| Text slots + tags + nicknames + decimals + smart power % | P | live token editor | Y | |
+| Portraits 2D/3D/class, attached/detached, masks, borders | P | Phoenix masks | Y | |
+| Castbar kick tick, interrupt colours, important cast | P | | N | |
+| Absorb styles, heal absorb, max-health reduction, heal prediction, glow line | P | | N | |
+| Class power (bars/circles) on player frame | P | | N | |
+| Visibility: fade OOC, resting alpha, show when missing health; dark mode; dynamic health colour | P | | N | |
+
+**Raid & Party** (EUI 343 controls; ours 23+3)
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Per-group + flat headers, party header, raid size tiers | P | auto tier | Y | 5/10/20/40 |
+| Buff Manager indicators (icon/square/bar/health colour/border/frame alpha), healer spell DB per spec, filters, ≤20 per spec | M | drag-to-corner editor on replica | Y | |
+| Debuff Manager tiles, match any/all, shown-on-modifier, per spec | M | | Y | |
+| Click-cast: frame path + hovercast path, global defaults, per spec | P | conflict detector | Y | combat-safe rebinds |
+| Grid Mode / Compact Mode shared outlines | M | | Y | |
+| Extra Frames (chosen members), friendly boss frames, party targets, pets (header/beside owner) | M | | Y | |
+| Sort: self first, prioritize class, FrameSort shim | P | | N | |
+| Range fading, ghost-aura safety net, healer mana text, ping marker, role/leader/combat icons, ready check | P | | N | |
+| Frame-provider API for external trackers | M | with plugin API | N | |
+| Preview: fake roster, cycling auras, size preview | P | state toggles | Y | |
+
+**Nameplates** (EUI 210; ours 17)
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Plate pool + prewarm, NamePlateDriverFrame suppression | P | | N | 40 plates |
+| Container bundle pool (player debuffs, important buffs, CC) with Blizzard nameplate filter rule, show-all toggle, tracked auras popup | M | F1 | Y | restricted |
+| Global cast dispatcher, kick tick + kick window, interrupted flash, cast target, important cast | P | | N | |
+| Colour rules: class/reaction/threat context/quest (C_TooltipInfo cache)/focus/debuff lists per class | M | unified Rules engine with priority | Y | |
+| Lazy target/focus overlays (arrows, glow, low health, near aggro, focus letter), non-target alpha, hover | P | | Y | |
+| Friendly system: name-only riding Blizzard name, subtitle/guild, class colours, faction badge, click-through, CVar enable/disable path | P | ledger (F4) | N | |
+| Range: distance text, out-of-range alpha (F8 Range) | M | | N | |
+| Class power on target plate, stacking/inset CVars re-applied, hide enemy OOC | M | | N | |
+
+**Action Bars** (EUI 147; ours 105)
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Own secure buttons, Blizzard bars disposed to hidden parent, events re-registered | P | | N | taint log clean |
+| Central dispatcher + bar dormancy, ACTION_RANGE_CHECK_UPDATE tint | P | | N | |
+| Override-binding keybinds, key-down, pushed flash, Quick Keybind compat, keybind mode | P | conflict warnings | N | |
+| Paging per bar (state driver, modifier/target conditions, class fallbacks), arrows | M | editor | Y | |
+| Visibility builder (multi-select → state driver), mouseover fade, gamepad hide, toggle-bar key | P | readable chips | Y | |
+| Shapes/masks/borders/chrome/end caps, pushed/highlight textures, proc + assisted highlight glows, flyout reskin | P | Phoenix media | Y | |
+| XP/Rep/House Favor bars: styles, dividers, smart ticks, quest-XP overlay, text positions (XP/h, session) | P | | Y | |
+| Vehicle exit, override controller, micro/bag holders, extra action button holder | P | | N | |
+| First-install capture of the user's Edit Mode layout | M | | N | |
+
+**Cooldown Manager** (EUI 198; ours 22)
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Restyle + reanchor Blizzard viewer children (hooks only, side tables, alpha-0 unclaimed), 4-phase collect | M | | N | combat reanchors, no taint |
+| Custom bars per spec + global groups, spell store, spell picker, talent conditions, empty slots, trinket slots, item presets, racials, spec sync | M | manager page | Y | |
+| Tracking bars from CDM children: thresholds, ticks, stacks, pandemic, sounds, auto-add, presets, engine decimals | M | | Y | |
+| Fake-active, custom icons, ready sound, state effects, charge text | M | | N | |
+| Bar glows (active/missing/usable/stacks/AND/hero tree), proc glows, pandemic sync | M | condition chips | Y | |
+| Rotation assist icon, mirror key presses, focus kick bar | M | | N | |
+
+**Resource Bars** (EUI 285; ours 18)
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Health/power/class resource bars, thresholds as colour curves, ticks/hash, smooth, fades | P | | N | |
+| Cast bar (ticks, empower, latency), GCD bar, totem bar, swing timer (Forever) on duration objects | P | engine fills | N | |
+| Spec helpers: Ironfur, Ignore Pain, Ebon Might, Arcane Soul, Warrior charges (hidden aura slots) | M | data pack | N | restricted |
+| Blizzard class art re-host, anchors/stack, border-around-all | M | | N | |
+
+**HUD: Minimap / Data Bars / Tooltip** (EUI 83 + 70 + skin)
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Minimap collector (scan, blacklist, flyout grid, free move), indicators (vault, portals, friends, calendar lockouts), micro menu on middle click | M | search | Y | |
+| Data bars engine: N bars from templates, 20+ blocks incl. LDB, layout solver, themes, heartbeat | M | | Y | |
+| Tooltip: anchor modes + mover, visibility with peek modifier, health strip, IDs | P | | N | |
+
+**Chat / Vault / Quest / Group Finder / Friends**
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Chat engine (AddMessage bridge, own SMF, ghost tabs), sidebar, idle fade, URL copy, session history | P | | Y | taint log during whisper creation |
+| Vault: categories engine, grid/compact/list, bank + warband parity, junk/pin/assign modes, stack splitter, sort two-phase, Pawn/overlay API | P | rule categories | Y | |
+| Quest tracker skin by hooks, item hotkey, auto accept/turn-in, visibility | P | | N | |
+| Group finder filters (dungeon/delve/raid boss/region), applications bar, cancel oldest | P | expression filter | Y | |
+| Friends skin | M | | N | |
+
+**Combat tools / QoL**
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Embers on `C_DamageMeter` (≤5 windows, breakdown, timer, spell history) | P | | Y | secret numbers via setters |
+| Ascent: run summary/history, target/focus cast bars, targeted spell bars | P | | Y | |
+| Reminders: combat-safe raid buffs vs OOC checks, secure click-to-use, where-to-show, talent reminders, ready-check mana | P | season data pack | Y | |
+| QoL toggles (~40) | P (Flow) | all OFF | N | |
+| Alerts anchor, battle res + lust icons, cursor rings, movement alert, raid tools band, self combat text, shifter, waypoint, upgrade calc, auto logging, /keys | M | | Y (cursor, raid tools) | |
+| Radial palette (Quickdraw idea) with secure in-combat selection | M | | Y | backlog after parity |
+
+**Options / onboarding / locales**
+| Feature | St | Phoenix better | Mock | Check |
+|---|---|---|---|---|
+| Schema renderer (F7), cog popups, apply-to-all, previews for every module | P | | Y | |
+| Global search (F6), profile export/import, profile sync groups | P/M | diff before import | Y | |
+| First-install module picker + look picker, one-time announcements, video guide links | P | | Y | |
+| Translations for 8 locales + Arabic generated from schema | M | | N | key coverage ≥95% |
+
+### 15.4 Revised order (replaces §13.12; §11 phases keep their acceptance rules)
+1. In-game check of current build (unchanged).
+2. **Foundations**: F1 Auras engine, F4 CVar ledger, F5 gate, F8 services, F7 schema renderer + F6 search.
+3. Profiles (export/import/copy) + **F2 Overrides**.
+4. Unit Frames + Player Aura Bars on F1.
+5. Raid & Party (Buff/Debuff managers, click-cast hovercast, tiers, grid mode).
+6. Nameplates (bundle pool, cast dispatcher, Rules engine).
+7. CDM rewrite on Blizzard viewer + Action Bars depth + Resource Bars engine fills.
+8. **F3 Studio v2**.
+9. HUD (minimap collector, data-bar engine), Chat engine, Vault views, Embers/Ascent depth, Reminders.
+10. QoL systems, Pulse/Arena/Spark, radial palette.
+11. Translations, plugins, release.
+Every step: mockups first where Mock = Y; each PR updates this section's St column and `CHANGELOG.md`.
 
 ## 14. Appendix — current schema keys by owner (448)
 
