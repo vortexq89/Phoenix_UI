@@ -22,11 +22,14 @@ local function actionButton()
 end
 Palette.ActionButton = actionButton
 
+PUI.Layout:RegisterElement("oracle.palette", { label = "Oracle search", owner = "Oracle", size = { 460, 60 + ROWS * 22 },
+  keys = "oracle", default = { point = "TOP", x = 0, y = -140 } })
+
 local function build()
   if Palette.frame then return Palette.frame end
   local f = PUI:CreateFrame("Frame", "PhoenixUI_Oracle", UIParent, nil, "Oracle")
   f:SetSize(460, 60 + ROWS * 22)
-  f:SetPoint("TOP", 0, -140)
+  PUI.Layout:Place(f, "oracle.palette")
   f:SetFrameStrata("DIALOG")
   Theme:Backdrop(f, "surface.1")
   Theme:Outline(f, "accent", 0.8)

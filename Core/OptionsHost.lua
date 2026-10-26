@@ -116,6 +116,61 @@ PUI.Schema:Register("studio.snap", {
   apply = forward("Studio", "OnSnapChanged"),
 })
 
+local function studioKey(id, def) def.owner = "Studio"; def.apply = def.apply or forward("Studio", "OnSettingsChanged"); PUI.Schema:Register(id, def) end
+studioKey("studio.snapMode", { type = "select", default = "both", choices = { "grid", "elements", "both" },
+  label = "Snap to", tooltip = "What dragged elements snap to while Snap is on: the grid, other elements' edges and centres, or both.",
+  mode = "simple", searchTags = { "snap", "align", "edges" } })
+studioKey("studio.snapDistance", { type = "range", default = 8, min = 2, max = 32, step = 1,
+  label = "Snap distance", tooltip = "How close (in UI pixels) an edge must come before it snaps.",
+  mode = "advanced", searchTags = { "snap", "magnet" } })
+studioKey("studio.centerGuides", { type = "toggle", default = true,
+  label = "Centre guides", tooltip = "Draw the screen's centre lines while Studio is open.",
+  mode = "simple", searchTags = { "guides", "centre", "center" } })
+studioKey("studio.safeZone", { type = "toggle", default = false,
+  label = "HUD safe-zone guides", tooltip = "Shade the screen edges and the centre area where your character stands, to keep frames out of the way.",
+  mode = "advanced", searchTags = { "guides", "safe", "zone" } })
+studioKey("studio.distanceLabels", { type = "toggle", default = true,
+  label = "Distance labels", tooltip = "Show the gap to the nearest element on each side of the selected one.",
+  mode = "simple", searchTags = { "distance", "gap", "measure" } })
+studioKey("studio.labels", { type = "select", default = "hover", choices = { "hover", "always", "selected" },
+  label = "Element names", tooltip = "When Studio shows each mover's name.",
+  mode = "simple", searchTags = { "labels", "names" } })
+studioKey("studio.overlayAlpha", { type = "range", default = 0.72, min = 0, max = 0.95, step = 0.05,
+  label = "Overlay darkness", tooltip = "How dark the screen gets behind the movers.",
+  mode = "advanced", searchTags = { "overlay", "dim", "dark" } })
+studioKey("studio.nudgeShift", { type = "range", default = 10, min = 2, max = 50, step = 1,
+  label = "Shift nudge step", tooltip = "Pixels moved per arrow press while holding Shift (1 without a modifier).",
+  mode = "advanced", searchTags = { "nudge", "arrow" } })
+studioKey("studio.nudgeCtrl", { type = "range", default = 100, min = 20, max = 400, step = 10,
+  label = "Ctrl nudge step", tooltip = "Pixels moved per arrow press while holding Ctrl.",
+  mode = "advanced", searchTags = { "nudge", "arrow" } })
+studioKey("studio.wheelCycle", { type = "toggle", default = true,
+  label = "Mouse wheel cycles overlaps", tooltip = "Scroll over stacked movers to pick the one underneath.",
+  mode = "advanced", searchTags = { "overlap", "wheel", "stacked" } })
+studioKey("studio.groupDrag", { type = "toggle", default = true,
+  label = "Drag the whole selection", tooltip = "With several elements selected, dragging one moves them all.",
+  mode = "advanced", searchTags = { "multi", "group", "selection" } })
+studioKey("studio.editModeBadge", { type = "toggle", default = true,
+  label = "Show Edit Mode badges", tooltip = "Mark Blizzard elements that Edit Mode owns, with a button to open Edit Mode for them.",
+  mode = "advanced", searchTags = { "edit mode", "badge", "blizzard" } })
+studioKey("studio.templates", { type = "layout", default = {},
+  label = "Saved layouts", tooltip = "Layouts you saved as templates in Studio.", mode = "advanced" })
+
+-- Key that opens and closes Studio, through the binding ledger (owner Studio).
+local studioButton = PUI:CreateFrame("Button", "PhoenixUIStudioToggleButton", UIParent, nil, "Studio")
+studioButton:Hide()
+studioButton:SetScript("OnClick", function()
+  if PUI.Studio and PUI.Studio.IsOpen and PUI.Studio:IsOpen() then PUI.Studio:Exit() else Host:OpenStudio() end
+end)
+studioKey("studio.toggleKey", { type = "keybind", default = "",
+  label = "Studio key", tooltip = "Press this key to open or close Studio. Empty means no key. Your own key bindings are untouched.",
+  mode = "simple", searchTags = { "keybind", "hotkey", "studio", "layout", "move" },
+  apply = function(key)
+    if not PUI.Bindings then return end
+    PUI.Bindings:Release("Studio")
+    if key ~= "" then PUI.Bindings:Claim("Studio", key, { click = "PhoenixUIStudioToggleButton" }) end
+  end })
+
 function Host:OpenOptions(target)
   if self:Load() then PUI.Options:Toggle(target) end
 end

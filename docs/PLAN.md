@@ -298,20 +298,20 @@ Every lint rule above ships with a self-proof fixture that must fail (QDB). Full
 | 4.1 | Overlay, grid, centre guides, movers with icons, hover names, chips, handles | B | Options/Studio.lua | — |
 | 4.2 | Toolbar: filter, snap, grid cycle, undo/redo, reset, save & exit | B | Studio.lua buildToolbar | — |
 | 4.3 | Inspector: X/Y, anchor grid, nudge, mirror, settings | B | buildInspector | — |
-| 4.4 | W/H edit and per-element scale | M | read-only size; Layout stores only point/x/y | L (Layout schema change + every module reading size/scale) |
-| 4.5 | Snap to elements, alignment guides, distance labels | M | divergence | M |
-| 4.6 | Side anchors (edge-to-edge), anchor to other elements, connector lines, cycle detection | M | anchors are UIParent-only | L |
-| 4.7 | Width/height matching chains | M | — | M |
+| 4.4 | W/H edit and per-element scale | B | Layout v2 records (scale, w/h for resizable elements); inspector fields | - |
+| 4.5 | Snap to elements, alignment guides, distance labels | B | Session:SnapCenter (grid / elements / both, distance setting), live guides on a drag-only Ticker entry, Session:Distances | - |
+| 4.6 | Side anchors (edge-to-edge), anchor to other elements, connector lines, cycle detection | B | attach {to, side, gap, align}; cycles refused at edit time and reported by Layout.cycles; linked badge (connector lines deferred) | - |
+| 4.7 | Width/height matching chains | B | attach.matchW / matchH; align bar "Chain right" | - |
 | 4.8 | Grow direction and orientation per bar | P | module settings exist (cdm growth, rf orientation); not in Studio | S |
-| 4.9 | Multi-select, box select, group drag, align/distribute | M | — | M |
-| 4.10 | Overlap cycling with the mouse wheel | M | — | S |
-| 4.11 | Per-spec and per-condition layouts | M | needs 1.8/1.9 | M |
-| 4.12 | Layout templates with thumbnails; apply with scale conversion | P | 3 wizard presets only | M |
-| 4.13 | Layout export/import (`!PUI_LAY`) | M | needs 1.10 | S after 1.10 |
-| 4.14 | Blizzard-element hand-off to Edit Mode (`C_EditMode`) | M | — | M |
-| 4.15 | "Explain this element" (keys driving it) | M | — | S |
-| 4.16 | Safe-area/HUD-zone guides | M | — | S |
-| 4.17 | Chat, minimap and buff frames as movers | M | not Layout elements | M |
+| 4.9 | Multi-select, box select, group drag, align/distribute | B | Shift-click, box select, Ctrl+A, group drag, align bar (6 aligns + 2 distributes) | - |
+| 4.10 | Overlap cycling with the mouse wheel | B | Session:ElementsAt + Studio:CycleAt (studio.wheelCycle) | - |
+| 4.11 | Per-spec and per-condition layouts | B | layout.positions and studio.blizzard.positions are overridable; Studio layer switch Profile / This spec / This content | - |
+| 4.12 | Layout templates with thumbnails; apply with scale conversion | P | named templates (studio.templates) with scale conversion; thumbnails deferred | S |
+| 4.13 | Layout export/import (`!PUI_LAY`) | B | `!PUI_LAY1:` with preview (known/changed/kept/unknown/scaled), applied as one undo step | - |
+| 4.14 | Blizzard-element hand-off to Edit Mode (`C_EditMode`) | B | Edit Mode owned elements locked, badge + "Open in Edit Mode" (user click only; never switched on from code) | - |
+| 4.15 | "Explain this element" (keys driving it) | B | Studio.ExplainElement + Explain panel (right-click a mover) | - |
+| 4.16 | Safe-area/HUD-zone guides | B | studio.safeZone (off by default), centre guides (studio.centerGuides) | - |
+| 4.17 | Chat, minimap and buff frames as movers | B | Core/Movers.lua: 130 Blizzard elements incl. chat, minimap, buffs (Edit Mode ones handed off) | - |
 
 - **Study additions (§16):**
   - Mover registry entries {key, label, frameGetter, kind, defaultPoint, minSize, resizable, active, options schema}; drag on Ticker/animation callbacks (no OnUpdate); positions as centre offsets in UIParent units snapped by parity (G23); combat moves parked via CombatQueue; Edit Mode never toggled from code (G5); undo/redo; anchor cycles reported, not hidden by pcall; position links in the same scope as positions (G8).
@@ -319,6 +319,9 @@ Every lint rule above ships with a self-proof fixture that must fail (QDB). Full
   - **Importers from other mover addons (new):** one-shot, read-only, user-triggered.
 
 - **All-addons parity additions (audit 2026-10-26, `pui_study/others/AllAddons_parity.md`; each a setting with Simple + Advanced views) — Studio (MoveAny):** Move/resize ~130 Blizzard elements → Added a Blizzard-element mover list using Edit Mode where it owns the frame, otherwise FrameLedger (off by default, full restore); Alpha by state → Added skyriding, pet battle and zone states to the shared engine; Make Blizzard windows draggable and remember positions → Added 'Move Blizzard windows' (off by default, FrameLedger, reset off-screen, confirm before clearing).
+
+- **Step 7 status (feat/studio, stacked on feat/bars) - Studio v2 built:** Layout v2 records (point/x/y plus scale, W/H for resizable elements, strata BACKGROUND..DIALOG, level 0..100, opacity, hide, click-through, edge-to-edge attach with gap, start/centre/end alignment and matched width/height, alpha by state with a fixed documented priority: pet battle > mouse-over > combat > vehicle > skyriding > mounted > resting > out of combat); placement order follows attach chains; cycles refused and reported; the module's own look comes back live when a field is cleared. Studio: two-row toolbar (layout layer Profile / This spec / This content through Overrides, filters incl. Blizzard, snap on/off + grid/elements/both, grid 8-64, guides, undo/redo with batched steps, reset, Layouts, cancel, save), movers with Edit Mode badge, linked and hidden marks, names on hover/always/selected; drag snap guides and group drag on one drag-only Ticker entry; box select, Shift-click, Ctrl+A; mouse wheel picks stacked movers; arrows nudge 1 / Shift / Ctrl (steps are settings; on an attached element the arrows change its gap); inspector (X/Y, scale %, W/H, anchor grid, attach menu, side, align, match width/height, layer, level, opacity, hide, click-through, seven alpha-by-state fields, mouse-over, explain, mirror, settings); align bar for 2+ (left/centre/right/top/middle/bottom, space across/down, chain right); distance labels to the nearest element on each side; Layouts panel (export `!PUI_LAY1:`, check with a preview, apply as one undo step with scale conversion, named templates save/apply/delete, Phoenix default); Explain panel (right-click a mover). Blizzard elements (`Core/Movers.lua`, off on first install): 130 elements in 8 categories, 48 Edit Mode owned (locked, badge, "Open in Edit Mode" on a user click), the rest changed only after the user edits them, through the FrameLedger (snapshot now also records strata, level, mouse and movable) with a secure SetPoint post-hook to re-assert and CombatQueue for protected frames; no reparenting, no method replacement, no Blizzard fields. Move Blizzard windows (`Core/Windows.lua`, off on first install): 53 windows incl. load-on-demand ones, Phoenix drag strip, Ctrl + wheel scale, Shift + right-click reset, remembered per profile and clamped on screen, `/pui windows reset` with a confirm. One-time MoveAny importer (`/pui import moveany`, Studio > Layouts): read-only preview of MATAB points, scale, combat alphas, hide and click-through; Edit Mode frames listed and left alone. Studio key through the binding ledger (`studio.toggleKey`). Oracle palette now registers its mover (every Phoenix module frame has one). 15 new Studio settings (snap mode/distance, centre and safe-zone guides, distance labels, names, overlay darkness, nudge steps, wheel cycle, group drag, Edit Mode badges, key, Blizzard list + show-all, windows on/remember/wheel/strip height). 19 new offline tests.
+- **Deferred to the polish pass (reported):** connector lines drawn between attached movers; layout template thumbnails; free per-member party placement; a Blizzard-element list page in options (the Studio Blizzard filter covers it now); resize handles on the mover corners (W/H fields only today); grow-direction anchors per bar inside Studio (4.8, still module settings); fades for Blizzard elements re-evaluated on state events (applied on placement today); importers for other mover addons.
 
 ## 5. Module-by-module audit
 

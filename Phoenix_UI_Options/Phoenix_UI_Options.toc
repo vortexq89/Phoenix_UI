@@ -30,7 +30,9 @@ ThemePage.lua
 SentinelPage.lua
 StudioModel.lua
 Studio.lua
+StudioPanels.lua
 Tests\Options_test.lua
 Tests\Studio_test.lua
+Tests\Studio2_test.lua
 Tests\Controls_test.lua
 Tests\Dialogs_test.lua
