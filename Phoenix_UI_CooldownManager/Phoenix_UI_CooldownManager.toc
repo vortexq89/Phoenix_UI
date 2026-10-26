@@ -5,6 +5,9 @@
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
 ## X-Website: https://www.vq8s.com/phoenix-ui
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\PhoenixIcon
+## Category: Phoenix UI
+## Group: Phoenix_UI
 ## Dependencies: Phoenix_UI
 
 CooldownManager.lua
