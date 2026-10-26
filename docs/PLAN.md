@@ -26,7 +26,7 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 
 ## 0. One-page summary — the biggest gaps
 
-> **2026-10-26 finished-study integration (§16).** The whole I:\ study is finished (Auctionator excluded pending D-AUC; ElvUI ignored per the user). The settings model for every module is now the EllesmereUI-style live preview (§1.S). The 25 cross-cutting rules are guardrails G1–G25 (§1.G). 23 missing items were added as rows 1.19–1.36 and in §5 and §11 (Phase F0, N, O). Ownership is fixed by the matrix in §1.O. Open questions are in §17 Decisions pending.
+> **2026-10-26 finished-study integration (§16).** The whole I:\ study is finished (Auctionator: general player-visible UX ideas only, D-AUC decided 2026-10-26; ElvUI ignored per the user). The settings model for every module is now the EllesmereUI-style live preview (§1.S). The 25 cross-cutting rules are guardrails G1–G25 (§1.G). 23 missing items were added as rows 1.19–1.36 and in §5 and §11 (Phase F0, N, O). Ownership is fixed by the matrix in §1.O. Open questions are in §17 Decisions pending.
 
 > **2026-10-26 deep-study correction:** the top gaps are now the 12.1 aura container engine (F1), the Blizzard-viewer CDM model, the per-spec/condition Overrides layer (F2) and Studio v2 anchor/size-match parity (F3). See §15.1 for what changed and §15.4 for the new order.
 
@@ -1155,7 +1155,7 @@ Read by hand so far: DamageMeters main file and Lifecycle (full), the Window ref
 - **Correction (Nameplates):** you can't read per-aura dispellability in restricted content, so purge glow must be done by engine group (Dispellable token).
 
 ## 16. Finished-study integration (2026-10-26)
-Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied addon). Auctionator-derived content is **excluded** pending D-AUC; ElvUI is ignored per the user (t53u). No code was copied; all notes describe behaviour only.
+Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied addon). From Auctionator only general player-visible UX ideas are used (D-AUC decided 2026-10-26); no code-level internals, bug lists or API patterns; ElvUI is ignored per the user (t53u). No code was copied; all notes describe behaviour only.
 - Guardrails G1–G25 merged into §1.G; ownership matrix §1.O; settings model §1.S.
 - 18 new foundation rows 1.19–1.36; Study additions in §4 and §5.1–§5.18; new §5.17a–c; Cast History and deepened Pulse/Arena/Spark in §5.21; Phases B+ and N in §11.
 - Coverage of the 23 "not yet in plan" items: Cast History (§5.21), Diagnostics (§5.17a, 1.31), `/pui profile` (§5.17b, 1.32), visibility engine (1.19), Binding ledger + conflict check (1.20), FrameLedger (1.21), window mover + importers (§4), GF queue QoL + filter builder (§5.16), Tooltip IDs (§5.7), Arena internals (§5.21), Spark attribution + triggers (§5.21), BigWigs coexistence + C_EncounterTimeline (§5.21, 1.35), AddAuraSound (§5.1), copy dialog/link handler/no-StaticPopup (1.26, 1.27), map rules + delete-protection (§5.8), search runner + escaped substitution (1.25, G12), versioned import schema (1.24), lint suite (1.33), export hub (§5.16), async data (1.23), errors-not-hidden + no CVar re-assert (G6, G7), PUI.Season (1.28), ownership matrix (§1.O).
@@ -1163,7 +1163,7 @@ Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied 
 ## 17. Decisions pending
 | ID | Question | Recommendation |
 |---|---|---|
-| D-AUC | May Auctionator study notes be used at all? (Its files ask AI tools not to use its code as a reference.) Until answered, nothing from it is in this plan, including a shared market-price API. | Keep excluded unless you approve. |
+| D-AUC | May Auctionator study notes be used at all? (Its files ask AI tools not to use its code as a reference.) Until answered, nothing from it is in this plan, including a shared market-price API. | **Decided 2026-10-26:** keep ONLY general player-visible UX ideas (price-history side panel, live match count while filtering, import preview), designed Phoenix's own way. No code-level internals, bug lists or API patterns. A shared market-price API is not taken from it. |
 | D-WT-DEBUG-1 | Offer `/pui safe` bisect mode? | Yes. |
 | D-WT-COMPAT-1 | Conflict picker for overlapping addons, never writing their settings? | Yes. |
 | D-WT-MIGRATE-1 | Never force-reset a user subtree? | Yes, never. |
