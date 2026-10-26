@@ -16,6 +16,8 @@ Options.CUSTOM = {
   Theme = function() return Options.ThemePage end,
   Profiles = function() return Options.ProfilesPage end,
   Sentinel = function() return PUI.Sentinel and PUI.Sentinel.Viewer and Options.SentinelPage end,
+  Overrides = function() return Options.OverridesPage end,
+  Ledger = function() return Options.LedgerPage end,
 }
 
 local function buildHeader(f)

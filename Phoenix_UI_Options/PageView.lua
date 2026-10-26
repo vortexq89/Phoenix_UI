@@ -12,7 +12,8 @@ Options.views = Options.views or {}
 local PREVIEW_W = 420
 local TAB_LABEL = { player = "Player", target = "Target", targettarget = "Target of Target", focus = "Focus",
   focustarget = "Focus Target", pet = "Pet", boss = "Boss", arena = "Arena", party = "Party", raid = "Raid",
-  general = "General", stance = "Stance", petbar = "Pet", vehicle = "Extra & vehicle" }
+  general = "General", stance = "Stance", petbar = "Pet", vehicle = "Extra & vehicle",
+  cast = "Cast bars", indicator = "Indicators", auraBars = "Player aura bars" }
 
 local function tabLabel(id)
   if TAB_LABEL[id] then return TAB_LABEL[id] end

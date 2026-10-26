@@ -133,6 +133,20 @@ function Handle:Configure(groups)
   end
 end
 
+-- Spell IDs one surface leaves to another (Player Aura Bars <-> CDM buff
+-- bars dedupe, plan 1.O "Buff bars"). Stored always; handed to the engine only
+-- when the client exposes a per-group exclusion setter (checked, never assumed).
+function Handle:SetExclusions(list)
+  self.exclusions = {}
+  for i = 1, #(list or {}) do self.exclusions[i] = list[i] end
+  local c = self.container
+  if c and c.SetAuraGroupExcludedSpellIDs then
+    for _, key in ipairs(self.order) do c:SetAuraGroupExcludedSpellIDs(key, self.exclusions) end
+    return true
+  end
+  return false
+end
+
 function Handle:GroupState(key) local g = self.groups[key]; return g and { filter = g.filter, cap = g.cap } end
 function Handle:Groups() return self.order end
 

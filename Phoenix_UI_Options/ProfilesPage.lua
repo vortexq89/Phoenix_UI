@@ -141,7 +141,7 @@ local function build(host)
   Kit.Section(share, "Share"):SetPoint("TOPLEFT", 18, -16)
   v.scope = Kit.Button(share, "", 200, function(self)
     local owners = { "" }
-    for _, p in ipairs(Model.Pages("advanced")) do owners[#owners + 1] = p.name end
+    for _, p in ipairs(Model.Pages("advanced")) do if not p.virtual then owners[#owners + 1] = p.name end end
     Widgets.OpenMenu(self, owners, function(o) return o == "" and "Whole profile" or select(2, Nav.Info(o)) end, PP.scope or "",
       function(o) PP.scope = o ~= "" and o or nil; PP:Refresh(v) end)
   end, "secondary")

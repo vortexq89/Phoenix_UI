@@ -255,6 +255,61 @@ function FrameLedger:List()
   return out
 end
 
+function FrameLedger:ReleaseAll()
+  local owners, n = {}, 0
+  for _, e in pairs(self.entries) do owners[e.owner] = true end
+  for o in pairs(owners) do n = n + self:Release(o) end
+  return n
+end
+
+function Bindings:ReleaseAll()
+  local owners, n = {}, 0
+  for _, c in pairs(self.claims) do for o in pairs(c) do owners[o] = true; n = n + 1 end end
+  for o in pairs(owners) do self:Release(o) end
+  return n
+end
+
+-- Restores one CVar for every owner at once (ledger page "Restore" button).
+function CVars:RestoreName(name)
+  local rec = store().cvars[name]
+  if not rec then return 0 end
+  local n = 0
+  local owners = {}
+  for o in pairs(rec.owners) do owners[#owners + 1] = o end
+  for _, o in ipairs(owners) do n = n + self:Restore(o, name) end
+  return n
+end
+
+------------------------------------------------------------------------------
+-- "Uninstall Phoenix" (plan 1.22, G6): give back every CVar (to the user's
+-- prior value, only where the value is still ours), every override binding and
+-- every frame takeover, then turn every module off so nothing re-asserts.
+-- Settings and profiles are kept (the user may come back); the summary says
+-- what was restored and that the addon can now be disabled in the AddOns list.
+local Ledger = {}
+PUI.Ledger = Ledger
+
+function Ledger.Summary()
+  local cv, kept = 0, 0
+  for _, r in ipairs(CVars:List()) do if r.stillOurs then cv = cv + 1 else kept = kept + 1 end end
+  return { cvars = cv, cvarsChanged = kept, bindings = #Bindings:List(), frames = #FrameLedger:List() }
+end
+
+function Ledger.Uninstall()
+  local before = Ledger.Summary()
+  local modules = 0
+  for _, name in ipairs(PUI.Kernel.order or {}) do
+    local key = "module." .. name
+    if PUI.Schema:Def(key) and PUI.Schema:Get(key) then PUI.Schema:Set(key, false); modules = modules + 1 end
+  end
+  local cvars = CVars:RestoreAll()
+  local binds = Bindings:ReleaseAll()
+  local frames = FrameLedger:ReleaseAll()
+  PUI:Log("ledger.uninstall", cvars, binds, frames)
+  PUI.Kernel:Fire("LEDGER_UNINSTALLED")
+  return { cvars = cvars, bindings = binds, frames = frames, modules = modules, untouched = before.cvarsChanged }
+end
+
 -- A module that turns off gives back everything it held.
 PUI.Kernel:On("MODULE_DISABLED", function(name)
   if type(name) ~= "string" then return end

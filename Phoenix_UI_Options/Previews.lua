@@ -42,16 +42,38 @@ local function classRGB()
   return 0.24, 0.86, 0.59
 end
 
--- Unit frames: player + target test frames with health, power and a cast bar.
-local function unitFrame(card, y, name, pct, hostile)
+-- Unit frames: test frames drawn from the same look table the real frames use
+-- (UnitFrames' Styles.Resolve), so the preview never disagrees with the game.
+local GOLD = { 0.85, 0.68, 0.3 }
+local function ufLook()
+  local UF = PUI.UnitFrames
+  if UF and UF.Styles and UF.settings then
+    local s = UF.settings
+    return UF.Styles.Resolve(s.style, { border = s.border, borderColor = s.borderColor, background = s.background,
+      power = s.powerStyle, shape = s.portraitShape, edge = s.edge == "look" and nil or s.edge, colorMode = s.colorMode })
+  end
+  return { border = "thick", borderPx = 2, borderColor = "black", bgAlpha = 0.85, power = "attached", portrait = "3d",
+    shape = "square", powerRatio = 0.22, gap = 1, edge = true }
+end
+
+local function edgeColor(look, r, g, b)
+  if look.borderColor == "class" then return r, g, b end
+  if look.borderColor == "accent" then return Theme:Color("accent") end
+  if look.borderColor == "gold" then return GOLD[1], GOLD[2], GOLD[3] end
+  return 0, 0, 0
+end
+
+local function unitFrame(card, y, name, pct, hostile, look)
   local f = st(card).uf and st(card).uf[name]
   if not f then
     f = CreateFrame("Frame", nil, card)
-    f:SetSize(300, 64)
+    f.body = f:CreateTexture(nil, "BACKGROUND")
     f.hp = bar(f, 300, 40)
-    f.hp:SetPoint("TOP")
     f.pp = bar(f, 300, 10)
-    f.pp:SetPoint("TOP", f.hp, "BOTTOM", 0, -3)
+    f.portrait = f:CreateTexture(nil, "ARTWORK")
+    f.pframe = Theme:Slice(f, A.border1, 4, "OVERLAY")
+    f.border = Theme:Slice(f, A.border1, 4, "OVERLAY")
+    f.accent = f:CreateTexture(nil, "OVERLAY")
     f.name = Kit.Text(f.hp, "label", "text.primary", "OVERLAY")
     f.name:SetPoint("LEFT", 10, 0)
     f.val = Kit.Text(f.hp, "mono", "text.primary", "OVERLAY")
@@ -59,31 +81,148 @@ local function unitFrame(card, y, name, pct, hostile)
     st(card).uf = st(card).uf or {}
     st(card).uf[name] = f
   end
-  f:SetPoint("TOP", 0, y)
+  local w, h = 300, 54
+  local ph = math.max(4, math.floor(h * (look.powerRatio or 0.22) + 0.5))
+  local floating = look.power == "floating"
+  local inset = look.power == "inset"
+  local hh = (inset or floating) and h or (h - ph - (look.gap or 1))
+  f:SetSize(w, h)
+  f:ClearAllPoints()
+  f:SetPoint("TOP", hostile and 40 or -40, y)
+  f.body:SetAllPoints()
+  f.body:SetColorTexture(0.04, 0.04, 0.05, look.bgAlpha or 0.85)
+  f.hp:SetSize(w, hh)
+  f.hp:ClearAllPoints()
+  f.hp:SetPoint("TOPLEFT")
+  f.pp:SetSize(inset and (w - 24) or (floating and (w - 40) or w), ph)
+  f.pp:ClearAllPoints()
+  if inset then f.pp:SetPoint("BOTTOM", f.hp, "BOTTOM", 0, 4)
+  elseif floating then f.pp:SetPoint("TOP", f, "BOTTOM", 0, ph / 2)
+  else f.pp:SetPoint("TOPLEFT", f.hp, "BOTTOMLEFT", 0, -(look.gap or 1)) end
   local r, g, b = classRGB()
   if hostile then r, g, b = 0.85, 0.22, 0.25 end
-  if get("uf.colorMode", "class") ~= "class" and not hostile then r, g, b = 0.24, 0.86, 0.59 end
-  paintBar(f.hp, pct, r, g, b)
+  if get("uf.darkMode", false) then
+    paintBar(f.hp, pct, 0.16, 0.16, 0.18)
+  elseif look.colorMode == "gradient" and not hostile then
+    paintBar(f.hp, pct, 0.3 + (1 - pct / 100) * 0.6, 0.85 * pct / 100 + 0.1, 0.2)
+  else
+    paintBar(f.hp, pct, r, g, b)
+  end
   paintBar(f.pp, 72, 0.25, 0.55, 1)
+  local er, eg, eb = edgeColor(look, r, g, b)
+  f.border:SetShown((look.borderPx or 0) > 0)
+  f.border:SetVertexColor(er, eg, eb, look.border == "glow" and 0.6 or 1)
+  f.accent:SetShown(look.edge == true)
+  f.accent:ClearAllPoints()
+  f.accent:SetPoint("TOPLEFT"); f.accent:SetPoint("BOTTOMLEFT")
+  f.accent:SetWidth(2)
+  f.accent:SetColorTexture(Theme:Color("accent"))
+  -- portrait beside the frame, the side a real frame would use
+  local showP = look.portrait ~= "off"
+  f.portrait:SetShown(showP)
+  f.pframe:SetShown(showP and (look.borderPx or 0) > 0)
+  if showP then
+    f.portrait:ClearAllPoints()
+    f.portrait:SetSize(h, h)
+    if hostile then f.portrait:SetPoint("LEFT", f, "RIGHT", 3, 0) else f.portrait:SetPoint("RIGHT", f, "LEFT", -3, 0) end
+    if look.portrait == "class" then f.portrait:SetTexture(A.Icon and A.Icon("unitframes") or A.border1)
+    else f.portrait:SetColorTexture(r * 0.35, g * 0.35, b * 0.35, 1) end
+    f.pframe:ClearAllPoints()
+    f.pframe:SetAllPoints(f.portrait)
+    f.pframe:SetVertexColor(er, eg, eb, 1)
+  end
   f.name:SetText(name)
   f.val:SetText(pct .. "%")
   f:Show()
   return f
 end
 
-function Previews.UnitFrames(card)
-  unitFrame(card, -60, UnitName("player") or "Player", 86, false)
-  local t = unitFrame(card, -150, "Training Dummy", 42, true)
+local function auraRow(card, anchor, n, debuff)
+  st(card).icons = st(card).icons or {}
+  for i = 1, 8 do
+    local id = (debuff and "uf.d" or "uf.b") .. i
+    local ic = st(card).icons[id]
+    if not ic then
+      ic = CreateFrame("Frame", nil, card)
+      ic.tex = ic:CreateTexture(nil, "ARTWORK")
+      ic.tex:SetAllPoints()
+      ic.edge = Theme:Slice(ic, A.border1, 4, "OVERLAY")
+      st(card).icons[id] = ic
+    end
+    if i <= n then
+      ic:SetSize(22, 22)
+      ic:ClearAllPoints()
+      ic:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", (i - 1) * 24, debuff and -6 or -32)
+      ic.tex:SetColorTexture(debuff and 0.5 or 0.2, debuff and 0.12 or 0.35, debuff and 0.5 or 0.25, 1)
+      ic.edge:SetVertexColor(debuff and 0.75 or 0, debuff and 0.2 or 0, debuff and 0.85 or 0, 1)
+      ic:Show()
+    else
+      ic:Hide()
+    end
+  end
+end
+
+-- Buttons under the preview: test frames (all groups shown in place) and
+-- "Copy settings from..." on a frame tab.
+local function note(card, text, kind)
+  local n = st(card).note
+  if not n then
+    n = Kit.Text(card, "small", "muted", "OVERLAY")
+    n:SetPoint("BOTTOMLEFT", 18, 50)
+    st(card).note = n
+  end
+  n:SetText(text or "")
+  Theme:Paint(n, kind == "err" and "err" or (kind == "warn" and "warn" or "ok"), 1, "text")
+end
+
+local function ufTools(card, tab)
+  local UF = PUI.UnitFrames
+  local s = st(card)
+  if not s.testBtn then
+    s.testBtn = Kit.Button(card, "Show test frames", 150, function()
+      if not (UF and UF.active) then note(card, "Turn Unit Frames on first.", "warn") return end
+      local ok, why = UF.SetTestMode(not UF.test)
+      if not ok then note(card, "Test frames: " .. tostring(why), "err") end
+      Previews.Update("UnitFrames", card)
+    end, "secondary")
+    s.testBtn:SetPoint("BOTTOMLEFT", 16, 14)
+    s.copyBtn = Kit.Button(card, "Copy settings from...", 170, nil, "secondary")
+    s.copyBtn:SetPoint("LEFT", s.testBtn, "RIGHT", 8, 0)
+  end
+  s.testBtn:SetText(UF and UF.test and "Hide test frames" or "Show test frames")
+  s.testBtn:Show()
+  local isGroup = UF and UF.GROUPS and UF.GROUPS[tab] ~= nil
+  s.copyBtn:SetShown(isGroup)
+  if isGroup then
+    local list = {}
+    for _, g in ipairs(UF.ORDER) do if g ~= tab then list[#list + 1] = g end end
+    s.copyBtn:SetScript("OnClick", function(btn)
+      Options.Widgets.OpenMenu(btn, list, function(g) return UF.GROUPS[g].label or g end, nil, function(from)
+        local n = UF.CopyGroup(from, tab)
+        note(card, n .. " setting(s) copied to " .. (UF.GROUPS[tab].label or tab) .. ".", "ok")
+      end)
+    end)
+  end
+end
+
+function Previews.UnitFrames(card, tab)
+  local look = ufLook()
+  unitFrame(card, -56, UnitName("player") or "Player", 86, false, look)
+  local t = unitFrame(card, -150, "Training Dummy", 42, true, look)
+  auraRow(card, t, 4, true)
+  auraRow(card, t, 6, false)
   if not st(card).cast then
     st(card).cast = bar(card, 300, 16)
     st(card).cast.text = Kit.Text(st(card).cast, "small", "text.primary", "OVERLAY")
     st(card).cast.text:SetPoint("LEFT", 8, 0)
   end
-  st(card).cast:SetPoint("TOP", t, "BOTTOM", 0, -12)
+  st(card).cast:ClearAllPoints()
+  st(card).cast:SetPoint("TOPLEFT", t, "BOTTOMLEFT", 0, -62)
   local ar, ag, ab = Theme:Color("accent")
   paintBar(st(card).cast, 64, ar, ag, ab)
   st(card).cast.text:SetText("Pyroblast  1.4")
   st(card).cast:Show()
+  ufTools(card, tab)
 end
 
 -- Action bars: 12 ability icons, size and per-row from bar 1 settings.
@@ -141,6 +280,7 @@ local function hideAll(card)
     for _, f in pairs(list) do f:Hide() end
   end
   if st(card).cast then st(card).cast:Hide() end
+  if st(card).testBtn then st(card).testBtn:Hide(); st(card).copyBtn:Hide() end
 end
 
 function Previews.Update(owner, card, key)
