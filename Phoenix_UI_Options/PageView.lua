@@ -15,7 +15,8 @@ local TAB_LABEL = { player = "Player", target = "Target", targettarget = "Target
   general = "General", stance = "Stance", petbar = "Pet", vehicle = "Extra & vehicle",
   cast = "Cast bars", indicator = "Indicators", auraBars = "Player aura bars",
   small = "Raid up to 10", medium = "Raid up to 20", large = "Raid up to 40", debuffs = "Debuffs", buffs = "Buffs",
-  defensive = "Defensives" }
+  defensive = "Defensives", enemy = "Enemy", friendly = "Friendly", colors = "Colours", auras = "Aura lanes",
+  icons = "Indicators", resource = "Class resource", rules = "NPC colours", system = "Game settings" }
 
 local function tabLabel(id)
   if TAB_LABEL[id] then return TAB_LABEL[id] end
