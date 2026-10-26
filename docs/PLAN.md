@@ -93,7 +93,7 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 | 1.12 | Migrations (scoped, idempotent, stamped) | B | DB:RegisterMigration/RunMigrations | — | — |
 | 1.13 | Public APIs: RegisterPlugin/Skin/DataBlock/OracleProvider/VaultRule/NicknameProvider | P | Core/API.lua registries exist; consumers only partly wired (Skins yes, DataBlock/VaultRule unverified) | — | M |
 | 1.14 | Data packs with packVersion/gameBuild warning | P | Reminders/Pack.lua, `/pui packs`; no NPC colour, interrupt, portal or crest packs | — | M per pack |
-| 1.15 | `conflictsWith` auto-disable for companion addons | M | grep finds none (GroupFinder stands down for PGF ad hoc) | spec 23 | S |
+| 1.15 | `conflictsWith` auto-disable for companion addons | M | replaced by the conflict notice/picker (1.35, D-WT-COMPAT-1): the user chooses which side to turn off | spec 23 | S |
 | 1.16 | Accessibility: colour-blind palettes, high contrast, large text, reduced motion, TTS events | M | only `media.fontScale` | spec 22.14 | M |
 | 1.17 | Controller/gamepad navigation | M | — | spec 5.17 | L |
 | 1.18 | Performance: per-module CPU readout on pages | M | Sentinel Perf.lua samples, not shown in options | spec 8/11 | S |
@@ -114,7 +114,7 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 | 1.32 | **Developer profiler `/pui profile`** (see §5.17b) | M | Sentinel perf sampler only | opt-in, zero cost off | M |
 | 1.33 | **Lint suite inside `/pui test`**: implicit globals, undefined refs, OnUpdate, Blizzard frame writes, unescaped gsub replacements, pattern-from-input; schema coverage (every key visible, searchable, live-applied, resettable) | M | guardrail scripts partial | G15, G25 | M |
 | 1.34 | **Ownership matrix** (§1.O) enforced by review and by a registry check (one owner per service/feature) | M | — | no duplication or overlap | S |
-| 1.35 | **Coexistence detector** (BigWigs, BugGrabber, PGF, FrameSort, Masque, SimulationCraft): yield their frames/CVars, integrate via public APIs, never write their settings | P | ad hoc PGF stand-down | G22; generalises 1.15 | S |
+| 1.35 | **Coexistence detector** (BigWigs, BugGrabber, PGF, FrameSort, Masque, SimulationCraft): yield their frames/CVars, integrate via public APIs, never write their settings; on overlap show the conflict notice/picker (user chooses Phoenix module or the other addon; nothing changes until they pick; changeable in settings) | P | ad hoc PGF stand-down | G22; generalises 1.15 | S |
 | 1.36 | **Phoenix chat hyperlinks** ("open this page") and **Blizzard Settings entry** (one "Open Phoenix" button, opens our panel next frame) | P | — | WT pattern, original code | S |
 
 ### 1.S Settings model for every module (EllesmereUI-style live preview — user direction t53u)
@@ -147,7 +147,7 @@ These are in force for every PR alongside the standing rules (original code only
 | G14 | **Never mutate Blizzard UI state in order to read it.** Use ByID APIs (reputation, trade skill) and never expand or collapse headers. Never write Blizzard LFG tables, the AH saved filter, or Blizzard_CombatLog filters. | QT #3. EUI-FE scanned only expanded rep headers. AQ cleared `LFGListFrame.declines`. PGF wrote back the results table. EUI-QOL wrote the AH filter. MSBT wrote a combat-log filter. |
 | G15 | **No globals.** Lint for implicit globals and undefined references. Forward-declared locals are fine. | EUI-CDM `GetBarData`, `FOCUSKICK_BAR_KEY`, `_focusKickIsHealer`; EUI-UF `_cpExpectedParent`; EUI-BG `sidebarChild`; EUI-BS `dialog`; MSBT undefined validator; BS and MA global names. (MSBT bug 1 was retracted: lesson learned.) |
 | G16 | **Locale-safe logic.** Use IDs, enums and Blizzard global strings. Never match English chat or tooltip text, and never truncate by bytes. | EUI-QOL Hero/Myth scan, QST loot strings, SAR healer names, PGF affix names, MSBT English summaries, EUI-DB byte truncation and hard-coded ",". |
-| G17 | **Versioned, idempotent, snapshot-first migrations.** Never inside constructors or import paths. Never force-reset a user subtree (D-WT-MIGRATE-1 recommends "never"). | EUI-DB factory silently migrated. SAR ran 12 flag migrations and forced drResetTime. EUI-RF migrated every profile at every login. WT migrated only the active profile. |
+| G17 | **Versioned, idempotent, snapshot-first migrations.** Never inside constructors or import paths. Never reset user settings: convert old settings; if one value fails to convert, back it up, tell the user, and reset only that setting (D-WT-MIGRATE-1, decided). | EUI-DB factory silently migrated. SAR ran 12 flag migrations and forced drResetTime. EUI-RF migrated every profile at every login. WT migrated only the active profile. |
 | G18 | **Pure reads.** A getter never writes defaults, prints anything or mutates the profile. Hot paths never write saved settings. | MA IsEnabled had side effects. EUI-RB Enhancement threshold was written from the update path. EUI-OPT mouseover mode mutated the profile. |
 | G19 | **Copy means deep copy.** Profiles and imports are deep-copied, validated against a versioned schema and bounded in size. There is a merge-or-replace choice with a preview count. | MA profile copy created an alias. MSBT copy overwrote an existing profile. BS received payloads with no size limit or allow-list. |
 | G20 | **Async with owner, generation and timeout.** Item and spell loads carry the requesting view's generation plus a timeout. Stale results are dropped, and a never-firing callback can't block a window. | SIMC `/simc` silently never opened (bug 8). WT's ID table never completed on an invalid ID. MSBT stale timers (the generation counter is a good pattern). |
@@ -168,8 +168,8 @@ These are in force for every PR alongside the standing rules (original code only
 | Glows | Action Bars, CDM, Raid, Arena | **PUI.Glow**. |
 | Movers | Studio, MA-style window mover, per-module unlock | **Studio (B3)** registry. Modules register; none build their own drag. |
 | M+ timer | Ascent (EUI-MT), QST challenge timer | **Ascent** owns it. The quest tracker shows nothing for keys. |
-| Encounter timers / warnings | Pulse, BigWigs | Pulse is active only without a boss mod. With BigWigs, stand down and bridge (R22). |
-| Group-finder filtering | GroupFinder, PGF | Phoenix stands down its filter layer when PGF loads (kept: queue QoL B16.2, unless overlapping). |
+| Encounter timers / warnings | Pulse, BigWigs | Conflict notice/picker (D-WT-COMPAT-1): the user chooses Pulse off (with BigWigs bridge, R22) or BigWigs off; nothing changes until they pick. |
+| Group-finder filtering | GroupFinder, PGF | Conflict notice/picker (D-WT-COMPAT-1/D-PGF): the user chooses Phoenix's Group Finder module off or PGF off; nothing changes until they pick. |
 | Error capture | Diagnostics, BugGrabber/BugSack | Coexist: become a display on BugGrabber's callback. |
 | Profiles | TGCD, MSBT, SAR, MA (own stores) | Only the **Core profiles**. Modules hold no profile store. |
 | Key bindings | Action Bars, Click-cast, Quickdraw, QoL FPS key, DM hotkeys | **Binding ledger** plus one conflict checker across all of them. |
@@ -535,13 +535,13 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Study additions (§16, 2026-10-26):**
   - **GroupFinder filters:** visual filter builder (role counts, rating sliders, lockout, friends) that *generates* an expression; optional expression field with plain-text validation; sort picker with stable comparator; delve tiers, raid bosses, group age, new/declined colouring; decorates our own overlay rows, never writes Blizzard results/decline tables (G14); cached activity map by ID; read-only in restricted states.
   - **Queue QoL:** role-check auto-accept, sign-up auto-confirm (Shift bypass), per-spec role override, declined/delisted colouring with timer, persistent sign-up note; event-driven only, no global function replacement, no SetScript on ScrollBox; auto-enter is a user-confirmed big button or sound, never a synthetic click.
-  - PGF present: stand down per D-PGF (§17); one group-age tooltip line, skipped when PGF loads.
+  - PGF present: conflict notice/picker (D-PGF, 1.35): the user chooses Phoenix's Group Finder module off or PGF off; one group-age tooltip line, skipped when PGF is the chosen side.
   - **Export hub (Wisdom):** calls SimulationcraftAPI when present, never duplicates it; uses the async data service (1.23) and the shared copy dialog.
 
 ### 5.17 Sentinel — 8 keys (+ Companion, website)
 
 - **B:**
-  - capture, ring, taint, integrity, drift, perf, heartbeat, safe mode, toast, export;
+  - capture, ring, taint, integrity, drift, perf, heartbeat, toast, export;
   - new viewer with resolved state, copy and `/pui sentinel`.
 - **P:** resolved state is not persisted across sessions intentionally (verify the SV write); tester matrix not recruited.
 - **Companion:** `companion/sentinel_companion` with build.py and tests exists — **P** (packaging/signing and auto-start unverified).
@@ -549,7 +549,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - **B:** ingest + D1 + admin `/phoenix/*` pages deployed (#15–#19).
   - **M:** public `/status`, `/sentinel` pages generated from data (verify which exist).
 
-- **5.17a Diagnostics `PUI.Diag` (new, M):** if BugGrabber is present, subscribe to its BugGrabbed callback and register as a display; otherwise own handler with a token-bucket throttle. Viewer with sessions, prev/next, counter, links. Store non-secret text only; no gsub on possibly-secret text. Send-to-player off (D-DIAG-SEND). Privacy kit for exports (GUID-kind allow-list, whole-word name redaction, system-string allow-list). Opt-in dev recorder (change-only streams, orphan-session recovery). `/pui safe` bisect mode restoring CVars via the ledger (D-WT-DEBUG-1). Errors never hidden by default (G7).
+- **5.17a Diagnostics `PUI.Diag` (new, M):** if BugGrabber is present, subscribe to its BugGrabbed callback and register as a display; otherwise own handler with a token-bucket throttle. Viewer with sessions, prev/next, counter, links. Store non-secret text only; no gsub on possibly-secret text. Sharing (D-DIAG-SEND): user-initiated in-game sharing of Sentinel reports to other players, and every report auto-uploads via the Companion app to the vq8s.com admin dashboard for analysis. Privacy kit for exports (GUID-kind allow-list, whole-word name redaction, system-string allow-list). Opt-in dev recorder (change-only streams, orphan-session recovery). Errors never hidden by default (G7).
 - **5.17b Profiler `/pui profile` (new, M):** opt-in, zero cost off; samples module entry points registered through the Phoenix API (no _G/frame traversal); GetTimePreciseSec; active-slice timing for Ticker jobs; measurement generations; frame-free report builder (self vs inclusive, grouped tree, honest "N hidden"); interleaved A/B helper; hot-primitive exclusions declared once; feeds the per-page CPU chip (1.18).
 - **5.17c `/pui test` depth:** pure-Lua view-model tests with mock widgets; unit-tested aura partition solver and Classify functions; lint suite (1.33); schema coverage.
 
@@ -590,7 +590,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 
 **Deepened Tier 1 entries (§16):**
 - **Pulse:** `C_EncounterTimeline` natively, never index-walking a fixed timer list (so a fight that outruns the list still warns); active only without a boss mod. With BigWigs loaded: stand down, keep its encounter frames and CVars (excluded from the CVar ledger), offer the BigWigs bar-style/profile bridge. Countdowns cancel their own timers only; emphasised fade honours settings.
-- **Arena:** own secure buttons (click attributes via CombatQueue, `@arena` substitution escaped, G12); secret-first spec display through the Blizzard role-map helper; health/power to widgets only; ArenaMatch state service (Idle/Prep/Engaged/Ended) on PVP_MATCH_STATE_CHANGED; zero events outside arena; 1 Hz Ticker match timers; DR from Blizzard DR APIs or opt-in ledger-restored mirror (D-ARENA-DR); optional FrameSort numbering; PvP colour CVar via ledger; layout presets as schema styles over one paint function, test mode uses that paint; never toggles Edit Mode or reparents CompactArenaFrame; relative frame levels.
+- **Arena:** own secure buttons (click attributes via CombatQueue, `@arena` substitution escaped, G12); secret-first spec display through the Blizzard role-map helper; health/power to widgets only; ArenaMatch state service (Idle/Prep/Engaged/Ended) on PVP_MATCH_STATE_CHANGED; zero events outside arena; 1 Hz Ticker match timers; DR from Blizzard DR APIs where available; otherwise an opt-in (off by default) Phoenix DR tracker, settings ledger-restored, labelled "best guess" (D-ARENA-DR); "assume regen in stealth" option, off by default (D-SARENA-STEALTH); optional FrameSort numbering; PvP colour CVar via ledger; layout presets as schema styles over one paint function, test mode uses that paint; never toggles Edit Mode or reparents CompactArenaFrame; relative frame levels.
 - **Spark:** attribution from UNIT_COMBAT plus own casts with confidence (trust a guess only once confirmed, nil when ambiguous); pooled text lines on the Ticker; escaped formatters; per-frame dedupe (no double heals, no double loot); Blizzard SCT via CVar ledger only; never writes Blizzard_CombatLog filters; area cards with live preview of sample numbers; visual trigger builder (health, power, aura, cooldown) without code.
 | Council | M | Tier 2 | XL |
 
@@ -751,7 +751,7 @@ Merge, push live and install follow the existing rules.
 - Each gets its mockup first, a "not possible on 12.1.5" list, and stand-down rules.
 
 **Phase N — Diagnostics and profiler (M)**
-- §5.17a `PUI.Diag` with BugGrabber coexistence, privacy kit, recorder, `/pui safe`; §5.17b `/pui profile`; §5.17c test depth.
+- §5.17a `PUI.Diag` with BugGrabber coexistence, privacy kit, recorder; §5.17b `/pui profile`; §5.17c test depth.
 - Accept: with BugGrabber loaded Phoenix registers as a display and installs no handler (T + I); profiler off = zero hooks (T); report totals match within 5% on an A/B run (I).
 
 **Phase J — Locales and accessibility (M–L)**
@@ -949,7 +949,7 @@ Merge, push live and install follow the existing rules.
 | Upgrade calculator (crests) | M | | Y | |
 | Forever: auto uprank, map fade/reveal/levels, classic windows, simplified stats, best quest reward, pet auto-summon, junk window, fishing, loot feed, macro manager, flight timer, threat | P | | N | |
 | Party mode celebrations (EUI fun) | M | Deferred | N | |
-| Error viewer (BugSack parity: sessions, counts, copy, sound) | B | Sentinel already exceeds (taint, perf, safe mode) | N | |
+| Error viewer (BugSack parity: sessions, counts, copy, sound) | B | Sentinel already exceeds (taint, perf, shareable reports) | N | |
 | SimC export | M | Deferred / link to Simulationcraft | N | |
 
 ### 13.12 New phases added to §11 from this study
@@ -1164,15 +1164,15 @@ Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied 
 | ID | Question | Recommendation |
 |---|---|---|
 | D-AUC | May Auctionator study notes be used at all? (Its files ask AI tools not to use its code as a reference.) Until answered, nothing from it is in this plan, including a shared market-price API. | **Decided 2026-10-26:** keep ONLY general player-visible UX ideas (price-history side panel, live match count while filtering, import preview), designed Phoenix's own way. No code-level internals, bug lists or API patterns. A shared market-price API is not taken from it. |
-| D-WT-DEBUG-1 | Offer `/pui safe` bisect mode? | Yes. |
-| D-WT-COMPAT-1 | Conflict picker for overlapping addons, never writing their settings? | Yes. |
-| D-WT-MIGRATE-1 | Never force-reset a user subtree? | Yes, never. |
-| D-PGF | With PGF loaded, stand down the whole filter layer or only the expression filter? | Whole filter layer; keep queue QoL. |
-| D-DIAG-SEND | Allow sending error reports to another player? | No, or bounded with an allow-list. |
-| D-ARENA-DR | If Blizzard DR APIs aren't exposed, build an opt-in ledger-restored mirror? | Your call. |
-| D-SARENA-STEALTH | Keep the cosmetic "assume regen in stealth" option? | Your call. |
-| D-LIC | Licence questions on the VortexQ8-tagged forks (PGF, MSBT, SAR, AQ, idTip). | Pending. |
-| D-STAGE | Stage QuestieDB-master and WoW-API-main (not studied) by zipping them on your drive? | Awaiting your permission. |
+| D-WT-DEBUG-1 | Offer `/pui safe` bisect mode? | **Decided 2026-10-26:** REJECTED. No `/pui safe`; removed everywhere. |
+| D-WT-COMPAT-1 | Conflict picker for overlapping addons, never writing their settings? | **Decided 2026-10-26:** YES, the main tool. Conflict notice/picker (D-WT-COMPAT-1): on detecting an overlapping addon Phoenix notifies and the user chooses which to turn off (the Phoenix module or the other addon); nothing changes until they pick; changeable later in settings; applies to every conflict. |
+| D-WT-MIGRATE-1 | Never force-reset a user subtree? | **Decided 2026-10-26:** never reset user settings; convert old settings; on a failed conversion back up that value, tell the user, reset only that setting. |
+| D-PGF | With PGF loaded, stand down the whole filter layer or only the expression filter? | **Decided 2026-10-26:** resolved by D-WT-COMPAT-1: the user chooses Phoenix's Group Finder module off or PGF off. |
+| D-DIAG-SEND | Allow sending error reports to another player? | **Decided 2026-10-26:** YES. User-initiated in-game sharing of Sentinel reports to other players, and every report auto-uploads via the Companion app to the vq8s.com admin dashboard for analysis. |
+| D-ARENA-DR | If Blizzard DR APIs aren't exposed, build an opt-in ledger-restored mirror? | **Decided 2026-10-26:** YES. Blizzard DR APIs where available; otherwise an opt-in (off by default) Phoenix DR tracker, settings ledger-restored, labelled "best guess". |
+| D-SARENA-STEALTH | Keep the cosmetic "assume regen in stealth" option? | **Decided 2026-10-26:** keep, as an option off by default. |
+| D-LIC | Licence questions on the VortexQ8-tagged forks (PGF, MSBT, SAR, AQ, idTip). | **Decided 2026-10-26:** closed. These are the user's own/co-built addons. Still never copy code, but Phoenix must include every one of their exact features, built more advanced and higher quality in Phoenix's style. |
+| D-STAGE | Stage QuestieDB-master and WoW-API-main (not studied) by zipping them on your drive? | **Decided 2026-10-26:** approved; study in progress (findings to be added later). |
 | D-MOCK | Mockups for every new page (Cast History, Diagnostics, profiler, ledger page, visibility picker, filter builder) before UI code. | Required by standing rule. |
 
 ## 14. Appendix — current schema keys by owner (448)
