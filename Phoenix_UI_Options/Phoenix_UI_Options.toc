@@ -3,6 +3,8 @@
 ## Notes: Phoenix UI options window and Studio layout editor.
 ## Author: VortexQ8
 ## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
 ## LoadOnDemand: 1
 ## Dependencies: Phoenix_UI
 

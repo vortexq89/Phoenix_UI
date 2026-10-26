@@ -1,0 +1,827 @@
+/pui cd
+/pui rl
+Accent colour
+Accept invites from friends
+Accepts a resurrection out of combat.
+Accepts and turns in quests with at most one reward choice. Hold Shift to read the quest.
+Accepts group invites from friends, Battle.net friends and guild members.
+Achievements
+Action bar 1
+Action bar 10
+Action bar 2
+Action bar 3
+Action bar 4
+Action bar 5
+Action bar 6
+Action bar 7
+Action bar 8
+Action bar 9
+Action bars
+Action button tooltips
+Actions can only be dragged off with the pick-up modifier (Shift by default).
+Add your own character name to reports. Other players' names are never collected.
+AddOn list
+Adds guild name and rank to player tooltips.
+Adds the Phoenix score or item-level difference to item tooltips.
+Adds the player's current Mythic+ score.
+Adds the spell or item ID line.
+Adventure Guide
+Aggro border
+All bags in one window with search, sort, item levels and junk selling.
+All tracked quests, only those in progress, or only those ready to turn in.
+Allow Sentinel reports to leave this computer (export string and Companion upload). Nothing is shared while off.
+Announce differences
+Ascent
+Auction House
+Auto accept and turn in
+Auto accept resurrection
+Auto decline duels
+Auto decline guild invites
+Auto gossip
+Auto release
+Auto repair
+Auto sell junk
+Automations: repair, junk, release, invites, cinematics, quick loot and more. Each one off until you turn it on.
+Background opacity of Phoenix UI windows.
+Badges in bags
+Bags
+Bar 1
+Bar 1 button size
+Bar 1 buttons
+Bar 1 buttons per row
+Bar 1 fade opacity
+Bar 1 fade out of combat
+Bar 1 fades to the fade opacity while you are out of combat.
+Bar 1 scale
+Bar 1 spacing
+Bar 1 visibility
+Bar 10
+Bar 10 action page
+Bar 10 button size
+Bar 10 buttons
+Bar 10 buttons per row
+Bar 10 fade opacity
+Bar 10 fade out of combat
+Bar 10 fades to the fade opacity while you are out of combat.
+Bar 10 scale
+Bar 10 spacing
+Bar 10 visibility
+Bar 2
+Bar 2 action page
+Bar 2 button size
+Bar 2 buttons
+Bar 2 buttons per row
+Bar 2 fade opacity
+Bar 2 fade out of combat
+Bar 2 fades to the fade opacity while you are out of combat.
+Bar 2 scale
+Bar 2 spacing
+Bar 2 visibility
+Bar 3
+Bar 3 action page
+Bar 3 button size
+Bar 3 buttons
+Bar 3 buttons per row
+Bar 3 fade opacity
+Bar 3 fade out of combat
+Bar 3 fades to the fade opacity while you are out of combat.
+Bar 3 scale
+Bar 3 spacing
+Bar 3 visibility
+Bar 4
+Bar 4 action page
+Bar 4 button size
+Bar 4 buttons
+Bar 4 buttons per row
+Bar 4 fade opacity
+Bar 4 fade out of combat
+Bar 4 fades to the fade opacity while you are out of combat.
+Bar 4 scale
+Bar 4 spacing
+Bar 4 visibility
+Bar 5
+Bar 5 action page
+Bar 5 button size
+Bar 5 buttons
+Bar 5 buttons per row
+Bar 5 fade opacity
+Bar 5 fade out of combat
+Bar 5 fades to the fade opacity while you are out of combat.
+Bar 5 scale
+Bar 5 spacing
+Bar 5 visibility
+Bar 6
+Bar 6 action page
+Bar 6 button size
+Bar 6 buttons
+Bar 6 buttons per row
+Bar 6 fade opacity
+Bar 6 fade out of combat
+Bar 6 fades to the fade opacity while you are out of combat.
+Bar 6 scale
+Bar 6 spacing
+Bar 6 visibility
+Bar 7
+Bar 7 action page
+Bar 7 button size
+Bar 7 buttons
+Bar 7 buttons per row
+Bar 7 fade opacity
+Bar 7 fade out of combat
+Bar 7 fades to the fade opacity while you are out of combat.
+Bar 7 scale
+Bar 7 spacing
+Bar 7 visibility
+Bar 8
+Bar 8 action page
+Bar 8 button size
+Bar 8 buttons
+Bar 8 buttons per row
+Bar 8 fade opacity
+Bar 8 fade out of combat
+Bar 8 fades to the fade opacity while you are out of combat.
+Bar 8 scale
+Bar 8 spacing
+Bar 8 visibility
+Bar 9
+Bar 9 action page
+Bar 9 button size
+Bar 9 buttons
+Bar 9 buttons per row
+Bar 9 fade opacity
+Bar 9 fade out of combat
+Bar 9 fades to the fade opacity while you are out of combat.
+Bar 9 scale
+Bar 9 spacing
+Bar 9 visibility
+Bar background opacity
+Bar texture
+Bars fill from the right.
+Bars, compact or minimal rows; switches live.
+Blizzard's server-side filter for groups missing your current role.
+Blizzard's server-side minimum rating filter; 0 turns it off.
+Boss cast bar
+Boss fill right to left
+Boss frame
+Boss height
+Boss kill times and the difference to your best run.
+Boss mechanics the game hides from addons, drawn by the game on each frame; 0 turns them off.
+Boss portrait
+Boss power bar height
+Boss splits
+Boss text (center)
+Boss text (left)
+Boss text (power)
+Boss text (right)
+Boss width
+Bosses only
+Buff bars
+Buff bars: Phoenix layout
+Buff bars: growth
+Buff bars: per row
+Buff bars: spacing
+Buff bars: width
+Buff icons
+Buff icons: Phoenix layout
+Buff icons: growth
+Buff icons: icon size
+Buff icons: per row
+Buff icons: spacing
+Button size of bar 1 in pixels.
+Button size of bar 10 in pixels.
+Button size of bar 2 in pixels.
+Button size of bar 3 in pixels.
+Button size of bar 4 in pixels.
+Button size of bar 5 in pixels.
+Button size of bar 6 in pixels.
+Button size of bar 7 in pixels.
+Button size of bar 8 in pixels.
+Button size of bar 9 in pixels.
+Buttons in each row of bar 1.
+Buttons in each row of bar 10.
+Buttons in each row of bar 2.
+Buttons in each row of bar 3.
+Buttons in each row of bar 4.
+Buttons in each row of bar 5.
+Buttons in each row of bar 6.
+Buttons in each row of bar 7.
+Buttons in each row of bar 8.
+Buttons in each row of bar 9.
+Calendar
+Cast bar
+Cast bar height
+Cast, target or open menus by clicking Phoenix unit, party and raid frames (Clique takes over when installed).
+Character
+Chat
+Chat timestamps
+Class buffs
+Class colour (players), reaction colour, a red-to-green gradient by health, or the accent colour.
+Class colour, a red-to-green gradient by health, or the accent colour.
+Class resource
+Class resource height
+Clears red error text (out of range, not ready) during combat.
+Click-cast bindings
+Click-casting
+Closes the talking head popup as it opens.
+Collections
+Columns
+Combat log in raids and M+
+Comma-separated blocks in order; empty hides the bar. Blocks: bags, clock, coords, durability, fps, gold, ilvl, latency, location, spec, xp.
+Comma-separated percentages (1-99) where thin lines are drawn on the power bar, e.g. 30, 60.
+Comma-separated words; a new line containing one plays a sound and flashes the game icon.
+Command palette: search settings, panels, macros, mounts, profiles and commands from one box.
+Completion sound
+Cooldown manager
+Cooldown manager preset
+Current subzone on the minimap.
+Damage meter on the game's own meter data, with saved segments, graphs, report and export.
+Data bar 1
+Data bar 1 blocks
+Data bar 1 height
+Data bar 1 width
+Data bar 2
+Data bar 2 blocks
+Data bar 2 height
+Data bar 2 width
+Data bars
+Decimal places in the score.
+Declines duel requests.
+Declines guild invitations.
+Deeper capture for designated testers: 200-event history, locals on every error, 1-second performance sampler, test suite on login.
+Default corner position or following the cursor.
+Details! windows
+Dim unwanted groups
+Dims groups below your minimum rating or from leaders who declined you.
+Disable a Phoenix module at the next login when it threw too many errors in the previous session.
+Dispel highlight
+Dragged elements snap to the Studio grid.
+Draw the pixel grid while Studio is open.
+Draws a marker at this health percentage; 0 hides it.
+Draws the frame of buttons that hold no action.
+Dressing room
+Durability threshold (%)
+Embers
+Embers window 1
+Embers window 2
+Embers window 3
+Embers window 4
+Embers window 5
+Enables /pui cd <seconds> for a pull countdown.
+Enables /pui rl to reload the UI.
+Entries separated by ';' as [mods-]button:action[:value]. Buttons 1-5 are mouse buttons, any other key is hovercast. Actions: target, menu, focus, assist, spell:<name>, macro:<text>, item:<name>. Example: shift-1:spell:Renew; F:spell:Flash Heal.
+Error notice
+Errors from one module in a session that trigger safe mode at the next login.
+Essential cooldowns
+Essential cooldowns: Phoenix layout
+Essential cooldowns: growth
+Essential cooldowns: icon size
+Essential cooldowns: per row
+Essential cooldowns: spacing
+Execute marker (%)
+Fade idle lines (seconds)
+Fade out of range
+Fades frames of members out of your range.
+Fades out the game's minimap border and zone text button.
+Fades the Blizzard objective tracker while a key runs.
+Fill DELETE
+Flow
+Focus cast bar
+Focus fill right to left
+Focus frame
+Focus height
+Focus portrait
+Focus power bar height
+Focus target cast bar
+Focus target fill right to left
+Focus target frame
+Focus target height
+Focus target portrait
+Focus target power bar height
+Focus target text (center)
+Focus target text (left)
+Focus target text (power)
+Focus target text (right)
+Focus target width
+Focus text (center)
+Focus text (left)
+Focus text (power)
+Focus text (right)
+Focus width
+Font for Phoenix UI windows and labels.
+Font for numbers and timers in Phoenix UI windows.
+Friendly plates: name only
+Friendly units show only a class-coloured name.
+Gap between frames and between raid groups.
+Gap between items.
+Gap between stacked resource bars.
+Gap between the buttons of bar 1.
+Gap between the buttons of bar 10.
+Gap between the buttons of bar 2.
+Gap between the buttons of bar 3.
+Gap between the buttons of bar 4.
+Gap between the buttons of bar 5.
+Gap between the buttons of bar 6.
+Gap between the buttons of bar 7.
+Gap between the buttons of bar 8.
+Gap between the buttons of bar 9.
+Gear advisor: stat-weight score and upgrade star in tooltips and bags.
+Global cooldown bar
+Global cooldown bar height
+Global nameplate scale; restored when the module turns off.
+Gossip and quests
+Great Vault
+Grid uses full-size slots; compact uses smaller ones.
+Group Finder
+Group absorbs
+Group frame height
+Group frame spacing
+Group frame width
+Group health colour
+Group health text
+Group invite
+Group layout
+Group raid markers
+Groups and orders tracked quests by zone, level, distance or quest type.
+Guild and communities
+Guild and rank
+Healer mana
+Healer mana height
+Health and power bars glide to new values instead of jumping.
+Health and power bars glide to new values.
+Health bar
+Health bar height
+Health colour
+Health fill opacity
+Health percentage, missing health, or nothing (dead/offline always show).
+Health text on the plate.
+Height of each party/raid frame.
+Height of the bar.
+Height of the boss frame in pixels.
+Height of the cast bar under each plate.
+Height of the cast bar.
+Height of the class resource.
+Height of the focus frame in pixels.
+Height of the focus target frame in pixels.
+Height of the global cooldown bar.
+Height of the healer mana bar.
+Height of the health bar.
+Height of the nameplate health bar.
+Height of the pet frame in pixels.
+Height of the player frame in pixels.
+Height of the power bar.
+Height of the power bar; 0 hides it.
+Height of the target frame in pixels.
+Height of the target of target frame in pixels.
+Height of the totem bars.
+Hide Blizzard cast bar
+Hide Blizzard party/raid frames
+Hide Blizzard tracker
+Hide Blizzard tracker in keys
+Hide errors in combat
+Hide minimap border and zone bar
+Hide talking head
+Hides the default objective tracker while this tracker is on.
+Hides the default party and raid frames while Phoenix group frames are on.
+Hides the default player cast bar while the Phoenix cast bar is shown.
+Highlights items you just received.
+Highlights members carrying a debuff you can dispel.
+Hovercast keys
+How many buttons bar 1 shows (an action page holds 12).
+How many buttons bar 10 shows (an action page holds 12).
+How many buttons bar 2 shows (an action page holds 12).
+How many buttons bar 3 shows (an action page holds 12).
+How many buttons bar 4 shows (an action page holds 12).
+How many buttons bar 5 shows (an action page holds 12).
+How many buttons bar 6 shows (an action page holds 12).
+How many buttons bar 7 shows (an action page holds 12).
+How many buttons bar 8 shows (an action page holds 12).
+How many buttons bar 9 shows (an action page holds 12).
+How many finished fights to keep across reloads (pinned ones are always kept).
+How many fit in one row before wrapping (overflow goes to the next row).
+How many meter windows to show (up to 5); each snaps in Studio.
+How many names a chat report lists.
+How many results the palette lists.
+Icon size
+In combat, colour plates by your threat: tanks want aggro (green), others want none.
+Include my character name
+Includes your own frame in the party frames.
+Indicator: PvP flag
+Indicator: elite / rare
+Indicator: group leader
+Indicator: in combat
+Indicator: raid markers
+Indicator: resting (player)
+Information bars: clock, FPS, latency, gold, durability and more.
+Inspect
+Interface font
+Item level on gear
+Keep only boss fights in the saved segments.
+Key that opens the Oracle palette.
+Keybind text
+Keyboard bindings cast on the frame under the mouse.
+Keyword alerts
+Language
+Language for Phoenix UI text. Auto follows the game client.
+Lays out the game's Cooldown Viewer icons and bars in Phoenix rows (the game still draws every cooldown).
+Leader icon
+Leader score
+Leader scores, missing roles, role fit and declined memory in the group finder. Stands down when Premade Groups Filter is loaded.
+Lists what you picked recently first when the search is empty.
+Loadouts
+Local time under the minimap.
+Lock action buttons
+Look
+Loot
+Low durability warning
+Macro conditions that show or hide bar 1, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 10, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 2, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 3, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 4, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 5, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 6, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 7, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 8, e.g. [combat] show; hide. Empty uses the default.
+Macro conditions that show or hide bar 9, e.g. [combat] show; hide. Empty uses the default.
+Macro names
+Macros
+Mail
+Mana bar on healers' frames only.
+Map and quest log
+Marks elite, rare and boss units.
+Marks items that beat what you wear with a star.
+Marks the group leader.
+Marks units related to one of your active quests.
+Marks upgrades in Phoenix bags (Vault).
+Max camera distance
+Merchant
+Meter type
+Meter windows
+Minimal: essential cooldowns only. Standard: adds utility cooldowns and buff icons. Everything: adds buff bars. Custom keeps your own choices.
+Minimap
+Minimap clock
+Minimap coordinates
+Minimap shape
+Minimap size
+Minimap zone text
+Minimum leader rating
+Mirrored lines fade after this many seconds; 0 keeps them.
+Missing raid buffs and class buffs, checked out of combat.
+Missing roles
+Mythic+ score
+Mythic+ timer
+Mythic+ timer with thresholds, forces, deaths, boss splits and personal bests.
+Nameplates
+New group sound
+New item glow
+Number font
+Only groups that need my role
+Only in a group
+Opacity of bar 1 out of combat when fading is on.
+Opacity of bar 10 out of combat when fading is on.
+Opacity of bar 2 out of combat when fading is on.
+Opacity of bar 3 out of combat when fading is on.
+Opacity of bar 4 out of combat when fading is on.
+Opacity of bar 5 out of combat when fading is on.
+Opacity of bar 6 out of combat when fading is on.
+Opacity of bar 7 out of combat when fading is on.
+Opacity of bar 8 out of combat when fading is on.
+Opacity of bar 9 out of combat when fading is on.
+Opacity of out-of-range frames.
+Opacity of the dark background behind Phoenix bars.
+Opacity of the health fill.
+Options mode
+Oracle
+Order raid frames by group, by role (tanks, healers, damage), by class or by name.
+Out-of-range opacity
+Outlines your current target's plate in the accent colour.
+Palette key
+Panel opacity
+Party frames
+Pawn
+Per-pull graph
+Performance sampler
+Personal health, power, class resource, cast, global cooldown and totem bars.
+Pet cast bar
+Pet fill right to left
+Pet frame
+Pet height
+Pet portrait
+Pet power bar height
+Pet text (center)
+Pet text (left)
+Pet text (power)
+Pet text (right)
+Pet width
+Phoenix action bars with paging, keybinds, cooldowns, range colouring and proc glow.
+Phoenix draws this frame, Blizzard shows the default frame, or hidden shows neither.
+Phoenix frame skin for Details! windows when that addon is installed.
+Phoenix frame skin for Pawn when that addon is installed.
+Phoenix frame skin for Plater options when that addon is installed.
+Phoenix frame skin for WeakAuras options when that addon is installed.
+Phoenix look for 25 Blizzard windows and Details!, Pawn, WeakAuras and Plater; each has its own switch.
+Phoenix minimap shape, size and texts.
+Phoenix nameplates over the game's plates: health, casts, threat colours and icons.
+Phoenix party and raid frames with status icons, range fade, dispel highlight and private auras.
+Phoenix player, target, focus, pet, target-of-target, focus-target and boss frames.
+Phoenix positions the game's buff bars in its own rows; off leaves them to the game.
+Phoenix positions the game's buff icons in its own rows; off leaves them to the game.
+Phoenix positions the game's essential cooldowns in its own rows; off leaves them to the game.
+Phoenix positions the game's utility cooldowns in its own rows; off leaves them to the game.
+Phoenix quest tracker with sorting, filters, collapsible sections and quest automation.
+Phoenix skin for the Achievements window.
+Phoenix skin for the AddOn list window.
+Phoenix skin for the Adventure Guide window.
+Phoenix skin for the Auction House window.
+Phoenix skin for the Calendar window.
+Phoenix skin for the Character window.
+Phoenix skin for the Collections window.
+Phoenix skin for the Dressing room window.
+Phoenix skin for the Gossip and quests window.
+Phoenix skin for the Great Vault window.
+Phoenix skin for the Group Finder window.
+Phoenix skin for the Group invite window.
+Phoenix skin for the Guild and communities window.
+Phoenix skin for the Inspect window.
+Phoenix skin for the Loot window.
+Phoenix skin for the Macros window.
+Phoenix skin for the Mail window.
+Phoenix skin for the Map and quest log window.
+Phoenix skin for the Merchant window.
+Phoenix skin for the Professions window.
+Phoenix skin for the Ready check window.
+Phoenix skin for the Settings window.
+Phoenix skin for the Spellbook and talents window.
+Phoenix skin for the Trade window.
+Phoenix skin for the Transmog window.
+Picks the only dialogue option when there is no quest. Hold Shift to read.
+Plate cast bar height
+Plate cast bars
+Plate elite / rare icon
+Plate health colour
+Plate health height
+Plate health text
+Plate quest icon
+Plate raid markers
+Plate scale
+Plate stacking
+Plate width
+Plater options
+Player cast bar
+Player coordinates (not available inside instances).
+Player fill right to left
+Player frame
+Player height
+Player portrait
+Player power bar height
+Player text (center)
+Player text (left)
+Player text (power)
+Player text (right)
+Player width
+Plays a sound on incoming whispers.
+Plays a sound when a new group that fits you shows up in a refreshed search.
+Plays a sound when a reminder appears.
+Plays a sound when a tracked quest is ready.
+Plays a sound with the announcement.
+Plays a warning when the +3 or +2 time runs out.
+Portrait beside the frame: off, 2D or 3D.
+Power bar
+Power bar height
+Power hash lines
+Print event history
+Print every Phoenix event (module changes, setting changes) to chat as it happens. For troubleshooting.
+Private aura slots
+Professions
+Profile
+Quest Tracker
+Quest tracker
+Quick loot
+Raid and party frames
+Raid buff reminders only while you are in a group.
+Raid buffs
+Raid frames
+Raid sorting
+Raid target markers on group frames.
+Raises the camera zoom limit; restored when turned off.
+Reaction colour, or class colour for players.
+Reads threshold warnings aloud with the game's text to speech.
+Ready check
+Ready check, incoming resurrection, pending summon and out-of-phase icons.
+Red border on members with high threat.
+Releases your spirit on death. World only, or also in dungeons and raids; never in battlegrounds or arenas, and never when you can self-resurrect.
+Remember recent picks
+Reminder icon size.
+Reminders
+Reminders: class
+Reminders: custom
+Reminders: raid
+Repairs everything at a vendor. Guild uses guild funds when allowed, else your own gold.
+Report lines
+Resource bar spacing
+Resource bar width
+Resource bars
+Results shown
+Role fit
+Role icons
+Rows
+Rows grow to the right or to the left of the anchor.
+Rows per window.
+Safe mode
+Safe mode threshold
+Sample Phoenix CPU use every 5 seconds and report modules that stay over budget.
+Samples your own per-second figure once a second in combat for the pull graph.
+Saved segments
+Scale of bar 1.
+Scale of bar 10.
+Scale of bar 2.
+Scale of bar 3.
+Scale of bar 4.
+Scale of bar 5.
+Scale of bar 6.
+Scale of bar 7.
+Scale of bar 8.
+Scale of bar 9.
+Scales every Phoenix UI font.
+Score decimals
+Score in tooltips
+Sell junk button
+Sells grey items when you open a vendor.
+Sentinel notice
+Settings
+Settings profile used by this character. Switching applies every setting immediately.
+Share diagnostics
+Short channel names
+Show
+Show Studio grid
+Show a small notice the first time a new Phoenix error happens.
+Show absorbs
+Show empty buttons
+Show incoming heals
+Show names
+Show or hide tooltips while you are in combat.
+Show party frames when solo
+Show yourself in party
+Shows Phoenix action bar 1 and hides the matching Blizzard bar.
+Shows Phoenix action bar 10.
+Shows Phoenix action bar 2 and hides the matching Blizzard bar.
+Shows Phoenix action bar 3 and hides the matching Blizzard bar.
+Shows Phoenix action bar 4 and hides the matching Blizzard bar.
+Shows Phoenix action bar 5 and hides the matching Blizzard bar.
+Shows Phoenix action bar 6 and hides the matching Blizzard bar.
+Shows Phoenix action bar 7 and hides the matching Blizzard bar.
+Shows Phoenix action bar 8 and hides the matching Blizzard bar.
+Shows Phoenix action bar 9.
+Shows [2] instead of [2. Trade - City].
+Shows a Sell junk button at vendors when you carry grey items.
+Shows a cast bar under the boss frame.
+Shows a cast bar under the focus frame.
+Shows a cast bar under the focus target frame.
+Shows a cast bar under the pet frame.
+Shows a cast bar under the player frame.
+Shows a cast bar under the target frame.
+Shows a cast bar under the target of target frame.
+Shows casts and channels under each plate (one shared cast dispatcher).
+Shows damage absorbs after the health fill and heal absorbs on it.
+Shows damage absorbs after the health fill.
+Shows macro names on action buttons.
+Shows predicted incoming heals after the health fill.
+Shows raid buffs someone in your group can give that you are missing.
+Shows raid target markers beside plates.
+Shows the PvP flag icon on unit frames.
+Shows the bound key on each action button.
+Shows the cast bar in the resource stack.
+Shows the class resource in the resource stack.
+Shows the elite / rare icon on unit frames.
+Shows the global cooldown bar in the resource stack.
+Shows the group leader icon on unit frames.
+Shows the health bar in the resource stack.
+Shows the in combat icon on unit frames.
+Shows the leader's Mythic+ score in its rarity colour.
+Shows the power bar in the resource stack.
+Shows the raid markers icon on unit frames.
+Shows the resting (player) icon on unit frames.
+Shows the spell or item tooltip when the pointer is over an action button.
+Shows the totem bars in the resource stack.
+Shows the unit's name above enemy plates.
+Shows whether your current role still fits the group.
+Shows which roles the group still needs.
+Shows your frame even when you are not in a group.
+Shows your own class buffs that are missing, like rogue poisons.
+Simple shows the curated settings; Advanced shows every setting.
+Size of each bar.
+Size of each icon.
+Size of the timer window.
+Skins
+Skip cinematics
+Skips cinematics and movies. Hold Shift to watch.
+Slots per row.
+Smooth bars
+Smooth resource bars
+Snap to grid
+Sort quests by
+Sound
+Spacing of the Studio pixel grid, in UI pixels.
+Spec, talent loadout and gear set per kind of content, checked when you zone in.
+Spell and item IDs
+Spellbook and talents
+Spoken warnings
+Square or round minimap.
+Stacked plates never overlap; overlapping plates stay over their units. Default leaves the game setting alone; the original value is restored when the module turns off.
+Status icons
+Studio grid size
+Switch automatically
+Switches to the saved loadout on its own when you zone in (out of combat).
+Taint logging this session
+Taint-safe chat mirror with timestamps, short channels, keyword alerts and copy.
+Takes every item as soon as the loot window opens. Hold Shift to choose.
+Tank, healer and damage icons.
+Target cast bar
+Target fill right to left
+Target frame
+Target height
+Target highlight
+Target of target cast bar
+Target of target fill right to left
+Target of target frame
+Target of target height
+Target of target portrait
+Target of target power bar height
+Target of target text (center)
+Target of target text (left)
+Target of target text (power)
+Target of target text (right)
+Target of target width
+Target portrait
+Target power bar height
+Target text (center)
+Target text (left)
+Target text (power)
+Target text (right)
+Target width
+Tells you in chat when your spec, talents or gear do not match the loadout for where you are.
+Tester mode
+Text size
+Texture for every Phoenix health, power, cast and resource bar.
+The single highlight colour of Phoenix UI. Class uses your class colour.
+Threat colours
+Threshold sounds
+Time in front of each new line (lines hidden by the game in restricted content are shown unchanged).
+Timer scale
+Tooltip
+Tooltip position
+Tooltip position, combat visibility and extra lines.
+Tooltips in combat
+Totem bars
+Totem bars height
+Track zone quests
+Tracks quests for the zone you enter.
+Trade
+Transmog
+Turn on the client's taint log until logout so blocked actions can be traced.
+Turns /combatlog on in raids and Mythic+ and off elsewhere.
+Types the confirmation word when deleting a good item.
+Unit frames
+Upgrade star
+Utility cooldowns
+Utility cooldowns: Phoenix layout
+Utility cooldowns: growth
+Utility cooldowns: icon size
+Utility cooldowns: per row
+Utility cooldowns: spacing
+Vault
+Vertical columns per group, or horizontal rows.
+View
+Warning level for the low durability warning.
+Warns once when any item drops to the threshold.
+WeakAuras options
+What the center text zone shows.
+What the first window shows. Each window can switch with a click on its title.
+What the left text zone shows.
+What the power text zone shows.
+What the right text zone shows.
+Which action page (12 slots) bar 10 shows.
+Which action page (12 slots) bar 2 shows.
+Which action page (12 slots) bar 3 shows.
+Which action page (12 slots) bar 4 shows.
+Which action page (12 slots) bar 5 shows.
+Which action page (12 slots) bar 6 shows.
+Which action page (12 slots) bar 7 shows.
+Which action page (12 slots) bar 8 shows.
+Which action page (12 slots) bar 9 shows.
+Whisper sound
+Width and height of the minimap.
+Width of Phoenix nameplates in pixels.
+Width of each party/raid frame.
+Width of the bar; blocks share it equally.
+Width of the boss frame in pixels.
+Width of the focus frame in pixels.
+Width of the focus target frame in pixels.
+Width of the personal resource bar stack.
+Width of the pet frame in pixels.
+Width of the player frame in pixels.
+Width of the target frame in pixels.
+Width of the target of target frame in pixels.
+Wisdom
+Writes the buff name under each icon.
+Writes the item level on equippable items.

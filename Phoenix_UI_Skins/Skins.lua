@@ -196,8 +196,13 @@ function SK.Refresh()
   end)
 end
 
--- Public API for third-party skins (PUI_V2 10).
-PUI.API.RegisterSkin = function(id, pack)
-  SK.Register("addon." .. id, pack)
+-- Public API for third-party skins (PUI_V2 10): PUI.API.RegisterSkin lives in
+-- Core/API.lua so plugins can register before this child loads; packs that
+-- arrive at any time are picked up here.
+local Reg = PUI.APIRegistry
+local function adopt(skinId)
+  SK.Register("addon." .. skinId, Reg.skins[skinId])
   if SK.active then SK.Refresh() end
 end
+for skinId in pairs(Reg.skins) do adopt(skinId) end
+Reg.Listen("skin", adopt)

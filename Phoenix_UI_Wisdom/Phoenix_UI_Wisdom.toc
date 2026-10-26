@@ -1,0 +1,12 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Wisdom
+## Notes: Phoenix UI gear advisor: stat-weight score and upgrade star in tooltips and bags, weights per profile.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## Dependencies: Phoenix_UI
+
+Pack.lua
+Wisdom.lua
+Tests\Wisdom_test.lua

@@ -21,3 +21,5 @@ jobs:
         run: python3 .tools/test_release_tools.py
       - name: Agent sweep triage tests
         run: python3 .tools/test_agent_sweep.py
+      - name: Locale keys
+        run: python3 .tools/locales.py --check

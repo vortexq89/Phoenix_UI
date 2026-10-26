@@ -3,6 +3,8 @@
 ## Notes: Phoenix UI chat: a taint-safe mirror of the game's chat frames with timestamps, channel abbreviations, keyword alerts and copy.
 ## Author: VortexQ8
 ## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
 ## Dependencies: Phoenix_UI
 
 Chat.lua

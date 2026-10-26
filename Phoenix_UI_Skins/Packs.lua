@@ -48,6 +48,27 @@ for _, w in ipairs(WINDOWS) do
   }
 end
 
+-- Third-party addon windows (PUI_V2 13 Phase 6). Frame names were read from
+-- each addon's own source (Details! d1e8ad7, Pawn 2.14.1, WeakAuras 37c3950,
+-- Plater 536b2ea; October 2026): only the frame shell, close button and title
+-- are touched, never the addon's content, and a missing frame is skipped.
+local ADDONS = {
+  { "details", "Details! windows", { "DetailsBaseFrame1", "DetailsBaseFrame2", "DetailsBaseFrame3", "DetailsBaseFrame4", "DetailsBaseFrame5" }, { "shell" } },
+  { "pawn", "Pawn", { "PawnUIFrame" }, { "shell", "close", "tabs", "buttons" } },
+  { "weakauras", "WeakAuras options", { "WeakAurasOptions" }, { "shell", "close", "title" } },
+  { "plater", "Plater options", { "PlaterOptionsPanelFrame" }, { "shell", "close" } },
+}
+SK.ADDONS = ADDONS
+for _, a in ipairs(ADDONS) do
+  local id, label, frames, parts = a[1], a[2], a[3], a[4]
+  SK.Register(id, { label = label, frames = frames, parts = parts })
+  schema["skins." .. id] = {
+    type = "toggle", default = true, label = label, owner = OWNER, mode = "advanced",
+    tooltip = "Phoenix frame skin for " .. label .. " when that addon is installed.",
+    apply = function() if SK.active then SK.Refresh() end end,
+  }
+end
+
 local function onEnable(mod)
   SK.active = true
   mod:RegisterEvent("ADDON_LOADED", function() SK.Refresh() end)
@@ -60,7 +81,7 @@ local function onDisable()
 end
 
 SK.module = PUI:RegisterModule(OWNER, {
-  label = "Skins", tooltip = "Phoenix look for 25 Blizzard windows; each window has its own switch.",
+  label = "Skins", tooltip = "Phoenix look for 25 Blizzard windows and Details!, Pawn, WeakAuras and Plater; each has its own switch.",
   enabledByDefault = false, schema = schema, onEnable = onEnable, onDisable = onDisable,
 })
 for k, def in pairs(schema) do def.apply(Schema:Get(k)) end

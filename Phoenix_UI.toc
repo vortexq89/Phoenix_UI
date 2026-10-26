@@ -3,6 +3,8 @@
 ## Notes: Phoenix UI core: kernel, settings, combat queue, ticker and Sentinel diagnostics.
 ## Author: VortexQ8
 ## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
 ## SavedVariables: PhoenixUIDB
 ## OptionalDeps: !BugGrabber
 
@@ -20,6 +22,7 @@ Core\Ticker.lua
 Core\Budget.lua
 Core\API.lua
 Core\Slash.lua
+Core\Packs.lua
 Core\SentinelHook.lua
 Core\Layout.lua
 Core\OptionsHost.lua
@@ -34,3 +37,4 @@ Tests\Ticker_test.lua
 Tests\Sentinel_test.lua
 Tests\Theme_test.lua
 Tests\Layout_test.lua
+Tests\Phase6_test.lua

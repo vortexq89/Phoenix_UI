@@ -3,6 +3,8 @@
 ## Notes: Phoenix UI automations: repair, junk, release, invites, cinematics, quick loot and more. Every toggle is off by default.
 ## Author: VortexQ8
 ## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
 ## Dependencies: Phoenix_UI
 
 Flow.lua
