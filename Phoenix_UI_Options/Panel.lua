@@ -8,11 +8,13 @@ local Options, Theme = PUI.Options, PUI.Theme
 local Model, Schema, Kit, A, Nav = Options.Model, PUI.Schema, Options.Kit, Options.Assets, Options.Nav
 
 local W, H, SIDEBAR, TOP = 1420, 860, 248, 72
+local MIN_W, MIN_H, MAX_W, MAX_H = 1420, 700, 2400, 1500
 Options.SIZE = { W = W, H = H, SIDEBAR = SIDEBAR, TOP = TOP }
 Options.page = "Dashboard"
 -- Pages drawn by their own view instead of settings rows.
 Options.CUSTOM = {
   Theme = function() return Options.ThemePage end,
+  Profiles = function() return Options.ProfilesPage end,
   Sentinel = function() return PUI.Sentinel and PUI.Sentinel.Viewer and Options.SentinelPage end,
 }
 
@@ -81,7 +83,7 @@ local function buildHeader(f)
   f:SetMovable(true)
   f:RegisterForDrag("LeftButton")
   f:SetScript("OnDragStart", f.StartMoving)
-  f:SetScript("OnDragStop", f.StopMovingOrSizing)
+  f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing(); Options:SaveWindow() end)
   local line = Kit.Divider(f)
   line:SetPoint("TOPLEFT", 0, -TOP)
   line:SetPoint("TOPRIGHT", 0, -TOP)
@@ -135,10 +137,83 @@ function Options:Build()
   buildHeader(f)
   buildSidebar(f)
   buildContent(f)
-  f:SetScript("OnHide", function() if Options.Widgets.popup then Options.Widgets.popup:Hide() end end)
+  f:SetScript("OnHide", function()
+    if Options.Widgets.popup then Options.Widgets.popup:Hide() end
+    if Options.Widgets.FlushColor then Options.Widgets.FlushColor() end
+  end)
+  -- resizable from the bottom-right grip; size and place are settings
+  f:SetResizable(true)
+  if f.SetResizeBounds then f:SetResizeBounds(MIN_W, MIN_H, MAX_W, MAX_H) end
+  local grip = CreateFrame("Button", nil, f)
+  grip:SetSize(18, 18)
+  grip:SetPoint("BOTTOMRIGHT", -6, 6)
+  for i = 1, 3 do -- three diagonal dots, drawn (no extra media)
+    local d = grip:CreateTexture(nil, "OVERLAY")
+    d:SetSize(2, 2)
+    d:SetPoint("BOTTOMRIGHT", -(i - 1) * 4, (3 - i) * 0)
+    Theme:Paint(d, "muted", 0.8)
+    local d2 = grip:CreateTexture(nil, "OVERLAY")
+    d2:SetSize(2, 2)
+    d2:SetPoint("BOTTOMRIGHT", 0, (i - 1) * 4)
+    Theme:Paint(d2, "muted", 0.8)
+  end
+  grip:SetScript("OnMouseDown", function() f:StartSizing("BOTTOMRIGHT") end)
+  grip:SetScript("OnMouseUp", function() f:StopMovingOrSizing(); Options:SaveWindow() end)
+  f.grip = grip
+  -- open animation: C-side AnimationGroup (no OnUpdate), off with options.motion
+  local intro = f:CreateAnimationGroup()
+  local fade = intro:CreateAnimation("Alpha")
+  fade:SetFromAlpha(0)
+  fade:SetToAlpha(1)
+  fade:SetDuration(0.14)
+  fade:SetSmoothing("OUT")
+  local rise = intro:CreateAnimation("Translation")
+  rise:SetOffset(0, 8)
+  rise:SetDuration(0.14)
+  rise:SetSmoothing("OUT")
+  f.intro = intro
+  f:SetScript("OnShow", function(self) if Schema:Get("options.motion") then self.intro:Play() end end)
   f:Hide()
   self.frame = f
+  self:OnWindowSettings()
   return f
+end
+
+-- Window settings: scale, tint, size and the opening anchor (live).
+function Options:OnWindowSettings()
+  local f = self.frame
+  if not f then return end
+  f:SetScale(Schema:Get("options.scale"))
+  local t = Schema:Get("options.tint")
+  if f.glassTint then f.glassTint:SetColorTexture(t.r, t.g, t.b, (t.a or 0) * 0.6) end
+  local size = Schema:Get("options.window")
+  f:SetSize(math.min(MAX_W, math.max(MIN_W, size.w or W)), math.min(MAX_H, math.max(MIN_H, size.h or H)))
+  if not self.savingWindow then
+    local a = Schema:Get("options.openAnchor")
+    f:ClearAllPoints()
+    f:SetPoint(a.point, UIParent, a.relPoint or a.point, a.x, a.y)
+  end
+  if f:IsShown() then self:Render() end
+end
+
+-- After a drag or resize: store size and the nearest anchor (integer px).
+function Options:SaveWindow()
+  local f = self.frame
+  local w, h = math.floor(f:GetWidth() + 0.5), math.floor(f:GetHeight() + 0.5)
+  self.savingWindow = true
+  Model.Commit("options.window", { w = w, h = h })
+  local l, b = f:GetLeft(), f:GetBottom()
+  if l and b then
+    local s = f:GetEffectiveScale() / UIParent:GetEffectiveScale()
+    local cx = (l + w / 2) * s - UIParent:GetWidth() / 2
+    local cy = (b + h / 2) * s - UIParent:GetHeight() / 2
+    Model.Commit("options.openAnchor", { point = "CENTER", relPoint = "CENTER", x = math.floor(cx / s + 0.5), y = math.floor(cy / s + 0.5) })
+  end
+  self.savingWindow = nil
+end
+
+function Options:OnPinned()
+  if self.frame and self.frame:IsShown() then self:RenderSidebar() end
 end
 
 -- Sidebar ------------------------------------------------------------------------
@@ -203,6 +278,26 @@ function Options:RenderSidebar()
   end
   item("Dashboard", "dashboard", "Dashboard", nil)
   y = y - 8
+  local pinned = Schema:Get("options.pinned")
+  if #pinned > 0 then
+    local c = caption(side, 99)
+    c:ClearAllPoints()
+    c:SetPoint("TOPLEFT", 12, y)
+    c.text:SetText("PINNED")
+    c.count:SetText("")
+    c:SetScript("OnClick", function() Options:Open("Options") end)
+    c:Show()
+    y = y - 26
+    for _, name in ipairs(pinned) do
+      if Model.Page("advanced", name) and Model.Page("advanced", name).name == name then
+        local icon, label = Nav.Info(name)
+        item(name, icon, label, Nav.ModuleOn(name))
+      end
+    end
+    y = y - 8
+  elseif side.captions[99] then
+    side.captions[99]:Hide()
+  end
   local groups = Nav.Layout(Model.Mode())
   for gi, g in ipairs(groups) do
     local c = caption(side, gi)
@@ -304,7 +399,11 @@ end
 
 PUI.Kernel:On("SETTING_CHANGED", function(key)
   local row = Options.rows[key]
-  if row and row:IsShown() then row:Refresh() end
+  if row and row:IsShown() then
+    local h = row:GetHeight()
+    row:Refresh()
+    if row:GetHeight() ~= h and Options.views.page and Options.views.page:IsShown() then Options:Render() end
+  end
   local f = Options.frame
   if f and f:IsShown() then
     if key:find("^module%.") then Options:RenderSidebar() end

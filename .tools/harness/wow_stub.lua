@@ -74,6 +74,7 @@ function CreateFont(name)
 end
 RAID_CLASS_COLORS = { MAGE = { r = 0.25, g = 0.78, b = 0.92 } }
 function IsShiftKeyDown() return false end
+function IsAltKeyDown() return false end
 function IsControlKeyDown() return false end
 UISpecialFrames = {}
 SlashCmdList = {}
@@ -672,6 +673,18 @@ C_ScenarioInfo = { GetCriteriaInfo = function(i)
 C_MythicPlus = { GetOwnedKeystoneChallengeMapID = function() return H.ownedKey end }
 H.spoken = {}
 C_VoiceChat = { SpeakText = function(voice, text) H.spoken[#H.spoken + 1] = text end }
+H.settingsCategories = {}
+Settings = {
+  RegisterCanvasLayoutCategory = function(frame, name) return { frame = frame, name = name } end,
+  RegisterAddOnCategory = function(cat) H.settingsCategories[#H.settingsCategories + 1] = cat end,
+}
+function IsInInstance()
+  local i = H.instance
+  if i == true then return true, "party" end
+  if type(i) == "string" then return true, i end
+  return false, "none"
+end
+function GetBindingAction(key) return (H.blizzBindings or {})[key] or "" end
 C_TTSSettings = { GetVoiceOptionID = function() return 1 end }
 H.macros = { "Focus Kick", "Burst" }
 function GetNumMacros() return #H.macros, 0 end

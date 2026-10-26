@@ -34,7 +34,8 @@ local INFO = {
   Oracle = { "oracle", "Oracle", "Ctrl K command palette.", "Oracle" },
   Wisdom = { "wisdom", "Wisdom", "Stat weights and upgrade stars.", "Wisdom" },
   Setup = { "setup", "Setup", "First-time wizard and presets." },
-  Options = { "profiles", "Profiles & Window", "Profiles and this window." },
+  Profiles = { "profiles", "Profiles", "Your profiles, content switching, import and export." },
+  Options = { "dashboard", "Window", "Scale, tint, open key and pinned pages of this window." },
   Sentinel = { "sentinel", "Sentinel", "Errors, taint and performance health." },
 }
 Nav.INFO = INFO
@@ -45,7 +46,7 @@ Nav.GROUPS = {
   { "Group", { "RaidFrames", "GroupFinder", "Ascent", "Embers", "Loadouts" } },
   { "Social & Chat", { "Chat", "Flow" } },
   { "Tools", { "Vault", "Oracle", "Wisdom", "Setup" } },
-  { "System", { "Options", "Sentinel" } },
+  { "System", { "Profiles", "Options", "Sentinel" } },
 }
 
 function Nav.Info(owner)

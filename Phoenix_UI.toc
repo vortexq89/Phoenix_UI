@@ -30,6 +30,7 @@ Core\Packs.lua
 Core\SentinelHook.lua
 Core\Layout.lua
 Core\OptionsHost.lua
+Core\Profiles.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Tests\Runner.lua
@@ -42,3 +43,4 @@ Tests\Sentinel_test.lua
 Tests\Theme_test.lua
 Tests\Layout_test.lua
 Tests\Phase6_test.lua
+Tests\Profiles_test.lua

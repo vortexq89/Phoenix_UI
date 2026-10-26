@@ -169,20 +169,26 @@ function PageView:Show(host, query)
   scroll:Show()
   local width = scroll:GetRight() and (scroll:GetRight() - scroll:GetLeft()) or (Options.SIZE.W - Options.SIZE.SIDEBAR - 60 - (builder and PREVIEW_W + 22 or 0))
   child:SetWidth(width)
-  scroll:SetVerticalScroll(0)
+  local keep = v.lastView == (tostring(owner) .. "|" .. tostring(query) .. "|" .. current.id)
+  v.lastView = tostring(owner) .. "|" .. tostring(query) .. "|" .. current.id
+  local oldScroll = keep and scroll:GetVerticalScroll() or 0
   local show = current.keys
   f.empty:SetText(#show == 0 and "Nothing matches." or "")
+  local y = 0
   for i = 1, #show do
     local key = show[i]
     local row = Options.rows[key] or Widgets.Row(child, key)
     Options.rows[key] = row
+    row:SetParent(child)
     row:ClearAllPoints()
-    row:SetPoint("TOPLEFT", 0, -(i - 1) * Widgets.ROW_H)
+    row:SetPoint("TOPLEFT", 0, -y)
     row:SetPoint("RIGHT", child, "RIGHT", 0, 0)
     row:Refresh()
     row:Show()
+    y = y + math.max(Widgets.ROW_H, row:GetHeight())
   end
-  child:SetHeight(#show * Widgets.ROW_H + 20)
+  child:SetHeight(y + 20)
+  scroll:SetVerticalScroll(oldScroll)
   function v:OnSetting(key)
     if key == self.moduleKey then self.toggle:SetValue_(Schema:Get(key)) end
     if self.previewFor and Options.Previews.Update then Options.Previews.Update(self.previewFor, self.previewCard, key) end

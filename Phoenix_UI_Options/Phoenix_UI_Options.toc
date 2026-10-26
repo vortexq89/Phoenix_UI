@@ -15,8 +15,10 @@ Model.lua
 Assets.lua
 Kit.lua
 Widgets.lua
+Controls.lua
 Nav.lua
 Panel.lua
+ProfilesPage.lua
 PageView.lua
 Previews.lua
 Dashboard.lua
@@ -26,3 +28,4 @@ StudioModel.lua
 Studio.lua
 Tests\Options_test.lua
 Tests\Studio_test.lua
+Tests\Controls_test.lua
