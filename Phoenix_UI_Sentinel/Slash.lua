@@ -1,5 +1,5 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- /pui sentinel [export|send|clear|induce|enable <module>]
+-- /pui sentinel [export|copy [all]|send|clear|induce|enable <module>]
 local S = PUI.Sentinel
 local out = PUI.Slash.Print
 
@@ -16,6 +16,9 @@ PUI.Slash:Register("sentinel", function(rest)
   if word == "export" then
     S.Panel:Open()
     S.Panel:ShowExport()
+  elseif word == "copy" then
+    if S.Panel.frame == nil then S.Panel:Build() end
+    if arg == "all" or arg == "session" then S.Panel:CopySession() else S.Panel:CopySelected() end
   elseif word == "send" then
     S.Panel:SendNow()
   elseif word == "clear" then
@@ -30,4 +33,4 @@ PUI.Slash:Register("sentinel", function(rest)
   else
     S.Panel:Toggle()
   end
-end, "open the Sentinel panel (export, send, clear, induce, enable <module>)")
+end, "open the Sentinel panel (export, copy [all], send, clear, induce, enable <module>)")

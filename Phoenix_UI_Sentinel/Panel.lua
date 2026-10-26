@@ -25,7 +25,7 @@ end
 
 function Panel:Build()
   local f = PUI:CreateFrame("Frame", "PhoenixUISentinelPanel", UIParent, nil, "Sentinel")
-  f:SetSize(620, 470)
+  f:SetSize(620, 500)
   f:SetPoint("CENTER")
   f:SetFrameStrata("HIGH")
   f:SetMovable(true)
@@ -57,7 +57,7 @@ function Panel:Build()
 
   local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
   scroll:SetPoint("TOPLEFT", sep, "BOTTOMLEFT", 0, -8)
-  scroll:SetPoint("BOTTOMRIGHT", -32, 76)
+  scroll:SetPoint("BOTTOMRIGHT", -32, 106)
   local box = CreateFrame("EditBox", nil, scroll)
   box:SetMultiLine(true)
   box:SetFontObject(ChatFontSmall)
@@ -79,7 +79,14 @@ function Panel:Build()
     button(f, "Send now", 140, function() Panel:SendNow() end),
     button(f, "Clear", 140, function() S.Capture:Clear(); Panel:ShowList() end),
   }
+  local row3 = {
+    button(f, "< Newer", 140, function() Panel:Step(-1) end),
+    button(f, "Older >", 140, function() Panel:Step(1) end),
+    button(f, "Copy", 140, function() Panel:CopySelected() end),
+    button(f, "Copy all from this session", 140, function() Panel:CopySession() end),
+  }
   for i = 1, 4 do
+    row3[i]:SetPoint("BOTTOMLEFT", 14 + (i - 1) * 148, 72)
     row1[i]:SetPoint("BOTTOMLEFT", 14 + (i - 1) * 148, 42)
     row2[i]:SetPoint("BOTTOMLEFT", 14 + (i - 1) * 148, 12)
   end
@@ -109,13 +116,13 @@ end
 
 function Panel:ShowList()
   local lines = {}
-  local list = {}
-  for _, inc in pairs(S.db.incidents) do list[#list + 1] = inc end
-  table.sort(list, function(a, b) return a.lastSeen > b.lastSeen end)
+  local list = S.Viewer:List(false)
+  self.selected = nil
   for i = 1, #list do
     local inc = list[i]
-    lines[#lines + 1] = string.format("[%s][%s][%s] x%d  %s", inc.severity or "?", inc.kind, inc.module, inc.count, inc.message:sub(1, 160))
+    lines[#lines + 1] = string.format("%d. [%s][%s][%s] x%d  %s", i, inc.severity or "?", inc.kind, inc.module, inc.count, inc.message:sub(1, 160))
   end
+  if #list > 0 then lines[#lines + 1] = "\nUse 'Older >' to open an incident, then 'Copy'." end
   for name in pairs(S.db.safeModed) do lines[#lines + 1] = "Safe mode: " .. name .. " (use /pui sentinel enable " .. name .. ")" end
   if #lines == 0 then lines[1] = "No incidents. Use /pui sentinel induce to create a test error." end
   self.frame.box:SetText(table.concat(lines, "\n"))
@@ -142,6 +149,79 @@ function Panel:SendNow()
   S.db.lastSent = { at = time(), reports = 0, via = "companion" }
   for _ in pairs(S.db.incidents) do S.db.lastSent.reports = S.db.lastSent.reports + 1 end
   C_UI.Reload()
+end
+
+-- Selection: index into the newest-first list; nil shows the overview list.
+function Panel:Select(index)
+  local list = S.Viewer:List(false)
+  if #list == 0 then self.selected = nil; return self:ShowList() end
+  index = math.max(1, math.min(#list, index))
+  self.selected = index
+  self.frame.box:SetText(string.format("Incident %d of %d\n\n", index, #list) .. S.Viewer:Text(list[index]))
+  self:Refresh()
+  return list[index]
+end
+
+function Panel:Step(delta)
+  if not self.selected then
+    if delta > 0 then return self:Select(1) end
+    return
+  end
+  local nextIndex = self.selected + delta
+  if nextIndex < 1 then return self:ShowList() end
+  return self:Select(nextIndex)
+end
+
+-- Plain-text copy window: one selectable edit box, text highlighted for Ctrl+C.
+function Panel:BuildCopy()
+  local c = PUI:CreateFrame("Frame", "PhoenixUISentinelCopy", UIParent, nil, "Sentinel")
+  c:SetSize(600, 420)
+  c:SetPoint("CENTER", 20, -20)
+  c:SetFrameStrata("DIALOG")
+  c:EnableMouse(true)
+  tinsert(UISpecialFrames, "PhoenixUISentinelCopy")
+  PUI.Theme:Backdrop(c, "surface.1")
+  local title = c:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+  title:SetPoint("TOPLEFT", 14, -12)
+  title:SetText("Copy (Ctrl+C), then Escape")
+  local close = CreateFrame("Button", nil, c, "UIPanelCloseButton")
+  close:SetPoint("TOPRIGHT", -2, -2)
+  local scroll = CreateFrame("ScrollFrame", nil, c, "UIPanelScrollFrameTemplate")
+  scroll:SetPoint("TOPLEFT", 14, -36)
+  scroll:SetPoint("BOTTOMRIGHT", -32, 14)
+  local box = CreateFrame("EditBox", nil, scroll)
+  box:SetMultiLine(true)
+  box:SetFontObject(ChatFontSmall)
+  box:SetWidth(550)
+  box:SetAutoFocus(false)
+  box:SetScript("OnEscapePressed", function() c:Hide() end)
+  -- Read-only: any edit snaps back to the copied text.
+  box:SetScript("OnTextChanged", function(b, user) if user and c.copyText then b:SetText(c.copyText); b:HighlightText() end end)
+  scroll:SetScrollChild(box)
+  c.copyBox = box
+  self.copy = c
+  return c
+end
+
+function Panel:ShowCopy(text)
+  local c = self.copy or self:BuildCopy()
+  c.copyText = text
+  c.copyBox:SetText(text)
+  c:Show()
+  c.copyBox:SetFocus()
+  c.copyBox:HighlightText()
+  return c
+end
+
+function Panel:CopySelected()
+  local list = S.Viewer:List(false)
+  local inc = self.selected and list[self.selected] or list[1]
+  if not inc then return self:ShowCopy("No incidents.") end
+  return self:ShowCopy(S.Viewer:Text(inc))
+end
+
+function Panel:CopySession()
+  return self:ShowCopy(S.Viewer:SessionText())
 end
 
 function Panel:Open()

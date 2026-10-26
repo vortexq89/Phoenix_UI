@@ -21,5 +21,6 @@ Heartbeat.lua
 SafeMode.lua
 Export.lua
 Toast.lua
+Viewer.lua
 Panel.lua
 Slash.lua
