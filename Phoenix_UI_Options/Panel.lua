@@ -10,6 +10,11 @@ local Model, Schema, Kit, A, Nav = Options.Model, PUI.Schema, Options.Kit, Optio
 local W, H, SIDEBAR, TOP = 1420, 860, 248, 72
 Options.SIZE = { W = W, H = H, SIDEBAR = SIDEBAR, TOP = TOP }
 Options.page = "Dashboard"
+-- Pages drawn by their own view instead of settings rows.
+Options.CUSTOM = {
+  Theme = function() return Options.ThemePage end,
+  Sentinel = function() return PUI.Sentinel and PUI.Sentinel.Viewer and Options.SentinelPage end,
+}
 
 local function buildHeader(f)
   local mark = Kit.Icon(f, A.logo, 36)
@@ -248,8 +253,8 @@ function Options:Render()
   local query = f.search:GetText()
   if query == "" and self.page == "Dashboard" then
     self.Dashboard:Show(f.host)
-  elseif query == "" and self.page == "Theme" and self.ThemePage then
-    self.ThemePage:Show(f.host)
+  elseif query == "" and self.rawPage ~= self.page and self.CUSTOM[self.page] and self.CUSTOM[self.page]() then
+    self.CUSTOM[self.page]():Show(f.host)
   else
     if query == "" and not Model.Page(Model.Mode(), self.page) then self.page = "Dashboard"; return self:Render() end
     self.PageView:Show(f.host, query)
@@ -276,6 +281,7 @@ end
 function Options:Open(target)
   local f = self.frame or self:Build()
   f.search:SetText("")
+  self.rawPage = nil
   if target and target ~= "Dashboard" then
     local page = Model.Page("advanced", target)
     if page and page.name:lower() == target:lower() then self.page = page.name else f.search:SetText(target) end

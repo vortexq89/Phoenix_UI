@@ -30,7 +30,11 @@ PUI.Slash:Register("sentinel", function(rest)
   elseif word == "enable" and arg ~= "" then
     S.SafeMode:Release(arg)
     out(arg .. " re-enabled.")
+  elseif word == "panel" then
+    S.Panel:Toggle()
+  elseif PUI.OptionsHost:Load() then
+    PUI.Options:Open("Sentinel")
   else
     S.Panel:Toggle()
   end
-end, "open the Sentinel panel (export, copy [all], send, clear, induce, enable <module>)")
+end, "open the Sentinel viewer (panel, export, copy [all], send, clear, induce, enable <module>)")

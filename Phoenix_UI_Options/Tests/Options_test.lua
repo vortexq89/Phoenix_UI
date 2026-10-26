@@ -95,3 +95,39 @@ Tests:Add("Options", "dashboard, module pages, previews and theme page render li
   Options.frame.search:SetText("")
   Options.frame:Hide()
 end)
+
+Tests:Add("Options", "Sentinel viewer lists, filters, resolves and copies incidents", function(t)
+  local S = PUI.Sentinel
+  if not (S and S.Capture and S.db) then return end
+  local saved = {}
+  for k, v in pairs(S.db.incidents) do saved[k] = v end
+  t:cleanup(function()
+    wipe(S.db.incidents)
+    for k, v in pairs(saved) do S.db.incidents[k] = v end
+    if S.Panel.copy then S.Panel.copy:Hide() end
+    if Options.frame then Options.frame:Hide() end
+    Options.SentinelPage.tab, Options.SentinelPage.selected = "session", nil
+  end)
+  wipe(S.db.incidents)
+  S.Capture:Report("secret", "Nameplates", { message = "attempt to compare a secret number value",
+    stack = "Phoenix_UI_Nameplates/Auras.lua:212: in function 'Update'" })
+  S.Capture:Report("taint", "ActionBars", { message = "ADDON_ACTION_BLOCKED", stack = "" })
+  Options:Open("Sentinel")
+  local v = Options.views.sentinel
+  t:ok(v and v:IsShown(), "Sentinel page is a custom view")
+  local SP = Options.SentinelPage
+  t:eq(#SP.Items("session", ""), 2, "two incidents this session")
+  t:eq(#SP.Items("session", "auras"), 1, "filter by file")
+  local inc = SP.Items("session", "auras")[1]
+  SP.selected = inc.hash
+  SP:Refresh(v)
+  t:eq(SP.current, inc, "selected incident in the detail pane")
+  t:ok(v.detail.hint:IsShown(), "secret incidents carry a hint")
+  v.detail.resolve:GetScript("OnClick")()
+  t:eq(#SP.Items("resolved", ""), 1, "marked resolved")
+  t:eq(#SP.Items("session", ""), 1, "resolved leaves the session tab")
+  SP.tab, SP.selected = "all", inc.hash
+  SP:Refresh(v)
+  v.detail.copy:GetScript("OnClick")()
+  t:ok(S.Panel.copy:IsShown(), "copy window opens")
+end)

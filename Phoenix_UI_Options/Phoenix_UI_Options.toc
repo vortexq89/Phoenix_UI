@@ -21,6 +21,7 @@ PageView.lua
 Previews.lua
 Dashboard.lua
 ThemePage.lua
+SentinelPage.lua
 StudioModel.lua
 Studio.lua
 Tests\Options_test.lua
