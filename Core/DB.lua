@@ -66,7 +66,13 @@ function DB:Init(svOverride)
   return fresh
 end
 
-function DB:GetRaw(key) return self.profile and self.profile[key] end
+-- Reads fall through the active profile to the base layer (a content profile
+-- stores only its differences from the character's own profile, D-SET-UI).
+function DB:GetRaw(key)
+  local v = self.profile and self.profile[key]
+  if v == nil and self.base then v = self.base[key] end
+  return v
+end
 
 function DB:SetRaw(key, value)
   self.profile[key] = value
@@ -89,8 +95,26 @@ function DB:SetProfile(name)
   sv.chars[self:CharKey()] = name
   self.profileName = name
   self.profile = sv.profiles[name]
+  self.base, self.baseName = nil, nil
   PUI:Log("profile.switch", name)
 end
+
+-- Content switch: activate `name` over the character's own profile without
+-- changing the character's choice. name == nil returns to the base profile.
+function DB:SetContentLayer(name)
+  local sv = self.sv
+  local own = sv.chars[self:CharKey()] or DEFAULT_PROFILE
+  sv.profiles[own] = sv.profiles[own] or {}
+  if name == nil or name == own or not sv.profiles[name] then
+    self.profileName, self.profile, self.base, self.baseName = own, sv.profiles[own], nil, nil
+  else
+    self.profileName, self.profile = name, sv.profiles[name]
+    self.base, self.baseName = sv.profiles[own], own
+  end
+  PUI:Log("profile.layer", self.profileName)
+end
+
+function DB:BaseProfileName() return self.baseName end
 
 local function deepEqual(a, b)
   if a == b then return true end
@@ -104,7 +128,10 @@ DB.DeepEqual = deepEqual
 -- Remove every stored value equal to its schema default (all profiles).
 function DB:StripDefaults()
   local defs = PUI.Schema.defs
-  for _, profile in pairs(self.sv.profiles) do
+  local layered = {}
+  for _, name in pairs(self.sv.contentProfiles or {}) do layered[name] = true end
+  for name, profile in pairs(self.sv.profiles) do
+    if layered[name] then profile = {} end -- a content layer may restate a default on purpose
     for key, value in pairs(profile) do
       local def = defs[key]
       if def and not def.get and deepEqual(value, def.default) then profile[key] = nil end

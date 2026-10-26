@@ -86,11 +86,11 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 | 1.3 | Ticker (no OnUpdate) and CombatQueue | B | Core/Ticker.lua, Core/CombatQueue.lua | — | — |
 | 1.4 | Secret-safe helpers | B | Core/Secret.lua | — | — |
 | 1.5 | Profiles: switch | B | Core/DB.lua `SetProfile`, key `core.profile` | — | — |
-| 1.6 | Profiles: create/copy/rename/delete UI | M | DB has no Copy/Delete/Rename | ElvUI/EUI have full profile managers | M |
+| 1.6 | Profiles: create/copy/rename/delete UI | B (Core/Profiles.lua, Options/ProfilesPage.lua; in-game check pending) | DB has no Copy/Delete/Rename | ElvUI/EUI have full profile managers | M |
 | 1.7 | Spec→profile auto-switch (combat-deferred) | M | none (wizard toggle omitted in PR #14) | EUI, ElvUI (LibDualSpec) | M |
 | 1.8 | Spec overrides inside a profile ("Editing as <spec>") | M | — | EUI | L |
 | 1.9 | Conditional overrides (party/raid/arena/BG/solo/keybind) | M | — | EUI | L |
-| 1.10 | Export/import `!PUI_` (whole, per-module, CDM-only, layout-only), merge/replace, async decode, media reconcile | P | CDM and Embers have their own strings (CooldownManager.lua, Embers.lua); no core serializer | ElvUI/EUI/Wago | L |
+| 1.10 | Export/import `!PUI_` (whole, per-module, CDM-only, layout-only), merge/replace, async decode, media reconcile | P (core `!PUI1!` whole/per-module with checked preview, new/merge/replace built; async decode and media reconcile open) | CDM and Embers have their own strings (CooldownManager.lua, Embers.lua); no core serializer | ElvUI/EUI/Wago | L |
 | 1.11 | Wago UI Packs installer hook | M | — | ElvUI | M |
 | 1.12 | Migrations (scoped, idempotent, stamped) | B | DB:RegisterMigration/RunMigrations | — | — |
 | 1.13 | Public APIs: RegisterPlugin/Skin/DataBlock/OracleProvider/VaultRule/NicknameProvider | P | Core/API.lua registries exist; consumers only partly wired (Skins yes, DataBlock/VaultRule unverified) | — | M |
@@ -259,9 +259,9 @@ Every lint rule above ships with a self-proof fixture that must fail (QDB). Full
 | 2.7 | Vertical bar list for Action Bars (mockup 03) | M | divergence, PR #13 | S |
 | 2.8 | Live previews | P | Previews.lua covers UnitFrames, ActionBars and ResourceBars only. Missing: RaidFrames, Nameplates, CDM, Chat, Tooltip, DataBars, Minimap, Reminders, Embers, Ascent, QuestTracker, Vault | L |
 | 2.9 | Pickers with samples for font/texture/sound | B | Widgets.lua dropdown with previews | — |
-| 2.10 | Border picker, colour picker (HSV, recents, class/accent swatches) | M | no colour type in the schema | M |
-| 2.11 | Keybind capture widget | M | Oracle key is text | S |
-| 2.12 | List editor (reorder), rule editor, aura picker, visibility-rule editor, tag editor | M | lists are stored as text keys (`db.bar1.blocks`, `chat.keywords`, `cc.bindings`, `loadouts.rules`, `wisdom.weights`) | L |
+| 2.10 | Border picker, colour picker (HSV, recents, class/accent swatches) | P (colour type + picker with alpha, accent/class swatches; recents and border picker open) | no colour type in the schema | M |
+| 2.11 | Keybind capture widget | B (conflict note vs Blizzard bindings; binding ledger 1.20 open) | Oracle key is text | S |
+| 2.12 | List editor (reorder), rule editor, aura picker, visibility-rule editor, tag editor | P (list editor and per-content grid built; rule/aura/visibility/tag editors open) | lists are stored as text keys (`db.bar1.blocks`, `chat.keywords`, `cc.bindings`, `loadouts.rules`, `wisdom.weights`) | L |
 | 2.13 | Cog popups / sub-settings per row | M | — | M |
 | 2.14 | Deep links (`/pui options <key>` scroll-to/highlight) | P | page/search only | S |
 | 2.15 | Theme & Media page | B | ThemePage.lua | — |

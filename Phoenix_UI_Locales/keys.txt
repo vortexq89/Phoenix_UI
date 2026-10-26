@@ -226,6 +226,7 @@ Click-cast bindings
 Click-casting
 Closes the talking head popup as it opens.
 Collections
+Colour wash over the settings window glass. Alpha sets how strong it is (0 = none). Glass opacity is in Theme & Media.
 Columns
 Combat log in raids and M+
 Comma-separated blocks in order; empty hides the bar. Blocks: bags, clock, coords, durability, fps, gold, ilvl, latency, location, spec, xp.
@@ -280,6 +281,7 @@ Essential cooldowns: icon size
 Essential cooldowns: per row
 Essential cooldowns: spacing
 Execute marker (%)
+Fade and slide the window and its pages. Turn off for reduced motion.
 Fade idle lines (seconds)
 Fade out of range
 Fades frames of members out of your range.
@@ -496,11 +498,14 @@ Opacity of bar 9 out of combat when fading is on.
 Opacity of out-of-range frames.
 Opacity of the dark background behind Phoenix bars.
 Opacity of the health fill.
+Open key
+Opens at
 Options mode
 Oracle
 Order raid frames by group, by role (tanks, healers, damage), by class or by name.
 Out-of-range opacity
 Outlines your current target's plate in the accent colour.
+Pages shown at the top of the sidebar, in this order.
 Palette key
 Panel opacity
 Party frames
@@ -560,7 +565,9 @@ Phoenix skin for the Settings window.
 Phoenix skin for the Spellbook and talents window.
 Phoenix skin for the Trade window.
 Phoenix skin for the Transmog window.
+Pick, per content type, whether the profile switches and whether a chat line tells you.
 Picks the only dialogue option when there is no quest. Hold Shift to read.
+Pinned pages
 Plate cast bar height
 Plate cast bars
 Plate elite / rare icon
@@ -595,6 +602,7 @@ Portrait beside the frame: off, 2D or 3D.
 Power bar
 Power bar height
 Power hash lines
+Press this key to open or close Phoenix settings. Empty means no key.
 Print event history
 Print every Phoenix event (module changes, setting changes) to chat as it happens. For troubleshooting.
 Private aura slots
@@ -720,6 +728,7 @@ Simple shows the curated settings; Advanced shows every setting.
 Size of each bar.
 Size of each icon.
 Size of the timer window.
+Size of this settings window. Independent of your UI scale.
 Skins
 Skip cinematics
 Skips cinematics and movies. Hold Shift to watch.
@@ -740,6 +749,7 @@ Stacked plates never overlap; overlapping plates stay over their units. Default 
 Status icons
 Studio grid size
 Switch automatically
+Switch profile by content
 Switches to the saved loadout on its own when you zone in (out of combat).
 Taint logging this session
 Taint-safe chat mirror with timestamps, short channels, keyword alerts and copy.
@@ -792,6 +802,7 @@ Turns /combatlog on in raids and Mythic+ and off elsewhere.
 Types the confirmation word when deleting a good item.
 Unit frames
 Upgrade star
+Use the profile you picked for raid, Mythic+, arena and other content automatically. Applies when you enter, never in combat.
 Utility cooldowns
 Utility cooldowns: Phoenix layout
 Utility cooldowns: growth
@@ -809,6 +820,8 @@ What the first window shows. Each window can switch with a click on its title.
 What the left text zone shows.
 What the power text zone shows.
 What the right text zone shows.
+Where the window opens on screen. Dragging the window updates this.
+Where to switch
 Which action page (12 slots) bar 10 shows.
 Which action page (12 slots) bar 2 shows.
 Which action page (12 slots) bar 3 shows.
@@ -831,7 +844,10 @@ Width of the pet frame in pixels.
 Width of the player frame in pixels.
 Width of the target frame in pixels.
 Width of the target of target frame in pixels.
+Window animations
 Window panels
+Window scale
+Window tint
 Wisdom
 Writes the buff name under each icon.
 Writes the item level on equippable items.

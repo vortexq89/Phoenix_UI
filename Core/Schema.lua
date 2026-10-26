@@ -8,7 +8,27 @@ local Schema = { defs = {}, keys = {} }
 PUI.Schema = Schema
 
 local MODES = { simple = true, advanced = true }
-local TYPES = { toggle = "boolean", range = "number", select = "string", text = "string", layout = "table" }
+-- Widget types (one schema for every module and plugin):
+--   toggle, range (slider + typed input), select (dropdown / segmented / media
+--   picker via def.preview), text, keybind ("" or "CTRL-SHIFT-K"), color
+--   ({ r, g, b, a } 0..1), anchor ({ point, relPoint, x, y }), list (array of
+--   strings, def.maxItems), grid ({ [row] = { [column] = bool } } over
+--   def.rows / def.columns, e.g. per-content switches), layout (hidden table).
+local TYPES = { toggle = "boolean", range = "number", select = "string", text = "string", layout = "table",
+  keybind = "string", color = "table", anchor = "table", list = "table", grid = "table" }
+local TABLE_TYPES = { layout = true, color = true, anchor = true, list = true, grid = true }
+Schema.TYPES, Schema.TABLE_TYPES = TYPES, TABLE_TYPES
+local POINTS = { TOPLEFT = true, TOP = true, TOPRIGHT = true, LEFT = true, CENTER = true, RIGHT = true,
+  BOTTOMLEFT = true, BOTTOM = true, BOTTOMRIGHT = true }
+Schema.POINTS = POINTS
+local function unit(v) return type(v) == "number" and v == v and v >= 0 and v <= 1 end
+local function ids(list)
+  if type(list) == "function" then list = list() end
+  local out = {}
+  for i = 1, #(list or {}) do local e = list[i]; out[i] = type(e) == "table" and e.id or e end
+  return out
+end
+Schema.Ids = ids
 
 local function copy(v)
   if type(v) ~= "table" then return v end
@@ -57,6 +77,29 @@ function Schema:Validate(def, value)
     if value ~= value then return false, "not a number" end
     if def.min and value < def.min then return false, "below " .. def.min end
     if def.max and value > def.max then return false, "above " .. def.max end
+  elseif def.type == "keybind" then
+    if value ~= "" and not value:match("^[%u%d%-]+$") then return false, "not a key name" end
+  elseif def.type == "color" then
+    if not (unit(value.r) and unit(value.g) and unit(value.b)) then return false, "r, g and b must be 0..1" end
+    if value.a ~= nil and not unit(value.a) then return false, "alpha must be 0..1" end
+  elseif def.type == "anchor" then
+    if not (POINTS[value.point] and POINTS[value.relPoint or value.point]) then return false, "unknown anchor point" end
+    if type(value.x) ~= "number" or type(value.y) ~= "number" then return false, "x and y must be numbers" end
+  elseif def.type == "list" then
+    local n = 0
+    for k in pairs(value) do n = n + 1; if type(k) ~= "number" then return false, "list keys must be 1..n" end end
+    for i = 1, n do if type(value[i]) ~= "string" then return false, "list items must be text" end end
+    if def.maxItems and n > def.maxItems then return false, "more than " .. def.maxItems .. " items" end
+  elseif def.type == "grid" then
+    local rows, cols = {}, {}
+    for _, r in ipairs(ids(def.rows)) do rows[r] = true end
+    for _, c in ipairs(ids(def.columns)) do cols[c] = true end
+    for r, line in pairs(value) do
+      if not rows[r] or type(line) ~= "table" then return false, "unknown row " .. tostring(r) end
+      for c, on in pairs(line) do
+        if not cols[c] or type(on) ~= "boolean" then return false, "bad cell " .. tostring(r) .. "/" .. tostring(c) end
+      end
+    end
   elseif def.type == "select" then
     local choices = type(def.choices) == "function" and def.choices() or def.choices
     if choices then
@@ -74,7 +117,7 @@ function Schema:Get(key)
   if def.get then return def.get() end
   local v = PUI.DB:GetRaw(key)
   if v == nil then v = def.default end
-  if def.type == "layout" then return copy(v) end
+  if TABLE_TYPES[def.type] then return copy(v) end
   return v
 end
 
@@ -84,18 +127,16 @@ function Schema:Set(key, value)
   if not def then error("unknown setting '" .. tostring(key) .. "'", 2) end
   local ok, why = self:Validate(def, value)
   if not ok then error("invalid value for '" .. key .. "': " .. why, 2) end
-  if def.type == "layout" then
-    value = copy(value)
-    PUI.DB:SetRaw(key, (not PUI.DB.DeepEqual(value, def.default)) and value or nil)
-  elseif def.set then
+  if TABLE_TYPES[def.type] then value = copy(value) end
+  if def.set then
     def.set(value)
-  elseif value == def.default then
+  elseif PUI.DB.DeepEqual(value, def.default) and not (PUI.DB.base and PUI.DB.base[key] ~= nil) then
     PUI.DB:SetRaw(key, nil)
   else
     PUI.DB:SetRaw(key, value)
   end
-  def.apply(value)
-  PUI:Log("setting", key, def.type == "layout" and "<layout>" or value)
+  def.apply(TABLE_TYPES[def.type] and copy(value) or value)
+  PUI:Log("setting", key, TABLE_TYPES[def.type] and ("<" .. def.type .. ">") or value)
   PUI.Kernel:Fire("SETTING_CHANGED", key, value)
 end
 
@@ -127,4 +168,13 @@ end
 function Schema:IsDefault(key)
   local def = self.defs[key]
   return def ~= nil and PUI.DB.DeepEqual(self:Get(key), def.default)
+end
+
+-- Grid helper: is cell (row, column) on? Missing cells read as def.cellDefault (false).
+function Schema:Cell(key, row, column)
+  local v = self:Get(key)
+  local line = v[row]
+  local on = line and line[column]
+  if on == nil then return self.defs[key].cellDefault == true end
+  return on
 end

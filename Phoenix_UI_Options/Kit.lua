@@ -59,11 +59,16 @@ function Kit.Window(frame)
   sh:SetPoint("TOPLEFT", -28, 22)
   sh:SetPoint("BOTTOMRIGHT", 28, -34)
   sh:SetVertexColor(0, 0, 0, 0.85)
-  local fill = frame:CreateTexture(nil, "BACKGROUND", nil, -6)
+  local fill = frame:CreateTexture(nil, "BACKGROUND", nil, -7)
   fill:SetPoint("TOPLEFT", 3, -3)
   fill:SetPoint("BOTTOMRIGHT", -3, 3)
   Theme:PanelFill(fill)
   frame.glassFill = fill
+  local tint = frame:CreateTexture(nil, "BACKGROUND", nil, -6)
+  tint:SetPoint("TOPLEFT", 3, -3)
+  tint:SetPoint("BOTTOMRIGHT", -3, 3)
+  tint:SetColorTexture(0, 0, 0, 0)
+  frame.glassTint = tint
   local edge = Theme:Slice(frame, A.panel, 32, "BACKGROUND", -5)
   edge:SetVertexColor(0.55, 0.57, 0.64, 0.95)
   return fill

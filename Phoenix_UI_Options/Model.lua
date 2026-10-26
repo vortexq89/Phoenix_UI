@@ -8,8 +8,8 @@ Options.Model = Model
 local Schema = PUI.Schema
 
 -- Sidebar order; owners not listed follow alphabetically.
-Model.PAGE_ORDER = { "Core", "Theme", "Options", "Studio", "Sentinel" }
-Model.PAGE_LABEL = { Core = "General", Theme = "Theme & media", Options = "Options window", Studio = "Studio", Sentinel = "Sentinel" }
+Model.PAGE_ORDER = { "Core", "Theme", "Profiles", "Options", "Studio", "Sentinel" }
+Model.PAGE_LABEL = { Core = "General", Theme = "Theme & media", Options = "Window", Profiles = "Profiles", Studio = "Studio", Sentinel = "Sentinel" }
 
 function Model.Mode()
   return Schema:Get("options.mode")
@@ -124,6 +124,15 @@ function Model.Format(def, value)
     if step >= 0.1 then return string.format("%.1f", value) end
     return string.format("%.2f", value)
   end
+  if def.type == "keybind" then return value == "" and "Not bound" or value end
+  if def.type == "color" then
+    return string.format("#%02X%02X%02X", value.r * 255 + 0.5, value.g * 255 + 0.5, value.b * 255 + 0.5)
+      .. ((value.a and value.a < 1) and string.format(" %d%%", value.a * 100 + 0.5) or "")
+  end
+  if def.type == "anchor" then return string.format("%s %d, %d", value.point, value.x, value.y) end
+  if def.type == "list" then return #value == 0 and "Empty" or (#value .. " item(s)") end
+  if def.type == "grid" then return "Per content" end
+  if type(value) == "table" then return "Custom" end
   return tostring(value)
 end
 

@@ -42,7 +42,10 @@ end
 Widgets.ChoiceLabel = choiceLabel
 
 -- Controls ------------------------------------------------------------------
+-- build[type](row, def) creates row.control and row:Show_(value). Controls.lua
+-- adds color, keybind, anchor, list and grid; plugins use the same table.
 local build = {}
+Widgets.build = build
 
 function build.toggle(row)
   local c = Kit.Toggle(row, function(v) Model.Commit(row.key, v) end)
@@ -180,8 +183,7 @@ local function menuRow(i)
   return r
 end
 
-function Widgets.OpenChoices(anchor, key)
-  local def = Schema:Def(key)
+local function ensureMenu()
   if not menu then
     menu = CreateFrame("Frame", "PhoenixUIOptionsChoices", UIParent)
     menu:SetFrameStrata("FULLSCREEN_DIALOG")
@@ -203,19 +205,24 @@ function Widgets.OpenChoices(anchor, key)
     menu.scroll, menu.content, menu.rows = scroll, content, {}
     tinsert(UISpecialFrames, "PhoenixUIOptionsChoices")
   end
-  local choices = Model.Choices(def)
-  local current = Schema:Get(key)
+  return menu
+end
+
+-- Generic pick list: values, a label(value) function, the checked value and
+-- onPick(value). def (optional) adds font / texture / sound samples.
+function Widgets.OpenMenu(anchor, choices, label, current, onPick, def)
+  ensureMenu()
   for i = 1, math.max(#choices, #menu.rows) do
     local r = menuRow(i)
     local value = choices[i]
     if value ~= nil then
-      r.text:SetText(choiceLabel(def, value))
+      r.text:SetText(label(value))
       r.text:ClearAllPoints()
       r.text:SetPoint("LEFT", 10, 0)
       r.text:SetPoint("RIGHT", -24, 0)
-      Widgets.Preview(r, def, value)
+      if def then Widgets.Preview(r, def, value) else r.text:SetFontObject(Kit.FontObject("label")); r.sample:Hide(); r.previewSound = nil end
       r.check:SetShown(value == current)
-      r:SetScript("OnClick", function() menu:Hide(); Model.Commit(key, value) end)
+      r:SetScript("OnClick", function() menu:Hide(); onPick(value) end)
       r:Show()
     else
       r:Hide()
@@ -229,6 +236,13 @@ function Widgets.OpenChoices(anchor, key)
   menu:SetClampedToScreen(true)
   menu:Show()
   Widgets.popup = menu
+  return menu
+end
+
+function Widgets.OpenChoices(anchor, key)
+  local def = Schema:Def(key)
+  return Widgets.OpenMenu(anchor, Model.Choices(def), function(v) return choiceLabel(def, v) end, Schema:Get(key),
+    function(v) Model.Commit(key, v) end, def)
 end
 
 -- Rows -------------------------------------------------------------------------
@@ -257,12 +271,23 @@ function Widgets.Row(parent, key)
   row.sub:SetPoint("RIGHT", -330, 0)
   row.sub:SetWordWrap(false)
   row.sub:SetText(PUI.L[def.tooltip])
+  row.hover = hover
   row:SetScript("OnEnter", function(self) hover:Show(); showHelp(self) end)
   row:SetScript("OnLeave", function() hover:Hide(); GameTooltip:Hide() end)
   row:SetScript("OnMouseUp", function(self, button)
     if button == "RightButton" then Schema:Reset(self.key) end
   end)
   build[def.type](row, def)
+  if row.stacked then -- tall controls sit under the label, full width
+    row.sub:SetPoint("RIGHT", -14, 0)
+    row.label:ClearAllPoints()
+    row.label:SetPoint("TOPLEFT", 14, -10)
+    row.sub:ClearAllPoints()
+    row.sub:SetPoint("TOPLEFT", 14, -28)
+    row.sub:SetPoint("RIGHT", -14, 0)
+    row.dot:ClearAllPoints()
+    row.dot:SetPoint("TOPLEFT", 2, -15)
+  end
   function row:Refresh()
     self:Show_(Schema:Get(self.key))
     if Model.IsChanged(self.key) then self.dot:Show() else self.dot:Hide() end
