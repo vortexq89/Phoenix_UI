@@ -1,6 +1,6 @@
 ## Interface: 120100, 120105, 16001
 ## Title: Phoenix UI - Group Finder
-## Notes: Phoenix UI group finder: leader score colours, missing roles, role fit, declined-group memory, rating filter and new-group sound.
+## Notes: Phoenix UI group finder: filter builder with why-hidden count, sorted list, row colours, role indicators, queue helper (role checks, sign-up, Enter button).
 ## Author: VortexQ8
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
@@ -10,5 +10,10 @@
 ## Group: Phoenix_UI
 ## Dependencies: Phoenix_UI
 
+Expr.lua
+Data.lua
+Filters.lua
 GroupFinder.lua
+Panel.lua
+QueueHelper.lua
 Tests\GroupFinder_test.lua

@@ -607,7 +607,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Study additions (§16, 2026-10-26):**
   - Categories by Enum.ItemClass; bag ranges from Constants.InventoryConstants; keyed on links/IDs, names filled later; seed flags in the same scope as data (G8); one pin semantic; gold wipe needs confirm; restore path and trim.
 
-### 5.12 Flow — 21 keys (spec ~40)
+### 5.12 Flow — step 9a built (Flow.lua, Quiet.lua; 21 keys + conflict choice)
 
 - **B:** repair, sell junk, release, accept res/invites, decline duels/guild, skip cinematics, auto delete, gossip, quick loot, hide errors, hide talking head, durability warn, max camera, combat log, countdown, `/rl`, `/cd`.
 - **M (about 19 items):**
@@ -618,6 +618,8 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Tab binder;
   - screenshot on achievement;
   - WindTools-harvest list (spec 23).
+
+- **Step 9a status:** Quiet mode built as the one row set (talking heads, movies/cinematics, toasts, boss emotes, error speech, SFX during bosses, music, accept res): grid per content type, all OFF at first install, per-instance override list (`instanceID:option=on|off`, `/pui quiet here`), sound options via the CVar ledger, soft conflict choice with BigWigs. Auto combat logging per content (owner; never stops a log Flow did not start). `/pui cd` moved to Raid Tools; migration `0009a_flow_quiet` carries the old single switches into Quiet mode cells and the /cd choice to `rt.slash`. **Deferred:** leave-queue popups, open containers, Train All, tutorials/banners, `/gg`, queue protection, Tab binder, screenshot on achievement.
 
 ### 5.13 Reminders — step 8c built (Reminders.lua, Pack.lua v2; 15 keys)
 
@@ -667,6 +669,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **GroupFinder:**
   - **B:** role fit, rating, missing roles, declined memory, dim, sound, PGF stand-down.
   - **M:** filter presets per dungeon, quick signup on Enter, persistent note (verify).
+  - **Step 9a status (Expr.lua, Data.lua, Filters.lua, GroupFinder.lua, Panel.lua, QueueHelper.lua; 184 keys):** filter builder per category (dungeon, raid, delve, arena, RBG, custom) whose chips generate a readable expression; own expression language with plain-word validation, did-you-mean, autocomplete and a searchable word list (season dungeon words learned live); hidden-count line with per-chip why-hidden counts and click-to-relax; Phoenix docked panel with its own sorted list (density, compact view, dock left/right/detached, scale), applications count and your keystone (read from Ascent); row colours, role indicators (fixed order, class bar, leader crown), best key, age, structured tooltip section; presets (`/pui lfg save|filter|why`); opt-in 'also narrow Blizzard's search' with your filter restored. Queue helper: role-check accept, sign-up confirm (Shift bypass) and double-click sign-up ON by default with the taint note as info; one role-per-spec setting (manual / auto / own list); role bar with locks; big Enter button and countdown bar from PUI.Queue (never pressed for you); keyword auto-invite (friends/guild only). Persistent sign-up note dropped: Blizzard's free-text boxes cannot be written by addons. Conflict notice: PGF (hard), AutoQueue (soft, queue helper only). **Deferred:** raid boss-defeated/lockout filters (no encounter API for search results in the catalog), cancel-oldest button (`C_LFGList.CancelApplication` not in the catalog), Raider.IO variables and region badge, plugin sort hooks, click-to-insert word list, Studio mover for the detached panel.
 
 - **Study additions (§16, 2026-10-26):**
   - **GroupFinder filters:** visual filter builder (role counts, rating sliders, lockout, friends) that *generates* an expression; optional expression field with plain-text validation; sort picker with stable comparator; delve tiers, raid bosses, group age, new/declined colouring; decorates our own overlay rows, never writes Blizzard results/decline tables (G14); cached activity map by ID; read-only in restricted states.
@@ -728,7 +731,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | **Arena Frames** (spec icons, trinkets/racials gated by issecretvalue probe, DR, dampening, test mode, layouts, "no longer possible" list) | M (paused) | 6.9 | XL |
 | **Spark** SCT (C_CombatText; scroll areas, animations, merge, school colours, notifications; MSBT stand-down) | M (paused) | 6.10 | L |
 | **Cast History** (new; spell-history strip or fading icons; castGUID-keyed state machine start/channel/empower/succeed/stop/interrupted with secret-safe early-out; pooled icon ring; blocklist picker by ID; "where to show" via 1.19; Studio mover; Core profiles only; owns spell history for Embers too) | M | — | M |
-| Raid Tools (markers, ready check, pull, notes ooc) | M | 22.13 | M |
+| Raid Tools (markers, ready check, pull, notes ooc) — **step 9a built** (Phoenix_UI_RaidTools: RaidTools.lua, Stats.lua; 19 keys): owner of pull/break/key countdowns and `/pui cd` (shared state, Kernel `COUNTDOWN` for Pulse), target + secure world markers bar, ready check with summary, encounter stats (kills, wipes, best, last vs best, wipe trend, CSV export, boss-mod stand-down). Deferred: notes out of combat, boss-frame tooltip line, stats window | B | 22.13 | M |
 
 **Deepened Tier 1 entries (§16):**
 - **Pulse:** `C_EncounterTimeline` natively, never index-walking a fixed timer list (so a fight that outruns the list still warns); active only without a boss mod. With BigWigs loaded: stand down, keep its encounter frames and CVars (excluded from the CVar ledger), offer the BigWigs bar-style/profile bridge. Countdowns cancel their own timers only; emphasised fade honours settings.
@@ -755,7 +758,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 7. Minimap button flyout and own buttons.
 8. Profiles manager, export/import, spec auto-switch, overrides.
 9. Studio resize/scale, anchors to elements, multi-select, templates, layout export, Edit Mode hand-off.
-10. Pulse, Arena, Spark, Raid Tools.
+10. Pulse, Arena, Spark (Raid Tools built in step 9a).
 11. Arabic locale and real translations.
 12. Plugin system (build last).
 13. Forever child.

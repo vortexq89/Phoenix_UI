@@ -887,6 +887,108 @@ function Previews.Reminders(card)
   st(card).rmIcons = math.min(8, #sample)
 end
 
+-- Group Finder: sample rows through the module's own filter, row text, row
+-- colours and count line, so the preview shows exactly what the filter keeps.
+function Previews.GroupFinder(card)
+  local GF = PUI.GroupFinder
+  if not GF then return end
+  local h = hudHolder(card, "gf")
+  h.lines = rawget(h, "lines") or {}
+  local act = { name = "Ara-Kara", mplus = true, maxPlayers = 5, category = "dungeon" }
+  local function sample(id, score, t, he, d, age, extra)
+    local v = { mprating = score, tanks = t, heals = he, dps = d, members = t + he + d, age = age, bestkey = 12, pvprating = 0,
+      partyfit = d < 3, delisted = false, mythicplus = true, declined = false, new = false, hasbl = d > 1, needbl = d <= 1, friends = 0 }
+    for k, x in pairs(extra or {}) do v[k] = x end
+    return { id = id, vars = v, meta = { activity = act, classes = {} } }
+  end
+  local rows = { sample(1, 3105, 1, 1, 1, 2, { new = true }), sample(2, 2890, 1, 0, 2, 6), sample(3, 2710, 0, 1, 3, 14),
+    sample(4, 3010, 1, 1, 1, 1, { declined = true }), sample(5, 2400, 1, 0, 1, 22), sample(6, 2050, 1, 1, 2, 9) }
+  local cat = "dungeon"
+  local shown, why = GF.Filters.Evaluate(cat, rows, GF.FilterGet)
+  shown = GF.Filters.Sort(shown, GF.FilterGet(cat, "sort"))
+  local out = { { GF.Filters.CountLine(#shown, #rows, why), "small" } }
+  local built = GF.Filters.BuildExpression(cat, GF.FilterGet)
+  out[#out + 1] = { "|cff9ad0ff" .. (built ~= "" and built or "no chips set") .. "|r", "small" }
+  for i = 1, math.min(6, #shown) do
+    local l, r = GF.Panel.RowText(shown[i])
+    local c = GF.RowColor({ declined = shown[i].vars.declined, vars = shown[i].vars, new = shown[i].vars.new })
+    local hex = c and string.format("|cff%02x%02x%02x", c.r * 255, c.g * 255, c.b * 255) or ""
+    out[#out + 1] = { hex .. l .. (hex ~= "" and "|r" or "") .. "   " .. r, "small" }
+  end
+  for i, x in ipairs(out) do
+    local fs = line(h, h.lines, i, x[2])
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 18)
+    fs:SetText(x[1])
+  end
+  hideFrom(h.lines, #out)
+  st(card).gfLines = #out
+  st(card).gfShown = #shown
+end
+
+-- Flow: the Quiet mode grid as it applies here and now, per content type.
+function Previews.Flow(card)
+  local FL = PUI.Flow
+  local QM = FL and FL.Quiet
+  if not QM then return end
+  local h = hudHolder(card, "flow")
+  h.lines = rawget(h, "lines") or {}
+  local cols = PUI.Profiles.CONTENT
+  local head = "Quiet mode       "
+  for _, c in ipairs(cols) do head = head .. c:sub(1, 4) .. " " end
+  local out = { head }
+  local on = 0
+  for _, o in ipairs(QM.OPTIONS) do
+    local row = string.format("%-16s ", o.id)
+    for _, c in ipairs(cols) do
+      local v = QM.Cell(o.id, c, nil)
+      if v then on = on + 1 end
+      row = row .. (v and "|cff40ff40 on |r " or "|cff606060 -- |r ")
+    end
+    out[#out + 1] = row
+  end
+  out[#out + 1] = string.format("%d overrides for single instances", #(PUI.Schema:Get("flow.quiet.instances") or {}))
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, "small")
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 16)
+    fs:SetText(text)
+  end
+  hideFrom(h.lines, #out)
+  st(card).flowOn = on
+end
+
+-- Raid Tools: the bar layout and the stats card with sample pulls.
+function Previews.RaidTools(card)
+  local RT = PUI.RaidTools
+  if not RT then return end
+  local S = RT.settings
+  local h = hudHolder(card, "rt")
+  h.lines = rawget(h, "lines") or {}
+  local parts = {}
+  if S.markers then parts[#parts + 1] = "8 target markers" end
+  if S.worldMarkers then parts[#parts + 1] = "8 world markers + clear" end
+  if S.readyButton then parts[#parts + 1] = "Ready" end
+  if S.pullButton then parts[#parts + 1] = "Pull " .. S.pullSeconds .. "s / Break " .. S.breakMinutes .. "m" end
+  local e = { name = "Vexie", kills = 4, wipes = 31, best = 342, longestWipe = 301, last = { seconds = 350, success = true, prevBest = 342 },
+    history = { { s = 130, ok = false, t = 1761500000 }, { s = 210, ok = false, t = 1761590000 }, { s = 301, ok = false, t = 1761680000 } } }
+  local out = {
+    "Bar (" .. S.bar .. "): " .. (#parts > 0 and table.concat(parts, "  |  ") or "empty"),
+    "Pull countdown preview: Pull " .. S.pullSeconds,
+    "Encounter stats" .. (RT.Stats.settings.enabled and "" or " (off)"),
+    "Vexie  Mythic  kills 4  wipes 31  best 5:42   " .. RT.Stats.Compare(e),
+    RT.Stats.TrendText(e),
+  }
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, i == 3 and "header" or "small")
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 18)
+    fs:SetText(text)
+  end
+  hideFrom(h.lines, #out)
+  st(card).rtLines = #out
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {}, st(card).cdm or {} }) do
     for _, f in pairs(list) do f:Hide() end
@@ -912,7 +1014,7 @@ end
 
 -- wrap builders so switching page/tab always starts clean
 for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars", "Chat", "Vault",
-  "Embers", "Ascent", "QuestTracker", "Reminders" }) do
+  "Embers", "Ascent", "QuestTracker", "Reminders", "GroupFinder", "Flow", "RaidTools" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end

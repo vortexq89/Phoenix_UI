@@ -723,7 +723,7 @@ C_Item.GetItemInfoInstant = function(id) if type(id) == "string" then return 1, 
 H.equipped = {}
 function GetInventoryItemLink(unit, slot) return H.equipped[slot] end
 local baseInstance = GetInstanceInfo
-function GetInstanceInfo() if H.instanceInfo then return unpack(H.instanceInfo) end return baseInstance() end
+function GetInstanceInfo() if H.instanceInfo then return unpack(H.instanceInfo, 1, 8) end return baseInstance() end
 H.specIndex = 1
 C_SpecializationInfo.GetSpecialization = function() return H.specIndex end
 C_SpecializationInfo.SetSpecialization = function(i) H.calls[#H.calls + 1] = { "SetSpecialization", i }; H.specIndex = i; return true end
@@ -737,8 +737,10 @@ C_EquipmentSet = { GetEquipmentSetIDs = function() return { 1, 2 } end,
 H.lfg = {}
 C_LFGList = {
   HasSearchResultInfo = function(id) return H.lfg[id] ~= nil end,
-  GetSearchResultInfo = function(id) local r = H.lfg[id]; return r and { leaderName = r.leader, leaderOverallDungeonScore = r.score, numMembers = #r.roles } end,
-  GetSearchResultPlayerInfo = function(id, i) local r = H.lfg[id]; return r and { assignedRole = r.roles[i] } end,
+  GetSearchResultInfo = function(id) local r = H.lfg[id]; return r and { leaderName = r.leader, leaderOverallDungeonScore = r.score, numMembers = #r.roles,
+    activityIDs = { r.activity or 1 }, age = r.age or 0, isDelisted = r.delisted == true, numBNetFriends = r.friends or 0, numCharFriends = 0, numGuildMates = 0,
+    voiceChat = r.voice or "", requiredItemLevel = r.ilvl or 0, leaderDungeonScoreInfo = r.best and { { bestRunLevel = r.best } } or nil } end,
+  GetSearchResultPlayerInfo = function(id, i) local r = H.lfg[id]; return r and { assignedRole = r.roles[i], classFilename = r.classes and r.classes[i], isLeader = i == 1 } end,
   GetSearchResults = function() local t = {}; for id in pairs(H.lfg) do t[#t + 1] = id end; table.sort(t); return #t, t end,
   GetAdvancedFilter = function() return H.lfgFilter or { minimumRating = 0, needsTank = false, needsHealer = false, needsDamage = false } end,
   SaveAdvancedFilter = function(f) H.lfgFilter = f end,
@@ -980,6 +982,36 @@ C_QuestLog.IsQuestTrivial = function() return false end
 C_QuestLog.IsRepeatableQuest = function() return false end
 C_QuestLog.GetLogIndexForQuestID = function(id) return id end
 C_QuestLog.RemoveQuestWatch = function(id) H.removedWatch = id end
+
+-- Step 9a: Flow quiet mode, Raid Tools, Group Finder queue helper.
+local function rec(name) return function(...) H.calls[#H.calls + 1] = { name, ... }; return H.ret and H.ret[name] end end
+for _, n in ipairs({ "SetRaidTarget", "CompleteLFGRoleCheck", "AcceptProposal", "RaidNotice_Clear", "AcceptBattlefieldPort",
+  "LFGListSearchPanel_SelectResult", "LFGListSearchPanel_SignUp" }) do _G[n] = rec(n) end
+C_PartyInfo.DoReadyCheck = rec("DoReadyCheck")
+C_PartyInfo.CanInvite = function() return true end
+C_PartyInfo.InviteUnit = rec("InviteUnit")
+function UnitIsGroupAssistant() return H.assist == true end
+function GetNumSubgroupMembers() return H.group and #H.group or 0 end
+H.lfgRoles = { false, false, false, true }
+function GetLFGRoles() return unpack(H.lfgRoles) end
+function SetLFGRoles(l, t, h, d) H.lfgRoles = { l, t, h, d }; H.calls[#H.calls + 1] = { "SetLFGRoles", l, t, h, d } end
+function GetAvailableRoles() return H.availRoles and H.availRoles[1], H.availRoles and H.availRoles[2], H.availRoles and H.availRoles[3] end
+H.activities = {}
+C_LFGList.GetActivityInfoTable = function(id) return H.activities[id] end
+C_LFGList.GetActivityGroupInfo = function(id) return H.activityGroups and H.activityGroups[id] end
+function LFGListApplicationDialog_Show(dialog, resultID) H.dialogShown = resultID end
+LFGListApplicationDialog = CreateFrame("Frame", "LFGListApplicationDialog", UIParent)
+LFGListApplicationDialog.SignUpButton = CreateFrame("Button", nil, LFGListApplicationDialog)
+LFGListApplicationDialog.SignUpButton.IsEnabled = function() return true end
+LFGListApplicationDialog.SignUpButton.Click = function() H.signUpClicked = (H.signUpClicked or 0) + 1 end
+AlertFrame = CreateFrame("Frame", "AlertFrame", UIParent)
+AlertFrame.AddAlertFrame = function() end
+RaidBossEmoteFrame = CreateFrame("MessageFrame", "RaidBossEmoteFrame", UIParent)
+function RaidNotice_AddMessage() end
+H.cvars.Sound_EnableErrorSpeech = "1"
+H.cvars.Sound_EnableSFX = "1"
+H.cvars.Sound_EnableMusic = "1"
+SOUNDKIT.READY_CHECK = 8960
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,

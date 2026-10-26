@@ -22,6 +22,7 @@ move-folders:
   Phoenix_UI/Phoenix_UI_Oracle: Phoenix_UI_Oracle
   Phoenix_UI/Phoenix_UI_Wisdom: Phoenix_UI_Wisdom
   Phoenix_UI/Phoenix_UI_Loadouts: Phoenix_UI_Loadouts
+  Phoenix_UI/Phoenix_UI_RaidTools: Phoenix_UI_RaidTools
   Phoenix_UI/Phoenix_UI_GroupFinder: Phoenix_UI_GroupFinder
   Phoenix_UI/Phoenix_UI_Locales: Phoenix_UI_Locales
   Phoenix_UI/Phoenix_UI_Media: Phoenix_UI_Media
