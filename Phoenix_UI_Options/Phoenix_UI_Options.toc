@@ -14,6 +14,7 @@
 Model.lua
 Assets.lua
 Kit.lua
+Dialogs.lua
 Widgets.lua
 Controls.lua
 Nav.lua
@@ -29,3 +30,4 @@ Studio.lua
 Tests\Options_test.lua
 Tests\Studio_test.lua
 Tests\Controls_test.lua
+Tests\Dialogs_test.lua

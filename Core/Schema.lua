@@ -115,6 +115,10 @@ function Schema:Get(key)
   local def = self.defs[key]
   if not def then error("unknown setting '" .. tostring(key) .. "'", 2) end
   if def.get then return def.get() end
+  if def.overridable and PUI.Overrides then -- condition > spec > profile > default (G9)
+    local ov = PUI.Overrides:Lookup(key)
+    if ov ~= nil then return TABLE_TYPES[def.type] and copy(ov) or ov end
+  end
   local v = PUI.DB:GetRaw(key)
   if v == nil then v = def.default end
   if TABLE_TYPES[def.type] then return copy(v) end
@@ -128,6 +132,12 @@ function Schema:Set(key, value)
   local ok, why = self:Validate(def, value)
   if not ok then error("invalid value for '" .. key .. "': " .. why, 2) end
   if TABLE_TYPES[def.type] then value = copy(value) end
+  local ov = PUI.Overrides
+  if def.overridable and ov and ov.editing then -- "Editing as <spec/condition>"
+    ov:Set(ov.editing.layer, ov.editing.id, key, value)
+    PUI.Kernel:Fire("SETTING_CHANGED", key, value)
+    return
+  end
   if def.set then
     def.set(value)
   elseif PUI.DB.DeepEqual(value, def.default) and not (PUI.DB.base and PUI.DB.base[key] ~= nil) then
@@ -138,6 +148,22 @@ function Schema:Set(key, value)
   def.apply(TABLE_TYPES[def.type] and copy(value) or value)
   PUI:Log("setting", key, TABLE_TYPES[def.type] and ("<" .. def.type .. ">") or value)
   PUI.Kernel:Fire("SETTING_CHANGED", key, value)
+end
+
+-- Provenance for the settings row: "default", "profile", "base" (content
+-- profile falls through to the character's own), "spec:N" or "cond:<name>".
+function Schema:Source(key)
+  local def = self.defs[key]
+  if not def then return nil end
+  if def.get then return "character" end
+  if def.overridable and PUI.Overrides then
+    local v, src = PUI.Overrides:Lookup(key)
+    if v ~= nil then return src end
+  end
+  local db = PUI.DB
+  if db.profile and db.profile[key] ~= nil then return "profile" end
+  if db.base and db.base[key] ~= nil then return "base" end
+  return "default"
 end
 
 function Schema:ApplyAll()
