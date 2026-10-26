@@ -11,13 +11,18 @@ local function hex(s)
 end
 
 -- Brand tokens (5.2) and semantic roles (18.1).
+-- Design spec v1 section 2: bg0-3, text/text2/muted, acc/acc2/gold, states.
 local TOKENS = {
-  flame = "FF5500", ember = "FF7D0A", spark = "FFD700", ash = "121212", smoke = "1E1E1E", void = "FF0044", life = "20FF20",
-  ["surface.0"] = "0E0E10", ["surface.1"] = "161618", ["surface.2"] = "1E1E22", line = "2A2A2F",
-  ["text.primary"] = "F2F2F2", ["text.secondary"] = "A0A0A8", danger = "FF0044", success = "20FF20",
+  flame = "FF5500", ember = "FF7A1A", spark = "F4C46A", ash = "121212", smoke = "1E1E1E", void = "FF5468", life = "3DDC97",
+  frost = "5AB4FF", arcane = "B07CFF",
+  bg0 = "0A0B0E", bg1 = "101217", bg2 = "161820", bg3 = "1D2029",
+  ["surface.0"] = "0E0F14", ["surface.1"] = "101217", ["surface.2"] = "1D2029", line = "2A2C33", line2 = "34363E",
+  ["text.primary"] = "ECE8E2", ["text.secondary"] = "B9B6B0", muted = "7D808B",
+  acc2 = "FFA94D", gold = "F4C46A", ok = "3DDC97", warn = "FFC24B", err = "FF5468", info = "5AB4FF",
+  danger = "FF5468", success = "3DDC97",
 }
 Theme.TOKENS = TOKENS
-Theme.ACCENTS = { "ember", "flame", "spark", "void", "life", "class" }
+Theme.ACCENTS = { "ember", "flame", "spark", "void", "life", "frost", "arcane", "class" }
 
 local accent = { hex(TOKENS.ember) }
 Theme.accent = accent
@@ -114,4 +119,17 @@ function Theme:Outline(frame, token, alpha)
   edge("TOPLEFT", "BOTTOMLEFT", 1, nil)
   edge("TOPRIGHT", "BOTTOMRIGHT", 1, nil)
   return edges
+end
+
+-- Nine-slice surface from a design texture (Phoenix_UI_Media). margin is in
+-- texture pixels; the art is drawn at 2x, so the UI margin is half of it.
+local SLICE_STRETCHED = 0
+function Theme:Slice(frame, texture, margin, layer, sub)
+  local t = frame:CreateTexture(nil, layer or "BACKGROUND", nil, sub)
+  t:SetAllPoints()
+  t:SetTexture(texture)
+  local mode = rawget(_G, "Enum") and Enum.UITextureSliceMode and Enum.UITextureSliceMode.Stretched or SLICE_STRETCHED
+  t:SetTextureSliceMargins(margin, margin, margin, margin)
+  t:SetTextureSliceMode(mode)
+  return t
 end

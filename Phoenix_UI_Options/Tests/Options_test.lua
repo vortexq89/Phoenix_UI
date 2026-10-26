@@ -66,3 +66,32 @@ Tests:Add("Options", "window renders, switches mode and refreshes rows live", fu
   Options:Render()
   t:ok(Options.rows["studio.gridSize"]:IsShown(), "search shows advanced matches too")
 end)
+
+Tests:Add("Options", "dashboard, module pages, previews and theme page render live", function(t)
+  Options:Open("Dashboard")
+  t:ok(Options.views.dashboard:IsShown(), "dashboard is the home page")
+  local mods = Options.Dashboard.Modules()
+  t:ok(#mods > 5, "module cards listed")
+  local tabs = Options.PageView.Tabs({ "uf.player.width", "uf.player.height", "uf.target.width", "uf.target.height", "uf.absorbs" })
+  t:eq(#tabs, 3, "general + player + target tabs")
+  t:eq(tabs[2].label, "Player", "tab label")
+  for _, page in ipairs({ "UnitFrames", "ActionBars", "ResourceBars" }) do
+    if Model.Page(Model.Mode(), page) then
+      Options:Open(page)
+      t:ok(Options.views.page:IsShown(), page .. " page shown")
+      t:ok(Options.views.page.previewCard:IsShown(), page .. " has a live preview")
+      Schema:Set("bars.texture", "Phoenix Smooth")
+      Schema:Set("bars.texture", "flat")
+    end
+  end
+  Options:Open("Theme")
+  t:ok(Options.views.theme:IsShown(), "theme page shown")
+  Model.Commit("theme.accent", "frost")
+  t:eq(Schema:Get("theme.accent"), "frost", "accent swatch commits")
+  Model.Commit("theme.accent", "ember")
+  Options.frame.search:SetText("font")
+  Options:Render()
+  t:ok(not Options.views.theme:IsShown(), "search replaces the page")
+  Options.frame.search:SetText("")
+  Options.frame:Hide()
+end)

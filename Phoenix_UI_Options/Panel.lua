@@ -1,89 +1,111 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- Options window (PUI_V2 18.2): sidebar of pages, search, Simple/Advanced
--- switch, Studio button, rows rendered from the schema, footer with version,
--- reset-page and the Sentinel status dot. Every change applies live; the
--- window re-renders on SETTING_CHANGED and on the mode switch.
-local Options, Theme, Widgets = PUI.Options, PUI.Theme, PUI.Options.Widgets
-local Model, Schema = Options.Model, PUI.Schema
+-- Options window (design mockups 01-04): glass window 1420x860, header
+-- (mark, search with Ctrl K hint, Simple/Advanced, profile chip, close),
+-- grouped sidebar with colour icons and status dots, and a content host that
+-- shows the Dashboard, a module page (tabs, settings, live preview) or the
+-- Theme & Media page. Every change applies live through the schema.
+local Options, Theme = PUI.Options, PUI.Theme
+local Model, Schema, Kit, A, Nav = Options.Model, PUI.Schema, Options.Kit, Options.Assets, Options.Nav
 
-local W, H, SIDEBAR, TOP = 980, 640, 190, 52
+local W, H, SIDEBAR, TOP = 1420, 860, 248, 72
+Options.SIZE = { W = W, H = H, SIDEBAR = SIDEBAR, TOP = TOP }
+Options.page = "Dashboard"
 
-local function buildSidebar(f)
-  local side = CreateFrame("Frame", nil, f)
-  side:SetPoint("TOPLEFT", 0, -TOP)
-  side:SetPoint("BOTTOMLEFT", 0, 34)
-  side:SetWidth(SIDEBAR)
-  Theme:Backdrop(side, "surface.1")
-  side.buttons = {}
-  f.side = side
-end
+local function buildHeader(f)
+  local mark = Kit.Icon(f, A.logo, 36)
+  mark:SetPoint("TOPLEFT", 22, -18)
+  local title = Kit.Text(f, "title", "text.primary")
+  title:SetPoint("TOPLEFT", mark, "TOPRIGHT", 10, -1)
+  title:SetText("PHOENIX |cffff7a1aUI|r")
+  local ver = Kit.Text(f, "small", "muted")
+  ver:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -2)
+  ver:SetText("v" .. (C_AddOns.GetAddOnMetadata(PUI.ADDON_NAME, "Version") or "?") .. "  |  " .. (PUI.IS_FOREVER and "Forever" or "Midnight"))
+  f.versionText = ver
 
-local function buildTop(f)
-  local title = Widgets.Font(f:CreateFontString(nil, "OVERLAY"), "header")
-  title:SetPoint("TOPLEFT", 16, -16)
-  title:SetText("PHOENIX UI")
-  Theme:Paint(title, "accent", 1, "text")
+  local search = CreateFrame("EditBox", "PhoenixUIOptionsSearch", f)
+  search:SetSize(420, 34)
+  search:SetPoint("TOPLEFT", SIDEBAR + 24, -19)
+  search:SetAutoFocus(false)
+  search:SetFontObject(Kit.FontObject("label"))
+  search:SetTextInsets(14, 70, 0, 0)
+  local sbg = Theme:Slice(search, A.control, 20)
+  sbg:SetVertexColor(0.06, 0.07, 0.09, 1)
+  local hint = Kit.Text(search, "small", "muted")
+  hint:SetPoint("LEFT", 14, 0)
+  hint:SetText("Search " .. #Schema.keys .. " settings...")
+  local kbd = Kit.Badge(search, "Ctrl K", "neutral")
+  kbd:SetPoint("RIGHT", -8, 0)
+  search:SetScript("OnTextChanged", function(self, user)
+    hint:SetShown(self:GetText() == "")
+    if user then Options:Render() end
+  end)
+  search:SetScript("OnEscapePressed", function(self) self:SetText(""); self:ClearFocus(); Options:Render() end)
+  f.search = search
+
+  local close = CreateFrame("Button", nil, f)
+  close:SetSize(30, 30)
+  close:SetPoint("TOPRIGHT", -18, -21)
+  close.x = Kit.Text(close, "title", "muted")
+  close.x:SetPoint("CENTER")
+  close.x:SetText("x")
+  close:SetScript("OnClick", function() f:Hide() end)
+
+  f.chip = Kit.Button(f, "", 190, function() Options:Open("Options") end, "secondary")
+  f.chip:SetPoint("RIGHT", close, "LEFT", -12, 0)
+  f.chip:SetHeight(34)
+  f.chip.avatar = f.chip:CreateTexture(nil, "ARTWORK")
+  f.chip.avatar:SetSize(20, 20)
+  f.chip.avatar:SetPoint("LEFT", 8, 0)
+  f.chip.label:ClearAllPoints()
+  f.chip.label:SetPoint("LEFT", f.chip.avatar, "RIGHT", 8, 0)
+
+  f.mode = Kit.Segmented(f, { "simple", "advanced" }, { "Simple", "Advanced" }, function(v) Model.Commit("options.mode", v) end)
+  f.mode:SetPoint("RIGHT", f.chip, "LEFT", -12, 0)
+
   f:EnableMouse(true)
   f:SetMovable(true)
   f:RegisterForDrag("LeftButton")
   f:SetScript("OnDragStart", f.StartMoving)
   f:SetScript("OnDragStop", f.StopMovingOrSizing)
-
-  local search = CreateFrame("EditBox", "PhoenixUIOptionsSearch", f, "InputBoxTemplate")
-  search:SetSize(260, 22)
-  search:SetPoint("TOP", 0, -14)
-  search:SetAutoFocus(false)
-  search:SetScript("OnTextChanged", function(self, user) if user then Options:Render() end end)
-  search:SetScript("OnEscapePressed", function(self) self:SetText(""); self:ClearFocus(); Options:Render() end)
-  f.search = search
-
-  f.mode = Widgets.Button(f, "", 110, function()
-    Model.Commit("options.mode", Model.Mode() == "simple" and "advanced" or "simple")
-  end)
-  f.mode:SetPoint("TOPRIGHT", -150, -14)
-  f.studio = Widgets.Button(f, "Studio", 80, function() PUI.OptionsHost:OpenStudio() end)
-  f.studio:SetPoint("LEFT", f.mode, "RIGHT", 6, 0)
-  local close = Widgets.Button(f, "Close", 50, function() f:Hide() end)
-  close:SetPoint("TOPRIGHT", -12, -14)
-  local line = f:CreateTexture(nil, "ARTWORK")
-  line:SetHeight(1)
+  local line = Kit.Divider(f)
   line:SetPoint("TOPLEFT", 0, -TOP)
   line:SetPoint("TOPRIGHT", 0, -TOP)
-  Theme:Paint(line, "line")
+end
+
+local function buildSidebar(f)
+  local side = CreateFrame("Frame", nil, f)
+  side:SetPoint("TOPLEFT", 0, -TOP)
+  side:SetPoint("BOTTOMLEFT", 0, 0)
+  side:SetWidth(SIDEBAR)
+  local bg = side:CreateTexture(nil, "BACKGROUND", nil, 1)
+  bg:SetPoint("TOPLEFT", 3, 0)
+  bg:SetPoint("BOTTOMRIGHT", 0, 3)
+  bg:SetColorTexture(0, 0, 0, 0.18)
+  local line = Kit.Divider(side, true)
+  line:SetPoint("TOPRIGHT")
+  line:SetPoint("BOTTOMRIGHT")
+  side.items, side.captions, side.collapsed = {}, {}, {}
+  f.side = side
 end
 
 local function buildContent(f)
-  local scroll = CreateFrame("ScrollFrame", "PhoenixUIOptionsScroll", f, "UIPanelScrollFrameTemplate")
-  scroll:SetPoint("TOPLEFT", SIDEBAR + 12, -TOP - 10)
-  scroll:SetPoint("BOTTOMRIGHT", -30, 44)
+  local host = CreateFrame("Frame", nil, f)
+  host:SetPoint("TOPLEFT", SIDEBAR, -TOP)
+  host:SetPoint("BOTTOMRIGHT")
+  f.host = host
+  -- generic scrolling column used by module pages and search
+  local scroll = CreateFrame("ScrollFrame", "PhoenixUIOptionsScroll", host)
+  scroll:EnableMouseWheel(true)
+  scroll:SetScript("OnMouseWheel", function(self, delta)
+    local max = math.max(0, self:GetScrollChild():GetHeight() - self:GetHeight())
+    self:SetVerticalScroll(math.min(max, math.max(0, self:GetVerticalScroll() - delta * 60)))
+  end)
   local child = CreateFrame("Frame", nil, scroll)
-  child:SetSize(W - SIDEBAR - 50, 10)
+  child:SetSize(600, 10)
   scroll:SetScrollChild(child)
   f.scroll, f.child = scroll, child
-  f.heading = Widgets.Font(child:CreateFontString(nil, "OVERLAY"), "header")
-  f.heading:SetPoint("TOPLEFT", 6, -4)
-  f.empty = Widgets.Font(child:CreateFontString(nil, "OVERLAY"), "body")
-  f.empty:SetPoint("TOPLEFT", 6, -36)
-  Theme:Paint(f.empty, "text.secondary", 1, "text")
-end
-
-local function buildFooter(f)
-  local foot = CreateFrame("Frame", nil, f)
-  foot:SetPoint("BOTTOMLEFT")
-  foot:SetPoint("BOTTOMRIGHT")
-  foot:SetHeight(34)
-  Theme:Backdrop(foot, "surface.1")
-  f.dot = foot:CreateTexture(nil, "ARTWORK")
-  f.dot:SetSize(8, 8)
-  f.dot:SetPoint("LEFT", 14, 0)
-  f.version = Widgets.Font(foot:CreateFontString(nil, "OVERLAY"), "small")
-  f.version:SetPoint("LEFT", f.dot, "RIGHT", 8, 0)
-  Theme:Paint(f.version, "text.secondary", 1, "text")
-  f.reset = Widgets.Button(foot, "Reset page", 100, function()
-    local n = Model.ResetPage(Model.Mode(), Options.page)
-    PUI.Slash.Print(n .. " setting(s) reset to default.")
-  end)
-  f.reset:SetPoint("RIGHT", -12, 0)
+  f.empty = Kit.Text(child, "body", "muted")
+  f.empty:SetPoint("TOPLEFT", 14, -12)
 end
 
 function Options:Build()
@@ -93,97 +115,171 @@ function Options:Build()
   f:SetFrameStrata("HIGH")
   f:SetClampedToScreen(true)
   f:SetToplevel(true)
-  Theme:Backdrop(f, "surface.0")
-  Theme:Outline(f, "line")
+  Kit.Window(f)
   tinsert(UISpecialFrames, "PhoenixUIOptions")
-  buildTop(f)
+  buildHeader(f)
   buildSidebar(f)
   buildContent(f)
-  buildFooter(f)
-  f:SetScript("OnHide", function() if Widgets.popup then Widgets.popup:Hide() end end)
+  f:SetScript("OnHide", function() if Options.Widgets.popup then Options.Widgets.popup:Hide() end end)
   f:Hide()
   self.frame = f
   return f
 end
 
-local function sideButton(f, i)
-  local b = f.side.buttons[i]
+-- Sidebar ------------------------------------------------------------------------
+local ITEM_H = 34
+
+local function sideItem(side, i)
+  local b = side.items[i]
   if b then return b end
-  b = Widgets.Button(f.side, "", SIDEBAR - 16, nil)
-  b:SetPoint("TOPLEFT", 8, -10 - (i - 1) * 26)
-  f.side.buttons[i] = b
+  b = CreateFrame("Button", nil, side)
+  b:SetSize(SIDEBAR - 24, ITEM_H)
+  b.sel = b:CreateTexture(nil, "BACKGROUND")
+  b.sel:SetAllPoints()
+  Theme:Paint(b.sel, "accent", 0.12)
+  b.bar = Kit.AccentBar(b, 3, 20)
+  b.bar:SetPoint("LEFT", -12, 0)
+  b.icon = Kit.Icon(b, A.Icon("general"), 20)
+  b.icon:SetPoint("LEFT", 8, 0)
+  b.text = Kit.Text(b, "label", "text.secondary")
+  b.text:SetPoint("LEFT", b.icon, "RIGHT", 10, 0)
+  b.dot = b:CreateTexture(nil, "ARTWORK")
+  b.dot:SetSize(6, 6)
+  b.dot:SetPoint("RIGHT", -8, 0)
+  Theme:Paint(b.dot, "ok")
+  local hl = b:CreateTexture(nil, "HIGHLIGHT")
+  hl:SetAllPoints()
+  hl:SetColorTexture(1, 1, 1, 0.04)
+  side.items[i] = b
   return b
 end
 
--- Which keys the content area shows right now.
+local function caption(side, i)
+  local c = side.captions[i]
+  if c then return c end
+  c = CreateFrame("Button", nil, side)
+  c:SetSize(SIDEBAR - 24, 24)
+  c.text = Kit.Text(c, "caption", "muted")
+  c.text:SetPoint("LEFT", 10, 0)
+  c.count = Kit.Text(c, "caption", "muted")
+  c.count:SetPoint("RIGHT", -10, 0)
+  side.captions[i] = c
+  return c
+end
+
+function Options:RenderSidebar()
+  local f, side = self.frame, self.frame.side
+  local y, n = -14, 0
+  local function item(name, icon, label, on)
+    n = n + 1
+    local b = sideItem(side, n)
+    b:ClearAllPoints()
+    b:SetPoint("TOPLEFT", 12, y)
+    y = y - ITEM_H - 2
+    b.icon:SetTexture(A.Icon(icon, on == false))
+    b.text:SetText(label)
+    local active = self.page == name and f.search:GetText() == ""
+    b.sel:SetShown(active)
+    b.bar:SetShown(active)
+    Theme:Paint(b.text, active and "text.primary" or "text.secondary", 1, "text")
+    b.dot:SetShown(on == true)
+    b:SetScript("OnClick", function() Options:Open(name) end)
+    b:Show()
+  end
+  item("Dashboard", "dashboard", "Dashboard", nil)
+  y = y - 8
+  local groups = Nav.Layout(Model.Mode())
+  for gi, g in ipairs(groups) do
+    local c = caption(side, gi)
+    c:ClearAllPoints()
+    c:SetPoint("TOPLEFT", 12, y)
+    c.text:SetText(g.label:upper())
+    c.count:SetText(#g.pages .. (side.collapsed[g.label] and "  >" or "  v"))
+    c:SetScript("OnClick", function()
+      side.collapsed[g.label] = not side.collapsed[g.label]
+      Options:RenderSidebar()
+    end)
+    c:SetShown(#g.pages > 0)
+    if #g.pages > 0 then y = y - 26 end
+    if not side.collapsed[g.label] then
+      for _, p in ipairs(g.pages) do
+        local icon, label = Nav.Info(p.name)
+        item(p.name, icon, label, Nav.ModuleOn(p.name))
+      end
+    end
+    if #g.pages > 0 then y = y - 6 end
+  end
+  for i = n + 1, #side.items do side.items[i]:Hide() end
+end
+
+-- Content ------------------------------------------------------------------------
+-- Which keys a page/search shows (used by module pages and the tests).
 function Options:CurrentKeys()
   local f = self.frame
   local query = f and f.search:GetText() or ""
   if query ~= "" then return Model.Search(query), "Search: " .. query end
   local page = Model.Page(Model.Mode(), self.page)
   if not page then return {}, "" end
-  self.page = page.name
   return page.keys, page.label
+end
+
+function Options:HideViews()
+  for _, view in pairs(self.views or {}) do view:Hide() end
+  for _, row in pairs(self.rows) do row:Hide() end
+  self.frame.scroll:Hide()
 end
 
 function Options:Render()
   local f = self.frame
   if not f then return end
-  local mode = Model.Mode()
-  f.mode:SetLabel(mode == "simple" and "Simple" or "Advanced")
-  local pages = Model.Pages(mode)
-  for i = 1, math.max(#pages, #f.side.buttons) do
-    local b = sideButton(f, i)
-    local page = pages[i]
-    if page then
-      b:SetLabel(page.label .. "  (" .. #page.keys .. ")")
-      b:SetScript("OnClick", function() Options.page = page.name; f.search:SetText(""); Options:Render() end)
-      b:Show()
-    else
-      b:Hide()
-    end
+  f.mode:SetValue_(Model.Mode())
+  self:RefreshChip()
+  self:HideViews()
+  local query = f.search:GetText()
+  if query == "" and self.page == "Dashboard" then
+    self.Dashboard:Show(f.host)
+  elseif query == "" and self.page == "Theme" and self.ThemePage then
+    self.ThemePage:Show(f.host)
+  else
+    if query == "" and not Model.Page(Model.Mode(), self.page) then self.page = "Dashboard"; return self:Render() end
+    self.PageView:Show(f.host, query)
   end
-  for _, row in pairs(self.rows) do row:Hide() end
-  local keys, heading = self:CurrentKeys()
-  f.heading:SetText(heading)
-  f.empty:SetText(#keys == 0 and "Nothing matches." or "")
-  for i = 1, #keys do
-    local key = keys[i]
-    local row = self.rows[key] or Widgets.Row(f.child, key)
-    self.rows[key] = row
-    row:ClearAllPoints()
-    row:SetPoint("TOPLEFT", 0, -30 - (i - 1) * Widgets.ROW_H)
-    row:SetPoint("RIGHT", f.child, "RIGHT", 0, 0)
-    row:Refresh()
-    row:Show()
-  end
-  f.child:SetHeight(40 + #keys * Widgets.ROW_H)
-  self:RefreshFooter()
+  self:RenderSidebar()
 end
 
-function Options:RefreshFooter()
+function Options:RefreshChip()
   local f = self.frame
-  local S = PUI.Sentinel
-  local errors = 0
-  if S and S.db and S.db.sessionErrors then
-    for _ in pairs(S.db.sessionErrors[S.db.session] or {}) do errors = errors + 1 end
+  local name = UnitName("player") or "?"
+  local specName = ""
+  local spec = C_SpecializationInfo and C_SpecializationInfo.GetSpecialization and C_SpecializationInfo.GetSpecialization()
+  if spec and C_SpecializationInfo.GetSpecializationInfo then
+    local _, sn = C_SpecializationInfo.GetSpecializationInfo(spec)
+    specName = sn and (" - " .. sn) or ""
   end
-  Theme:Paint(f.dot, errors == 0 and "success" or "danger")
-  f.version:SetText("v" .. (C_AddOns.GetAddOnMetadata(PUI.ADDON_NAME, "Version") or "?")
-    .. "  |  Sentinel: " .. (errors == 0 and "no incidents this session" or errors .. " incident(s) this session"))
+  f.chip:SetLabel(name .. specName)
+  local _, class = UnitClass("player")
+  local c = class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+  f.chip.avatar:SetColorTexture(c and c.r or 0.24, c and c.g or 0.86, c and c.b or 0.59, 1)
 end
 
--- target: a page name (e.g. "Theme") or a search string.
-function Options:Toggle(target)
+-- target: a page name (e.g. "Theme"), "Dashboard", or a search string.
+function Options:Open(target)
   local f = self.frame or self:Build()
-  if f:IsShown() and not target then f:Hide(); return end
   f.search:SetText("")
-  if target then
+  if target and target ~= "Dashboard" then
     local page = Model.Page("advanced", target)
     if page and page.name:lower() == target:lower() then self.page = page.name else f.search:SetText(target) end
+  elseif target == "Dashboard" then
+    self.page = "Dashboard"
   end
   f:Show()
   self:Render()
+end
+
+function Options:Toggle(target)
+  local f = self.frame
+  if f and f:IsShown() and not target then f:Hide(); return end
+  self:Open(target)
 end
 
 function Options:OnModeChanged()
@@ -193,4 +289,11 @@ end
 PUI.Kernel:On("SETTING_CHANGED", function(key)
   local row = Options.rows[key]
   if row and row:IsShown() then row:Refresh() end
+  local f = Options.frame
+  if f and f:IsShown() then
+    if key:find("^module%.") then Options:RenderSidebar() end
+    for _, view in pairs(Options.views or {}) do
+      if view:IsShown() and view.OnSetting then view:OnSetting(key) end
+    end
+  end
 end)
