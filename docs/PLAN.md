@@ -125,6 +125,10 @@ Competitor references describe feature parity only. Behaviour is reimplemented a
 - Every disabled control says why; every feature has its own reset; changed values show a reset dot and tint.
 - Widget contract: slider with typed input; keybind capture with conflict warning (1.20); colour picker whose Cancel restores the old colour and commits debounced while dragging; Escape reverts, Enter commits (G10); keyboard/controller focus.
 - This replaces any ElvUI-style reference: ElvUI is ignored by the user's direction.
+- **Override stack (QDB):** `default < profile < spec < character < temporary (preview/test)`, recomposed at read time. Every row shows who set its value (provenance). A layer overrides fields and never deletes the row below; withdrawing restores the one below exactly; re-enabling never reorders; a user delete is sticky; atomic values (anchor point + offset) are replaced whole; the temporary layer never writes saved data. Only non-default values are saved; presence is kept apart from value.
+- **Apply model (WAPI):** live apply stays the default; staged Apply/Revert only for expensive or relayout settings; a timed "Keep these settings?" revert (Phoenix's own dialog) for UI scale and layout swaps; snapshot on open, Cancel restores, Undo confirmed. One shared flag pass for anything needing a reload (should never be needed, G25).
+- **Rows (WAPI):** built from data tables, one key per row for label/reader/writer; parent/child indentation with predicates re-evaluated on parent change; confirmation intercepts; per-row callback handles released on recycle (asserted empty); the list repairs in place and keeps scroll position; per class+spec layouts with last-used memory and an explicit "use default".
+- **Blizzard Settings panel (WAPI):** Phoenix registers there too (AddOn/proxy settings) so Blizzard search, defaults, restart-required marks, recommended/warning lines and per-version "new" badges work.
 
 ### 1.G Guardrails (cross-cutting rules G1–G25, from the finished study)
 These are in force for every PR alongside the standing rules (original code only; live apply; no OnUpdate outside the Ticker; secret values to widgets only; done = guardrails + `/pui test` + in-game check). "Source" names the behaviour seen in the studied addons that each rule prevents; no code was copied.
@@ -156,6 +160,17 @@ These are in force for every PR alongside the standing rules (original code only
 | G23 | **Pixel-perfect integer maths.** Compute sizes in physical pixels, then multiply by the scale. Centre snapping is parity-aware. | EUI-CDM float-dust bug (3×21.666 → 81). EUI-RB 1 px drift on spec swap. |
 | G24 | **Stable keys, not indexes**, for selection, journal entries and profiles. Avoid `pairs` order wherever order matters. | MSBT index selection. EUI-FE and PGF nondeterministic `pairs`. QST journal. |
 | G25 | **Every setting is schema-declared.** Each one carries an apply target and a struct/style/geo/filter tag. The page, search, defaults, reset and fingerprint are all generated from that one declaration, so a key that is never live-applied can't exist. | EUI-RF FP lists were maintained by hand. EUI-OPT duplicated defaults (pushed default 3 vs 2; pipWidth 214 vs 220). Shift X/Y stored nil at 0. Two swatches edited one key. |
+| G26 | **Validate, then publish (all-or-nothing).** Settings writes, imports and conflict-picker choices are staged and checked at entry; a rejected change leaves UI, caches and provenance untouched and names module/setting/value. | QDB correction engine; Blizzard staged settings skipped type checks until Commit. |
+| G27 | **Refuse, don't default.** Unknown key → nil + Sentinel note; unknown spec/client/API → feature off (fail closed); exact tokens for slash arguments; presence kept apart from value. | QDB getters could not tell explicit 0 from absent; registry returned a fake owner. |
+| G28 | **Heavy work is time-sliced and scoped.** Login/zone-in scans yield, publish only complete results and restart on invalidation; invalidate only what changed; decode on first use. | QDB "script ran too long" at login; 67 ms apply storm. |
+| G29 | **No aliasing, no mutation during iteration.** Handed-out tables are copies or frozen; copy at the save boundary; never remove from a table inside its own loop. | QDB aliasing write-through; Blizzard buff frame tremove-in-pairs. |
+| G30 | **Events match handlers.** Every handled event is registered and vice versa; unit events via RegisterUnitEvent; heavy events only while shown. | Blizzard arena/castbar/buff frames handle unregistered events. |
+| G31 | **Retail API hygiene.** A deprecated-API denylist (retail 12.x) and a current-client CVar list fail the build on use of removed names. | WAPI Manual/Deprecated list (UnitAura, GetSpellInfo, IsAddOnLoaded…). |
+| G32 | **Isolated callbacks.** Module registration, apply, menu and settings callbacks run protected; one failure never blocks other modules and is retried later. | Blizzard Settings panel isolates each addon canvas. |
+| G33 | **Timers are owned.** Cancel the previous timer before arming a new one; throttles reset their accumulator; clocks are event or Ticker driven. | Blizzard double revert timers; never-reset resize throttle. |
+| G34 | **IDs, not names; correct maths.** Never match by display name when an ID exists; no `bit.*` masks over 32 bits; WoW global trig uses degrees. | QDB race masks above 32 bits; WAPI compat notes. |
+
+Every lint rule above ships with a self-proof fixture that must fail (QDB). Full lint additions and test-harness rules: §5.17c and §18.
 
 ### 1.O Ownership matrix (one owner each — no duplication or overlap)
 | Feature | Claimed by | Owner / resolution |
@@ -205,6 +220,8 @@ These are in force for every PR alongside the standing rules (original code only
 | 2.19 | Plugins page (mockups P1–P3) | M | design only | (see section 9) |
 | 2.20 | Reset all, reset module | P | per-page Reset; no reset-all | S |
 | 2.21 | Localised labels at the render boundary | P | PUI.L used in Studio; options labels not wrapped everywhere | S |
+
+**Menus (WAPI, 2026-10-26):** retail Menu API only (no legacy dropdown); regenerate on open; mouse-wheel cycles radios; one menu stack with a close-to-level primitive; ~0.3 s hover delay, immediate clicks; layout measure → columns → common width → scroll/grid → flip → clamp; close when the owner hides or on an outside click; a tag-based "modify menu" hook so modules extend each other's menus. Drag-reorder with explicit cancel, drop markers and empty-slot targets; filter dropdowns with a Reset "x"; disabled rows restore their cached enabled colour and desaturate icons.
 
 ## 3. Setup, tour, entry points (mockups 05–11, 13)
 
@@ -285,6 +302,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Text tags without code: token chips + format dropdown; raw tag field optional for power users; secret-safe formatters (UnitHealthPercent with a curve → SetFormattedText) so a secret value never shows 0.
   - Per-frame visibility via 1.19 (fade out of combat, resting alpha, show when health missing, solo/party/raid).
   - Auras only through PUI.Auras (F1); `C_UnitAuras.AddAuraSound` for gain sounds.
+- **Study (WAPI):** cast bar is one castID-matched state machine (casting/channeling/empowered/hold/fade), queries its own unit on show, uses duration-object timers (12.x secret-safe), unit-scoped events only.
 
 ### 5.2 Raid & Party — 23 keys (RaidFrames.lua, Elements.lua) + ClickCast (3 keys)
 
@@ -309,6 +327,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Indicator manager page (70/30: list left, live preview right, spec selector, healer-spec presets) over F1 containers + a declarative indicator list. Honest notes where 12.1 secrecy blocks a mode ("missing/allPresent", frame alpha) instead of silent fallback.
   - Click-cast + Hovercast: global / options / per-spec columns, conflict warning via 1.20, WrapScript or persistent secure button, all changes via CombatQueue.
   - Aura-icon tooltip on modifier (secure motion eater).
+- **Study (WAPI, raid frames):** frames reserved by player GUID across sorts; batched layout (pause → add → resume); tank/assist + target + ToT as one atomic group; total-order sorts with deterministic fallback; permission-gated controls rebuilt on leader/roster change; one typed setting dispatcher (booleans normalised); one shared heal-prediction/absorb renderer for raid, party, unit and arena; StatusBar setters only; positions as screen-half-relative anchors clamped on all edges; one shared flash clock for expiring auras; auraInstanceID deltas.
 
 ### 5.3 Nameplates — 17 keys (Nameplates.lua, Plate.lua)
 
@@ -332,6 +351,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Aura lanes: pre-created container bundle attached/detached on NAME_PLATE_UNIT_ADDED/REMOVED; purge glow by engine group.
   - Cast dispatcher: the 13 SPELLCAST events registered once globally and shared with every castbar (§1.O); kick-ready tick, interrupted flash, cast target.
   - NPC rules engine as visual rule rows (NPC, colour, scale, glow).
+- **Study (WAPI):** unit-scoped events; no aura events when no aura lane is on; click insets from visual bounds with a minimum hit height; forbidden plates untouched.
 
 ### 5.4 Action Bars — 105 keys (ActionBars.lua, Buttons.lua)
 
@@ -358,6 +378,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Preview uses the real button paint (no drifting second implementation); apply-to-all has undo and never copies mouseoverAlpha into transparent bars; shape change never overwrites fonts.
   - Micro/bag bar: own buttons calling Blizzard toggles, vehicle and pet-battle visibility. XP/Rep/House Favor bar is a **Data Bars template** (§1.O).
   - Game Menu button inside the Esc menu (standing rule, D1).
+- **Study (WAPI):** secure buttons via attributes/state drivers only; two event tiers (all buttons vs filled buttons); pooled proc glows; step aside for vehicle/override bars; fit-to-space vertical bars with a minimum scale then fold; AnimationGroup slides; "missing from my bars" helper after talent swaps; keybind mode on Blizzard's listener model with conflict report, rollback and save to the current binding set (feeds 1.20).
 
 ### 5.5 Cooldown Manager — 22 keys
 
@@ -379,6 +400,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Hooks OnCooldownIDSet and pool Acquire, queues re-anchor; never SetParent/SetScale/Hide on viewer frames (unclaimed frames get alpha 0); all state in weak external tables.
   - Demand-gated; "store not ready" held and retried; talent debounce; integer-pixel layout (G23); flicker fixed by UnitIsUnit checks; schema-driven re-evaluation instead of once-per-login flags.
   - Spell Picker page (add/swap/move/replace) with live preview and presets; Focus Kick bar; Mirror Key Presses; pandemic sync with nameplates. Buff bars stay on Blizzard viewer data.
+- **Study (WAPI):** keep skinning Blizzard's Cooldown Viewer; resolution aura > linked > override > base; late-join aura handling; reconcile saved order (drop missing, append new); class+spec-tagged layouts with last-used memory; events only while shown; edit-mode placeholders with paused timers and a minimum item count; one ordered visibility function; stable hidden slots; search cache invalidated on talent change.
 
 ### 5.6 Resource Bars — 18 keys (ResourceBars.lua, ClassResource.lua)
 
@@ -417,6 +439,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Tooltip info via one TooltipDataProcessor post-call; never force UberTooltips; locale-safe stat names.
   - Minimap: border on a dedicated host re-anchored each pass; addon-button collector flyout; first-install capture.
   - Data bars: user-created bars from templates; layout solver; secure blocks (travel, spec popups) built out of combat, never Hide/Show secure content in combat; gold ledger with confirm; filtered currency refresh; locale-safe text.
+- **Study (WAPI):** tooltips refresh through the owner's update on the shared throttle; padding only on meaningful change; comparison side by free space.
 
 ### 5.8 Quest Tracker — 8 keys
 
@@ -428,6 +451,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - **Map rules (G13):** open maps with `C_Map.OpenWorldMap(mapID)`; zone↔continent transforms via `C_Map.GetMapChildrenInfo` + GetMapRectOnMap, cached lazily; a **map-lines service**; pin removal O(n) with icon limits; private tooltip for gamepad hover without OnUpdate.
   - **Quest item delete-protection:** tooltip warning line or our own confirm overlay (no StaticPopup, G5).
   - Quest/DB search via the plain-text runner (1.25). M+ timer is owned by Ascent, not the tracker.
+- **Study (QDB):** retail quest data from live APIs only (quest log, task quests, map); QuestieDB data is Classic-only and not reused; UiMapID/AreaID/MapID kept as distinct types; never match by name when an ID exists.
 
 ### 5.9 Skins — 30 keys
 
@@ -460,6 +484,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Study additions (§16, 2026-10-26):**
   - Blizzard chat stays the data plane; lines bridged to our display via an AddMessage post-hook; never hook FCF_* or reparent chat widgets; idle fade on the Ticker.
   - URL copy via the shared copy dialog (1.26); class names in bodies; history across reload (never stores secret text); search. Documented limit: secret args skip chat filters.
+- **Study (WAPI):** opt-in battleground join/leave batch summary; every text-built pattern escaped; live example-line previews for formatting options; tab strip shrinks evenly on overflow.
 
 ### 5.11 Vault — 6 keys
 
@@ -552,6 +577,9 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **5.17a Diagnostics `PUI.Diag` (new, M):** if BugGrabber is present, subscribe to its BugGrabbed callback and register as a display; otherwise own handler with a token-bucket throttle. Viewer with sessions, prev/next, counter, links. Store non-secret text only; no gsub on possibly-secret text. Sharing (D-DIAG-SEND): user-initiated in-game sharing of Sentinel reports to other players, and every report auto-uploads via the Companion app to the vq8s.com admin dashboard for analysis. Privacy kit for exports (GUID-kind allow-list, whole-word name redaction, system-string allow-list). Opt-in dev recorder (change-only streams, orphan-session recovery). Errors never hidden by default (G7).
 - **5.17b Profiler `/pui profile` (new, M):** opt-in, zero cost off; samples module entry points registered through the Phoenix API (no _G/frame traversal); GetTimePreciseSec; active-slice timing for Ticker jobs; measurement generations; frame-free report builder (self vs inclusive, grouped tree, honest "N hidden"); interleaved A/B helper; hot-primitive exclusions declared once; feeds the per-page CPU chip (1.18).
 - **5.17c `/pui test` depth:** pure-Lua view-model tests with mock widgets; unit-tested aura partition solver and Classify functions; lint suite (1.33); schema coverage.
+- **Study (WAPI/QDB):** dedupe by message+stack with counts in a capped ring buffer; excess-error warning once; messages state expected/found/why/where; warning baseline of stable fingerprints (fail on new rows only); dev-mode badge whenever a dev/test build or test mode runs; dev event-trace panel for Phoenix's bus (ring buffer, frame deltas, markers, filters, plain search); self-measurement with the retail addon profiler (signature verified), top-addons readout on hover only.
+- **§5.17c test-harness additions (QDB/WAPI):** zero-check suite fails; unknown test name fails with no PASS; per-test sandbox that restores and asserts globals; real module code in the sandbox; literal fixtures not derived from code; idempotence re-runs; self-proof per gate and lint rule; persona matrix (class × spec × role × faction); every module exercised at least once; allocation guard; warm-up + best-of-N benchmarks; harness stricter than the client; override-stack collision tests; time-format edges; determinism check (two builds byte-identical).
+- **Lint additions:** deprecated-API denylist; CVar list check; handled-vs-registered events; remove-inside-pairs; unplain user-text search; `type(a == b)`; multi-return captured as a list; handlers reading global `event`; `total + max` accumulator slips; numeric results as booleans; reader/writer key mismatch; function-valued format args; raw children on pooled frames; never-reset throttles.
 
 ### 5.18 Theme & Media
 
@@ -593,6 +621,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Arena:** own secure buttons (click attributes via CombatQueue, `@arena` substitution escaped, G12); secret-first spec display through the Blizzard role-map helper; health/power to widgets only; ArenaMatch state service (Idle/Prep/Engaged/Ended) on PVP_MATCH_STATE_CHANGED; zero events outside arena; 1 Hz Ticker match timers; DR from Blizzard DR APIs where available; otherwise an opt-in (off by default) Phoenix DR tracker, settings ledger-restored, labelled "best guess" (D-ARENA-DR); "assume regen in stealth" option, off by default (D-SARENA-STEALTH); optional FrameSort numbering; PvP colour CVar via ledger; layout presets as schema styles over one paint function, test mode uses that paint; never toggles Edit Mode or reparents CompactArenaFrame; relative frame levels.
 - **Spark:** attribution from UNIT_COMBAT plus own casts with confidence (trust a guess only once confirmed, nil when ambiguous); pooled text lines on the Ticker; escaped formatters; per-frame dedupe (no double heals, no double loot); Blizzard SCT via CVar ledger only; never writes Blizzard_CombatLog filters; area cards with live preview of sample numbers; visual trigger builder (health, power, aura, cooldown) without code.
 | Council | M | Tier 2 | XL |
+- **Arena study (WAPI):** explicit opponent lifecycle (seen/unseen/destroyed/cleared) with a greyed stale look; prep-phase class/spec; CC/trinket requested on show, item icon preferred; shared heal-prediction renderer (§5.2); no arithmetic on possibly-secret health/absorbs.
 
 ## 6. Deferred list (consolidated)
 
@@ -677,6 +706,8 @@ Use the same design package rules: 1420×860 options, the tokens and the kit.
 | Companion v1 (upload SV to ingest) | P | signed build, auto-start, tester distribution, M |
 | CurseForge/Wago release via release.yml (BigWigs packager) | M (never run; needs your approval and project IDs/tokens) | final phase |
 | Discord | M | out of code scope |
+
+**Companion installer and release rules (QDB, 2026-10-26):** validate the whole ZIP first (names, reserved Windows names, case collisions, no links, only Phoenix_UI* top folders); checksum before unpack; refuse while Wow.exe runs; stage + swap with a recovery copy so an I/O error can't half-install; keep the user's other files and never overwrite user-edited files; Windows path edge cases tested; "can't reach server" ≠ "no update". Releases fail closed and keep the previous build; draft until complete, manifest last; never reuse a tag; reproducible archives; CI pinned by SHA; TOC lint (one Version, 12.x Interface, files exist); ship by allowlist; player-language changelog from tagged entries without emails; append-only validation log per release; end-to-end install of the built ZIP into a clean AddOns folder. Store manifest compatibility only at the store-publishing phase (end).
 
 ## 11. Ordered phase plan with acceptance criteria
 
@@ -1160,6 +1191,14 @@ Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied 
 - 18 new foundation rows 1.19–1.36; Study additions in §4 and §5.1–§5.18; new §5.17a–c; Cast History and deepened Pulse/Arena/Spark in §5.21; Phases B+ and N in §11.
 - Coverage of the 23 "not yet in plan" items: Cast History (§5.21), Diagnostics (§5.17a, 1.31), `/pui profile` (§5.17b, 1.32), visibility engine (1.19), Binding ledger + conflict check (1.20), FrameLedger (1.21), window mover + importers (§4), GF queue QoL + filter builder (§5.16), Tooltip IDs (§5.7), Arena internals (§5.21), Spark attribution + triggers (§5.21), BigWigs coexistence + C_EncounterTimeline (§5.21, 1.35), AddAuraSound (§5.1), copy dialog/link handler/no-StaticPopup (1.26, 1.27), map rules + delete-protection (§5.8), search runner + escaped substitution (1.25, G12), versioned import schema (1.24), lint suite (1.33), export hub (§5.16), async data (1.23), errors-not-hidden + no CVar re-assert (G6, G7), PUI.Season (1.28), ownership matrix (§1.O).
 
+## 18. QuestieDB and WoW-API integration (2026-10-26)
+Source: `QuestieDB.md`, `WoW-API.md` (studied in full; ideas only, original code, retail 12.x). Merged feature by feature into `Feature_Catalogue.md` as (f) lines; no duplicates of G1–G25.
+- **Guardrails** G26–G34 (§1.G) with self-proof fixtures; lint and test-harness additions in §5.17.
+- **Settings model** §1.S: written override stack with provenance, apply model, data-driven rows, Blizzard Settings panel entry. **Menus** §2. **Raid frames** §5.2; also §5.1, 5.3, 5.4, 5.5, 5.7, 5.8, 5.10, 5.21. **Companion/release** §10.
+- **Shared services (row 1.29 scope):** lazy data modules (index at login, decode on first use, bounded cache); contract range check core ↔ modules ↔ Companion; deterministic, idempotent offline generators (spell/DR/aura lists) with hand-authored overrides kept separate and authoritative, a written limitations list and a review step; enum tables that error on unknown keys in dev/test; slash-command registry with help and ranges.
+- **Export/import format (concept only, extends 1.24):** Phoenix prefix + encoding version, then Base64(Deflate(CBOR)) via retail `C_EncodingUtil`; schema version inside the table, one reader per schema version; checksum; string keys or dense arrays, shallow depth, no functions; protected serialize; whole-string validation and type check before anything applies; newer-schema or already-applied strings refused clearly; import preview (changes / kept / unknown); unknown newer fields preserved; user text escaped; chunking with round-trip test for in-game report sharing (D-DIAG-SEND).
+- **Retail-reference need:** both sources are Classic-only (QuestieDB TOC 11508–50504; WoW-API generated from the vanilla branch, Jan 2026, no secret-value marks). Every behaviour idea must be re-checked against retail 12.x. Phoenix needs a retail 12.x LuaLS workspace (retail Blizzard UI source + generated API docs with secret-return marks; Blizzard stubs as a library; need-check-nil, undefined-global and undefined-field kept on) and generated guardrail data (events, CVars, secret-returning functions, deprecations). Trust order: Blizzard-generated docs > community annotations > AI-generated docs (never trusted). See D-RETAIL-REF.
+
 ## 17. Decisions pending
 | ID | Question | Recommendation |
 |---|---|---|
@@ -1172,7 +1211,8 @@ Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied 
 | D-ARENA-DR | If Blizzard DR APIs aren't exposed, build an opt-in ledger-restored mirror? | **Decided 2026-10-26:** YES. Blizzard DR APIs where available; otherwise an opt-in (off by default) Phoenix DR tracker, settings ledger-restored, labelled "best guess". |
 | D-SARENA-STEALTH | Keep the cosmetic "assume regen in stealth" option? | **Decided 2026-10-26:** keep, as an option off by default. |
 | D-LIC | Licence questions on the VortexQ8-tagged forks (PGF, MSBT, SAR, AQ, idTip). | **Decided 2026-10-26:** closed. These are the user's own/co-built addons. Still never copy code, but Phoenix must include every one of their exact features, built more advanced and higher quality in Phoenix's style. |
-| D-STAGE | Stage QuestieDB-master and WoW-API-main (not studied) by zipping them on your drive? | **Decided 2026-10-26:** approved; study in progress (findings to be added later). |
+| D-STAGE | Stage QuestieDB-master and WoW-API-main (not studied) by zipping them on your drive? | **Done 2026-10-26:** both studied in full; findings merged (§18, Feature Catalogue (f) lines). |
+| D-RETAIL-REF | Where to get a retail 12.x reference (Blizzard UI source + generated API docs) for the LuaLS workspace and guardrail data? | Pending your approval of a source before staging. |
 | D-MOCK | Mockups for every new page (Cast History, Diagnostics, profiler, ledger page, visibility picker, filter builder) before UI code. | Required by standing rule. |
 
 ## 14. Appendix — current schema keys by owner (448)
