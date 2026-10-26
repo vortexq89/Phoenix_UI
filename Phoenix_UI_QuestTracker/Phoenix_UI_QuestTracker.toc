@@ -3,6 +3,8 @@
 ## Notes: Phoenix UI quest tracker: sorting, filtering, collapsible sections, zone auto-track, auto accept and turn-in.
 ## Author: VortexQ8
 ## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
 ## Dependencies: Phoenix_UI
 
 QuestTracker.lua

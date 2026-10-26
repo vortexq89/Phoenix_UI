@@ -118,7 +118,27 @@ function VA.UpdateButton(b, bag, slot)
   b:SetMatchesSearch(not filtered)
   local lvl = s.ilvl and VA.ItemLevel(bag, slot, itemID)
   VA.ilvlText[b]:SetText(lvl and tostring(lvl) or "")
+  VA.Badge(b, link and lvl and VA.WantsBadge() and PUI.Wisdom.IsUpgrade(link))
   return info ~= nil
+end
+
+-- Upgrade badge from Wisdom (when that module is on), one texture per slot.
+VA.badges = setmetatable({}, { __mode = "k" })
+function VA.WantsBadge()
+  local w = PUI.Wisdom
+  return w ~= nil and w.active and w.settings.bags
+end
+function VA.Badge(b, on)
+  local t = VA.badges[b]
+  if not t then
+    if not on then return end
+    t = b:CreateTexture(nil, "OVERLAY")
+    t:SetSize(14, 14)
+    t:SetPoint("TOPLEFT", 1, -1)
+    t:SetAtlas("PetJournal-FavoritesIcon") -- atlas used by Blizzard_Collections on live and Forever
+    VA.badges[b] = t
+  end
+  t:SetShown(on and true or false)
 end
 
 function VA.Junk()

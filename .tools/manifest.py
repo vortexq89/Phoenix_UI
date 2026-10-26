@@ -39,6 +39,11 @@ ENGINE_GLOBALS = {
     "IsQuestCompletable", "QuestMapFrame_OpenToQuestDetails", "SetItemButtonTexture", "SetItemButtonCount",
     "SetItemButtonQuality", "SetItemButtonDesaturated", "ToggleAllBags", "ToggleBackpack", "OpenAllBags", "CloseAllBags",
     "ItemLocation", "ReloadUI", "IsInRaid",
+    # Phase 6 (FrameXML/engine globals used by Blizzard code on live 12.1.5 and
+    # Forever: world timers in Blizzard_ScenarioObjectiveTracker, macros in
+    # Blizzard_MacroUI, LFGListSearchEntry_Update in Blizzard_GroupFinder).
+    "GetWorldElapsedTime", "GetWorldElapsedTimers", "GetNumMacros", "GetMacroInfo", "GetInventoryItemLink",
+    "LFGListSearchEntry_Update", "TooltipDataProcessor", "AbbreviateNumbers", "GetInstanceInfo",
 }
 
 CALL_RE = re.compile(r"(?<![\w.:])([A-Za-z_]\w*)(?!\s*=[^=])(?!\w)")

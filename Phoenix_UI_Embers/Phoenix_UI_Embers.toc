@@ -1,0 +1,12 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Embers
+## Notes: Phoenix UI damage meter on Blizzard's own meter data: windows, saved segments, graphs, death recap, report and export.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## Dependencies: Phoenix_UI
+
+Embers.lua
+Window.lua
+Tests\Embers_test.lua

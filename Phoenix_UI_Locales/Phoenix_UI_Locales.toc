@@ -1,0 +1,19 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Locales
+## Notes: Phoenix UI translations, loaded only on non-English clients.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## LoadOnDemand: 1
+## Dependencies: Phoenix_UI
+
+Locales\deDE.lua
+Locales\frFR.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\koKR.lua
+Locales\zhCN.lua
+Locales\zhTW.lua

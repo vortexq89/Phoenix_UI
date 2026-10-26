@@ -50,6 +50,7 @@ jobs:
           lua5.1 .tools/harness/run_tests.lua
           PUI_FLAVOR=forever lua5.1 .tools/harness/run_tests.lua
           python3 .tools/test_release_tools.py
+          python3 .tools/locales.py --check
       - name: Merged pull requests since the last tag
         env:
           GH_TOKEN: ${{ github.token }}
@@ -97,14 +98,35 @@ jobs:
         with:
           name: release-${{ inputs.version }}
           path: out
+      - name: Listings are configured
+        # CurseForge and Wago project ids come from repository variables (set
+        # after the listings exist under the VortexQ8 account); the API keys
+        # come from the release environment's secrets.
+        env:
+          CF_PROJECT_ID: ${{ vars.CF_PROJECT_ID }}
+          WAGO_PROJECT_ID: ${{ vars.WAGO_PROJECT_ID }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+        run: |
+          missing=""
+          [ -n "$CF_PROJECT_ID" ] || missing="$missing CF_PROJECT_ID(variable)"
+          [ -n "$WAGO_PROJECT_ID" ] || missing="$missing WAGO_PROJECT_ID(variable)"
+          [ -n "$CF_API_KEY" ] || missing="$missing CF_API_KEY(secret)"
+          [ -n "$WAGO_API_TOKEN" ] || missing="$missing WAGO_API_TOKEN(secret)"
+          if [ -n "$missing" ]; then echo "publish blocked, missing:$missing"; exit 1; fi
       - name: Tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a "v${{ inputs.version }}" -m "Phoenix UI ${{ inputs.version }}"
           git push origin "v${{ inputs.version }}"
+      - name: Use the generated changelog
+        run: cp out/CHANGELOG.md CHANGELOG.md
       - name: Package and upload
+        # Release type follows the tag: v3.0.0-beta1 -> beta, -alpha -> alpha, plain -> release.
         uses: BigWigsMods/packager@v2
+        with:
+          args: -p ${{ vars.CF_PROJECT_ID }} -w ${{ vars.WAGO_PROJECT_ID }}
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}

@@ -17,6 +17,13 @@ move-folders:
   Phoenix_UI/Phoenix_UI_QuestTracker: Phoenix_UI_QuestTracker
   Phoenix_UI/Phoenix_UI_Reminders: Phoenix_UI_Reminders
   Phoenix_UI/Phoenix_UI_Setup: Phoenix_UI_Setup
+  Phoenix_UI/Phoenix_UI_Embers: Phoenix_UI_Embers
+  Phoenix_UI/Phoenix_UI_Ascent: Phoenix_UI_Ascent
+  Phoenix_UI/Phoenix_UI_Oracle: Phoenix_UI_Oracle
+  Phoenix_UI/Phoenix_UI_Wisdom: Phoenix_UI_Wisdom
+  Phoenix_UI/Phoenix_UI_Loadouts: Phoenix_UI_Loadouts
+  Phoenix_UI/Phoenix_UI_GroupFinder: Phoenix_UI_GroupFinder
+  Phoenix_UI/Phoenix_UI_Locales: Phoenix_UI_Locales
 
 externals:
   Libs/LibStub:
@@ -29,6 +36,10 @@ externals:
     url: https://github.com/SafeteeWoW/LibDeflate
     tag: latest
 
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
 ignore:
   - .tools
   - .github
@@ -36,3 +47,4 @@ ignore:
   - Data/ApiCatalog.json
   - companion
   - README.md
+  - Phoenix_UI_Locales/keys.txt

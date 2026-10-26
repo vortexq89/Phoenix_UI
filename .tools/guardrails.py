@@ -142,7 +142,7 @@ def check_files(root, files, rep, catalog):
                 rep.add("gate", r, "line 1 must be the client-gate guard")
         elif not lines or not lines[0].startswith("-- PUI-GATE"):
             rep.add("gate", r, "ClientGate.lua must start with the PUI-GATE marker")
-        if not r.startswith("Locales/") and any(b > 127 for b in raw):
+        if "/Locales/" not in "/" + r and any(b > 127 for b in raw):
             rep.add("ascii", r, "non-ASCII bytes outside Locales/")
         locals_ = set()
         for m in re.finditer(r"\blocal\s+(?:function\s+)?([A-Za-z_][\w\s,]*)", code):

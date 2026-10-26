@@ -629,8 +629,94 @@ CharacterFrame.Inset.Bg = CreateFrame("Frame", nil, CharacterFrame.Inset)
 CharacterFrameTab1 = CreateFrame("Button", "CharacterFrameTab1", CharacterFrame)
 CharacterFrameTab1.Left = CreateFrame("Frame", nil, CharacterFrameTab1)
 
+-- Phase 6: embers, ascent, oracle, wisdom, loadouts, group finder, locales.
+Enum.DamageMeterType = { DamageDone = 0, Dps = 1, HealingDone = 2, Hps = 3, Absorbs = 4, Interrupts = 5, Dispels = 6, DamageTaken = 7,
+  AvoidableDamageTaken = 8, Deaths = 9, EnemyDamageTaken = 10 }
+Enum.DamageMeterSessionType = { Overall = 0, Current = 1, Expired = 2 }
+H.meter = { available = true, sessions = {}, current = nil, list = {} }
+C_DamageMeter = {
+  IsDamageMeterAvailable = function() return H.meter.available, H.meter.available and "" or "disabled" end,
+  GetCombatSessionFromType = function(sessionType, kind) local c = H.meter.current; if not c then return nil end
+    local out = { maxAmount = maybe(c.max), totalAmount = maybe(c.total), durationSeconds = maybe(c.duration), combatSources = {} }
+    for i, r in ipairs(c.rows) do out.combatSources[i] = { name = maybe(r.name), classFilename = r.class, specIconID = 1, totalAmount = maybe(r.amount),
+      amountPerSecond = maybe(r.aps), isLocalPlayer = r.me == true, deathRecapID = 0, deathTimeSeconds = maybe(0), classification = "normal" } end
+    return out end,
+  GetCombatSessionFromID = function(id, kind) local c = H.meter.sessions[id]; if not c then return nil end
+    local out = { maxAmount = maybe(c.max), totalAmount = maybe(c.total), durationSeconds = maybe(c.duration), combatSources = {} }
+    for i, r in ipairs(c.rows) do out.combatSources[i] = { name = maybe(r.name), classFilename = r.class, specIconID = 1, totalAmount = maybe(r.amount),
+      amountPerSecond = maybe(r.aps), isLocalPlayer = r.me == true } end
+    return out end,
+  GetAvailableCombatSessions = function() return H.meter.list end,
+  ResetAllCombatSessions = function() H.meter.reset = true end,
+}
+H.chat = {}
+C_ChatInfo = { InChatMessagingLockdown = function() return H.chatLocked == true end, SendChatMessage = function(msg, ch) H.chat[#H.chat + 1] = { msg, ch } end }
+Enum.WorldElapsedTimerTypes = { None = 0, ChallengeMode = 1, ProvingGround = 2 }
+Enum.TtsVoiceType = { Standard = 0, Alternate = 1 }
+H.mplus = nil -- { mapID, level, limit, elapsed, deaths, lost, forces = { q, total, text } }
+function GetWorldElapsedTimers() if H.mplus then return 7 end end
+function GetWorldElapsedTime(id) if H.mplus and id == 7 then return 0, H.mplus.elapsed, 1 end return 0, 0, 0 end
+C_ChallengeMode.IsChallengeModeActive = function() return H.mplus ~= nil end
+C_ChallengeMode.GetActiveChallengeMapID = function() return H.mplus and H.mplus.mapID end
+C_ChallengeMode.GetMapUIInfo = function(id) return "Dungeon " .. id, id, H.mplus and H.mplus.limit or 1800 end
+C_ChallengeMode.GetActiveKeystoneInfo = function() if H.mplus then return H.mplus.level, { 9 }, false end return 0 end
+C_ChallengeMode.GetAffixInfo = function(id) return "Affix" .. id, "", 0 end
+C_ChallengeMode.GetDeathCount = function() if H.mplus then return maybe(H.mplus.deaths), maybe(H.mplus.lost) end return 0, 0 end
+C_ChallengeMode.GetChallengeCompletionInfo = function() return H.completion end
+C_ChallengeMode.GetDungeonScoreRarityColor = function() return { GenerateHexColor = function() return "ff1eff00" end } end
+C_ScenarioInfo = { GetCriteriaInfo = function(i)
+  if i == 1 and H.mplus then return { isWeightedProgress = false, quantity = 0, totalQuantity = 1, quantityString = "" } end
+  if i == 2 and H.mplus and H.mplus.forces then local f = H.mplus.forces; return { isWeightedProgress = true, quantity = maybe(f[1]), totalQuantity = f[2], quantityString = maybe(f[3]) } end
+  return nil end }
+C_MythicPlus = { GetOwnedKeystoneChallengeMapID = function() return H.ownedKey end }
+H.spoken = {}
+C_VoiceChat = { SpeakText = function(voice, text) H.spoken[#H.spoken + 1] = text end }
+C_TTSSettings = { GetVoiceOptionID = function() return 1 end }
+H.macros = { "Focus Kick", "Burst" }
+function GetNumMacros() return #H.macros, 0 end
+function GetMacroInfo(i) return H.macros[i] end
+H.mounts = { [1] = { "Swift Phoenix", true }, [2] = { "Slow Mule", false } }
+C_MountJournal = {
+  GetMountIDs = function() local t = {}; for id in pairs(H.mounts) do t[#t + 1] = id end; table.sort(t); return t end,
+  GetMountInfoByID = function(id) local m = H.mounts[id]; if not m then return nil end return m[1], 1000 + id, 500 + id, false, true, 0, false, false, nil, false, m[2], id end,
+  SummonByID = function(id) H.summoned = id end,
+}
+H.itemStats = {}
+C_Item.GetItemStats = function(link) return H.itemStats[link] end
+C_Item.GetDetailedItemLevelInfo = function(link) local st = H.itemStats[link]; return st and st.ilvl end
+C_Item.GetItemInfoInstant = function(id) if type(id) == "string" then return 1, "", "", (H.itemStats[id] or {}).loc or "INVTYPE_HEAD" end return id, "", "", "INVTYPE_HEAD" end
+H.equipped = {}
+function GetInventoryItemLink(unit, slot) return H.equipped[slot] end
+local baseInstance = GetInstanceInfo
+function GetInstanceInfo() if H.instanceInfo then return unpack(H.instanceInfo) end return baseInstance() end
+H.specIndex = 1
+C_SpecializationInfo.GetSpecialization = function() return H.specIndex end
+C_SpecializationInfo.SetSpecialization = function(i) H.calls[#H.calls + 1] = { "SetSpecialization", i }; H.specIndex = i; return true end
+H.config = 100
+C_ClassTalents = { GetLastSelectedSavedConfigID = function() return H.config end, CanChangeTalents = function() return true end,
+  LoadConfig = function(id) H.calls[#H.calls + 1] = { "LoadConfig", id }; H.config = id; return 1 end }
+H.sets = { [1] = { "Raid", false }, [2] = { "Dungeon", true } }
+C_EquipmentSet = { GetEquipmentSetIDs = function() return { 1, 2 } end,
+  GetEquipmentSetInfo = function(id) local x = H.sets[id]; return x[1], 0, id, x[2] end,
+  UseEquipmentSet = function(id) H.calls[#H.calls + 1] = { "UseEquipmentSet", id }; for k, v in pairs(H.sets) do v[2] = (k == id) end; return true end }
+H.lfg = {}
+C_LFGList = {
+  HasSearchResultInfo = function(id) return H.lfg[id] ~= nil end,
+  GetSearchResultInfo = function(id) local r = H.lfg[id]; return r and { leaderName = r.leader, leaderOverallDungeonScore = r.score, numMembers = #r.roles } end,
+  GetSearchResultPlayerInfo = function(id, i) local r = H.lfg[id]; return r and { assignedRole = r.roles[i] } end,
+  GetSearchResults = function() local t = {}; for id in pairs(H.lfg) do t[#t + 1] = id end; table.sort(t); return #t, t end,
+  GetAdvancedFilter = function() return H.lfgFilter or { minimumRating = 0, needsTank = false, needsHealer = false, needsDamage = false } end,
+  SaveAdvancedFilter = function(f) H.lfgFilter = f end,
+}
+function LFGListSearchEntry_Update(entry) rawset(entry, "updates", (rawget(entry, "updates") or 0) + 1) end
+H.addonLoaded = {}
+local baseLoaded = C_AddOns.IsAddOnLoaded
+C_AddOns.IsAddOnLoaded = function(n) if H.addonLoaded[n] then return true end return baseLoaded(n) end
+local baseLoad = C_AddOns.LoadAddOn
+C_AddOns.LoadAddOn = function(n) if n == "Phoenix_UI_Locales" then H.loadAddon(n); return true end return baseLoad(n) end
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
-local OPTIONAL = { ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
+local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end

@@ -66,3 +66,14 @@ SlashCmdList.PHOENIXUI = function(msg)
   elseif word == "" and Slash.default then Slash.default()
   else help() end
 end
+
+-- /pui loc: translation coverage for the active language (PUI_V2 5.17).
+Slash:Register("loc", function()
+  local L = PUI.Locale
+  local keys = L:Harvest()
+  local have, total = L:Coverage(keys)
+  if L.active == "enUS" then return out("language enUS: " .. total .. " strings (English is the source).") end
+  local miss = 0
+  for _ in pairs(L.missing) do miss = miss + 1 end
+  out(string.format("language %s: %d of %d strings translated; %d missing ones seen so far fall back to English.", L.active, have, total, miss))
+end, "translation coverage for the current language")
