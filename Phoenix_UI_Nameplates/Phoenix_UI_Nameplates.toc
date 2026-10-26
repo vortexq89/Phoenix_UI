@@ -1,0 +1,10 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Nameplates
+## Notes: Phoenix UI nameplates: pooled plates over Blizzard's, one cast dispatcher, threat and reaction colours, icons and CVar control.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Plate.lua
+Nameplates.lua
+Tests\Nameplates_test.lua

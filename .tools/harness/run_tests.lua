@@ -5,7 +5,7 @@ local H = dofile(here .. "/wow_stub.lua")
 
 H.loadAddon("Phoenix_UI")
 -- Non-LoD children load right after the parent, as the client does.
-for _, child in ipairs({ "Phoenix_UI_UnitFrames", "Phoenix_UI_ResourceBars", "Phoenix_UI_ActionBars" }) do
+for _, child in ipairs({ "Phoenix_UI_UnitFrames", "Phoenix_UI_ResourceBars", "Phoenix_UI_ActionBars", "Phoenix_UI_Nameplates", "Phoenix_UI_RaidFrames" }) do
   local fh = io.open(H.root .. "/" .. child .. "/" .. child .. ".toc")
   if fh then fh:close(); H.loadAddon(child) end
 end

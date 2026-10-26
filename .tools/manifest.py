@@ -28,6 +28,8 @@ ENGINE_GLOBALS = {
     "GetBindingKey", "GetBindingText", "SetOverrideBindingClick", "ClearOverrideBindings",
     "PickupAction", "PlaceAction", "IsModifiedClick", "RegisterStateDriver", "UnregisterStateDriver",
     "RegisterUnitWatch", "UnregisterUnitWatch", "GameTooltip_SetDefaultAnchor", "CreateColor",
+    # Phase 3 (present in both wow_globals_12.1.5 and wow_globals_forever_1.60.1).
+    "GetReadyCheckStatus", "UnitHasIncomingResurrection",
 }
 
 CALL_RE = re.compile(r"(?<![\w.:])([A-Za-z_]\w*)(?!\s*=[^=])(?!\w)")

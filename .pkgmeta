@@ -3,6 +3,11 @@ package-as: Phoenix_UI
 move-folders:
   Phoenix_UI/Phoenix_UI_Sentinel: Phoenix_UI_Sentinel
   Phoenix_UI/Phoenix_UI_Options: Phoenix_UI_Options
+  Phoenix_UI/Phoenix_UI_UnitFrames: Phoenix_UI_UnitFrames
+  Phoenix_UI/Phoenix_UI_ResourceBars: Phoenix_UI_ResourceBars
+  Phoenix_UI/Phoenix_UI_ActionBars: Phoenix_UI_ActionBars
+  Phoenix_UI/Phoenix_UI_Nameplates: Phoenix_UI_Nameplates
+  Phoenix_UI/Phoenix_UI_RaidFrames: Phoenix_UI_RaidFrames
 
 externals:
   Libs/LibStub:

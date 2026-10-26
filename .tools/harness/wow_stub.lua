@@ -437,8 +437,49 @@ C_ActionBar = {
   GetBonusBarOffset = function() return 0 end,
 }
 
+-- Phase 3: nameplates, group frames, click-casting.
+function Region:WrapScript(frame, script, pre) H.wrapped = H.wrapped or {}; H.wrapped[#H.wrapped + 1] = { header = self, frame = frame, script = script, pre = pre } end
+function Region:SetTextColor(r, g, b) self.textColor = { r, g, b } end
+H.plates = {}
+function H.addPlate(unit)
+  local plate = CreateFrame("Frame", nil, UIParent)
+  plate.UnitFrame = CreateFrame("Frame", nil, plate)
+  plate.namePlateUnitToken = unit
+  H.plates[unit] = plate
+  H.units[unit] = true
+  return plate
+end
+C_NamePlate = {
+  GetNamePlateForUnit = function(unit) return H.plates[unit] end,
+  GetNamePlates = function() local t = {}; for _, p in pairs(H.plates) do t[#t + 1] = p end; return t end,
+}
+H.threat = 0
+function UnitThreatSituation() return maybe(H.threat) end
+function UnitIsTapDenied() return maybe(false) end
+function UnitIsUnit(a, b) return maybe(a == b) end
+H.friendly = {}
+function UnitIsFriend(_, u) return maybe(H.friendly[u] == true) end
+C_QuestLog = { UnitIsRelatedToActiveQuest = function() return maybe(false) end }
+C_SpecializationInfo.GetSpecializationInfo = function() return 62, "Arcane", "", 0, H.role or "DAMAGER" end
+function UnitInRange() return maybe(true), maybe(true) end
+H.roles = {}
+function UnitGroupRolesAssigned(u) return maybe(H.roles[u] or "NONE") end
+function GetReadyCheckStatus(u) return H.ready and H.ready[u] or nil end
+function UnitHasIncomingResurrection() return maybe(false) end
+C_IncomingSummon = { IncomingSummonStatus = function() return maybe(0) end }
+function UnitPhaseReason() return nil end
+H.privateAnchors, H.nextAnchor = {}, 0
+C_UnitAuras = {
+  AddPrivateAuraAnchor = function(args) H.nextAnchor = H.nextAnchor + 1; H.privateAnchors[H.nextAnchor] = args; return H.nextAnchor end,
+  RemovePrivateAuraAnchor = function(id) H.privateAnchors[id] = nil end,
+  GetAuraDataByIndex = function(u, i, filter) if H.dispellable and H.dispellable[u] then return { auraInstanceID = maybe(7) } end return nil end,
+}
+for _, n in ipairs({ "PartyFrame", "CompactRaidFrameContainer", "CompactRaidFrameManager" }) do
+  local f = CreateFrame("Frame", n, UIParent); f.parent = UIParent
+end
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
-local OPTIONAL = { ClickCastFrames = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
+local OPTIONAL = { ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end

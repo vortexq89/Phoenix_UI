@@ -149,6 +149,7 @@ local function build(group, unit)
     _G.ClickCastFrames = clickCast
   end
   clickCast[b] = true
+  PUI.Kernel:Fire("CLICKCAST_FRAME", b)
   local o = { unit = unit, group = group, button = b, cfg = cfg[group], live = false }
   o.tracker = PUI:CreateFrame("Frame", nil, nil, nil, OWNER)
   o.tracker.owner = o
