@@ -1,0 +1,15 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Pulse
+## Notes: Phoenix UI Pulse: boss timer bars from the game's encounter timeline, the pull and break countdown bar, and the shared combat and encounter timer.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Logo\PhoenixUI_Icon_64
+## Category: Phoenix UI
+## Group: Phoenix_UI
+## Dependencies: Phoenix_UI
+
+Bars.lua
+Pulse.lua
+Tests\Pulse_test.lua

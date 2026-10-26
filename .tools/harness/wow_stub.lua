@@ -115,9 +115,11 @@ function H.step(dt)
     local f = H.frames[i]
     if f.scripts.OnUpdate then dispatch(f.scripts.OnUpdate, f, dt) end
   end
-  for g in pairs(H.groups) do
+  local live = {}
+  for g in pairs(H.groups) do live[#live + 1] = g end -- a loop may start new groups (as the engine allows)
+  for _, g in ipairs(live) do
     g.elapsed = g.elapsed + dt
-    if g.duration and g.elapsed >= g.duration then
+    if H.groups[g] and g.duration and g.elapsed >= g.duration then
       g.elapsed = 0
       if g.scripts.OnLoop then dispatch(g.scripts.OnLoop, g, "FORWARD") end
     end
@@ -620,7 +622,7 @@ H.auras = {}
 C_UnitAuras.GetPlayerAuraBySpellID = function(id) local a = H.auras[id]; if a then return maybe(a) end return nil end
 H.known = {}
 C_SpellBook = { IsSpellKnown = function(id) return H.known[id] == true end }
-C_Spell.GetSpellTexture = function(id) return 100000 + id end
+C_Spell.GetSpellTexture = function(id) if id == nil then return nil end if H.secrets[id] ~= nil then return H.secret(100000 + H.secrets[id]) end return 100000 + id end
 C_Spell.GetSpellName = function(id) return "Spell " .. id end
 function IsInGroup() return (H.group and #H.group or 0) > 0 end
 function IsInRaid() return false end
@@ -850,7 +852,7 @@ H.itemCounts, H.itemSpells = { [5512] = 2 }, {}
 C_Item.GetItemCount = function(id) return H.itemCounts[id] or 0 end
 C_Item.GetItemIconByID = function(id) return 1000 + id end
 C_Item.GetItemCooldown = function() return 0, 0, 1 end
-C_Item.GetItemSpell = function(id) return H.itemSpells[id] end
+C_Item.GetItemSpell = function(id) local v = H.itemSpells[id]; if v ~= nil then return "Item spell", v end end
 H.assistSpell = nil
 C_AssistedCombat = { GetNextCastSpell = function() return H.assistSpell end }
 function Region:IsMouseOver() return rawget(self, "mouseOver") == true end
@@ -918,6 +920,7 @@ C_Item.GetItemNameByID = function(id) return H.itemNames and H.itemNames[id] or 
 C_Item.IsItemKeystoneByID = function(id) return id == 180653 end
 C_Item.GetItemQualityColor = function(q) return 0.1 * q, 0.5, 0.5 end
 C_Item.GetItemIconByID = function(id) return 1000 + (id or 0) end
+C_Spell.GetSpellInfo = function(x) if type(x) == "number" then return { spellID = x, name = "Spell " .. x } end return nil end
 C_Item.GetItemQualityByID = function() return 1 end
 local baseInstant = C_Item.GetItemInfoInstant
 C_Item.GetItemInfoInstant = function(id)
@@ -1012,6 +1015,40 @@ H.cvars.Sound_EnableErrorSpeech = "1"
 H.cvars.Sound_EnableSFX = "1"
 H.cvars.Sound_EnableMusic = "1"
 SOUNDKIT.READY_CHECK = 8960
+
+
+-- Step 9b: Pulse, Arena, Spark, Cast History.
+C_EncounterTimeline = {
+  GetEventTimer = function(id) return H.duration("timeline" .. tostring(id)) end,
+  GetEventTimeRemaining = function() return H.timelineLeft or 10 end,
+  GetEventInfo = function(id) return H.timeline and H.timeline[id] end,
+  GetEventColor = function() return nil end,
+  GetSortedEventList = function() local out = {}; for id in pairs(H.timeline or {}) do out[#out + 1] = id end; table.sort(out); return out end,
+}
+
+function UnitGUID(u) return "Player-1-" .. tostring(u) end
+CompactArenaFrame = CreateFrame("Frame", "CompactArenaFrame", UIParent)
+function GetSpecializationInfoForSpecID(id) return id, "Spec" .. tostring(id), "", 200000 + (id or 0), "DAMAGER" end
+C_SpellDiminish = { IsSystemSupported = function() return true end,
+  GetSpellDiminishCategoryInfo = function(c) return { category = c, name = "Cat" .. tostring(c), icon = 300000 + c } end }
+H.arenaCC = {}
+C_PvP.GetArenaCrowdControlInfo = function(u) local x = H.arenaCC[u]; if x then return x[1], x[2], x[3] end end
+C_PvP.RequestCrowdControlSpell = rec("RequestCrowdControlSpell")
+C_PvP.GetArenaOpponentSpec = function(i) return H.arenaSpecs and H.arenaSpecs[i] or 0, 0 end
+C_PvP.GetActiveMatchDuration = function() return H.matchDuration or 0 end
+C_PvP.IsMatchActive = function() return H.matchActive == true end
+C_PvP.GetScoreInfo = function(i) return H.scores and H.scores[i] end
+C_PvP.GetScoreInfoByPlayerGuid = function() return H.scores and H.scores[1] end
+
+C_Item.GetItemQualityByID = function(link) return H.itemQuality or 3 end
+H.itemCD = {}
+C_Container.GetItemCooldown = function(id) local c = H.itemCD[id]; if c then return c[1], c[2], 1 end return 0, 0, 1 end
+for _, k in ipairs({ "floatingCombatTextCombatDamage", "floatingCombatTextCombatHealing", "floatingCombatTextPetMeleeDamage", "floatingCombatTextPetSpellDamage",
+  "enableFloatingCombatText", "floatingCombatTextCombatState", "floatingCombatTextReactives", "floatingCombatTextLowManaHealth", "floatingCombatTextHonorGains",
+  "floatingCombatTextRepChanges", "floatingCombatTextEnergyGains", "floatingCombatTextAuras", "floatingCombatTextDodgeParryMiss", "spellDiminishPVPEnemiesEnabled" }) do
+  H.cvars[k] = H.cvars[k] or "1"
+end
+H.cvars.spellDiminishPVPEnemiesEnabled = "0"
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,

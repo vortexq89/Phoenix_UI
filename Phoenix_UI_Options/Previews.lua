@@ -989,6 +989,201 @@ function Previews.RaidTools(card)
   st(card).rtLines = #out
 end
 
+-- Pulse: sample boss bars in the live bar style, the combat timer line and
+-- the fight history (drawn by Pulse's own bar group, so it never disagrees).
+function Previews.Pulse(card)
+  local PL = PUI.Pulse
+  if not PL then return end
+  local h = hudHolder(card, "pulse")
+  h.lines = rawget(h, "lines") or {}
+  local s = st(card)
+  if not s.pulseGroup then s.pulseGroup = PL.Bars.NewGroup("Pulse", "preview", PL.style, h) end
+  local g = s.pulseGroup
+  g.anchor:ClearAllPoints(); g.anchor:SetPoint("TOPLEFT", h, "TOPLEFT", 6, -26)
+  g:ReleaseAll()
+  local S = PL.settings
+  local now = GetTime()
+  if S.timeline then
+    for i, x in ipairs(PL.SAMPLES) do
+      g:Acquire("p" .. i):Fill({ name = x[1], icon = x[2], start = now, length = x[3], sortKey = x[3], autoRelease = false,
+        color = (S.severityColors and (i == 1 and S.colorHigh or (i == 2 and S.colorMedium))) or S.colorNormal, emphasis = i == 1 and S.highlight })
+    end
+  end
+  if S.countdownBar then g:Acquire("pc"):Fill({ name = "Pull", icon = 136106, color = S.colorCountdown, start = now, length = 10, sortKey = 0, autoRelease = false }) end
+  local out = { "Boss timer bars" .. (S.timeline and "" or " (off)") }
+  local top = -32 - math.min(g:Count(), PL.style.max) * (PL.style.height + PL.style.gap)
+  local extra = { S.timer and ("Combat timer: " .. (S.timerLabel and "Vexie  " or "") .. (S.timerFormat == "tenths" and "1:05.4" or "1:05")) or "Combat timer: off" }
+  for _, l in ipairs(PL.HistoryLines(3)) do extra[#extra + 1] = l end
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, "header"); fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, -4); fs:SetText(text)
+  end
+  for i, text in ipairs(extra) do
+    local fs = line(h, h.lines, i + 1, "small"); fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, top - (i - 1) * 16); fs:SetText(text)
+  end
+  hideFrom(h.lines, #extra + 1)
+  s.pulseBars = g:Count()
+end
+
+-- Arena: sample enemies in the live size, colours, trinket, racial and the DR
+-- tray drawn by Arena's own tray paint.
+function Previews.Arena(card)
+  local AR = PUI.Arena
+  if not AR then return end
+  local h = hudHolder(card, "arena")
+  local S = AR.settings
+  h.rows = rawget(h, "rows") or {}
+  h.lines = rawget(h, "lines") or {}
+  local n = S.testCount
+  local scale = math.min(1, 300 / (S.width + S.trinketSize * 2 + S.drSize * 3 + 40))
+  for i = 1, 5 do
+    local r = h.rows[i]
+    if not r then
+      r = CreateFrame("Frame", nil, h)
+      r.bar = bar(r, 10, 10); r.bar:SetPoint("TOPLEFT")
+      r.name = Kit.Text(r.bar, "small", "text.primary", "OVERLAY"); r.name:SetPoint("LEFT", 4, 0)
+      r.hp = Kit.Text(r.bar, "small", "text.primary", "OVERLAY"); r.hp:SetPoint("RIGHT", -4, 0)
+      r.trinket = r:CreateTexture(nil, "ARTWORK"); r.racial = r:CreateTexture(nil, "ARTWORK")
+      r.tray = AR.DR.BuildTray(r)
+      h.rows[i] = r
+    end
+    local x = AR.SAMPLE[i]
+    r:SetShown(i <= n)
+    if i <= n then
+      r:SetScale(scale)
+      r:SetSize(S.width, S.height)
+      r:ClearAllPoints(); r:SetPoint("TOPLEFT", h, "TOPLEFT", S.mirrored and (S.trinketSize * 2 + 20) or 6, -24 - (i - 1) * (S.height + S.spacing))
+      r.bar:SetSize(S.width, S.height - (S.showPower and S.powerHeight or 0))
+      local c = S.classColors and C_ClassColor.GetClassColor(x.class)
+      if c then paintBar(r.bar, x.hp * 100, c.r, c.g, c.b) else paintBar(r.bar, x.hp * 100, 0.3, 0.72, 0.36) end
+      r.name:SetText(S.name and x.name or "")
+      r.hp:SetText(S.healthText ~= "none" and string.format("%d%%", x.hp * 100) or "")
+      r:SetAlpha(x.life == "left" and S.staleAlpha or 1)
+      for _, t in ipairs({ r.trinket, r.racial }) do t:SetSize(S.trinketSize, S.trinketSize); t:ClearAllPoints() end
+      r.trinket:SetTexture(1322720); r.racial:SetTexture(136129)
+      if S.mirrored then r.trinket:SetPoint("RIGHT", r, "LEFT", -4, 0); r.racial:SetPoint("RIGHT", r.trinket, "LEFT", -2, 0)
+      else r.trinket:SetPoint("LEFT", r, "RIGHT", 4, 0); r.racial:SetPoint("LEFT", r.trinket, "RIGHT", 2, 0) end
+      r.trinket:SetShown(S.trinket); r.racial:SetShown(S.racial)
+      local entries = {}
+      if S.drBlizzard and S.drTray then
+        for _, d in ipairs(x.dr) do
+          entries[#entries + 1] = { key = "p" .. d.cat, category = d.cat, plain = true, stage = d.stage,
+            info = { category = d.cat, startTime = GetTime(), duration = 18, isImmune = d.stage >= 3 } }
+        end
+      end
+      AR.DR.Paint(r.tray, entries, AR.Frames.TrayStyle(S))
+      r.tray:ClearAllPoints()
+      local anchor = (S.drAnchor == "racial" and S.racial and r.racial) or (S.drAnchor == "frame" and r) or (S.trinket and r.trinket) or r
+      if S.mirrored then r.tray:SetPoint("RIGHT", anchor, "LEFT", -4 + S.drX, S.drY) else r.tray:SetPoint("LEFT", anchor, "RIGHT", 4 + S.drX, S.drY) end
+    end
+  end
+  local note = S.drBlizzard and "DR from the game's own tracking, right of the trinket (movable)." or "DR tracking is off: turn on \"DR tracking (game's own)\" to see DR."
+  local head = (S.matchTimer and "Match 2:41  " or "") .. (S.dampening and "Dampening 12%  " or "") .. (S.shadowsight and "Shadowsight up" or "")
+  for i, text in ipairs({ head ~= "" and head or "Arena (test data)", note }) do
+    local fs = line(h, h.lines, i, i == 1 and "header" or "small")
+    fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, i == 1 and -4 or (-30 - n * (S.height + S.spacing) * scale))
+    fs:SetText(text)
+  end
+  st(card).arenaFrames = n
+  st(card).arenaNote = note
+end
+
+-- Spark: the four areas with sample lines in their live size, colour and alignment.
+function Previews.Spark(card)
+  local SP = PUI.Spark
+  if not SP then return end
+  local h = hudHolder(card, "spark")
+  h.boxes = rawget(h, "boxes") or {}
+  local S = SP.settings
+  local SAMPLE = {
+    incoming = { { "inDamage", "-12.4K", true }, { "inHeal", "+8.4K Rejuv" }, { "inAvoid", "Dodge" } },
+    outgoing = { { "outDamage", "48.2K Mortal Strike", true }, { "outDamage", "Rend 6K x5" }, { "outHeal", "+6.2K Heal" } },
+    notification = { { "combatIn", "+Combat" }, { "itemReady", "Healthstone ready" }, { "money", "+1g 20s" } },
+    static = { { "itemReady", "Hearthstone ready" } },
+  }
+  local shown = 0
+  for i, id in ipairs(SP.Engine.AREAS) do
+    local A = S.areas[id]
+    local b = h.boxes[i]
+    if not b then
+      b = CreateFrame("Frame", nil, h)
+      b.bg = b:CreateTexture(nil, "BACKGROUND"); b.bg:SetAllPoints(); b.bg:SetColorTexture(1, 1, 1, 0.04)
+      b.title = Kit.Text(b, "small", "text.secondary", "OVERLAY"); b.title:SetPoint("TOPLEFT", 4, -3)
+      b.lines = {}
+      h.boxes[i] = b
+    end
+    b:SetSize(186, 138)
+    b:ClearAllPoints(); b:SetPoint("TOPLEFT", h, "TOPLEFT", 6 + ((i - 1) % 2) * 192, -6 - math.floor((i - 1) / 2) * 144)
+    b:SetShown(A.enabled)
+    if A.enabled then
+      shown = shown + 1
+      b.title:SetText(SP.Engine.AREA_LABELS[id] .. " - " .. A.behaviour .. ", " .. A.direction)
+      for j, x in ipairs(SAMPLE[id]) do
+        local fs = b.lines[j]
+        if not fs then fs = b:CreateFontString(nil, "OVERLAY"); b.lines[j] = fs end
+        local R = S.rows[x[1]]
+        local size = A.size * ((x[3] and S.master.critScale) or 1) * 0.6
+        fs:SetFont(PUI.Media:FontObject("normal"):GetFont(), math.floor(size + 0.5), S.master.outline ~= "NONE" and S.master.outline or "")
+        fs:ClearAllPoints()
+        local y = A.direction == "down" and (-22 - (j - 1) * 30) or (-108 + (j - 1) * 30)
+        fs:SetPoint(A.align, b, A.align, A.align == "LEFT" and 6 or (A.align == "RIGHT" and -6 or 0), 0)
+        fs:SetPoint("TOP", b, "TOP", 0, y)
+        local c = R.color or { r = 1, g = 1, b = 1 }
+        fs:SetTextColor(c.r, c.g, c.b, A.alpha)
+        fs:SetText(R.on and x[2] or "")
+        fs:Show()
+      end
+      hideFrom(b.lines, #SAMPLE[id])
+    end
+  end
+  st(card).sparkAreas = shown
+end
+
+-- Cast History: one sample strip in the live size, count, direction, glow and crosses.
+function Previews.CastHistory(card)
+  local CH = PUI.CastHistory
+  if not CH then return end
+  local h = hudHolder(card, "ch")
+  h.icons = rawget(h, "icons") or {}
+  h.lines = rawget(h, "lines") or {}
+  local S = CH.settings
+  local n = S.count
+  local size = math.min(S.iconSize, math.floor(360 / math.max(1, n)) - S.spacing)
+  local d = CH.Strip.DIR[S.direction] or CH.Strip.DIR.LEFT
+  local ids = { 133, 116, 2948, 11366, 108853, 190319, 31661, 45438, 1953, 2139, 30449, 80353 }
+  for i = 1, math.max(n, #h.icons) do
+    local b = h.icons[i]
+    if not b and i <= n then
+      b = CreateFrame("Frame", nil, h)
+      b.tex = b:CreateTexture(nil, "ARTWORK"); b.tex:SetAllPoints()
+      b.cross = b:CreateTexture(nil, "OVERLAY"); b.cross:SetAllPoints(); b.cross:SetAtlas("common-icon-redx")
+      h.icons[i] = b
+    end
+    if b then
+      b:SetShown(i <= n)
+      if i <= n then
+        b:SetSize(size, size)
+        b:ClearAllPoints()
+        local off = (i - 1) * (size + S.spacing)
+        local ox = d[1] ~= 0 and (d[1] < 0 and (360 - size - off) or off) or 0
+        local oy = d[2] ~= 0 and (d[2] > 0 and (-120 + off) or -off) or 0
+        b:SetPoint("TOPLEFT", h, "TOPLEFT", 6 + ox, -30 + (d[2] ~= 0 and oy or 0))
+        b.tex:SetTexture(C_Spell.GetSpellTexture(ids[((i - 1) % #ids) + 1]))
+        b.tex:SetTexCoord(S.zoom and 0.08 or 0, S.zoom and 0.92 or 1, S.zoom and 0.08 or 0, S.zoom and 0.92 or 1)
+        b.cross:SetShown(i == 2 and S.showInterrupted)
+        if i == 1 and S.glowNewest then PUI.Glow:Start(b, S.glowStyle) else PUI.Glow:Stop(b) end
+      end
+    end
+  end
+  local out = { "Cast history - " .. (S.mode == "move" and "moving strip" or "still and fade") .. ", newest " .. S.direction:lower() .. " side",
+    string.format("%d blocked spells, %d blocked items%s", #(S.blockSpells or {}), #(S.blockItems or {}), S.builtIn and ", auto attacks hidden" or "") }
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, i == 1 and "header" or "small")
+    fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, i == 1 and -4 or (-40 - size - (d[2] ~= 0 and n * (size + S.spacing) or 0)))
+    fs:SetText(text)
+  end
+  st(card).chIcons = n
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {}, st(card).cdm or {} }) do
     for _, f in pairs(list) do f:Hide() end
@@ -1003,6 +1198,7 @@ local function hideAll(card)
   if st(card).rfPreset then st(card).rfPreset:Hide() end
   if st(card).npHolder then st(card).npHolder:Hide() end
   for _, h in pairs(st(card).hud or {}) do h:Hide() end
+  if st(card).pulseGroup then st(card).pulseGroup:ReleaseAll() end -- stops its text Ticker entry
 end
 
 function Previews.Update(owner, card, key)
@@ -1014,7 +1210,7 @@ end
 
 -- wrap builders so switching page/tab always starts clean
 for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars", "Chat", "Vault",
-  "Embers", "Ascent", "QuestTracker", "Reminders", "GroupFinder", "Flow", "RaidTools" }) do
+  "Embers", "Ascent", "QuestTracker", "Reminders", "GroupFinder", "Flow", "RaidTools", "Pulse", "Arena", "Spark", "CastHistory" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end
