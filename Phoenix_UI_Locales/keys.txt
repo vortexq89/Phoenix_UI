@@ -226,6 +226,8 @@ Click-cast bindings
 Click-casting
 Closes the talking head popup as it opens.
 Collections
+Colour for a score of 0 when using your own gradient.
+Colour for the top score when using your own gradient.
 Colour wash over the settings window glass. Alpha sets how strong it is (0 = none). Glass opacity is in Theme & Media.
 Columns
 Combat log in raids and M+
@@ -247,7 +249,9 @@ Data bar 2 blocks
 Data bar 2 height
 Data bar 2 width
 Data bars
+Decimal places for short numbers, e.g. 12K, 12.3K or 12.34K.
 Decimal places in the score.
+Decimals on short numbers
 Declines duel requests.
 Declines guild invitations.
 Deeper capture for designated testers: 200-event history, locals on every error, 1-second performance sampler, test suite on login.
@@ -334,6 +338,9 @@ Global cooldown bar
 Global cooldown bar height
 Global nameplate scale; restored when the module turns off.
 Gossip and quests
+Gradient end colour
+Gradient start colour
+Gradient top score
 Great Vault
 Grid uses full-size slots; compact uses smaller ones.
 Group Finder
@@ -391,6 +398,7 @@ Hides the default player cast bar while the Phoenix cast bar is shown.
 Highlights items you just received.
 Highlights members carrying a debuff you can dispel.
 Hovercast keys
+How large numbers look everywhere in Phoenix (meters, data bars, unit text, combat text).
 How many buttons bar 1 shows (an action page holds 12).
 How many buttons bar 10 shows (an action page holds 12).
 How many buttons bar 2 shows (an action page holds 12).
@@ -406,6 +414,7 @@ How many fit in one row before wrapping (overflow goes to the next row).
 How many meter windows to show (up to 5); each snaps in Studio.
 How many names a chat report lists.
 How many results the palette lists.
+How often out-of-range units are re-checked (seconds). Lower reacts faster and costs a little more.
 Icon size
 In combat, colour plates by your threat: tanks want aggro (green), others want none.
 Include my character name
@@ -439,6 +448,7 @@ Lock action buttons
 Look
 Loot
 Low durability warning
+M+ score colours
 Macro conditions that show or hide bar 1, e.g. [combat] show; hide. Empty uses the default.
 Macro conditions that show or hide bar 10, e.g. [combat] show; hide. Empty uses the default.
 Macro conditions that show or hide bar 2, e.g. [combat] show; hide. Empty uses the default.
@@ -483,6 +493,7 @@ Nameplates
 New group sound
 New item glow
 Number font
+Number style
 Only groups that need my role
 Only in a group
 Opacity of bar 1 out of combat when fading is on.
@@ -618,6 +629,7 @@ Raid frames
 Raid sorting
 Raid target markers on group frames.
 Raises the camera zoom limit; restored when turned off.
+Range check speed
 Reaction colour, or class colour for players.
 Reads threshold warnings aloud with the game's text to speech.
 Ready check
@@ -659,6 +671,7 @@ Scale of bar 9.
 Scales every Phoenix UI font.
 Score decimals
 Score in tooltips
+Score that gets the end colour; higher scores keep it.
 Sell junk button
 Sells grey items when you open a vendor.
 Sentinel notice
@@ -820,6 +833,7 @@ What the first window shows. Each window can switch with a click on its title.
 What the left text zone shows.
 What the power text zone shows.
 What the right text zone shows.
+Where Mythic+ score colours come from in tooltips, Group Finder and data bars.
 Where the window opens on screen. Dragging the window updates this.
 Where to switch
 Which action page (12 slots) bar 10 shows.

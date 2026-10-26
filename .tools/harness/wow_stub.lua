@@ -729,8 +729,51 @@ C_AddOns.IsAddOnLoaded = function(n) if H.addonLoaded[n] then return true end re
 local baseLoad = C_AddOns.LoadAddOn
 C_AddOns.LoadAddOn = function(n) if n == "Phoenix_UI_Locales" then H.loadAddon(n); return true end return baseLoad(n) end
 
+
+-- Foundations (ledgers, visibility, services, season, cast bar, auras) ---------
+function SetOverrideBinding(owner, prio, key, command) H.overrideBindings[key] = { owner = owner, command = command } end
+function BreakUpLargeNumbers(n) local s = tostring(n); local k; repeat s, k = s:gsub("^(-?%d+)(%d%d%d)", "%1,%2") until k == 0; return s end
+H.cursor = { 100, 200 }
+function GetCursorPosition() return H.cursor[1], H.cursor[2] end
+function UnitHasVehicleUI() return H.vehicle == true end
+function IsMounted() return H.mounted == true end
+C_PlayerInfo.GetGlidingInfo = function() return H.gliding == true, true, 0 end
+H.season = { id = 15, maps = { 501, 502 }, info = { [501] = { "Ara-Kara", 1800 }, [502] = { "The Dawnbreaker", 1980 } }, affixes = { 9, 152 } }
+C_MythicPlus.GetCurrentSeason = function() return H.season.id end
+C_MythicPlus.GetCurrentAffixes = function() local out = {}; for i, a in ipairs(H.season.affixes) do out[i] = { id = a } end; return out end
+C_MythicPlus.RequestMapInfo = function() end
+C_MythicPlus.RequestCurrentAffixes = function() end
+C_ChallengeMode.GetMapTable = function() return H.season.maps end
+C_ChallengeMode.GetMapUIInfo = function(id) local i = H.season.info[id]; if i then return i[1], id, i[2], 0, 0, 2000 + id end end
+C_ChallengeMode.GetDungeonScoreRarityColor = function(score) if score >= 2500 then return { r = 1, g = 0.5, b = 0 } end return { r = 0, g = 0.44, b = 0.87 } end
+H.auraContainers = {}
+local function auraContainer()
+  local c = newObject("AuraContainer")
+  c.groupLog = {}
+  rawset(c, "SetUnit", function(self, u) self.unit = u end)
+  rawset(c, "AddAuraGroup", function(self, key, filter, opts) self.groupLog[#self.groupLog + 1] = { "add", key, filter, opts.maxFrameCount } end)
+  rawset(c, "SetAuraGroupFilterString", function(self, key, filter) self.groupLog[#self.groupLog + 1] = { "filter", key, filter } end)
+  rawset(c, "SetAuraGroupMaxFrameCount", function(self, key, n) self.groupLog[#self.groupLog + 1] = { "cap", key, n } end)
+  rawset(c, "SetAuraGroupSortMethod", function(self, key, m, d) self.groupLog[#self.groupLog + 1] = { "sort", key, m, d } end)
+  H.auraContainers[#H.auraContainers + 1] = c
+  return c
+end
+local baseCreateFrame = CreateFrame
+function CreateFrame(frameType, name, parent, template)
+  if frameType == "AuraContainer" then return auraContainer() end
+  return baseCreateFrame(frameType, name, parent, template)
+end
+AuraContainerSortMethod = { Default = 0, BigDefensive = 1, UnitFrameDebuff = 2, ImportantOnly = 3, Expiration = 4, ExpirationOnly = 5, Name = 6 }
+AuraContainerSortDirection = { Normal = 0, Reverse = 1 }
+H.addonLoaded.Blizzard_AuraContainer = true
+H.secretAuras = false
+C_Secrets.ShouldAurasBeSecret = function() return H.secretAuras == true end
+H.callbacks = {}
+EventRegistry = { RegisterCallback = function(_, event, fn, owner) H.callbacks[event] = H.callbacks[event] or {}; table.insert(H.callbacks[event], fn) end }
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
-local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
+local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
+  AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end

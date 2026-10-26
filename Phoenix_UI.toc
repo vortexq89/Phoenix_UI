@@ -31,6 +31,15 @@ Core\SentinelHook.lua
 Core\Layout.lua
 Core\OptionsHost.lua
 Core\Profiles.lua
+Core\Ledger.lua
+Core\Visibility.lua
+Core\Services.lua
+Core\Season.lua
+Core\Search.lua
+Core\Dialogs.lua
+Core\CastBar.lua
+Core\Auras.lua
+Core\Overrides.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Tests\Runner.lua
@@ -44,3 +53,5 @@ Tests\Theme_test.lua
 Tests\Layout_test.lua
 Tests\Phase6_test.lua
 Tests\Profiles_test.lua
+Tests\Foundations_test.lua
+Tests\Overrides_test.lua
