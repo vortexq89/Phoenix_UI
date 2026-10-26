@@ -33,6 +33,7 @@ end
 
 function A.sellJunk()
   if not s.sellJunk then return end
+  if PUI.Vault and PUI.Vault.OwnsJunk and PUI.Vault.OwnsJunk() then return end -- Vault owns junk while it is on (plan 1.O)
   local n = C_MerchantFrame.GetNumJunkItems()
   if n and n > 0 then C_MerchantFrame.SellAllJunkItems(); did("sellJunk") end
 end
@@ -253,7 +254,7 @@ end
 local function toggle(name, label, tooltip) key(name, { type = "toggle", default = false, label = label, tooltip = tooltip }) end
 key("repair", { type = "select", default = "off", choices = { "off", "player", "guild" }, label = "Auto repair",
   tooltip = "Repairs everything at a vendor. Guild uses guild funds when allowed, else your own gold.", mode = "simple" })
-toggle("sellJunk", "Auto sell junk", "Sells grey items when you open a vendor.")
+toggle("sellJunk", "Auto sell junk", "Sells grey items when you open a vendor. While Vault is on, Vault's own junk setting decides instead.")
 key("release", { type = "select", default = "off", choices = { "off", "world", "instances" }, label = "Auto release",
   tooltip = "Releases your spirit on death. World only, or also in dungeons and raids; never in battlegrounds or arenas, and never when you can self-resurrect." })
 toggle("acceptRes", "Auto accept resurrection", "Accepts a resurrection out of combat.")

@@ -1,6 +1,6 @@
 ## Interface: 120100, 120105, 16001
 ## Title: Phoenix UI - Chat
-## Notes: Phoenix UI chat: a taint-safe mirror of the game's chat frames with timestamps, channel abbreviations, keyword alerts and copy.
+## Notes: Phoenix UI chat: skinned Blizzard chat with keyword alerts, links, emoji, searchable history, whisper windows and a channel bar.
 ## Author: VortexQ8
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
@@ -10,5 +10,9 @@
 ## Group: Phoenix_UI
 ## Dependencies: Phoenix_UI
 
+Text.lua
 Chat.lua
+History.lua
+Whisper.lua
+Module.lua
 Tests\Chat_test.lua

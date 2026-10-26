@@ -516,7 +516,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 | Previews | B |
 
 - **Step 8a status (feat/hud, stacked on feat/studio):** every look and behaviour above is a setting with Simple and Advanced rows and a live preview drawn by the module's own paint code (Minimap.PlaceTexts/PaintBorder, Tooltip.UnitLines/PaintSkin, TooltipIDs.Line, DataBars.PaintBar/PaintProgress). Tickers only while shown (`mm.texts`, `mm.queue` while a pop is up, one-shot `mm.zoom`/`mm.ping`, `db.update`); no OnUpdate. Secret-safe: IDs and lines are built only from plain values; forces text and bar values are handed to widgets. Defaults (D-MOD-DEF): tooltip IDs always visible (gate off), bonus/trait IDs off, coordinates owner "ask", progress bar off, bin on when the minimap module is on. 8 new offline tests + 3 rewritten.
-- **Deferred to the polish pass (reported):** inspect-based lines (other players' item level and spec), transmog-known and upgrade-track lines, tier-set count; ID sources still to hook: achievement criteria rows (pooled frames), artifact power, garrison and pet-battle ability text; Phoenix-drawn tracking/calendar/mail buttons; LDB host and secure travel/profession blocks; per-spec data-bar sets; queue-popup timer in Skins reading PUI.Queue; Vault's gold history over PUI.Wallet; Group Finder page for `queue.lfgSeconds`.
+- **Deferred to the polish pass (reported):** inspect-based lines (other players' item level and spec), transmog-known and upgrade-track lines, tier-set count; ID sources still to hook: achievement criteria rows (pooled frames), artifact power, garrison and pet-battle ability text; Phoenix-drawn tracking/calendar/mail buttons; LDB host and secure travel/profession blocks; per-spec data-bar sets; queue-popup timer in Skins reading PUI.Queue; Group Finder page for `queue.lfgSeconds`.
 - **Study additions (§16, 2026-10-26):**
   - **Tooltip IDs (27 kinds)** + derived IDs (icon, use-spell, enchant, bonus, gems) merged per kind; four groups (Items, Spells, World, Collections), each kind toggleable and searchable; bonus/trait IDs off by default; secret guards before compares; skipped in pet battles.
   - **All-addons parity additions (audit 2026-10-26, `pui_study/others/AllAddons_parity.md`; each a setting with Simple + Advanced views) — Tooltip IDs (idTip):** Extra sources: hyperlinks, action buttons, talents, recipe, transmog wardrobe, achievement criteria, map pins, garrison and pet-battle abilities → Pet-battle ability/aura IDs were excluded; added for the pet journal and battle tooltips (secret-guarded); Show only while a modifier is held, copy the ID, colour per kind → Added modifier gate (Shift default, off/Shift/Ctrl/Alt), click-to-copy into the shared copy box, colour per kind; /idtip slash → Added `/pui ids` (opens the IDs page).
@@ -550,24 +550,28 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Style-aware window skins and character/inspect sheet (ilvl, enchants, upgrade track, gems): borders deduplicated on INSPECT_READY; gem flyout respects socket type; no auto-equip without an option and a combat guard; level tables from PUI.Season (1.28).
   - Friends skin: search, class icons.
 
-### 5.10 Chat — 6 keys
+### 5.10 Chat — step 8b built (Phoenix_UI_Chat: Text.lua, Chat.lua, History.lua, Whisper.lua, Module.lua; Core/Announce.lua; 41 keys + conflict choice + QoL router 5)
 
-- **B:** mirror, fade, timestamps, abbreviations, keyword alerts (text list), whisper sound, `/copychat`.
-- **M:**
-  - emoji (panel + autocomplete);
-  - role/class icons;
-  - spam filter;
-  - per-line copy;
-  - searchable history;
-  - tab editor;
-  - sidebar;
-  - edit box position;
-  - URL copy (verify);
-  - class-coloured names (verify);
-  - smart whisper windows;
-  - chat channel bar (plain buttons, no edit-box hooks);
-  - channel colour editor.
+| Feature | Status |
+|---|---|
+| Skin: panel per window (Phoenix/Glass/Blizzard, colour, opacity, padding, border), font/size/outline/shadow; window 1 via Edit Mode; window 3 never touched | B |
+| Display-time filter (ChatFrameUtil/ChatFrame message-event filters; no AddMessage/FCF hooks); secret args returned untouched | B |
+| Timestamps (4 formats, colour, click to copy the line), short channel names (full / [2. T] / [2]) | B |
+| Clickable URLs → shared copy dialog (EventRegistry SetItemRef addon links) | B |
+| Emoji (:name: → icon, size) + autocomplete (suggestion popup, click or Tab) | B (game textures; Phoenix emoji art with the media library) |
+| Keyword alerts: highlight colour, sound, icon flash, ignore own lines; once per line across windows | B |
+| Spam filter (repeat window), role icons | B |
+| Battleground join/leave one-line summary (client strings → escaped patterns, English fallback; click for names) | B |
+| Searchable history: text / channel / player / date, copy results, persist across reload, lines and days kept | B |
+| Smart whisper windows (off/collect/popup; fixed-width tabs shrinking evenly; unread; reply; lockdown-safe) | B |
+| Channel bar (plain buttons, above/below window 1) | B |
+| Announcement router `PUI.Announce` (QoL page): off, self channel default, topic × content grid all unticked, throttle, lockdown → self | B |
+| Idle fade on the Ticker (wake on line, hover, edit-box focus) | B |
+| Conflict notice: Prat-3.0, Chattynator, Chatter, Glass, WIM, BasicChatMods | B |
+| Tab editor/strip styling, sidebar, edit-box position, lock window 1 size, channel colour editor, class-coloured names in bodies, current-language tag, GUILD_DISCORD/PING types, `Menu.ModifyMenu` chat shortcuts | M (deferred to the polish pass) |
+| Live preview (sample lines through the real helpers) | B |
 
+- **Step 8b status (feat/chat-vault, stacked on feat/hud):** defaults per D-MOD-DEF: module off; history on, persisted 14 days / 2000 lines; whisper windows off; channel bar off; BG summary off; spam filter off; announcements off. Smart Tab not included. Settings carry over by migration `0008b_chat_vault_keys` (chat.abbreviate → chat.channelNames; chat.fade dropped).
 - **Study additions (§16, 2026-10-26):**
   - Blizzard chat stays the data plane; display-time decoration through the ChatFrameFilters registries (corrected by §19: no AddMessage hook); never hook FCF_* or reparent chat widgets; idle fade on the Ticker.
   - URL copy via the shared copy dialog (1.26); class names in bodies; history across reload (never stores secret text); search. Documented limit: secret args skip chat filters.
@@ -575,21 +579,27 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 - **Overlap/upgrade audit (2026-10-26):** announcements go through the one router (QoL); upgrade: history search filters by channel, player and date.
 - **Study (WAPI):** opt-in battleground join/leave batch summary; every text-built pattern escaped; live example-line previews for formatting options; tab strip shrinks evenly on overflow.
 
-### 5.11 Vault — 6 keys
+### 5.11 Vault — step 8b built (Phoenix_UI_Vault: Rules.lua, Sort.lua, Vault.lua, View.lua, Store.lua, Bank.lua, Module.lua; 25 keys + conflict choice)
 
-- **B:** grid/list/compact mode, columns, ilvl, junk, new glow.
-- **M:**
-  - rules engine and categories with drag-assign;
-  - bank/warband/reagent tabs (**deferred**);
-  - guild bank;
-  - offline alts;
-  - sort/merge plan;
-  - currencies;
-  - keystone shelf;
-  - equipment-set builder;
-  - sell-junk button (verify);
-  - stack splitter.
+| Feature | Status |
+|---|---|
+| Views: category (default) / grid / compact / list; slot size, spacing, columns, list columns, fold empty slots | B |
+| Rules engine: `Name|rule` list (fields, and/or/not, brackets, field:value), before built-ins; per-category show/collapse grid | B |
+| Built-ins: Pinned, New, Keystone shelf, Equipment sets, Equipment, Consumables, Reagents, Quest, Other, Junk | B |
+| Pin mode / junk mode (overlay click; secure button never used), manual itemID=Category assignment | B (drag-to-assign: polish pass) |
+| Junk owner: auto-sell OFF, sell button, greys via sell-all, marked items ≤12/visit, pins protected; Flow defers | B |
+| Sort + undo last sort (snapshot, pure planner, Ticker steps, combat-paused, merged stacks reported) | B |
+| Search: plain → game search; operators → rules engine | B |
+| Item level, quality borders from ColorManager (min quality), new glow, Wisdom upgrade badge | B |
+| Bank window: Character / Warband (live secure slots at the banker, read-only snapshot elsewhere), Reagents, Guild bank (read-only), Alts; deposit reagents, sort; Blizzard bank faded via FrameLedger | B |
+| Offline alts' items, counts across characters (`Store.Where`) | B (tooltip line: HUD Tooltip polish pass) |
+| Gold history into `PUI.Wallet` (Record/History/Today/Characters/Total/Wipe), currencies footer, gold tooltip, `/pui vault gold wipe` with confirm | B |
+| Equipment sets category + Sets button → Loadouts | B |
+| Stack splitter, merge duplicates, nest by expansion, gear by slot, armory slot packing, open with character window, contacts/mail | M (deferred) |
+| Conflict notice: Baganator, Bagnon, AdiBags, ArkInventory, BetterBags, Combuctor, LiteBag | B |
+| Live preview (sample items grouped by the real rules engine) | B |
 
+- **Step 8b status:** module off by default; category view and auto-sell off per D-MOD-DEF2; alts, gold history, currencies and bank window on when the module is on. Migration carries vault.mode → vault.view.
 - **Overlap/upgrade audit (2026-10-26):** Vault owns junk (Flow links), the gold ledger and currencies (Data Bars read them); equipment sets belong to Loadouts; keystone shelf reads Ascent. Defaults (D-MOD-DEF2): category view, junk auto-sell OFF. Upgrade: undo last sort.
 
 - **Study additions (§16, 2026-10-26):**
