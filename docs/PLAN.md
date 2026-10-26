@@ -213,6 +213,37 @@ Every lint rule above ships with a self-proof fixture that must fail (QDB). Full
 | Objective tracker | Quest Tracker, Blizzard_ObjectiveTracker | Conflict notice; when Phoenix's tracker is chosen, `ObjectiveTrackerManager:SetCanAddModules(false)` (restored on disable). Never DisableAddOn (G39). |
 | Chat windows | Chat, Edit Mode, Voice | Chat skins every window; **chat window 1 is placed by Edit Mode**; **chat window 3 (voice transcription) is never taken over**. |
 | Item quality colours | Tooltip, Vault, Skins, Chat | `ColorManager.GetColorDataForItemQuality` (G40). |
+| Death recap / death log | Embers, Ascent | **Embers** (C_DeathRecap). Ascent's M+ death log lists deaths and time lost and opens the Embers recap. |
+| Interrupt counts (party kicks) | Embers Interrupts meter, Ascent kick tracker, run-summary Kicks column | **Embers** (C_DamageMeter interrupts). Ascent reads the segment engine. |
+| Own kick readiness (kick tick, your kick CD) | UF, Plates, Arena, CDM Focus Kick | One own-interrupt state inside the Core castbar element (§1.O cast bars). |
+| Target/focus cast bars | Unit Frames, Ascent "standalone", CDM Focus Kick | **Unit Frames** (target/focus) and the **CDM Focus Kick bar** (focus + kick). Ascent links to them. |
+| Player cast bar / class resource | Unit Frames, Resource Bars, target plate | **Resource Bars** owns each element; UF and Plates only host them (setting: attach here / keep separate). |
+| Keystone data, /keys, insert/auto-slot keystone, M+ countdown | Ascent, Flow, Group Finder (EUI keystone insert), Vault shelf, BigWigs tools | **Ascent Keystones**. Flow and GF rows link to it; Vault's shelf is only a bag category; the countdown is Raid Tools'. |
+| Pull / break / M+ countdown, /cd | Raid Tools, Flow `/cd`, Ascent, Pulse | **Raid Tools** (C_PartyInfo.DoCountdown). `/cd` is an alias; Pulse draws the bar. |
+| Raid markers, ready check | Flow, Raid Tools | **Raid Tools**. |
+| Combat / encounter / stage timer | Embers standalone timer, BigWigs-style stage timers, QoL | One **Combat & encounter timer** on the Pulse page; the Embers header reads it. |
+| Battle res + Bloodlust | Ascent M+ block, combat tools | One **Ascent** widget, docked in the M+ block or standalone. |
+| Combat enter/leave alert | WindTools alert (QoL), Spark notification | **Spark** "combat in/out" event; the QoL alert is a Spark preset. |
+| Item / potion cooldown ready | Spark, EUI Alerts "potion ready", CDM ready sound | **Spark** item-cooldown-ready event; CDM keeps its own icon sound. |
+| Combat text CVars, self combat text | Spark, Core Combat CVars, QoL | **Spark** (3×2 Blizzard SCT switches via the CVar ledger). Other pages link. |
+| Loot / money / rep / XP text, loot feed (Forever) | Spark, Forever | **Spark** notifications; the Forever loot feed is a Spark area preset. |
+| Announcements (quest, keys, resets, interrupts, meter reports) | Chat, Quest Tracker, Loadouts, GF, Ascent, Flow, Embers | One **announcement router** (QoL). Modules only choose what to send. |
+| Role-check accept, sign-up confirm, role per spec | Group Finder, Flow role-check confirm, BigWigs auto-role | **Group Finder** queue helper; "auto from spec" is a mode of the one role-per-spec setting. |
+| Queue-pop countdown, queue status | Group Finder, Skins queue popup timer, Minimap queue eye | **Group Finder**; Skins and Minimap reuse it. |
+| Arena match timer, dampening, Shadowsight | Arena, Flow dampening display | **Arena**. |
+| Party⇄arena targeting dots | Arena, Raid frames | One **Arena** targeting service; raid frames display it. |
+| Junk definition, sell junk, auto-sell | Vault, Flow sell junk | **Vault** (rules define junk). Flow's row links here. |
+| Gold ledger, currencies | Vault, Data Bars gold/currency blocks | **Vault** (has offline alts); Data Bars blocks read it. |
+| Equipment sets | Vault builder, Loadouts | **Loadouts**; Vault shows set names and opens Loadouts. |
+| Waypoints (/way, super tracker) | Quest Tracker, Flow, EUI QoL | **Quest Tracker** super tracker; Flow `/way` links. |
+| Skip cinematics, talking head, toasts, auto-accept res | Flow, WindTools QoL, BigWigs BossBlock | One **Quiet mode** row set in Flow per content type (each opt-in). |
+| Auto combat logging | Flow, Ascent study | **Flow** (per content, Recorder compatibility). |
+| Enemy forces % (tooltip, plate text) | Ascent, Tooltip, Nameplates | **Ascent** provides forces data; Tooltip and a Nameplate text slot display it. |
+| M+ score colours | Tooltip, GF rating, Data Bars | **PUI.Season** (1.28) colour source (Blizzard / Raider.IO / custom). |
+| Window sets by content | Embers auto-switch, content profiles | **Core content profiles** (D-SET-UI); Embers has no own switcher. |
+| Threat meter (Forever) | Embers, §5.20, §13.10 | **Embers** window type, code in `Phoenix_UI_Forever`. |
+| Extra item bar | Action Bars, Quickdraw, CDM custom bar | **Action Bars** clickable item bar; CDM custom bar is display-only; one item-list service feeds both. |
+| Buff bars | Player Aura Bars, CDM tracked buff bars | Both stay (different sources); new dedupe setting hides an aura already shown in CDM bars. |
 
 
 ## 2. Options window (mockups 01–04) and tabs
@@ -504,13 +535,14 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - URL copy (verify);
   - class-coloured names (verify);
   - smart whisper windows;
-  - chat bar / smart tab;
+  - chat channel bar (plain buttons, no edit-box hooks);
   - channel colour editor.
 
 - **Study additions (§16, 2026-10-26):**
   - Blizzard chat stays the data plane; display-time decoration through the ChatFrameFilters registries (corrected by §19: no AddMessage hook); never hook FCF_* or reparent chat widgets; idle fade on the Ticker.
   - URL copy via the shared copy dialog (1.26); class names in bodies; history across reload (never stores secret text); search. Documented limit: secret args skip chat filters.
 - **Retail (§19):** filters are skipped silently for secret arguments, so a skipped line must look like stock Blizzard; whisper tabs fixed width; EventRegistry edit-box and hyperlink callbacks; `Menu.ModifyMenu("MENU_CHAT_SHORTCUTS")`; chat window 1 via Edit Mode, chat window 3 untouched (G38); current-language tag in the edit box (Blizzard's is broken); GUILD_DISCORD and PING types; UTF-8 truncation.
+- **Overlap/upgrade audit (2026-10-26):** announcements go through the one router (QoL); upgrade: history search filters by channel, player and date.
 - **Study (WAPI):** opt-in battleground join/leave batch summary; every text-built pattern escaped; live example-line previews for formatting options; tab strip shrinks evenly on overflow.
 
 ### 5.11 Vault — 6 keys
@@ -528,6 +560,8 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - sell-junk button (verify);
   - stack splitter.
 
+- **Overlap/upgrade audit (2026-10-26):** Vault owns junk (Flow links), the gold ledger and currencies (Data Bars read them); equipment sets belong to Loadouts; keystone shelf reads Ascent. Defaults (D-MOD-DEF2): category view, junk auto-sell OFF. Upgrade: undo last sort.
+
 - **Study additions (§16, 2026-10-26):**
   - Categories by Enum.ItemClass; bag ranges from Constants.InventoryConstants; keyed on links/IDs, names filled later; seed flags in the same scope as data (G8); one pin semantic; gold wipe needs confirm; restore path and trim.
 
@@ -535,11 +569,11 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 
 - **B:** repair, sell junk, release, accept res/invites, decline duels/guild, skip cinematics, auto delete, gossip, quick loot, hide errors, hide talking head, durability warn, max camera, combat log, countdown, `/rl`, `/cd`.
 - **M (about 19 items):**
-  - insert keystone, role-check confirm, leave-queue popups, open containers, Train All;
+  - insert keystone → **Ascent** (link); role-check confirm → **Group Finder** (link); leave-queue popups, open containers, Train All;
+  - *Overlap audit 2026-10-26:* sell junk → Vault owns (link); skip cinematics, hide talking head, loot toasts and accept res merge into one **Quiet mode** row set; `/way` → Quest Tracker; `/cd` and raid markers/ready check → Raid Tools; dampening → Arena; interrupt announce → announcement router.
   - hide tutorials/loot toasts/banners;
   - `/keys`, `/way`, `/gg`, queue protection;
-  - Tab binder, dampening display, interrupt announce;
-  - raid marker tools, ready check tool;
+  - Tab binder;
   - screenshot on achievement;
   - WindTools-harvest list (spec 23).
 
@@ -554,7 +588,8 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 ### 5.14 Embers — 10 keys (LoD)
 
 - **B:** windows up to 5, meter type, segments, boss-only, max segments, graph, report, rows, look; export; history/compare (tests).
-- **M:** death recap window, window snapping, per-spec icons (verify), Forever threat meter, encounter history markers.
+- **M:** death recap window (sole owner; Ascent links), window snapping, per-spec icons (verify), Forever threat meter, encounter history markers.
+- **Overlap/upgrade audit (2026-10-26):** interrupts feed Ascent; standalone combat timer → Pulse Combat & encounter timer; window sets via content profiles; reports via the announcement router. Upgrades: compare current pull vs your best pull of the same boss; pinned own row; side-aware breakdown.
 
 - **Study additions (§16, 2026-10-26):**
   - Meter windows over C_DamageMeter with the §15.5 segment engine; secret-guarded amounts *and* durations (past segments too); per-window cog; show/hide-all hotkey through the Binding ledger.
@@ -564,6 +599,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 
 - **B:** timer, splits, records, sounds, TTS, notes, hide Blizzard, scale.
 - **M:** forces current-pull preview (verify), death log, score projection, vault planner, kick tracker, run summary card.
+- **Overlap/upgrade audit (2026-10-26):** death log opens the Embers recap; kick tracker reads Embers interrupts; target/focus cast bars link to Unit Frames / Focus Kick; Ascent owns keystones, /keys and keystone insert. Upgrade: **pace line** (forces ahead/behind the +1/+2/+3 pace, from public forces and timer data).
 
 - **Study additions (§16, 2026-10-26):**
   - M+ timer: completion time from `C_ChallengeMode.GetChallengeCompletionInfo` (GetWorldElapsedTime can be secret/stale — the "99:99" bug); Ticker job only while a key is active; next-threshold countdown colour; per-run summary with rating deltas; IDs not English difficulty names.
@@ -586,6 +622,7 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 
 - **Study additions (§16, 2026-10-26):**
   - **GroupFinder filters:** visual filter builder (role counts, rating sliders, lockout, friends) that *generates* an expression; optional expression field with plain-text validation; sort picker with stable comparator; delve tiers, raid bosses, group age, new/declined colouring; decorates our own overlay rows, never writes Blizzard results/decline tables (G14); cached activity map by ID; read-only in restricted states.
+  - **Defaults (D-MOD-DEF2):** role-check auto-accept, sign-up auto-confirm and double-click sign-up are **ON at first install**; the taint explanation stays visible as info. Role per spec is one setting (manual / auto from spec). GF owns role-check accept and the queue-pop bar; keystone insert links to Ascent.
   - **Queue QoL:** role-check auto-accept, sign-up auto-confirm (Shift bypass), per-spec role override, declined/delisted colouring with timer, persistent sign-up note; event-driven only, no global function replacement, no SetScript on ScrollBox; auto-enter is a user-confirmed big button or sound, never a synthetic click.
   - PGF present: conflict notice/picker (D-PGF, 1.35): the user chooses Phoenix's Group Finder module off or PGF off; one group-age tooltip line, skipped when PGF is the chosen side.
   - **Export hub (Wisdom):** calls SimulationcraftAPI when present, never duplicates it; uses the async data service (1.23) and the shared copy dialog.
@@ -647,8 +684,10 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
 
 **Deepened Tier 1 entries (§16):**
 - **Pulse:** `C_EncounterTimeline` natively, never index-walking a fixed timer list (so a fight that outruns the list still warns); active only without a boss mod. With BigWigs loaded: stand down, keep its encounter frames and CVars (excluded from the CVar ledger), offer the BigWigs bar-style/profile bridge. Countdowns cancel their own timers only; emphasised fade honours settings.
+- **Arena overlap/upgrade audit (2026-10-26):** Arena owns match timer, dampening and Shadowsight (Flow links), and the one party⇄arena targeting service that raid frames also use. Upgrade: post-match card (comp, rating/MMR delta, trinket and DR-tray history).
 - **Arena:** own secure buttons (click attributes via CombatQueue, `@arena` substitution escaped, G12); secret-first spec display through the Blizzard role-map helper; health/power to widgets only; ArenaMatch state service (Idle/Prep/Engaged/Ended) on PVP_MATCH_STATE_CHANGED; zero events outside arena; 1 Hz Ticker match timers; DR: opt-in (off by default) switch that turns on `spellDiminishPVPEnemiesEnabled` through the CVar ledger and restyles Blizzard's DR tray; no Phoenix DR maths (D-ARENA-DR, revised by §19); built on CompactArenaFrame data (`GetArenaCrowdControlInfo`, `AddBlockedAura`), pre-match/live/stealthed states; "assume regen in stealth" option, off by default (D-SARENA-STEALTH); optional FrameSort numbering; PvP colour CVar via ledger; layout presets as schema styles over one paint function, test mode uses that paint; never toggles Edit Mode or reparents CompactArenaFrame; relative frame levels.
 - **All-addons parity additions (audit 2026-10-26, `pui_study/others/AllAddons_parity.md`; each a setting with Simple + Advanced views) — Arena (sArena):** 9 layouts → Now 9 data presets over one layout engine in Phoenix's own art, plus your own saved styles; Mirrored layout → Added a true geometric flip setting; Trinket: CC info, surrender flag when none, use sound → All added; healer-only variants greyed with the reason when specs are secret; Racial with shared trinket CD, swap racial into trinket slot, per-race toggles → Added shared-CD state machine with tests, swap option and per-race list; DR display: size, spacing, growth, border styles, DR text + anchor, decimals, coloured CD text, per-category size offsets, only triggerable by me → Added these as styling of Blizzard's DR tray; 'only triggerable by me' via the CVar ledger; durations labelled estimated; Class-icon aura: CC/defensive/important priority, sort order each, only CC, hide/replace healer icon, decimals threshold → Added sort per category, only-CC, replace healer icon, decimal threshold; Aura highlight on class icon: per category → Added via PUI.Glow with live preview; Dispel tracker per enemy (cooldown, charges, show after use) → Added as an observed-dispel widget (shown after first seen use), honest Midnight limits; Cast bar: modern/classic/simple styles, hide shield/spark/icon, arena-ID text, cast-target text → All added on Phoenix's own cast bar element; Pet frames: per-class filter, size, strata, name/number/ID, border style, widgets, range, status text → Added full pet frame page; Range check: per-spec spell list, alpha/icon/both, atlas presets, tint, scale, offset → Added arena range page with per-spec spell override and icon modes; Combat indicator (swords / food / sap), death, disconnect, feign death icons → Added indicator set with in/out-of-combat toggles; Target and focus indicators: icon and/or border, colours, size, offset, wrap class icon/trinket/racial → Added; Party⇄arena targeting icons → Added to the plan (it was only in the mockup): direction, spacing, scale, text anchor; labelled limited in Midnight arenas; Shadowsight timer → Added to match timers (1 Hz Ticker, restored from match duration); Gladiator / Legend / Strategist progress on the conquest frame → Added to the plan: read-only overlay; Text: name/health/power/spec name anchors and sizes, class-coloured names and spec names, arena number, % / formatted numbers, hide power text, reverse fill → Added full text page with per-text font/size/outline; Dark mode, class-coloured frame textures (healer green), healer texture, pixel borders → Added via Skin tokens; Cooldown look: swipe colour, edge, per-element swipe/invert/CD-text toggles → Added per element; Click actions per mouse binding → Added binding editor through the binding ledger, CombatQueue applied; PvP UI: rated card, MMR delta, scoreboard column registry, leave countdown, Training Grounds → Added to the Arena/BG module.
+- **Spark defaults (D-MOD-DEF2):** Spark turns **all three Blizzard combat-text categories off** at first install (CVar ledger, prior values restored when Spark is off). Spark owns combat in/out alerts, item/potion-ready alerts and loot/progress text. Upgrade: density cap in big pulls (extra lines merge).
 - **Spark:** attribution from UNIT_COMBAT plus own casts with confidence (trust a guess only once confirmed, nil when ambiguous); pooled text lines on the Ticker; escaped formatters; per-frame dedupe (no double heals, no double loot); Blizzard SCT via CVar ledger only; never writes Blizzard_CombatLog filters; area cards with live preview of sample numbers; visual trigger builder (health, power, aura, cooldown) without code.
 - **All-addons parity additions (audit 2026-10-26, `pui_study/others/AllAddons_parity.md`; each a setting with Simple + Advanced views) — Spark (MSBT):** Scroll areas → Added the full per-area settings list with inherit chain (event → area → master); ~165 event rows: incoming/outgoing for player and pet, notifications → Added every category; each row: enable, colour, area, font, sound, message template; Message tokens %a %n %s %e %t %p, overheal/overkill and partial-effect trailers → Added token chips with live sample; trailers editable; Ability substitution and suppression lists, ability abbreviation → Added (locale-safe; abbreviation by rule, not English-only); Class colours, damage-school colours, partial colouring → Added class and per-school colour tables; Aura tracking allow/block list with per-aura style overrides → Added; Loot alerts: items, money, currency, quality filter, always show quest items, allow and exclude lists → Added, including Legendary/Artifact/Heirloom (MSBT stops at Epic); Item cooldown-ready alerts with threshold and exclusions → Added; Sounds per event, custom sounds → Added via the PUI sound service; Blizzard SCT control: per-category Blizzard/MSBT on/off for outgoing, incoming, notifications; reset Blizzard SCT → Added the 3×2 per-category switches and a restore button, all through the CVar ledger; Toggle all / move all events (incl. aura rows) → Added set-all (one state) and move-all.
 - **All-addons parity additions (audit 2026-10-26, `pui_study/others/AllAddons_parity.md`; each a setting with Simple + Advanced views) — Cast History (TrufiGCD):** Catch-up speed for queued icons → Added catch-up speed setting; Built-in + user spell blocklist, item blocklist, Ctrl+Alt+click to add, name→ID picker → Added item blocklist, click-to-add and a picker listing every name match; Tooltip on hover, pause on hover, print spell link/ID → Added (print is opt-in, no hover spam); PvP trinket shown with faction art → Added; Masque, Addon Compartment, slash → Added compartment entry.
@@ -1235,6 +1274,9 @@ Every EllesmereUI option section (≈2,000 labelled controls in 288 sections, fr
 ### 15.7 All-addons parity audit (2026-10-26, user direction t73u)
 Every other addon studied from the I:\ drive (PremadeGroupsFilter, AutoQueue, idTip, sArena Reloaded, MikScrollingBattleText, MoveAny, TrufiGCD, Simulationcraft, !BugGrabber, BugSack, BigWigs + LittleWigs, Questie, QuestieDB, QuestieTrace, WoW-API, Auctionator UX ideas, EllesmereUI_WindTools; ElvUI listed and excluded per t53u) plus the Blizzard retail 12.x reference was checked feature by feature against this plan and the catalogue: 193 rows, 91 OK, 50 WEAKER, 47 MISSING, 5 N/A (recorded exclusions). All 97 gaps are fixed in place as "All-addons parity additions" bullets in §4, §5.7, §5.8, §5.16, §5.17a and §5.21, plus catalogue `(p)` lines. Rule (D-LIC): a VortexQ8 module (Group Finder, Arena, Spark, Tooltip IDs, Studio movers) is not finished until every feature of the matching VortexQ8 addon is built, better, in Phoenix's own code. Full tables: `pui_study/others/AllAddons_parity.md` (built by `pui_study/tools/allparity.py`).
 
+### 15.8 Overlap and upgrade audit (2026-10-26, user direction t75u)
+Module mockups 01–11 and §1.O/§5.x/§15.3/§15.6/§15.7 were checked for features owned twice. 31 overlaps found; each now has one owner in §1.O (rows from "Death recap" to "Buff bars"), and the other modules link to or reuse it (§5.10, 5.11, 5.12, 5.14, 5.15, 5.16, 5.21 updated). Every screen's source-addon features now list a concrete Phoenix upgrade; features that were only matched got one (pace line, history filters, undo sort, density cap, best-pull compare, aura and CDM dedupe, post-match card, shared targeting service). Smart Tab is removed from §5.10. Full report: `pui_mockups/modules/OVERLAP_UPGRADE_AUDIT.md`.
+
 ## 16. Finished-study integration (2026-10-26)
 Source: `Feature_Catalogue.md` (finished I:\ study, every file of every studied addon). From Auctionator only general player-visible UX ideas are used (D-AUC decided 2026-10-26); no code-level internals, bug lists or API patterns; ElvUI is ignored per the user (t53u). No code was copied; all notes describe behaviour only.
 - Guardrails G1–G25 merged into §1.G; ownership matrix §1.O; settings model §1.S.
@@ -1274,6 +1316,7 @@ Source: `pui_study/others/RetailUI_MERGED.md` (feature by feature: Blizzard API 
 | D-AURA-OWNER | Who owns `CustomAuraContainer`? | **Decided 2026-10-26:** the Auras module (PUI.Auras). Private-aura container anchors are an option for raid frames, configured through PUI.Auras (§1.O). |
 | D-SET-UI | Settings panel mockups (7 screens): auto profile switching default, per-page Arena filter, floating vs docked panel? | **Decided 2026-10-26:** auto profile switching by content (Raid, Arena, Mythic+) on by default; no per-page Arena filter, arena options stay under Combat/Arena; floating window as in the mockups (§1.S). Mockups await final approval. |
 | D-MOD-DEF | Module mockups batch 1 (5 screens): default unit-frame style, friendly plates in instances, arena DR tray position? | **Decided 2026-10-26:** every design choice is a user setting (Simple + Advanced), defaults are first-install only (§1.S). Unit frames default Ember, Glass and other looks selectable; arena DR tray default right of the trinket, adjustable (right, left, under cast bar, free offset); friendly plates name-only vs health bars per content (open world, dungeon, raid, arena, battleground), each switchable. |
+| D-MOD-DEF2 | Module mockups batch 2 first-install defaults: GF sign-up helpers, Spark vs Blizzard combat text, bag view and junk auto-sell? | **Decided 2026-10-26:** GF sign-up helpers (auto-accept role checks, auto-confirm, double-click sign-up) **ON**, taint warning kept as info; Spark turns **all** Blizzard combat-text categories off; bags open in **category view**, junk auto-sell **OFF**. All stay user settings (Simple + Advanced). |
 | D-MOCK | Mockups for every new page (Cast History, Diagnostics, profiler, ledger page, visibility picker, filter builder) before UI code. | Required by standing rule. |
 
 ## 14. Appendix — current schema keys by owner (448)
