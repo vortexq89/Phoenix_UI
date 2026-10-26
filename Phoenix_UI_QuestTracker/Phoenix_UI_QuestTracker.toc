@@ -1,0 +1,9 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Quest Tracker
+## Notes: Phoenix UI quest tracker: sorting, filtering, collapsible sections, zone auto-track, auto accept and turn-in.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+QuestTracker.lua
+Tests\QuestTracker_test.lua

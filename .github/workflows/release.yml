@@ -1,0 +1,123 @@
+name: release
+# Manual only. Merging to any branch never runs this workflow, so nothing is
+# tagged, released or uploaded unless someone starts it from the Actions tab.
+# Even then the default is a dry run: checks, CHANGELOG.md, releases.json and a
+# package zip as workflow artifacts. Publishing needs publish=true AND the
+# version typed again in confirm.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version without the v, e.g. 3.0.0-alpha1"
+        required: true
+      track:
+        description: "Release track"
+        type: choice
+        options: [canary, stable]
+        default: canary
+      publish:
+        description: "Tag, upload and record the release (leave off for a dry run)"
+        type: boolean
+        default: false
+      confirm:
+        description: "Type the version again to publish"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Lua 5.1
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - name: Guardrails and smoke suite
+        run: |
+          python3 .tools/guardrails.py
+          python3 .tools/manifest.py --check
+          lua5.1 .tools/harness/run_tests.lua
+          PUI_FLAVOR=forever lua5.1 .tools/harness/run_tests.lua
+          python3 .tools/test_release_tools.py
+      - name: Merged pull requests since the last tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          since=$(git log -1 --format=%cs "$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)")
+          gh pr list --repo "${{ github.repository }}" --state merged --base main-v2 --limit 200 \
+            --search "merged:>=$since" --json number,title,labels,body > prs.json
+      - name: Changelog (fails on a module that is not in code)
+        run: python3 .tools/changelog.py --prs prs.json --version "${{ inputs.version }}" --track "${{ inputs.track }}" --file CHANGELOG.md
+      - name: releases.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --repo "${{ github.repository }}" --pattern releases.json --dir prev 2>/dev/null || true
+          python3 .tools/releases.py --version "${{ inputs.version }}" --track "${{ inputs.track }}" --repo "${{ github.repository }}" \
+            --in prev/releases.json --out releases.json --record release-record.json
+      - name: Site feature list
+        run: python3 .tools/site_features.py --out features.json --version "${{ inputs.version }}"
+      - name: Package (no upload)
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -d
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ inputs.version }}
+          path: |
+            CHANGELOG.md
+            releases.json
+            release-record.json
+            features.json
+            .release/*.zip
+
+  publish:
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.publish && inputs.confirm == inputs.version
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-${{ inputs.version }}
+          path: out
+      - name: Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${{ inputs.version }}" -m "Phoenix UI ${{ inputs.version }}"
+          git push origin "v${{ inputs.version }}"
+      - name: Package and upload
+        uses: BigWigsMods/packager@v2
+        env:
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+      - name: Attach releases.json and the changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "v${{ inputs.version }}" out/releases.json out/CHANGELOG.md out/features.json --clobber
+      - name: Record the release on vq8s.com
+        env:
+          PHOENIX_INGEST_KEY: ${{ secrets.PHOENIX_INGEST_KEY }}
+        run: |
+          if [ -z "$PHOENIX_INGEST_KEY" ]; then echo "no ingest key; skipped"; exit 0; fi
+          curl -fsS -X POST https://www.vq8s.com/phoenix/api/release \
+            -H "content-type: application/json" -H "x-phoenix-key: $PHOENIX_INGEST_KEY" \
+            --data @out/release-record.json

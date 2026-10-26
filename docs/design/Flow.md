@@ -1,0 +1,5 @@
+# Flow (PUI_V2 5.14) - Phase 5 core
+
+20 settings, all off; the module registers only the events of enabled toggles. Auto repair (player/guild), sell junk, auto release (world / instances, never BG/arena, never with a self-resurrect option), accept resurrection out of combat, decline duels, decline guild invites, accept invites from friends/Battle.net/guild (secret GUIDs never trusted), skip cinematics and movies (Shift to watch), fill DELETE, auto gossip (single option, Shift to read), quick loot (Shift to choose), low durability warning + threshold, hide talking head, hide error text in combat, combat log in raids/M+, max camera distance (CVar saved and restored), `/pui rl`, `/pui cd`.
+
+Deferred: auto decline pet battle duels (C_PetBattles.CancelPVPDuel not in the API catalog), auto insert keystone, auto confirm role check, auto leave queue popups, auto open containers, Train All, hide Lua errors/tutorials/loot toasts/banners, error whitelist, rested ZZZ, /keys, /way, /gg, SafeQueue protection, Tab binder for PvP, dampening, interrupt announce, raid marker and ready check tools, screenshot status hide.

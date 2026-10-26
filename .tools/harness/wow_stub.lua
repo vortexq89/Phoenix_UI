@@ -538,6 +538,97 @@ function Region:AddMessage(msg) self.messages = rawget(self, "messages") or {}; 
 function Region:SetScrollOffset(o) self.offset = o end
 function Region:GetScrollOffset() return rawget(self, "offset") or 0 end
 
+-- Phase 5: skins, vault, flow, quest tracker, setup, reminders.
+function Region:GetObjectType() return rawget(self, "otype") or "Frame" end
+function Region:SetFontObject(o) self.fontObject = o end
+function Region:GetFontObject() return rawget(self, "fontObject") end
+function Region:SetEnabled(v) self.enabled = v end
+function Region:GetChildren() return unpack(rawget(self, "kids") or {}) end
+H.calls = {}
+local function call(name) return function(...) H.calls[#H.calls + 1] = { name, ... }; return H.ret and H.ret[name] end end
+for _, n in ipairs({ "RepairAllItems", "RepopMe", "AcceptResurrect", "CancelDuel", "DeclineGuild", "AcceptGroup", "StaticPopup_Hide",
+  "CinematicFrame_CancelCinematic", "LootSlot", "AcceptQuest", "CompleteQuest", "GetQuestReward", "ReloadUI", "QuestMapFrame_OpenToQuestDetails",
+  "SetItemButtonTexture", "SetItemButtonCount", "SetItemButtonQuality", "SetItemButtonDesaturated", "ToggleAllBags", "OpenAllBags",
+  "CloseAllBags", "ToggleBackpack" }) do _G[n] = call(n) end
+function CanMerchantRepair() return true end
+function GetRepairAllCost() return 5000, true end
+function CanGuildBankRepair() return H.guildRepair == true end
+C_MerchantFrame = { GetNumJunkItems = function() return H.junk or 0 end, SellAllJunkItems = call("SellAllJunkItems") }
+C_PvP = { IsBattleground = function() return H.pvp == "bg" end, IsArena = function() return H.pvp == "arena" end }
+function IsInInstance() return H.instance == true end
+C_DeathInfo = { GetSelfResurrectOptions = function() return H.selfRes or {} end }
+C_FriendList = { IsFriend = function(g) return g == "Player-1-FRIEND" end }
+function IsGuildMember() return false end
+C_BattleNet = { GetAccountInfoByGUID = function() return nil end }
+MovieFrame = CreateFrame("Frame", "MovieFrame", UIParent)
+StaticPopup_FindVisible = function() return nil end
+DELETE_ITEM_CONFIRM_STRING = "DELETE"
+C_GossipInfo = { GetNumAvailableQuests = function() return 0 end, GetNumActiveQuests = function() return 0 end,
+  GetOptions = function() return H.gossip or {} end, SelectOption = call("SelectOption") }
+function GetNumLootItems() return H.lootCount or 0 end
+function LoggingCombat(v) if v ~= nil then H.logging = v end return H.logging == true end
+TalkingHeadFrame = CreateFrame("Frame", "TalkingHeadFrame", UIParent)
+UIErrorsFrame = CreateFrame("MessageFrame", "UIErrorsFrame", UIParent)
+C_PartyInfo = { DoCountdown = call("DoCountdown") }
+SOUNDKIT.RAID_WARNING = 8959
+SOUNDKIT.IG_QUEST_LIST_COMPLETE = 878
+H.quests = {}
+H.questLog = {}
+C_QuestLog.GetNumQuestWatches = function() return #H.quests end
+C_QuestLog.GetQuestIDForQuestWatchIndex = function(i) return H.quests[i] and H.quests[i].id end
+local function q(id) for _, v in ipairs(H.quests) do if v.id == id then return v end end end
+C_QuestLog.GetTitleForQuestID = function(id) return q(id) and q(id).title end
+C_QuestLog.GetQuestObjectives = function(id) return q(id) and q(id).objectives or {} end
+C_QuestLog.IsComplete = function(id) return q(id) and q(id).done or false end
+C_QuestLog.ReadyForTurnIn = function(id) return q(id) and q(id).done or false end
+C_QuestLog.GetQuestDifficultyLevel = function(id) return q(id) and q(id).level or 1 end
+C_QuestLog.GetDistanceSqToQuest = function(id) return q(id) and q(id).dist end
+C_QuestLog.IsWorldQuest = function(id) return q(id) and q(id).world or false end
+C_QuestLog.GetQuestTagInfo = function() return nil end
+C_QuestLog.GetNumQuestLogEntries = function() return #H.questLog end
+C_QuestLog.GetInfo = function(i) return H.questLog[i] end
+C_QuestLog.AddQuestWatch = call("AddQuestWatch")
+function GetZoneText() return "Dornogal" end
+function IsQuestCompletable() return true end
+function GetNumQuestChoices() return H.choices or 0 end
+ObjectiveTrackerFrame = CreateFrame("Frame", "ObjectiveTrackerFrame", UIParent)
+ObjectiveTrackerFrame:Show()
+H.auras = {}
+C_UnitAuras.GetPlayerAuraBySpellID = function(id) local a = H.auras[id]; if a then return maybe(a) end return nil end
+H.known = {}
+C_SpellBook = { IsSpellKnown = function(id) return H.known[id] == true end }
+C_Spell.GetSpellTexture = function(id) return 100000 + id end
+C_Spell.GetSpellName = function(id) return "Spell " .. id end
+function IsInGroup() return (H.group and #H.group or 0) > 0 end
+function IsInRaid() return false end
+local baseUnitClass = UnitClass
+function UnitClass(u) if u ~= "player" and H.group then local c = H.group[tonumber(u:match("%d+") or 0)]; if c then return c, c, 1 end end return baseUnitClass(u) end
+local baseNum = GetNumGroupMembers
+function GetNumGroupMembers() if H.group then return #H.group end return baseNum() end
+H.bags = { [0] = 4, 2, 0, 0, 0, 0 }
+H.items = {}
+C_Container.GetContainerNumSlots = function(bag) return H.bags[bag] or 0 end
+C_Container.GetContainerItemInfo = function(bag, slot) return H.items[bag .. ":" .. slot] end
+C_Container.SortBags = call("SortBags")
+C_Container.SetItemSearch = call("SetItemSearch")
+C_Item = { IsEquippableItem = function(id) return id == 900 end, GetItemInfoInstant = function(id) return id, "", "", "INVTYPE_HEAD" end,
+  DoesItemExist = function() return true end, GetCurrentItemLevel = function() return 645 end }
+ItemLocation = { CreateFromBagAndSlot = function(_, bag, slot) return { bag = bag, slot = slot } end }
+C_CurrencyInfo = { GetCoinTextureString = function(m) return tostring(math.floor(m / 10000)) .. "g" end }
+ContainerFrameCombinedBags = CreateFrame("Frame", "ContainerFrameCombinedBags", UIParent)
+function GetPhysicalScreenSize() return 2560, 1440 end
+H.addons = { "Phoenix_UI", "Phoenix_UI_Skins", "OtherAddon" }
+C_AddOns.GetNumAddOns = function() return #H.addons end
+C_AddOns.GetAddOnInfo = function(i) return H.addons[i] end
+H.disabled = {}
+C_AddOns.DisableAddOn = function(n) H.disabled[#H.disabled + 1] = n end
+CharacterFrame = CreateFrame("Frame", "CharacterFrame", UIParent)
+CharacterFrame.NineSlice = CreateFrame("Frame", nil, CharacterFrame)
+CharacterFrame.Inset = CreateFrame("Frame", nil, CharacterFrame)
+CharacterFrame.Inset.Bg = CreateFrame("Frame", nil, CharacterFrame.Inset)
+CharacterFrameTab1 = CreateFrame("Button", "CharacterFrameTab1", CharacterFrame)
+CharacterFrameTab1.Left = CreateFrame("Frame", nil, CharacterFrameTab1)
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true }
 setmetatable(_G, {

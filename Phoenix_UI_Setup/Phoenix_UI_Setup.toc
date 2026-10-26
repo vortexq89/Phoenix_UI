@@ -1,0 +1,10 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Setup
+## Notes: Phoenix UI first-install wizard, role and layout presets, tour and uninstall.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Presets.lua
+Setup.lua
+Tests\Setup_test.lua
