@@ -11,6 +11,12 @@ move-folders:
   Phoenix_UI/Phoenix_UI_CooldownManager: Phoenix_UI_CooldownManager
   Phoenix_UI/Phoenix_UI_HUD: Phoenix_UI_HUD
   Phoenix_UI/Phoenix_UI_Chat: Phoenix_UI_Chat
+  Phoenix_UI/Phoenix_UI_Skins: Phoenix_UI_Skins
+  Phoenix_UI/Phoenix_UI_Vault: Phoenix_UI_Vault
+  Phoenix_UI/Phoenix_UI_Flow: Phoenix_UI_Flow
+  Phoenix_UI/Phoenix_UI_QuestTracker: Phoenix_UI_QuestTracker
+  Phoenix_UI/Phoenix_UI_Reminders: Phoenix_UI_Reminders
+  Phoenix_UI/Phoenix_UI_Setup: Phoenix_UI_Setup
 
 externals:
   Libs/LibStub:

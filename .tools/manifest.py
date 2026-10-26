@@ -31,6 +31,14 @@ ENGINE_GLOBALS = {
     # Phase 3 (present in both wow_globals_12.1.5 and wow_globals_forever_1.60.1).
     "GetReadyCheckStatus", "UnitHasIncomingResurrection",
     "PlaySound", "SOUNDKIT", "FlashClientIcon", "GetGuildInfo", "GetAverageItemLevel", "GetInventoryItemDurability", "hooksecurefunc",
+    # Phase 5 (FrameXML/engine globals present on live 12.1.5 and Forever source;
+    # the item-button setters are defined in Blizzard_ItemButton on both).
+    "RepairAllItems", "CanMerchantRepair", "GetRepairAllCost", "CanGuildBankRepair", "CancelDuel", "AcceptGroup",
+    "IsGuildMember", "StaticPopup_Hide", "StaticPopup_FindVisible", "DELETE_ITEM_CONFIRM_STRING", "CinematicFrame_CancelCinematic",
+    "GetNumLootItems", "LootSlot", "LoggingCombat", "AcceptQuest", "CompleteQuest", "GetQuestReward", "GetNumQuestChoices",
+    "IsQuestCompletable", "QuestMapFrame_OpenToQuestDetails", "SetItemButtonTexture", "SetItemButtonCount",
+    "SetItemButtonQuality", "SetItemButtonDesaturated", "ToggleAllBags", "ToggleBackpack", "OpenAllBags", "CloseAllBags",
+    "ItemLocation", "ReloadUI", "IsInRaid",
 }
 
 CALL_RE = re.compile(r"(?<![\w.:])([A-Za-z_]\w*)(?!\s*=[^=])(?!\w)")

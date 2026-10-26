@@ -1,0 +1,10 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Reminders
+## Notes: Phoenix UI reminders: missing raid buffs and class buffs, shown out of combat.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Pack.lua
+Reminders.lua
+Tests\Reminders_test.lua

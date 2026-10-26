@@ -1,0 +1,3 @@
+# Release pipeline (PUI_V2 12, 17.2, 20.6)
+
+`.github/workflows/release.yml` runs only from a manual `workflow_dispatch`; merging never triggers it. Default is a dry run: guardrails, manifest check, harness (retail + Forever), release tool tests, `changelog.py` (merged PRs since the last tag; fails on a scope that is not a module in Data/SchemaIndex.lua), `releases.py` (releases.json with latest stable/canary, history, supported builds), `site_features.py` (feature list from the module registry and schema), and a packager build without upload, all as artifacts. Publishing needs `publish=true` and the version typed again: it tags, packages and uploads, attaches releases.json/CHANGELOG.md/features.json, and posts the release record to /phoenix/api/release.

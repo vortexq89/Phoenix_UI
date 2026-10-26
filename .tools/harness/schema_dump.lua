@@ -39,7 +39,7 @@ local function load(name)
   H.fire("ADDON_LOADED", name, false)
 end
 load("Phoenix_UI")
-for _, child in ipairs({ "Phoenix_UI_UnitFrames", "Phoenix_UI_ResourceBars", "Phoenix_UI_ActionBars", "Phoenix_UI_Nameplates", "Phoenix_UI_RaidFrames", "Phoenix_UI_CooldownManager", "Phoenix_UI_HUD", "Phoenix_UI_Chat", "Phoenix_UI_Sentinel", "Phoenix_UI_Options" }) do
+for _, child in ipairs({ "Phoenix_UI_UnitFrames", "Phoenix_UI_ResourceBars", "Phoenix_UI_ActionBars", "Phoenix_UI_Nameplates", "Phoenix_UI_RaidFrames", "Phoenix_UI_CooldownManager", "Phoenix_UI_HUD", "Phoenix_UI_Chat", "Phoenix_UI_Skins", "Phoenix_UI_Vault", "Phoenix_UI_Flow", "Phoenix_UI_QuestTracker", "Phoenix_UI_Reminders", "Phoenix_UI_Setup", "Phoenix_UI_Sentinel", "Phoenix_UI_Options" }) do
   if not H.loaded[child] then load(child) end
 end
 table.sort(out)

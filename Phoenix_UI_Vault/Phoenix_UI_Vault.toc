@@ -1,0 +1,9 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Vault
+## Notes: Phoenix UI bags: one window with search, sort, item levels and junk selling.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Vault.lua
+Tests\Vault_test.lua

@@ -1,0 +1,10 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Skins
+## Notes: Phoenix UI skins for Blizzard windows, applied and removed live.
+## Author: VortexQ8
+## Version: @project-version@
+## Dependencies: Phoenix_UI
+
+Skins.lua
+Packs.lua
+Tests\Skins_test.lua
