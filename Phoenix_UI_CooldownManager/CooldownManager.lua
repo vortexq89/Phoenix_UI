@@ -101,7 +101,7 @@ function CDM.Items(viewer, all)
       CDM.hidden[f] = true
       f:SetAlpha(0)
     else
-      if CDM.hidden[f] then CDM.hidden[f] = nil; f:SetAlpha(1) end
+      if CDM.hidden[f] and not all then CDM.hidden[f] = nil; f:SetAlpha(1) end
       list[#list + 1] = f
     end
   end

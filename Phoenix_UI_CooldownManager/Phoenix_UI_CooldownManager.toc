@@ -11,4 +11,6 @@
 ## Dependencies: Phoenix_UI
 
 CooldownManager.lua
+Extras.lua
 Tests\CooldownManager_test.lua
+Tests\Extras_test.lua

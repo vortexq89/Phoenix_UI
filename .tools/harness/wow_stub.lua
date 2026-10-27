@@ -1143,4 +1143,7 @@ setmetatable(_G, {
   end,
 })
 
+H.craftedQuality = {}
+C_TradeSkillUI = rawget(_G, "C_TradeSkillUI") or {}
+C_TradeSkillUI.GetItemCraftedQualityByItemInfo = function(id) return H.craftedQuality[id] end
 return H
