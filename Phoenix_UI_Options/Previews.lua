@@ -1268,7 +1268,10 @@ function Previews.Sentinel(card)
     { "New error: " .. (#alerts > 0 and table.concat(alerts, ", ") or "counted only") .. "; same error again after " .. g("throttle") .. " s", "small" },
     { "[x4] Phoenix_UI_HUD/Minimap.lua:212: attempt to index nil (field 'host')", "small" },
     { "Viewer opens on: " .. g("viewerSession") .. ", " .. g("viewerSource") .. (g("captureOthers") and "  - other addons captured on this PC" or ""), "small" },
-    { "Auto-upload via Companion: " .. (g("optIn") and "on" or "off") .. (g("uploadOthers") and " (includes other addons)" or " (Phoenix errors only)"), "small" },
+    { "Layout: " .. (g("viewerGroup") == "addon" and ("one section per addon" .. (g("viewerCollapsed") and ", collapsed" or ", open")) or "one newest-first list"), "small" },
+    { "  - Phoenix_UI  1 / x4      + WeakAuras  2 / x9      + Blizzard  1 / x1", "small" },
+    { "Auto-upload via Companion: " .. (g("optIn") and "on" or "off") .. (g("uploadOthers") and " (full log, every addon)" or " (Phoenix errors only)")
+      .. (g("uploadAddonList") and " + addon list" or ""), "small" },
     { "Names: " .. (g("redactNames") and "[player], GUIDs keep only their kind" or "kept") .. "   Shared with you: " .. g("shareAccept"), "small" },
   })
 end

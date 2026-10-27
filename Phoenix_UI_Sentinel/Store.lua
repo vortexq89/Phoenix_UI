@@ -30,10 +30,10 @@ function Store:OnOther(rec)
   local isNew = inc == nil
   if isNew then
     inc = { hash = hash, kind = "error", module = rec.addon or "?", addon = rec.addon or "?", other = true, message = rec.message or "",
-      stack = stack, locals = rec.locals, count = 0, firstSeen = now, session = db.session, combat = rec.combat }
+      stack = stack, locals = rec.locals, count = 0, firstSeen = now, lastSeen = now, session = db.session, combat = rec.combat }
     db.others[hash] = inc
     local n, oldest, oldestKey = 0, nil, nil
-    for k, v in pairs(db.others) do n = n + 1; if not oldest or v.lastSeen < oldest then oldest, oldestKey = v.lastSeen, k end end
+    for k, v in pairs(db.others) do n = n + 1; if not oldest or (v.lastSeen or 0) < oldest then oldest, oldestKey = v.lastSeen, k end end
     if n > MAX_OTHERS and oldestKey and oldestKey ~= hash then db.others[oldestKey] = nil end
   end
   inc.count = inc.count + 1

@@ -182,6 +182,10 @@ function Export.StableN(hash)
   return n
 end
 
+-- Which game the report came from, so the dashboard keeps Retail and Forever
+-- reports in separate sections ("retail" | "forever").
+function Export.Flavor() return PUI.IS_FOREVER == true and "forever" or "retail" end
+
 local function report(inc, db)
   local session = inc.lastSession or inc.session
   return {
@@ -190,7 +194,7 @@ local function report(inc, db)
     count = inc.count, firstSeen = inc.firstSeen, lastSeen = inc.lastSeen, session = session,
     addonVersion = inc.addonVersion, interface = inc.interface, build = inc.build, locale = inc.locale,
     source = "sentinel", module = inc.module, severity = inc.severity, track = inc.track,
-    context = inc.context, extra = inc.extra, apiFamily = inc.apiFamily,
+    context = inc.context, extra = inc.extra, apiFamily = inc.apiFamily, flavor = Export.Flavor(), addon = "Phoenix_UI",
   }
 end
 
@@ -219,9 +223,9 @@ function Export:Payload()
       local inc = db.others[others[i]]
       n = n + 1
       reports[n] = S.Privacy.Report({ id = string.format("%s-%d-%d", db.installId, inc.lastSession or inc.session or 0, Export.StableN(inc.hash)),
-        hash = inc.hash, kind = "error", message = inc.message, stack = inc.stack, locals = inc.locals, count = inc.count,
+        hash = inc.hash, kind = inc.kind == "taint" and "taint" or "error", message = inc.message, stack = inc.stack, locals = inc.locals, count = inc.count,
         firstSeen = inc.firstSeen, lastSeen = inc.lastSeen, session = inc.lastSession or inc.session, source = "other", module = "Other", addon = inc.addon,
-        addonVersion = S:Version(), interface = PUI.TOC, build = PUI.BUILD }, name)
+        addonVersion = S:Version(), interface = PUI.TOC, build = PUI.BUILD, flavor = Export.Flavor() }, name)
     end
   end
   for i = 1, #db.heartbeats do
@@ -230,16 +234,21 @@ function Export:Payload()
     reports[n] = { id = db.installId .. "-" .. hb.session .. "-0", kind = "heartbeat", hash = "heartbeat-" .. hb.session,
       message = "session health", count = 1, firstSeen = hb.at, lastSeen = hb.at, session = hb.session,
       addonVersion = hb.version, interface = hb.interface, build = hb.build, source = "sentinel",
-      module = "Core", track = hb.track, context = hb }
+      module = "Core", track = hb.track, context = hb, flavor = Export.Flavor() }
   end
   for i = 1, #db.tests do
     local t = db.tests[i]
     n = n + 1
     reports[n] = { id = string.format("%s-%d-%d", db.installId, t.session, t.at or i), kind = "test", hash = "test-" .. t.session .. "-" .. i,
       message = t.summary, count = 1, firstSeen = t.at, lastSeen = t.at, session = t.session,
-      addonVersion = t.version, build = t.build, source = "sentinel", module = "Tests", context = t }
+      addonVersion = t.version, build = t.build, source = "sentinel", module = "Tests", context = t, flavor = Export.Flavor() }
   end
-  return { schema = CONTRACT, installId = db.installId, uploader = "Phoenix_UI_Sentinel " .. S:Version(), reports = reports }
+  local payload = { schema = CONTRACT, installId = db.installId, uploader = "Phoenix_UI_Sentinel " .. S:Version(), flavor = Export.Flavor(), session = db.session, reports = reports }
+  -- The installed addon list (folder, version, enabled, loaded) for the dashboard's conflict ranking.
+  if S.Sections and PUI.Schema:Get("sentinel.uploadAddonList") then
+    payload.addons = setmetatable(S.Sections.AddonInventory(), Export.ARRAY)
+  end
+  return payload
 end
 
 function Export.Encode(payload)

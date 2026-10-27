@@ -66,6 +66,7 @@ function Alerts:BuildBadge()
   return b
 end
 function Alerts:PaintBadge()
+  if S.Sections then S.Sections:RefreshLaunchers() end
   local show = o.alertBadge and self.unseen > 0 and not self:Yield()
   if not show then if self.badge then self.badge:Hide() end return end
   local b = self.badge or self:BuildBadge()
