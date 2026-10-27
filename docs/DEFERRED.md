@@ -1,6 +1,6 @@
 # Deferred items (consolidated, PRs #31-#43)
 
-Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Deferred batch A (stacked on PR #43) marks its items in place: **done**, **blocked** with the reason, or **left**. Deferred batch B (stacked on batch A) marks the Studio and HUD items the same way and adds live previews for the Action Bars, Cooldown Manager and Resource Bars extras. Deferred batch C (stacked on batch B) marks every remaining module from Quest Tracker to Plan-wide the same way, with each extra shown live in its module's preview. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
+Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Deferred batch A (stacked on PR #43) marks its items in place: **done**, **blocked** with the reason, or **left**. Deferred batch B (stacked on batch A) marks the Studio and HUD items the same way and adds live previews for the Action Bars, Cooldown Manager and Resource Bars extras. Deferred batch C (stacked on batch B) marks every remaining module from Quest Tracker to Plan-wide the same way, with each extra shown live in its module's preview. Deferred batch D (stacked on batch C) builds the Sentinel recorder, the BugGrabber shim, the five Diagnostics items, the fixed-in sync that needs no new infrastructure and the first slice of the Forever child; every remaining in-game check is listed in docs/INGAME_CHECKS.md. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
 
 | Module | Items |
 |---|---|
@@ -215,29 +215,29 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 ## Sentinel error reporter (PR #43, this PR)
 
 - **done (deferred C):** compartment entry: Shift+click on Phoenix's compartment entry opens Sentinel (existing, Core/Entry.lua)
-- **left:** opt-in dev recorder (change-only streams, orphan-session recovery): larger design, not started
+- **done (deferred D):** opt-in dev recorder (`sentinel.recorder`, `/pui record`; change-only rows for zone, combat, group, frame-rate band and errors; open recordings from a crashed session kept as "recovered"; Phoenix_UI_Sentinel/Recorder.lua)
 - **done (deferred C):** dev event-trace panel (`sentinel.trace`, `/pui trace`; wraps Kernel.Fire only while on; Phoenix_UI_Sentinel/Extras.lua)
 - **done (deferred C):** warning baseline (errors seen in 3+ sessions) and the one-time excess warning (`sentinel.baselineWarn`)
-- **left:** fixed-in state synced from the dashboard: needs a Companion-to-addon channel that does not exist yet
+- **done (deferred D):** fixed-in sync, manual half: Companion `fixed-string` turns the dashboard's fixed list into a string, `/pui sentinel fixed` imports it (Phoenix_UI_Sentinel/FixedSync.lua); **left:** automatic sync needs a per-install server read scope and a Companion SavedVariables writer (design in docs/FIXED_SYNC.md)
 - **blocked:** protected decode of a received report: needs an approved pcall exception tag (guardrails); the checksum guards it today
-- **left:** BugGrabber display object: BugGrabber picks its display from the `X-BugGrabber-Display` TOC field at its own load, and Sentinel is load-on-demand, so the global would not exist then; needs a Core-side shim
+- **done (deferred D):** BugGrabber display object through a Core shim (Core/BugDisplay.lua, `## X-BugGrabber-Display: PhoenixUIBugDisplay` in Phoenix_UI.toc)
 - **left:** removing the retired safe-mode code paths: cleanup for the polish pass (setting hidden and inert)
 - **done (deferred C):** sound list from the media library (four game sounds, then every media sound)
 
 ## Diagnostics and profiler (PR #43, this PR)
 
 - **done (deferred C):** per-page CPU chip in the settings header (`sentinel.cpuChip`; Phoenix_UI_Options/CpuChip.lua)
-- **left:** top-addons readout on hover
-- **left:** self-measurement through the game's addon profiler with signature check
-- **left:** privacy kit system-string allow-list
-- **left:** Diagnostics as its own settings page
-- **left:** A/B report window
+- **done (deferred D):** top-addons readout on hover (CPU chip and the Diagnostics page; GetTopKAddOnsForMetric, read only on hover)
+- **done (deferred D):** self-measurement through the game's addon profiler with a signature check (Core/DiagExtras.lua; in the report)
+- **done (deferred D):** privacy kit system-string allow-list (`sentinel.privacyAllow` plus client words and addon folder names; path context only)
+- **done (deferred D):** Diagnostics as its own settings page (System > Diagnostics; Phoenix_UI_Options/DiagPage.lua)
+- **done (deferred D):** A/B report window (`/pui ab`, registered pairs, interleaved, game-profiler clock when verified)
 
 ## Plan-wide (PLAN section 6)
 
 - **left:** Arabic locale and real translations (needs a translator)
 - **left:** plugin system (build last, by plan)
-- **left:** Forever child
+- **done (deferred D):** Forever child, first slice: learned flight timer and pet happiness (Phoenix_UI_Forever); **left:** spellbook/talent skins and fishing; **blocked:** swing timer (see Resource Bars)
 - **blocked:** CurseForge/Wago release: an external publishing action that needs your approval; not done by an agent
 - **left:** raid debuff tiles with per-instance data packs (needs data from the test phase)
 - **left:** nameplate NPC colour data packs (needs data)
