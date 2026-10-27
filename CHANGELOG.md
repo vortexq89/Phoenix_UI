@@ -4,6 +4,11 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Approved guardrail exceptions, branch feat/approved-exceptions
+- Forever swing timer (Forever page, off by default, live): a bar counting down to your next melee swing, from your own SWING_DAMAGE / SWING_MISSED combat-log lines. The combat log is read only when PUI.IS_FOREVER and the setting is on; the Ticker job exists only while a swing runs. Size setting, Forever page preview, Edit Mode element.
+- Sentinel: received reports are decoded inside a pcall (base64, inflate, JSON only), after the size cap (now also on offered bytes and the assembled length) and the checksum; malformed bodies are dropped as "bad data".
+- Both documented in docs/GUARDRAIL_EXCEPTIONS.md and tagged in code. Tests: 447 (retail and Forever).
+
 ### Skins v2 extras and surfaces, branch feat/skins-b
 - 22 more window extras, each in the window's gear flyout and on /pui -> Skins, live (changing one re-runs that window's code at once): spellbook cast time lines and spell name size, talent rings; collections dim uncollected and model backdrop; transmog pending highlight; Group Finder fade declined; Friends class icons; loot and roll upgrade hint; toast style; bags junk overlay and bag view (Blizzard's own combinedBags setting); merchant dim unusable and search; Auction House price font; professions have/need; achievements earned colour; guild unread badges and last online column; calendar event colours; Great Vault unlocked glow.
 - New surfaces: submenus (every level of right-click and dropdown menus), raid warnings / boss emotes / error text fonts, breath and fatigue timers, widgets and the encounter alt power bar, help tips, movie subtitles, chat bubbles (open world), pet battles and the barbershop.

@@ -17,6 +17,9 @@ PX.extend("Forever", function(card)
   else rows[#rows + 1] = "Flight timer off" end
   if s.petHappiness then rows[#rows + 1] = "Pet: Happy  +20" .. (s.petWarn and "   (chat line when unhappy)" or "")
   else rows[#rows + 1] = "Pet happiness badge off" end
+  if s.swingTimer and FV.Swing then
+    rows[#rows + 1] = "Swing bar: " .. FV.Swing.Text(0, 2.6, 1.3) .. string.format("  (size %.0f%%)", (s.swingScale or 1) * 100)
+  else rows[#rows + 1] = "Swing timer off (opt-in)" end
   if not PUI.IS_FOREVER then rows[#rows + 1] = "Turns on in the Forever client only." end
   PX.Foot(card, "fv", rows)
 end)

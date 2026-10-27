@@ -138,6 +138,20 @@ Tests:Add("Sentinel", "in-game share: nothing sent before accept; chunks with ch
   -- Tampered chunk fails the checksum.
   S.Share.inbox["Vex|9"] = { chunks = 1, sum = "00000000", parts = {}, got = 0, accepted = true }
   t:eq(S.Share:OnMessage("PUISEN", "C|9|1|abc", "WHISPER", "Vex"), "checksum failed", "checksum checked")
+  -- Checksum-valid but malformed body: decoded inside the approved pcall, dropped, no Lua error.
+  for i, junk in ipairs({ "!!not-base64!!", C_EncodingUtil.EncodeBase64("not compressed"), C_EncodingUtil.EncodeBase64(C_EncodingUtil.CompressString("{\"broken\": ")) }) do
+    local id = "j" .. i
+    S.Share.inbox["Vex|" .. id] = { chunks = 1, sum = S.Share.Checksum(junk), bytes = #junk, parts = {}, got = 0, accepted = true }
+    t:eq(S.Share:OnMessage("PUISEN", "C|" .. id .. "|1|" .. junk, "WHISPER", "Vex"), "bad data", "malformed body " .. i .. " dropped")
+  end
+  t:eq(S.Share.Decode(C_EncodingUtil.EncodeBase64(C_EncodingUtil.CompressString("[1]"))), nil, "a non-report value is dropped")
+  -- Size cap: over-size offers and bodies are never decoded.
+  t:eq(S.Share:OnMessage("PUISEN", "O|7|61|abcd|100", "WHISPER", "Vex"), "bad offer", "too many chunks")
+  t:eq(S.Share:OnMessage("PUISEN", "O|7|2|abcd|" .. (S.Share.MAX_BYTES + 1), "WHISPER", "Vex"), "bad offer", "too many bytes")
+  S.Share.inbox["Vex|8"] = { chunks = 1, sum = "x", bytes = 5, parts = {}, got = 0, accepted = true }
+  t:eq(S.Share:OnMessage("PUISEN", "C|8|1|abc", "WHISPER", "Vex"), "bad size", "length must match the offer")
+  local big = string.rep("A", S.Share.MAX_BYTES + 1)
+  t:eq(S.Share.Decode(big), nil, "Decode refuses text over the cap")
   Schema:Set("sentinel.shareAccept", "never")
   t:cleanup(function() Schema:Set("sentinel.shareAccept", "ask") end)
   t:eq(S.Share:OnMessage("PUISEN", "O|5|1|abcd|10", "WHISPER", "Stranger"), "refused", "never accept")

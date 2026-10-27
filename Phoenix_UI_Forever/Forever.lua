@@ -9,14 +9,16 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 --  * Pet happiness: a small badge (Happy / Content / Unhappy) with your pet's
 --    loyalty rate, polled every 2 s by a Ticker job only while you have a pet;
 --    optional chat line when it becomes unhappy.
--- Threat is Embers' Threat window; swing timers are Resource Bars'.
+--  * Swing timer (opt-in, off by default): see the Swing section below; the
+--    only combat-log reader in Phoenix UI (approved guardrail exception).
+-- Threat is Embers' Threat window.
 local _, ns = ...
 local Schema = PUI.Schema
 local OWNER = "Forever"
 local FV = { active = false }
 ns.Forever = FV
 PUI.Forever = FV
-local s = { flightTimer = true, flightScale = 1, petHappiness = true, petWarn = false }
+local s = { flightTimer = true, flightScale = 1, petHappiness = true, petWarn = false, swingTimer = false, swingScale = 1 }
 FV.settings = s
 
 function FV.DB()
@@ -167,6 +169,100 @@ function Pet.Refresh()
   end
 end
 
+-- Swing timer (opt-in, off by default) -------------------------------------------------------------
+-- APPROVED GUARDRAIL EXCEPTION (deprecated: COMBAT_LOG_EVENT_UNFILTERED and
+-- CombatLogGetCurrentEventInfo), 2026-10-28, approver VortexQ8 (t96u). Scope:
+--  * Forever client only: Swing.Wanted() requires PUI.IS_FOREVER, where the
+--    combat log is still open to addons. Retail never registers the event.
+--  * Opt-in: the event is registered only while "Swing timer" is on (default
+--    off) and unregistered the moment it, the module or the client gate goes off.
+--  * Reads only the player's own SWING_DAMAGE / SWING_MISSED lines; a value
+--    that is secret is never compared (it is dropped).
+--  * The bar moves from a Ticker job that exists only while a swing is running.
+-- See docs/GUARDRAIL_EXCEPTIONS.md.
+local Swing = {}
+FV.Swing = Swing
+Swing.EVENTS = { SWING_DAMAGE = true, SWING_MISSED = true }
+-- guardrails-allow: deprecated 2026-10-28 approver=VortexQ8 reason=Forever-only-opt-in-swing-timer-(t96u,docs/GUARDRAIL_EXCEPTIONS.md)
+Swing.EVENT = "COMBAT_LOG_EVENT_UNFILTERED"
+function Swing.Wanted() return PUI.IS_FOREVER == true and FV.active == true and s.swingTimer == true end
+local function plain(v) return v ~= nil and not PUI.Secret.IsSecret(v) end
+function Swing.Speed()
+  local main = UnitAttackSpeed and UnitAttackSpeed("player")
+  if type(main) ~= "number" or not plain(main) or main <= 0 then return nil end
+  return main
+end
+function Swing.Read()
+  -- guardrails-allow: deprecated 2026-10-28 approver=VortexQ8 reason=Forever-only-opt-in-swing-timer-(t96u,docs/GUARDRAIL_EXCEPTIONS.md)
+  local reader = rawget(_G, "CombatLogGetCurrentEventInfo")
+  if not reader then return nil end
+  local _, sub, _, src = reader()
+  return sub, src
+end
+-- One combat-log line: a player swing restarts the timer. Returns true when it did.
+function Swing.OnLog(sub, src, now)
+  if not Swing.Wanted() or not plain(sub) or not plain(src) then return false end
+  if not Swing.EVENTS[sub] or src ~= UnitGUID("player") then return false end
+  Swing.t0, Swing.dur = now, Swing.Speed() or 2
+  PUI.Ticker:Register("forever.swing", 0.05, Swing.Paint, OWNER)
+  Swing.Paint()
+  return true
+end
+function Swing.OnEvent() local sub, src = Swing.Read(); Swing.OnLog(sub, src, GetTime()) end
+function Swing.Text(t0, dur, now)
+  local left = math.max(0, t0 + dur - now)
+  return string.format("Swing  %.1f", left), math.min(1, math.max(0, (now - t0) / dur))
+end
+PUI.Layout:RegisterElement("forever.swing", { label = "Swing timer", owner = OWNER, size = { 200, 14 }, default = { point = "CENTER", x = 0, y = -180 } })
+function Swing.Build()
+  local b = PUI:CreateFrame("StatusBar", "PhoenixUIForeverSwing", UIParent, nil, OWNER)
+  b:SetSize(200, 14)
+  PUI.Layout:Place(b, "forever.swing")
+  b:SetStatusBarTexture(PUI.Bars and PUI.Bars:TexturePath() or PUI.Media:Texture("flat"))
+  b:SetMinMaxValues(0, 1)
+  local r, g, bl = PUI.Theme:Color("accent")
+  b:SetStatusBarColor(r or 1, g or 0.48, bl or 0.1, 0.9)
+  PUI.Theme:Backdrop(b, "surface.0")
+  b.text = b:CreateFontString(nil, "OVERLAY")
+  b.text:SetFontObject(PUI.Media:FontObject("small"))
+  b.text:SetPoint("CENTER")
+  Swing.bar = b
+  return b
+end
+function Swing.Stop()
+  PUI.Ticker:Unregister("forever.swing")
+  Swing.t0 = nil
+  if Swing.bar then Swing.bar:Hide() end
+end
+function Swing.Paint()
+  if not (Swing.t0 and s.swingTimer) then return Swing.Stop() end
+  local now = GetTime()
+  if now > Swing.t0 + Swing.dur + 0.5 then return Swing.Stop() end -- idle: the job goes away
+  local b = Swing.bar or Swing.Build()
+  b:SetScale(s.swingScale or 1)
+  local text, frac = Swing.Text(Swing.t0, Swing.dur, now)
+  b.text:SetText(text)
+  b:SetValue(frac)
+  b:Show()
+end
+-- Registers or drops the combat-log event to match the setting (live, no reload).
+function Swing.Refresh()
+  local mod = FV.module
+  if not mod then return end
+  if Swing.Wanted() then
+    if not Swing.listening then
+      Swing.listening = true
+      mod:RegisterEvent(Swing.EVENT, Swing.OnEvent)
+    end
+  else
+    if Swing.listening then
+      Swing.listening = false
+      mod:UnregisterEvent(Swing.EVENT)
+    end
+    Swing.Stop()
+  end
+end
+
 -- Module --------------------------------------------------------------------------------------------
 local schema = {}
 FV.schema = schema
@@ -179,6 +275,9 @@ local function key(name, def)
     if name == "flightTimer" or name == "flightScale" then
       if s.flightTimer and Flight.trip then PUI.Ticker:Register("forever.flight", 0.2, Flight.Paint, OWNER) else PUI.Ticker:Unregister("forever.flight") end
       Flight.Paint()
+    elseif name == "swingTimer" or name == "swingScale" then
+      Swing.Refresh()
+      if Swing.t0 then Swing.Paint() end
     else Pet.Refresh() end
   end
   schema["forever." .. name] = def
@@ -188,13 +287,16 @@ key("flightTimer", { type = "toggle", default = true, mode = "simple", label = "
 key("flightScale", { type = "range", default = 1, min = 0.6, max = 1.8, step = 0.05, label = "Flight timer size", tooltip = "Scale of the flight bar." })
 key("petHappiness", { type = "toggle", default = true, mode = "simple", label = "Pet happiness badge",
   tooltip = "Happy, Content or Unhappy, with the loyalty rate, while you have a pet out." })
+key("swingTimer", { type = "toggle", default = false, mode = "simple", label = "Swing timer",
+  tooltip = "A bar that counts down to your next melee swing. Off by default; Forever only. It reads your own swings from the combat log." })
+key("swingScale", { type = "range", default = 1, min = 0.6, max = 1.8, step = 0.05, label = "Swing timer size", tooltip = "Scale of the swing bar." })
 key("petWarn", { type = "toggle", default = false, label = "Chat line when the pet is unhappy", tooltip = "One line each time your pet becomes unhappy." })
 
 local hooked = false
 FV.module = PUI:RegisterModule(OWNER, {
   enabledByDefault = true,
   label = "Forever",
-  tooltip = "Flight timer and pet happiness for the Forever client.",
+  tooltip = "Flight timer, pet happiness and an optional swing timer for the Forever client.",
   loadCondition = function() return PUI.IS_FOREVER == true end,
   schema = schema,
   onEnable = function(mod)
@@ -209,9 +311,11 @@ FV.module = PUI:RegisterModule(OWNER, {
     mod:RegisterEvent("PLAYER_CONTROL_GAINED", function() if Flight.trip and not UnitOnTaxi("player") then Flight.Land() end end)
     mod:RegisterEvent("UNIT_PET", function(_, _, unit) if unit == "player" then Pet.Refresh() end end)
     Pet.Refresh()
+    Swing.Refresh()
   end,
   onDisable = function()
     FV.active = false
+    Swing.Refresh()
     Flight.trip, Flight.pending = nil, nil
     if Flight.bar then Flight.bar:Hide() end
     Pet.Paint(nil)
