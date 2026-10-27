@@ -203,3 +203,33 @@ Tests:Add("GroupFinder", "live preview runs the real filter on sample rows", fun
   t:eq(P.State(card).gfShown, 3, "rating chip applies live in the preview")
   t:ok(P.State(card).hud.gf.lines[1]:GetText():find("3 hidden", 1, true), "count line in the preview")
 end)
+
+Tests:Add("GroupFinder", "Raider.IO words, realm badge, plugin sort words, word list insert, detached panel mover", function(t)
+  if not H then return end
+  setup(t)
+  Schema:Set("module.GroupFinder", true)
+  local X = GF.Extras
+  H.lfg[7] = { leader = "Vex-Kazzak", score = 2500, roles = { "TANK", "HEALER" } }
+  rawset(_G, "RaiderIO", { GetProfile = function(name) if name == "Vex" then return { mythicKeystoneProfile = { currentScore = 2610, mainCurrentScore = 3100 } } end end })
+  local realms = { Kazzak = "deDE", Silvermoon = "enGB" }
+  rawset(_G, "LibStub", { GetLibrary = function(_, n) if n == "LibRealmInfo" then return { GetRealmInfo = function(_, r) return nil, nil, nil, nil, realms[r] end } end end })
+  t:cleanup(function() rawset(_G, "RaiderIO", nil); rawset(_G, "LibStub", nil); X.UnregisterSort("leaderlen") end)
+  local d = GF.Info(7)
+  t:eq(d.vars.rio, 2610, "rio word")
+  t:eq(d.vars.riomain, 3100, "riomain word")
+  t:eq(d.vars.samelang, false, "German realm vs English realm")
+  t:ok(GF.Text(d):find("[DE]", 1, true), "language badge on the row")
+  t:ok(GF.Text(d):find("RIO 2610", 1, true), "Raider.IO score on the row")
+  t:ok(GF.Expr.Compile("rio >= 2600 and not samelang"), "words usable in expressions")
+  -- plugin sort word
+  t:ok(GF.RegisterSort("leaderlen", "length of the leader's name", function(id) return #(H.lfg[id].leader) end), "registered")
+  t:eq(GF.Info(7).vars.leaderlen, 10, "computed per result")
+  t:ok(GF.Filters.ParseSort("leaderlen desc"), "usable as a sort word")
+  -- word list insert
+  Schema:Set("gf.dungeon.expr", "")
+  t:eq(X.Insert("dungeon", "partyfit"), "partyfit", "first word")
+  t:eq(X.Insert("dungeon", "hasbl"), "partyfit and hasbl", "next words joined with and")
+  t:ok(#X.Words("rio") >= 2, "word list filter")
+  -- Studio mover
+  t:ok(PUI.Layout.elements["gf.panel"], "detached panel has a Studio mover")
+end)

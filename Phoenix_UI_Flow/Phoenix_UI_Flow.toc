@@ -12,4 +12,5 @@
 
 Flow.lua
 Quiet.lua
+Extras.lua
 Tests\Flow_test.lua

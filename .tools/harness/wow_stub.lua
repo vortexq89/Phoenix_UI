@@ -1198,9 +1198,16 @@ C_Traits.GetConfigInfo = C_Traits.GetConfigInfo or function(id) return { name = 
 H.mapBest, H.runHistory = {}, {}
 C_MythicPlus.GetSeasonBestAffixScoreInfoForMap = function(id) return {}, maybe(H.mapBest[id] or 0) end
 C_MythicPlus.GetRunHistory = function() return H.runHistory end
+H.trainer = {}
+function GetNumTrainerServices() return #H.trainer end
+function GetTrainerServiceInfo(i) return "Skill " .. i, H.trainer[i] end
+function BuyTrainerService(i) H.calls[#H.calls + 1] = { "BuyTrainerService", i } end
+function Screenshot() H.calls[#H.calls + 1] = { "Screenshot" } end
+C_PartyInfo.LeaveParty = function() H.calls[#H.calls + 1] = { "LeaveParty" } end
+function GetNormalizedRealmName() return "Silvermoon" end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
-  AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }
+  AnchorUtil = true, RaiderIO = true, LibStub = true, CustomAuraContainerTemplate = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end
