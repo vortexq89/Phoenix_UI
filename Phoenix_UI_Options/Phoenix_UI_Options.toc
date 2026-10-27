@@ -33,8 +33,11 @@ SentinelPage.lua
 StudioModel.lua
 Studio.lua
 StudioPanels.lua
+StudioExtras.lua
+BlizzardPage.lua
 Tests\Options_test.lua
 Tests\Studio_test.lua
 Tests\Studio2_test.lua
+Tests\StudioB_test.lua
 Tests\Controls_test.lua
 Tests\Dialogs_test.lua
