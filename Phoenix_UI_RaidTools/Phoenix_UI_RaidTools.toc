@@ -13,4 +13,5 @@
 RaidTools.lua
 Stats.lua
 Extras.lua
+Council.lua
 Tests\RaidTools_test.lua

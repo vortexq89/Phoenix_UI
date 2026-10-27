@@ -165,6 +165,19 @@ for n, shape in MASKS.items():
     svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><g fill="#fff">%s</g></svg>' % shape
     rel = "Textures/Masks/%s.tga" % n; save(render(svg, 64), rel); add(rel, "texture", "Mask " + n)
 
+# Cursor ring, celebration ember and spark (white, tinted in game) -------------------------------------
+FX = {
+    "Textures/Cursor/ring": '<circle cx="32" cy="32" r="26" fill="none" stroke="#fff" stroke-width="5"/>',
+    "Textures/Cursor/ringthin": '<circle cx="32" cy="32" r="28" fill="none" stroke="#fff" stroke-width="2.5"/>',
+    "Textures/Cursor/dot": '<circle cx="32" cy="32" r="7"/>',
+    "Textures/Celebrate/ember": '<defs><radialGradient id="e"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#fff" stop-opacity=".85"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><circle cx="32" cy="32" r="30" fill="url(#e)"/>',
+    "Textures/Celebrate/spark": '<path d="M32 2l5 25 25 5-25 5-5 25-5-25-25-5 25-5z"/>',
+    "Textures/Celebrate/feather": '<path d="M32 4c14 10 18 30 4 54l-4-6-4 6C14 34 18 14 32 4z"/><path d="M32 12v46" stroke="#000" stroke-opacity=".35" stroke-width="2"/>',
+}
+for rel, body in FX.items():
+    svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><g fill="#fff">%s</g></svg>' % body
+    save(render(svg, 64), rel + ".tga"); add(rel + ".tga", "texture", rel.split("/")[-1].capitalize())
+
 json.dump(entries, open(mm.MANIFEST, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
 mm.write_lua(entries); mm.write_md(entries)
 print("gaps art:", len(PAGES) * 3, "page icons,", len(CLASSES), "class,", len(ROLES), "role,", len(EMOJI) + len(OBJ), "emoji,", len(MASKS), "masks")

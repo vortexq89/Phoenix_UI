@@ -38,6 +38,7 @@ Core\Ledger.lua
 Core\Visibility.lua
 Core\Services.lua
 Core\Look.lua
+Core\Gaps.lua
 Core\Season.lua
 Core\Search.lua
 Core\Dialogs.lua

@@ -101,6 +101,32 @@ function X.SetPiecesEquipped(setID)
   end
   return n
 end
+-- Crest upgrade calculator (review gap): ranks left on the track times the
+-- crest cost per rank (a setting, because Blizzard changes it per season;
+-- the line says "about").
+function X.CrestsToMax(cur, max)
+  if type(cur) ~= "number" or type(max) ~= "number" or max <= cur then return 0, 0 end
+  return max - cur, (max - cur) * (s.crestCost or 15)
+end
+function X.CrestLine(cur, max, track)
+  if not s.crestCalc then return nil end
+  local ranks, crests = X.CrestsToMax(cur, max)
+  if ranks == 0 then return "Fully upgraded" end
+  return string.format("To max: %d rank%s, about %d %s crests", ranks, ranks == 1 and "" or "s", crests, track)
+end
+-- EquippedToMax() -> { [track] = crests } for every equipped item (preview and the Wisdom card).
+function X.EquippedToMax()
+  local out = {}
+  for slot = 1, 17 do
+    local link = GetInventoryItemLink("player", slot)
+    local u = link and C_Item.GetItemUpgradeInfo(link)
+    if type(u) == "table" and plain(u.trackString) and u.trackString and plain(u.currentLevel) and plain(u.maxLevel) then
+      local _, c = X.CrestsToMax(u.currentLevel, u.maxLevel)
+      out[u.trackString] = (out[u.trackString] or 0) + c
+    end
+  end
+  return out
+end
 function X.ItemLines(id, link)
   local out = {}
   local ref = link or id
@@ -119,6 +145,8 @@ function X.ItemLines(id, link)
       local line = string.format("Track: %s %d/%d", u.trackString, u.currentLevel, u.maxLevel)
       if plain(u.maxItemLevel) and u.maxItemLevel and u.maxItemLevel > 0 then line = line .. string.format("  (up to %d)", u.maxItemLevel) end
       out[#out + 1] = { line, 0.95, 0.75, 0.3 }
+      local crest = X.CrestLine(u.currentLevel, u.maxLevel, u.trackString)
+      if crest then out[#out + 1] = { crest, 0.85, 0.85, 0.85 } end
     end
   end
   if s.setPieces then
@@ -241,5 +269,9 @@ key("lines.transmog", "transmog", { type = "toggle", default = true, label = "Ap
   tooltip = "Gear says whether you have collected its appearance.", mode = "simple" })
 key("lines.upgrade", "upgrade", { type = "toggle", default = true, label = "Upgrade track",
   tooltip = "Gear shows its upgrade track and level (for example Hero 3/6) and the item level it can reach.", mode = "advanced" })
+key("lines.crestCalc", "crestCalc", { type = "toggle", default = true, label = "Crests to max upgrade",
+  tooltip = "Upgradable gear shows how many ranks are left and about how many crests they cost.", mode = "simple" })
+key("crestCost", "crestCost", { type = "range", default = 15, min = 0, max = 100, step = 1, label = "Crests per upgrade rank",
+  tooltip = "Crests one upgrade rank costs this season (used by the crest calculator).", mode = "advanced" })
 key("lines.setPieces", "setPieces", { type = "toggle", default = true, label = "Set pieces equipped",
   tooltip = "Set items (such as tier) show how many pieces of that set you are wearing.", mode = "advanced" })

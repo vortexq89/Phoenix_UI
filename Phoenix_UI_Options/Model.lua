@@ -189,3 +189,25 @@ function Model.ResetPage(mode, name)
   end
   return n
 end
+
+-- Review gap: reset scopes. ResetModule resets every key the page's owner
+-- registered, simple and advanced; ResetEverything resets every Phoenix key.
+-- Both skip keys already at their default and return how many changed.
+function Model.ChangedKeys(owner)
+  local list = {}
+  for key, def in pairs(Schema.defs) do
+    if (owner == nil or def.owner == owner) and Model.IsChanged(key) then list[#list + 1] = key end
+  end
+  table.sort(list)
+  return list
+end
+function Model.ResetModule(owner)
+  local list = Model.ChangedKeys(owner)
+  for i = 1, #list do Schema:Reset(list[i]) end
+  return #list
+end
+function Model.ResetEverything()
+  local list = Model.ChangedKeys(nil)
+  for i = 1, #list do Schema:Reset(list[i]) end
+  return #list
+end

@@ -88,6 +88,11 @@ key("factionBanners", { type = "toggle", default = true, label = "Faction tint",
 key("hideAppOnly", { type = "toggle", default = false, label = "Hide Battle.net app-only friends",
   tooltip = "Friends only signed in to the Battle.net app are left out of the Phoenix list and dimmed on Blizzard's list." })
 key("appOnlyAlpha", { type = "range", default = 0.35, min = 0, max = 1, step = 0.05, label = "App-only dimming", tooltip = "How faded app-only friends are on Blizzard's list while hidden." })
+key("wowOnly", { type = "toggle", default = false, mode = "simple", label = "In game only",
+  tooltip = "Show only friends playing World of Warcraft: others are left out of the Phoenix list and dimmed on Blizzard's list (the game has no such filter of its own).",
+  searchTags = { "online", "in game", "wow" } })
+key("sameGame", { type = "toggle", default = false, label = "In game only: this game version",
+  tooltip = "With In game only, also leave out friends playing a different version of World of Warcraft." })
 key("hideOffline", { type = "toggle", default = false, label = "Hide offline in the Phoenix list", tooltip = "Only online players in the search panel." })
 key("panel", { type = "toggle", default = true, mode = "simple", label = "Search panel", tooltip = "One search across friends, guild and recent players, with sort and actions, beside the friends list." })
 key("dock", { type = "select", default = "right", choices = { "right", "left", "free" }, choiceLabels = { right = "Right of the list", left = "Left of the list", free = "Free (move in Studio)" },
