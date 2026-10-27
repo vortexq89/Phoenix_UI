@@ -14,4 +14,5 @@ Data.lua
 Skin.lua
 Panel.lua
 Friends.lua
+Extras.lua
 Tests\Friends_test.lua

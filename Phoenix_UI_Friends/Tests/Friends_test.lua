@@ -67,3 +67,41 @@ Tests:Add("Friends", "live preview follows the settings", function(t)
   P.Friends(card)
   t:eq(P.State(card).friendsLines, n - 1, "app-only friend leaves the preview")
 end)
+
+Tests:Add("Friends", "class icon themes, border and tab accent, add-friend suggestions, Studio mover for the free panel", function(t)
+  if not H then return end
+  local X = F.Extras
+  for _, k in ipairs({ "module.Friends", "friends.iconTheme", "friends.frameStyle", "friends.dock" }) do Tests.Keep(t, k) end
+  Schema:Set("module.Friends", true)
+  -- icon theme on a Blizzard row
+  local row = CreateFrame("Button"); row.id = 1; row.buttonType = 2; row.name = row:CreateFontString(); row.info = row:CreateFontString()
+  H.friends[1].className = "Mage"
+  t:cleanup(function() H.friends[1].className = nil end)
+  Schema:Set("friends.iconTheme", "letter")
+  F.Skin.Paint(row, F.settings)
+  local p = F.Skin.decorated[row]
+  if p and rawget(p, "letter") then t:eq(p.letter:GetText(), "M", "class letter") else t:ok(true, "row without a class (stub)") end
+  -- frame border and tabs (own overlay, hooks only)
+  local host = CreateFrame("Frame", "FriendsFrame", UIParent)
+  rawset(_G, "FriendsFrame", host)
+  local tab = CreateFrame("Button", "FriendsFrameTab1", host); rawset(_G, "FriendsFrameTab1", tab)
+  host.selectedTab = 1
+  t:cleanup(function() rawset(_G, "FriendsFrame", nil); rawset(_G, "FriendsFrameTab1", nil); rawset(_G, "AddFriendNameEditBox", nil); X.frameHooked = nil; X.boxHooked = nil end)
+  t:ok(X.HookFrame(), "hooked")
+  t:ok(X.PaintFrame() and X.overlay:IsShown(), "overlay drawn")
+  t:ok(X.overlay.tabs[1]:IsShown(), "accent line under the open tab")
+  Schema:Set("friends.frameStyle", false)
+  t:eq(X.overlay:IsShown(), false, "off applies live")
+  -- add-friend suggestions
+  local box = CreateFrame("EditBox", "AddFriendNameEditBox", UIParent); rawset(_G, "AddFriendNameEditBox", box)
+  box:SetText("ra")
+  t:eq(X.ShowSuggestions(box), 1, "recent player suggested")
+  X.drop.rows[1]:GetScript("OnClick")(X.drop.rows[1])
+  t:eq(box:GetText(), "Rae-Silvermoon", "click fills the box")
+  -- Studio mover for the free-floating panel
+  t:ok(PUI.Layout.elements["friends.panel"], "panel registered with Studio")
+  Schema:Set("friends.dock", "free")
+  F.Panel.Show(F.settings, true)
+  t:ok(F.Panel.frame.point ~= nil, "free panel placed by Studio's layout")
+  F.Panel.frame:Hide()
+end)

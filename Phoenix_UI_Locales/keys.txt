@@ -55,6 +55,7 @@ A strip of recent casts for party 3.
 A strip of recent casts for party 4.
 A strip of recent casts for target.
 A strip of recent casts for you.
+A thin accent border on the friends frame and an accent line under the open tab.
 A thin accent-coloured line under the health bar.
 A thin dark border around each icon.
 A white edge when a shield is bigger than the missing health, and a red edge when a heal absorb is bigger than the current health.
@@ -146,6 +147,7 @@ Alt+click in the addon menu
 Alternate power bar
 Always on the minimap
 Always show me
+An accent line under the open tab.
 An essential or utility cooldown that is on one of your shown action bars is left out of these rows, so it appears once.
 Animation speed
 Announce boss results
@@ -505,6 +507,7 @@ Block width
 Bonus objective banner
 Bonus roll
 Border
+Border and tab colour
 Border around the square minimap; 0 hides it.
 Border buffs you can purge
 Border colour
@@ -513,6 +516,7 @@ Border colour for purgeable buffs.
 Border from quality
 Border important auras
 Border on my target
+Border opacity
 Border thickness
 Border thickness in pixels (0 hides it).
 Boss banner
@@ -728,6 +732,7 @@ Class colour (players), reaction colour, a red-to-green gradient by health, the 
 Class colour for the interrupter
 Class colour, a red-to-green gradient by health, the accent colour or your own colour.
 Class colours
+Class icon look
 Class icons
 Class names in tooltip
 Class resource
@@ -781,6 +786,7 @@ Colour of every block's text.
 Colour of member names.
 Colour of the ID numbers.
 Colour of the assisted combat outline.
+Colour of the border and the tab line.
 Colour of the button border.
 Colour of the cast bar while casting.
 Colour of the cast bar while channelling.
@@ -1634,6 +1640,7 @@ How a button glows when the game highlights the spell (a proc).
 How a button shows that its target is out of range.
 How a dispellable debuff is shown on the frame.
 How amounts are written. Numbers the game hides in combat always use the game's own short format.
+How class icons on friend rows look.
 How close (in UI pixels) an edge must come before it snaps.
 How dark the cooldown swipe is.
 How dark the screen gets behind the movers.
@@ -1693,6 +1700,7 @@ How often windows redraw in combat. 0.5 seconds is the fastest; slower saves a l
 How quests ready to turn in look.
 How solid the row bars are.
 How solid the tooltip background is.
+How strong the border is (0 hides it, the tab line stays).
 How strong the hover highlight is.
 How strongly the health bar is tinted.
 How the bag bar shows. Move it in Studio (Edit Mode owns its position).
@@ -1872,6 +1880,7 @@ Like the default pet bar: right-click switches the ability's autocast on or off.
 Line after each pull
 Line cap in big pulls
 Line spacing
+Line under the open tab
 Lines kept
 Lines older than this are dropped. 0 keeps them until the line limit.
 Link colour (hex)
@@ -2261,6 +2270,7 @@ Phoenix action bars hide while you are inside a player house and come back when 
 Phoenix action bars with paging, where-to-show rules, mouse-over fade, keybind mode, cooldowns, range colouring and proc glow, plus stance, pet, vehicle exit and item bars.
 Phoenix background and border on tooltips; off keeps Blizzard's look.
 Phoenix bank window
+Phoenix border and tabs
 Phoenix builds this many plates out of combat so big pulls never build frames mid-fight.
 Phoenix draws this frame, Blizzard shows the default frame, or hidden shows neither.
 Phoenix draws your buffs and debuffs in two movable rows, or Blizzard's default buff frame stays.
@@ -3130,6 +3140,7 @@ Studio key
 Style
 Style the friends list
 Subzone text
+Suggestions when adding a friend
 Summary delay (seconds)
 Summary: Damage column
 Summary: Deaths column
@@ -3372,6 +3383,7 @@ Turns the game's friendly nameplates on or off for you. Your own value comes bac
 Type /keys to list your key, your alts' keys and your group's keys (/pui keys always works).
 Types the confirmation word when deleting a good item.
 Typing : and a few letters shows matching emoji; click one or press Tab to insert it.
+Typing in the add-friend box lists matching guild members and recent players; click one to fill the box.
 UI errors
 Uninterruptible colour
 Uninterruptible colour of plate cast bars.
