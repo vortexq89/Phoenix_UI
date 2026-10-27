@@ -131,3 +131,149 @@ PX.extend("RaidFrames", function(card)
   G.Lines(card, "rf", { "Extra frames", "Pets: " .. on(s.pets) .. "   Party targets: " .. on(s.partyTargets),
     "Extra block: " .. (s.extraRole == "off" and "off" or (s.extraRole .. "s")), "Grid Mode: " .. on(s.gridMode) .. (s.gridMode and " (shared outline)" or "") })
 end)
+
+-- Gaps 2 previews --------------------------------------------------------------------------------------------
+-- add(owner, fn): extends the page's own preview, or becomes it when the page has none.
+local function add(owner, fn)
+  if type(Previews[owner]) == "function" then return PX.extend(owner, fn) end
+  Previews[owner] = function(card, tab) hide(card); fn(card, tab) end
+end
+G.Add = add
+local function get(k) return Schema:Get(k) end
+
+add("Core", function(card)
+  G.Lines(card, "cq", { "Combat notices", "Say when a change waits: " .. on(get("core.combatToast")),
+    "Sample: \"Bar layout: waits until combat ends\"", "Shown for " .. get("core.combatToastSeconds") .. " s" })
+  local t = tex(card, "cqBar")
+  t:SetSize(3, 18); t:SetPoint("TOPRIGHT", card, "TOPRIGHT", -190, -42); t:SetColorTexture(Theme:Color("warn"))
+end)
+
+add("Cursor", function(card)
+  local g = PUI.Gaps and PUI.Gaps.s
+  if not g then return end
+  G.Lines(card, "cu", { "Cursor ring", "Ring: " .. on(g.ring) .. (g.ringCombat and " (in combat)" or ""), "Style " .. g.ringStyle .. ", colour " .. g.ringColor .. ", dot " .. on(g.ringDot) }, true)
+  local t = tex(card, "cuRing")
+  t:SetSize(g.ringSize, g.ringSize); t:SetPoint("CENTER", card, "CENTER", 0, -20)
+  t:SetTexture(MEDIA .. "Textures\\" .. (PUI.Gaps.Ring.STYLES[g.ringStyle] or PUI.Gaps.Ring.STYLES.ring))
+  t:SetVertexColor(PUI.Gaps.Ring.Color()); t:SetAlpha(g.ring and 1 or 0.35)
+  local d = tex(card, "cuDot")
+  d:SetSize(g.ringSize / 4, g.ringSize / 4); d:SetPoint("CENTER", t, "CENTER"); d:SetTexture(MEDIA .. "Textures\\Cursor\\dot")
+  d:SetVertexColor(PUI.Gaps.Ring.Color()); d:SetShown(g.ringDot)
+end)
+
+add("Celebrations", function(card)
+  local g = PUI.Gaps and PUI.Gaps.s
+  if not g then return end
+  local reduced = PUI.Gaps.Celebrate.Reduced()
+  G.Lines(card, "ce", { "Celebrations", "On: " .. on(g.celebrate) .. "   sound " .. on(g.celebrateSound),
+    "Achievements " .. on(g.celebrateAchievements) .. ", keys " .. on(g.celebrateKeys) .. ", levels " .. on(g.celebrateLevels),
+    reduced and "Reduced motion: banner only" or "Embers rise behind the banner" }, true)
+  local band = tex(card, "ceBand")
+  band:SetSize(260, 44); band:SetPoint("TOP", card, "TOP", 0, -100); band:SetColorTexture(0.05, 0.04, 0.04, 0.85)
+  local line = tex(card, "ceLine")
+  line:SetSize(260, 2); line:SetPoint("BOTTOM", band, "BOTTOM"); line:SetColorTexture(Theme:Color("accent"))
+  local r, gg, b = Theme:Color("accent")
+  for i = 1, 8 do
+    local e = tex(card, "ceE" .. i)
+    e:SetSize(8 + (i * 5) % 10, 8 + (i * 5) % 10)
+    e:SetPoint("BOTTOM", band, "BOTTOM", -110 + i * 26, 10 + (i * 13) % 30)
+    e:SetTexture(MEDIA .. "Textures\\Celebrate\\" .. (i % 3 == 0 and "spark" or "ember")); e:SetVertexColor(r, gg, b); e:SetShown(not reduced)
+  end
+end)
+
+add("Nameplates", function(card)
+  local s = PUI.Nameplates and PUI.Nameplates.settings
+  if not (s and s.los) then return end
+  G.Lines(card, "los", { "Out of sight", "Flash on a failed cast: " .. on(s.los.enabled), "Lasts " .. s.los.seconds .. " s, with an \"Out of sight\" tag" })
+end)
+
+add("GroupFinder", function(card)
+  local s = PUI.GroupFinder and PUI.GroupFinder.settings
+  if not s then return end
+  local X = PUI.GroupFinder.Gaps
+  G.Lines(card, "gfx", { "Raid rows and queues", "Sample: Liberation of Undermine" .. (s.bossesDown and " 3 down" or "") .. (s.ownLockout and "  you 5/8" or ""),
+    "Oldest application age: " .. on(s.oldestAge) .. (X and X.CanCancel() and "   [Cancel oldest]" or ""),
+    "Queue pop reminder: " .. on(s.popAlert) .. (s.popSound and " with sound" or "") })
+end)
+
+add("Tooltip", function(card)
+  local X = PUI.Tooltip and PUI.Tooltip.Extras
+  if not X then return end
+  G.Lines(card, "cr", { "Crest calculator", "Track: Hero 3/6", X.CrestLine(3, 6, "Hero") or "(off)" })
+end)
+
+add("Studio", function(card)
+  local g = PUI.Gaps and PUI.Gaps.s
+  if not g then return end
+  local saved = get("studio.editModeLayout")
+  G.Lines(card, "em", { "Edit Mode layout", "Keep a copy in the profile: " .. on(g.editModeAutoSave),
+    "Saved: " .. ((type(saved) == "table" and saved.name) or "nothing yet"), "Restore switches to it: " .. on(g.editModeActivate) }, true)
+end)
+
+add("Wisdom", function(card)
+  G.Lines(card, "sc", { "SimC export (/pui simc)", "On: " .. on(get("wisdom.simc")) .. "   bag gear: " .. on(get("wisdom.simcBags")),
+    'mage="Vorte"', "head=,id=212081,bonus_id=10356/1540", get("wisdom.simcBags") and "# trinket1=,id=219314" or "" }, true)
+end)
+
+add("RaidTools", function(card)
+  local C = PUI.RaidTools and PUI.RaidTools.Council
+  if not C then return end
+  G.Lines(card, "co", { "Council", "On: " .. on(C.s.council) .. "   answers close after " .. C.s.councilSeconds .. " s",
+    "Vorte  Need  642", "Ash  Minor  655", "Kael  Pass  660" })
+end)
+
+add("Pulse", function(card)
+  local A = PUI.Pulse and PUI.Pulse.Sounds
+  if not A then return end
+  local list = A.s.auraSounds or {}
+  local first = list[1] and A.Parse(list[1])
+  G.Lines(card, "as", { "Aura sounds (" .. #list .. ")", first and (first.spellID .. " -> " .. first.sound .. " (" .. first.trigger .. ")") or "Example: 1234567: Alarm",
+    "Channel " .. A.s.auraSoundChannel .. ", gap " .. A.s.auraSoundThrottle .. " s, watching " .. A.s.auraSoundUnit })
+end)
+
+add("Friends", function(card)
+  G.Lines(card, "ig", { "In game only: " .. on(get("friends.wowOnly")), get("friends.sameGame") and "This game version only" or "Any World of Warcraft" })
+end)
+
+add("CooldownManager", function(card)
+  G.Lines(card, "so", { "Skin only: " .. on(get("cdm.skinOnly")), get("cdm.skinOnly") and "Blizzard places the icons" or "Phoenix places the icons" })
+end)
+
+add("Embers", function(card)
+  local D = PUI.Embers and PUI.Embers.Dock
+  if not D then return end
+  local s = D.s
+  G.Lines(card, "dk", { "Windows: " .. s.dock .. (s.dock ~= "free" and (" (gap " .. s.dockGap .. ")") or ""),
+    "Header fade: " .. on(s.fade) .. (s.fade and (" to " .. math.floor(s.fadeAlpha * 100) .. "%") or ""),
+    "Wheel scroll: " .. on(s.wheel) .. (s.scrollLine and ", marker" or ", no bar"),
+    "Header click: " .. (s.typeMenu and "type list" or "cycle"), "Blocked reports: " .. (get("embers.queueReport") and "posted later" or "refused") })
+  if s.dock ~= "free" then
+    for i = 1, 2 do
+      local t = tex(card, "dkW" .. i)
+      t:SetSize(60, 40)
+      if s.dock == "row" then t:SetPoint("BOTTOMRIGHT", card, "BOTTOMRIGHT", -14 - (2 - i) * (60 + s.dockGap), 40)
+      else t:SetPoint("BOTTOMRIGHT", card, "BOTTOMRIGHT", -14, 40 + (2 - i) * (40 + s.dockGap)) end
+      t:SetColorTexture(Theme:Color("bg2"))
+    end
+  end
+end)
+
+add("UnitFrames", function(card)
+  local list = get("uf.player.textSlots") or {}
+  G.Lines(card, "ts", { "Extra texts (player): " .. #list, list[1] or "Add one: health:percent @ TOPRIGHT 0 10 14" })
+end)
+
+PX.extend("Colors", function(card)
+  local s = Look.s
+  G.Lines(card, "hg", { "Health by percent: " .. s.gradient .. ", middle " .. math.floor(s.gradientMid * 100) .. "%" })
+  local cols = s.gradient == "theme" and { { Theme:Color("err") }, { Theme:Color("warn") }, { Theme:Color("ok") } } or { { 1, 0.1, 0.1 }, { 1, 0.85, 0.1 }, { 0.1, 0.9, 0.2 } }
+  for i, c in ipairs(cols) do
+    local t = tex(card, "hgC" .. i)
+    t:SetSize(40, 8); t:SetPoint("TOPLEFT", card, "TOPLEFT", 14 + (i - 1) * 44, -170); t:SetColorTexture(c[1], c[2], c[3])
+  end
+end)
+
+PX.extend("Theme", function(card)
+  local s = Look.s
+  G.Lines(card, "bd", { "Borders: " .. s.borderStyle .. (s.borderStyle == "pixel" and (" " .. s.borderSize .. " px") or "") })
+end)

@@ -47,3 +47,4 @@ Tests\Studio2_test.lua
 Tests\StudioB_test.lua
 Tests\Controls_test.lua
 Tests\Dialogs_test.lua
+Tests\Gaps2_test.lua

@@ -1263,4 +1263,5 @@ C_EditMode.ConvertLayoutInfoToString = function(info) return "EM:" .. tostring(i
 C_EditMode.ConvertStringToLayoutInfo = function(str) local n = type(str) == "string" and str:match("^EM:(.+)$"); return n and { layoutName = n, layoutType = 1, systems = {} } or nil end
 C_EditMode.SaveLayouts = function(layouts) H.editModeSaved = layouts end
 C_EditMode.SetActiveLayout = function(i) H.editModeActive = i end
+function GetAchievementInfo(id) return id, "Achievement " .. tostring(id) end
 return H

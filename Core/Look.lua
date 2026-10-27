@@ -18,7 +18,7 @@ PUI.Look = Look
 local MEDIA = "Interface\\AddOns\\Phoenix_UI_Media\\Media\\"
 local s = { everywhere = "keep", outline = "none", shadow = true, headerSize = 15, bodySize = 12, smallSize = 10,
   quests = "global", meter = "global", classOverride = false, class = {}, power = {}, palette = "standard",
-  reaction = {}, thickness = 2, speed = 1, accentGlow = false, reducedMotion = false, theme = "ember",
+  reaction = {}, thickness = 2, speed = 1, accentGlow = false, reducedMotion = false, theme = "ember", gradient = "classic", gradientMid = 0.5,
   shape = "square", classIcons = "game", roleIcons = "game" }
 Look.s = s
 
@@ -224,7 +224,13 @@ key("fonts.meter", "Fonts", "meter", { type = "select", default = "global", choi
 
 key("colors.palette", "Colors", "palette", { type = "select", default = "standard", choices = Look.PALETTE_ORDER, mode = "simple",
   choiceLabels = { standard = "Standard", deuteranopia = "Deuteranopia (red-green)", protanopia = "Protanopia (red-weak)", tritanopia = "Tritanopia (blue-yellow)", contrast = "High contrast" },
-  label = "Colour-blind palette", tooltip = "Swaps the red and green state colours (good/bad, friendly/hostile) for pairs you can tell apart." }, function() Look.ApplyTokens(); refresh() end)
+  label = "Colour-blind palette", tooltip = "Swaps the red and green state colours (good/bad, friendly/hostile) for pairs you can tell apart." }, function() Look.ApplyTokens(); if PUI.Bars then PUI.Bars.healthCurve = nil end; refresh() end)
+local function curve() if PUI.Bars then PUI.Bars.healthCurve = nil end; refresh() end
+key("colors.healthGradient", "Colors", "gradient", { type = "select", default = "classic", choices = { "classic", "theme" }, mode = "simple",
+  choiceLabels = { classic = "Red, yellow, green", theme = "Theme bad, warning, good (follows the palette)" },
+  label = "Health-by-percent colours", tooltip = "Colours of health bars set to colour by health. The theme option follows the colour-blind palette." }, curve)
+key("colors.gradientMid", "Colors", "gradientMid", { type = "range", default = 0.5, min = 0.2, max = 0.8, step = 0.05,
+  label = "Health colour middle point", tooltip = "At which health share the middle (yellow or warning) colour sits." }, curve)
 key("colors.classOverride", "Colors", "classOverride", { type = "toggle", default = false, mode = "simple", label = "Use my class colours",
   tooltip = "Phoenix bars and names use the class colours below instead of the game's." }, refresh)
 local function rgb(t) return { r = t[1], g = t[2], b = t[3], a = 1 } end
@@ -271,3 +277,38 @@ key("theme.classIcons", "Theme", "classIcons", { type = "select", default = "gam
   choiceLabels = { game = "Game icons", phoenix = "Phoenix icons" }, label = "Class icons", tooltip = "Class icons in friends and group lists: the game's or Phoenix's own set." }, refresh)
 key("theme.roleIcons", "Theme", "roleIcons", { type = "select", default = "game", choices = { "game", "phoenix" },
   choiceLabels = { game = "Game icons", phoenix = "Phoenix icons" }, label = "Role icons", tooltip = "Tank, healer and damage icons on raid frames: the game's or Phoenix's own set." }, refresh)
+
+-- Borders (review gap: Textures page parity) ------------------------------------------------------------
+-- Every Phoenix outline (Theme:Outline) follows one border style and size:
+-- "pixel" (the 1 px edges), "soft" (the soft nine-slice border art) or "none".
+Look.outlines = setmetatable({}, { __mode = "k" })
+s.borderStyle, s.borderSize = "pixel", 1
+local outline = Theme.Outline
+function Theme:Outline(frame, token, alpha)
+  local edges = outline(self, frame, token, alpha)
+  Look.outlines[edges] = frame
+  Look.StyleOutline(edges, frame)
+  return edges
+end
+function Look.StyleOutline(edges, frame)
+  local size = s.borderSize
+  edges[1]:SetHeight(size); edges[2]:SetHeight(size); edges[3]:SetWidth(size); edges[4]:SetWidth(size)
+  local pixel = s.borderStyle == "pixel" and size > 0
+  for i = 1, 4 do edges[i]:SetAlpha(pixel and 1 or 0) end
+  local soft = rawget(edges, "soft")
+  if s.borderStyle == "soft" then
+    if not soft then soft = Theme:Slice(frame, MEDIA .. "Textures\\NineSlice\\Border_Soft", 16, "BORDER"); rawset(edges, "soft", soft) end
+    soft:SetVertexColor(edges[1]:GetVertexColor())
+    soft:Show()
+  elseif soft then soft:Hide() end
+end
+function Look.RestyleOutlines()
+  local n = 0
+  for edges, frame in pairs(Look.outlines) do Look.StyleOutline(edges, frame); n = n + 1 end
+  return n
+end
+key("theme.borderStyle", "Theme", "borderStyle", { type = "select", default = "pixel", choices = { "pixel", "soft", "none" }, mode = "simple",
+  choiceLabels = { pixel = "Pixel line", soft = "Soft edge", none = "No border" },
+  label = "Border style", tooltip = "The border around every Phoenix window, frame and icon outline." }, function() Look.RestyleOutlines() end)
+key("theme.borderSize", "Theme", "borderSize", { type = "range", default = 1, min = 0, max = 4, step = 1,
+  label = "Border thickness", tooltip = "Thickness of pixel-line borders (0 hides them)." }, function() Look.RestyleOutlines() end)

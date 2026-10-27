@@ -9,6 +9,7 @@ local Schema, Secret = PUI.Schema, PUI.Secret
 local OWNER = "Wisdom"
 local S = { s = { simc = true, simcBags = false } }
 ns.SimC = S
+if PUI.Wisdom then PUI.Wisdom.SimC = S end
 local s = S.s
 
 S.SLOTS = { { 1, "head" }, { 2, "neck" }, { 3, "shoulder" }, { 15, "back" }, { 5, "chest" }, { 4, "shirt" }, { 19, "tabard" },

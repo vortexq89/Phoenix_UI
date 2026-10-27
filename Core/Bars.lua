@@ -64,9 +64,20 @@ function Bars:HealthCurve()
   if self.healthCurve then return self.healthCurve end
   local curve = C_CurveUtil.CreateColorCurve()
   curve:SetType(Enum.LuaCurveType.Linear)
-  curve:AddPoint(0, CreateColor(1, 0.1, 0.1, 1))
-  curve:AddPoint(0.5, CreateColor(1, 0.85, 0.1, 1))
-  curve:AddPoint(1, CreateColor(0.1, 0.9, 0.2, 1))
+  -- W10: the curve is the only colour-by-percent path (no comparisons on a secret
+  -- health value). The Colours page can switch it to the theme's bad/warning/good
+  -- tokens, which follow the colour-blind palettes, and move its middle point.
+  local look = PUI.Look and PUI.Look.s
+  local mid = look and look.gradientMid or 0.5
+  if look and look.gradient == "theme" then
+    curve:AddPoint(0, CreateColor(Theme:Color("err")))
+    curve:AddPoint(mid, CreateColor(Theme:Color("warn")))
+    curve:AddPoint(1, CreateColor(Theme:Color("ok")))
+  else
+    curve:AddPoint(0, CreateColor(1, 0.1, 0.1, 1))
+    curve:AddPoint(mid, CreateColor(1, 0.85, 0.1, 1))
+    curve:AddPoint(1, CreateColor(0.1, 0.9, 0.2, 1))
+  end
   self.healthCurve = curve
   return curve
 end

@@ -65,6 +65,9 @@ Gaps.QUEUE_LABEL = LABEL
 Gaps.told = {}
 local set = Schema.Set
 function Schema:Set(k, v, ...)
+  -- a bad key or value errors inside Set before any apply runs: leave the marker alone then
+  local def = self.defs[k]
+  if not (def and self:Validate(def, v)) then return set(self, k, v, ...) end
   local prev = Gaps.changing
   Gaps.changing = k
   local a, b = set(self, k, v, ...)

@@ -107,6 +107,7 @@ Actions can only be dragged off with the pick-up modifier (Shift by default).
 Activity on the row
 Add group size
 Add on-use trinkets
+Add text slot: one line each, "tag @ POINT x y size" (for example health:percent @ TOPRIGHT 0 10 14).
 Add your own character name to reports. Other players' names are never collected.
 Add, remove and reorder columns. Column IDs: name, spec, damage, healing, kb, deaths, hk, rating, ratingChange, mmrBefore, mmrAfter, honor, plus any column another addon adds.
 AddOn list
@@ -218,6 +219,7 @@ Assisted combat highlight
 Assisted highlight colour
 Assume full health in stealth
 At the banker, shows the bank with Character, Warband, Reagents, Guild bank and Alts tabs beside your bags.
+At which health share the middle (yellow or warning) colour sits.
 Attribution window (s)
 Auction House
 Aura caster
@@ -539,6 +541,7 @@ Border from quality
 Border important auras
 Border on my target
 Border opacity
+Border style
 Border thickness
 Border thickness in pixels (0 hides it).
 Boss banner
@@ -568,6 +571,7 @@ Boss dispel slot size
 Boss dispel slots
 Boss dispel slots shown
 Boss emotes
+Boss extra texts
 Boss fill bottom to top
 Boss fill right to left
 Boss frame
@@ -858,6 +862,7 @@ Colour: you cancelled
 Colours a group's name: new since your last search, declined you, cancelled or delisted. Each colour is its own setting.
 Colours each slot's border by item quality, using the game's quality colours (your colour overrides apply).
 Colours matched keywords inside the line.
+Colours of health bars set to colour by health. The theme option follows the colour-blind palette.
 Colours the name by the interrupter's class.
 Colours the power bar low / middle / high at the points below (done by the game, works in combat).
 Colours the tracked buff bars in your class colour instead of Blizzard's.
@@ -1364,6 +1369,7 @@ Focus dispel slot position
 Focus dispel slot size
 Focus dispel slots
 Focus dispel slots shown
+Focus extra texts
 Focus fill bottom to top
 Focus fill right to left
 Focus frame
@@ -1401,6 +1407,7 @@ Focus target dispel slot position
 Focus target dispel slot size
 Focus target dispel slots
 Focus target dispel slots shown
+Focus target extra texts
 Focus target fill bottom to top
 Focus target fill right to left
 Focus target frame
@@ -1592,6 +1599,7 @@ Health bar text
 Health bars in each enemy's class colour.
 Health colour
 Health colour below the execute percent.
+Health colour middle point
 Health fill opacity
 Health fills upwards instead of sideways.
 Health percent where your execute range starts; 0 turns the execute marker and recolour off.
@@ -1602,6 +1610,7 @@ Health text
 Health text on the right of enemy plates.
 Health text position
 Health text size
+Health-by-percent colours
 Height
 Height of each enemy frame.
 Height of each frame in this layout.
@@ -2212,6 +2221,7 @@ Opacity of the whole tracker.
 Opacity out of combat
 Opacity used when the where-to-show rule hides the frame (0 = invisible, higher = faded).
 Opacity used when the where-to-show rule hides the frames (0 = invisible). They stay clickable in combat because the game locks that.
+Open a blocked report in the copy box
 Open containers
 Open key
 Open recap when I die
@@ -2356,6 +2366,7 @@ Pet dispel slot position
 Pet dispel slot size
 Pet dispel slots
 Pet dispel slots shown
+Pet extra texts
 Pet fill bottom to top
 Pet fill right to left
 Pet frame
@@ -2487,6 +2498,7 @@ Player dispel slot position
 Player dispel slot size
 Player dispel slots
 Player dispel slots shown
+Player extra texts
 Player fill bottom to top
 Player fill right to left
 Player frame
@@ -2522,6 +2534,7 @@ Pop-up dialog
 Portrait beside the frame: from the look, off, 2D, 3D or a class icon.
 Portrait shape
 Possess bar
+Post blocked reports later
 Power bar
 Power bar colour
 Power bar height
@@ -3343,6 +3356,7 @@ Target dispel slot size
 Target dispel slots
 Target dispel slots shown
 Target dot size
+Target extra texts
 Target fill bottom to top
 Target fill right to left
 Target frame
@@ -3378,6 +3392,7 @@ Target of target dispel slot position
 Target of target dispel slot size
 Target of target dispel slots
 Target of target dispel slots shown
+Target of target extra texts
 Target of target fill bottom to top
 Target of target fill right to left
 Target of target frame
@@ -3436,6 +3451,7 @@ The action page bar 9 shows while its paging modifier is held.
 The bar stays invisible until you point at it.
 The bar turns red when this many seconds are left.
 The border and backdrop style of every plate. Each part below can still be changed on its own.
+The border around every Phoenix window, frame and icon outline.
 The clock block uses 24-hour time.
 The countdown bar turns red with this many seconds left.
 The dungeon ready pop-up ignores clicks for a moment so a stray click cannot accept or leave.
@@ -3468,6 +3484,7 @@ Theme
 Theme accent or your class colour.
 There is no combat log in Midnight: Spark works out your hits from your own casts.
 Thick or thin ring.
+Thickness of pixel-line borders (0 hides them).
 Thin accent border around each window.
 Thin accent border around the panel.
 Thin lines between blocks.
@@ -3664,6 +3681,7 @@ Where the detached panel sits.
 Where the difficulty text sits.
 Where the dispel icons sit.
 Where the elite / rare icon sits on enemy plates. You can also drag it in the preview.
+Where the game blocks addon chat (Mythic+, PvP, boss fights), a report waits and posts when the key, match or boss ends. Say and Yell ask you first.
 Where the game's DR data is drawn. Needs DR tracking on.
 Where the health text sits on enemy plates. You can also drag it in the preview.
 Where the health text sits.
@@ -3737,6 +3755,7 @@ While Spark is on, the game's combat state, reactive, honor and reputation popup
 While Spark is on, the game's own damage and healing numbers over enemies are off. Your old setting comes back when this or Spark is off.
 While Spark is on, the game's own text over your character is off. Restored when this or Spark is off.
 While a key runs, Ascent's Mythic+ block sits at the top of the tracker (Ascent owns the timer).
+While a report waits, it also opens in the copy box so you can paste it yourself.
 While a tooltip shows IDs, this key opens them in the copy box. It is only taken while IDs are on screen, and never over a key you bound yourself. Empty turns it off.
 While an achievement ID setting is 0, Phoenix looks up the season's title achievement in the game's list (once per season) and reads its progress.
 While the developer profiler has samples, each module page shows how much time that module took.

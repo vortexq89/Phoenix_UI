@@ -9,6 +9,10 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 --    single Studio mover ("Embers dock"), or stay free with their own movers.
 --  * type menu: a click on the header opens a Phoenix list of meter types
 --    (and fights, with a right click) instead of cycling through them.
+--  * report queue (workaround W9): where the game blocks addon chat (Mythic+,
+--    PvP, encounters), a report waits and posts after the key, match or boss
+--    ends, out of combat; Say and Yell need your click, so those ask first.
+--    Meanwhile the report opens in the copy box for a manual paste.
 local _, ns = ...
 local EM, Window = ns.EM, ns.Window
 local Schema, Theme, Media, Layout = PUI.Schema, PUI.Theme, PUI.Media, PUI.Layout
@@ -22,7 +26,8 @@ function D.Chrome(w, alpha)
   w.title:SetAlpha(alpha)
   local look = Window.LOOKS[EM.settings.look] or Window.LOOKS.phoenix
   w.bg:SetAlpha(alpha * (EM.settings.bgAlpha or 1) * look.bgScale)
-  for _, e in ipairs(w.outline) do e:SetAlpha(alpha) end
+  local pixel = PUI.Look.s.borderStyle == "pixel"
+  for _, e in ipairs(w.outline) do e:SetAlpha(pixel and alpha or 0) end
 end
 function D.Hover(w, over)
   w.hover = over
@@ -186,6 +191,43 @@ end
 PUI.Kernel:On("MODULE_ENABLED", function(name) if name == OWNER then D.Arrange() end end)
 PUI.Kernel:On("MODULE_DISABLED", function(name) if name == OWNER then D.Arrange() end end)
 
+-- Report queue (W9) ------------------------------------------------------------------------------------------------
+D.queued = nil
+D.HARDWARE = { SAY = true, YELL = true }
+function D.Post()
+  local q = D.queued
+  if not q then return false end
+  local ok, why = EM.CanReport()
+  if not ok then return false, why end
+  D.queued = nil
+  D.events:UnregisterAllEvents()
+  if D.HARDWARE[q.channel] then
+    PUI.Dialogs:Confirm({ title = "Post the Embers report?", text = "The fight is over: post the report to " .. q.channel:lower() .. " now?",
+      accept = "Post", onAccept = function() EM.Report(q.index, q.channel) end })
+    return true
+  end
+  return EM.Report(q.index, q.channel)
+end
+local report = EM.Report
+function EM.Report(index, channel)
+  local ok, why = report(index, channel)
+  if ok or not s.queueReport then return ok, why end
+  local seg = (Schema:Get("embers.segments") or {})[index or 1]
+  if not seg then return ok, why end
+  D.queued = { index = index or 1, channel = (channel or "SAY"):upper() }
+  local e = D.events
+  e:RegisterEvent("CHALLENGE_MODE_COMPLETED"); e:RegisterEvent("PVP_MATCH_COMPLETE"); e:RegisterEvent("ENCOUNTER_END")
+  PUI.CombatQueue.Defer("embers.report", function() if D.queued and not C_ChatInfo.InChatMessagingLockdown() then D.Post() end end)
+  if PUI.Toast then PUI.Toast:Show("Embers report waits until chat is allowed (" .. why .. ")", "warn", true) end
+  if s.reportCopy then PUI.Dialogs:Copy("Embers report", table.concat(EM.ReportLines(seg), "\n"), "Ctrl+C to paste it yourself.") end
+  return false, "queued"
+end
+D.events = PUI:CreateFrame("Frame", nil, UIParent, nil, OWNER)
+D.events:SetScript("OnEvent", function()
+  -- the key/match/boss just ended: post once combat is over (CombatQueue runs it now when already out of combat)
+  PUI.CombatQueue.Defer("embers.report", function() D.Post() end)
+end)
+
 local function key(name, def)
   def.owner = OWNER
   def.apply = function(v)
@@ -214,3 +256,7 @@ key("typeMenu", { type = "toggle", default = true, mode = "simple", label = "Pic
   tooltip = "A click on a window's header opens a Phoenix list of meter types instead of cycling through them." })
 key("typeMenuSessions", { type = "toggle", default = true, mode = "advanced", label = "Pick the fight from a list",
   tooltip = "A right click on the header opens a list of fights (current, overall, last saved) instead of cycling." })
+key("queueReport", { type = "toggle", default = true, mode = "simple", label = "Post blocked reports later",
+  tooltip = "Where the game blocks addon chat (Mythic+, PvP, boss fights), a report waits and posts when the key, match or boss ends. Say and Yell ask you first." })
+key("reportCopy", { type = "toggle", default = true, mode = "advanced", label = "Open a blocked report in the copy box",
+  tooltip = "While a report waits, it also opens in the copy box so you can paste it yourself." })
