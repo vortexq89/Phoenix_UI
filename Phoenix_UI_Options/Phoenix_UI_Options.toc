@@ -26,6 +26,7 @@ OverridesUI.lua
 LedgerPage.lua
 Previews.lua
 PreviewsExtras.lua
+PreviewsExtrasB.lua
 Dashboard.lua
 ThemePage.lua
 SentinelPage.lua
