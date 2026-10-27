@@ -45,6 +45,7 @@ function Region:SetValue(v) self.value = v end
 function Region:GetValue() return rawget(self, "value") end
 function Region:SetColorTexture(r, g, b, a) self.color = { r, g, b, a } end
 function Region:CreateFontString() return newObject("FontString") end
+function Region:CreateMaskTexture() return newObject("MaskTexture") end
 function Region:CreateAnimationGroup()
   local g = newObject("AnimationGroup")
   g.playing = false
@@ -423,7 +424,9 @@ Enum.PowerType = { Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, R
 H.spec = 1
 C_SpecializationInfo.GetSpecialization = function() return H.spec end
 function H.duration(tag)
-  return { tag = tag, IsZero = function() return maybe(false) end, SetTimeFromStart = function(self, s, d) self.start, self.length = s, d end }
+  return { tag = tag, IsZero = function() return maybe(false) end, SetTimeFromStart = function(self, s, d) self.start, self.length = s, d end,
+    EvaluateRemainingDuration = function(self, curve) H.evaluated = curve; return CreateColor(1, 0.33, 0.33, 1) end,
+    EvaluateRemainingPercent = function(self, curve) H.evaluated = curve; return CreateColor(1, 0.33, 0.33, 1) end }
 end
 C_Spell = { GetSpellCooldownDuration = function() return H.duration("gcd") end }
 C_DurationUtil = { CreateDuration = function() return H.duration("custom") end }
@@ -1118,6 +1121,12 @@ C_NamePlateManager = {
 }
 H.inRange = {}
 C_Spell.IsSpellInRange = function(spell, u) return maybe(H.inRange[u] ~= false) end
+H.editMode = { layouts = {}, activeLayout = 1 }
+C_EditMode = { GetLayouts = function() return H.editMode end }
+Enum.EditModeSystem = { ActionBar = 0 }
+H.inHouse = false
+C_Housing = rawget(_G, "C_Housing") or {}
+C_Housing.IsInsideHouse = function() return maybe(H.inHouse) end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
   AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }
