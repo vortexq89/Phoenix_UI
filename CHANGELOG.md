@@ -4,6 +4,17 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Deferred batch B: Studio, HUD, previews
+- Studio: lines between attached movers (a setting), corner grips to resize (width and height where the element allows it, otherwise scale), grow-direction buttons in the inspector, thumbnails of your saved layouts (click to apply), an ElvUI mover importer next to MoveAny, and Blizzard elements fade again when their state changes.
+- Options: a Blizzard page (Interface group) listing every Blizzard element Phoenix can move, with hide/show, reset and "In Studio". A setting can now show on another module's page: the dungeon queue-pop time is on the Group Finder page.
+- Raid frames: free placement for each party member (off at first install), each with its own mover.
+- Tooltip: other players' item level and spec (asked once, kept 5 minutes, never in combat), appearance collected, upgrade track and level, set pieces equipped. IDs for achievement criteria rows, artifact powers, follower abilities and pet battle abilities (28 kinds).
+- Minimap: Phoenix tracking, calendar (invites badge) and mail (latest senders) buttons in place of Blizzard's, with corner, growth, size and spacing.
+- Data bars: LibDataBroker feeds as blocks (`ldb:Name`) when another addon provides them, clickable hearthstone and profession blocks, and block lists per specialization (`/pui dbspec save|clear`).
+- Skins: a countdown bar under the dungeon and battleground ready pop-ups, the same countdown as the minimap queue eye.
+- Live previews for the Action Bars, Cooldown Manager and Resource Bars extras from batch A, and for the new minimap, tooltip, data bar and queue timer settings.
+- Tests: 17 new offline cases (376 in total, retail and Forever).
+
 ### Deferred batch A: core, nameplates, action bars, cooldown manager, resource bars
 - Profiles: switch profile by specialization (off at first install; one profile per spec, per character, waits for combat to end), with a toggle in the setup wizard that makes a copy of your profile for each spec. A layer key (hold or toggle) and a "keybind" condition for overrides.
 - Nameplates: compact totem and pet plates, fade enemies out of range, "interrupted by <name>", NPC titles and quest text, hit-box size, click-through and friendly plates, hover highlight, aura borders from the game (important, pandemic, purge), pool pre-warm, rule conditions (classification, reaction, casting) with packs, Blizzard plate suppression and a drag-slot layout editor in the preview.

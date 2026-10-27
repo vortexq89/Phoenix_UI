@@ -11,8 +11,12 @@
 ## Dependencies: Phoenix_UI
 
 Minimap.lua
+MinimapButtons.lua
 ButtonBin.lua
 Tooltip.lua
 TooltipIDs.lua
+TooltipExtras.lua
 DataBars.lua
+DataBarsExtras.lua
 Tests\HUD_test.lua
+Tests\HUDExtras_test.lua

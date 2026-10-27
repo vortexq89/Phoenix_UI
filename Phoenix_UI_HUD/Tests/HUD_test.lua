@@ -23,7 +23,7 @@ local function lines(tip)
 end
 local function newTip() return CreateFrame("GameTooltip") end
 
-Tests:Add("HUD", "modules off by default and silent; every key applies live; 27 ID kinds in 4 groups", function(t)
+Tests:Add("HUD", "modules off by default and silent; every key applies live; 28 ID kinds in 4 groups", function(t)
   for _, m in ipairs({ "Minimap", "Tooltip", "DataBars" }) do t:eq(Schema:Def("module." .. m).default, false, m .. " defaults off") end
   if not Schema:Get("module.Minimap") then t:eq(Ticker:IsRegistered("mm.texts"), false, "no minimap ticker") end
   if not Schema:Get("module.DataBars") then
@@ -33,10 +33,10 @@ Tests:Add("HUD", "modules off by default and silent; every key applies live; 27 
   for _, sc in ipairs({ MM.schema, TT.schema, DB.schema, IDs.schema, Bin.schema }) do
     for key, def in pairs(sc) do t:eq(type(def.apply), "function", key .. " apply") end
   end
-  t:eq(#IDs.KINDS, 27, "27 ID kinds")
+  t:eq(#IDs.KINDS, 28, "28 ID kinds")
   local groups = {}
   for _, k in ipairs(IDs.KINDS) do groups[k[3]] = (groups[k[3]] or 0) + 1; t:ok(Schema:Def("tt.ids." .. k[1]), k[1] .. " has a setting") end
-  t:same({ groups.items, groups.spells, groups.world, groups.collections }, { 7, 8, 8, 4 }, "four groups")
+  t:same({ groups.items, groups.spells, groups.world, groups.collections }, { 7, 9, 8, 4 }, "four groups")
   t:eq(Schema:Def("tt.ids.bonus").default, false, "bonus IDs off by default")
   t:eq(Schema:Def("tt.ids.traitNode").default, false, "trait IDs off by default")
   t:eq(Schema:Def("tt.ids.gate").default, "off", "IDs always visible by default (D-MOD-DEF)")
@@ -300,7 +300,7 @@ Tests:Add("HUD", "tooltip IDs: kinds, derived IDs, merge, gate, pet battles, hyp
   IDs.OnHyperlink(hl, "|cffffff00|Hachievement:41533:Player-1:0:0:0:0|h[Keystone Hero]|h|r")
   t:eq(lines(hl)[1], "Achievement ID: 41533", "achievement from a chat link")
   local tal = newTip()
-  local saved = GameTooltip.lines
+  local saved = rawget(GameTooltip, "lines")
   rawset(GameTooltip, "lines", nil)
   t:cleanup(function() rawset(GameTooltip, "lines", saved); IDs.Clear(GameTooltip) end)
   IDs.OnTalent({ GetNodeID = function() return 90313 end, GetEntryID = function() return 112137 end, GetSpellID = function() return 12294 end })

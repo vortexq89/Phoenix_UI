@@ -1,6 +1,6 @@
 # Deferred items (consolidated, PRs #31-#43)
 
-Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Deferred batch A (stacked on PR #43) marks its items in place: **done**, **blocked** with the reason, or **left**. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
+Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Deferred batch A (stacked on PR #43) marks its items in place: **done**, **blocked** with the reason, or **left**. Deferred batch B (stacked on batch A) marks the Studio and HUD items the same way and adds live previews for the Action Bars, Cooldown Manager and Resource Bars extras. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
 
 | Module | Items |
 |---|---|
@@ -92,24 +92,24 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 
 ## Studio movers (PR #37)
 
-- connector lines drawn between attached movers
-- layout template thumbnails
-- free per-member party placement
-- a Blizzard-element list page in options (the Studio Blizzard filter covers it now)
-- resize handles on the mover corners (W/H fields only today)
-- grow-direction anchors per bar inside Studio (4.8, still module settings)
-- fades for Blizzard elements re-evaluated on state events (applied on placement today)
-- importers for other mover addons
+- **done (deferred B):** connector lines drawn between attached movers (Studio connectors setting, elbow lines redrawn on every placement)
+- **done (deferred B):** layout template thumbnails (Saved layouts section in the Layouts panel; click applies)
+- **done (deferred B):** free per-member party placement (`rf.party.free`, movers rf.party.member1..5, secure buttons with state drivers)
+- **done (deferred B):** a Blizzard-element list page in options (Interface > Blizzard: enable, hide/show, reset, open in Studio)
+- **done (deferred B):** resize handles on the mover corners (width/height for resizable elements, scale 0.25-4 for the rest)
+- **done (deferred B):** grow-direction anchors per bar inside Studio (inspector buttons cycle the module's own grow keys)
+- **done (deferred B):** fades for Blizzard elements re-evaluated on state events (Movers:Refade on the Layout fade events)
+- **done (deferred B):** importers for other mover addons (ElvUI movers added next to MoveAny)
 
 ## HUD: Minimap, Data Bars, Tooltip (PR #38)
 
-- inspect-based lines (other players' item level and spec), transmog-known and upgrade-track lines, tier-set count
-- ID sources still to hook: achievement criteria rows (pooled frames), artifact power, garrison and pet-battle ability text
-- Phoenix-drawn tracking/calendar/mail buttons
-- LDB host and secure travel/profession blocks
-- per-spec data-bar sets
-- queue-popup timer in Skins reading PUI.Queue
-- Group Finder page for `queue.lfgSeconds`
+- **done (deferred B):** inspect-based lines (other players' item level and spec), transmog-known and upgrade-track lines, tier-set count (Phoenix_UI_HUD/TooltipExtras.lua; inspect cached 5 min, never in combat or with the Inspect window open)
+- **done (deferred B):** ID sources: achievement criteria rows (hook on AchievementObjectives_DisplayCriteria), artifact power (GameTooltip:SetArtifactPowerByID), garrison follower abilities and pet-battle abilities (own ID line on those custom tooltip frames; new kind "Follower ability", 28 kinds)
+- **done (deferred B):** Phoenix-drawn tracking/calendar/mail buttons (`mm.buttons`; Blizzard's faded by alpha only; invites badge, mail senders)
+- **done (deferred B):** LDB host (`ldb:Name` block through another addon's LibStub) and secure travel/profession blocks (hearth, prof1, prof2 via SecureActionButtons on UIParent, placed out of combat)
+- **done (deferred B):** per-spec data-bar sets (`db.spec.on`, `/pui dbspec save|clear`)
+- **done (deferred B):** queue-popup timer in Skins reading PUI.Queue (Phoenix_UI_Skins/QueueTimer.lua)
+- **done (deferred B):** Group Finder page for `queue.lfgSeconds` (schema `page` field: owned by Core, shown on Group Finder; queue timer sample in its preview)
 
 ## Quest Tracker (PR #40)
 

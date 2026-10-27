@@ -81,7 +81,7 @@ f:SetScript("OnEvent", function(_, event) Queue:OnEvent(event) end)
 Queue.frame = f
 
 PUI.Schema:Register("queue.lfgSeconds", {
-  type = "range", default = 40, min = 20, max = 60, step = 1, owner = "Core",
+  type = "range", default = 40, min = 20, max = 60, step = 1, owner = "Core", page = "GroupFinder",
   label = "Dungeon queue-pop time", tooltip = "How long a dungeon or raid finder invite stays open, used for the queue-pop countdown everywhere (minimap queue eye, queue popup). Battleground invites use the game's own expiry.",
   mode = "advanced", searchTags = { "queue", "countdown", "lfg", "pop" },
   apply = function(v) Queue.lfgSeconds = v end,

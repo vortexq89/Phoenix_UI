@@ -12,4 +12,6 @@
 
 Skins.lua
 Packs.lua
+QueueTimer.lua
 Tests\Skins_test.lua
+Tests\QueueTimer_test.lua

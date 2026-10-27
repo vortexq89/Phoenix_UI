@@ -27,6 +27,7 @@ LedgerPage.lua
 Previews.lua
 PreviewsExtras.lua
 PreviewsExtrasB.lua
+PreviewsExtrasHUD.lua
 Dashboard.lua
 ThemePage.lua
 SentinelPage.lua
