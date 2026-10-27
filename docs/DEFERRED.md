@@ -1,6 +1,6 @@
 # Deferred items (consolidated, PRs #31-#43)
 
-Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
+Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Deferred batch A (stacked on PR #43) marks its items in place: **done**, **blocked** with the reason, or **left**. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
 
 | Module | Items |
 |---|---|
@@ -32,63 +32,63 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 
 ## Options & Core (PRs #31-#32)
 
-- Spec auto-switch wizard toggle (1.7, omitted in PR #14)
-- Conditional override for keybind condition (1.9 still P)
-- In-game checks pending: profiles manager (1.6), spec and condition overrides (1.8, 1.9), ledger page (1.22), copy dialog and chat links (1.26), own confirm dialogs (1.27), PUI.Season (1.28), shared services (1.29)
+- **done (deferred A):** Core/SpecProfiles.lua + wizard role page; Spec auto-switch wizard toggle (1.7, omitted in PR #14)
+- **done (deferred A):** layer key (Core/KeyLayer.lua) and "keybind" override condition; Conditional override for keybind condition (1.9 still P)
+- **left (test phase):** In-game checks pending: profiles manager (1.6), spec and condition overrides (1.8, 1.9), ledger page (1.22), copy dialog and chat links (1.26), own confirm dialogs (1.27), PUI.Season (1.28), shared services (1.29)
 
 ## Unit Frames (PR #33)
 
-- Verify in game: private-aura anchors and AnimatedHealthLoss on addon frames
+- **left (test phase):** Verify in game: private-aura anchors and AnimatedHealthLoss on addon frames
 
 ## Nameplates (PR #35)
 
-- totem/pet compact plates
-- range/LoS opacity for enemies (PUI.Range is group-only)
-- "interrupted by <name>"
-- NPC subtitles and quest objective text (C_TooltipInfo cache)
-- hit-box insets (`C_NamePlateManager`), click-through and friendly CVar enable path
-- hover highlight
-- important-aura glow per lane and pandemic glow
-- purge glow per engine group
-- pre-warm pool sizing
-- rule conditions beyond NPC id/name (classification, reaction, casting) and data packs
-- Blizzard nameplate driver suppression
-- drag-slot layout editor
+- **done (deferred A):** totem/pet compact plates
+- **done (deferred A):** range fade; **blocked:** line of sight (no LoS API in the 12.x API docs); range/LoS opacity for enemies (PUI.Range is group-only)
+- **done (deferred A):** "interrupted by <name>"
+- **done (deferred A):** NPC subtitles and quest objective text (C_TooltipInfo cache)
+- **done (deferred A):** hit-box insets (`C_NamePlateManager`), click-through and friendly CVar enable path
+- **done (deferred A):** hover highlight
+- **done (deferred A):** important-aura glow per lane and pandemic glow
+- **done (deferred A):** purge glow per engine group
+- **done (deferred A):** pre-warm pool sizing
+- **done (deferred A):** rule conditions beyond NPC id/name (classification, reaction, casting) and data packs
+- **done (deferred A):** Blizzard nameplate driver suppression
+- **done (deferred A):** drag-slot layout editor
 
 ## Action Bars (PR #36)
 
-- micro menu and bag bar
-- extra action / zone ability movers
-- flyout reskin
-- pet autocast toggle on right-click
-- mouse-button capture in keybind mode and a printable key sheet
-- per-button overrides
-- Blizzard/Classic looks and masks
-- threshold colours on cooldown numbers (needs a secret-safe curve on the countdown)
-- "hide in housing" and gamepad hide
-- first-install capture of the Edit Mode layout
-- reverse CDM dedupe (hide a bar button already in the CDM)
+- **done (deferred A):** micro menu and bag bar
+- **done (deferred A):** extra action / zone ability movers
+- **done (deferred A):** flyout reskin
+- **done (deferred A):** pet autocast toggle on right-click
+- **done (deferred A):** mouse-button capture in keybind mode and a printable key sheet
+- **done (deferred A):** per-button overrides
+- **done (deferred A):** Blizzard/Classic looks and masks
+- **done (deferred A):** threshold colours on cooldown numbers (needs a secret-safe curve on the countdown)
+- **done (deferred A):** "hide in housing" and gamepad hide
+- **done (deferred A):** first-install capture of the Edit Mode layout
+- **done (deferred A):** reverse CDM dedupe (hide a bar button already in the CDM)
 
 ## Cooldown Manager (PR #36)
 
-- spell picker page
-- glow conditions
-- tracking-bar reskin (thresholds, ticks, stacks)
-- focus kick bar
-- rotation assist icon
-- audio cues
-- per-spell import
-- crafted-quality rank
+- **done (deferred A):** as a "Hidden spells" ID list plus /pui cdmspells (copy dialog); a dedicated picker page is polish; spell picker page
+- **done (deferred A):** glow conditions
+- **done (deferred A):** tracking-bar reskin (thresholds, ticks, stacks)
+- **done (deferred A):** focus kick bar
+- **done (deferred A):** rotation assist icon
+- **done (deferred A):** audio cues
+- **done (deferred A):** per-spell import
+- **done (deferred A):** crafted-quality rank
 
 ## Resource Bars (PR #36)
 
-- latency overlay and channel ticks
-- empower stages
-- GCD bar instance/instant-only modes
-- swing timer (Forever)
-- spec helpers on hidden aura slots
-- threshold colour curves
-- bar shifting when a resource is missing
+- **done (deferred A):** latency overlay and channel ticks
+- **done (deferred A):** empower stages
+- **done (deferred A):** GCD bar instance/instant-only modes
+- **blocked:** needs COMBAT_LOG_EVENT_UNFILTERED (not delivered to addons; guardrails DEPRECATED_TOKENS) and there is no swing event or API; swing timer (Forever)
+- **done (deferred A):** spec helpers on hidden aura slots
+- **done (deferred A):** threshold colour curves
+- **done (deferred A):** bar shifting when a resource is missing
 
 ## Studio movers (PR #37)
 
