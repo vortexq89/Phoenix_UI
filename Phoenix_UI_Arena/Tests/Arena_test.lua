@@ -139,3 +139,61 @@ Tests:Add("Arena", "live preview follows the settings", function(t)
   P.Arena(card)
   t:ok(P.State(card).arenaNote:find("DR tracking is off", 1, true), "explains why no DR shows")
 end)
+
+Tests:Add("Arena", "pets, class-icon aura, dispel tracker, range, clicks, text, FrameSort numbers, DR mine CVar, healer-only", function(t)
+  if not H then return end
+  local X = AR.Extras
+  for _, k in ipairs({ "module.Arena", "arena.drBlizzard", "arena.drMine", "arena.clicks", "arena.nameSize", "arena.nameAnchor", "arena.trinketHealerOnly",
+    "arena.auraOrder", "arena.range" }) do Tests.Keep(t, k) end
+  Schema:Set("module.Arena", true)
+  H.instance = "arena"
+  t:cleanup(function() H.instance = nil; H.dispellable = nil; H.fire("ZONE_CHANGED_NEW_AREA"); AR.SetTest(false); rawset(_G, "FrameSortApi", nil); ST.Reset() end)
+  H.fire("ZONE_CHANGED_NEW_AREA")
+  t:ok(AR.module.handlers.UNIT_AURA ~= nil and AR.module.handlers.UNIT_PET ~= nil, "aura and pet events only while in an arena")
+  t:ok(PUI.Ticker:IsRegistered("arena.range"), "range check runs in arenas")
+  AR.SetTest(true)
+  local f1, f3 = AR.Frames.frames[1], AR.Frames.frames[3]
+  t:ok(X.pets[1] and X.pets[1]:IsShown(), "pet frame in test mode")
+  t:eq(X.pets[1].name:GetText(), "Pet 1", "pet sample name")
+  t:ok(rawget(f3, "dispel") and f3.dispel:IsShown(), "dispel tracker sample on the priest")
+  Schema:Set("arena.trinketHealerOnly", true)
+  t:eq(f1.trinket:IsShown(), false, "trinket hidden on a non-healer")
+  t:ok(f3.trinket:IsShown(), "trinket kept on the healer (Discipline)")
+  Schema:Set("arena.trinketHealerOnly", false)
+  Schema:Set("arena.nameSize", 15); Schema:Set("arena.nameAnchor", "CENTER")
+  t:eq(f1.name.fontSize, 15, "name size per text")
+  t:eq(f1.name.point[1], "CENTER", "name anchor per text")
+  AR.SetTest(false)
+  -- aura priority (the game's filter picks, no secret compare)
+  local purge = H.purgeable
+  H.dispellable, H.purgeable = { arena1 = true }, {}
+  t:cleanup(function() H.purgeable = purge end)
+  local _, cat = X.TopAura("arena1")
+  t:eq(cat, "cc", "crowd control first")
+  Schema:Set("arena.auraOrder", "defensive")
+  t:eq(select(2, X.TopAura("arena1")), nil, "category left out is never shown")
+  -- dispel tracker
+  t:eq(X.OnSpell("arena2", H.secret(527)), false, "secret spell ID skipped")
+  t:ok(X.OnSpell("arena2", 527), "plain dispel seen")
+  t:ok(AR.Frames.frames[2].dispel:IsShown(), "dispel icon shown after use")
+  -- range
+  H.units.arena1 = true
+  H.inRange = { arena1 = false }
+  t:cleanup(function() H.units.arena1 = nil; H.inRange = {} end)
+  AR.prepCount = 1
+  X.CheckRange()
+  t:eq(f1:GetAlpha(), Schema:Get("arena.rangeAlpha"), "out of range fades through SetAlphaFromBoolean")
+  -- clicks
+  Schema:Set("arena.clicks", { "1: target", "shift-1: spell:Polymorph", "3: none" })
+  t:eq(f1:GetAttribute("shift-type1"), "spell", "modifier click type")
+  t:eq(f1:GetAttribute("shift-spell1"), "Polymorph", "spell name kept as typed")
+  t:eq(#X.ParseClicks({ "bogus", "2: dance" }), 0, "unknown actions ignored")
+  -- FrameSort
+  rawset(_G, "FrameSortApi", { v3 = { Sorting = { GetEnemyUnits = function() return { "arena2", "arena1" } end } } })
+  t:eq(X.SortedNumber("arena1"), 2, "number from FrameSort's order")
+  -- DR mine CVar via the ledger
+  Schema:Set("arena.drBlizzard", true); Schema:Set("arena.drMine", true)
+  t:eq(H.cvars.spellDiminishPVPOnlyTriggerableByMe, "1", "child CVar set")
+  Schema:Set("arena.drMine", false)
+  t:eq(H.cvars.spellDiminishPVPOnlyTriggerableByMe, "0", "restored")
+end)

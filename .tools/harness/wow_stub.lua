@@ -1041,12 +1041,15 @@ C_EncounterTimeline = {
   GetEventTimeRemaining = function() return H.timelineLeft or 10 end,
   GetEventInfo = function(id) return H.timeline and H.timeline[id] end,
   GetEventColor = function() return nil end,
-  GetSortedEventList = function() local out = {}; for id in pairs(H.timeline or {}) do out[#out + 1] = id end; table.sort(out); return out end,
+  GetSortedEventList = function(n) local out = {}; for id in pairs(H.timeline or {}) do out[#out + 1] = id end; table.sort(out); while n and #out > n do table.remove(out) end; return out end,
+  GetViewType = function() return H.timelineView or 1 end,
+  SetViewType = function(v) H.timelineView = v end,
 }
 
 function UnitGUID(u) return "Player-1-" .. tostring(u) end
 CompactArenaFrame = CreateFrame("Frame", "CompactArenaFrame", UIParent)
-function GetSpecializationInfoForSpecID(id) return id, "Spec" .. tostring(id), "", 200000 + (id or 0), "DAMAGER" end
+H.specRoles = { [256] = "HEALER", [105] = "HEALER", [65] = "HEALER", [264] = "HEALER", [270] = "HEALER", [257] = "HEALER", [1468] = "HEALER" }
+function GetSpecializationInfoForSpecID(id) return id, "Spec" .. tostring(id), "", 200000 + (id or 0), H.specRoles[id] or "DAMAGER" end
 C_SpellDiminish = { IsSystemSupported = function() return true end,
   GetSpellDiminishCategoryInfo = function(c) return { category = c, name = "Cat" .. tostring(c), icon = 300000 + c } end }
 H.arenaCC = {}
@@ -1067,6 +1070,7 @@ for _, k in ipairs({ "floatingCombatTextCombatDamage", "floatingCombatTextCombat
   H.cvars[k] = H.cvars[k] or "1"
 end
 H.cvars.spellDiminishPVPEnemiesEnabled = "0"
+H.cvars.spellDiminishPVPOnlyTriggerableByMe = "0"
 
 
 -- Step 9c: PvP UI, Friends, Sentinel reporter, diagnostics, profiler.
@@ -1207,7 +1211,7 @@ C_PartyInfo.LeaveParty = function() H.calls[#H.calls + 1] = { "LeaveParty" } end
 function GetNormalizedRealmName() return "Silvermoon" end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
-  AnchorUtil = true, RaiderIO = true, LibStub = true, CustomAuraContainerTemplate = true }
+  AnchorUtil = true, RaiderIO = true, LibStub = true, BigWigsAPI = true, FrameSortApi = true, CustomAuraContainerTemplate = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end

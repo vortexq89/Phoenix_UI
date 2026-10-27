@@ -127,6 +127,7 @@ local function frameFor(unit)
   return i and FR.frames[i]
 end
 local handlers = {}
+AR.handlers = handlers -- Extras.lua adds pet, aura and dispel handlers
 function handlers.ARENA_OPPONENT_UPDATE(unit, reason)
   if type(unit) ~= "string" or not unit:match("^arena%d$") then return end
   ST.SetLife(unit, reason)
