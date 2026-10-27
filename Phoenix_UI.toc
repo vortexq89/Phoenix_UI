@@ -31,6 +31,7 @@ Core\SentinelHook.lua
 Core\Layout.lua
 Core\OptionsHost.lua
 Core\Profiles.lua
+Core\SpecProfiles.lua
 Core\Ledger.lua
 Core\Visibility.lua
 Core\Services.lua
@@ -40,6 +41,7 @@ Core\Dialogs.lua
 Core\CastBar.lua
 Core\Auras.lua
 Core\Overrides.lua
+Core\KeyLayer.lua
 Core\Prediction.lua
 Core\Targeting.lua
 Core\Coexist.lua
@@ -70,3 +72,4 @@ Tests\Overrides_test.lua
 Tests\Movers_test.lua
 Tests\Reporter_test.lua
 Tests\Profiler_test.lua
+Tests\Deferred_test.lua
