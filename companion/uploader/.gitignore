@@ -1,0 +1,4 @@
+dist/
+*.exe
+rsrc_windows_amd64.syso
+config.json
