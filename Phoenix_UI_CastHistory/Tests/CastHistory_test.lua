@@ -107,3 +107,41 @@ Tests:Add("CastHistory", "live preview follows the settings", function(t)
   P.CastHistory(card)
   t:eq(P.State(card).chIcons, 4, "live")
 end)
+
+Tests:Add("CastHistory", "Masque group, Alt+click compartment test strip, Embers Casts button", function(t)
+  if not H then return end
+  local X = CH.Extras
+  for _, k in ipairs({ "module.CastHistory", "ch.masque", "module.Embers" }) do Tests.Keep(t, k) end
+  Schema:Set("module.CastHistory", true)
+  local added, removed = {}, {}
+  local group = { AddButton = function(_, b) added[#added + 1] = b end, RemoveButton = function(_, b) removed[#removed + 1] = b end }
+  rawset(_G, "LibStub", { GetLibrary = function(_, n) if n == "Masque" then return { Group = function(_, a, g) group.name = a .. "/" .. g; return group end } end end })
+  X.group = nil
+  t:cleanup(function() rawset(_G, "LibStub", nil); X.group = nil; wipe(X.masqued); SR.ClearAll(); X.testing = false; H.altDown = nil end)
+  local b = SR.Add("player", 116, "instant", CH.settings)
+  t:eq(added[1], b, "icon added to the Masque group")
+  t:eq(group.name, "Phoenix UI/Cast History", "group name")
+  Schema:Set("ch.masque", false)
+  t:eq(removed[1], b, "removed when off")
+  -- compartment
+  SR.ClearAll()
+  H.altDown = true
+  PUI.Entry:Click("LeftButton")
+  t:ok(#icons("player") > 0, "Alt+click shows the test strip")
+  PUI.Entry:Click("LeftButton")
+  t:eq(#icons("player"), 0, "and clears it")
+  H.altDown = nil
+  -- Embers link
+  Schema:Set("module.Embers", true)
+  X.HookEmbers()
+  local Recap = PUI.Embers.Recap
+  local w = { frame = CreateFrame("Frame"), source = "Saved", meter = 0 }
+  T.history.player = { { id = 133, t = 1 }, { id = nil, t = 2 }, { id = 116, t = 3 } }
+  t:cleanup(function() T.history.player = nil; Recap.HideBreakdown() end)
+  Recap.ShowBreakdown(w, { name = "Tester", class = "MAGE", me = true })
+  local f = Recap.flyout
+  t:ok(rawget(f, "phxLink") and f.phxLink:IsShown(), "Casts button on the breakdown")
+  f.phxLink:GetScript("OnClick")(f.phxLink)
+  t:eq(X.ShowCasts(f, "player"), 2, "recent casts shown (hidden casts skipped)")
+  t:eq(X.UnitFor({ guid = H.secret("x") }), nil, "secret GUID never compared")
+end)

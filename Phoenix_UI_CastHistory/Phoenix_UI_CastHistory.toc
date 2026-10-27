@@ -13,4 +13,5 @@
 Tracker.lua
 Strip.lua
 CastHistory.lua
+Extras.lua
 Tests\CastHistory_test.lua

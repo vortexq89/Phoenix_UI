@@ -16,4 +16,5 @@ Columns.lua
 Match.lua
 Card.lua
 PvP.lua
+Extras.lua
 Tests\PvP_test.lua

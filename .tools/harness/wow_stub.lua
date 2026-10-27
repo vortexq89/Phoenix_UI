@@ -75,7 +75,7 @@ function CreateFont(name)
 end
 RAID_CLASS_COLORS = { MAGE = { r = 0.25, g = 0.78, b = 0.92 } }
 function IsShiftKeyDown() return false end
-function IsAltKeyDown() return false end
+function IsAltKeyDown() return H.altDown == true end
 function IsControlKeyDown() return false end
 UISpecialFrames = {}
 SlashCmdList = {}

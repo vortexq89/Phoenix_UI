@@ -114,3 +114,59 @@ Tests:Add("PvP", "live preview follows the settings", function(t)
   P.PvP(card)
   t:eq(P.State(card).pvpLines, n - 3, "progress lines leave the preview at once")
 end)
+
+Tests:Add("PvP", "conquest overlay, title achievement lookup, history window, header drag, Shuffle round results", function(t)
+  if not H then return end
+  local X = PV.Extras
+  for _, k in ipairs({ "module.PvP", "pvp.columns", "pvp.ach_legend", "pvp.autoTitleIDs" }) do Tests.Keep(t, k) end
+  Schema:Set("module.PvP", true)
+  -- title achievement lookup (plain names, newest ID)
+  local achs = { [95] = { { 4000, "Legend: Season 1" }, { 4200, "Legend: Season 2" }, { 4100, "Strategist: Season 2" }, { 4300, H.secret("Legend: x") } } }
+  rawset(_G, "GetCategoryList", function() return { 95 } end)
+  rawset(_G, "GetCategoryNumAchievements", function(c) return #(achs[c] or {}) end)
+  rawset(_G, "GetAchievementInfo", function(c, i) local a = achs[c][i]; return a[1], a[2] end)
+  t:cleanup(function() for _, n in ipairs({ "GetCategoryList", "GetCategoryNumAchievements", "GetAchievementInfo", "ConquestFrame" }) do rawset(_G, n, nil) end; wipe(X.found) end)
+  t:eq(X.FindTitleAchievement("Legend"), 4200, "newest Legend achievement")
+  t:eq(X.FindTitleAchievement("Strategist"), 4100, "Strategist")
+  Schema:Set("pvp.ach_legend", 0)
+  t:eq(X.AutoIDs(), 2, "found for both titles")
+  local nCrit, cInfo = rawget(_G, "GetAchievementNumCriteria"), rawget(_G, "GetAchievementCriteriaInfo")
+  rawset(_G, "GetAchievementNumCriteria", function() return 1 end)
+  rawset(_G, "GetAchievementCriteriaInfo", function(id) return "", 0, false, id == 4200 and 37 or 0, 100 end)
+  t:cleanup(function() rawset(_G, "GetAchievementNumCriteria", nCrit); rawset(_G, "GetAchievementCriteriaInfo", cInfo) end)
+  local have, need, src = R.Progress("legend", PV.DB(), PV.Season(), PV.settings)
+  t:eq(have, 37, "progress read from the found achievement"); t:eq(src, "game", "game source")
+  -- conquest overlay
+  local host = CreateFrame("Frame", "ConquestFrame", UIParent)
+  rawset(_G, "ConquestFrame", host)
+  X.hooked = false
+  t:ok(X.HookConquest(), "hooked with HookScript")
+  host:Show()
+  t:ok(X.PaintOverlay() and X.overlay:IsShown(), "overlay shown with the conquest frame")
+  t:ok(X.overlay.text:GetText():find("Legend  37 / 100", 1, true), "title progress on the overlay")
+  Schema:Set("pvp.conquestOverlay", false)
+  t:eq(X.overlay:IsShown(), false, "off applies live")
+  Schema:Set("pvp.conquestOverlay", true)
+  -- history window
+  local db = PV.DB()
+  local saved = db.history
+  db.history = { { at = 1700000000, bracketLabel = "3v3", change = 16, rating = 2416 }, { at = 1700000500, bracketLabel = "Solo Shuffle", change = -12, rating = 2398 } }
+  t:cleanup(function() db.history = saved; if X.history then X.history:Hide() end end)
+  t:eq(X.ShowHistory(), 2, "history window lists stored results")
+  t:ok(X.history.body:GetText():find("+16", 1, true), "change shown")
+  -- header drag
+  t:eq(table.concat(X.Reorder({ "a", "b", "c", "d" }, 1, 3), ","), "b,c,a,d", "reorder moves a column")
+  -- Shuffle per-round results
+  H.soloShuffle = true
+  t:cleanup(function() H.soloShuffle = nil; H.matchState = nil; H.scores = nil; M.ResetRounds() end)
+  M.ResetRounds()
+  H.matchState = Enum.PvPMatchState.Engaged; M.OnState(PV.settings)
+  H.scores = { { roundsWon = H.secret(1) } }
+  H.matchState = Enum.PvPMatchState.PostRound; M.OnState(PV.settings)
+  t:eq(M.results[1], nil, "secret round count: nothing recorded")
+  H.matchState = Enum.PvPMatchState.Engaged; M.OnState(PV.settings)
+  H.scores = { { roundsWon = 1 } }
+  H.matchState = Enum.PvPMatchState.PostRound; M.OnState(PV.settings)
+  t:eq(M.results[2], "W", "plain round count: won")
+  t:ok(M.RoundText():find("[? W]", 1, true), "round results in the tracker line")
+end)

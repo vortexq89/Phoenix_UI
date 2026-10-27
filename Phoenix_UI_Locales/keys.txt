@@ -41,6 +41,7 @@ A small frame for each enemy pet (click to target, right-click to focus).
 A small list of the next boss abilities and their times during a boss fight. Move it in Studio.
 A small mark on your focus.
 A small popup the first time a new error happens (repeats are only counted).
+A small read-only Phoenix panel inside Blizzard's conquest frame with your title progress and conquest.
 A soft glow around reminder icons.
 A spell shown in the cooldown manager's Essential or Utility rows is hidden on your bars. Off while the cooldown manager hides icons that are on your bars (pick one).
 A starting look for size, spacing and icon side. Every part can still be changed on its own below.
@@ -140,6 +141,8 @@ Also narrow Blizzard's search: minimum rating
 Also narrow Blizzard's search: needs my role
 Also prints the rating change in your chat window after each rated match.
 Also shows a dot for each boss targeting this member.
+Alt+click Phoenix UI in the minimap addon menu to show or clear the Cast History test strip.
+Alt+click in the addon menu
 Alternate power bar
 Always on the minimap
 Always show me
@@ -689,6 +692,7 @@ Cast history: Target
 Cast history: You
 Cast time
 Cast, target or open menus by clicking Phoenix unit, party and raid frames (Clique takes over when installed).
+Casts button in Embers
 Catch-up speed
 Categories
 Categories group items by your rules; grid shows bags in order; compact uses smaller slots; list shows names.
@@ -1070,6 +1074,8 @@ Does not repeat the exact same announcement within 5 seconds.
 Double-click a group (in Blizzard's list or Phoenix's) to open its sign-up. Blizzard runs this window with protected code; an addon helping here can, rarely, cause an 'interface action blocked' message. It is on by default because you chose so; turn it off if you ever see that.
 Double-click a group to sign up
 Drag Blizzard windows (character, map, bags, talents and about 50 more) by their title. Ctrl + mouse wheel scales, Shift + right-click resets.
+Drag a scoreboard header onto another to change the column order.
+Drag scoreboard headers
 Drag the whole selection
 Dragged elements snap to the Studio grid.
 Draw the pixel grid while Studio is open.
@@ -1128,6 +1134,7 @@ Embers window 1
 Embers window 2
 Embers window 3
 Embers window 4
+Embers' spell breakdown gets a Casts button that shows that player's recent casts (you and your party).
 Emoji
 Emoji size
 Emoji suggestions while typing
@@ -1252,6 +1259,7 @@ Filter chip. Off at 4000.
 Filter chip. Off when unticked.
 Filter chip. Off when unticked. Ticks in the same bracket row mean any of them.
 Filter chip. Off when unticked. Ticks in the same difficulty row mean any of them.
+Find Legend and Strategist achievements
 Finished quests
 Fire is orange, frost light blue and so on.
 Fixed width of each whisper tab; tabs shrink evenly only when they no longer fit.
@@ -1598,6 +1606,7 @@ Highlight you
 Highlight your team
 Highlights items you just received.
 Highlights members carrying a debuff that can be dispelled.
+History rows
 Hits from the same spell close together become one line (Rend x5).
 Hits you avoid (dodge, parry, absorb...)
 Hits you avoid (dodge, parry, absorb...): area
@@ -1671,6 +1680,7 @@ How many meter windows to show (up to 4). Each one has its own meter type and fi
 How many names a chat report lists.
 How many pulls per boss the history (and the wipe trend) keeps.
 How many rated results are kept (Arena's card reads them too).
+How many rated results the history window lists (/pui pvphistory).
 How many results the palette lists.
 How many sample enemies the test mode shows.
 How many spells the breakdown lists.
@@ -1918,6 +1928,7 @@ Marks the group leader above their role icon.
 Marks the group leader.
 Marks units tied to one of your active quests.
 Marks upgrades in Phoenix bags (Vault).
+Masque skins
 Match the player frame width when attached
 Match time above the frames.
 Match timer
@@ -2151,6 +2162,7 @@ Pandemic colour
 Pandemic colour on your debuffs
 Panel border
 Panel colour
+Panel corner
 Panel opacity
 Panel padding
 Panel position
@@ -2411,6 +2423,7 @@ Progress bar shows
 Progress bar text
 Progress bar width
 Progress colours
+Progress on the conquest frame
 Pull and break bar
 Pull and break buttons
 Pull countdown (s)
@@ -2554,6 +2567,7 @@ Rated battlegrounds: Tanks at most
 Rated battlegrounds: expression
 Rated battlegrounds: sort
 Rated card with rating change and title progress, a scoreboard with your own columns, the battleground leave countdown, Training Grounds and the Solo Shuffle round tracker. Arena frames are in Arena.
+Rated history
 Rated matches kept
 Rating at which wins count toward Gladiator (check the season's rules).
 Rating at which wins count toward Legend (check the season's rules).
@@ -3002,6 +3016,7 @@ Snap to
 Snap to grid
 Snapped window gap
 Soft shadow under chat text.
+Solo Shuffle round results
 Solo Shuffle round tracker
 Sort
 Sort from highest to lowest.
@@ -3495,6 +3510,7 @@ Which auras this lane shows.
 Which battlegrounds use the countdown.
 Which buffs are shown.
 Which colour a listed NPC gets in combat.
+Which corner of the conquest frame the panel sits in.
 Which debuffs are shown.
 Which errors the viewer lists first.
 Which minimap corner the Phoenix buttons start from.
@@ -3538,6 +3554,7 @@ While Spark is on, the game's own damage and healing numbers over enemies are of
 While Spark is on, the game's own text over your character is off. Restored when this or Spark is off.
 While a key runs, Ascent's Mythic+ block sits at the top of the tracker (Ascent owns the timer).
 While a tooltip shows IDs, this key opens them in the copy box. It is only taken while IDs are on screen, and never over a key you bound yourself. Empty turns it off.
+While an achievement ID setting is 0, Phoenix looks up the season's title achievement in the game's list (once per season) and reads its progress.
 Whisper sound
 Whisper tab width
 Whisper window width
@@ -3591,6 +3608,7 @@ Wins toward each title. Uses the game's own achievement count when the season ha
 Wisdom
 With BigWigs loaded, adds a "Phoenix UI" bar style you can pick in BigWigs' bar options.
 With FrameSort loaded, the arena numbers follow its sorted enemy order (matching its EnemyFrame macros).
+With Masque loaded, cast icons use the skin you pick for "Phoenix UI: Cast History" in Masque.
 With Raider.IO loaded, adds the leader's Raider.IO score to each row (filter words rio and riomain work either way).
 With several elements selected, dragging one moves them all.
 Words for the dungeons, raids or delves to keep (see the word list in the help panel; the season's words are added live). Empty keeps all.
@@ -3609,6 +3627,7 @@ Writes 1, 2, 3 beside each frame (matches /target arena1).
 Writes 1., 2., 3. before names.
 Writes 1/2, 1/4 or immune when the game's values are readable (hidden values show icon and swipe only).
 Writes Blizzard's own server-side minimum rating filter. Your previous Blizzard filter is saved and put back when this returns to 0.
+Writes W or L for each round once the game shows the round count plainly (it is hidden during play).
 Writes the boss name (or Combat) before the time.
 Writes the buff name under each icon.
 Writes the item level on equippable items.
