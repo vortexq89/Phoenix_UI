@@ -211,8 +211,15 @@ rep("uploadOthers", { type = "toggle", default = false, label = "Include other a
 rep("alertBadge", { type = "toggle", default = true, mode = "simple", label = "Error count badge",
   tooltip = "A small badge with the number of new errors this session; click it to open the viewer." })
 rep("alertSound", { type = "toggle", default = false, mode = "simple", label = "Sound on a new error", tooltip = "Plays a sound the first time a new error happens." })
-rep("alertSoundName", { type = "select", default = "Raid Warning", choices = { "Raid Warning", "Ready Check", "Tell", "Alarm" },
-  label = "Error sound", tooltip = "Which sound plays." })
+rep("alertSoundName", { type = "select", default = "Raid Warning", choices = function()
+    local list = { "Raid Warning", "Ready Check", "Tell", "Alarm" }
+    for _, name in ipairs(PUI.Media:List("sound")) do if name ~= "None" then list[#list + 1] = name end end
+    return list
+  end, label = "Error sound", tooltip = "Which sound plays: four game sounds, then every sound in the media library (yours and other addons' shared sounds)." })
+rep("baselineWarn", { type = "range", default = 0, min = 0, max = 50, step = 1, label = "Warn once on many new errors",
+  tooltip = "0 = off. Errors seen in 3 or more sessions become your baseline; when this many errors outside the baseline happen in one session, one chat line says so (once per session)." })
+rep("trace", { type = "toggle", default = false, label = "Developer event trace",
+  tooltip = "Keeps the last 200 Phoenix bus signals (module enabled, profile changes, settings) for /pui trace. Off costs nothing." })
 rep("alertChat", { type = "toggle", default = false, label = "Chat line on a new error", tooltip = "Prints one line with a link that opens the viewer." })
 rep("autoOpen", { type = "toggle", default = false, mode = "simple", label = "Open the viewer on a new error",
   tooltip = "Opens the error viewer by itself. Never during combat: it waits until the fight ends." })

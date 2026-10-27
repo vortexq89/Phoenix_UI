@@ -32,4 +32,5 @@ Share.lua
 Upload.lua
 Reporter.lua
 Panel.lua
+Extras.lua
 Slash.lua
