@@ -34,4 +34,5 @@ Reporter.lua
 Panel.lua
 Extras.lua
 Recorder.lua
+FixedSync.lua
 Slash.lua

@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from sentinel_companion import core, exportstring, luasv, payload, redact
+from sentinel_companion import core, exportstring, fixedin, luasv, payload, redact
 from sentinel_companion.config import Config
 from sentinel_companion.state import State
 
@@ -147,6 +147,28 @@ class ExportStringTests(unittest.TestCase):
             self.assertEqual(exportstring.decode(exportstring.encode(p, wbits)), json.loads(json.dumps(p, sort_keys=True)))
         with self.assertRaises(ValueError):
             exportstring.decode("nope")
+
+
+class FixedInTests(unittest.TestCase):
+    def test_dashboard_issues_to_string(self):
+        issues = {"issues": [
+            {"hash": "1A2B3C4D", "status": "fixed", "fixedIn": "1.4.2"},
+            {"hash": "deadbeef", "status": "new", "fixedIn": "1.4.2"},
+            {"hash": "cafebabe", "status": "fixed", "fixed_in": "1.4.3"},
+            {"hash": "1a2b3c4d", "status": "fixed", "fixedIn": "1.4.2"},
+            {"hash": "nothex!!", "status": "fixed", "fixedIn": "1.0"},
+            {"hash": "abcdef01", "status": "fixed", "fixedIn": "bad version!"},
+        ]}
+        out = exportstring.decode(fixedin.build(issues))
+        self.assertEqual(out["kind"], "fixed-in")
+        self.assertEqual(out["fixed"], [{"hash": "1a2b3c4d", "fixedIn": "1.4.2"}, {"hash": "cafebabe", "fixedIn": "1.4.3"}])
+
+    def test_refuses_empty_and_oversized(self):
+        with self.assertRaises(ValueError):
+            fixedin.build([])
+        many = [{"hash": "%08x" % i, "fixedIn": "1.0"} for i in range(fixedin.MAX + 1)]
+        with self.assertRaises(ValueError):
+            fixedin.build(many)
 
 
 if __name__ == "__main__":

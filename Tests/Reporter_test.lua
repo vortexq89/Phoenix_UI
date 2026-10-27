@@ -298,3 +298,19 @@ Tests:Add("Sentinel", "batch D: self-measurement with signature check, top addon
   X.pairs["test.ab"] = nil
   for i, id in ipairs(X.order) do if id == "test.ab" then table.remove(X.order, i) end end
 end)
+
+Tests:Add("Sentinel", "batch D: fixed-in list from the Companion marks errors fixed, refuses bad input", function(t)
+  local S = scratch(t)
+  local F = S.FixedSync
+  local text = S.Export.Encode({ kind = "fixed-in", schema = 1, fixed = {
+    { hash = "1a2b3c4d", fixedIn = "1.4.2" }, { hash = "zz", fixedIn = "1.0" }, { hash = "cafebabe", fixedIn = "bad version" } } })
+  local applied, skipped = F.Import(text)
+  t:eq(applied, 1, "one valid row applied")
+  t:eq(skipped, 2, "two malformed rows skipped")
+  t:eq(S.Store:DB().resolved["1a2b3c4d"].fixedIn, "1.4.2", "marked fixed in that version")
+  t:eq(select(2, F.Import(text)), 3, "same list again: nothing changes")
+  local none, why = F.Import(S.Export.Encode({ kind = "report", fixed = {} }))
+  t:eq(none, nil, "other kinds refused")
+  t:ok(why:find("not a fixed-in", 1, true), "reason")
+  t:eq((F.Import("garbage")), nil, "garbage refused")
+end)

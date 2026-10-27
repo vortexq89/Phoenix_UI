@@ -382,3 +382,13 @@ Tests:Add("Options", "Diagnostics page: own System entry, report lines, develope
   Page:Show(host)
   t:eq(Options.views.diagnostics.lines[1]:GetText(), "Phoenix UI diagnostics", "drawn")
 end)
+
+Tests:Add("Options", "batch D settings show live in the Sentinel preview", function(t)
+  local bag = Options.PreviewsExtras.Bag
+  Tests.Keep(t, "sentinel.privacyAllow")
+  local card = CreateFrame("Frame")
+  Schema:Set("sentinel.privacyAllow", { "Healbot", "Grid" })
+  Options.Previews.Sentinel(card)
+  t:ok(bag(card).snC6:GetText():find("2 of yours", 1, true), "allow-list count")
+  t:ok(bag(card).snC5:GetText():find("off", 1, true), "recorder off")
+end)

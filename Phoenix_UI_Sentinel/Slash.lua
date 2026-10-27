@@ -30,6 +30,8 @@ PUI.Slash:Register("sentinel", function(rest)
   elseif word == "enable" and arg ~= "" then
     S.SafeMode:Release(arg)
     out(arg .. " re-enabled.")
+  elseif word == "fixed" then
+    S.FixedSync.Prompt()
   elseif word == "panel" then
     S.Panel:Toggle()
   elseif word == "preview" then
@@ -39,5 +41,5 @@ PUI.Slash:Register("sentinel", function(rest)
   else
     S.Reporter:Toggle()
   end
-end, "open the error reporter (settings, preview, panel, export, copy [all], send, clear, induce)")
+end, "open the error reporter (settings, preview, panel, export, copy [all], send, clear, induce, fixed)")
 PUI.Slash:Register("bugs", function() S.Reporter:Toggle() end, "open the error reporter")
