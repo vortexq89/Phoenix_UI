@@ -351,3 +351,16 @@ Tests:Add("Options", "batch C extras show live on every module preview", functio
   Options.Previews.Arena(card)
   t:ok(bag(card).arC2:GetText():find("Pet frames off", 1, true), "arena pets off in the preview")
 end)
+
+Tests:Add("Options", "CPU chip shows the open page's profiler time live", function(t)
+  local Chip, P = Options.CpuChip, PUI.Profiler
+  Tests.Keep(t, "sentinel.cpuChip")
+  local saved = P.stats
+  P.stats = { a = { owner = "Embers", self = 1.5 }, b = { owner = "Arena", self = 9 } }
+  t:cleanup(function() P.stats = saved end)
+  t:ok(Chip.Text("Embers"):find("1.50 ms", 1, true), "page total")
+  t:eq(Chip.Text("Dashboard"), nil, "not on the Dashboard")
+  t:eq(Chip.Text("Flow"), nil, "nothing without samples")
+  Schema:Set("sentinel.cpuChip", false)
+  t:eq(Chip.Text("Embers"), nil, "off")
+end)

@@ -4,6 +4,7 @@
 /keys command
 /pui pull [s] (also /pui cd), /pui break [min], /pui rc.
 /pui rl
+0 = off. Errors seen in 3 or more sessions become your baseline; when this many errors outside the baseline happen in one session, one chat line says so (once per session).
 0 keeps the summary card open until you close it.
 0 makes the bar background invisible.
 0 poor, 1 common, 2 uncommon, 3 rare, 4 epic, 5 legendary, 6 artifact, 7 heirloom.
@@ -651,6 +652,7 @@ Buttons listed here are left alone exactly where their addon put them.
 Buttons listed here stay on the minimap instead of going into the bin.
 Buttons per row in the bin.
 By role colours every state for tanks and others. Classic only colours plates that are on you or about to be.
+CPU chip on settings pages
 Calendar
 Calendar button
 Capture other addons' errors
@@ -1050,6 +1052,7 @@ Delves: only these
 Delves: sort
 Detached panel position
 Details! windows
+Developer event trace
 Developer profiler
 Difficulty position
 Digits after the decimal point.
@@ -1208,6 +1211,7 @@ Essential cooldowns: icon size
 Essential cooldowns: per row
 Essential cooldowns: spacing
 Event toasts
+Event trace
 Execute colour
 Execute line
 Execute range (%)
@@ -1823,6 +1827,7 @@ Keeps a list of each character's bag and bank items so you can see them from any
 Keeps each whisper conversation in its own tab of a small window with a reply box. Never pops up in combat.
 Keeps history across reloads and logins. Lines the game kept secret are never stored.
 Keeps recent chat lines so you can search them by text, channel, player and date (/pui chat history).
+Keeps the last 200 Phoenix bus signals (module enabled, profile changes, settings) for /pui trace. Off costs nothing.
 Key countdown (s)
 Key that opens the Oracle palette.
 Keybind text
@@ -3417,6 +3422,7 @@ Viewer shows
 Voice deafen button
 Voice mute button
 Warn at (seconds left)
+Warn once on many new errors
 Warning level for the low durability warning.
 Warns once when any item drops to the threshold.
 Waypoint line
@@ -3533,7 +3539,7 @@ Which side of the bar the icon sits on.
 Which side of the cast bar the icon sits on.
 Which side of the frame the portrait sits on.
 Which side the spec icon sits on.
-Which sound plays.
+Which sound plays: four game sounds, then every sound in the media library (yours and other addons' shared sounds).
 Which tiers the pace line compares against.
 Which way boss frames 2 to 5 are added.
 Which way extra rows are added.
@@ -3567,6 +3573,7 @@ While Spark is on, the game's own text over your character is off. Restored when
 While a key runs, Ascent's Mythic+ block sits at the top of the tracker (Ascent owns the timer).
 While a tooltip shows IDs, this key opens them in the copy box. It is only taken while IDs are on screen, and never over a key you bound yourself. Empty turns it off.
 While an achievement ID setting is 0, Phoenix looks up the season's title achievement in the game's list (once per season) and reads its progress.
+While the developer profiler has samples, each module page shows how much time that module took.
 Whisper sound
 Whisper tab width
 Whisper window width

@@ -4,6 +4,14 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Deferred batch C: every remaining module
+- Quest Tracker: quest-item buttons beside each quest and auto-share. Reminders: season consumables, weapon oil, talents by zone, per-reminder sound and icon. Embers: show/hide and reset hotkeys, window snapping, a threat warning. Ascent: current-pull forces, score projection, `/pui vaultplan`.
+- Flow: leave-queue popups, open containers, Train All, tutorials and banners, `/gg`, queue protection, Tab binder, screenshot on achievement. Group Finder: Raider.IO words and region badge, plugin sorts, a click-to-insert word list, a Studio mover for the detached panel. Raid Tools: notes window (hidden in combat), boss tooltip line, stats window.
+- Pulse: next-three HUD, per-boss rules, BigWigs bar style, hide Blizzard's timeline. Arena: pets, class-icon aura, dispels, range fading, click bindings, text sizes, FrameSort numbers, "only mine" DR, healer-only parts. Spark: per-event sounds, aura gain/fade, substitutions and abbreviation, a trigger builder, MSBT import.
+- Cast History: Masque, Alt+click on Phoenix's compartment entry, a Casts button in the Embers breakdown. PvP: conquest overlay, automatic title achievement IDs, history window, drag headers, Shuffle rounds. Friends: icon themes, frame border and tab line, add-friend suggestions.
+- Sentinel: error sounds from the media library, a warning when many unusual errors pile up, a developer event trace (`/pui trace`). Settings window: a CPU chip for the open page while the profiler has samples.
+- Every new setting shows live in its module's preview (PreviewsExtrasC.lua). Blocked with evidence: Group Finder lockout filters and cancel-oldest, Pulse private-aura sounds, Friends app-only removal, Sentinel protected decode, the store release. Tests: 392 (from 376).
+
 ### Deferred batch B: Studio, HUD, previews
 - Studio: lines between attached movers (a setting), corner grips to resize (width and height where the element allows it, otherwise scale), grow-direction buttons in the inspector, thumbnails of your saved layouts (click to apply), an ElvUI mover importer next to MoveAny, and Blizzard elements fade again when their state changes.
 - Options: a Blizzard page (Interface group) listing every Blizzard element Phoenix can move, with hide/show, reset and "In Studio". A setting can now show on another module's page: the dungeon queue-pop time is on the Group Finder page.

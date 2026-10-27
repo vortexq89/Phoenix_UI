@@ -1,6 +1,6 @@
 # Deferred items (consolidated, PRs #31-#43)
 
-Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Deferred batch A (stacked on PR #43) marks its items in place: **done**, **blocked** with the reason, or **left**. Deferred batch B (stacked on batch A) marks the Studio and HUD items the same way and adds live previews for the Action Bars, Cooldown Manager and Resource Bars extras. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
+Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step-status lines and section 6), the CHANGELOG and this PR. Each item is a backlog entry, not a to-do: it is scheduled during the test, fix and polish phase after the end-to-end build. Items move out of this file when they are built or dropped by a decision. Deferred batch A (stacked on PR #43) marks its items in place: **done**, **blocked** with the reason, or **left**. Deferred batch B (stacked on batch A) marks the Studio and HUD items the same way and adds live previews for the Action Bars, Cooldown Manager and Resource Bars extras. Deferred batch C (stacked on batch B) marks every remaining module from Quest Tracker to Plan-wide the same way, with each extra shown live in its module's preview. Moved out in this PR: Arena's Gladiator progress (now on the PvP rated card) and Embers' Pulse page for the combat timer (built in step 9b).
 
 | Module | Items |
 |---|---|
@@ -113,132 +113,132 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 
 ## Quest Tracker (PR #40)
 
-- quest-item SecureActionButtons
-- auto-share
+- **done (deferred C):** quest-item SecureActionButtons (Phoenix_UI_QuestTracker/Extras.lua; placed and resized out of combat only, `qt.itemButtons`, `qt.itemSize`)
+- **done (deferred C):** auto-share (`qt.autoShare`, optional skip of daily/weekly quests)
 
 ## Reminders (PR #40)
 
-- season consumable IDs (pack empty)
-- talents by zone
-- per-reminder sound/icon
+- **done (deferred C):** season consumables and weapon oil reminders (Phoenix_UI_Reminders/Extras.lua); **left:** the season item ID pack stays empty until the in-game test phase
+- **done (deferred C):** talents by zone (saved per instance, reminder on entering)
+- **done (deferred C):** per-reminder sound/icon overrides (`rm.overrides` list)
 
 ## Embers damage meter (PR #40)
 
-- show/hide-all and reset hotkeys (Binding ledger)
-- Forever threat meter
-- window snapping
+- **done (deferred C):** show/hide-all and reset hotkeys through the Binding ledger (Phoenix_UI_Embers/Extras.lua)
+- **done (deferred C):** threat warning at a set percentage with a media sound (Forever and retail; reads the plain threat API)
+- **done (deferred C):** window snapping (edges or grid, with a gap)
 
 ## Ascent Mythic+ (PR #40)
 
-- forces current-pull preview
-- score projection
-- vault planner
+- **done (deferred C):** forces current-pull preview (Phoenix_UI_Ascent/Extras.lua)
+- **done (deferred C):** score projection (`AS.SCORE` model; **left:** constants checked in the test phase)
+- **done (deferred C):** vault planner (`/pui vaultplan`)
 
 ## Flow QoL (PR #41)
 
-- leave-queue popups
-- open containers
-- Train All
-- tutorials/banners
-- `/gg`
-- queue protection
-- Tab binder
-- screenshot on achievement
+- **done (deferred C):** leave-queue popups (Phoenix_UI_Flow/Extras.lua)
+- **done (deferred C):** open containers (out of combat, Ticker-paced)
+- **done (deferred C):** Train All
+- **done (deferred C):** tutorials/banners
+- **done (deferred C):** `/gg` (custom text)
+- **done (deferred C):** queue protection (accept button guarded for a set time)
+- **done (deferred C):** Tab binder (Binding ledger, out of combat)
+- **done (deferred C):** screenshot on achievement
 
 ## Group Finder (PR #41)
 
-- raid boss-defeated/lockout filters (no encounter API for search results in the catalog)
-- cancel-oldest button (`C_LFGList.CancelApplication` not in the catalog)
-- Raider.IO variables and region badge
-- plugin sort hooks
-- click-to-insert word list
-- Studio mover for the detached panel
+- **blocked:** raid boss-defeated/lockout filters: `C_LFGList.GetSearchResultEncounterInfo` is used by Blizzard_GroupFinder/Mainline/LFGList.lua:4536 but is absent from the 12.1.5 generated API docs and the catalog
+- **blocked:** cancel-oldest button: `C_LFGList.CancelApplication` is used by QueueStatusFrame.lua:1554 but is absent from the 12.1.5 generated API docs and the catalog
+- **done (deferred C):** Raider.IO words `rio`/`riomain` and region badge `[DE]` plus `samelang` (Phoenix_UI_GroupFinder/Extras.lua; RaiderIO and LibRealmInfo looked up at call time)
+- **done (deferred C):** plugin sort hooks (`GF.RegisterSort`/`UnregisterSort`)
+- **done (deferred C):** click-to-insert word list (Words button; Shift+click keeps the help)
+- **done (deferred C):** Studio mover for the detached panel (`gf.panel`)
 
 ## Raid Tools (PR #41)
 
-- notes out of combat
-- boss-frame tooltip line
-- stats window
+- **done (deferred C):** notes window (hidden in combat, back after it through CombatQueue; Phoenix_UI_RaidTools/Extras.lua)
+- **done (deferred C):** boss-frame tooltip line (TooltipDataProcessor)
+- **done (deferred C):** stats window (`/pui statswin`, export, confirmed row reset)
 
 ## Pulse (PR #42)
 
-- next-three HUD
-- private-aura sounds
-- per-boss options
-- BigWigs bar-style bridge
-- Blizzard timeline view hide
+- **done (deferred C):** next-three HUD (Ticker `pulse.next`, boss fights only; Phoenix_UI_Pulse/Extras.lua)
+- **blocked:** private-aura sounds: UnitAuraDocumentation.lua (12.1.5) has only AddPrivateAuraAnchor/RemovePrivateAuraAnchor; no sound or applied-event API for private auras
+- **done (deferred C):** per-boss options (`pulse.bossRules`)
+- **done (deferred C):** BigWigs bar-style bridge (BigWigsAPI.RegisterBarStyle)
+- **done (deferred C):** Blizzard timeline view hide (C_EncounterTimeline.SetViewType, restored when off)
 
 ## Arena (PR #42)
 
-- pet frames
-- class-icon aura priority
-- dispel tracker
-- range page
-- click-binding editor
-- text page per text
-- FrameSort numbering
-- 'only triggerable by me' DR CVar
-- healer-only variants
+- **done (deferred C):** pet frames (Phoenix_UI_Arena/Extras.lua)
+- **done (deferred C):** class-icon aura priority
+- **done (deferred C):** dispel tracker (**left:** spell ID list checked in game)
+- **done (deferred C):** range fading (**left:** per-class range spells checked in game)
+- **done (deferred C):** click-binding list (applied out of combat)
+- **done (deferred C):** text size and anchor per text
+- **done (deferred C):** FrameSort numbering (**left:** FrameSort API checked in game)
+- **done (deferred C):** 'only triggerable by me' DR CVar (CVar ledger)
+- **done (deferred C):** healer-only variants (trinket, DR, cast)
 
 ## Spark (PR #42)
 
-- per-event sounds
-- aura gain/fade rows
-- ability substitution/abbreviation lists
-- visual trigger builder
-- profile import from MSBT
+- **done (deferred C):** per-event sounds (Phoenix_UI_Spark/Extras.lua)
+- **done (deferred C):** aura gain/fade rows
+- **done (deferred C):** ability substitution/abbreviation lists
+- **done (deferred C):** visual trigger builder
+- **done (deferred C):** profile import from MSBT (confirmed; **left:** key mapping checked against a real MSBT profile)
 
 ## Cast History (PR #42)
 
-- Masque
-- Addon Compartment entry
-- Embers link button
+- **done (deferred C):** Masque group (Phoenix_UI_CastHistory/Extras.lua)
+- **done (deferred C):** Addon Compartment: Alt+click on Phoenix's entry toggles the test strip (the game has no remove-entry call, so a second entry could not follow its setting live)
+- **done (deferred C):** Embers link button ("Casts" in the breakdown)
 
 ## PvP UI (PR #43, this PR)
 
-- Read-only overlay on Blizzard's conquest frame (the rated card docks beside the PvP window instead)
-- Automatic Legend and Strategist achievement IDs per season (settings take the ID; Phoenix counts wins until then)
-- Rated match history page (stored, read by the card; no list window yet)
-- Drag-to-reorder column headers on the scoreboard itself (order is set in the list editor)
-- Per-round Solo Shuffle win/loss while the game keeps it secret (shown only once plain)
-- In-game check: GetPersonalRatedInfo bracket indexes 7 (Shuffle) and 9 (Blitz), LeaveBattlefield from the Ticker, Training Grounds queue calls
+- **done (deferred C):** read-only overlay on Blizzard's conquest frame (Phoenix_UI_PvP/Extras.lua)
+- **done (deferred C):** automatic Legend and Strategist achievement IDs (category scan; a typed ID still wins)
+- **done (deferred C):** rated match history window (`/pui pvphistory`)
+- **done (deferred C):** drag-to-reorder scoreboard headers
+- **done (deferred C):** per-round Solo Shuffle win/loss when plain
+- **left:** in-game check: GetPersonalRatedInfo bracket indexes 7 and 9, LeaveBattlefield from the Ticker, Training Grounds queue calls
 
 ## Friends (PR #43, this PR)
 
-- Removing app-only rows from Blizzard's own list (they are dimmed; changing Blizzard's data provider would taint)
-- Class icon theme choices beyond the default atlas set
-- Friends frame border and accent tab styling (Skins pass)
-- Invite-search dropdown on Blizzard's add-friend box (the Phoenix panel search covers it)
-- Studio mover check for the free-floating panel
-- In-game check: FriendsFrame_UpdateFriendButton hook, recent allies data shape, BNet note dialog
+- **blocked:** removing app-only rows from Blizzard's own list: it would mean replacing Blizzard's data provider, which taints the friends frame (rows stay dimmed)
+- **done (deferred C):** class icon themes atlas/square/letter (Phoenix_UI_Friends/Extras.lua)
+- **done (deferred C):** friends frame border and tab line styling
+- **done (deferred C):** suggestions on Blizzard's add-friend box
+- **done (deferred C):** Studio mover check for the free-floating panel (test)
+- **left:** in-game check: FriendsFrame_UpdateFriendButton hook, recent allies data shape, BNet note dialog
 
 ## Sentinel error reporter (PR #43, this PR)
 
-- Addon Compartment / minimap entry for the badge (a movable floating badge ships)
-- Opt-in dev recorder (change-only streams, orphan-session recovery)
-- Dev event-trace panel for Phoenix's bus
-- Warning baseline of stable fingerprints and the one-time excess-error warning
-- Fixed-in state synced from the dashboard (marked by hand in game today)
-- Protected decode of a received report (needs an approved pcall exception tag; the checksum guards it today)
-- Registering as a BugGrabber display object (Sentinel listens to BugGrabber's public callback today)
-- Removing the retired safe-mode code paths (setting hidden and inert)
-- Sound list from the media library instead of four built-in sounds
+- **done (deferred C):** compartment entry: Shift+click on Phoenix's compartment entry opens Sentinel (existing, Core/Entry.lua)
+- **left:** opt-in dev recorder (change-only streams, orphan-session recovery): larger design, not started
+- **done (deferred C):** dev event-trace panel (`sentinel.trace`, `/pui trace`; wraps Kernel.Fire only while on; Phoenix_UI_Sentinel/Extras.lua)
+- **done (deferred C):** warning baseline (errors seen in 3+ sessions) and the one-time excess warning (`sentinel.baselineWarn`)
+- **left:** fixed-in state synced from the dashboard: needs a Companion-to-addon channel that does not exist yet
+- **blocked:** protected decode of a received report: needs an approved pcall exception tag (guardrails); the checksum guards it today
+- **left:** BugGrabber display object: BugGrabber picks its display from the `X-BugGrabber-Display` TOC field at its own load, and Sentinel is load-on-demand, so the global would not exist then; needs a Core-side shim
+- **left:** removing the retired safe-mode code paths: cleanup for the polish pass (setting hidden and inert)
+- **done (deferred C):** sound list from the media library (four game sounds, then every media sound)
 
 ## Diagnostics and profiler (PR #43, this PR)
 
-- Per-page CPU chip in the settings window (Profiler:OwnerTotal is ready)
-- Top-addons readout on hover
-- Self-measurement through the game's addon profiler with signature check
-- Privacy kit system-string allow-list
-- Diagnostics as its own settings page (it is a tab in the reporter window and /pui diag)
-- A/B report window (Profiler.AB returns numbers; no UI)
+- **done (deferred C):** per-page CPU chip in the settings header (`sentinel.cpuChip`; Phoenix_UI_Options/CpuChip.lua)
+- **left:** top-addons readout on hover
+- **left:** self-measurement through the game's addon profiler with signature check
+- **left:** privacy kit system-string allow-list
+- **left:** Diagnostics as its own settings page
+- **left:** A/B report window
 
 ## Plan-wide (PLAN section 6)
 
-- Arabic locale and real translations
-- Plugin system (build last)
-- Forever child
-- CurseForge/Wago release
-- Raid debuff tiles with per-instance data packs
-- Nameplate NPC colour data packs
-- Data Bars user bars and LDB host
+- **left:** Arabic locale and real translations (needs a translator)
+- **left:** plugin system (build last, by plan)
+- **left:** Forever child
+- **blocked:** CurseForge/Wago release: an external publishing action that needs your approval; not done by an agent
+- **left:** raid debuff tiles with per-instance data packs (needs data from the test phase)
+- **left:** nameplate NPC colour data packs (needs data)
+- **done (deferred B):** Data Bars user bars and LDB host

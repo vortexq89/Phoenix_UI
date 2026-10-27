@@ -20,6 +20,7 @@ Controls.lua
 VisibilityControl.lua
 Nav.lua
 Panel.lua
+CpuChip.lua
 ProfilesPage.lua
 PageView.lua
 OverridesUI.lua
