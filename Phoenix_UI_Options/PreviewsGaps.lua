@@ -277,3 +277,28 @@ PX.extend("Theme", function(card)
   local s = Look.s
   G.Lines(card, "bd", { "Borders: " .. s.borderStyle .. (s.borderStyle == "pixel" and (" " .. s.borderSize .. " px") or "") })
 end)
+
+-- Blizzard's own meter in the Phoenix look: a sample window (bottom-left).
+add("Embers", function(card)
+  local B = PUI.Embers and PUI.Embers.BlizzSkin
+  if not B then return end
+  local s = B.s
+  local x, y, w = 14, 40, 150
+  local head = tex(card, "bmH")
+  head:SetSize(w, 16); head:SetPoint("BOTTOMLEFT", card, "BOTTOMLEFT", x, y + 3 * 14)
+  local ar, ag, ab = Theme:Color("accent")
+  local alpha = s.fade and s.fadeAlpha or 1
+  head:SetColorTexture(ar * 0.22, ag * 0.22, ab * 0.22, 0.95 * alpha); head:SetShown(s.enabled)
+  local fs = PX.Line(card, "bmT")
+  fs:ClearAllPoints(); fs:SetPoint("LEFT", head, "LEFT", 4, 0)
+  fs:SetText(s.enabled and ("Blizzard meter" .. (s.dock ~= "off" and (" - docked " .. s.dock) or "")) or "Blizzard meter: Blizzard look")
+  fs:SetTextColor(0.95, 0.95, 0.95); fs:SetAlpha(alpha); fs:Show()
+  local rows = { { "WARRIOR", 1 }, { "MAGE", 0.8 }, { "PRIEST", 0.55 } }
+  for i, r in ipairs(rows) do
+    local t = tex(card, "bmB" .. i)
+    t:SetSize(w * r[2], 13); t:SetPoint("BOTTOMLEFT", card, "BOTTOMLEFT", x, y + (3 - i) * 14)
+    local cr, cg, cb = 0.8, 0.2, 0.2
+    if s.classColors then cr, cg, cb = Look.ClassRGB(r[1]) end
+    t:SetColorTexture(cr or 0.8, cg or 0.2, cb or 0.2, 0.9); t:SetShown(true)
+  end
+end)

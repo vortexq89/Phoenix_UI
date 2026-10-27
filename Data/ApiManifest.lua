@@ -428,7 +428,7 @@ PUI.ApiManifest = {
     ["debugprofilestop"] = { owners = { "Core", "Tests" } },
     ["debugstack"] = { owners = { "Core", "Sentinel", "Tests" } },
     ["geterrorhandler"] = { owners = { "Core", "Skins", "Tests" } },
-    ["hooksecurefunc"] = { owners = { "CooldownManager", "Core", "Flow", "Forever", "Friends", "GroupFinder", "HUD", "Nameplates", "Vault" } },
+    ["hooksecurefunc"] = { owners = { "CooldownManager", "Core", "Embers", "Flow", "Forever", "Friends", "GroupFinder", "HUD", "Nameplates", "Vault" } },
     ["issecretvalue"] = { owners = { "Core" } },
     ["securecallfunction"] = { owners = { "Arena", "Core", "GroupFinder", "Options", "Oracle", "Pulse", "Skins", "Tests" } },
     ["seterrorhandler"] = { owners = { "Core", "Skins", "Tests" } },
