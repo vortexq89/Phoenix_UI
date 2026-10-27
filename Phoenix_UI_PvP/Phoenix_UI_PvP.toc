@@ -1,0 +1,19 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - PvP
+## Notes: Phoenix UI PvP: rated card with rating change, Gladiator / Legend / Strategist progress, weekly record and Great Vault, a scoreboard with columns you choose (other addons can add columns), the battleground leave countdown, Training Grounds and the Solo Shuffle round tracker. Arena frames live in Phoenix UI - Arena.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Logo\PhoenixUI_Icon_64
+## Category: Phoenix UI
+## Group: Phoenix_UI
+## Dependencies: Phoenix_UI
+## SavedVariablesPerCharacter: PhoenixUIPvPDB
+
+Rated.lua
+Columns.lua
+Match.lua
+Card.lua
+PvP.lua
+Tests\PvP_test.lua

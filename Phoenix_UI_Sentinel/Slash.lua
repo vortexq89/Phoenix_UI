@@ -32,9 +32,12 @@ PUI.Slash:Register("sentinel", function(rest)
     out(arg .. " re-enabled.")
   elseif word == "panel" then
     S.Panel:Toggle()
-  elseif PUI.OptionsHost:Load() then
+  elseif word == "preview" then
+    PUI.Dialogs:Copy("What leaves this PC", S.Upload:PreviewText())
+  elseif word == "settings" and PUI.OptionsHost:Load() then
     PUI.Options:Open("Sentinel")
   else
-    S.Panel:Toggle()
+    S.Reporter:Toggle()
   end
-end, "open the Sentinel viewer (panel, export, copy [all], send, clear, induce, enable <module>)")
+end, "open the error reporter (settings, preview, panel, export, copy [all], send, clear, induce)")
+PUI.Slash:Register("bugs", function() S.Reporter:Toggle() end, "open the error reporter")

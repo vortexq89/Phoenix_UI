@@ -961,7 +961,7 @@ C_ChallengeMode.SlotKeystone = function() H.slotted = true end
 C_Container.GetContainerItemID = function(bag, slot) local it = H.items[bag .. ":" .. slot]; return it and it.itemID end
 H.addonMsgs = {}
 C_ChatInfo.RegisterAddonMessagePrefix = function() return 0 end
-C_ChatInfo.SendAddonMessage = function(prefix, msg, channel) H.addonMsgs[#H.addonMsgs + 1] = { prefix, msg, channel } return 0 end
+C_ChatInfo.SendAddonMessage = function(prefix, msg, channel, target) H.addonMsgs[#H.addonMsgs + 1] = { prefix, msg, channel, target } return 0 end
 LE_PARTY_CATEGORY_INSTANCE = 2
 H.waypoint = nil
 H.superTracked = {}
@@ -1049,6 +1049,46 @@ for _, k in ipairs({ "floatingCombatTextCombatDamage", "floatingCombatTextCombat
   H.cvars[k] = H.cvars[k] or "1"
 end
 H.cvars.spellDiminishPVPEnemiesEnabled = "0"
+
+
+-- Step 9c: PvP UI, Friends, Sentinel reporter, diagnostics, profiler.
+H.rated = {}
+function GetPersonalRatedInfo(i) local r = H.rated[i]; if not r then return 0, 0, 0, 0, 0, 0, 0 end
+  return r.rating, r.best, r.weeklyBest, r.sp, r.sw, r.wp, r.ww, 0, false, 0, 0, r.rsp, r.rsw, r.rwp, r.rww end
+function RequestRatedInfo() end
+function GetNumBattlefieldScores() return H.scores and #H.scores or 0 end
+function LeaveBattlefield() H.leftBattlefield = (H.leftBattlefield or 0) + 1 end
+C_PvP.IsMatchComplete = function() return H.matchComplete == true end
+C_PvP.IsRatedSoloShuffle = function() return H.ratedShuffle == true end
+C_PvP.IsSoloShuffle = function() return H.soloShuffle == true end
+C_PvP.IsRatedSoloRBG = function() return false end
+C_PvP.IsRatedBattleground = function() return false end
+C_PvP.IsRatedArena = function() return H.ratedArena == true end
+C_PvP.GetActiveMatchState = function() return H.matchState end
+C_PvP.GetUIDisplaySeason = function() return 7 end
+C_PvP.GetPVPSeasonRewardAchievementID = function() return 0 end
+C_PvP.AreTrainingGroundsEnabled = function() return true end
+C_PvP.CanPlayerUseTrainingGroundsUI = function() return true end
+C_PvP.HasRandomTrainingGroundBGWinToday = function() return false end
+C_PvP.HasRandomTrainingGroundArenaWinToday = function() return false end
+C_PvP.JoinRandomTrainingGroundBG = rec("JoinRandomTrainingGroundBG")
+C_PvP.JoinRandomTrainingGroundArena = rec("JoinRandomTrainingGroundArena")
+Enum.PvPMatchState = { Inactive = 0, Waiting = 1, StartUp = 2, Engaged = 3, PostRound = 4, Complete = 5 }
+Enum.WeeklyRewardChestThresholdType = { None = 0, Activities = 1, RankedPvP = 2, Raid = 3, World = 6 }
+C_WeeklyRewards.GetActivities = function() return H.vaultActs or {} end
+function UnitIsInMyGuild() return false end
+function GetAchievementNumCriteria() return 0 end
+function GetAchievementCriteriaInfo() return nil end
+function GetBattlefieldArenaFaction() return 0 end
+function ChatFrame_SendTell(n) H.calls[#H.calls + 1] = { "SendTell", n } end
+function ChatFrame_SendBNetTell(n) H.calls[#H.calls + 1] = { "SendBNetTell", n } end
+function UpdateAddOnMemoryUsage() end
+function GetAddOnMemoryUsage() return 1234 end
+function GetTimePreciseSec() return os.clock() end
+function GetGuildRosterInfo(i) if i == 1 then return "Gil-Silvermoon", "Officer", 1, 90, "Mage", "Dornogal", "tank alt", "", true, 0, "MAGE", 0, 0, false, false, 0, "Player-1-GIL" end end
+LOCALIZED_CLASS_NAMES_MALE = { MAGE = "Mage", PRIEST = "Priest", WARRIOR = "Warrior" }
+LOCALIZED_CLASS_NAMES_FEMALE = LOCALIZED_CLASS_NAMES_MALE
+C_RecentAllies = { GetRecentAllies = function() return { { characterData = { fullName = "Rae-Silvermoon", classFile = "PRIEST" }, stateData = { isOnline = true, currentLocation = "Dornogal" } } } end }
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,

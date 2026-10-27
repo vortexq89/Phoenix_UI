@@ -69,11 +69,24 @@ function Hook.BuildRecord(message, stack, locals)
     combat = InCombatLockdown() and true or false,
   }
   rec.module = Hook.OwnerOf(rec.stack) or Hook.OwnerOf(rec.message)
+  if not rec.module then
+    rec.addon = rec.stack:match("AddOns[/\\]([%w_%-%.!]+)[/\\]") or rec.message:match("AddOns[/\\]([%w_%-%.!]+)[/\\]") or "Blizzard"
+  end
   return rec
 end
 
+Hook.others = {}
 function Hook.Deliver(rec)
-  if not rec.module then return end -- not a Phoenix error: never recorded (privacy)
+  if not rec.module then
+    -- Another addon's error (BugSack parity): kept on this PC only, in its
+    -- own list, and only while "Capture other addons" is on. It never joins
+    -- Phoenix's reports and never leaves unless you allow it.
+    if not Hook.captureOthers then return end
+    local S = PUI.Sentinel
+    if S and S.Store then S.Store:OnOther(rec)
+    elseif #Hook.others < MAX_PENDING then Hook.others[#Hook.others + 1] = rec end
+    return
+  end
   Hook.captured = Hook.captured + 1
   local S = PUI.Sentinel
   if S and S.Capture then
@@ -157,27 +170,65 @@ local function toggle(key, label, tooltip, mode, default, method)
   })
 end
 
-toggle("sentinel.optIn", "Share diagnostics",
-  "Allow Sentinel reports to leave this computer (export string and Companion upload). Nothing is shared while off.",
-  "simple", false, "ApplyOptIn")
+toggle("sentinel.optIn", "Auto-upload via Companion",
+  "Phoenix error reports go to the vq8s.com dashboard through the Companion app (and the export string works). See exactly what leaves this PC with Preview on the error reporter. Nothing is shared while off.",
+  "simple", true, "ApplyOptIn")
 toggle("sentinel.shareCharacterName", "Include my character name",
   "Add your own character name to reports. Other players' names are never collected.",
   "advanced", false, "ApplyShareName")
 toggle("sentinel.testerMode", "Tester mode",
   "Deeper capture for designated testers: 200-event history, locals on every error, 1-second performance sampler, test suite on login.",
   "advanced", false, "ApplyTesterMode")
-toggle("sentinel.safeMode", "Safe mode",
-  "Disable a Phoenix module at the next login when it threw too many errors in the previous session.",
-  "simple", false, "ApplySafeMode")
+toggle("sentinel.safeMode", "Safe mode (retired)",
+  "Retired: Phoenix never turns modules off after errors and never hides errors. Kept only so old profiles load; it does nothing.",
+  "advanced", false, "ApplySafeMode")
+Schema.defs["sentinel.safeMode"].hidden = true
 toggle("sentinel.perfSampler", "Performance sampler",
   "Sample Phoenix CPU use every 5 seconds and report modules that stay over budget.",
   "advanced", false, "ApplyPerfSampler")
 toggle("sentinel.taintLogSession", "Taint logging this session",
   "Turn on the client's taint log until logout so blocked actions can be traced.",
   "advanced", false, "ApplyTaintLog")
-toggle("sentinel.toast", "Error notice",
-  "Show a small notice the first time a new Phoenix error happens.",
+toggle("sentinel.toast", "New-error popup",
+  "A small popup the first time a new error happens (repeats are only counted).",
   "simple", true, "ApplyToast")
+
+-- Error reporter (mockup 15, BugSack parity + upgrades). Applied live by the
+-- child through S:ApplyReporter(key, value).
+local function rep(key, def)
+  def.owner, def.mode = "Sentinel", def.mode or "advanced"
+  def.apply = function(v)
+    if key == "captureOthers" then Hook.captureOthers = v end
+    local S = PUI.Sentinel
+    if S and S.ApplyReporter then S:ApplyReporter(key, v) end
+  end
+  Schema:Register("sentinel." .. key, def)
+end
+rep("captureOthers", { type = "toggle", default = true, mode = "simple", label = "Capture other addons' errors",
+  tooltip = "Also keeps errors from other addons and Blizzard's code in the viewer, on this PC only. They never join Phoenix's reports unless you allow it below." })
+rep("uploadOthers", { type = "toggle", default = false, label = "Include other addons' errors in uploads",
+  tooltip = "Off: only Phoenix's own errors leave this PC. On: other addons' errors go too (with the same privacy filters)." })
+rep("alertBadge", { type = "toggle", default = true, mode = "simple", label = "Error count badge",
+  tooltip = "A small badge with the number of new errors this session; click it to open the viewer." })
+rep("alertSound", { type = "toggle", default = false, mode = "simple", label = "Sound on a new error", tooltip = "Plays a sound the first time a new error happens." })
+rep("alertSoundName", { type = "select", default = "Raid Warning", choices = { "Raid Warning", "Ready Check", "Tell", "Alarm" },
+  label = "Error sound", tooltip = "Which sound plays." })
+rep("alertChat", { type = "toggle", default = false, label = "Chat line on a new error", tooltip = "Prints one line with a link that opens the viewer." })
+rep("autoOpen", { type = "toggle", default = false, mode = "simple", label = "Open the viewer on a new error",
+  tooltip = "Opens the error viewer by itself. Never during combat: it waits until the fight ends." })
+rep("throttle", { type = "range", default = 60, min = 0, max = 600, step = 10, label = "Alert again after (s)",
+  tooltip = "The same error alerts at most once in this many seconds (it is always counted)." })
+rep("redactNames", { type = "toggle", default = true, label = "Hide names in reports",
+  tooltip = "Your character name is replaced by [player] as a whole word, and GUIDs keep only their kind, before anything is shared or uploaded." })
+rep("shareAccept", { type = "select", default = "ask", choices = { "ask", "trusted", "never" },
+  choiceLabels = { ask = "Ask me every time", trusted = "Ask only for friends and guild", never = "Never accept" },
+  label = "Reports shared with you", tooltip = "When another player sends you a report, you get a prompt first (or it is refused)." })
+rep("viewerSession", { type = "select", default = "this", choices = { "this", "previous", "all" },
+  choiceLabels = { this = "This session", previous = "Previous session", all = "All sessions" }, label = "Viewer opens on", tooltip = "Which session the viewer shows first." })
+rep("viewerSource", { type = "select", default = "all", choices = { "all", "phoenix", "others" },
+  choiceLabels = { all = "Every addon", phoenix = "Phoenix only", others = "Other addons" }, label = "Viewer shows", tooltip = "Which errors the viewer lists first." })
+rep("profiler", { type = "toggle", default = false, label = "Developer profiler",
+  tooltip = "Times Phoenix's registered entry points and Ticker jobs (/pui profile). Off costs nothing: no wrappers exist while it is off." })
 
 Schema:Register("sentinel.safeModeThreshold", {
   type = "range", min = 1, max = 50, step = 1, default = 5,

@@ -200,11 +200,28 @@ function Export:Payload()
   local hashes = {}
   for hash in pairs(db.incidents) do hashes[#hashes + 1] = hash end
   table.sort(hashes)
+  local name = S.Privacy and S.Privacy.Name()
   for i = 1, #hashes do
     local inc = db.incidents[hashes[i]]
     if REPORT_KINDS[inc.kind] then
       n = n + 1
       reports[n] = report(inc, db)
+      if S.Privacy then S.Privacy.Report(reports[n], name) end
+      if S.Store then reports[n].resolution = (S.Store:State(inc)) end
+    end
+  end
+  -- Other addons' errors only when you allow it (sentinel.uploadOthers).
+  if db.others and PUI.Schema:Get("sentinel.uploadOthers") then
+    local others = {}
+    for hash in pairs(db.others) do others[#others + 1] = hash end
+    table.sort(others)
+    for i = 1, #others do
+      local inc = db.others[others[i]]
+      n = n + 1
+      reports[n] = S.Privacy.Report({ id = string.format("%s-%d-%d", db.installId, inc.lastSession or inc.session or 0, Export.StableN(inc.hash)),
+        hash = inc.hash, kind = "error", message = inc.message, stack = inc.stack, locals = inc.locals, count = inc.count,
+        firstSeen = inc.firstSeen, lastSeen = inc.lastSeen, session = inc.lastSession or inc.session, source = "other", module = "Other", addon = inc.addon,
+        addonVersion = S:Version(), interface = PUI.TOC, build = PUI.BUILD }, name)
     end
   end
   for i = 1, #db.heartbeats do

@@ -59,6 +59,13 @@ class PayloadTests(unittest.TestCase):
         self.assertIsNone(p)
         self.assertIn("off", why)
 
+    def test_outbox_from_game_is_used_as_is(self):
+        db = {"installId": "abc", "optIn": True, "incidents": {"x": {"hash": "x", "kind": "error", "message": "raw Vexie"}},
+              "outbox": {"reports": {1: {"id": "abc-1-1", "kind": "error", "message": "[player] failed"}}}}
+        p, why = payload.build(db)
+        self.assertIsNone(why)
+        self.assertEqual([r["message"] for r in p["reports"]], ["[player] failed"])
+
     def test_stable_n_matches_addon(self):
         self.assertEqual(payload.stable_n("0000000a"), 10)
         self.assertLess(payload.stable_n("test-1-2"), 2 ** 32)

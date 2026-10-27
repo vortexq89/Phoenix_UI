@@ -70,6 +70,7 @@ function FL.IsTrusted(guid)
 end
 
 function A.invite(_, _, _, _, _, _, inviterGUID)
+  if PUI.Friends and PUI.Friends.active then return end -- Friends owns invite accept while it is on (plan 1.O)
   if not s.acceptInvites or not FL.IsTrusted(inviterGUID) then return end
   AcceptGroup()
   StaticPopup_Hide("PARTY_INVITE")
@@ -235,7 +236,7 @@ key("release", { type = "select", default = "off", choices = { "off", "world", "
   tooltip = "Releases your spirit on death. World only, or also in dungeons and raids; never in battlegrounds or arenas, and never when you can self-resurrect." })
 toggle("declineDuels", "Auto decline duels", "Declines duel requests.")
 toggle("declineGuild", "Auto decline guild invites", "Declines guild invitations.")
-toggle("acceptInvites", "Accept invites from friends", "Accepts group invites from friends, Battle.net friends and guild members.")
+toggle("acceptInvites", "Accept invites from friends", "Accepts group invites from friends, Battle.net friends and guild members. While the Friends module is on, its own per-source switches decide instead.")
 toggle("autoDelete", "Fill DELETE", "Types the confirmation word when deleting a good item.")
 toggle("autoGossip", "Auto gossip", "Picks the only dialogue option when there is no quest. Hold Shift to read.")
 toggle("quickLoot", "Quick loot", "Takes every item as soon as the loot window opens. Hold Shift to choose.")

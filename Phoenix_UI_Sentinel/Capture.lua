@@ -149,7 +149,7 @@ function Capture:Report(kind, module, fields)
   local counts = db.sessionErrors[db.session]
   counts[module] = (counts[module] or 0) + 1
   PUI:Log("sentinel." .. kind, module, hash)
-  if isNew and S.Toast then S.Toast:Notify(inc) end
+  if S.Alerts then S.Alerts:OnError(inc, isNew) elseif isNew and S.Toast then S.Toast:Notify(inc) end
   return inc, isNew
 end
 

@@ -51,6 +51,12 @@ def build(db):
         return None, "no Sentinel data yet (log in once with Phoenix UI)"
     if not db.get("optIn"):
         return None, "Share diagnostics is off in game (/pui sentinel), nothing is uploaded"
+    outbox = db.get("outbox")
+    if isinstance(outbox, dict) and outbox.get("reports") is not None:
+        # Built in game by Export:Payload() with the privacy kit applied: the
+        # exact payload the in-game Preview shows (step 9c).
+        reports = [_plain(r) for r in as_list(outbox.get("reports")) if isinstance(r, dict)]
+        return {"schema": CONTRACT, "installId": db["installId"], "uploader": "sentinel-companion " + VERSION, "reports": reports}, None
     reports = []
     incidents = db.get("incidents") or {}
     for h in sorted(incidents, key=str):

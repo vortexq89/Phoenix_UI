@@ -18,8 +18,15 @@ function SafeMode:Evaluate(counts, threshold)
   return hit
 end
 
+-- Phoenix has no safe mode (decision 2026-10-26: errors are never hidden and
+-- modules are never turned off for you). Anything an older build put in safe
+-- mode is released at load; Evaluate stays for the diagnostics readout.
 function SafeMode:ApplyAtLoad()
   local db = S.db
+  if not S.safeModeEnabled then
+    for module in pairs(db.safeModed) do db.safeModed[module] = nil; PUI.Kernel:SetSafeMode(module, false) end
+    return
+  end
   if S.safeModeEnabled then
     local hit = self:Evaluate(db.sessionErrors[db.session - 1], S.safeModeThreshold or 5)
     for i = 1, #hit do db.safeModed[hit[i]] = (db.sessionErrors[db.session - 1] or {})[hit[i]] or true end

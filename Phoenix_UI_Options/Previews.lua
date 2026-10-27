@@ -1201,6 +1201,78 @@ local function hideAll(card)
   if st(card).pulseGroup then st(card).pulseGroup:ReleaseAll() end -- stops its text Ticker entry
 end
 
+-- PvP: the rated card drawn by PvP's own Lines() with sample brackets, a
+-- sample scoreboard header in your column order and the leave countdown.
+local function textLines(card, keyName, out)
+  local h = hudHolder(card, keyName)
+  h.lines = rawget(h, "lines") or {}
+  for i, l in ipairs(out) do
+    local fs = line(h, h.lines, i, l[2] or "small")
+    fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 17); fs:SetText(l[1])
+  end
+  hideFrom(h.lines, #out)
+  st(card)[keyName .. "Lines"] = #out
+  return h
+end
+function Previews.PvP(card)
+  local PV = PUI.PvP
+  if not PV then return end
+  local S = PV.settings
+  local snap = { ["3v3"] = { rating = 2184, best = 2240, weekWon = 14, weekPlayed = 23 }, shuffle = { rating = 1950, best = 2010, roundsWeek = 18, roundsWeekWon = 11 } }
+  local db = { history = { { bracketLabel = "3v3", change = 16, rating = 2184 } }, progress = { [0] = { gladiator = 31 } } }
+  local out = { { "Rated card", "header" } }
+  for _, l in ipairs(PV.Card.Lines(S, db, 0, snap)) do out[#out + 1] = l end
+  local heads = {}
+  for _, c in ipairs(PV.Columns:Pick(S.columns)) do heads[#heads + 1] = c.label end
+  out[#out + 1] = { "Scoreboard: " .. table.concat(heads, "  |  ") .. "   (sorted by " .. tostring(S.sortBy) .. (S.sortDesc and ", highest first)" or ")"), "small" }
+  out[#out + 1] = { S.leave and string.format("Battleground over: leaving in 0:%02d  [Leave now] [Stay]%s", S.leaveSeconds, S.leaveNotInCombat and "  - never in combat" or "") or "Leave countdown: off", "small" }
+  textLines(card, "pvp", out)
+end
+
+-- Friends: sample rows painted with the same rules as the list.
+function Previews.Friends(card)
+  local F = PUI.Friends
+  if not F then return end
+  local S = F.settings
+  local rows = {
+    F.Data.FromBNet(1, { accountName = "Kael", battleTag = "Kael#2211", gameAccountInfo = { isOnline = true, clientProgram = "WoW", characterName = "Vex", areaName = "Silvermoon", richPresence = "Mythic+ +16", regionID = 3, factionName = "Horde" } }),
+    F.Data.FromBNet(2, { accountName = "Lumi", isAFK = true, gameAccountInfo = { isOnline = true, clientProgram = "WoW", characterName = "Lumi", areaName = "Nagrand Arena", richPresence = "Arena 3v3", regionID = 3 } }),
+    F.Data.FromBNet(3, { accountName = "Nyx", isDND = true, gameAccountInfo = { isOnline = true, clientProgram = "WoW", characterName = "Nyx", areaName = "Dornogal", regionID = 1 } }),
+    F.Data.FromBNet(4, { accountName = "Rae", battleTag = "Rae#1001", gameAccountInfo = { isOnline = true, clientProgram = "BSAp" } }),
+  }
+  rows = F.Data.Sort(F.Data.Filter(rows, { hideAppOnly = S.hideAppOnly }), S.sort)
+  local out = { { "Friends  -  " .. #rows .. " online", "header" } }
+  for _, e in ipairs(rows) do
+    local tag = (S.statusOrb and ("(" .. e.status .. ") ") or "") .. (e.name or "?")
+    local info = e.zone or (e.appOnly and "Battle.net app") or ""
+    if S.activity and e.activity then info = info .. "  -  " .. e.activity end
+    out[#out + 1] = { tag .. "   " .. (S.zoneLine and info or "") .. (S.regionIcons and e.region and ("   " .. e.region) or ""), "small" }
+  end
+  out[#out + 1] = { "Invite accept: friends " .. (S.inviteFriends and "on" or "off") .. ", guild " .. (S.inviteGuild and "on" or "off") .. " (never queued or in combat)", "small" }
+  textLines(card, "friends", out)
+end
+
+-- Sentinel: the alert popup, the badge and the viewer header as configured.
+function Previews.Sentinel(card)
+  local S = PUI.Sentinel
+  if not S then return end
+  local g = function(k) return PUI.Schema:Get("sentinel." .. k) end
+  local alerts = {}
+  if g("toast") then alerts[#alerts + 1] = "popup" end
+  if g("alertBadge") then alerts[#alerts + 1] = "badge \"3 new\"" end
+  if g("alertSound") then alerts[#alerts + 1] = "sound (" .. g("alertSoundName") .. ")" end
+  if g("alertChat") then alerts[#alerts + 1] = "chat line" end
+  if g("autoOpen") then alerts[#alerts + 1] = "opens the viewer (after combat)" end
+  textLines(card, "sentinel", {
+    { "Error reporter", "header" },
+    { "New error: " .. (#alerts > 0 and table.concat(alerts, ", ") or "counted only") .. "; same error again after " .. g("throttle") .. " s", "small" },
+    { "[x4] Phoenix_UI_HUD/Minimap.lua:212: attempt to index nil (field 'host')", "small" },
+    { "Viewer opens on: " .. g("viewerSession") .. ", " .. g("viewerSource") .. (g("captureOthers") and "  - other addons captured on this PC" or ""), "small" },
+    { "Auto-upload via Companion: " .. (g("optIn") and "on" or "off") .. (g("uploadOthers") and " (includes other addons)" or " (Phoenix errors only)"), "small" },
+    { "Names: " .. (g("redactNames") and "[player], GUIDs keep only their kind" or "kept") .. "   Shared with you: " .. g("shareAccept"), "small" },
+  })
+end
+
 function Previews.Update(owner, card, key)
   local fn = Previews[owner]
   if type(fn) ~= "function" or owner == "Update" then return end
@@ -1210,7 +1282,7 @@ end
 
 -- wrap builders so switching page/tab always starts clean
 for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars", "Chat", "Vault",
-  "Embers", "Ascent", "QuestTracker", "Reminders", "GroupFinder", "Flow", "RaidTools", "Pulse", "Arena", "Spark", "CastHistory" }) do
+  "Embers", "Ascent", "QuestTracker", "Reminders", "GroupFinder", "Flow", "RaidTools", "Pulse", "Arena", "Spark", "CastHistory", "PvP", "Friends", "Sentinel" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end

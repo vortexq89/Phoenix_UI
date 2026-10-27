@@ -25,5 +25,11 @@ SafeMode.lua
 Export.lua
 Toast.lua
 Viewer.lua
+Store.lua
+Privacy.lua
+Alerts.lua
+Share.lua
+Upload.lua
+Reporter.lua
 Panel.lua
 Slash.lua

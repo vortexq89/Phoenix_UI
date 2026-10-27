@@ -53,6 +53,9 @@ Tests:Add("Flow", "invites only from trusted players; secret GUID ignored", func
   if not H then return end
   enable(t, "flow.acceptInvites")
   Schema:Set("flow.acceptInvites", true)
+  local friendsOn = Schema:Get("module.Friends")
+  Schema:Set("module.Friends", false) -- Flow's switch only acts while Friends is off
+  t:cleanup(function() Schema:Set("module.Friends", friendsOn) end)
   wipe(H.calls)
   H.fire("PARTY_INVITE_REQUEST", "Stranger", false, false, false, false, false, "Player-1-STRANGER")
   t:eq(called("AcceptGroup"), nil, "stranger not accepted")

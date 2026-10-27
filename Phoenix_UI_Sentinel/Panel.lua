@@ -148,6 +148,7 @@ function Panel:SendNow()
   end
   S.db.lastSent = { at = time(), reports = 0, via = "companion" }
   for _ in pairs(S.db.incidents) do S.db.lastSent.reports = S.db.lastSent.reports + 1 end
+  if S.Upload then S.Upload:MarkSaved() end
   C_UI.Reload()
 end
 

@@ -62,11 +62,11 @@ end
 function Toast:Notify(inc)
   if not S.toastEnabled or inc.kind == "heartbeat" or inc.kind == "test" then return end
   if not PUI.Kernel.loggedIn then return end
-  local text = "|cffff7d0aPhoenix UI|r caught a " .. inc.kind .. " in " .. inc.module .. ".\n" .. inc.message:sub(1, 90)
+  local text = "|cffff7d0aPhoenix UI|r caught " .. (inc.other and "an error in " or ("a " .. inc.kind .. " in ")) .. inc.module .. ".\n" .. inc.message:sub(1, 90)
   if S.db.optIn then
-    self:Show(text, "Send report", function() S.Panel:SendNow() end)
+    self:Show(text, "Details", function() S.Reporter:Open(inc) end)
   else
-    self:Show(text, "Details", function() S.Panel:Open() end)
+    self:Show(text, "Details", function() S.Reporter:Open(inc) end)
   end
 end
 
