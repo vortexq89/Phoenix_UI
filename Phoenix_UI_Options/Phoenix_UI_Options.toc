@@ -38,6 +38,7 @@ Studio.lua
 StudioPanels.lua
 StudioExtras.lua
 BlizzardPage.lua
+DiagPage.lua
 Tests\Options_test.lua
 Tests\Studio_test.lua
 Tests\Studio2_test.lua

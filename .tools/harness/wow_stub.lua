@@ -162,7 +162,10 @@ C_SpecializationInfo = { GetSpecialization = function() return 1 end }
 C_ChallengeMode = { GetActiveKeystoneInfo = function() return 0 end }
 C_CVar = { GetCVar = function(k) return H.cvars[k] end, SetCVar = function(k, v) H.cvars[k] = v; return true end }
 C_UI = { Reload = function() H.reloaded = true end }
-C_AddOnProfiler = { IsEnabled = function() return true end, GetAddOnMetric = function() return 0.0001 end }
+C_AddOnProfiler = { IsEnabled = function() return true end, GetAddOnMetric = function() return 0.0001 end,
+  GetApplicationMetric = function() return 0.01 end,
+  GetTopKAddOnsForMetric = function(_, k) local out = {}; for i = 1, math.min(k, 3) do out[i] = { addOnName = "Addon" .. i, metricValue = 0.5 / i } end; return out end,
+  MeasureCall = function(fn, ...) fn(...); return { elapsedMilliseconds = 0.002 } end }
 Enum = { AddOnProfilerMetric = { RecentAverageTime = 1 } }
 function print(...)
   local parts = {}
@@ -812,7 +815,8 @@ H.addonLoaded.Blizzard_AuraContainer = true
 H.secretAuras = false
 C_Secrets.ShouldAurasBeSecret = function() return H.secretAuras == true end
 H.callbacks = {}
-EventRegistry = { RegisterCallback = function(_, event, fn, owner) H.callbacks[event] = H.callbacks[event] or {}; table.insert(H.callbacks[event], fn) end }
+EventRegistry = { RegisterCallback = function(_, event, fn, owner) H.callbacks[event] = H.callbacks[event] or {}; table.insert(H.callbacks[event], fn) end,
+  TriggerEvent = function(_, event, ...) H.triggered = H.triggered or {}; H.triggered[#H.triggered + 1] = event; for _, fn in ipairs(H.callbacks[event] or {}) do fn(nil, ...) end end }
 
 -- Phase 4: group frames (dispel colours, corner indicators, arena targeting).
 C_UnitAuras.GetAuraDispelTypeColor = function(u, id, curve) H.dispelColorCalls = (H.dispelColorCalls or 0) + 1; return CreateColor(0.2, 0.6, 1, 1) end
@@ -1211,7 +1215,7 @@ C_PartyInfo.LeaveParty = function() H.calls[#H.calls + 1] = { "LeaveParty" } end
 function GetNormalizedRealmName() return "Silvermoon" end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
-  AnchorUtil = true, RaiderIO = true, LibStub = true, BigWigsAPI = true, FrameSortApi = true, CustomAuraContainerTemplate = true }
+  AnchorUtil = true, RaiderIO = true, LibStub = true, BigWigsAPI = true, FrameSortApi = true, CustomAuraContainerTemplate = true, PhoenixUIBugDisplay = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end

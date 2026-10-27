@@ -364,3 +364,21 @@ Tests:Add("Options", "CPU chip shows the open page's profiler time live", functi
   Schema:Set("sentinel.cpuChip", false)
   t:eq(Chip.Text("Embers"), nil, "off")
 end)
+
+Tests:Add("Options", "Diagnostics page: own System entry, report lines, developer settings on it", function(t)
+  local Page = Options.DiagPage
+  local found = false
+  for _, g in ipairs(Options.Nav.GROUPS) do if g[1] == "System" then for _, n in ipairs(g[2]) do if n == "Diagnostics" then found = true end end end end
+  t:ok(found, "listed under System")
+  t:eq(Schema:Def("sentinel.recorder").page, "Diagnostics", "recorder setting on the page")
+  local p = Model.Page("advanced", "Diagnostics")
+  t:eq(p.name, "Diagnostics", "page exists")
+  local lines = Page.Lines(80)
+  t:eq(lines[1], "Phoenix UI diagnostics", "report first line")
+  local self = false
+  for _, l in ipairs(lines) do if l:find("Self-measurement", 1, true) then self = true end end
+  t:ok(self, "self-measurement in the report")
+  local host = CreateFrame("Frame")
+  Page:Show(host)
+  t:eq(Options.views.diagnostics.lines[1]:GetText(), "Phoenix UI diagnostics", "drawn")
+end)

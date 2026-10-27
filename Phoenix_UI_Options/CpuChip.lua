@@ -28,6 +28,11 @@ function Chip.Paint()
     fs:SetFontObject(PUI.Media:FontObject("small"))
     fs:SetPoint("RIGHT", f.mode, "LEFT", -12, 0)
     rawset(f, "cpuChip", fs)
+    -- Top-addons readout on hover only (read when the pointer arrives).
+    local hit = CreateFrame("Frame", nil, f)
+    hit:SetAllPoints(fs)
+    hit:EnableMouse(true)
+    PUI.Diag.Extras.HoverTop(hit)
   end
   local text = Chip.Text(Options.page)
   fs:SetText(text or "")

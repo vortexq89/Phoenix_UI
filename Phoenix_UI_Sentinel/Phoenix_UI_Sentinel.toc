@@ -33,4 +33,5 @@ Upload.lua
 Reporter.lua
 Panel.lua
 Extras.lua
+Recorder.lua
 Slash.lua

@@ -113,5 +113,6 @@ PUI.Slash:Register("trace", function() X.Toggle() end, "show Phoenix's internal 
 local apply = S.ApplyReporter
 function S:ApplyReporter(key, value)
   if key == "trace" then X.SetTrace(value) end
+  if key == "recorder" and S.Recorder then S.Recorder.Apply(value) end
   return apply(self, key, value)
 end
