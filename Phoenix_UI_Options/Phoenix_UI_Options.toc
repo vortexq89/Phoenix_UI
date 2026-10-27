@@ -30,6 +30,7 @@ PreviewsExtras.lua
 PreviewsExtrasB.lua
 PreviewsExtrasHUD.lua
 PreviewsExtrasC.lua
+PreviewsExtrasD.lua
 Dashboard.lua
 ThemePage.lua
 SentinelPage.lua

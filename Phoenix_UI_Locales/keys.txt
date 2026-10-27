@@ -22,6 +22,7 @@ A clickable button beside quests that have a usable item (placed outside combat)
 A coloured dot for each party member targeting this enemy (shared with the party frames' enemy dots).
 A coloured glow around player, target, focus and boss frames when you have threat.
 A countdown bar under the dungeon and battleground ready pop-ups (same countdown as the minimap queue eye).
+A countdown bar while you fly. The first flight on a route is timed and remembered.
 A dark background behind the tracker.
 A faint bar on your row showing your best pull on this boss.
 A gold border around the enemy you are targeting.
@@ -60,6 +61,7 @@ A thin accent border on the friends frame and an accent line under the open tab.
 A thin accent-coloured line under the health bar.
 A thin dark border around each icon.
 A white edge when a shield is bigger than the missing health, and a red edge when a heal absorb is bigger than the current health.
+A/B report
 Abilities listed
 Abilities the game only estimates show a ~ until their time is firm.
 Ability icon
@@ -721,6 +723,7 @@ Chat fades after this many quiet seconds and wakes on a new line, hover or typin
 Chat font
 Chat line on a new error
 Chat line when accepted
+Chat line when the pet is unhappy
 Chat look
 Chat menu button
 Chat tabs
@@ -1054,6 +1057,7 @@ Detached panel position
 Details! windows
 Developer event trace
 Developer profiler
+Developer recorder
 Difficulty position
 Digits after the decimal point.
 Dim buttons on cooldown
@@ -1275,6 +1279,9 @@ Fire is orange, frost light blue and so on.
 Fixed width of each whisper tab; tabs shrink evenly only when they no longer fit.
 Flash the game icon
 Flashes the taskbar icon when a keyword matches.
+Flight timer
+Flight timer and pet happiness for the Forever client.
+Flight timer size
 Flips every part to the other side (for frames on the left of the screen).
 Flow
 Focus bar texture
@@ -1385,6 +1392,7 @@ Font size of the cooldown numbers on icons.
 Font size of the health text. 0 uses the font setting.
 Font size of the keybind text.
 Force unit
+Forever
 Frame border thickness.
 Frame rate text
 Frames grow
@@ -1489,6 +1497,7 @@ Grows (positive) or shrinks (negative) the clickable area left and right of frie
 Guild and communities
 Guild and rank
 HUD safe-zone guides
+Happy, Content or Unhappy, with the loyalty rate, while you have a pet out.
 Heal absorbs
 Healer mana
 Healer mana height
@@ -1739,6 +1748,7 @@ Icon zoom
 Icons per row on the custom bar.
 Icons per row.
 If you are fighting when the countdown ends, it waits until you are out of combat.
+If your character shares a name with an addon or a system word, it stays visible inside file paths in reports. Addon folder names and client words are already on this list.
 Ignore my own lines
 Important aura border colour
 Important cast glow colour
@@ -2063,6 +2073,7 @@ One NPC per line: its NPC id or exact name, a colour, then optionally a size and
 One binding per row. Pick a modifier, a mouse button or a key, and what it does: target, menu, focus, assist, cast a spell, run a macro or use an item. Keys work while the mouse is over a frame. Each spec can keep its own list (Editing as). Changes made in combat apply as soon as combat ends.
 One button per line: bar.button: options. Options: nohotkey, nomacro, nocount, hide, alpha=0.5, glow=none|pulse|solid|flash. Example: 1.12:nohotkey,alpha=0.6
 One large icon in the middle for a big personal or external defensive.
+One line each time your pet becomes unhappy.
 One line each: "Boss name: text". Lines starting with "*:" show for every boss.
 One line each: "Original name = New text". Blank new text hides the name.
 One line per boss, by name or encounter ID: "off" hides Pulse bars, "bars=4" limits bars, "hud=on" or "hud=off" for the next-abilities list. Example: Dimensius: bars=4 hud=on
@@ -2255,6 +2266,8 @@ Pet frame height
 Pet frame position
 Pet frame width
 Pet frames
+Pet happiness
+Pet happiness badge
 Pet height
 Pet hide lockout debuffs
 Pet names
@@ -2604,6 +2617,7 @@ Recent casts for you, your target, focus, party and arena enemies. The one owner
 Recent deaths listed under the timer; click one to open its Embers recap.
 Recolour in execute range
 Records each character's gold once a day; hover the gold line to see every character and the last week.
+Records zone, combat, group size, frame-rate band and Phoenix errors, one row per change, into your saved data (/pui record). Off records nothing.
 Red below (seconds)
 Red border on members with high threat.
 Refresh every (seconds)
@@ -2693,6 +2707,7 @@ Scale of bar 6.
 Scale of bar 7.
 Scale of bar 8.
 Scale of bar 9.
+Scale of the flight bar.
 Scales every Phoenix UI font.
 Score decimals
 Score if timed
@@ -3631,6 +3646,7 @@ With Masque loaded, cast icons use the skin you pick for "Phoenix UI: Cast Histo
 With Raider.IO loaded, adds the leader's Raider.IO score to each row (filter words rio and riomain work either way).
 With several elements selected, dragging one moves them all.
 Words for the dungeons, raids or delves to keep (see the word list in the help panel; the season's words are added live). Empty keeps all.
+Words never hidden in paths
 World label colour
 World markers
 World: Achievement ID

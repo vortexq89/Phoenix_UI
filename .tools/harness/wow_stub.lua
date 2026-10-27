@@ -1213,9 +1213,20 @@ function BuyTrainerService(i) H.calls[#H.calls + 1] = { "BuyTrainerService", i }
 function Screenshot() H.calls[#H.calls + 1] = { "Screenshot" } end
 C_PartyInfo.LeaveParty = function() H.calls[#H.calls + 1] = { "LeaveParty" } end
 function GetNormalizedRealmName() return "Silvermoon" end
+-- Forever child: taxi map, taxi state and pet happiness (Forever only).
+H.taxiNodes = {}
+H.onTaxi = false
+C_TaxiMap = { GetAllTaxiNodes = function() return H.taxiNodes end }
+Enum.FlightPathState = { Current = 0, Reachable = 1, Unreachable = 2 }
+function UnitOnTaxi() return H.onTaxi end
+function TakeTaxiNode(slot) H.tookTaxi = slot end
+if flavor == "forever" then
+  C_PetInfo = { GetPetHappiness = function() return H.petHappiness or 3, 0, H.petLoyalty or 0 end }
+end
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
-  AnchorUtil = true, RaiderIO = true, LibStub = true, BigWigsAPI = true, FrameSortApi = true, CustomAuraContainerTemplate = true, PhoenixUIBugDisplay = true }
+  AnchorUtil = true, RaiderIO = true, LibStub = true, BigWigsAPI = true, FrameSortApi = true, CustomAuraContainerTemplate = true, PhoenixUIBugDisplay = true, C_PetInfo = true, PhoenixUIForeverDB = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end

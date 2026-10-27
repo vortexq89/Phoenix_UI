@@ -392,3 +392,15 @@ Tests:Add("Options", "batch D settings show live in the Sentinel preview", funct
   t:ok(bag(card).snC6:GetText():find("2 of yours", 1, true), "allow-list count")
   t:ok(bag(card).snC5:GetText():find("off", 1, true), "recorder off")
 end)
+
+Tests:Add("Options", "Forever page preview follows its settings live", function(t)
+  if not PUI.Forever then return end
+  local bag = Options.PreviewsExtras.Bag
+  Tests.Keep(t, "forever.flightTimer")
+  local card = CreateFrame("Frame")
+  Options.Previews.Forever(card)
+  t:ok(bag(card).fvC2:GetText():find("Stormwind  1:45", 1, true), "flight sample")
+  Schema:Set("forever.flightTimer", false)
+  Options.Previews.Forever(card)
+  t:eq(bag(card).fvC2:GetText(), "Flight timer off", "live")
+end)

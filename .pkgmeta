@@ -29,6 +29,7 @@ move-folders:
   Phoenix_UI/Phoenix_UI_CastHistory: Phoenix_UI_CastHistory
   Phoenix_UI/Phoenix_UI_PvP: Phoenix_UI_PvP
   Phoenix_UI/Phoenix_UI_Friends: Phoenix_UI_Friends
+  Phoenix_UI/Phoenix_UI_Forever: Phoenix_UI_Forever
   Phoenix_UI/Phoenix_UI_GroupFinder: Phoenix_UI_GroupFinder
   Phoenix_UI/Phoenix_UI_Locales: Phoenix_UI_Locales
   Phoenix_UI/Phoenix_UI_Media: Phoenix_UI_Media
