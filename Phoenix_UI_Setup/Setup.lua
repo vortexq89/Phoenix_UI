@@ -1,6 +1,7 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- First install (PUI_V2 5.16). Login 1 opens a five-step wizard (Wizard.lua,
--- mockups 05-11): language, UI scale, role preset, layout preset and look;
+-- First install (PUI_V2 5.16). Login 1 opens a six-step wizard (Wizard.lua,
+-- mockups 05-11): language, UI scale, role preset, layout preset, look and
+-- Blizzard window skins (on or off, with a preview);
 -- Finish writes the choices live (no reload). Login 2 shows a three-card tour.
 -- /pui uninstall restores the CVars Phoenix changed and disables every
 -- Phoenix addon. The wizard never opens in combat.
@@ -12,7 +13,7 @@ local OWNER = "Setup"
 local SU = { step = 1, choices = {} }
 ns.SU = SU
 PUI.Setup = SU
-SU.STEPS = { "language", "scale", "role", "layout", "look" }
+SU.STEPS = { "language", "scale", "role", "layout", "look", "skins" }
 
 -- State ------------------------------------------------------------------------
 function SU.State() return Schema:Get("setup.state") end
@@ -34,7 +35,7 @@ end
 
 function SU.Defaults()
   return { language = Schema:Get("core.locale"), scale = "keep", role = SU.DetectRole(), layout = "classic",
-    accent = Schema:Get("theme.accent"), panel = Schema:Get("theme.panel") }
+    accent = Schema:Get("theme.accent"), panel = Schema:Get("theme.panel"), skins = true }
 end
 
 -- Role of the current spec ("HEALER"/"TANK"/"DAMAGER") -> preset id.
@@ -80,6 +81,12 @@ function SU.ApplyLook(id)
   return true
 end
 
+-- Skins step: the player chooses Phoenix skins for Blizzard windows or the
+-- stock Blizzard look; live through the module switch, no reload.
+function SU.ApplySkins(on)
+  return setIfKnown("module.Skins", on and true or false)
+end
+
 -- CVars Phoenix changes are saved once so uninstall can put them back.
 function SU.SetCVar(name, value)
   local st = SU.State()
@@ -115,6 +122,7 @@ function SU.ApplyChoices(c)
   if c.accent then Schema:Set("theme.accent", c.accent) end
   if c.panel then Schema:Set("theme.panel", c.panel) end
   if c.specProfile ~= nil then SU.ApplySpecProfiles(c.specProfile) end
+  if c.skins ~= nil then SU.ApplySkins(c.skins) end
   saveState({ wizardDone = true })
 end
 

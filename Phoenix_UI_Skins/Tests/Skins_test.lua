@@ -14,8 +14,10 @@ local function enable(t, ...)
   CQ.Drain()
 end
 
-Tests:Add("Skins", "25 window packs, each with a live toggle; module off by default", function(t)
-  t:eq(#SK.WINDOWS, 25, "25 windows")
+Tests:Add("Skins", "window catalog with a live toggle each; module off by default", function(t)
+  t:ok(#SK.WINDOWS >= 25, "25+ windows")
+  local seen = {}
+  for _, w in ipairs(SK.WINDOWS) do t:ok(not seen[w[1]], "unique id " .. w[1]); seen[w[1]] = true; t:ok(Schema:Def("skins." .. w[1]) ~= nil, w[1] .. " toggle") end
   t:eq(Schema:Def("module.Skins").default, false, "module defaults off")
   for key, def in pairs(SK.schema) do t:eq(type(def.apply), "function", key .. " apply") end
   if not Schema:Get("module.Skins") then t:eq(next(SK.applied), nil, "nothing skinned while off") end

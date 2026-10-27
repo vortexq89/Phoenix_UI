@@ -4,6 +4,14 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Skins v2 core, branch feat/skins-core
+- Shared controls for every skinned Blizzard window, in Blizzard's own layout: scroll bars (MinimalScrollBar, WowTrimScrollBar), dropdowns (WowStyle1 and UIDropDownMenu), checkboxes and radios, edit and search boxes, sliders, panel buttons and item quality borders (Blizzard's quality colour on a Phoenix slot frame, kept in sync by a SetItemButtonQuality post-hook). Pooled ScrollBox rows are skinned after Blizzard's Update. One switch per family (skins.controls.*), live.
+- Gear cog in the title bar of every skinned window opens an inline flyout with that window's settings (live) and a link to /pui -> Skins; "skins.gear" turns the cog off.
+- Right-click and dropdown menus (Blizzard_Menu), including the damage meter's dropdowns: post-hooks on the menu manager's OpenMenu/OpenContextMenu; entries keep Blizzard's buttons and handlers.
+- Setup wizard: a sixth step, Skins, where the player picks Phoenix skins or the Blizzard look, each with a preview; applied live on Finish.
+- Media: 22 original skin textures and 30 original window icons in Phoenix_UI_Media (Textures/Skins, Icons/Skins). Skins page preview. The v2 mockups, SKINS_AUDIT.md and SKINS_FEATURE_AUDIT.md are in docs/.
+- Taint-safe: textures and fonts only, post-hooks, no writes into Blizzard tables, protected and forbidden frames skipped, work deferred out of combat. Tests: 430.
+
 ### Blizzard meter skin, branch feat/meter-skin
 - Embers: Phoenix look on Blizzard's own damage meter windows (Blizzard_DamageMeter, DamageMeterSessionWindowN): backdrop, header, theme fonts, Phoenix bar texture and class colours (secret-safe), header/backdrop fade until hovered, hidden scroll bar, skinned type and fight dropdowns, and an optional docked row/column layout under one Studio mover ("embers.blizzDock"). Post-hooks only (SetupSessionWindow, InitEntry, UpdateStatusBarColor, HookScript); no field writes on Blizzard frames. 11 settings (embers.blizz.*), preview on the Embers page, 3 tests.
 

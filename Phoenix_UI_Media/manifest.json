@@ -5218,5 +5218,473 @@
   "author": "Phoenix UI (VortexQ8)",
   "licence": "Original (Phoenix UI)",
   "changes": "none"
+ },
+ {
+  "file": "Icons/Skins/pui_achievements.tga",
+  "type": "icon",
+  "name": "Skins/achievements",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_auction.tga",
+  "type": "icon",
+  "name": "Skins/auction",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_bags.tga",
+  "type": "icon",
+  "name": "Skins/bags",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_calendar.tga",
+  "type": "icon",
+  "name": "Skins/calendar",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_character.tga",
+  "type": "icon",
+  "name": "Skins/character",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_collections.tga",
+  "type": "icon",
+  "name": "Skins/collections",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_editmode.tga",
+  "type": "icon",
+  "name": "Skins/editmode",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_groupfinder.tga",
+  "type": "icon",
+  "name": "Skins/groupfinder",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_guild.tga",
+  "type": "icon",
+  "name": "Skins/guild",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_heirlooms.tga",
+  "type": "icon",
+  "name": "Skins/heirlooms",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_housing.tga",
+  "type": "icon",
+  "name": "Skins/housing",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_journal.tga",
+  "type": "icon",
+  "name": "Skins/journal",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_loot.tga",
+  "type": "icon",
+  "name": "Skins/loot",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_mail.tga",
+  "type": "icon",
+  "name": "Skins/mail",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_map.tga",
+  "type": "icon",
+  "name": "Skins/map",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_menu.tga",
+  "type": "icon",
+  "name": "Skins/menu",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_merchant.tga",
+  "type": "icon",
+  "name": "Skins/merchant",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_mounts.tga",
+  "type": "icon",
+  "name": "Skins/mounts",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_pets.tga",
+  "type": "icon",
+  "name": "Skins/pets",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_popup.tga",
+  "type": "icon",
+  "name": "Skins/popup",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_professions.tga",
+  "type": "icon",
+  "name": "Skins/professions",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_pvp.tga",
+  "type": "icon",
+  "name": "Skins/pvp",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_readycheck.tga",
+  "type": "icon",
+  "name": "Skins/readycheck",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_social.tga",
+  "type": "icon",
+  "name": "Skins/social",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_spellbook.tga",
+  "type": "icon",
+  "name": "Skins/spellbook",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_talents.tga",
+  "type": "icon",
+  "name": "Skins/talents",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_tooltip.tga",
+  "type": "icon",
+  "name": "Skins/tooltip",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_toys.tga",
+  "type": "icon",
+  "name": "Skins/toys",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_transmog.tga",
+  "type": "icon",
+  "name": "Skins/transmog",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Icons/Skins/pui_vault.tga",
+  "type": "icon",
+  "name": "Skins/vault",
+  "source": "Phoenix UI skins media (docs/mockups/skins/media/svg)",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "rendered from original SVG at 64x64"
+ },
+ {
+  "file": "Textures/Skins/Skin_Border_R10_1px.tga",
+  "type": "texture",
+  "name": "Skins/Border_R10_1px",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Button_Danger.tga",
+  "type": "texture",
+  "name": "Skins/Button_Danger",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Button_Disabled.tga",
+  "type": "texture",
+  "name": "Skins/Button_Disabled",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Button_Hover.tga",
+  "type": "texture",
+  "name": "Skins/Button_Hover",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Button_Normal.tga",
+  "type": "texture",
+  "name": "Skins/Button_Normal",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Button_Pressed.tga",
+  "type": "texture",
+  "name": "Skins/Button_Pressed",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Button_Primary.tga",
+  "type": "texture",
+  "name": "Skins/Button_Primary",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Check_Box.tga",
+  "type": "texture",
+  "name": "Skins/Check_Box",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Check_Mark.tga",
+  "type": "texture",
+  "name": "Skins/Check_Mark",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Divider_Ember.tga",
+  "type": "texture",
+  "name": "Skins/Divider_Ember",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Hairline_Ember.tga",
+  "type": "texture",
+  "name": "Skins/Hairline_Ember",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_ModelBackdrop_Ember.tga",
+  "type": "texture",
+  "name": "Skins/ModelBackdrop_Ember",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Panel_EmberGlass.tga",
+  "type": "texture",
+  "name": "Skins/Panel_EmberGlass",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Radio.tga",
+  "type": "texture",
+  "name": "Skins/Radio",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Scroll_Thumb.tga",
+  "type": "texture",
+  "name": "Skins/Scroll_Thumb",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Shadow_Soft.tga",
+  "type": "texture",
+  "name": "Skins/Shadow_Soft",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Slot_Empty.tga",
+  "type": "texture",
+  "name": "Skins/Slot_Empty",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Slot_QualityFrame.tga",
+  "type": "texture",
+  "name": "Skins/Slot_QualityFrame",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_StatusOrb.tga",
+  "type": "texture",
+  "name": "Skins/StatusOrb",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Tab_Underline.tga",
+  "type": "texture",
+  "name": "Skins/Tab_Underline",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_TitleBar_Ember.tga",
+  "type": "texture",
+  "name": "Skins/TitleBar_Ember",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
+ },
+ {
+  "file": "Textures/Skins/Skin_Toast_Wash.tga",
+  "type": "texture",
+  "name": "Skins/Toast_Wash",
+  "source": "Phoenix UI skins media",
+  "author": "VortexQ8",
+  "licence": "Original (Phoenix UI)",
+  "changes": "none"
  }
 ]

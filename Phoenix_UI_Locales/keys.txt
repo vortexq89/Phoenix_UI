@@ -25,6 +25,7 @@ A button that leaves the vehicle, shown only when you can exit.
 A class icon on each friend row.
 A click on a window's header opens a Phoenix list of meter types instead of cycling through them.
 A clickable button beside quests that have a usable item (placed outside combat).
+A cog in the title bar of every skinned window opens its Phoenix options in place.
 A coloured dot for each party member targeting this enemy (shared with the party frames' enemy dots).
 A coloured glow around player, target, focus and boss frames when you have threat.
 A countdown bar under the dungeon and battleground ready pop-ups (same countdown as the minimap queue eye).
@@ -773,6 +774,7 @@ Chat menu button
 Chat tabs
 Chat: when another addon does this
 Check on ready check
+Checkboxes and radios
 Chi
 Choice toggle
 Cinematic subtitles
@@ -1159,6 +1161,7 @@ Draws the bright moving edge on the cooldown swipe.
 Draws the frame of buttons that hold no action.
 Draws the pull, break and key countdown that Raid Tools runs (yours or anyone's in the group).
 Dressing room
+Dropdowns
 Druid colour
 Dungeon queue-pop time
 Dungeon ready pop-up
@@ -1198,6 +1201,7 @@ Each specialization can keep its own block list for every bar (save one with /pu
 Each specialization can use its own profile. When you change spec, Phoenix switches to that profile (after combat). Content profiles for raid, arena or Mythic+ still apply on top.
 Each time you save in Edit Mode, Phoenix keeps a copy of the active layout in this profile; /pui editmode restore puts it back as a layout named Phoenix.
 Ebon Might
+Edit and search boxes
 Effects that eat healing, drawn in red inside the health fill.
 Eight buttons that put a raid marker on your target.
 Eight secure buttons that place or remove a world marker, plus clear all. Changes wait until combat ends.
@@ -1916,6 +1920,7 @@ Item or potion ready: colour
 Item or potion ready: message
 Item or potion ready: sound
 Item quality border
+Item quality borders
 Item tooltips get a border in the item's quality colour.
 Items label colour
 Items marked as junk
@@ -2308,6 +2313,7 @@ Palette key
 Pandemic colour
 Pandemic colour on your debuffs
 Panel border
+Panel buttons
 Panel colour
 Panel corner
 Panel opacity
@@ -2414,17 +2420,22 @@ Phoenix background and border on tooltips; off keeps Blizzard's look.
 Phoenix bank window
 Phoenix bars and names use the class colours below instead of the game's.
 Phoenix border and tabs
+Phoenix boxes; the check mark takes the accent colour.
 Phoenix builds this many plates out of combat so big pulls never build frames mid-fight.
+Phoenix button face on Blizzard panel buttons.
 Phoenix draws this frame, Blizzard shows the default frame, or hidden shows neither.
 Phoenix draws your buffs and debuffs in two movable rows, or Blizzard's default buff frame stays.
+Phoenix dropdown boxes with an accent arrow.
 Phoenix emoji art
 Phoenix error reports go to the vq8s.com dashboard through the Companion app (and the export string works). See exactly what leaves this PC with Preview on the error reporter. Nothing is shared while off.
 Phoenix frame skin for Details! windows when that addon is installed.
 Phoenix frame skin for Pawn when that addon is installed.
 Phoenix frame skin for Plater options when that addon is installed.
 Phoenix frame skin for WeakAuras options when that addon is installed.
+Phoenix input boxes with a hairline border.
 Phoenix keybinds
-Phoenix look for 25 Blizzard windows and Details!, Pawn, WeakAuras and Plater; each has its own switch.
+Phoenix look for Blizzard's windows, menus, tooltips and popups (their own layout and features, your theme), and Details!, Pawn, WeakAuras and Plater; each has its own switch.
+Phoenix look for every context menu and dropdown list, including the damage meter's.
 Phoenix look on Blizzard's meter
 Phoenix look on flyouts
 Phoenix minimap: shape, border, texts, coordinates, queue countdown, addon button bin and more.
@@ -2463,6 +2474,7 @@ Phoenix skin for the Settings window.
 Phoenix skin for the Spellbook and talents window.
 Phoenix skin for the Trade window.
 Phoenix skin for the Transmog window.
+Phoenix slot frame on Blizzard item buttons, in the item's quality colour.
 Phoenix stance bar (hides the Blizzard one).
 Phoenix style for BigWigs bars
 Phoenix tag on local lines
@@ -2804,6 +2816,7 @@ Return to graveyard
 Reveal all mouse-over bars together
 Reverses the chosen order.
 Right-click a pet button to toggle autocast
+Right-click and dropdown menus
 Ring colour
 Ring size
 Ring style
@@ -2863,6 +2876,7 @@ Score in tooltips
 Score that gets the end colour; higher scores keep it.
 Scoreboard columns
 Screenshot on achievement
+Scroll bars
 Scroll over stacked movers to pick the one underneath.
 Scroll over the minimap to zoom in and out.
 Scroll rows with the mouse wheel
@@ -3192,6 +3206,7 @@ Skip repeats
 Skips dungeon bosses.
 Slash commands
 Slide time (s)
+Sliders
 Slot size
 Slot size in the compact view.
 Slot spacing
@@ -3507,9 +3522,11 @@ Theme accent or your class colour.
 There is no combat log in Midnight: Spark works out your hits from your own casts.
 Thick or thin ring.
 Thickness of pixel-line borders (0 hides them).
+Thin Phoenix scroll bars in every skinned window.
 Thin accent border around each window.
 Thin accent border around the panel.
 Thin lines between blocks.
+Thin rail with an accent thumb.
 Thin scroll marker
 This week's wins and losses, conquest earned and the PvP row of the Great Vault on one line.
 Threat colour style
@@ -3825,6 +3842,7 @@ Window animations
 Window background opacity.
 Window border
 Window drag strip height
+Window gear button
 Window layout
 Window panels
 Window scale
