@@ -10,7 +10,7 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- flyout and on /pui -> Skins (tabs Player, Social, Trade, World).
 local _, ns = ...
 local SK = ns.SK
-local Schema = PUI.Schema
+local Schema, CQ = PUI.Schema, PUI.CombatQueue
 local OWNER = "Skins"
 
 local function N(prefix, a, b) local t = {} for i = a, b do t[#t + 1] = prefix .. i end return t end
@@ -71,6 +71,8 @@ local WINDOWS = {
   { "landing", "Expansion summary and renown", { "ExpansionLandingPage" }, "world", {} },
   { "housing", "Housing", { "HousingDashboardFrame", "HouseFinderFrame", "HouseListFrame", "HousingBulletinBoardFrame", "HousingCornerstoneFrame" }, "world", {} },
   { "legacy", "Legacy content windows", { "CovenantSanctumFrame", "CovenantRenownFrame", "GarrisonLandingPage", "OrderHallTalentFrame", "AzeriteEssenceUI" }, "world", {} },
+  { "petBattle", "Pet battles", { "PetBattleFrame" }, "world", {} },
+  { "barbershop", "Barbershop", { "BarberShopFrame", "CharCustomizeFrame" }, "player", {} },
   { "gameMenu", "Game Menu", { "GameMenuFrame" }, "world", {} },
   { "popups", "Popups", N("StaticPopup", 1, 4), "world", { "popupDanger" } },
   { "editMode", "Edit Mode", { "EditModeManagerFrame", "EditModeSystemSettingsDialog" }, "world", { "editModeStudio" } },
@@ -88,11 +90,31 @@ local WINDOWS = {
 SK.WINDOWS = WINDOWS
 SK.WINDOW_GROUPS = { player = "Player", social = "Social", trade = "Trade", world = "World" }
 
+-- Rerun(name): an extra changed, so every applied window that has it runs its
+-- window code again at once (live, no reopen); out of combat via CombatQueue.
+function SK.Rerun(name)
+  if not SK.active then return end
+  local def = SK.EXTRA_DEFS[name]
+  CQ.Defer("skins.rerun." .. name, function()
+    if def and def.onSet then securecallfunction(def.onSet) end
+    for _, id in ipairs(SK.order) do
+      local pack = SK.packs[id]
+      if SK.applied[id] and pack.extra and pack.extraNames then
+        for _, n in ipairs(pack.extraNames) do
+          if n == name then for _, f in ipairs(SK.Frames(pack)) do securecallfunction(pack.extra, f, nil, id) end break end
+        end
+      end
+    end
+  end)
+end
+
 local schema = {}
 SK.schema = schema
 local function refresh() if SK.active then SK.Refresh() end end
 for _, w in ipairs(WINDOWS) do
   local id, label, frames, group, extras = w[1], w[2], w[3], w[4], w[5]
+  extras = extras or {}
+  for _, more in ipairs((SK.WINDOW_EXTRAS or {})[id] or {}) do extras[#extras + 1] = more end
   local keys = { "skins." .. id }
   for _, name in ipairs(extras or {}) do keys[#keys + 1] = "skins." .. group .. "." .. name end
   local impl = (SK.WINDOW_IMPL or {})[id] or {}
@@ -102,7 +124,8 @@ for _, w in ipairs(WINDOWS) do
     local key, def = "skins." .. group .. "." .. name, SK.EXTRA_DEFS[name]
     if not schema[key] then
       schema[key] = { type = def.type, default = def.default, label = def.label, tooltip = def.tooltip, owner = OWNER, mode = def.mode,
-        apply = function(v) SK.Extras.s[name] = v; refresh(); if SK.Gear.flyout and SK.Gear.flyout:IsShown() then SK.Gear.Fill(SK.Gear.flyout.packId) end end }
+        choices = def.choices, choiceLabels = def.choiceLabels,
+        apply = function(v) SK.Extras.s[name] = v; SK.Rerun(name); refresh(); if SK.Gear.flyout and SK.Gear.flyout:IsShown() then SK.Gear.Fill(SK.Gear.flyout.packId) end end }
     end
   end
   schema["skins." .. id] = {

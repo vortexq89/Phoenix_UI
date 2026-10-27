@@ -20,8 +20,10 @@ function SF.Toast(frame)
   for _, r in ipairs({ frame:GetRegions() }) do
     if r.GetObjectType and r:GetObjectType() == "Texture" and r.GetDrawLayer and r:GetDrawLayer() == "BACKGROUND" then C.Fade("toasts", r) end
   end
-  local wash = C.Over("toasts", frame, "wash", "BACKGROUND", "Toast_Wash", -8)
+  local style = SK.Extras.s.toastStyle or "glass"
+  local wash = C.Over("toasts", frame, "wash", "BACKGROUND", style == "glass" and "Toast_Wash" or nil, -8)
   wash:ClearAllPoints(); wash:SetPoint("TOPLEFT", 6, -6); wash:SetPoint("BOTTOMRIGHT", -6, 6)
+  wash:SetShown(style ~= "minimal")
   local edge = C.Over("toasts", frame, "edge", "BORDER", "Border_R10_1px")
   edge:ClearAllPoints(); edge:SetAllPoints(wash)
   Theme:Paint(edge, "accent", 0.8, "vertex")

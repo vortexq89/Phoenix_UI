@@ -10,7 +10,7 @@ local _, ns = ...
 local SK = ns.SK
 local C = SK.Controls
 local Theme, Media = PUI.Theme, PUI.Media
-local M = { menus = setmetatable({}, { __mode = "k" }), hooked = false }
+local M = { menus = setmetatable({}, { __mode = "k" }), entered = setmetatable({}, { __mode = "k" }), hooked = false }
 SK.Menus = M
 local ID = "menus"
 
@@ -38,12 +38,24 @@ function M.Skin(menu)
   end
   local n = 0
   for _, child in ipairs({ menu:GetChildren() }) do
+    if not M.entered[child] and child.HookScript then
+      M.entered[child] = true
+      child:HookScript("OnEnter", function() if SK.applied[ID] then securecallfunction(M.Sub, menu) end end)
+    end
     local fs = C.K(child, "fontString")
     if fs then SK.Font(ID, fs, "body"); n = n + 1 end
     local hl = C.K(child, "highlight")
     if hl and not C.done[hl] then C.done[hl] = ID; C.Tint(ID, hl, "accent", 0.35) end
   end
   return n
+end
+
+-- Sub(menu): the submenu a hovered entry opened gets the same look (and its
+-- own entries hook further levels the same way).
+function M.Sub(menu)
+  local sub = (menu.GetSubmenu and menu:GetSubmenu()) or C.K(menu, "submenu")
+  if sub and sub ~= menu then return M.Skin(sub) end
+  return false
 end
 
 local function afterOpen()

@@ -4,6 +4,11 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Skins v2 extras and surfaces, branch feat/skins-b
+- 22 more window extras, each in the window's gear flyout and on /pui -> Skins, live (changing one re-runs that window's code at once): spellbook cast time lines and spell name size, talent rings; collections dim uncollected and model backdrop; transmog pending highlight; Group Finder fade declined; Friends class icons; loot and roll upgrade hint; toast style; bags junk overlay and bag view (Blizzard's own combinedBags setting); merchant dim unusable and search; Auction House price font; professions have/need; achievements earned colour; guild unread badges and last online column; calendar event colours; Great Vault unlocked glow.
+- New surfaces: submenus (every level of right-click and dropdown menus), raid warnings / boss emotes / error text fonts, breath and fatigue timers, widgets and the encounter alt power bar, help tips, movie subtitles, chat bubbles (open world), pet battles and the barbershop.
+- Skins page preview counts the window extras. Coverage recount in docs/SKINS_AUDIT.md: 82 full, 7 partial, 8 none of 97. Tests: 442.
+
 ### Skins v2 windows, branch feat/skins-a
 - Window catalog: 62 Blizzard windows and surfaces (up from 25), each with a live switch and the gear cog, in Blizzard's layout with the shared controls: adds Friends/Who/Raid/Quick Join, bags and bank (when Vault is off), guild bank, loot rolls, bonus roll, loot history, LFG ready/role/proposal dialogs, M+ keystone, PvP scoreboard/results, channels, black market, trainer, socketing, item upgrades, catalyst, scrapping, archaeology, pet stable, flight and zone maps, player choice, Delves companion and difficulty, trait trees, expansion summary, housing (dashboard, finder, list, bulletin board, cornerstone), legacy content windows, Game Menu, StaticPopups, Edit Mode, click casting, colour picker, help, clock/stopwatch, queue status, Battle.net toasts and the world loot list. Frame names read from the 12.1.5 source; absent frames are skipped.
 - Alert toasts (post-hook on AlertFrame:AddAlertFrame; background art only, icons untouched) and the tooltips the HUD Tooltip does not own (item reference, comparison, embedded, battle pet).
