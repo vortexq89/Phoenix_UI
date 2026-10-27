@@ -13,7 +13,7 @@ Options.CUSTOM.Diagnostics = function() return Options.DiagPage end
 local Model = Options.Model
 Model.PAGE_LABEL.Diagnostics = "Diagnostics"
 Model.VIRTUAL[#Model.VIRTUAL + 1] = "Diagnostics" -- review fix: its keys are all Advanced, so the page needs to be virtual to show in Simple mode
-Options.Nav.INFO.Diagnostics = { "sentinel", "Diagnostics", "Versions, modules, CPU and memory, the game profiler, A/B timing and developer tools." }
+Options.Nav.INFO.Diagnostics = { "diagnostics", "Diagnostics", "Versions, modules, CPU and memory, the game profiler, A/B timing and developer tools." }
 for _, g in ipairs(Options.Nav.GROUPS) do
   if g[1] == "System" then
     local list = g[2]

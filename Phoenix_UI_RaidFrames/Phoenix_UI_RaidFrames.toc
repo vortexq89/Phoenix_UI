@@ -16,6 +16,8 @@ Indicators.lua
 RaidFrames.lua
 ClickCast.lua
 Members.lua
+Extra.lua
 Tests\RaidFrames_test.lua
 Tests\ClickCast_test.lua
 Tests\Members_test.lua
+Tests\Extra_test.lua

@@ -21,8 +21,8 @@ Window.LOOKS = {
 
 local function font(fs, size)
   fs:SetFontObject(Media:FontObject("small"))
-  local path = Media:Font(PUI.Schema:Get("media.uiFont"))
-  if path and fs.SetFont then fs:SetFont(path, size, "") end
+  local path = PUI.Look.FontFor("meter")
+  if path and fs.SetFont then fs:SetFont(path, size, PUI.Look.Flags()) end
 end
 
 local function row(w, i)

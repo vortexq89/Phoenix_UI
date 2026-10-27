@@ -18,14 +18,18 @@ local X = {}
 F.Extras = X
 
 -- Class icon themes ----------------------------------------------------------------------------------
-X.THEMES = { "atlas", "square", "letter" }
+X.THEMES = { "atlas", "square", "letter", "phoenix" }
 function X.ThemeIcon(button, e)
   local p = K.decorated[button]
   if not (p and e and e.classFile and s.classIcons) then return end
   local letter = rawget(p, "letter")
   if not letter then letter = button:CreateFontString(nil, "OVERLAY"); letter:SetFontObject(PUI.Media:FontObject("small")); letter:SetAllPoints(p.icon); p.letter = letter end
   local c = C_ClassColor.GetClassColor(e.classFile)
-  if s.iconTheme == "square" and c then
+  local phoenix = (s.iconTheme == "phoenix" or (s.iconTheme == "atlas" and PUI.Look.s.classIcons == "phoenix"))
+    and ("Interface\\AddOns\\Phoenix_UI_Media\\Media\\Icons\\Classes\\" .. e.classFile:lower())
+  if phoenix then
+    p.icon:SetTexture(phoenix); p.icon:SetTexCoord(0, 1, 0, 1); letter:SetText("")
+  elseif s.iconTheme == "square" and c then
     p.icon:SetColorTexture(c.r, c.g, c.b, 1); letter:SetText("")
   elseif s.iconTheme == "letter" and c then
     p.icon:SetColorTexture(0.06, 0.07, 0.08, 0.9)
@@ -145,7 +149,7 @@ local function key(name, def)
   Schema:Register("friends." .. name, def)
   s[name] = Schema:Get("friends." .. name)
 end
-key("iconTheme", { type = "select", default = "atlas", choices = X.THEMES, choiceLabels = { atlas = "Game class icons", square = "Class-colour squares", letter = "Class-colour letters" },
+key("iconTheme", { type = "select", default = "atlas", choices = X.THEMES, choiceLabels = { atlas = "Game class icons", square = "Class-colour squares", letter = "Class-colour letters", phoenix = "Phoenix class icons" },
   label = "Class icon look", tooltip = "How class icons on friend rows look." })
 key("frameStyle", { type = "toggle", default = true, mode = "simple", label = "Phoenix border and tabs", tooltip = "A thin accent border on the friends frame and an accent line under the open tab." })
 key("frameColor", { type = "color", default = { r = 0.91, g = 0.64, b = 0.24, a = 1 }, label = "Border and tab colour", tooltip = "Colour of the border and the tab line." })

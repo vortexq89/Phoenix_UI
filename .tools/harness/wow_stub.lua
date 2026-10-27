@@ -70,6 +70,8 @@ function CreateFont(name)
   local f = { name = name }
   function f:SetFont(path, size, flags) self.path, self.size, self.flags = path, size, flags end
   function f:GetFont() return self.path, self.size, self.flags end
+  function f:SetShadowOffset(x, y) self.shadow = { x, y } end
+  function f:SetShadowColor() end
   _G[name] = f
   return f
 end
@@ -528,6 +530,8 @@ end
 Minimap = CreateFrame("Minimap", "Minimap", UIParent)
 Minimap:SetSize(198, 198)
 function Region:SetMaskTexture(t) self.mask = t end
+function Region:AddMaskTexture(m) rawset(self, "masks", rawget(self, "masks") or {}); self.masks[m] = true end
+function Region:RemoveMaskTexture(m) if rawget(self, "masks") then self.masks[m] = nil end end
 MinimapCluster = CreateFrame("Frame", "MinimapCluster", UIParent)
 MinimapCluster.BorderTop = CreateFrame("Frame", nil, MinimapCluster)
 MinimapCluster.ZoneTextButton = CreateFrame("Button", nil, MinimapCluster)

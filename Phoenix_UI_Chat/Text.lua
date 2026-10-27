@@ -168,6 +168,21 @@ T.EMOJI = {
 }
 T.EMOJI_BY = {}
 for _, e in ipairs(T.EMOJI) do T.EMOJI_BY[e.name] = e end
+T.BASE_EMOJI = #T.EMOJI
+
+-- Phoenix emoji art (review gaps): original faces and objects from Phoenix_UI_Media,
+-- added after the game-texture set when chat.phoenixEmoji is on.
+function T.SetPhoenixEmoji(on)
+  for i = #T.EMOJI, T.BASE_EMOJI + 1, -1 do T.EMOJI_BY[T.EMOJI[i].name] = nil; T.EMOJI[i] = nil end
+  if on and PUI.Look and C_AddOns.IsAddOnLoaded("Phoenix_UI_Media") then
+    for _, name in ipairs(PUI.Look.EMOJI) do
+      local e = { name = name, tex = PUI.Look.EmojiPath(name), phoenix = true }
+      T.EMOJI[#T.EMOJI + 1] = e
+      T.EMOJI_BY[name] = e
+    end
+  end
+  return #T.EMOJI - T.BASE_EMOJI
+end
 
 function T.EmojiMarkup(e, size)
   if e.atlas then return "|A:" .. e.atlas .. ":" .. size .. ":" .. size .. "|a" end

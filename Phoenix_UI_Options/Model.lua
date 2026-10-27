@@ -14,7 +14,7 @@ Model.VIRTUAL = { "Overrides", "Ledger" }
 -- Sidebar order; owners not listed follow alphabetically.
 Model.PAGE_ORDER = { "Core", "Theme", "Profiles", "Options", "Studio", "Sentinel" }
 Model.PAGE_LABEL = { Core = "General", Theme = "Theme & media", Options = "Window", Profiles = "Profiles", Studio = "Studio", Sentinel = "Sentinel",
-  Overrides = "Overrides", Ledger = "Changes & uninstall" }
+  Overrides = "Overrides", Ledger = "Changes & uninstall", Colors = "Colours" }
 
 function Model.Mode()
   return Schema:Get("options.mode")

@@ -291,8 +291,8 @@ function E.PaintBorder(o)
   elseif mode == "gold" then paintEdges(o.border, Styles.GOLD.r, Styles.GOLD.g, Styles.GOLD.b, 1)
   elseif mode == "class" then
     local _, token = UnitClass(o.unit)
-    local color = token ~= nil and C_ClassColor.GetClassColor(token)
-    if color then paintEdges(o.border, color:GetRGB()) else paintEdges(o.border, 0, 0, 0, 1) end
+    local r, g, b = PUI.Look.ClassRGB(token)
+    if r then paintEdges(o.border, r, g, b, 1) else paintEdges(o.border, 0, 0, 0, 1) end
   else paintEdges(o.border, 0, 0, 0, 1) end
   paintEdges(o.portrait.border, 0, 0, 0, 1)
 end
@@ -305,8 +305,8 @@ function E.UpdateHealthColor(o)
   if s.darkMode then
     bar:SetStatusBarColor(0.16, 0.16, 0.18, 1)
     local _, token = UnitClass(unit)
-    local color = token ~= nil and C_ClassColor.GetClassColor(token)
-    if color then bar.bg:SetVertexColor(color:GetRGB()) end
+    local r, g, b = PUI.Look.ClassRGB(token)
+    if r then bar.bg:SetVertexColor(r, g, b) end
     return
   end
   local tapped = UnitIsTapDenied(unit)
@@ -316,7 +316,7 @@ function E.UpdateHealthColor(o)
     if (Secret.IsSecret(isPlayer) or isPlayer) and Bars.ClassColor(bar, unit) then return end
     Bars.Color(bar, UnitSelectionColor(unit))
   elseif mode == "reaction" then
-    Bars.Color(bar, UnitSelectionColor(unit))
+    Bars.ReactionColor(bar, unit)
   elseif mode == "gradient" then
     local color = UnitHealthPercent(unit, true, Bars:HealthCurve())
     bar:SetStatusBarColor(color:GetRGB())

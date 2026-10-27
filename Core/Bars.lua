@@ -76,6 +76,12 @@ end
 function Bars.ClassColor(bar, unit)
   local _, token = UnitClass(unit)
   if token == nil then return false end
+  if PUI.Look then
+    local r, g, b = PUI.Look.ClassRGB(token)
+    if r == nil then return false end
+    bar:SetStatusBarColor(r, g, b)
+    return true
+  end
   local color = C_ClassColor.GetClassColor(token)
   if color == nil then return false end
   bar:SetStatusBarColor(color:GetRGB())
@@ -86,6 +92,10 @@ end
 function Bars.PowerColor(bar, unit)
   local _, token = UnitPowerType(unit)
   if token == nil or Secret.IsSecret(token) then return Bars.TokenColor(bar, "accent") end
+  if PUI.Look then
+    local r, g, b = PUI.Look.PowerRGB(token)
+    if r then return bar:SetStatusBarColor(r, g, b) end
+  end
   local c = PowerBarColor and PowerBarColor[token]
   if c then bar:SetStatusBarColor(c.r, c.g, c.b) else Bars.TokenColor(bar, "accent") end
 end
