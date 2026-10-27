@@ -371,7 +371,7 @@ function UnitPowerMax(u, ptype)
   if ptype ~= nil then return H.powerMaxByType and H.powerMaxByType[ptype] or 0 end
   return maybe(100)
 end
-function UnitPowerPercent() return maybe(50) end
+function UnitPowerPercent(u, t, p, c) if type(c) == "table" and c.isColor then H.powerCurve = c; return CreateColor(0.2, 0.9, 0.3, 1) end return maybe(50) end
 function UnitPowerType() return 0, "MANA", 0, 0, 1 end
 function UnitName(u) return maybe(u == "player" and "Tester" or "Dummy"), nil end
 function UnitEffectiveLevel() return maybe(80) end
@@ -387,9 +387,15 @@ function UnitFactionGroup() return "Horde", "Horde" end
 function IsResting() return false end
 function GetRaidTargetIndex() if H.secretMode then return H.secret(3) end return nil end
 function UnitCastingInfo(u) if H.casting then return maybe("Fireball"), nil, 135812, 0, 1, false, "id", maybe(false), 133 end return nil end
-function UnitChannelInfo() return nil end
+function UnitChannelInfo()
+  local c = H.channel
+  if c then return maybe(c.name or "Channel"), nil, 136243, c.start or 0, c.stop or 3000, false, maybe(false), c.spellID, c.empowered or false, c.stages or 0 end
+  return nil
+end
+H.empowerStages = { 500, 400, 400, 400 }
+function GetUnitEmpowerStageDuration(unit, i) return H.empowerStages[i + 1] or 0 end
 function UnitCastingDuration() if H.casting then return { duration = true } end return nil end
-function UnitChannelDuration() return nil end
+function UnitChannelDuration() if H.channel then return { duration = true } end return nil end
 function UnitStagger() return maybe(0) end
 function UnitPartialPower() return maybe(0) end
 function GetComboPoints() return maybe(0) end
