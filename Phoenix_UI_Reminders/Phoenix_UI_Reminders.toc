@@ -12,4 +12,5 @@
 
 Pack.lua
 Reminders.lua
+Extras.lua
 Tests\Reminders_test.lua

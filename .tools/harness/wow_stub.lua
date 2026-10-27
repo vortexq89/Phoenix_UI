@@ -381,7 +381,8 @@ function UnitSelectionColor() return maybe(1), maybe(0.2), maybe(0.2), 1 end
 function UnitIsConnected() return maybe(true) end
 function UnitIsDeadOrGhost() return maybe(false) end
 function UnitIsGroupLeader() return maybe(false) end
-function UnitAffectingCombat() return maybe(false) end
+H.combatUnits = {}
+function UnitAffectingCombat(u) return maybe(H.combatUnits[u] == true) end
 function UnitIsPVP() return maybe(false) end
 function UnitFactionGroup() return "Horde", "Horde" end
 function IsResting() return false end
@@ -969,7 +970,7 @@ C_DeathRecap = {
   GetRecapMaxHealth = function() return 100 end,
 }
 H.threatPct = {} -- [unit] = pct
-function UnitDetailedThreatSituation(unit, mob) local p = H.threatPct[unit]; if p == nil then return nil end return maybe(unit == "player"), maybe(3), maybe(p), maybe(p), maybe(p * 1000) end
+function UnitDetailedThreatSituation(unit, mob) local p = H.threatPct[unit]; if p == nil then return nil end return maybe(unit == "player" and not H.notTanking), maybe(3), maybe(p), maybe(p), maybe(p * 1000) end
 H.charges = nil -- { cur, max }
 C_Spell.GetSpellCharges = function(id) if id == 20484 and H.charges then return { currentCharges = maybe(H.charges[1]), maxCharges = H.charges[2], cooldownStartTime = 0, cooldownDuration = 600 } end return nil end
 C_MythicPlus.GetOwnedKeystoneLevel = function() return H.ownedKeyLevel or 0 end
@@ -1184,6 +1185,19 @@ H.professionInfo = {}
 function GetProfessionInfo(p) local i = H.professionInfo[p]; if i then return i[1], "", i[2], i[3] end end
 H.bind = "Dornogal"
 function GetBindLocation() return H.bind end
+-- Deferred C stubs.
+H.questItems, H.pushed = {}, {}
+function GetQuestLogSpecialItemInfo(i) local it = H.questItems[i]; if it then return it.link, it.icon, it.charges, it.showComplete end end
+function QuestLogPushQuest(i) H.pushed[#H.pushed + 1] = i end
+H.pushable = {}
+C_QuestLog.IsPushableQuest = function(id) return H.pushable[id] == true end
+H.weaponEnchant = true
+C_PaperDollInfo.GetTemporaryEnchantmentInfo = function() if H.weaponEnchant then return { remainingTimeMs = 3600000 } end end
+C_Traits = rawget(_G, "C_Traits") or {}
+C_Traits.GetConfigInfo = C_Traits.GetConfigInfo or function(id) return { name = "Loadout " .. tostring(id) } end
+H.mapBest, H.runHistory = {}, {}
+C_MythicPlus.GetSeasonBestAffixScoreInfoForMap = function(id) return {}, maybe(H.mapBest[id] or 0) end
+C_MythicPlus.GetRunHistory = function() return H.runHistory end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
   AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }

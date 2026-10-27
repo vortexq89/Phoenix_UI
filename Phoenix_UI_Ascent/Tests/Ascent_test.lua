@@ -167,3 +167,46 @@ Tests:Add("Ascent", "live preview follows timer and widget settings", function(t
   P.Ascent(card)
   t:eq(P.State(card).ascentLines, n - 1, "pace line follows the setting")
 end)
+
+Tests:Add("Ascent", "current pull forces, score projection and the vault planner", function(t)
+  if not H or PUI.IS_FOREVER then return end
+  enable(t)
+  local X = AS.Extras
+  t:cleanup(function()
+    for _, u in ipairs({ "nameplate1", "nameplate2", "nameplate3" }) do H.units[u] = nil; H.hostile[u] = nil; H.combatUnits[u] = nil; H.forces[u] = nil end
+    H.mapBest = {}; H.runHistory = {}; H.vaultActs = nil
+  end)
+  H.mplus = { mapID = 501, level = 12, limit = 1800, elapsed = 600, deaths = 0, lost = 0, forces = { 40, 200, "20%" } }
+  H.fire("CHALLENGE_MODE_START")
+  for i, v in ipairs({ 6, 4, 9 }) do
+    local u = "nameplate" .. i
+    H.units[u], H.hostile[u], H.forces[u] = true, true, { v, 200, "" }
+    H.combatUnits[u] = i < 3
+  end
+  local p = X.PullForces()
+  t:eq(p.add, 5, "two engaged enemies: 10 of 200")
+  t:eq(p.after, 25, "20% now, 25% after the pull")
+  t:eq(X.PullText(p), "pull +5.0% -> 25.0%", "pull text")
+  H.mapBest[501] = 300
+  AS.Draw()
+  t:ok(X.label:find("pull +5.0%", 1, true) and X.label:find("score: timed", 1, true), "forces line shows pull and projection")
+  H.secretMode = true
+  t:eq(X.PullForces(), nil, "secret values hide the pull preview")
+  H.secretMode = false
+  t:eq(X.Score(2, 1), 155, "+2 timed")
+  t:eq(X.Score(12, 1), 365, "+12 timed: level and four breakpoints")
+  t:eq(X.Score(12, 0.6), 380, "40% under adds the full time bonus")
+  t:eq(X.Score(12, 1.5), 0, "far over time gives nothing")
+  local proj = X.Projection(501, 12)
+  t:same({ proj.timed, proj.best, proj.gain }, { 365, 300, 65 }, "projection against your best")
+  Schema:Set("ascent.scoreProjection", false)
+  Tests.Keep(t, "ascent.scoreProjection")
+  AS.Draw()
+  t:eq(X.label:find("score", 1, true), nil, "projection off live")
+  H.vaultActs = { { index = 1, threshold = 1 }, { index = 2, threshold = 4 }, { index = 3, threshold = 8 } }
+  H.runHistory = { { level = 10 }, { level = 12 }, { level = 8 }, { level = 11 } }
+  local plan = X.VaultPlan()
+  t:eq(plan[1].text, "Slot 1: unlocked at +12", "first slot from the best run")
+  t:eq(plan[2].text, "Slot 2: unlocked at +8", "fourth best run")
+  t:eq(plan[3].text, "Slot 3: 4 more runs (4 of 8)", "runs still needed")
+end)
