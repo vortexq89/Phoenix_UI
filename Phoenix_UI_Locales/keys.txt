@@ -60,6 +60,7 @@ A white edge when a shield is bigger than the missing health, and a red edge whe
 Abilities listed
 Abilities the game only estimates show a ~ until their time is firm.
 Ability icon
+Ability substitutions
 Accent colour
 Accent line
 Accept group invites from friends
@@ -204,6 +205,16 @@ Aura spell ID
 Aura stack bar
 Aura stack bar height
 Aura stack bar maximum
+Auras you gain
+Auras you gain: area
+Auras you gain: colour
+Auras you gain: message
+Auras you gain: sound
+Auras you lose
+Auras you lose: area
+Auras you lose: colour
+Auras you lose: message
+Auras you lose: sound
 Auto accept and turn in
 Auto accept leaves grey (trivial) quests alone.
 Auto accept leaves repeatable quests alone.
@@ -593,6 +604,7 @@ Buffs: icon size
 Buffs: position
 Buffs: which ones
 BugSack is loaded: who shows new errors?
+Built by the trigger builder; each line is "when | name or ID | text | RRGGBB | sound" (when: cast, auraGain, auraFade, combatIn, combatOut).
 Built-in blocklist: auto attack, auto shot, shoot and the global cooldown.
 Button border
 Button border colour
@@ -691,6 +703,7 @@ Channel names
 Channel ticks
 Channels
 Character
+Character limit before a name is shortened.
 Charges and count size
 Chat
 Chat channel button
@@ -878,6 +891,7 @@ Currency
 Currency: area
 Currency: colour
 Currency: message
+Currency: sound
 Current dampening above the frames.
 Current fight, the overall session, or your last saved segment. Right-click the window title to switch.
 Current pull forces
@@ -929,10 +943,12 @@ Damage you take
 Damage you take: area
 Damage you take: colour
 Damage you take: message
+Damage you take: sound
 Damage your pet takes
 Damage your pet takes: area
 Damage your pet takes: colour
 Damage your pet takes: message
+Damage your pet takes: sound
 Dampening
 Dangerous colour
 Dark health fill with the class colour behind it.
@@ -1121,13 +1137,16 @@ Empty uses "%a %s %c". Tokens: %a amount, %s spell or item, %c count, %e event, 
 Empty uses "%e". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "%s ready". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "%s". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
+Empty uses "%s". Tokens: %s aura or text, %c count.
 Empty uses "+%a %s %c". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "+%a %t". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "+%a XP". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "+%s %c". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "+%s". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
+Empty uses "+%s". Tokens: %s aura or text, %c count.
 Empty uses "+Combat". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "-%a %t". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
+Empty uses "-%s". Tokens: %s aura or text, %c count.
 Empty uses "-Combat". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "Pet +%a". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
 Empty uses "Pet -%a". Tokens: %a amount, %s spell or item, %c count, %e event, %t trailer (crushing, glancing).
@@ -1164,6 +1183,7 @@ Entering combat
 Entering combat: area
 Entering combat: colour
 Entering combat: message
+Entering combat: sound
 Error count badge
 Error sound
 Errors from one module in a session that trigger safe mode at the next login.
@@ -1185,6 +1205,7 @@ Experience colour
 Experience: area
 Experience: colour
 Experience: message
+Experience: sound
 External defensives
 Extra action and zone ability
 Extra action button
@@ -1457,10 +1478,12 @@ Heals you get
 Heals you get: area
 Heals you get: colour
 Heals you get: message
+Heals you get: sound
 Heals your pet gets
 Heals your pet gets: area
 Heals your pet gets: colour
 Heals your pet gets: message
+Heals your pet gets: sound
 Health and power bars glide to new values instead of jumping.
 Health and power bars glide to new values.
 Health as a percent, written by the game so hidden values still show.
@@ -1580,6 +1603,7 @@ Hits you avoid (dodge, parry, absorb...)
 Hits you avoid (dodge, parry, absorb...): area
 Hits you avoid (dodge, parry, absorb...): colour
 Hits you avoid (dodge, parry, absorb...): message
+Hits you avoid (dodge, parry, absorb...): sound
 Hold Ctrl and scroll over a window title to scale it.
 Hold this key to read a quest instead of auto accepting or turning it in.
 Hold: the layer is on only while the key is down. Toggle: press once for on, again for off.
@@ -1589,6 +1613,7 @@ Honor colour
 Honor: area
 Honor: colour
 Honor: message
+Honor: sound
 Hostile colour
 Housing controls
 Hover colour
@@ -1755,6 +1780,7 @@ Item or potion ready
 Item or potion ready: area
 Item or potion ready: colour
 Item or potion ready: message
+Item or potion ready: sound
 Item quality border
 Item tooltips get a border in the item's quality colour.
 Items label colour
@@ -1820,6 +1846,7 @@ Leaving combat
 Leaving combat: area
 Leaving combat: colour
 Leaving combat: message
+Leaving combat: sound
 Left enemy opacity
 Left-click a quest
 Legend achievement ID
@@ -1857,6 +1884,7 @@ Loot window
 Loot: area
 Loot: colour
 Loot: message
+Loot: sound
 Loss of control
 Loss of control swipe
 Low durability warning
@@ -1922,6 +1950,7 @@ Money
 Money: area
 Money: colour
 Money: message
+Money: sound
 Monk stagger bar
 Most bars shown
 Most friends listed in the tooltip.
@@ -1962,6 +1991,7 @@ Name size
 Name the fight
 Nameplates
 Names
+Names longer than the limit become their initials (Shadow Word: Pain -> SWP).
 Names of the NPC colour packs to add after your own rules (your own lines always win).
 Neutral colour
 Never collect
@@ -2009,6 +2039,7 @@ One binding per row. Pick a modifier, a mouse button or a key, and what it does:
 One button per line: bar.button: options. Options: nohotkey, nomacro, nocount, hide, alpha=0.5, glow=none|pulse|solid|flash. Example: 1.12:nohotkey,alpha=0.6
 One large icon in the middle for a big personal or external defensive.
 One line each: "Boss name: text". Lines starting with "*:" show for every boss.
+One line each: "Original name = New text". Blank new text hides the name.
 One line per boss, by name or encounter ID: "off" hides Pulse bars, "bars=4" limits bars, "hud=on" or "hud=off" for the next-abilities list. Example: Dimensius: bars=4 hud=on
 One line per click: "1: target", "2: focus", "shift-1: spell:Polymorph", "ctrl-3: macro:/cast [@arena1] Kick", "3: none". Applied when you leave combat.
 One line per reminder: key: sound=SoundName icon=IconID (for example 'oil: sound=Phoenix icon=463543'). Keys: intellect, stamina, lethal, pet, oil, talents, custom12345 ...
@@ -2341,6 +2372,7 @@ Plays a sound when your threat on your target reaches this share and you are not
 Plays a sound with the announcement.
 Plays a warning when the +3, +2 or +1 time runs out.
 Plays an extra ready-check sound when the invite appears.
+Plays this sound with the line (at most once every 0.3 s per row).
 Pointing at any bar that fades until mouse-over shows every such bar at once.
 Pop-up dialog
 Portrait beside the frame: from the look, off, 2D, 3D or a class icon.
@@ -2573,6 +2605,7 @@ Reputation colour
 Reputation: area
 Reputation: colour
 Reputation: message
+Reputation: sound
 Reset meter key
 Reset zoom after (seconds)
 Resource Bars' class resource, power and your cast bar sit under the player frame, or stay where you placed them in Studio. Turn the bars on in Resource Bars.
@@ -2678,6 +2711,8 @@ Short difficulty text inside instances, such as M+16, H, M, LFR or TW.
 Short item cooldowns are not announced.
 Short keybind text
 Short numbers
+Shorten long ability names
+Shorten names longer than
 Shortens key names so they fit: SHIFT-1 becomes S1, mouse button 4 becomes M4, mouse wheel up becomes WU.
 Show
 Show 2v2
@@ -2755,6 +2790,8 @@ Shows a cast bar for this frame.
 Shows a red swipe on buttons you cannot use because you are stunned, silenced or locked out.
 Shows a small F at the corner of your focus target's plate.
 Shows an NPC's title, such as <Innkeeper> or <Flight Master>, under its name.
+Shows auras you gain in Spark.
+Shows auras you lose in Spark.
 Shows buffs icons on each frame.
 Shows buffs on the boss frame.
 Shows buffs on the focus frame.
@@ -2894,6 +2931,7 @@ Shows your notes for your target or the last boss, only out of combat. Move it i
 Shows your own class buffs that are missing, like rogue poisons or a paladin aura.
 Shows your quest progress for an enemy, such as "Void Acolytes slain: 3/8", under its name.
 Shows your rating change on the card.
+Shows your triggers in Spark.
 Shrinks the role bar to its + button.
 Side of the frame the icons sit on.
 Sideways distance from the cursor for the left/right cursor positions.
@@ -2939,6 +2977,7 @@ Skill ups
 Skill ups: area
 Skill ups: colour
 Skill ups: message
+Skill ups: sound
 Skinned Blizzard chat with keyword alerts, links, emoji, searchable history and whisper windows.
 Skins
 Skip low-level quests
@@ -3300,6 +3339,8 @@ Trade
 Train All button
 Training Grounds buttons
 Transmog
+Trigger list
+Triggers
 Trims the icon edges.
 Trinket and racial size
 Trinket for healers only
@@ -3582,6 +3623,7 @@ Your damage
 Your damage: area
 Your damage: colour
 Your damage: message
+Your damage: sound
 Your debuff timers change colour in the last 30 % of their duration, when refreshing loses nothing.
 Your debuffs
 Your debuffs on the enemy, above the plate.
@@ -3593,16 +3635,24 @@ Your heals
 Your heals: area
 Your heals: colour
 Your heals: message
+Your heals: sound
 Your last rated match and how much it moved your rating.
 Your misses
 Your misses: area
 Your misses: colour
 Your misses: message
+Your misses: sound
 Your note after each friend in the search panel.
 Your own categories, one per line as Name|rule, checked before the built-in ones. Example: Sets: PvP|set ~ PvP and ilvl >= 640. Fields: type, subtype, ilvl, quality, name, id, bound, expansion, slot, count, set, keystone.
+Your own lines for casts, auras and combat. Build them with /pui spark trigger.
 Your own messages never trigger keyword alerts.
 Your row is tinted with the accent colour.
 Your team's rows get a light tint.
+Your triggers
+Your triggers: area
+Your triggers: colour
+Your triggers: message
+Your triggers: sound
 Zone ability
 Zone colour
 Zone name
