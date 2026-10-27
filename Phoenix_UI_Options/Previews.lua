@@ -550,16 +550,28 @@ function Previews.Minimap(card)
   local Bin = PUI.ButtonBin
   if Bin then
     local bs = Bin.settings
-    local cells = Bin.Grid(14, bs.columns, math.min(bs.size, 24), bs.spacing)
-    for i = 1, #cells do
+    local cell = math.min(bs.size, 24)
+    local hidden = #(bs.hidden or {})
+    local n = math.max(1, 14 - hidden) + (bs.compartment and 2 or 0)
+    local cells = Bin.Grid(n, bs.columns, cell, bs.spacing, bs.grow, 8, 30)
+    for i = 1, math.max(#cells, #h.bin) do
       local b = h.bin[i]
-      if not b then b = h:CreateTexture(nil, "ARTWORK"); h.bin[i] = b end
-      b:ClearAllPoints()
-      b:SetSize(math.min(bs.size, 24), math.min(bs.size, 24))
-      b:SetPoint("TOPLEFT", h, "TOPLEFT", cells[i].x, -size - 30 + cells[i].y + 30)
-      b:SetColorTexture(0.25 + (i % 5) * 0.1, 0.3, 0.45 - (i % 3) * 0.1, 1)
-      b:SetShown(bs.enabled)
+      if not b and cells[i] then b = h:CreateTexture(nil, "ARTWORK"); h.bin[i] = b end
+      if b then
+        b:ClearAllPoints()
+        b:SetSize(cell, cell)
+        if cells[i] then b:SetPoint("TOPLEFT", h, "TOPLEFT", cells[i].x, -size - 30 + cells[i].y + 30) end
+        b:SetColorTexture(0.25 + (i % 5) * 0.1, 0.3, 0.45 - (i % 3) * 0.1, 1)
+        if b.SetMask then b:SetMask(bs.skin and bs.shape == "round" and "Interface\\Masks\\CircleMaskScalable" or "Interface\\Buttons\\WHITE8X8") end
+        b:SetShown(bs.enabled and cells[i] ~= nil)
+      end
     end
+    if not rawget(h, "binNote") then h.binNote = h:CreateFontString(nil, "OVERLAY"); h.binNote:SetFontObject(PUI.Media:FontObject("small")) end
+    h.binNote:ClearAllPoints()
+    h.binNote:SetPoint("TOPLEFT", h, "TOPLEFT", 8, -size - 4)
+    h.binNote:SetText(string.format("%s, grows %s, %s%s%s", bs.layout == "bar" and "Docked bar" or "Popup grid", bs.grow,
+      bs.sort == "custom" and "my order" or "A-Z", bs.badge and string.format(", badge %d", n) or "", bs.hideInCombat and ", hides in combat" or ""))
+    h.binNote:SetShown(bs.enabled)
   end
 end
 

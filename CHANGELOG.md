@@ -4,6 +4,12 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Minimap button bin, branch feat/minimap-bin (t97u)
+- Collects every addon's minimap button: LibDBIcon and plain addon buttons on the Minimap / MinimapCluster (Blizzard's, Phoenix's, protected and panel-sized frames left alone), late ones too (rescan on ADDON_LOADED plus a 30 s Ticker scan job after login). Optional addon compartment entries as Phoenix proxy buttons.
+- Popup grid or a docked bar (along the minimap edge, or anywhere with the Studio mover "Minimap button bar"); grow right / left / down / up; A-Z or your own drag order (saved); search box; Edit mode (Shift-click the bin button) with a right-click menu to hide / show / pin to the minimap / never collect / move first or last.
+- Theme skin: Phoenix tile, square or round icon mask, 1 px border, the gold ring art stripped (all given back when off); count badge and Phoenix or Blizzard look for the bin button; auto-close on leave with a delay, hide in combat (bar back after combat), idle fade for the bar. Tooltips and clicks stay each addon's own; parent, points, size, level and shown state restored when the bin or the module turns off.
+- 25 settings (7 simple), all live; minimap preview shows the bin layout; locale keys regenerated. Tests: 453 (retail and Forever).
+
 ### Approved guardrail exceptions, branch feat/approved-exceptions
 - Forever swing timer (Forever page, off by default, live): a bar counting down to your next melee swing, from your own SWING_DAMAGE / SWING_MISSED combat-log lines. The combat log is read only when PUI.IS_FOREVER and the setting is on; the Ticker job exists only while a swing runs. Size setting, Forever page preview, Edit Mode element.
 - Sentinel: received reports are decoded inside a pcall (base64, inflate, JSON only), after the size cap (now also on offered bytes and the assembled length) and the checksum; malformed bodies are dropped as "bad data".
