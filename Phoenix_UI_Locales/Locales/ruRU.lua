@@ -4306,4 +4306,13 @@ PUI.Locale:Add("ruRU", {
   ["Tracks personal defensives such as Ice Block, Divine Shield and Cloak of Shadows."] = "Отслеживает личные защитные способности, например Ice Block, Divine Shield и Cloak of Shadows.",
   ["Where icons go"] = "Где показывать значки",
   ["Which side of the party frame the icons sit on."] = "С какой стороны рамки группы располагаются значки.",
+  ["A compact, movable list of group loot rolls with item level, a timer bar and Need / Greed / Transmog / Pass buttons, in place of the game's roll frames."] = "Компактный перемещаемый список розыгрышей добычи с уровнем предмета, полосой таймера и кнопками «Нужно / Не откажусь / Трансмогрификация / Отказаться» вместо стандартных окон розыгрыша.",
+  ["Height of each loot roll row (the icon and buttons follow)."] = "Высота каждой строки розыгрыша (значок и кнопки подстраиваются).",
+  ["Keep Blizzard's roll frames"] = "Оставить окна розыгрыша Blizzard",
+  ["New rolls grow upwards"] = "Новые розыгрыши добавляются вверх",
+  ["Roll height"] = "Высота розыгрыша",
+  ["Roll width"] = "Ширина розыгрыша",
+  ["Show the game's own loot roll frames as well (Phoenix rolls stay)."] = "Показывать также стандартные окна розыгрыша (розыгрыши Phoenix остаются).",
+  ["Stack rolls upwards from the anchor instead of downwards."] = "Складывать розыгрыши вверх от якоря, а не вниз.",
+  ["Width of each loot roll row."] = "Ширина каждой строки розыгрыша.",
 })

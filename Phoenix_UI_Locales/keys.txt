@@ -33,6 +33,7 @@ A clickable button beside quests that have a usable item (placed outside combat)
 A cog in the title bar of every skinned window opens its Phoenix options in place.
 A coloured dot for each party member targeting this enemy (shared with the party frames' enemy dots).
 A coloured glow around player, target, focus and boss frames when you have threat.
+A compact, movable list of group loot rolls with item level, a timer bar and Need / Greed / Transmog / Pass buttons, in place of the game's roll frames.
 A countdown bar under the dungeon and battleground ready pop-ups (same countdown as the minimap queue eye).
 A countdown bar while you fly. The first flight on a route is timed and remembered.
 A dark background behind the tracker.
@@ -1805,6 +1806,7 @@ Height
 Height of each docked Blizzard meter window.
 Height of each enemy frame.
 Height of each frame in this layout.
+Height of each loot roll row (the icon and buttons follow).
 Height of each pet frame.
 Height of each row in the search panel.
 Height of each row.
@@ -2128,6 +2130,7 @@ Items: Item ID
 Join and leave lines are collected for this long before the summary is printed.
 Junk overlay
 Keep Blizzard's buttons, or use Phoenix's matching set (Blizzard's are faded out, never moved).
+Keep Blizzard's roll frames
 Keep after the fight (s)
 Keep it open after leaving
 Keep my Edit Mode layout in the profile
@@ -2368,6 +2371,7 @@ New group sound
 New item glow
 New items category
 New members are added above instead of below.
+New rolls grow upwards
 New-error popup
 Newest icon glow
 Next abilities list
@@ -3121,6 +3125,8 @@ Role markers fade away while you are in combat.
 Role order
 Role poll
 Roles per spec
+Roll height
+Roll width
 Rotate minimap
 Rotation assist icon
 Rotation assist icon size
@@ -3266,6 +3272,7 @@ Show the age of your oldest application
 Show the boss frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
 Show the focus frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
 Show the focus target frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
+Show the game's own loot roll frames as well (Phoenix rolls stay).
 Show the gap to the nearest element on each side of the selected one.
 Show the party frames everywhere, never, or only in the content, combat state and group you pick. The line below explains why they are hidden right now.
 Show the pet frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
@@ -3625,6 +3632,7 @@ Spoken warnings
 Square or round minimap.
 Square or round portraits.
 Square, rounded or round icons.
+Stack rolls upwards from the anchor instead of downwards.
 Stacked plates never overlap; overlapping plates stay over their units. Your own value comes back when Phoenix nameplates turn off.
 Stacks for a full bar.
 Stance bar
@@ -4170,6 +4178,7 @@ Width and height of the minimap.
 Width of each docked Blizzard meter window.
 Width of each enemy frame.
 Width of each frame in this layout.
+Width of each loot roll row.
 Width of each pet frame.
 Width of each timer bar.
 Width of enemy health bars in pixels.

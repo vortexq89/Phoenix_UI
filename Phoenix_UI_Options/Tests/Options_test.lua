@@ -480,3 +480,14 @@ Tests:Add("Options", "party cooldown preview follows size and side live", functi
   Options.Previews.Update("PartyCD", card)
   if rawget(_G, "HARNESS") then t:eq(rawget(b, "point") and b.point[1], "RIGHT", "left side anchors the icon's right edge") end
 end)
+
+Tests:Add("Options", "loot roll preview follows width and height live", function(t)
+  if not PUI.LootRoll then return end
+  Tests.Keep(t, "loot.height")
+  local card = CreateFrame("Frame")
+  Schema:Set("loot.height", 30)
+  Options.Previews.Update("LootRoll", card)
+  local r = Options.PreviewsExtras.Bag(card)["loot.row1"]
+  t:ok(r and r:IsShown(), "sample roll")
+  t:eq(r:GetHeight(), 30, "height follows the setting")
+end)

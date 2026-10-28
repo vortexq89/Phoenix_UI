@@ -4,6 +4,9 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Loot rolls, branch feat/loot-roll
+- New "Loot rolls" module (on by default, Social & Chat group): a compact movable list replacing the game's group loot roll frames: icon, item level, quality-coloured name, draining timer bar (one Ticker entry only while a roll is open), Need / Greed / Transmog / Pass buttons shown only when allowed (RollOnLoot), item tooltip; option to keep Blizzard's frames, width, height, grow upwards; live preview; /pui loottest.
+
 ### Party cooldowns, branch feat/party-cd
 - New "Party cooldowns" module (off by default, Raid & Party group): an OmniCD-style tracker. Party casts (UNIT_SPELLCAST_SUCCEEDED on player/party1-4) of spells in Phoenix's curated table (Data/PartyCooldowns.lua: interrupts, personal and group defensives, big damage cooldowns, battle res, lust; retail and Forever with ranks) start that spell's base cooldown. Icons on each member's Phoenix party frame (side and gap) or a standalone movable list; per-category toggles, size, spacing, icons per member, interrupts shown before first use, include yourself; live preview; /pui pcdtest. Secret spell IDs and GUIDs are never compared.
 

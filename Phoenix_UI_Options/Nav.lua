@@ -48,6 +48,7 @@ local INFO = {
   RaidTools = { "raidtools", "Raid Tools", "Markers, ready check, pull timer, notes and stats.", "RaidTools" },
   Friends = { "friends", "Friends", "Friends list look, notes and search.", "Friends" },
   Forever = { "forever", "Forever", "Flight timer and pet happiness (Forever client).", "Forever" },
+  LootRoll = { "flow", "Loot Rolls", "Compact Need, Greed, Transmog and Pass rolls with item level.", "LootRoll" },
   QoL = { "chat", "Announcements", "One router for quest, key, reset and interrupt messages." },
   Fonts = { "theme", "Fonts", "One font everywhere, outline, shadow, sizes and per-module fonts, with specimens." },
   Colors = { "theme", "Colours", "Class, power and reaction colours and colour-blind palettes." },
@@ -62,7 +63,7 @@ Nav.GROUPS = {
   { "Interface", { "Core", "Theme", "Fonts", "Colors", "Glows", "Cursor", "Celebrations", "Studio", "Minimap", "Tooltip", "DataBars", "QuestTracker", "Skins" } },
   { "Combat", { "UnitFrames", "ActionBars", "ResourceBars", "CooldownManager", "Nameplates", "Reminders", "ClickCast", "Arena", "Pulse", "Spark", "CastHistory", "PvP" } },
   { "Group", { "RaidFrames", "PartyCD", "GroupFinder", "Ascent", "Embers", "Loadouts", "RaidTools" } },
-  { "Social & Chat", { "Chat", "Flow", "Friends", "QoL" } },
+  { "Social & Chat", { "Chat", "Flow", "LootRoll", "Friends", "QoL" } },
   { "Tools", { "Vault", "Oracle", "Wisdom", "Setup", "Forever" } },
   { "System", { "Profiles", "Overrides", "Options", "Sentinel", "Ledger" } },
 }
