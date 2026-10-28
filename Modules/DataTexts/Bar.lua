@@ -64,7 +64,7 @@ function M.BarText(d, mode, hovered)
     end
     local text = prefix .. pct .. "%"
     if (d.quest or 0) > 0 and hovered then
-        text = text .. "  " .. L.DT_QUEST_XP_PENDING:format(math.floor(d.quest / d.max * 1000 + 0.5) / 10)
+        text = text .. "  " .. L.DT_QUEST_XP_PENDING:format((math.floor(d.quest / d.max * 1000 + 0.5) / 10) .. "%")
     end
     return text
 end

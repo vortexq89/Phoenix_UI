@@ -2699,7 +2699,7 @@ ns.RegisterLocale("enUS", {
     DT_RESTED_DESC = "Show rested experience as a second, lighter fill.",
     DT_QUEST_XP = "Finished quests",
     DT_QUEST_XP_DESC = "Shows the experience waiting in finished quests as a third fill after your XP.",
-    DT_QUEST_XP_PENDING = "+%s%% in quests",
+    DT_QUEST_XP_PENDING = "+%s in quests",
     DT_BAR_WIDTH = "Bar width",
     DT_BAR_HEIGHT = "Bar height",
     DT_BAR_TEXT = "Bar text",

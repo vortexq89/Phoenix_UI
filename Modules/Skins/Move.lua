@@ -72,7 +72,8 @@ end
 
 function M:SetupMoving()
     for _, entry in ipairs(self.WINDOWS) do
-        if not entry.dialog then
+        -- load-on-demand windows are hooked when their addon loads (Skins' ADDON_LOADED handler)
+        if not entry.dialog and not (entry.addon and not C_AddOns.IsAddOnLoaded(entry.addon)) then
             for _, name in ipairs(entry.frames) do self:HookMovable(name) end
         end
     end
