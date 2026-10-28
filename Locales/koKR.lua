@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "잠금 해제",
     MOVERS_GRID = "격자",
     MOVERS_SHOW_HIDDEN = "숨겨진 프레임 표시",
+    MOVERS_SETTINGS = "설정",
     MOVERS_SHOW_HIDDEN_DESC = "지금 화면에 없는 프레임(빈 파티·공격대, 우두머리, 블리자드 메시지)의 상자도 표시합니다. 팁: 테스트 프레임으로 예시를 볼 수 있습니다.",
     MOVERS_GRID_DESC = "잠금 해제 중 정렬용 격자를 표시합니다.",
     MOVERS_GRID_SIZE = "격자 크기",

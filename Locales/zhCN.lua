@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "解锁",
     MOVERS_GRID = "网格",
     MOVERS_SHOW_HIDDEN = "显示隐藏框体",
+    MOVERS_SETTINGS = "设置",
     MOVERS_SHOW_HIDDEN_DESC = "同时显示当前不在屏幕上的框体（空的小队和团队、首领、暴雪消息框）。提示：测试框体可显示示例。",
     MOVERS_GRID_DESC = "解锁时显示对齐网格。",
     MOVERS_GRID_SIZE = "网格大小",

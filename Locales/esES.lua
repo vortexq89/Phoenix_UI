@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "Desbloquear",
     MOVERS_GRID = "Cuadrícula",
     MOVERS_SHOW_HIDDEN = "Mostrar marcos ocultos",
+    MOVERS_SETTINGS = "Ajustes",
     MOVERS_SHOW_HIDDEN_DESC = "Muestra también cajas para marcos que ahora no están en pantalla (grupo y banda vacíos, jefes, mensajes de Blizzard). Consejo: los marcos de prueba muestran ejemplos.",
     MOVERS_GRID_DESC = "Muestra una cuadrícula de alineación mientras está desbloqueado.",
     MOVERS_GRID_SIZE = "Tamaño de cuadrícula",

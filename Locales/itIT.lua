@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "Sblocca",
     MOVERS_GRID = "Griglia",
     MOVERS_SHOW_HIDDEN = "Mostra riquadri nascosti",
+    MOVERS_SETTINGS = "Impostazioni",
     MOVERS_SHOW_HIDDEN_DESC = "Mostra anche i riquadri non visibili ora (gruppo e incursione vuoti, boss, messaggi di Blizzard). Suggerimento: i riquadri di prova mostrano esempi.",
     MOVERS_GRID_DESC = "Mostra una griglia di allineamento mentre è sbloccato.",
     MOVERS_GRID_SIZE = "Dimensione griglia",

@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "Destravar",
     MOVERS_GRID = "Grade",
     MOVERS_SHOW_HIDDEN = "Mostrar quadros ocultos",
+    MOVERS_SETTINGS = "Configurações",
     MOVERS_SHOW_HIDDEN_DESC = "Mostra também caixas para quadros que não estão na tela agora (grupo e raide vazios, chefes, mensagens da Blizzard). Dica: os quadros de teste mostram exemplos.",
     MOVERS_GRID_DESC = "Mostra uma grade de alinhamento enquanto destravado.",
     MOVERS_GRID_SIZE = "Tamanho da grade",

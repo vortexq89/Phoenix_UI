@@ -45,10 +45,11 @@ local DEFAULTS = {
         bar2 = bar("BOTTOM", 0, 70),
         bar3 = bar("BOTTOM", 0, 114),
         bar4 = bar("RIGHT", -6, 0, vertical()),
-        bar5 = bar("RIGHT", -50, 0, vertical({ enabled = false })),
-        bar6 = bar("BOTTOM", 0, 202, { enabled = false }),
-        bar7 = bar("BOTTOM", 0, 246, { enabled = false }),
-        bar8 = bar("BOTTOM", 0, 290, { enabled = false }),
+        bar5 = bar("RIGHT", -50, 0, vertical()),
+        -- off by default; when switched on they open on the left edge and right of bar 5, clear of everything
+        bar6 = bar("LEFT", 6, 0, vertical({ enabled = false, wrap = "RIGHT" })),
+        bar7 = bar("LEFT", 50, 0, vertical({ enabled = false, wrap = "RIGHT" })),
+        bar8 = bar("RIGHT", -94, 0, vertical({ enabled = false })),
         pet = bar("BOTTOM", 0, 158, { buttons = 10, width = 32, height = 32 }),
         -- above the pet bar: clear of the player and target frames on a 768 px high UI (pixel-perfect scale)
         stance = bar("BOTTOM", 0, 194, { buttons = 10, width = 32, height = 32 }),

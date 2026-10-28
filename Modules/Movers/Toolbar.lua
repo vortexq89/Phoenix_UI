@@ -5,7 +5,15 @@ local M = ns:GetModule("Movers")
 
 --[[ Unlock-mode toolbar: which frame is selected, cycle frames, nudge, scale, opacity, reset, grid/snap,
     done. A Phoenix-owned, draggable frame; built on first unlock. ]]
-local WIDTH, HEIGHT = 700, 96
+local WIDTH, HEIGHT = 820, 96
+
+-- The options page that holds the selected frame's settings, from its mover key prefix.
+local PAGES = { ab = "ActionBars", auras = "Auras", bags = "Bags", cb = "CastBars", cdm = "Tracker",
+    gf = "GroupFrames", pvp = "PvP", quests = "Quests", tooltip = "Tooltip", uf = "UnitFrames" }
+function M.SettingsPageOf(e)
+    if not e or not e.key then return nil end
+    return PAGES[e.key:match("^([%a]+)%.")]
+end
 
 local function cycle(dir)
     local list, cur = {}, M:GetSelected()
@@ -97,6 +105,13 @@ function M:BuildToolbar()
     t.reset = W:Button(t, L.RESET, "secondary", "reset", 96)
     t.reset:SetPoint("BOTTOMRIGHT", -12, 12)
     t.reset.onClick = function() local e = M:GetSelected(); if e then M:ResetFrame(e.key) end end
+    -- open the selected frame's own settings (size, layout, visibility) next to the movers
+    t.settings = W:Button(t, L.MOVERS_SETTINGS, "secondary", "cog", 110)
+    t.settings:SetPoint("RIGHT", t.reset, "LEFT", -8, 0)
+    t.settings.onClick = function()
+        local page = M.SettingsPageOf(M:GetSelected())
+        if page and ns.Config and ns.Config.Show then ns.Config:Show(page) end
+    end
 
     Skin:Register(t, function(self)
         Skin:Panel(self, "raised", { border = "border.strong", shadow = 14, sheen = 30 })

@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "Entsperren",
     MOVERS_GRID = "Raster",
     MOVERS_SHOW_HIDDEN = "Versteckte Rahmen zeigen",
+    MOVERS_SETTINGS = "Einstellungen",
     MOVERS_SHOW_HIDDEN_DESC = "Zeigt auch Kästen für Rahmen, die gerade nicht sichtbar sind (leere Gruppen- und Schlachtzugsrahmen, Bossrahmen, Blizzard-Meldungen). Tipp: Testrahmen zeigt Beispielrahmen.",
     MOVERS_GRID_DESC = "Zeigt im entsperrten Zustand ein Ausrichtungsraster.",
     MOVERS_GRID_SIZE = "Rastergröße",

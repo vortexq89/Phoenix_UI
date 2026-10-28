@@ -53,6 +53,7 @@ local LAYOUT = [[
         if b then
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", self, "TOPLEFT", pad + tonumber(x), -(pad + tonumber(y)))
+            b:SetScale(1) -- Blizzard's Edit Mode "icon size" scales its buttons; Phoenix sizes them itself
             b:SetWidth(w)
             b:SetHeight(h)
         end
@@ -146,7 +147,19 @@ local function header(def)
     if def.kind ~= "items" then
         for i = 1, def.count do
             local b = blizzardButton(def, i)
-            if b then SecureHandlerSetFrameRef(h, "b" .. i, b) end
+            if b then
+                SecureHandlerSetFrameRef(h, "b" .. i, b)
+                -- Edit Mode re-applies its icon size by scaling the button: that shrank Phoenix bars (24 px
+                -- buttons, bars bunched together). Undo it whenever it happens out of combat; the layout
+                -- snippet also resets it in combat.
+                if b.SetScale and not b.puiScaleHook then
+                    b.puiScaleHook = true
+                    hooksecurefunc(b, "SetScale", function(self, s)
+                        if s ~= 1 and h.def and M:IsPhoenix() and not InCombatLockdown() then self:SetScale(1) end
+                    end)
+                end
+                if not InCombatLockdown() and b.SetScale then b:SetScale(1) end
+            end
         end
     end
     h:SetAttribute("pb-total", def.count)

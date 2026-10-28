@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "Déverrouiller",
     MOVERS_GRID = "Grille",
     MOVERS_SHOW_HIDDEN = "Afficher les cadres masqués",
+    MOVERS_SETTINGS = "Réglages",
     MOVERS_SHOW_HIDDEN_DESC = "Affiche aussi les cadres absents de l'écran (groupe et raid vides, boss, messages de Blizzard). Astuce : les cadres de test affichent des exemples.",
     MOVERS_GRID_DESC = "Affiche une grille d'alignement une fois déverrouillé.",
     MOVERS_GRID_SIZE = "Taille de la grille",

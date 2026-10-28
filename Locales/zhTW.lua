@@ -331,6 +331,7 @@ local T = {
     MOVERS_UNLOCK_BUTTON = "解鎖",
     MOVERS_GRID = "網格",
     MOVERS_SHOW_HIDDEN = "顯示隱藏框架",
+    MOVERS_SETTINGS = "設定",
     MOVERS_SHOW_HIDDEN_DESC = "同時顯示目前不在畫面上的框架（空的隊伍和團隊、首領、暴雪訊息框）。提示：測試框架可顯示範例。",
     MOVERS_GRID_DESC = "解鎖時顯示對齊網格。",
     MOVERS_GRID_SIZE = "網格大小",
