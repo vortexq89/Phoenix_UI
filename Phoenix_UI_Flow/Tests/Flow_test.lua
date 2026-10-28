@@ -164,3 +164,69 @@ Tests:Add("Flow", "live preview shows the Quiet mode grid", function(t)
   P.Flow(card)
   t:eq(P.State(card).flowOn, 1, "a ticked cell shows live")
 end)
+
+Tests:Add("Flow", "batch C: leave prompt, containers, Train All, banners, /gg, queue protection, Tab binder, screenshot", function(t)
+  if not H then return end
+  local keys = { "flow.leavePrompt", "flow.openContainers", "flow.trainAll", "flow.hideTutorials", "flow.hideBanners", "flow.gg",
+    "flow.queueProtect", "flow.tabBinder", "flow.screenshot" }
+  for _, k in ipairs(keys) do t:eq(Schema:Def(k).default, false, k .. " off at first install") end
+  enable(t, unpack(keys))
+  local A = FL.actions
+  t:cleanup(function() H.items = {}; H.trainer = {}; H.group = nil; H.pvp = nil; wipe(H.chat); H.inCombat = false; PUI.CombatQueue.Drain() end)
+  t:eq(FL.wanted.LFG_COMPLETION_REWARD, nil, "no events while the switches are off")
+  for _, k in ipairs(keys) do Schema:Set(k, true) end
+  t:ok(FL.wanted.LFG_COMPLETION_REWARD and FL.wanted.BAG_UPDATE_DELAYED and FL.wanted.ACHIEVEMENT_EARNED, "events follow the switches")
+  -- leave prompt
+  H.group = { "party1" }
+  t:ok(A.leavePrompt(), "asks to leave")
+  -- containers
+  H.items["0:2"] = { hasLoot = true }
+  local bankShown = BankFrame:IsShown()
+  BankFrame:Hide()
+  t:cleanup(function() if bankShown then BankFrame:Show() end end)
+  H.calls = {}
+  t:ok(A.openContainers(), "opens a lootable item")
+  t:same(H.calls[1], { "UseContainerItem", 0, 2 }, "bag 0 slot 2")
+  H.inCombat = true
+  t:eq(A.openContainers(), false, "never in combat")
+  H.inCombat = false
+  -- Train All
+  H.trainer = { "used", "available", "unavailable", "available" }
+  rawset(_G, "ClassTrainerFrame", CreateFrame("Frame"))
+  t:cleanup(function() rawset(_G, "ClassTrainerFrame", nil) end)
+  A.trainAll()
+  t:ok(FL.trainButton:IsShown(), "button shown when something can be trained")
+  H.calls = {}
+  t:eq(FL.TrainAll(), 2, "two available")
+  t:same({ H.calls[1][2], H.calls[2][2] }, { 4, 2 }, "bought from the bottom up")
+  -- banners and tutorials
+  local banner = CreateFrame("Frame", "BossBanner")
+  t:cleanup(function() rawset(_G, "BossBanner", nil) end)
+  FL.ApplyBanners()
+  t:eq(banner:GetAlpha(), 0, "boss banner hidden")
+  t:eq(C_CVar.GetCVar("showTutorials"), "0", "tutorials off")
+  Schema:Set("flow.hideBanners", false)
+  t:eq(banner:GetAlpha(), 1, "banner back live")
+  -- /gg
+  t:ok(FL.GG(), "gg sent to the group channel")
+  t:eq(H.chat[#H.chat][1], "gg", "gg said")
+  -- queue protection
+  local enter = CreateFrame("Button", "LFGDungeonReadyDialogEnterDungeonButton")
+  t:cleanup(function() rawset(_G, "LFGDungeonReadyDialogEnterDungeonButton", nil) end)
+  t:ok(A.queueProtect(), "buttons held")
+  t:ok(PUI.Ticker:IsRegistered("flow.queueProtect"), "one-shot ticker")
+  FL.QueueRelease()
+  -- Tab binder
+  H.pvp = "arena"
+  t:ok(A.tabBinder(), "Tab claimed in arena")
+  PUI.CombatQueue.Drain()
+  t:eq(H.overrideBindings.TAB and H.overrideBindings.TAB.command, "TARGETNEARESTENEMYPLAYER", "override binding")
+  H.pvp = nil
+  t:eq(A.tabBinder(), false, "released outside PvP")
+  -- screenshot
+  H.calls = {}
+  A.screenshot()
+  t:ok(PUI.Ticker:IsRegistered("flow.screenshot"), "screenshot after a second")
+  Schema:Set("flow.hideTutorials", false)
+  t:ok(C_CVar.GetCVar("showTutorials") ~= "0", "tutorial setting restored")
+end)

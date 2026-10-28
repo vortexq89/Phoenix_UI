@@ -75,7 +75,7 @@ function CreateFont(name)
 end
 RAID_CLASS_COLORS = { MAGE = { r = 0.25, g = 0.78, b = 0.92 } }
 function IsShiftKeyDown() return false end
-function IsAltKeyDown() return false end
+function IsAltKeyDown() return H.altDown == true end
 function IsControlKeyDown() return false end
 UISpecialFrames = {}
 SlashCmdList = {}
@@ -381,7 +381,8 @@ function UnitSelectionColor() return maybe(1), maybe(0.2), maybe(0.2), 1 end
 function UnitIsConnected() return maybe(true) end
 function UnitIsDeadOrGhost() return maybe(false) end
 function UnitIsGroupLeader() return maybe(false) end
-function UnitAffectingCombat() return maybe(false) end
+H.combatUnits = {}
+function UnitAffectingCombat(u) return maybe(H.combatUnits[u] == true) end
 function UnitIsPVP() return maybe(false) end
 function UnitFactionGroup() return "Horde", "Horde" end
 function IsResting() return false end
@@ -969,7 +970,7 @@ C_DeathRecap = {
   GetRecapMaxHealth = function() return 100 end,
 }
 H.threatPct = {} -- [unit] = pct
-function UnitDetailedThreatSituation(unit, mob) local p = H.threatPct[unit]; if p == nil then return nil end return maybe(unit == "player"), maybe(3), maybe(p), maybe(p), maybe(p * 1000) end
+function UnitDetailedThreatSituation(unit, mob) local p = H.threatPct[unit]; if p == nil then return nil end return maybe(unit == "player" and not H.notTanking), maybe(3), maybe(p), maybe(p), maybe(p * 1000) end
 H.charges = nil -- { cur, max }
 C_Spell.GetSpellCharges = function(id) if id == 20484 and H.charges then return { currentCharges = maybe(H.charges[1]), maxCharges = H.charges[2], cooldownStartTime = 0, cooldownDuration = 600 } end return nil end
 C_MythicPlus.GetOwnedKeystoneLevel = function() return H.ownedKeyLevel or 0 end
@@ -1040,12 +1041,15 @@ C_EncounterTimeline = {
   GetEventTimeRemaining = function() return H.timelineLeft or 10 end,
   GetEventInfo = function(id) return H.timeline and H.timeline[id] end,
   GetEventColor = function() return nil end,
-  GetSortedEventList = function() local out = {}; for id in pairs(H.timeline or {}) do out[#out + 1] = id end; table.sort(out); return out end,
+  GetSortedEventList = function(n) local out = {}; for id in pairs(H.timeline or {}) do out[#out + 1] = id end; table.sort(out); while n and #out > n do table.remove(out) end; return out end,
+  GetViewType = function() return H.timelineView or 1 end,
+  SetViewType = function(v) H.timelineView = v end,
 }
 
 function UnitGUID(u) return "Player-1-" .. tostring(u) end
 CompactArenaFrame = CreateFrame("Frame", "CompactArenaFrame", UIParent)
-function GetSpecializationInfoForSpecID(id) return id, "Spec" .. tostring(id), "", 200000 + (id or 0), "DAMAGER" end
+H.specRoles = { [256] = "HEALER", [105] = "HEALER", [65] = "HEALER", [264] = "HEALER", [270] = "HEALER", [257] = "HEALER", [1468] = "HEALER" }
+function GetSpecializationInfoForSpecID(id) return id, "Spec" .. tostring(id), "", 200000 + (id or 0), H.specRoles[id] or "DAMAGER" end
 C_SpellDiminish = { IsSystemSupported = function() return true end,
   GetSpellDiminishCategoryInfo = function(c) return { category = c, name = "Cat" .. tostring(c), icon = 300000 + c } end }
 H.arenaCC = {}
@@ -1066,6 +1070,7 @@ for _, k in ipairs({ "floatingCombatTextCombatDamage", "floatingCombatTextCombat
   H.cvars[k] = H.cvars[k] or "1"
 end
 H.cvars.spellDiminishPVPEnemiesEnabled = "0"
+H.cvars.spellDiminishPVPOnlyTriggerableByMe = "0"
 
 
 -- Step 9c: PvP UI, Friends, Sentinel reporter, diagnostics, profiler.
@@ -1184,9 +1189,29 @@ H.professionInfo = {}
 function GetProfessionInfo(p) local i = H.professionInfo[p]; if i then return i[1], "", i[2], i[3] end end
 H.bind = "Dornogal"
 function GetBindLocation() return H.bind end
+-- Deferred C stubs.
+H.questItems, H.pushed = {}, {}
+function GetQuestLogSpecialItemInfo(i) local it = H.questItems[i]; if it then return it.link, it.icon, it.charges, it.showComplete end end
+function QuestLogPushQuest(i) H.pushed[#H.pushed + 1] = i end
+H.pushable = {}
+C_QuestLog.IsPushableQuest = function(id) return H.pushable[id] == true end
+H.weaponEnchant = true
+C_PaperDollInfo.GetTemporaryEnchantmentInfo = function() if H.weaponEnchant then return { remainingTimeMs = 3600000 } end end
+C_Traits = rawget(_G, "C_Traits") or {}
+C_Traits.GetConfigInfo = C_Traits.GetConfigInfo or function(id) return { name = "Loadout " .. tostring(id) } end
+H.mapBest, H.runHistory = {}, {}
+C_MythicPlus.GetSeasonBestAffixScoreInfoForMap = function(id) return {}, maybe(H.mapBest[id] or 0) end
+C_MythicPlus.GetRunHistory = function() return H.runHistory end
+H.trainer = {}
+function GetNumTrainerServices() return #H.trainer end
+function GetTrainerServiceInfo(i) return "Skill " .. i, H.trainer[i] end
+function BuyTrainerService(i) H.calls[#H.calls + 1] = { "BuyTrainerService", i } end
+function Screenshot() H.calls[#H.calls + 1] = { "Screenshot" } end
+C_PartyInfo.LeaveParty = function() H.calls[#H.calls + 1] = { "LeaveParty" } end
+function GetNormalizedRealmName() return "Silvermoon" end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
-  AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }
+  AnchorUtil = true, RaiderIO = true, LibStub = true, BigWigsAPI = true, FrameSortApi = true, CustomAuraContainerTemplate = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end

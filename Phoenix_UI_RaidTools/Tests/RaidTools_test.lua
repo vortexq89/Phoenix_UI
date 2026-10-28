@@ -96,3 +96,46 @@ Tests:Add("RaidTools", "live preview follows the bar settings", function(t)
   t:eq(P.State(card).rtLines, 5, "bar and stats lines")
   t:eq(P.State(card).hud.rt.lines[1]:GetText():find("world markers", 1, true), nil, "world markers left out live")
 end)
+
+Tests:Add("RaidTools", "notes out of combat, boss tooltip stats line, stats window with reset", function(t)
+  if not H then return end
+  local X = RT.Extras
+  Tests.Keep(t, "rt.notesText"); Tests.Keep(t, "module.RaidTools"); Tests.Keep(t, "rt.stats.scope")
+  Schema:Set("module.RaidTools", true)
+  Schema:Set("rt.notesText", { "Dummy: soak the left orb", "*: lust on pull", "Other Boss: spread", "not a note" })
+  t:eq(#X.NotesFor("Dummy"), 2, "boss lines plus * lines")
+  t:eq(#X.NotesFor("dummy"), 2, "case-insensitive boss names")
+  t:eq(#X.NotesFor(nil), 1, "only * lines without a boss")
+  H.units.target = true
+  t:cleanup(function() H.units.target = nil; H.inCombat = false end)
+  H.fire("PLAYER_TARGET_CHANGED")
+  t:ok(X.notes and X.notes:IsShown(), "notes shown out of combat")
+  t:ok(X.notes.body:GetText():find("soak the left orb", 1, true), "target's boss lines")
+  H.inCombat = true; H.fire("PLAYER_REGEN_DISABLED")
+  t:eq(X.notes:IsShown(), false, "hidden when combat starts")
+  H.inCombat = false; PUI.CombatQueue.Drain()
+  t:ok(X.notes:IsShown(), "back after combat")
+  -- tooltip line
+  local store = ST.Store()
+  local saved = {}
+  for k, v in pairs(store) do saved[k] = v; store[k] = nil end
+  t:cleanup(function() for k in pairs(store) do store[k] = nil end; for k, v in pairs(saved) do store[k] = v end end)
+  ST.Record(9001, "Dummy", 0, 250, true, 1000); ST.Record(9001, "Dummy", 0, 200, false, 1100)
+  local tip = CreateFrame("GameTooltip")
+  X.OnTooltip(tip)
+  t:ok(rawget(tip, "lines") == nil, "player tooltip unchanged")
+  tip.GetUnit = function() return "Dummy", "boss1" end
+  X.OnTooltip(tip)
+  t:ok(rawget(tip, "lines") and tostring(tip.lines[1]):find("1 kills, 1 wipes", 1, true), "boss tooltip stats line")
+  -- stats window
+  local f = X.ShowStats()
+  t:ok(f:IsShown() and f.rows[1]:IsShown(), "stats window lists the boss")
+  local accepted
+  local confirm = PUI.Dialogs.Confirm
+  PUI.Dialogs.Confirm = function(_, o) accepted = o end
+  t:cleanup(function() PUI.Dialogs.Confirm = confirm; f:Hide() end)
+  f.rows[1].reset:GetScript("OnClick")(f.rows[1].reset)
+  t:ok(accepted, "reset asks first")
+  accepted.onAccept()
+  t:eq(store["9001:0"], nil, "reset after confirm")
+end)

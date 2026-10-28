@@ -328,3 +328,39 @@ Tests:Add("Options", "batch B HUD extras show in the minimap, tooltip, data bar 
   Options.Previews.GroupFinder(card)
   t:eq(bag(card).gfQueue:IsShown(), false, "timer off live")
 end)
+
+Tests:Add("Options", "batch C extras show live on every module preview", function(t)
+  local bag = Options.PreviewsExtras.Bag
+  local pages = { QuestTracker = "qt", Reminders = "rm", Embers = "em", Ascent = "as", Flow = "fl", GroupFinder = "gf", RaidTools = "rt",
+    Pulse = "pl", Arena = "ar", Spark = "sp", CastHistory = "ch", PvP = "pv", Friends = "fr", Sentinel = "sn" }
+  for _, k in ipairs({ "pulse.nextHud", "arena.pets", "flow.gg" }) do Tests.Keep(t, k) end
+  for owner, id in pairs(pages) do
+    local card = CreateFrame("Frame")
+    Options.Previews[owner](card)
+    local first = bag(card)[id .. "C1"]
+    t:ok(first and first:IsShown(), owner .. ": batch C lines drawn")
+  end
+  local card = CreateFrame("Frame")
+  Schema:Set("pulse.nextHud", true)
+  Options.Previews.Pulse(card)
+  t:ok(bag(card).plC2:GetText():find("Devouring Cosmos", 1, true), "next abilities sample")
+  Schema:Set("pulse.nextHud", false)
+  Options.Previews.Pulse(card)
+  t:ok(bag(card).plC1:GetText():find("(off)", 1, true), "setting change shows live")
+  Schema:Set("arena.pets", false)
+  Options.Previews.Arena(card)
+  t:ok(bag(card).arC2:GetText():find("Pet frames off", 1, true), "arena pets off in the preview")
+end)
+
+Tests:Add("Options", "CPU chip shows the open page's profiler time live", function(t)
+  local Chip, P = Options.CpuChip, PUI.Profiler
+  Tests.Keep(t, "sentinel.cpuChip")
+  local saved = P.stats
+  P.stats = { a = { owner = "Embers", self = 1.5 }, b = { owner = "Arena", self = 9 } }
+  t:cleanup(function() P.stats = saved end)
+  t:ok(Chip.Text("Embers"):find("1.50 ms", 1, true), "page total")
+  t:eq(Chip.Text("Dashboard"), nil, "not on the Dashboard")
+  t:eq(Chip.Text("Flow"), nil, "nothing without samples")
+  Schema:Set("sentinel.cpuChip", false)
+  t:eq(Chip.Text("Embers"), nil, "off")
+end)

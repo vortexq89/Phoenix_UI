@@ -11,4 +11,5 @@
 ## Dependencies: Phoenix_UI
 
 QuestTracker.lua
+Extras.lua
 Tests\QuestTracker_test.lua

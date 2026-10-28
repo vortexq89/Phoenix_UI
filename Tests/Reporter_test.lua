@@ -172,3 +172,43 @@ Tests:Add("Sentinel", "outbox at logout is the previewed payload; nothing when a
   S.Upload:MarkSaved()
   t:eq(S.db.outbox, nil, "off: nothing queued")
 end)
+
+Tests:Add("Sentinel", "batch C: media sounds, baseline warning once per session, event trace on and off", function(t)
+  local S = scratch(t)
+  local X = S.Extras
+  if not X then return end
+  for _, k in ipairs({ "sentinel.baselineWarn", "sentinel.trace", "sentinel.alertSoundName", "sentinel.alertSound" }) do Tests.Keep(t, k) end
+  -- Sound list: game sounds first, then the media library.
+  local choices = Schema:Def("sentinel.alertSoundName").choices()
+  t:eq(choices[1], "Raid Warning", "game sounds first")
+  t:ok(#choices >= 4, "media sounds appended")
+  -- Baseline: an error from 3 earlier sessions is known.
+  X.warned, X.outside = false, 0
+  local printed = {}
+  local print0 = PUI.Slash.Print
+  PUI.Slash.Print = function(msg) printed[#printed + 1] = msg end
+  t:cleanup(function() PUI.Slash.Print = print0; X.warned, X.outside = false, 0 end)
+  S.db.seenIn = { old = { n = 3, last = S.db.session - 1 } }
+  t:eq(X.InBaseline("old"), true, "seen in 3 sessions -> baseline")
+  t:eq(X.InBaseline("fresh"), false, "new error outside")
+  Schema:Set("sentinel.baselineWarn", 2)
+  X.Note({ hash = "old", kind = "error" })
+  t:eq(X.outside, 0, "baseline errors do not count")
+  X.Note({ hash = "a", kind = "error" })
+  X.Note({ hash = "b", kind = "error" })
+  X.Note({ hash = "c", kind = "error" })
+  t:eq(#printed, 1, "warned once")
+  t:ok(printed[1]:find("3 errors", 1, true) == nil and printed[1]:find("2 errors", 1, true), "at the limit")
+  t:eq(S.db.seenIn.a.n, 1, "sessions counted")
+  -- Trace: wraps Kernel.Fire only while on.
+  local fire = PUI.Kernel.Fire
+  Schema:Set("sentinel.trace", true)
+  t:ok(PUI.Kernel.Fire ~= fire, "wrapped while on")
+  PUI.Kernel:Fire("PUI_TEST_SIGNAL", "x")
+  t:ok(X.ring[#X.ring]:find("PUI_TEST_SIGNAL", 1, true), "signal recorded")
+  X.Toggle()
+  t:ok(X.lines[1]:GetText():find("PUI_TEST_SIGNAL", 1, true), "window lists it")
+  X.Toggle()
+  Schema:Set("sentinel.trace", false)
+  t:eq(#X.ring, 0, "cleared when off")
+end)

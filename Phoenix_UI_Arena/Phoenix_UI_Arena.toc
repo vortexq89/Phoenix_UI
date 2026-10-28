@@ -15,4 +15,5 @@ DR.lua
 Match.lua
 Frames.lua
 Arena.lua
+Extras.lua
 Tests\Arena_test.lua

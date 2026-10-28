@@ -33,7 +33,10 @@ function Alerts:OnError(inc, isNew)
   self.last[inc.hash] = now
   if self:Yield() then return false end
   if S.toastEnabled and S.Toast then S.Toast:Notify(inc) end
-  if o.alertSound then PlaySound(self.SOUNDS[o.alertSoundName] or 8959, "Master") end
+  if o.alertSound then
+    local kit = self.SOUNDS[o.alertSoundName or "Raid Warning"]
+    if kit then PlaySound(kit, "Master") else PUI.Media:PlaySound(o.alertSoundName) end
+  end
   if o.alertChat then
     PUI.Slash.Print(string.format("error in %s: %s  %s", inc.module or "?", (inc.message or ""):sub(1, 80), PUI.Links.Make("sentinel", inc.hash, "open")))
   end

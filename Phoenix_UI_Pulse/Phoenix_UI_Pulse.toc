@@ -12,4 +12,5 @@
 
 Bars.lua
 Pulse.lua
+Extras.lua
 Tests\Pulse_test.lua

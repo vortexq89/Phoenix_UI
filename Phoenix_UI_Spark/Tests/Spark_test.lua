@@ -123,3 +123,68 @@ Tests:Add("Spark", "live preview shows the four areas with sample lines", functi
   P.Spark(card)
   t:eq(P.State(card).sparkAreas, 3, "an area turned off leaves the preview live")
 end)
+
+Tests:Add("Spark", "per-event sounds, aura rows, substitutions, triggers and builder, MSBT import", function(t)
+  if not H then return end
+  local X = SP.Extras
+  for _, k in ipairs({ "module.Spark", "spark.ev.auraGain.on", "spark.ev.auraFade.on", "spark.substitutions", "spark.abbreviate", "spark.triggers",
+    "spark.ev.inDamage.sound", "spark.area.incoming.behaviour", "spark.area.incoming.direction", "spark.ev.outDamage.template", "spark.shortNumbers",
+    "spark.ev.loot.on", "spark.ev.inDamage.color" }) do Tests.Keep(t, k) end
+  Schema:Set("module.Spark", true)
+  t:cleanup(function() E.Clear() end)
+  -- sound per row (throttled)
+  PUI.Media:Register("sound", "Ding", "Interface\\Ding.ogg")
+  local played = {}
+  local psf = rawget(_G, "PlaySoundFile")
+  rawset(_G, "PlaySoundFile", function(path) played[#played + 1] = path end)
+  t:cleanup(function() rawset(_G, "PlaySoundFile", psf) end)
+  Schema:Set("spark.ev.inDamage.sound", "Ding")
+  F.Emit("inDamage", { amount = 10 }); F.Emit("inDamage", { amount = 11 })
+  t:eq(#played, 1, "row sound, throttled")
+  -- aura rows
+  Schema:Set("spark.ev.auraGain.on", true); Schema:Set("spark.ev.auraFade.on", true)
+  E.Clear()
+  X.OnAura("player", { addedAuras = { { auraInstanceID = 41, name = "Power Word: Fortitude" }, { auraInstanceID = 42, name = H.secret("Hidden") } } })
+  E.Flush(true)
+  t:ok(texts():find("+Power Word: Fortitude", 1, true), "aura gain line")
+  t:eq(X.auraNames[42], nil, "secret aura name skipped")
+  X.OnAura("player", { removedAuraInstanceIDs = { 41 } })
+  E.Flush(true)
+  t:ok(texts():find("-Power Word: Fortitude", 1, true), "aura fade line")
+  -- substitutions and abbreviation
+  Schema:Set("spark.substitutions", { "Mortal Strike = MS" })
+  t:eq(X.Text("Mortal Strike"), "MS", "substitution")
+  Schema:Set("spark.abbreviate", true)
+  t:eq(X.Text("Shadow Word: Pain Extended"), "SWPE", "long names shortened")
+  t:eq(X.Text(H.secret("x")) ~= nil, true, "secret names pass through untouched")
+  Schema:Set("spark.abbreviate", false)
+  -- triggers and builder
+  local b = X.Builder()
+  X.CycleKind()
+  t:eq(b.draft.kind, "auraGain", "builder cycles the condition")
+  b.draft.match = "Bloodlust"; b.draft.message = "LUST!"; b.draft.hex = "ff0000"
+  t:ok(X.AddDraft(), "builder adds a line")
+  t:eq(Schema:Get("spark.triggers")[1], "auraGain | Bloodlust | LUST! | ff0000 | ", "stored as a readable line")
+  b:Hide()
+  E.Clear()
+  X.OnAura("player", { addedAuras = { { auraInstanceID = 50, name = "Bloodlust" } } })
+  E.Flush(true)
+  t:ok(texts():find("LUST!", 1, true), "trigger fired on the aura")
+  Schema:Set("spark.triggers", { "cast | 133 | Fireball out |  | " })
+  t:eq(X.Fire("cast", "Fireball", 133), 1, "cast trigger by spell ID")
+  t:eq(X.Fire("cast", H.secret("Fireball"), H.secret(133)), 0, "secret cast never compared")
+  -- MSBT import
+  local sv = { profiles = { Main = {
+    scrollAreas = { Incoming = { animationStyle = "Straight", direction = "Up", textAlignIndex = 2, scrollHeight = 900 } },
+    events = { OUTGOING_DAMAGE = { message = "%a (%n) %sl" }, NOTIFICATION_LOOT = { disabled = true }, INCOMING_DAMAGE = { colorR = 0.5, colorG = 0, colorB = 0 } },
+    shortenNumbers = false, abilitySubstitutions = { ["Mortal Strike"] = "Morty" } } } }
+  t:eq(select(2, X.ImportMSBT(nil, nil)), "MikScrollingBattleText's saved settings are not loaded", "needs MSBT's data")
+  local n = X.ImportMSBT(sv, { currentProfileName = "Main" })
+  t:ok(n >= 8, "settings written: " .. tostring(n))
+  t:eq(Schema:Get("spark.area.incoming.behaviour"), "scroll", "animation mapped")
+  t:eq(Schema:Get("spark.area.incoming.direction"), "up", "direction mapped")
+  t:eq(Schema:Get("spark.ev.outDamage.template"), "%a %s", "message tokens mapped")
+  t:eq(Schema:Get("spark.ev.loot.on"), false, "event off mapped")
+  t:eq(Schema:Get("spark.ev.inDamage.color").r, 0.5, "colour mapped")
+  t:eq(Schema:Get("spark.substitutions")[1], "Mortal Strike = Morty", "substitutions imported")
+end)

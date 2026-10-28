@@ -13,4 +13,5 @@
 Engine.lua
 Feed.lua
 Spark.lua
+Extras.lua
 Tests\Spark_test.lua

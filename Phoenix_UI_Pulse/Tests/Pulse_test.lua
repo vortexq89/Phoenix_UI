@@ -90,3 +90,43 @@ Tests:Add("Pulse", "live preview draws sample bars in the live style and stops i
   P.Update("Flow", card)
   t:eq(PUI.Ticker:IsRegistered("pulse.text.preview"), false, "leaving the page releases the preview bars")
 end)
+
+Tests:Add("Pulse", "next-three list, per-boss rules, Blizzard timeline view, BigWigs bar style", function(t)
+  if not H then return end
+  local X = PL.Extras
+  for _, k in ipairs({ "module.Pulse", "pulse.nextHud", "pulse.bossRules", "pulse.hideBlizzard", "pulse.nextCount" }) do Tests.Keep(t, k) end
+  t:cleanup(function() H.timeline = nil; H.timelineView = nil; rawset(_G, "BigWigsAPI", nil); X.bigwigsDone = nil; X.boss = nil; X.Apply() end)
+  Schema:Set("module.Pulse", true)
+  local rules = X.ParseRules({ "Dimensius: bars=4 hud=on", "3129: off", "junk" })
+  t:eq(rules.dimensius.bars, 4, "bars limit"); t:eq(rules.dimensius.hud, true, "hud on"); t:eq(rules["3129"].off, true, "off by encounter ID")
+  H.timeline = {}
+  for i = 1, 4 do H.timeline[i] = { id = i, spellName = H.secret("Ability" .. i), iconFileID = 90 + i, duration = 10 * i } end
+  Schema:Set("pulse.nextHud", true)
+  H.fire("ENCOUNTER_START", 3000, "Dummy Boss", 16, 20)
+  t:eq(X.PaintHud(), 3, "three next abilities")
+  t:ok(X.hud:IsShown() and X.hud.rows[3]:IsShown() and not X.hud.rows[4]:IsShown(), "rows shown")
+  t:ok(PUI.Ticker:IsRegistered("pulse.next"), "refresh runs through the Ticker during the fight")
+  Schema:Set("pulse.nextCount", 2)
+  t:eq(X.PaintHud(), 2, "count applies live")
+  Schema:Set("pulse.bossRules", { "Dummy Boss: off" })
+  t:eq(PL.TimelineAllowed(), false, "per-boss off")
+  t:eq(X.hud:IsShown(), false, "list hidden for that boss")
+  Schema:Set("pulse.bossRules", { "3000: bars=2" })
+  t:eq(PL.style.max, 2, "per-boss bar limit")
+  H.fire("ENCOUNTER_END", 3000, "Dummy Boss", 16, 20, 1)
+  t:ok(PL.style.max ~= 2, "limit restored after the fight")
+  t:eq(PUI.Ticker:IsRegistered("pulse.next"), false, "no Ticker job outside a boss fight")
+  -- Blizzard view
+  H.timelineView = 2
+  Schema:Set("pulse.hideBlizzard", true)
+  t:eq(H.timelineView, 0, "Blizzard timeline set to its empty view")
+  Schema:Set("pulse.hideBlizzard", false)
+  t:eq(H.timelineView, 2, "previous view restored")
+  -- BigWigs style
+  local got
+  rawset(_G, "BigWigsAPI", { RegisterBarStyle = function(_, k, st) got = { k = k, st = st } end })
+  t:ok(X.RegisterBigWigs(), "registered with BigWigs")
+  t:eq(got.k, "PhoenixUI", "style key"); t:eq(got.st.apiVersion, 1, "api version")
+  local bar = CreateFrame("Frame"); got.st.ApplyStyle(bar)
+  t:ok(rawget(bar, "phoenixEdge"), "style applied to a bar")
+end)
