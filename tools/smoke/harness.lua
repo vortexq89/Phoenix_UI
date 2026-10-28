@@ -1807,6 +1807,12 @@ try("armory link", function()
     local C = ns.modules.Chat
     local us = C.ArmoryURL("Vortex", "TwistingNether", "US")
     assert(us == "https://worldofwarcraft.blizzard.com/en-us/character/us/twisting-nether/vortex", "bad us url " .. tostring(us))
+    for input, want in pairs({ ["Area 52"] = "area-52", Area52 = "area-52", ["Mal'Ganis"] = "malganis", MalGanis = "mal-ganis",
+            ["Azjol-Nerub"] = "azjolnerub", AzjolNerub = "azjolnerub", ["Twisting Nether"] = "twisting-nether",
+            TwistingNether = "twisting-nether", ["Aggra (Português)"] = "aggra-português", Draenor = "draenor" }) do
+        local got = C.RealmSlug(input)
+        assert(got == want, input .. " -> " .. tostring(got) .. ", want " .. want)
+    end
     assert(C.ArmoryURL("Abc", "Twisting Nether", "EU"):find("/en%-gb/character/eu/twisting%-nether/abc$"), "bad eu url")
     assert(C.ArmoryURL("Abc", "", "EU") == nil and C.ArmoryURL(nil, "x") == nil, "empty input made a url")
     local made = {}

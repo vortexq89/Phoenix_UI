@@ -107,13 +107,32 @@ M.ShowURL = showURL
 ---------------------------------------------------------------- armory link in unit menus
 -- The official armory address for a player: worldofwarcraft.blizzard.com/<locale>/character/<region>/<realm>/<name>.
 local REGION_LOCALE = { us = "en-us", eu = "en-gb", kr = "ko-kr", tw = "zh-tw", cn = "zh-cn" }
+-- Realm slug as the armory writes it: lower case, apostrophes and hyphens dropped, spaces become "-".
+-- Display names ("Area 52", "Twisting Nether") convert directly. A normalized name ("Area52", "TwistingNether",
+-- what menus and GetNormalizedRealmName give) has lost its spaces: they come back before each capital that
+-- follows a lower-case letter and between letters and digits. Hyphenated realms lose the hyphen in both forms,
+-- which matches the armory ("Azjol-Nerub" -> "azjolnerub"), except where the split would add one (listed).
+local SLUG_EXCEPTIONS = { azjolnerub = "azjolnerub", ["azjol-nerub"] = "azjolnerub" }
+function M.RealmSlug(realm)
+    realm = tostring(realm or "")
+    if realm == "" then return nil end
+    local s
+    if realm:find(" ", 1, true) or realm:find("-", 1, true) then
+        s = realm:gsub("['%-()]", ""):gsub("%s+", "-")
+    else
+        s = realm:gsub("(%l)(%u)", "%1-%2"):gsub("(%a)(%d)", "%1-%2"):gsub("(%d)(%a)", "%1-%2"):gsub("'", "")
+    end
+    s = s:lower()
+    local raw = realm:lower():gsub("[%s']", "")
+    return SLUG_EXCEPTIONS[raw] or s
+end
 function M.ArmoryURL(name, realm, region)
     if type(name) ~= "string" or name == "" then return nil end
     region = tostring(region or "us"):lower()
-    realm = tostring(realm or ""):gsub("(%l)(%u)", "%1-%2"):gsub("'", ""):gsub("%s+", "-"):lower()
-    if realm == "" then return nil end
+    local slug = M.RealmSlug(realm)
+    if not slug then return nil end
     return ("https://worldofwarcraft.blizzard.com/%s/character/%s/%s/%s"):format(REGION_LOCALE[region] or "en-us",
-        region, realm, name:lower())
+        region, slug, name:lower())
 end
 local MENUS = { "MENU_UNIT_PLAYER", "MENU_UNIT_FRIEND", "MENU_UNIT_PARTY", "MENU_UNIT_RAID_PLAYER",
     "MENU_UNIT_ENEMY_PLAYER", "MENU_UNIT_COMMUNITIES_GUILD_MEMBER", "MENU_UNIT_GUILD" }
@@ -121,7 +140,9 @@ local function addArmory(_, root, ctx)
     if not (M:IsEnabled() and M.db.armoryLink) or type(ctx) ~= "table" then return end
     local name, realm = ctx.name, ctx.server
     if Secret.IsSecret(name) or Secret.IsSecret(realm) or type(name) ~= "string" then return end
-    if not realm or realm == "" then realm = GetNormalizedRealmName and GetNormalizedRealmName() or GetRealmName() end
+    -- own realm (or the menu gives the normalized form of it): the display name keeps the spaces
+    local own = GetNormalizedRealmName and GetNormalizedRealmName()
+    if not realm or realm == "" or realm == own then realm = GetRealmName() end
     local region = GetCurrentRegionName and GetCurrentRegionName()
     local url = M.ArmoryURL(name, realm, region)
     if not url then return end
