@@ -100,6 +100,8 @@ ns.RegisterLocale("enUS", {
     SKINS_GAMEMENU_DESC = "Skin the Escape menu.",
     SKINS_MICRO = "Micro menu",
     SKINS_MICRO_DESC = "The small menu buttons (character, talents, quests …) as flat tiles with Phoenix glyphs; alert badges stay.",
+    SKINS_MAP = "World map and quest log",
+    SKINS_MAP_DESC = "The map window and the quest log beside it in the Phoenix look; the open quest log tab in the accent.",
     SKINS_POPUPS = "Popups",
     SKINS_POPUPS_DESC = "Skin confirmation dialogs.",
     SKINS_READYCHECK = "Ready check",

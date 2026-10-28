@@ -93,5 +93,6 @@ function M:Refresh()
     if self.SkinMicroMenu then self:SkinMicroMenu() end -- MicroMenu.lua, live
     if self.ApplyLive then self:ApplyLive() end -- Game Menu window look, live both ways
     if self.SkinGameMenu then self:SkinGameMenu() end -- GameMenu.lua, live
+    if self.SkinWorldMap then self:SkinWorldMap() end -- WorldMap.lua, live
     if not self.db.moveWindows and not InCombatLockdown() and UpdateUIPanelPositions then UpdateUIPanelPositions() end
 end

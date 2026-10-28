@@ -2075,6 +2075,28 @@ try("chat pill tabs", function()
     C.db.pillTabs = true; C:StylePill(tab, cf); C:RefreshPills()
     env.ChatTypeInfo = nil
 end)
+-- map and quest log skin (plan window 5): border frame window look, quest log panel, side tabs, tracker ticks; live off/on
+try("map and quest log skin", function()
+    local S, Q = ns.modules.Skins, ns.modules.Quests
+    local map = CreateFrame("Frame", "WorldMapFrame", UIParent)
+    map.BorderFrame = CreateFrame("Frame", nil, map)
+    local qm = CreateFrame("Frame", "QuestMapFrame", UIParent)
+    qm.QuestsTab = CreateFrame("Button", nil, qm)
+    qm.QuestsTab.SelectedTexture = qm.QuestsTab:CreateTexture()
+    qm.Background = qm:CreateTexture()
+    env.WorldMapFrame, env.QuestMapFrame = map, qm
+    assert(S.SideTabSelected(qm.QuestsTab) == true and S.SideTabSelected(nil) == false, "side tab state")
+    S:SkinWorldMap()
+    assert(S.IsWindowOn(map.BorderFrame), "map skinned")
+    S.db.worldMap = false; S:SkinWorldMap()
+    assert(not S.IsWindowOn(map.BorderFrame), "map back to Blizzard live")
+    S.db.worldMap = true; S:SkinWorldMap()
+    assert(S.IsWindowOn(map.BorderFrame), "map skinned again live")
+    local module = { Header = CreateFrame("Frame", nil, UIParent) }
+    module.Header.Text = module.Header:CreateFontString()
+    Q.HeaderTick(module, true); Q.HeaderTick(module, true); Q.HeaderTick(module, false)
+    env.WorldMapFrame, env.QuestMapFrame = nil, nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

@@ -85,8 +85,30 @@ local function dressBlock(module, block)
     end
 end
 
+-- Skins plan window 5: an accent tick (primary -> secondary) beside each module header; our own texture on
+-- the header, hidden again when the restyle is switched off.
+local ticks = setmetatable({}, { __mode = "k" })
+local function headerTick(module, on)
+    local h = module.Header
+    if not (h and h.Text) then return end
+    local t = ticks[h]
+    if not on then if t then t:Hide() end; return end
+    if not t then
+        t = h:CreateTexture(nil, "OVERLAY", nil, 2)
+        t:SetTexture(Media.textures.WHITE)
+        t:SetSize(2, 12)
+        t:SetPoint("RIGHT", h.Text, "LEFT", -4, 0)
+        ticks[h] = t
+    end
+    Skin:Gradient(t, "VERTICAL", "accent.secondary", "accent.primary")
+    t:Show()
+end
+M.HeaderTick = headerTick
+
 local function dressModule(module)
-    if not (M:IsEnabled() and M.db.restyle) then return end
+    local on = M:IsEnabled() and M.db.restyle
+    headerTick(module, on)
+    if not on then return end
     if module.Header and module.Header.Text then Skin:TextSpec(module.Header.Text, M.db.header, "heading", "accent.primary") end
     if module.EnumerateActiveBlocks then
         module:EnumerateActiveBlocks(function(block) dressBlock(module, block) end)
@@ -162,6 +184,7 @@ function M:EnableTracker()
     ns.Events:On("PLAYER_REGEN_DISABLED", self, onCombat)
     ns.Events:On("PLAYER_REGEN_ENABLED", self, function(...) onCombat(...); applySize() end)
     ns.Events:On("PLAYER_ENTERING_WORLD", self, function() self:ApplyCollapse() end)
+    ns.Events:Listen("PUI_THEME_CHANGED", self, function() self:RefreshTracker() end) -- header ticks follow the accent
     self:RefreshTracker()
 end
 
@@ -173,6 +196,11 @@ function M:RefreshTracker()
         for _, name in ipairs(MODULES) do
             local module = _G[name]
             if type(module) == "table" and module.EnumerateActiveBlocks then dressModule(module) end
+        end
+    else
+        for _, name in ipairs(MODULES) do
+            local module = _G[name]
+            if type(module) == "table" then headerTick(module, false) end
         end
     end
     ns.Combat:Run("quests.size", applySize)

@@ -12,7 +12,7 @@ local Skin, Style, W = ns.Skin, ns.Style, ns.Widgets
 local M = ns:NewModule("Skins", {
     label = "SKINS", desc = "SKINS_DESC", category = "interface", order = 5, reloadOnToggle = true,
     defaults = {
-        gameMenu = true, microMenu = true, popups = true, readyCheck = true,
+        gameMenu = true, microMenu = true, worldMap = true, popups = true, readyCheck = true,
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
@@ -130,8 +130,11 @@ local function skinTabs(frame)
 end
 
 -- One window or dialog. dialog: a centred panel without a title strip.
+local winOn, winSeen = setmetatable({}, { __mode = "k" }), setmetatable({}, { __mode = "k" })
 local function window(frame, dialog)
-    if not frame or Skin:IsSkinned(frame) then return end
+    if not frame or winOn[frame] then return end
+    if Skin:IsSkinned(frame) and not winSeen[frame] then return end -- dressed by another Phoenix module
+    winOn[frame], winSeen[frame] = true, true
     local db = M.db
     for _, key in ipairs(ART) do
         if key ~= "PortraitContainer" or db.titleStyle ~= "blizzard" then Skin:HideRegion(frame[key]) end
@@ -170,7 +173,8 @@ M.SkinWindow = window
 
 -- Live switch off: Blizzard's own art and title font back, our pieces hidden (window() redoes it when on).
 local function unwindow(frame)
-    if not frame or not Skin:IsSkinned(frame) then return end
+    if not frame or not winOn[frame] then return end
+    winOn[frame] = nil
     for _, key in ipairs(ART) do Skin:Restore(frame[key]) end
     local header = frame.Header
     if header then for _, key in ipairs(HEADER_ART) do Skin:Restore(header[key]) end end
@@ -194,6 +198,7 @@ local function unwindow(frame)
     Skin:Restore(frame)
 end
 M.UnskinWindow = unwindow
+function M.IsWindowOn(frame) return winOn[frame] and true or false end
 
 -- Windows whose switch applies live both ways (the rest restore Blizzard's look after /reload).
 M.LIVE = { gameMenu = true }
@@ -265,6 +270,7 @@ function M:OnEnable()
     end)
     if self.SetupGameMenu then self:SetupGameMenu() end -- GameMenu.lua
     if self.SkinMicroMenu then self:SkinMicroMenu() end -- MicroMenu.lua
+    if self.SetupWorldMap then self:SetupWorldMap() end -- WorldMap.lua
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then
