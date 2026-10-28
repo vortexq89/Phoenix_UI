@@ -2292,6 +2292,17 @@ try("collections phase 3 skin", function()
     local S = ns.modules.Skins
     local f = CreateFrame("Frame", "CollectionsJournal", UIParent)
     env.CollectionsJournal = f
+    local a, b = S.MountChipFilters("missing")
+    assert(a == false and b == true and select(2, S.MountChipFilters("collected")) == false, "mount chip filters")
+    local row = CreateFrame("Button", nil, f)
+    row.Favorite = row:CreateTexture()
+    S.FavouriteStar(row, true); S.FavouriteStar(row, false)
+    local set = {}
+    env.C_MountJournal = { SetCollectedFilterSetting = function(k, v) set[k] = v end, GetCollectedFilterSetting = function(k) return set[k] ~= false end }
+    env.LE_MOUNT_JOURNAL_FILTER_COLLECTED, env.LE_MOUNT_JOURNAL_FILTER_NOT_COLLECTED = 1, 2
+    env.MountJournal = CreateFrame("Frame", nil, f)
+    S:MountFilterChips(true); S:MountFilterChips(false)
+    env.C_MountJournal, env.MountJournal = nil, nil
     S:SkinCollections(); S.db.collections = false; S:Refresh(); S.db.collections = true; S:Refresh()
     env.CollectionsJournal = nil
 end)
