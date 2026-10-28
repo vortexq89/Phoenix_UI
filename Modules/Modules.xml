@@ -45,6 +45,7 @@
     <Script file="DataTexts\Bar.lua"/>
     <Script file="Movers\Movers.lua"/>
     <Script file="Movers\Toolbar.lua"/>
+    <Script file="Movers\Popup.lua"/>
     <!-- combat -->
     <Script file="CooldownText\CooldownText.lua"/>
     <Script file="Tracker\Tracker.lua"/>

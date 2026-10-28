@@ -1770,6 +1770,23 @@ try("preview click to setting", function()
     for _, f in ipairs(stage.hots or {}) do if f.key == "bars.@.width" then any = true end end
     assert(any, "no hotspot over the preview buttons")
 end)
+-- settings popup on a mover box: edits the frame's settings live
+try("mover popup", function()
+    local Mv, AB = ns.modules.Movers, ns.modules.ActionBars
+    local e = Mv:GetEntry("ab.bar2")
+    assert(e, "no mover for bar 2")
+    local p = Mv:OpenPopup(e)
+    assert(p and p:IsShown() and p.spec, "popup did not open with a settings set")
+    local before = AB.db.bars.bar2.width
+    local slider
+    for i, def in ipairs(p.spec.rows) do if def[1] == "width" then slider = p.rows[i].slider end end
+    assert(slider, "no width slider")
+    slider.onChange(slider, 33)
+    assert(AB.db.bars.bar2.width == 33, "popup slider did not write the bar")
+    ns.DB:Set(AB, "bars.bar2.width", before)
+    Mv:ClosePopup()
+    assert(not p:IsShown(), "popup did not close")
+end)
 -- tab consistency: every tab of every module page has settings, no setting appears on two tabs
 try("tab consistency", function()
     local C = ns.Config

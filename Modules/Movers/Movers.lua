@@ -356,6 +356,10 @@ local function overlayFor(e)
     o.label:SetText(M:LabelOf(e))
     o.state = W.Text(o, "small", "text.muted", "CENTER")
     o.state:SetPoint("TOP", o.label, "BOTTOM", 0, -2)
+    -- the cog opens this frame's own settings right on the box (Popup.lua)
+    o.cog = W:IconButton(o, "cog", 18, L.MOVERS_SETTINGS)
+    o.cog:SetPoint("TOPRIGHT", -2, -2)
+    o.cog.onClick = function() selectEntry(e); M:OpenPopup(e, o) end
     Skin:Register(o, paintOverlay)
     o:SetScript("OnDragStart", function(self)
         if blocked(resolve(e)) then return end
@@ -484,6 +488,7 @@ function M:SetUnlocked(on)
             o:Hide()
         end
         if toolbar then toolbar:Hide() end
+        if M.ClosePopup then M:ClosePopup() end
     end
     ns.Events:Fire("PUI_MOVERS")
 end
