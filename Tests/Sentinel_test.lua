@@ -107,6 +107,22 @@ Tests:Add("Sentinel", "export string decodes to the same contract v2 payload", f
   t:eq(S.Export:Build(), nil, "export refused without opt-in")
 end)
 
+Tests:Add("Sentinel", "every report carries the game flavor (retail | forever)", function(t)
+  local S = scratch(t)
+  Hook.Simulate("Interface/AddOns/Phoenix_UI/Core/Fake.lua:30: flavor me", CORE_STACK, "")
+  local saved = PUI.IS_FOREVER
+  t:cleanup(function() PUI.IS_FOREVER = saved end)
+  PUI.IS_FOREVER = false
+  local p = S.Export:Payload()
+  t:eq(p.flavor, "retail", "payload flavor on retail")
+  for i = 1, #p.reports do t:eq(p.reports[i].flavor, "retail", "report " .. i .. " flavor on retail") end
+  PUI.IS_FOREVER = true
+  p = S.Export:Payload()
+  t:eq(p.flavor, "forever", "payload flavor on Forever")
+  for i = 1, #p.reports do t:eq(p.reports[i].flavor, "forever", "report " .. i .. " flavor on Forever") end
+  t:eq(S.Export.FromJSON(S.Export.ToJSON(p)).reports[1].flavor, "forever", "flavor survives the JSON round trip")
+end)
+
 Tests:Add("Sentinel", "the previous error handler is still called", function(t)
   local S = scratch(t)
   local calls = 0
@@ -122,7 +138,9 @@ end)
 Tests:Add("Sentinel", "taint, drift, integrity and perf create incidents", function(t)
   local S = scratch(t)
   t:ok(S.Taint:OnAction("ADDON_ACTION_BLOCKED", "Phoenix_UI", "CastSpellByName()"), "taint for Phoenix")
-  t:eq(S.Taint:OnAction("ADDON_ACTION_BLOCKED", "OtherAddon", "x()"), nil, "others ignored")
+  local other = S.Taint:OnAction("ADDON_ACTION_BLOCKED", "OtherAddon", "x()")
+  t:eq(other and other.addon, "OtherAddon", "other addons' blocked actions join their own list")
+  t:eq(other and other.kind, "taint", "kept as taint")
   PUI:RegisterModule("PUITest_Drift", { enabledByDefault = true })
   PUI.Kernel:Evaluate("PUITest_Drift")
   t:cleanup(function() PUI.Kernel:SetSafeMode("PUITest_Drift", false); PUI.Kernel:Unregister("PUITest_Drift") end)

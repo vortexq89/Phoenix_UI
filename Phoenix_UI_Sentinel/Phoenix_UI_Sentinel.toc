@@ -26,6 +26,7 @@ Export.lua
 Toast.lua
 Viewer.lua
 Store.lua
+Sections.lua
 Privacy.lua
 Alerts.lua
 Share.lua

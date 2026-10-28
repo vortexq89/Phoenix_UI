@@ -43,3 +43,6 @@ PUI.Slash:Register("sentinel", function(rest)
   end
 end, "open the error reporter (settings, preview, panel, export, copy [all], send, clear, induce, fixed)")
 PUI.Slash:Register("bugs", function() S.Reporter:Toggle() end, "open the error reporter")
+-- /sentinel (BugSack's /bugsack habit): opens the same viewer.
+SLASH_PHOENIXSENTINEL1 = "/sentinel"
+SlashCmdList.PHOENIXSENTINEL = function() S.Reporter:Toggle() end

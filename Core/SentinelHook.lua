@@ -59,6 +59,26 @@ function Hook.OwnerOf(stack)
   return nil
 end
 
+-- Which addon an error belongs to, from the first AddOns/<Folder>/ path in
+-- the message or stack (the message names the failing file, so it wins).
+-- Blizzard's own code (Blizzard_* folders, FrameXML, SharedXML) is grouped
+-- as "Blizzard"; nothing recognisable is "Unknown".
+local function folderIn(text)
+  if type(text) ~= "string" then return nil end
+  return text:match("AddOns[/\\]([%w_%-%.!]+)[/\\]")
+end
+function Hook.AddonOf(stack, message)
+  local folder = folderIn(message) or folderIn(stack)
+  if folder then
+    if folder:find("^Blizzard_") then return "Blizzard" end
+    return folder
+  end
+  for _, text in ipairs({ message or "", stack or "" }) do
+    if type(text) == "string" and (text:find("Interface[/\\]FrameXML") or text:find("Interface[/\\]SharedXML") or text:find("Blizzard_")) then return "Blizzard" end
+  end
+  return "Unknown"
+end
+
 -- Turns one raw error into a plain, storable record.
 function Hook.BuildRecord(message, stack, locals)
   local rec = {
@@ -69,14 +89,27 @@ function Hook.BuildRecord(message, stack, locals)
     combat = InCombatLockdown() and true or false,
   }
   rec.module = Hook.OwnerOf(rec.stack) or Hook.OwnerOf(rec.message)
-  if not rec.module then
-    rec.addon = rec.stack:match("AddOns[/\\]([%w_%-%.!]+)[/\\]") or rec.message:match("AddOns[/\\]([%w_%-%.!]+)[/\\]") or "Blizzard"
-  end
+  rec.addon = Hook.AddonOf(rec.stack, rec.message)
   return rec
 end
 
 Hook.others = {}
+-- Flood guard: the same error (same message) is processed at most FLOOD_MAX
+-- times per second (an OnUpdate error fires every frame); the rest are only
+-- counted in Hook.flooded, so a storm cannot stall the game or the log.
+Hook.FLOOD_MAX, Hook.flooded = 10, 0
+local floodSecond, floodCount = 0, {}
+function Hook.Flooding(now, message)
+  if now ~= floodSecond then floodSecond, floodCount = now, {} end
+  local key = message or ""
+  local n = (floodCount[key] or 0) + 1
+  floodCount[key] = n
+  if n > Hook.FLOOD_MAX then Hook.flooded = Hook.flooded + 1; return true end
+  return false
+end
+function Hook.ResetFlood() floodSecond, floodCount = 0, {} end
 function Hook.Deliver(rec)
+  if Hook.Flooding(rec.time or time(), rec.message) then return end
   if not rec.module then
     -- Another addon's error (BugSack parity): kept on this PC only, in its
     -- own list, and only while "Capture other addons" is on. It never joins
@@ -206,8 +239,15 @@ local function rep(key, def)
 end
 rep("captureOthers", { type = "toggle", default = true, mode = "simple", label = "Capture other addons' errors",
   tooltip = "Also keeps errors from other addons and Blizzard's code in the viewer, on this PC only. They never join Phoenix's reports unless you allow it below." })
-rep("uploadOthers", { type = "toggle", default = false, label = "Include other addons' errors in uploads",
-  tooltip = "Off: only Phoenix's own errors leave this PC. On: other addons' errors go too (with the same privacy filters)." })
+rep("uploadOthers", { type = "toggle", default = true, mode = "simple", label = "Include other addons' errors in uploads",
+  tooltip = "On: the full log goes to the dashboard, other addons' errors included, so conflicts with Phoenix can be found (same privacy filters: names and paths scrubbed). Off: only Phoenix's own errors leave this PC." })
+rep("uploadAddonList", { type = "toggle", default = true, label = "Include the loaded addon list in uploads",
+  tooltip = "Sends each installed addon's folder name, version and whether it is enabled, so the dashboard can rank possible conflicts. Nothing else about your addons or character." })
+rep("viewerGroup", { type = "select", default = "addon", mode = "simple", choices = { "addon", "flat" },
+  choiceLabels = { addon = "One section per addon", flat = "One list, newest first" }, label = "Viewer layout",
+  tooltip = "One section per addon (collapsible, with counts, first and last seen and the session), or a single newest-first list." })
+rep("viewerCollapsed", { type = "toggle", default = false, label = "Sections start collapsed",
+  tooltip = "Addon sections in the viewer open collapsed; click a section header to expand it." })
 rep("alertBadge", { type = "toggle", default = true, mode = "simple", label = "Error count badge",
   tooltip = "A small badge with the number of new errors this session; click it to open the viewer." })
 rep("alertSound", { type = "toggle", default = false, mode = "simple", label = "Sound on a new error", tooltip = "Plays a sound the first time a new error happens." })

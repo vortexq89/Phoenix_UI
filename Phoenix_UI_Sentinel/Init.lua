@@ -67,7 +67,7 @@ end
 
 -- Error reporter keys (registered by SentinelHook so they exist early).
 S.REPORTER_KEYS = { "captureOthers", "uploadOthers", "alertBadge", "alertSound", "alertSoundName", "alertChat", "autoOpen", "throttle",
-  "redactNames", "shareAccept", "viewerSession", "viewerSource", "profiler", "baselineWarn", "trace", "recorder" }
+  "redactNames", "shareAccept", "viewerSession", "viewerSource", "profiler", "baselineWarn", "trace", "recorder", "uploadAddonList", "viewerGroup", "viewerCollapsed" }
 function S:ApplyReporter(key, value)
   if self.Alerts then self.Alerts.opts[key] = value; if key == "alertBadge" then self.Alerts:PaintBadge() end end
   if key == "profiler" and PUI.Profiler then if value then PUI.Profiler:Start() else PUI.Profiler:Stop() end end
@@ -101,5 +101,6 @@ frame:SetScript("OnEvent", function(self, event, arg1, ...)
   self:RegisterEvent("CHAT_MSG_ADDON")
   self:RegisterEvent("PLAYER_LOGOUT")
   S.Taint:Start()
+  S.Sections:RegisterLaunchers()
   S.Heartbeat:Start()
 end)

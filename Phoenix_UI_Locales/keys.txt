@@ -118,6 +118,7 @@ Add your own character name to reports. Other players' names are never collected
 Add, remove and reorder columns. Column IDs: name, spec, damage, healing, kb, deaths, hk, rating, ratingChange, mmrBefore, mmrAfter, honor, plus any column another addon adds.
 AddOn list
 Addon compartment
+Addon sections in the viewer open collapsed; click a section header to expand it.
 Adds ID lines (spell, item, NPC, quest and 23 more kinds) to tooltips. Phoenix is the only place IDs are added.
 Adds Phoenix's own emoji: :smile: :grin: :laugh: :wink: :sad: :cry: :angry: :cool: :wow: :think: :sleep: :gg: :heart: :fire: :thumbsup: :dead:.
 Adds a Phoenix UI button above the Escape menu.
@@ -1923,6 +1924,7 @@ In game only
 In game only: this game version
 Include my character name
 Include other addons' errors in uploads
+Include the loaded addon list in uploads
 Includes your own frame in the party frames.
 Incoming heals
 Incoming: animation
@@ -2257,9 +2259,9 @@ Objective tracker
 Objectives go from red to green as their count fills.
 Off while a boss mod keeps stats
 Off-tank colour
-Off: only Phoenix's own errors leave this PC. On: other addons' errors go too (with the same privacy filters).
 Off: the All filter lists only Blizzard elements you changed; the Blizzard filter always lists them all.
 On a boss, shows your best saved pull on the same boss and difficulty in the title, and after the pull how you did against it.
+On: the full log goes to the dashboard, other addons' errors included, so conflicts with Phoenix can be found (same privacy filters: names and paths scrubbed). Off: only Phoenix's own errors leave this PC.
 One NPC per line: its NPC id or exact name, a colour, then optionally a size and 'glow'. Examples: 185680:B07CFF  -  Void Acolyte:B07CFF:1.1  -  Explosive:FF5468:1.2:glow. The first line for an NPC wins. In some restricted content the game hides NPC ids and names; then a rule waits until they are visible.
 One binding per row. Pick a modifier, a mouse button or a key, and what it does: target, menu, focus, assist, cast a spell, run a macro or use an item. Keys work while the mouse is over a frame. Each spec can keep its own list (Editing as). Changes made in combat apply as soon as combat ends.
 One button per line: bar.button: options. Options: nohotkey, nomacro, nocount, hide, alpha=0.5, glow=none|pulse|solid|flash. Example: 1.12:nohotkey,alpha=0.6
@@ -2277,6 +2279,7 @@ One line per spec: spec ID = roles, e.g. '105 = HEALER, DPS'. Used when Roles pe
 One per line as itemID=Category (a built-in id such as consumables, or the name of one of your rules).
 One per line: a spell ID, optionally followed by :name (for example 1234:Flask). Shows when you lack that buff.
 One search across friends, guild and recent players, with sort and actions, beside the friends list.
+One section per addon (collapsible, with counts, first and last seen and the session), or a single newest-first list.
 One setting for every place roles are set: manual, the role your spec plays, or your own list below. Auto stands down while BigWigs sets roles.
 One switch for every chat announcement Phoenix modules can make. Modules only pick what to say; where it goes is set here.
 Online friends count on the minimap; hover it for the list.
@@ -3026,9 +3029,11 @@ Seconds a finished or interrupted cast bar takes to fade.
 Seconds before leaving.
 Seconds left until the DR resets, written by the game.
 Seconds the finished or interrupted cast stays visible while fading (0 hides it at once).
+Sections start collapsed
 Sell junk automatically
 Sells grey items and items you marked as junk when you open a vendor. Off at first install; the Sell junk button works either way.
 Sells grey items when you open a vendor. While Vault is on, Vault's own junk setting decides instead.
+Sends each installed addon's folder name, version and whether it is enabled, so the dashboard can rank possible conflicts. Nothing else about your addons or character.
 Sends objective progress and completions through Phoenix announcements (the Quest topic there decides where).
 Sends the break through the announcement router (where it goes is set on the Announcements page; off until you turn it on there).
 Sends your key to group members who also use Phoenix, so /keys can list theirs.
@@ -3778,6 +3783,7 @@ Vehicle seats
 Vertical distance from the cursor for the left/right cursor positions.
 Vertical spacing when stacked
 View
+Viewer layout
 Viewer opens on
 Viewer shows
 Voice deafen button

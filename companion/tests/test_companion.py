@@ -171,5 +171,25 @@ class FixedInTests(unittest.TestCase):
             fixedin.build(many)
 
 
+class FlavorTests(unittest.TestCase):
+    def test_outbox_keeps_flavor_session_and_addon_list(self):
+        from sentinel_companion import payload
+        db = {"installId": "ab" * 8, "optIn": True, "outbox": {"flavor": "forever", "session": 7,
+              "addons": {1: {"name": "WeakAuras", "version": "5.0", "enabled": True, "loaded": True}},
+              "reports": {1: {"id": "x", "flavor": "forever"}}}}
+        out, why = payload.build(db)
+        assert why is None
+        assert out["flavor"] == "forever" and out["session"] == 7
+        assert out["addons"][0]["name"] == "WeakAuras"
+        assert out["reports"][0]["flavor"] == "forever"
+
+
+    def test_flavor_of_interface(self):
+        from sentinel_companion.payload import flavor_of
+        assert flavor_of(120105) == "retail"
+        assert flavor_of(16000) == "forever"
+        assert flavor_of(None) is None
+
+
 if __name__ == "__main__":
     unittest.main()

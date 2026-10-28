@@ -42,7 +42,19 @@ def incident_report(inc, db):
         "interface": inc.get("interface"), "build": inc.get("build"), "locale": inc.get("locale"), "source": "sentinel",
         "module": inc.get("module"), "severity": inc.get("severity"), "track": inc.get("track"),
         "context": _plain(inc.get("context")), "extra": _plain(inc.get("extra")), "apiFamily": inc.get("apiFamily"),
+        "flavor": flavor_of(inc.get("interface")), "addon": "Phoenix_UI",
     })
+
+
+def flavor_of(interface):
+    """retail | forever from the client's interface number (WoW Forever is 16000-19999)."""
+    try:
+        n = int(interface)
+    except (TypeError, ValueError):
+        return None
+    if 16000 <= n <= 19999:
+        return "forever"
+    return "retail" if n >= 100000 else None
 
 
 def build(db):
@@ -56,7 +68,15 @@ def build(db):
         # Built in game by Export:Payload() with the privacy kit applied: the
         # exact payload the in-game Preview shows (step 9c).
         reports = [_plain(r) for r in as_list(outbox.get("reports")) if isinstance(r, dict)]
-        return {"schema": CONTRACT, "installId": db["installId"], "uploader": "sentinel-companion " + VERSION, "reports": reports}, None
+        out = {"schema": CONTRACT, "installId": db["installId"], "uploader": "sentinel-companion " + VERSION, "reports": reports}
+        # Game flavor, session and the installed addon list ride along unchanged (the dashboard's
+        # Retail / Forever sections and its conflict ranking use them).
+        for key in ("flavor", "session"):
+            if outbox.get(key) is not None:
+                out[key] = outbox.get(key)
+        if outbox.get("addons") is not None:
+            out["addons"] = [_plain(a) for a in as_list(outbox.get("addons")) if isinstance(a, dict)]
+        return out, None
     reports = []
     incidents = db.get("incidents") or {}
     for h in sorted(incidents, key=str):

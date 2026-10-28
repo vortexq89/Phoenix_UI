@@ -24,6 +24,7 @@ PUI.ApiManifest = {
     ["C_AddOnProfiler.GetTopKAddOnsForMetric"] = { owners = { "Core" } },
     ["C_AddOnProfiler.IsEnabled"] = { owners = { "Core", "Sentinel" } },
     ["C_AddOns.DisableAddOn"] = { owners = { "Core", "Setup" } },
+    ["C_AddOns.GetAddOnEnableState"] = { owners = { "Sentinel" } },
     ["C_AddOns.GetAddOnInfo"] = { owners = { "Core", "Sentinel", "Setup" } },
     ["C_AddOns.GetAddOnMetadata"] = { owners = { "Core", "Options", "Sentinel" } },
     ["C_AddOns.GetNumAddOns"] = { owners = { "Core", "Sentinel", "Setup" } },
