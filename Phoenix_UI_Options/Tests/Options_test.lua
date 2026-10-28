@@ -429,3 +429,20 @@ Tests:Add("Options", "review gaps: Fonts, Colours, Glows and Theme previews draw
   t:ok(bag(card).thG1:GetText():find("midnight", 1, true), "theme shows live")
   t:ok(Options.Nav.INFO.Fonts and Options.Nav.INFO.Colors and Options.Nav.INFO.Glows, "sidebar entries")
 end)
+
+Tests:Add("Options", "minimap preview shows the button bin layout, order, badge and hidden buttons live", function(t)
+  if not (PUI.Minimap and PUI.ButtonBin) then return end
+  for _, k in ipairs({ "mm.bin.enabled", "mm.bin.layout", "mm.bin.grow", "mm.bin.hidden", "mm.bin.sort" }) do Tests.Keep(t, k) end
+  Schema:Set("mm.bin.enabled", true)
+  local card = CreateFrame("Frame")
+  Options.Previews.Minimap(card)
+  local h = Options.Previews.State(card).hud.mm
+  t:ok(h.binNote:GetText():find("Popup grid, grows right, A-Z", 1, true), "popup sample")
+  Schema:Set("mm.bin.layout", "bar"); Schema:Set("mm.bin.grow", "down"); Schema:Set("mm.bin.sort", "custom")
+  Options.Previews.Minimap(card)
+  t:ok(h.binNote:GetText():find("Docked bar, grows down, my order", 1, true), "bar sample live")
+  Schema:Set("mm.bin.hidden", { "A", "B" })
+  Options.Previews.Minimap(card)
+  t:ok(h.binNote:GetText():find("badge 12", 1, true), "hidden buttons leave the sample")
+  t:eq(h.bin[13]:IsShown(), false, "fewer cells")
+end)

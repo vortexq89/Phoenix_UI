@@ -354,3 +354,224 @@ Tests:Add("HUD", "previews draw with the modules' own paint code", function(t)
   t:eq(strip(st.hud.tt.rows[2][1]), "<Phoenix Rising> Officer", "tooltip sample uses the real line builder")
   t:eq(st.hud.db.bars[1].cells[1]:GetText(), "21:42", "data bar sample")
 end)
+
+-- t97u: the upgraded bin ------------------------------------------------------
+local function fakeButtons(t, list)
+  local made = {}
+  for _, spec in ipairs(list) do
+    local f = CreateFrame(spec.kind or "Button", spec.name, spec.parent or Minimap)
+    rawset(f, "GetName", function() return spec.name end)
+    rawset(f, "GetObjectType", function() return spec.kind or "Button" end)
+    rawset(f, "GetParent", function(self) return rawget(self, "parent") or spec.parent or Minimap end)
+    if spec.width then f:SetSize(spec.width, spec.width) end
+    made[#made + 1] = f
+  end
+  rawset(Minimap, "GetChildren", function() return unpack(made) end)
+  t:cleanup(function() rawset(Minimap, "GetChildren", nil) end)
+  return made
+end
+local function binOn(t, ...)
+  enable(t, "Minimap", "mm.bin.enabled", "mm.bin.layout", "mm.bin.sort", "mm.bin.order", "mm.bin.hidden", "mm.bin.keep", "mm.bin.blacklist",
+    "mm.bin.compartment", "mm.bin.grow", "mm.bin.dock", "mm.bin.shape", "mm.bin.skin", "mm.bin.strip", "mm.bin.fade", "mm.bin.autoClose",
+    "mm.bin.closeDelay", "mm.bin.badge", "mm.bin.binSkin", "mm.bin.hideInCombat", "mm.bin.columns", ...)
+  t:cleanup(function() Bin.SetEditing(false, true); Bin.filter = ""; if Bin.flyout then Bin.flyout:Hide() end; if Bin.bar then Bin.bar:Hide() end end)
+end
+
+Tests:Add("HUD", "bin: non-LibDBIcon buttons and late ones are collected; Blizzard, protected and big frames are not", function(t)
+  if not H then return end
+  local made = fakeButtons(t, { { name = "LibDBIcon10_Alpha" }, { name = "RareScannerMinimapButton" }, { name = "WIM3MinimapButton" },
+    { name = "MyAddon_Toggle" }, { name = "GameTimeFrame" }, { name = "MinimapZoomIn" }, { name = "BigPanel", width = 200 },
+    { name = "SomeTexture", kind = "Frame" } })
+  local secure = CreateFrame("Button", "SecureThing", Minimap)
+  rawset(secure, "secure", true)
+  t:eq(Bin.IsAddonButton(secure), false, "protected frames are never taken")
+  binOn(t)
+  CQ.Drain()
+  local names = {}
+  for _, b in ipairs(Bin.buttons) do names[#names + 1] = Bin.Label(b) end
+  table.sort(names)
+  t:same(names, { "Alpha", "MyAddon_Toggle", "RareScanner", "WIM3" }, "LibDBIcon and plain addon buttons; Blizzard, big and non-clickable frames left")
+  t:ok(Ticker:IsRegistered("mm.bin.scan"), "short scan job after login")
+  -- a button created later is picked up by the scan job and by ADDON_LOADED
+  local late = CreateFrame("Button", "LateAddonMinimapButton", Minimap)
+  rawset(late, "GetName", function() return "LateAddonMinimapButton" end)
+  rawset(late, "GetObjectType", function() return "Button" end)
+  made[#made + 1] = late
+  Bin.ScanTick(GetTime())
+  CQ.Drain()
+  t:ok(Bin.original[late] ~= nil, "late button collected by the scan job")
+  Bin.ScanTick(GetTime() + Bin.SCAN_FOR + 1)
+  t:eq(Ticker:IsRegistered("mm.bin.scan"), false, "scan job removes itself")
+  t:ok(Bin.events:IsEventRegistered("ADDON_LOADED"), "rescans on ADDON_LOADED")
+  Schema:Set("mm.bin.enabled", false)
+  CQ.Drain()
+  t:eq(#Bin.buttons, 0, "off: every button given back")
+  t:eq(late:GetParent(), Minimap, "original parent restored")
+  t:eq(Bin.events:IsEventRegistered("ADDON_LOADED"), false, "no events while off")
+end)
+
+Tests:Add("HUD", "bin: compartment entries, sort A-Z or custom drag order, hide/show/pin menu, search", function(t)
+  if not H then return end
+  fakeButtons(t, { { name = "LibDBIcon10_Zeta" }, { name = "LibDBIcon10_Alpha" }, { name = "LibDBIcon10_Mid" } })
+  local clicked
+  local comp = rawget(_G, "AddonCompartmentFrame")
+  local hadComp = comp ~= nil
+  if not comp then comp = CreateFrame("Frame", "AddonCompartmentFrame", Minimap); rawset(_G, "AddonCompartmentFrame", comp) end
+  local saved = rawget(comp, "registeredAddons")
+  rawset(comp, "registeredAddons", { { text = "Bagger", icon = 1, func = function(name, button) clicked = name .. ":" .. button end }, { text = "Phoenix UI", icon = 2 } })
+  t:cleanup(function() rawset(comp, "registeredAddons", saved); if not hadComp then rawset(_G, "AddonCompartmentFrame", nil) end end)
+  binOn(t)
+  CQ.Drain()
+  local function order() local o = {}; for _, b in ipairs(Bin.Visible()) do o[#o + 1] = Bin.Name(b) end; return table.concat(o, ",") end
+  t:eq(order(), "Alpha,Mid,Zeta", "A-Z, compartment off by default")
+  Schema:Set("mm.bin.compartment", true)
+  CQ.Drain()
+  t:eq(order(), "Alpha,Bagger,Mid,Zeta", "compartment entries join (Phoenix's own left out)")
+  Bin.proxies.Bagger:GetScript("OnClick")(Bin.proxies.Bagger, "LeftButton")
+  t:eq(clicked, "Bagger:LeftButton", "proxy calls the addon's own compartment function")
+  -- custom order by drag
+  Bin.SetEditing(true)
+  Bin.dragging, Bin.dropOn = "Zeta", "Alpha"
+  t:ok(Bin.Drop(), "drop handled")
+  t:eq(Schema:Get("mm.bin.sort"), "custom", "dragging switches to custom order")
+  t:eq(order(), "Zeta,Alpha,Bagger,Mid", "drag order applied")
+  t:same(Schema:Get("mm.bin.order"), { "Zeta", "Alpha", "Bagger", "Mid" }, "order saved")
+  Bin.Act("Alpha", "last")
+  t:eq(order(), "Zeta,Bagger,Mid,Alpha", "Move last")
+  -- menu
+  local zeta
+  for _, b in ipairs(Bin.buttons) do if Bin.Name(b) == "Zeta" then zeta = b end end
+  local acts = {}
+  for _, e in ipairs(Bin.MenuEntries(zeta)) do if e.action then acts[#acts + 1] = e.action end end
+  t:same(acts, { "hide", "pin", "never", "first", "last" }, "right-click menu")
+  local pacts = {}
+  for _, e in ipairs(Bin.MenuEntries(Bin.proxies.Bagger)) do if e.action then pacts[#pacts + 1] = e.action end end
+  t:same(pacts, { "hide", "first", "last" }, "compartment entries cannot be pinned")
+  Bin.Act("Zeta", "hide")
+  t:ok(order():find("Zeta", 1, true) ~= nil, "Edit mode still shows hidden buttons")
+  Bin.SetEditing(false)
+  t:eq(order(), "Bagger,Mid,Alpha", "hidden live")
+  t:eq(Bin.Count(), 3, "count excludes hidden")
+  t:eq(Bin.toggle.badge:GetText(), "3", "badge shows the count")
+  Bin.Act("Zeta", "show")
+  t:eq(Bin.Count(), 4, "shown again")
+  Bin.Act("Mid", "pin")
+  CQ.Drain()
+  t:eq(order(), "Zeta,Bagger,Alpha", "pinned button goes back to the minimap")
+  Bin.filter = "ag"
+  t:eq(order(), "Bagger", "search")
+  Schema:Set("mm.bin.search", false)
+  t:cleanup(function() Schema:Set("mm.bin.search", true) end)
+  t:eq(#Bin.Visible(), 3, "search box off ignores the filter")
+end)
+
+Tests:Add("HUD", "bin: grid grows four ways, docked bar or Studio mover, popup side", function(t)
+  local cells, w, h = Bin.Grid(3, 2, 10, 2, "right", 4, 4)
+  t:same({ cells[2].x, cells[3].x, cells[3].y }, { 16, 4, -16 }, "right: rows")
+  cells = Bin.Grid(3, 2, 10, 2, "left", 4, 4)
+  t:same({ cells[1].x, cells[2].x }, { 16, 4 }, "left: mirrored")
+  cells, w, h = Bin.Grid(3, 2, 10, 2, "down", 4, 4)
+  t:same({ cells[2].y, cells[3].x }, { -16, 16 }, "down: columns")
+  t:eq(w, 8 + 24 - 2, "down: width from lines")
+  cells = Bin.Grid(3, 2, 10, 2, "up", 4, 4)
+  t:same({ cells[1].y, cells[2].y }, { -16, -4 }, "up: mirrored")
+  t:ok(PUI.Layout:Element("mm.binbar") ~= nil, "Studio mover element for the bar")
+  if not H then return end
+  fakeButtons(t, { { name = "LibDBIcon10_One" }, { name = "LibDBIcon10_Two" } })
+  binOn(t)
+  Schema:Set("mm.bin.layout", "bar")
+  CQ.Drain()
+  t:ok(Bin.bar:IsShown(), "bar shown")
+  t:eq(Bin.buttons[1]:GetParent(), Bin.bar, "buttons live in the bar")
+  t:same({ Bin.bar.point[1], Bin.bar.point[2], Bin.bar.point[3] }, { "TOPLEFT", Minimap, "BOTTOMLEFT" }, "docked under the minimap growing right")
+  Schema:Set("mm.bin.grow", "down")
+  CQ.Drain()
+  t:same({ Bin.bar.point[1], Bin.bar.point[3] }, { "TOPRIGHT", "TOPLEFT" }, "docked on the left edge growing down")
+  Schema:Set("mm.bin.dock", "free")
+  CQ.Drain()
+  t:eq(PUI.Layout:Frame("mm.binbar"), Bin.bar, "free: placed by the Studio mover")
+  Schema:Set("mm.bin.layout", "popup")
+  Schema:Set("mm.bin.grow", "right")
+  CQ.Drain()
+  t:eq(Bin.bar:IsShown(), false, "popup layout hides the bar")
+  Bin.Toggle(true)
+  t:same({ Bin.flyout.point[1], Bin.flyout.point[3] }, { "TOPLEFT", "TOPRIGHT" }, "popup opens on the grow side")
+  t:eq(Bin.buttons[1]:GetParent(), Bin.flyout, "buttons moved to the popup live")
+end)
+
+Tests:Add("HUD", "bin: skin mask/border/ring strip restored, auto-close delay, idle fade, hide in combat", function(t)
+  if not H then return end
+  local made = fakeButtons(t, { { name = "LibDBIcon10_Ring" } })
+  local b = made[1]
+  local icon, ring = b:CreateTexture(), b:CreateTexture()
+  rawset(b, "icon", icon)
+  rawset(ring, "GetTexture", function() return "Interface\\Minimap\\MiniMap-TrackingBorder" end)
+  rawset(b, "GetRegions", function() return icon, ring end)
+  local origPoint = { "TOPLEFT", Minimap, "TOPLEFT", 10, -10 }
+  rawset(b, "GetNumPoints", function() return 1 end)
+  rawset(b, "GetPoint", function() return unpack(origPoint) end)
+  binOn(t)
+  CQ.Drain()
+  Bin.Toggle(true)
+  t:eq(ring:GetAlpha(), 0, "ring art stripped")
+  t:ok(rawget(icon, "masks") and next(icon.masks) ~= nil, "icon masked")
+  Schema:Set("mm.bin.shape", "round")
+  CQ.Drain()
+  t:eq(Bin.original[b].mask.texture, "Interface\\Masks\\CircleMaskScalable", "round mask live")
+  Schema:Set("mm.bin.skin", false)
+  CQ.Drain()
+  t:eq(ring:GetAlpha(), 1, "skin off gives the ring back")
+  t:eq(next(icon.masks), nil, "and removes the mask")
+  Schema:Set("mm.bin.skin", true)
+  CQ.Drain()
+  -- auto-close
+  Bin.Toggle(true)
+  t:ok(Ticker:IsRegistered("mm.bin.mouse"), "mouse job only while open")
+  Schema:Set("mm.bin.closeDelay", 1)
+  Bin.MouseTick(100)
+  t:ok(Bin.flyout:IsShown(), "still open inside the delay")
+  Bin.MouseTick(101.1)
+  t:eq(Bin.flyout:IsShown(), false, "closed after the delay")
+  t:eq(Ticker:IsRegistered("mm.bin.mouse"), false, "job gone when closed")
+  -- fade
+  Schema:Set("mm.bin.layout", "bar")
+  Schema:Set("mm.bin.fade", 0.3)
+  CQ.Drain()
+  t:ok(Ticker:IsRegistered("mm.bin.mouse"), "fade job while the bar fades")
+  Bin.MouseTick(200)
+  t:eq(Bin.bar:GetAlpha(), 0.3, "idle fade")
+  rawset(Bin.bar, "mouseOver", true)
+  Bin.MouseTick(201)
+  t:eq(Bin.bar:GetAlpha(), 1, "hover shows it")
+  rawset(Bin.bar, "mouseOver", nil)
+  -- combat
+  H.inCombat = true
+  t:cleanup(function() H.inCombat = false end)
+  Bin.events:GetScript("OnEvent")(Bin.events, "PLAYER_REGEN_DISABLED")
+  t:eq(Bin.bar:IsShown(), false, "hidden in combat")
+  H.inCombat = false
+  CQ.Drain()
+  t:ok(Bin.bar:IsShown(), "back after combat")
+  -- restore
+  Schema:Set("mm.bin.enabled", false)
+  CQ.Drain()
+  t:eq(b:GetParent(), Minimap, "parent restored")
+  t:same(b.point, origPoint, "points restored")
+  t:eq(ring:GetAlpha(), 1, "art restored")
+end)
+
+Tests:Add("HUD", "bin: bin button skin and badge follow settings live", function(t)
+  if not H then return end
+  fakeButtons(t, { { name = "LibDBIcon10_A" }, { name = "LibDBIcon10_B" } })
+  binOn(t)
+  CQ.Drain()
+  t:eq(Bin.toggle.badge:GetText(), "2", "badge count")
+  t:ok(Bin.toggle.badge:IsShown(), "badge shown")
+  Schema:Set("mm.bin.badge", false)
+  CQ.Drain()
+  t:eq(Bin.toggle.badge:IsShown(), false, "badge off live")
+  t:ok(tostring(Bin.toggle.tex.texture):find("PhoenixUI_Icon", 1, true), "Phoenix bin button")
+  Schema:Set("mm.bin.binSkin", "blizzard")
+  CQ.Drain()
+  t:eq(Bin.toggle.tex.texture, "Interface\\Buttons\\UI-PlusButton-Up", "Blizzard look live")
+end)
