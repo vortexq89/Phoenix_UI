@@ -62,6 +62,8 @@ ns:RegisterOptions("Chat", {
       keywords = "tab flash alert new message glow" },
     { type = "toggle", key = "whisperTabs", label = "CHAT_WHISPER_TABS", desc = "CHAT_WHISPER_TABS_DESC",
       keywords = "whisper tab colour color" },
+    { type = "toggle", key = "pillTabs", label = "CHAT_PILLS", desc = "CHAT_PILLS_DESC",
+      keywords = "tabs pill unread dot edit box channel colour" },
     { type = "toggle", key = "fadeTabs", label = "CHAT_FADE_TABS", desc = "CHAT_FADE_TABS_DESC", keywords = "tabs visible idle" },
     { type = "color", key = "selectedTabColor", label = "CHAT_SELECTED_TAB", desc = "CHAT_SELECTED_TAB_DESC",
       token = "accent.primary", reset = true },

@@ -30,7 +30,7 @@ local M = ns:NewModule("Chat", {
         fade = true, fadeAfter = 120, maxLines = 0,       -- 0 = the game's own (Blizzard keeps 128)
         hideInCombat = false, sideButtons = true, scrollButton = true,
         -- tabs
-        fadeTabs = true, selectedTabColor = false,
+        fadeTabs = true, selectedTabColor = false, pillTabs = true,
         -- messages
         shortChannels = false, keywords = "", keywordOwnName = true, keywordColor = false, keywordSound = "",
         itemLevels = true, linkIcons = true, roleIcons = true, throttle = 0,
@@ -224,6 +224,7 @@ local function tabState(tab)
     if not chatFrame then return end
     M:StyleTabState(tab, tab:GetFontString(), chatFrame.chatType, ChatFrameUtil.IsTabAlerting(tab))
     M:StyleSelectedTab(tab, chatFrame)
+    if M.StylePill then M:StylePill(tab, chatFrame) end -- Pills.lua
 end
 M.TabState = tabState
 
@@ -268,6 +269,7 @@ function M:OnEnable()
         hooksecurefunc("FCFTab_UpdateColors", tabState)
         hooksecurefunc("FCF_StartAlertFlash", onAlert)
         self:HookWindows()
+        if self.HookPills then self:HookPills() end
     end
     self:Refresh()
 end
@@ -279,6 +281,7 @@ function M:OnDisable()
     for _, b in pairs(buttons) do b:Hide() end
     for box, saved in pairs(editBoxes) do box:SetAltArrowKeyMode(saved.altArrows) end
     self:RestoreWindows()
+    if self.RefreshPills then self:RefreshPills() end -- IsEnabled is false here: pills and bars come off
     self:HideBar()
 end
 
@@ -298,6 +301,7 @@ function M:Refresh()
         self:StyleWindow(chatFrame)
     end)
     self:RefreshMessages()
+    if self.RefreshPills then self:RefreshPills() end
     self:RefreshBar()
 end
 

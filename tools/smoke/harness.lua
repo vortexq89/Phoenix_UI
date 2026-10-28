@@ -2057,6 +2057,24 @@ try("bag chrome skin", function()
     B:Refresh()
     rawset(env.Enum, "BankType", hadBankType)
 end)
+-- chat skin (plan window 3): pill states, channel colour, pills on/off live
+try("chat pill tabs", function()
+    local C = ns.modules.Chat
+    assert(C.PillState(true, true) == "selected" and C.PillState(false, true) == "alert" and C.PillState(false, false) == "idle",
+        "pill states")
+    env.ChatTypeInfo = { SAY = { r = 1, g = 1, b = 1 }, CHANNEL2 = { r = 0.2, g = 0.4, b = 0.6 } }
+    local r, g = C.ChannelColor("CHANNEL", 2)
+    assert(r == 0.2 and g == 0.4 and C.ChannelColor("SAY") == 1 and C.ChannelColor(nil) == nil, "channel colours")
+    local tab = CreateFrame("Button", nil, UIParent)
+    tab.Left = tab:CreateTexture()
+    local cf = CreateFrame("Frame", nil, UIParent)
+    C:StylePill(tab, cf); C:StylePill(tab, cf)
+    local box = CreateFrame("EditBox", nil, UIParent)
+    C:StyleEditBar(box)
+    C.db.pillTabs = false; C:StylePill(tab, cf); C:StyleEditBar(box)
+    C.db.pillTabs = true; C:StylePill(tab, cf); C:RefreshPills()
+    env.ChatTypeInfo = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

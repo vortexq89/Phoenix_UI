@@ -2473,6 +2473,8 @@ ns.RegisterLocale("enUS", {
     CHAT_ROLE_ICONS = "Role icons on names",
     CHAT_ROLE_ICONS_DESC = "Group members' names get their tank, healer or damage icon.",
     CHAT_SELECTED_TAB = "Selected tab colour",
+    CHAT_PILLS = "Pill tabs",
+    CHAT_PILLS_DESC = "Tabs as Phoenix pills (selected in the accent, a dot for unread messages) and a channel-coloured bar on the edit box.",
     CHAT_SELECTED_TAB_DESC = "Colour the open tab's name so you can see which window you are in.",
     CHAT_SHORT_CHANNELS = "Short channel names",
     CHAT_SHORT_CHANNELS_DESC = "Numbered channels show only their number: [2. Trade] becomes [2]. Guild, party and raid keep the game's labels.",
