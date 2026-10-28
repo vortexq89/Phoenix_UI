@@ -71,7 +71,15 @@ end
 
 -- Phoenix close button: Blizzard's art faded out, our glyph on a child frame of ours.
 local function closeButton(button)
-    if not button or extras[button] then return end
+    if not button then return end
+    if extras[button] then -- switched back on live
+        for _, getter in ipairs(CLOSE_ART) do
+            local tex = button[getter] and button[getter](button)
+            if tex then Skin:HideRegion(tex) end
+        end
+        extras[button].holder:Show()
+        return
+    end
     for _, getter in ipairs(CLOSE_ART) do
         local tex = button[getter] and button[getter](button)
         if tex then Skin:HideRegion(tex) end
@@ -143,6 +151,7 @@ local function window(frame, dialog)
         e.strip:SetPoint("TOPRIGHT", -1, -1)
         e.strip:SetHeight(22)
     end
+    if e.strip then e.strip:Show() end
     if db.closeStyle == "phoenix" then closeButton(frame.CloseButton or frame.ClosePanelButton) end
     Skin:Register(frame, function(self)
         local now = M.db
@@ -158,6 +167,46 @@ local function window(frame, dialog)
     if db.tabs and not dialog then skinTabs(frame) end
 end
 M.SkinWindow = window
+
+-- Live switch off: Blizzard's own art and title font back, our pieces hidden (window() redoes it when on).
+local function unwindow(frame)
+    if not frame or not Skin:IsSkinned(frame) then return end
+    for _, key in ipairs(ART) do Skin:Restore(frame[key]) end
+    local header = frame.Header
+    if header then for _, key in ipairs(HEADER_ART) do Skin:Restore(header[key]) end end
+    local inset = frame.Inset
+    if inset then
+        for _, key in ipairs(INSET_ART) do Skin:Restore(inset[key]) end
+        Skin:Restore(inset)
+    end
+    local e = extras[frame]
+    if e and e.strip then e.strip:Hide() end
+    local close = frame.CloseButton or frame.ClosePanelButton
+    if close and extras[close] then
+        for _, getter in ipairs(CLOSE_ART) do
+            local tex = close[getter] and close[getter](close)
+            if tex then Skin:Restore(tex) end
+        end
+        extras[close].holder:Hide()
+    end
+    local title = titleOf(frame)
+    if title then Skin:Restore(title) end
+    Skin:Restore(frame)
+end
+M.UnskinWindow = unwindow
+
+-- Windows whose switch applies live both ways (the rest restore Blizzard's look after /reload).
+M.LIVE = { gameMenu = true }
+function M:ApplyLive()
+    for _, entry in ipairs(self.WINDOWS) do
+        if self.LIVE[entry.key] then
+            local on = self:IsEnabled() and self:Wanted(entry)
+            for _, name in ipairs(entry.frames) do
+                if on then window(_G[name], entry.dialog) else unwindow(_G[name]) end
+            end
+        end
+    end
+end
 
 function M:Wanted(entry)
     if entry.feature and not ns:Supports(entry.feature) then return false end

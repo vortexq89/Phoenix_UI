@@ -402,8 +402,16 @@ function Sk:IconFrame(owner, icon, spec, zoom, token)
         h:SetFrameLevel(owner:GetFrameLevel() + 2)
         iconFrames[icon] = h
     end
+    h:Show()
     self:BorderSpec(h, spec, token or "border.black")
     return h
+end
+
+-- Undo IconFrame: our border frame hidden, the icon's own crop restored (live skin switches).
+function Sk:HideIconFrame(icon)
+    local h = icon and iconFrames[icon]
+    if h then h:Hide() end
+    if icon then self:Restore(icon) end
 end
 
 ---------------------------------------------------------------- status bars

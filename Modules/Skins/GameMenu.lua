@@ -37,6 +37,7 @@ function M.MenuIcon(text)
     return map[text]
 end
 
+local header
 local rows = setmetatable({}, { __mode = "k" }) -- [blizzard button] = our overlay
 
 local function paintRow(button)
@@ -56,11 +57,6 @@ function M.SkinMenuButton(button)
     if not button then return end
     local o = rows[button]
     if not o then
-        for _, k in ipairs(BUTTON_ART) do Skin:HideRegion(button[k]) end
-        for _, g in ipairs(BUTTON_TEX) do
-            local tex = button[g] and button[g](button)
-            if tex then Skin:HideRegion(tex) end
-        end
         o = CreateFrame("Frame", nil, button)
         o:SetAllPoints()
         o:SetFrameLevel(math.max(0, button:GetFrameLevel() - 1))
@@ -72,8 +68,16 @@ function M.SkinMenuButton(button)
         rows[button] = o
         button:HookScript("OnEnter", function(self) rows[self].hover = true; paintRow(self) end)
         button:HookScript("OnLeave", function(self) rows[self].hover = false; paintRow(self) end)
-        Skin:Register(button, paintRow)
     end
+    o.hidden = {}
+    for _, k in ipairs(BUTTON_ART) do if button[k] then o.hidden[#o.hidden + 1] = button[k] end end
+    for _, g in ipairs(BUTTON_TEX) do
+        local tex = button[g] and button[g](button)
+        if tex then o.hidden[#o.hidden + 1] = tex end
+    end
+    for _, r in ipairs(o.hidden) do Skin:HideRegion(r) end
+    o:Show()
+    Skin:Register(button, paintRow)
     local name = M.MenuIcon(button.GetText and button:GetText())
     if name and not o.icon then
         o.icon = W.Icon(o, name, 14, "text.secondary", "OVERLAY")
@@ -86,7 +90,6 @@ function M.SkinMenuButton(button)
     paintRow(button)
 end
 
-local header
 local function skinHeader(menu)
     if header then return end
     header = CreateFrame("Frame", nil, menu)
@@ -103,18 +106,81 @@ local function skinHeader(menu)
     end)
 end
 
+-- Switch off live: Blizzard's button art and label colours back, our rows, header and dividers hidden.
+function M.UnskinMenuButton(button)
+    local o = rows[button]
+    if not o then return end
+    for _, r in ipairs(o.hidden or {}) do Skin:Restore(r) end
+    local fs = button.GetFontString and button:GetFontString()
+    if fs then Skin:Restore(fs) end
+    Skin:Restore(button)
+    o:Hide()
+end
+
+-- Group breaks: Blizzard leaves a larger gap between sections (Game / Interface / Phoenix / Exit). Given the
+-- buttons' { top, bottom } from top to bottom, returns the indexes after which a divider goes.
+function M.MenuBreaks(spans)
+    local gaps, smallest = {}, math.huge
+    for i = 2, #spans do
+        local gap = spans[i - 1].bottom - spans[i].top
+        gaps[i - 1] = gap
+        if gap < smallest then smallest = gap end
+    end
+    local out = {}
+    for i, gap in ipairs(gaps) do
+        if gap >= smallest + 6 then out[#out + 1] = i end
+    end
+    return out
+end
+
+local dividers = {}
+local function placeDividers(buttons)
+    for _, d in ipairs(dividers) do d:Hide() end
+    local spans = {}
+    for i, b in ipairs(buttons) do
+        local top, bottom = b:GetTop(), b:GetBottom()
+        if type(top) ~= "number" or type(bottom) ~= "number" then return end
+        spans[i] = { top = top, bottom = bottom }
+    end
+    for n, i in ipairs(M.MenuBreaks(spans)) do
+        local d = dividers[n]
+        if not d then
+            d = W.Texture(header, "ARTWORK", 1)
+            d:SetHeight(1)
+            dividers[n] = d
+        end
+        local gap = spans[i].bottom - spans[i + 1].top
+        d:ClearAllPoints()
+        d:SetPoint("LEFT", buttons[i], "BOTTOMLEFT", 6, -gap / 2)
+        d:SetPoint("RIGHT", buttons[i], "BOTTOMRIGHT", -6, -gap / 2)
+        W.Color(d, "border.subtle")
+        d:Show()
+    end
+end
+M.menuDividers = dividers
+
 function M:SkinGameMenu(menu)
     menu = menu or _G.GameMenuFrame
     if not menu then return end
     local on = self:IsEnabled() and self.db.gameMenu and true or false
-    if header then header:SetShown(on) end
-    for _, o in pairs(rows) do o:SetShown(on) end
-    if not on then return end
-    skinHeader(menu)
-    local pool = menu.buttonPool
-    if pool and pool.EnumerateActive then
-        for button in pool:EnumerateActive() do M.SkinMenuButton(button) end
+    if not on then
+        if header then header:Hide() end
+        for _, d in ipairs(dividers) do d:Hide() end
+        for button in pairs(rows) do M.UnskinMenuButton(button) end
+        return
     end
+    skinHeader(menu)
+    header:Show()
+    local pool, buttons = menu.buttonPool, {}
+    if pool and pool.EnumerateActive then
+        for button in pool:EnumerateActive() do M.SkinMenuButton(button); buttons[#buttons + 1] = button end
+    end
+    table.sort(buttons, function(a, b)
+        local ta, tb = tonumber(a:GetTop()) or 0, tonumber(b:GetTop()) or 0
+        if ta ~= tb then return ta > tb end
+        return (a.layoutIndex or 0) < (b.layoutIndex or 0)
+    end)
+    placeDividers(buttons)
 end
 
 local menuHooked
@@ -125,5 +191,9 @@ function M:SetupGameMenu()
     if type(menu.InitButtons) == "function" then
         hooksecurefunc(menu, "InitButtons", function(self) M:SkinGameMenu(self) end)
     end
-    menu:HookScript("OnShow", function(self) M:SkinGameMenu(self) end)
+    menu:HookScript("OnShow", function(self)
+        M:SkinGameMenu(self)
+        -- the menu lays its buttons out after showing; place the dividers again once positions are final
+        if C_Timer then C_Timer.After(0, function() M:SkinGameMenu(self) end) end
+    end)
 end

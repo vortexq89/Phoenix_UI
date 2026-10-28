@@ -2006,6 +2006,13 @@ try("game menu skin", function()
     menu.buttonPool = { EnumerateActive = function() local done; return function() if not done then done = true; return b end end end }
     S:SkinGameMenu(menu)
     ns.Events:Fire("PUI_THEME_CHANGED") -- live accent repaint reaches the rows
+    -- group breaks: 4 px between rows, 20 px between sections
+    local br = S.MenuBreaks({ { top = 100, bottom = 72 }, { top = 68, bottom = 40 }, { top = 20, bottom = -8 },
+        { top = -12, bottom = -40 }, { top = -60, bottom = -88 } })
+    assert(#br == 2 and br[1] == 2 and br[2] == 4, "dividers after rows 2 and 4")
+    assert(#S.MenuBreaks({ { top = 10, bottom = 0 } }) == 0, "one row, no divider")
+    -- the switch reverts live and comes back
+    S.db.gameMenu = false; S:Refresh(); S.db.gameMenu = true; S:Refresh(); S:SkinGameMenu(menu)
 end)
 -- micro menu skin (plan window 2): every known micro button gets one tile with a Phoenix glyph, states follow hover
 try("micro menu skin", function()
