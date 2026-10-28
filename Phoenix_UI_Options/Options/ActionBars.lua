@@ -180,4 +180,13 @@ ns:RegisterOptions("ActionBars", {
       keywords = "item id consumables potions" },
     { type = "input", key = "items.hotkey", label = "AB_ITEMS_HOTKEY", desc = "AB_ITEMS_HOTKEY_DESC", disabled = noBars, combat = true,
       keywords = "quest item key bind hotkey" },
+    { type = "header", label = "AB_RING", icon = "grid" },
+    { type = "toggle", key = "ring.enabled", label = "AB_RING", desc = "AB_RING_DESC", combat = true,
+      keywords = "ring radial wheel quickdraw palette",
+      cog = { { type = "range", key = "ring.size", label = "UF_SIZE", min = 24, max = 72, step = 1 },
+              { type = "range", key = "ring.radius", label = "AB_RING_RADIUS", min = 40, max = 240, step = 1 } } },
+    { type = "input", key = "ring.key", label = "AB_RING_KEY", desc = "AB_RING_KEY_DESC", combat = true,
+      disabled = function(m) return not m.db.ring.enabled end },
+    { type = "input", key = "ring.list", label = "AB_RING_LIST", desc = "AB_RING_LIST_DESC", combat = true,
+      disabled = function(m) return not m.db.ring.enabled end },
 })

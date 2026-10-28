@@ -1911,6 +1911,20 @@ try("upgrade planner", function()
     assert(IL.ReadUpgrade({ lines = { { leftText = "x" } } }, pat) == nil, "no line read as an upgrade")
     local w = IL:ShowUpgrades(); assert(w and w:IsShown(), "planner did not open"); w:Hide()
 end)
+-- quick ring: list parsing, circle layout, secure buttons set out of combat
+try("quick ring", function()
+    local AB = ns.modules.ActionBars
+    local l = AB.ParseRing("133, item:5512, macro:PUI Heal, Fireball")
+    assert(#l == 4 and l[1].type == "spell" and l[1].value == 133 and l[2].value == "item:5512"
+        and l[3].type == "macro" and l[3].value == "PUI Heal" and l[4].value == "Fireball", "ring list not parsed")
+    local p = AB.RingPoints(4, 90)
+    assert(p[1][1] == 0 and p[1][2] == 90 and p[2][1] == 90 and p[3][2] == -90, "ring points")
+    AB.db.ring.enabled, AB.db.ring.list, AB.db.ring.key = true, "133, item:5512", "shift-q"
+    AB:RefreshRing()
+    assert(AB.ringCount == 2 and AB.ringKey == "SHIFT-Q", "ring not built")
+    AB.db.ring.enabled, AB.db.ring.list, AB.db.ring.key = false, "", ""
+    AB:RefreshRing()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
