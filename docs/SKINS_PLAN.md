@@ -25,6 +25,11 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   on text over art; checked with the dev diagnostics (`/pui dev pages`-style audit extended to skinned
   windows: truncation, overlap, small fonts, icon rule).
 
+## Status
+- Built (awaiting the in-game checklist): 1 Game Menu (`Skins/GameMenu.lua`), 2 Micro menu (`Skins/MicroMenu.lua`),
+  4 Bags/bank chrome (`Bags/Chrome.lua`; slots were already dressed by `Bags.lua`). Game Menu groups keep
+  Blizzard's own spacing (no extra dividers), and the bag category chips belong to the Phoenix bag window view.
+
 ## Delivery phases (ordered by how often players open the window)
 | Phase | Windows |
 |---|---|

@@ -242,6 +242,8 @@ function M:Refresh()
     eachBag(function(frame) if frame:IsShown() then onUpdateItems(frame) end end)
     if BankPanel and BankPanel:IsShown() then onBankItems(BankPanel) end
     if self.RefreshWindow then self:RefreshWindow() end
+    if self.DressAllChrome then self:DressAllChrome() end
+    if self.PaintBankTabs and BankPanel then self.PaintBankTabs(BankPanel) end
 end
 
 local hooked
@@ -254,6 +256,7 @@ function M:OnEnable()
     ns.Events:On("AUCTION_HOUSE_SHOW", self, function() if M.db.openAuction then OpenAllBags() end end)
     ns.Events:On("TRADE_SHOW", self, function() if M.db.openTrade then OpenAllBags() end end)
     if self.EnableWindow then self:EnableWindow() end
+    if self.SetupChrome then self:SetupChrome() end -- Chrome.lua
     if hooked then self:Refresh(); return end
     hooked = true
     eachBag(function(frame) hooksecurefunc(frame, "UpdateItems", onUpdateItems) end)

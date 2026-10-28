@@ -2020,6 +2020,29 @@ try("micro menu skin", function()
     S.PaintMicro(b)
     _G.CharacterMicroButton = nil
 end)
+-- bag chrome (plan window 4): title tick, close glyph, search field, bank tab rail with warband accent
+try("bag chrome skin", function()
+    local B = ns.modules.Bags
+    local hadBankType = rawget(env.Enum, "BankType")
+    rawset(env.Enum, "BankType", { Character = 0, Account = 2 })
+    assert(B.BankAccent(2) == "accent.secondary" and B.BankAccent(0) == "accent.primary",
+        "warband accent")
+    local f = CreateFrame("Frame", nil, UIParent)
+    f.MoneyFrame = CreateFrame("Frame", nil, f)
+    f.CloseButton = CreateFrame("Button", nil, f)
+    local c = B.DressChrome(f)
+    assert(c and c.tick and c.divider and B.DressChrome(f) == c, "chrome once per window")
+    local box = CreateFrame("EditBox", nil, UIParent)
+    B.SkinSearch(box); B.SkinSearch(box)
+    local tab = CreateFrame("Button", nil, UIParent)
+    tab.IsSelected = function() return true end
+    local panel = { bankTabPool = { EnumerateActive = function() local d; return function() if not d then d = true; return tab end end end },
+        GetActiveBankType = function() return 2 end }
+    B.PaintBankTabs(panel); B.PaintBankTabs(panel)
+    B:DressAllChrome()
+    ns.Events:Fire("PUI_THEME_CHANGED")
+    rawset(env.Enum, "BankType", hadBankType)
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
