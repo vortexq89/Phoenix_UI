@@ -2236,6 +2236,8 @@ try("auction house skin", function()
     S.FramePath(root, { "A", "B" })
     assert(#S.MissingSkinFrames() == 0, "found path cleared")
     env.AuctionHouseFrame = ah
+    ah.BrowseResultsFrame = { ItemList = { HeaderContainer = CreateFrame("Frame", nil, ah) } }
+    S:AuctionHeaders(ah, true); S:AuctionHeaders(ah, false)
     S:SkinAuction(); S.db.auction = false; S:Refresh(); S.db.auction = true; S:Refresh()
     env.AuctionHouseFrame = nil
 end)
