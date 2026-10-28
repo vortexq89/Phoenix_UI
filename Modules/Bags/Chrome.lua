@@ -21,7 +21,15 @@ function M.BankAccent(bankType)
 end
 
 local function closeGlyph(button)
-    if not button or chrome[button] then return end
+    if not button then return end
+    if chrome[button] then
+        for _, g in ipairs(CLOSE_ART) do
+            local tex = button[g] and button[g](button)
+            if tex then Skin:HideRegion(tex) end
+        end
+        chrome[button]:Show()
+        return
+    end
     for _, g in ipairs(CLOSE_ART) do
         local tex = button[g] and button[g](button)
         if tex then Skin:HideRegion(tex) end
@@ -37,7 +45,15 @@ local function closeGlyph(button)
 end
 
 function M.SkinSearch(box)
-    if not box or chrome[box] then return end
+    if not box then return end
+    if chrome[box] then
+        for _, k in ipairs(SEARCH_ART) do
+            local r = box[k]
+            if type(r) == "table" and r.SetAlpha then Skin:HideRegion(r) end
+        end
+        Skin:Register(box, chrome[box].paint)
+        return
+    end
     for _, k in ipairs(SEARCH_ART) do
         local r = box[k]
         if type(r) == "table" and r.SetAlpha then Skin:HideRegion(r) end
@@ -45,16 +61,50 @@ function M.SkinSearch(box)
     local o = { focus = false }
     chrome[box] = o
     local function paint(self)
+        if not (M:IsEnabled() and M.db.skin) then return end
         Skin:Panel(self, "sunken", { border = o.focus and "accent.primary" or "border.subtle" })
     end
+    o.paint = paint
     box:HookScript("OnEditFocusGained", function(self) o.focus = true; paint(self) end)
     box:HookScript("OnEditFocusLost", function(self) o.focus = false; paint(self) end)
     Skin:Register(box, paint)
 end
 
+-- Live switch off: Blizzard's close button and search field art back, our tick and divider hidden.
+function M.UndressChrome(frame)
+    local c = frame and chrome[frame]
+    if not c then return end
+    if c.tick then c.tick:Hide() end
+    if c.divider then c.divider:Hide() end
+    local close = frame.CloseButton
+    if close and chrome[close] then
+        for _, g in ipairs(CLOSE_ART) do
+            local tex = close[g] and close[g](close)
+            if tex then Skin:Restore(tex) end
+        end
+        chrome[close]:Hide()
+    end
+end
+
+function M.UnskinSearch(box)
+    if not (box and chrome[box]) then return end
+    for _, k in ipairs(SEARCH_ART) do
+        local r = box[k]
+        if type(r) == "table" then Skin:Restore(r) end
+    end
+    Skin:Restore(box)
+end
+
 -- One bag or bank window: title tick, close glyph, footer divider.
 function M.DressChrome(frame)
-    if not frame or chrome[frame] then return chrome[frame] end
+    if not frame then return end
+    if chrome[frame] then
+        local c = chrome[frame]
+        closeGlyph(frame.CloseButton)
+        c.tick:Show()
+        if c.divider then c.divider:Show() end
+        return c
+    end
     local c = {}
     chrome[frame] = c
     c.tick = W.Texture(frame, "ARTWORK", 2)
@@ -80,9 +130,16 @@ end
 -- Bank tab buttons (side rail): the selected one outlined in the bank's accent.
 local rail = setmetatable({}, { __mode = "k" })
 function M.PaintBankTabs(panel)
-    if not (panel and M:IsEnabled() and M.db.bankSkin) then return end
+    if not panel then return end
     local pool = panel.bankTabPool
     if not (pool and pool.EnumerateActive) then return end
+    if not (M:IsEnabled() and M.db.bankSkin and M.db.skin) then
+        for tab in pool:EnumerateActive() do
+            local o = rail[tab]
+            if o then o:Hide(); Skin:Restore(tab.Border) end
+        end
+        return
+    end
     local accent = M.BankAccent(panel.GetActiveBankType and panel:GetActiveBankType())
     for tab in pool:EnumerateActive() do
         local o = rail[tab]
@@ -93,23 +150,27 @@ function M.PaintBankTabs(panel)
             Skin:Border(o, "border.subtle")
             rail[tab] = o
         end
+        if type(tab.Border) == "table" and tab.Border.SetAlpha then Skin:HideRegion(tab.Border) end
+        o:Show()
         local selected = tab.IsSelected and tab:IsSelected()
         Skin:SetBorderColor(o, selected and accent or "border.subtle")
     end
 end
 
 function M:DressAllChrome()
-    if not self.db.skin then return end
-    for i = 1, NUM_CONTAINER_FRAMES or 0 do
-        local f = _G["ContainerFrame" .. i]
-        if f then M.DressChrome(f) end
+    local on = self:IsEnabled() and self.db.skin
+    local bank = on and self.db.bankSkin
+    local frames = {}
+    for i = 1, NUM_CONTAINER_FRAMES or 0 do frames[#frames + 1] = _G["ContainerFrame" .. i] end
+    frames[#frames + 1] = _G.ContainerFrameCombinedBags
+    for _, f in ipairs(frames) do
+        if on then M.DressChrome(f) else M.UndressChrome(f) end
     end
-    if _G.ContainerFrameCombinedBags then M.DressChrome(_G.ContainerFrameCombinedBags) end
-    M.SkinSearch(_G.BagItemSearchBox)
-    if self.db.bankSkin then
-        if _G.BankFrame then M.DressChrome(_G.BankFrame) end
-        M.SkinSearch(_G.BankItemSearchBox)
+    if on then M.SkinSearch(_G.BagItemSearchBox) else M.UnskinSearch(_G.BagItemSearchBox) end
+    if _G.BankFrame then
+        if bank then M.DressChrome(_G.BankFrame) else M.UndressChrome(_G.BankFrame) end
     end
+    if bank then M.SkinSearch(_G.BankItemSearchBox) else M.UnskinSearch(_G.BankItemSearchBox) end
 end
 
 local chromeHooked

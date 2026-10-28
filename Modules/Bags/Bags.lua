@@ -182,7 +182,12 @@ local function styleButton(button, location, own)
             if own then Skin:Place(button.Count, button, db.count) end
         end
     else
+        -- switched off live: Blizzard's slot art, quality border, icon crop and count font back
         d.bg:Hide()
+        Skin:Restore(button:GetNormalTexture())
+        Skin:Restore(button.IconBorder)
+        if button.icon then Skin:HideIconFrame(button.icon) end
+        if button.Count then Skin:Restore(button.Count) end
     end
     marks(button, d, s, own)
     local up, simmed = upgradeOf(location, exists)
@@ -193,8 +198,21 @@ end
 M.StyleButton = styleButton
 
 local ART = { "Bg", "NineSlice", "TopTileStreaks" }
-local function skinWindow(frame)
-    if skinned[frame] or not M.db.skin then return end
+local function unskinWindow(frame)
+    if not skinned[frame] then return end
+    skinned[frame] = nil
+    for _, key in ipairs(ART) do Skin:Restore(frame[key]) end
+    local title = frame.TitleContainer and frame.TitleContainer.TitleText
+    if title then Skin:Restore(title) end
+    Skin:Restore(frame)
+end
+M.UnskinWindow = unskinWindow
+function M.IsWindowSkinned(frame) return skinned[frame] and true or false end
+
+local function skinWindow(frame, on)
+    if on == nil then on = M.db.skin end
+    if not on then unskinWindow(frame); return end
+    if skinned[frame] then return end
     skinned[frame] = true
     for _, key in ipairs(ART) do Skin:HideRegion(frame[key]) end
     Skin:Register(frame, function(self)
@@ -227,7 +245,16 @@ local function bankLocation(button)
     return ItemLocation:CreateFromBagAndSlot(button:GetBankTabID(), button:GetContainerSlotID())
 end
 local function onBankItems(panel)
-    if not (M:IsEnabled() and M.db.bankSkin) then return end
+    if not M:IsEnabled() then return end
+    if not (M.db.bankSkin and M.db.skin) then
+        -- switched off live: the bank window and its slots back to Blizzard's look
+        if BankFrame then unskinWindow(BankFrame) end
+        local saved = M.db.skin
+        M.db.skin = false
+        for button in panel:EnumerateValidItems() do styleButton(button, bankLocation(button)) end
+        M.db.skin = saved
+        return
+    end
     if BankFrame then skinWindow(BankFrame) end
     local il = ns.modules.ItemLevel
     for button in panel:EnumerateValidItems() do
