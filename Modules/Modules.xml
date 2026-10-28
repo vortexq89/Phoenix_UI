@@ -25,6 +25,7 @@
     <Script file="Skins\Journal.lua"/>
     <Script file="Skins\Achievements.lua"/>
     <Script file="Skins\Collections.lua"/>
+    <Script file="Skins\Transmog.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>
