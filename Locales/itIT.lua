@@ -1865,7 +1865,6 @@ local T = {
     APPLY_ALL_OFF = "Modifica solo degli elementi scelti.",
     CHIPS_SHIFT_HINT = "Maiusc-clic per modificarne più di uno",
     MIXED_VALUES = "Misto",
-    MIXED_VALUES_DESC = "Gli elementi scelti hanno valori diversi qui. Cambiarlo imposta lo stesso valore su tutti.",
     EDITING_SEVERAL = "Modifica di %d",
     PREVIEW_WORLD = "Mostra nel mondo",
     PREVIEW_WORLD_OFF = "Attiva il modulo per provarlo nel mondo.",

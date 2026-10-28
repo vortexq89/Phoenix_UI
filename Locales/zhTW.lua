@@ -1865,7 +1865,6 @@ local T = {
     APPLY_ALL_OFF = "僅編輯所選元素。",
     CHIPS_SHIFT_HINT = "Shift-點擊可同時編輯多個",
     MIXED_VALUES = "混合",
-    MIXED_VALUES_DESC = "所選元素在此處的值不同。修改後將統一為同一值。",
     EDITING_SEVERAL = "正在編輯 %d 個",
     PREVIEW_WORLD = "在遊戲中顯示",
     PREVIEW_WORLD_OFF = "啟用該模組後才能在遊戲中測試。",

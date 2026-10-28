@@ -1913,18 +1913,18 @@ try("profiles v2", function()
     assert(DB:SetCharacterProfile(DB.charKey, DB:GetProfileName()), "assigning this character's profile failed")
     assert(not DB:SetCharacterProfile("Nobody-Realm", "\0missing"), "a missing profile was assigned")
 end)
--- the preview dock: wide windows pin the preview beside the page, narrow ones keep it in the page
+-- the dock: previews never dock (they stay at the top of the page, t123u); Home's side panel docks when wide
 try("dock", function()
     local C = ns.Config
     local f = C.frame
     rawset(f, "GetWidth", function() return 1280 end)
     local page = C:Show("NamePlates")
     C:LayoutShell()
-    assert(page.docked and f.dock:IsShown(), "a 1280 px window did not dock the preview")
-    assert(page.pinned:GetScale() <= 1, "the docked preview is not fitted")
+    assert(not page.docked and not f.dock:IsShown(), "a preview was docked beside the page")
+    assert(page.pinned:GetScale() <= 1, "the preview is not fitted")
     rawset(f, "GetWidth", function() return 1000 end)
     C:LayoutShell()
-    assert(not page.docked and not f.dock:IsShown(), "a 1000 px window still docks the preview")
+    assert(not page.docked and not f.dock:IsShown(), "a 1000 px window docks the preview")
     rawset(f, "GetWidth", function() return 1280 end)
     local home = C:Show("home")
     C:LayoutShell()

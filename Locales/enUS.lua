@@ -1891,7 +1891,6 @@ ns.RegisterLocale("enUS", {
     APPLY_ALL_OFF = "Editing the picked elements only.",
     CHIPS_SHIFT_HINT = "Shift-click to edit several",
     MIXED_VALUES = "Mixed",
-    MIXED_VALUES_DESC = "The selected elements have different values here. Changing it sets the same value on all of them.",
     EDITING_SEVERAL = "Editing %d",
     PREVIEW_WORLD = "Show in world",
     PREVIEW_WORLD_OFF = "Turn the module on to test it in the world.",

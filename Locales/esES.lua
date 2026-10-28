@@ -1865,7 +1865,6 @@ local T = {
     APPLY_ALL_OFF = "Editando solo los elementos elegidos.",
     CHIPS_SHIFT_HINT = "Mayús+clic para editar varios",
     MIXED_VALUES = "Mixto",
-    MIXED_VALUES_DESC = "Los elementos elegidos tienen valores distintos aquí. Cambiarlo pone el mismo valor en todos.",
     EDITING_SEVERAL = "Editando %d",
     PREVIEW_WORLD = "Mostrar en el mundo",
     PREVIEW_WORLD_OFF = "Activa el módulo para probarlo en el mundo.",

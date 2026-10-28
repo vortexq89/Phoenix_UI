@@ -1865,7 +1865,6 @@ local T = {
     APPLY_ALL_OFF = "仅编辑所选元素。",
     CHIPS_SHIFT_HINT = "Shift-点击可同时编辑多个",
     MIXED_VALUES = "混合",
-    MIXED_VALUES_DESC = "所选元素在此处的值不同。修改后将统一为同一值。",
     EDITING_SEVERAL = "正在编辑 %d 个",
     PREVIEW_WORLD = "在游戏中显示",
     PREVIEW_WORLD_OFF = "启用该模块后才能在游戏中测试。",
