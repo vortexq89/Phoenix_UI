@@ -440,6 +440,6 @@ PUI.ApiManifest = {
     ["seterrorhandler"] = { owners = { "Core", "Skins", "Tests" } },
     ["time"] = { owners = { "Ascent", "Chat", "Core", "Embers", "GroupFinder", "Options", "PvP", "RaidTools", "Sentinel", "Tests", "Vault" } },
     ["tinsert"] = { owners = { "Chat", "Options", "Sentinel", "Vault" } },
-    ["wipe"] = { owners = { "Arena", "Ascent", "CastHistory", "Chat", "Core", "Embers", "Flow", "GroupFinder", "HUD", "Loadouts", "Options", "PvP", "QuestTracker", "RaidTools", "Reminders", "Sentinel", "Setup", "Spark", "Tests", "Vault", "Wisdom" } },
+    ["wipe"] = { owners = { "Arena", "Ascent", "CastHistory", "Chat", "CooldownManager", "Core", "Embers", "Flow", "GroupFinder", "HUD", "Loadouts", "Options", "PvP", "QuestTracker", "RaidTools", "Reminders", "Sentinel", "Setup", "Spark", "Tests", "Vault", "Wisdom" } },
   },
 }

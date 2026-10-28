@@ -4270,4 +4270,12 @@ PUI.Locale:Add("zhCN", {
   ["Which way auto item bar 3 adds buttons."] = "自动物品条 3 添加按钮的方向。",
   ["Which way auto item bar 4 adds buttons."] = "自动物品条 4 添加按钮的方向。",
   ["Which way auto item bar 5 adds buttons."] = "自动物品条 5 添加按钮的方向。",
+  ["Masque: Cooldown Manager icons"] = "Masque：冷却管理器图标",
+  ["Masque: action bars"] = "Masque：动作条",
+  ["Masque: auto item bars"] = "Masque：自动物品条",
+  ["Masque: stance, pet, vehicle and item bar"] = "Masque：姿态条、宠物条、载具与物品条",
+  ["With Masque installed, Cooldown Manager icons use the \"Phoenix UI: Cooldown Manager\" Masque group."] = "安装 Masque 后，冷却管理器图标使用 Masque 中的“Phoenix UI: Cooldown Manager”分组。",
+  ["With Masque installed, Phoenix action bars use the skin you pick for each \"Phoenix UI: Action bar\" group in Masque."] = "安装 Masque 后，Phoenix 动作条使用你在 Masque 中为每个“Phoenix UI: Action bar”分组选择的皮肤。",
+  ["With Masque installed, each auto item bar uses its own Masque group."] = "安装 Masque 后，每个自动物品条使用各自的 Masque 分组。",
+  ["With Masque installed, the stance, pet, vehicle exit and item bars use their Masque groups."] = "安装 Masque 后，姿态条、宠物条、离开载具按钮和物品条使用各自的 Masque 分组。",
 })

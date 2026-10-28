@@ -4270,4 +4270,12 @@ PUI.Locale:Add("ruRU", {
   ["Which way auto item bar 3 adds buttons."] = "В какую сторону авто-панель предметов 3 добавляет кнопки.",
   ["Which way auto item bar 4 adds buttons."] = "В какую сторону авто-панель предметов 4 добавляет кнопки.",
   ["Which way auto item bar 5 adds buttons."] = "В какую сторону авто-панель предметов 5 добавляет кнопки.",
+  ["Masque: Cooldown Manager icons"] = "Masque: значки менеджера восстановления",
+  ["Masque: action bars"] = "Masque: панели действий",
+  ["Masque: auto item bars"] = "Masque: авто-панели предметов",
+  ["Masque: stance, pet, vehicle and item bar"] = "Masque: панели стоек, питомца, транспорта и предметов",
+  ["With Masque installed, Cooldown Manager icons use the \"Phoenix UI: Cooldown Manager\" Masque group."] = "Если установлен Masque, значки менеджера восстановления используют группу Masque «Phoenix UI: Cooldown Manager».",
+  ["With Masque installed, Phoenix action bars use the skin you pick for each \"Phoenix UI: Action bar\" group in Masque."] = "Если установлен Masque, панели действий Phoenix используют обложку, выбранную для каждой группы «Phoenix UI: Action bar» в Masque.",
+  ["With Masque installed, each auto item bar uses its own Masque group."] = "Если установлен Masque, каждая авто-панель предметов использует свою группу Masque.",
+  ["With Masque installed, the stance, pet, vehicle exit and item bars use their Masque groups."] = "Если установлен Masque, панели стоек, питомца, выхода из транспорта и предметов используют свои группы Masque.",
 })

@@ -4,6 +4,9 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Masque support, branch feat/masque
+- Optional Masque support (PUI.Masque, no-op without Masque): "Phoenix UI" groups per action bar, the stance/pet/vehicle/item bars, each auto item bar and Cooldown Manager icons; four live toggles under Action Bars. Phoenix's own border steps aside while Masque skins a button; nothing is written on Blizzard viewer frames.
+
 ### Auto item bars, branch feat/item-bars
 - Action Bars > Auto item bars: five bars (1-3 on by default) that fill themselves from your bags and gear by category: healing potions and healthstones, combat potions, flasks/phials/elixirs, food and drink, augment runes (retail only), weapon oils and stones, on-use trinkets, on-use gear (engineering), quest items, a custom item list, and your class battle res with the shared charges. Secure item/spell buttons, changes in combat wait for combat to end, keybind mode, per-bar size, spacing, per row, grow direction, order, counts, cooldowns, mouse-over fade and where-to-show, all live with an Options preview. Tests: 476 (retail and Forever).
 
