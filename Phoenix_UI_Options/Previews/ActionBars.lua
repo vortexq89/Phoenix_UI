@@ -22,9 +22,9 @@ local function actionSlot(def, i)
     elseif def.kind == "items" then
         return nil
     end
-    local page = def.page or (GetActionBarPage and GetActionBarPage()) or 1
+    local page = def.page or (C_ActionBar and C_ActionBar.GetActionBarPage and C_ActionBar.GetActionBarPage()) or 1
     local slot = (page - 1) * 12 + i
-    local tex = GetActionTexture and GetActionTexture(slot)
+    local tex = C_ActionBar and C_ActionBar.GetActionTexture and C_ActionBar.GetActionTexture(slot)
     if not tex then return nil end
     local real = def.prefix and _G[def.prefix .. i]
     local hk = real and real.HotKey and real.HotKey:GetText()
