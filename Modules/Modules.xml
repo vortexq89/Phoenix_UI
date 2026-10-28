@@ -9,6 +9,7 @@
     <Script file="Skins\MailAlts.lua"/>
     <Script file="Skins\Wardrobe.lua"/>
     <Script file="Skins\GameMenu.lua"/>
+    <Script file="Skins\MicroMenu.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>

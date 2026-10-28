@@ -12,7 +12,7 @@ local Skin, Style, W = ns.Skin, ns.Style, ns.Widgets
 local M = ns:NewModule("Skins", {
     label = "SKINS", desc = "SKINS_DESC", category = "interface", order = 5, reloadOnToggle = true,
     defaults = {
-        gameMenu = true, popups = true, readyCheck = true,
+        gameMenu = true, microMenu = true, popups = true, readyCheck = true,
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
@@ -215,6 +215,7 @@ function M:OnEnable()
         if mv then for _, f in ipairs(mv.frames) do M:HookMovable(f) end end
     end)
     if self.SetupGameMenu then self:SetupGameMenu() end -- GameMenu.lua
+    if self.SkinMicroMenu then self:SkinMicroMenu() end -- MicroMenu.lua
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then

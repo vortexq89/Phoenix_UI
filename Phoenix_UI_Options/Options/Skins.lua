@@ -9,6 +9,8 @@ ns:RegisterOptions("Skins", {
     { type = "preview", kind = "skins" },
     { type = "header", label = "SKINS_DIALOGS", icon = "skins" },
     { type = "toggle", key = "gameMenu", label = "SKINS_GAMEMENU", desc = "SKINS_GAMEMENU_DESC", reload = true, keywords = "escape menu" },
+    { type = "toggle", key = "microMenu", label = "SKINS_MICRO", desc = "SKINS_MICRO_DESC",
+      keywords = "micro menu buttons bar character talents" },
     { type = "toggle", key = "popups", label = "SKINS_POPUPS", desc = "SKINS_POPUPS_DESC", reload = true, keywords = "dialog" },
     { type = "toggle", key = "readyCheck", label = "SKINS_READYCHECK", desc = "SKINS_READYCHECK_DESC", reload = true },
     { type = "toggle", key = "alerts", label = "SKINS_ALERTS", desc = "SKINS_ALERTS_DESC", reload = true,

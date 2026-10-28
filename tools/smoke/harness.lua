@@ -2007,6 +2007,19 @@ try("game menu skin", function()
     S:SkinGameMenu(menu)
     ns.Events:Fire("PUI_THEME_CHANGED") -- live accent repaint reaches the rows
 end)
+-- micro menu skin (plan window 2): every known micro button gets one tile with a Phoenix glyph, states follow hover
+try("micro menu skin", function()
+    local S = ns.modules.Skins
+    for _, e in ipairs(S.MICRO) do assert(ns.Icons:Has(e[2]), "glyph " .. e[2]) end
+    local b = CreateFrame("Button", "CharacterMicroButton", UIParent)
+    _G.CharacterMicroButton = b
+    local t = S.SkinMicroButton(b, "user")
+    assert(t and S.SkinMicroButton(b, "user") == t, "one tile per button")
+    assert(S.MicroState(b, true) == "hover" and S.MicroState(b, false) ~= "hover", "hover state")
+    S.db.microMenu = false; S:SkinMicroMenu(); S.db.microMenu = true; S:SkinMicroMenu()
+    S.PaintMicro(b)
+    _G.CharacterMicroButton = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

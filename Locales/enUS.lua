@@ -98,6 +98,8 @@ ns.RegisterLocale("enUS", {
     SKINS_WINDOWS = "Windows",
     SKINS_GAMEMENU = "Game menu",
     SKINS_GAMEMENU_DESC = "Skin the Escape menu.",
+    SKINS_MICRO = "Micro menu",
+    SKINS_MICRO_DESC = "The small menu buttons (character, talents, quests …) as flat tiles with Phoenix glyphs; alert badges stay.",
     SKINS_POPUPS = "Popups",
     SKINS_POPUPS_DESC = "Skin confirmation dialogs.",
     SKINS_READYCHECK = "Ready check",
