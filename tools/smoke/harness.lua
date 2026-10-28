@@ -2309,6 +2309,13 @@ try("mail phase 3 skin", function()
     S:SkinMail(); S.db.mail = false; S:Refresh(); S.db.mail = true; S:Refresh()
     env.MailFrame = nil
 end)
+try("merchant phase 3 skin", function()
+    local S = ns.modules.Skins
+    local f = CreateFrame("Frame", "MerchantFrame", UIParent)
+    env.MerchantFrame = f
+    S:SkinMerchant(); S.db.merchant = false; S:Refresh(); S.db.merchant = true; S:Refresh()
+    env.MerchantFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
