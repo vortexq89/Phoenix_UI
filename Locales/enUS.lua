@@ -39,7 +39,6 @@ ns.RegisterLocale("enUS", {
     SCALE = "Scale",
     FONT_SIZE = "Font size",
     BADGE_RELOAD = "Reload",
-    STATE_ACTIVE = "Active",
     STATE_ERROR = "Error",
     STATUS_LIVE = "Changes apply instantly",
     STATUS_COMBAT = "In combat – some changes wait until it ends",

@@ -42,11 +42,13 @@ T.presets = {
 }
 
 -- No role below 12: smaller sizes turn into blurry, blocky glyphs once the UI scale goes under 0.7.
+-- The options use two families (Inter for titles and section headings, Roboto for rows and hints) in four
+-- clear steps: title 20 > heading 13 caps > body 14 > desc 12. Condensed faces are for in-world numbers.
 T.fontRoles = {
     brand   = { font = "CinzelBold",        size = 20, flags = "" },
-    title   = { font = "InterBold",         size = 18, flags = "" },
-    heading = { font = "CondensedBold",     size = 12, flags = "" },
-    body    = { font = "RobotoMedium",      size = 13, flags = "" },
+    title   = { font = "InterBold",         size = 20, flags = "" },
+    heading = { font = "InterBold",         size = 13, flags = "" },
+    body    = { font = "RobotoMedium",      size = 14, flags = "" },
     desc    = { font = "Roboto",            size = 12, flags = "" },
     number  = { font = "CondensedSemiBold", size = 13, flags = "" },
     small   = { font = "CondensedMedium",   size = 12, flags = "" },

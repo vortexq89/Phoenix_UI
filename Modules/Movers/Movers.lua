@@ -177,10 +177,10 @@ local function axis(c, size, total, low, high)
     return "", c - total / 2
 end
 
--- Save the target so its centre lands on (cx, cy).
-local function commit(e, cx, cy, scale, alpha)
+-- The {point, x, y} that puts the target's centre on (cx, cy); `s` (optional) is filled in.
+local function placement(e, cx, cy, scale, s)
     local f = resolve(e)
-    local s = saved(e) or {}
+    s = s or {}
     scale = scale or s.scale or f:GetScale()
     local ratio = scale / f:GetScale()
     local _, _, w, h = centerOf(f)
@@ -188,6 +188,13 @@ local function commit(e, cx, cy, scale, alpha)
     local vy, y = axis(cy, (h or 0) * ratio, UIParent:GetHeight(), "BOTTOM", "TOP")
     local point = vy .. hx
     s.point, s.x, s.y = point ~= "" and point or "CENTER", math.floor(x + 0.5), math.floor(y + 0.5)
+    return s, scale
+end
+
+-- Save the target so its centre lands on (cx, cy).
+local function commit(e, cx, cy, scale, alpha)
+    local s
+    s, scale = placement(e, cx, cy, scale, saved(e))
     if not e.noScale then s.scale = scale end
     if alpha and not e.noAlpha then s.alpha = alpha end
     if e.store then e.store.set(s) else M.db.frames[e.key] = s end
@@ -293,6 +300,31 @@ local function nudge(e, dx, dy)
     if toolbar then toolbar:Update() end
 end
 M.Nudge = nudge
+
+-- Exact placement from the popup: the saved {point, x, y} (UIParent units), or for a frame never moved the
+-- numbers of where it is now (nothing is saved until a value is changed).
+function M.PositionOf(e)
+    local s = saved(e)
+    if s and s.point then return s end
+    local f = resolve(e)
+    if not f or blocked(f) then return nil end
+    local cx, cy = centerOf(f)
+    if not cx then return nil end
+    return (placement(e, cx, cy))
+end
+function M.SetPosition(e, point, x, y)
+    local f = resolve(e)
+    if not f or blocked(f) then return end
+    local s = M.PositionOf(e)
+    if not s then return end
+    s = saved(e) or s
+    if not e.noScale and not s.scale then s.scale = f:GetScale() end
+    s.point, s.x, s.y = point or s.point, math.floor((x or s.x) + 0.5), math.floor((y or s.y) + 0.5)
+    if e.store then e.store.set(s) else M.db.frames[e.key] = s end
+    apply(e)
+    if overlays[e.key] then syncOverlay(overlays[e.key]) end
+    if toolbar then toolbar:Update() end
+end
 
 local function setScale(e, v)
     local f = resolve(e)

@@ -42,7 +42,6 @@ local T = {
     SCALE = "Échelle",
     FONT_SIZE = "Taille de police",
     BADGE_RELOAD = "Recharger",
-    STATE_ACTIVE = "Actif",
     STATE_ERROR = "Erreur",
     STATUS_LIVE = "Les changements s'appliquent immédiatement",
     STATUS_COMBAT = "En combat – certains changements attendent la fin du combat",

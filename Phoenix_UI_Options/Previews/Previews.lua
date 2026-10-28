@@ -78,6 +78,7 @@ function P.Caption(parent, text)
 end
 
 ---------------------------------------------------------------- stage
+P.MAX_ZOOM = 1.6
 function P:Create(kind, parent, m, page)
     local def = self.kinds[kind]
     local stage = CreateFrame("Frame", nil, parent)
@@ -105,6 +106,13 @@ function P:Create(kind, parent, m, page)
         if self.designWidth > 0 and width and width > 0 and width < self.designWidth then scale = width / self.designWidth end
         local base, need = self.baseHeight or 120, self.needHeight or self.baseHeight or 120
         if need > base then scale = math.min(scale, base / need) end
+        -- small samples (one unit frame, one cast bar) are zoomed so they fill the stage instead of sitting tiny
+        -- in an empty panel; the footprint on the page stays the same
+        local cw, ch = self.contentW, self.contentH
+        if scale == 1 and cw and ch and cw > 0 and ch > 0 and width and width > 0 then
+            local zoom = math.min(P.MAX_ZOOM, (width * 0.7) / cw, (base * 0.75) / ch)
+            if zoom > 1.05 then scale = zoom end
+        end
         scale = ns.Previews.ClampScale(scale)
         self:SetScale(scale)
         self:SetHeight(base / scale)
@@ -138,11 +146,16 @@ function P:Create(kind, parent, m, page)
         local pad, mid = 8, (l0 + r0) / 2
         local needW = math.max(r - mid, mid - l) * 2 + pad
         local needH = math.max(t0, t) - b + pad
+        local cw, ch = needW, t - b + pad
+        local zoomChanged = not stage.contentW or math.abs(cw - stage.contentW) > 2 or math.abs(ch - stage.contentH) > 2
+        stage.contentW, stage.contentH = cw, ch
         local width, height = math.max(baseWidth, math.ceil(needW)), math.max(baseHeight, math.ceil(needH))
         if width ~= stage.designWidth or math.abs(height - (stage.needHeight or baseHeight)) > 0.5 then
             stage.designWidth = width
             stage.needHeight = height
             if page.Layout then page:Layout() end
+        elseif zoomChanged and page.Layout then
+            page:Layout()
         end
     end
     local retry

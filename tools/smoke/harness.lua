@@ -1795,6 +1795,17 @@ try("mover popup", function()
     slider.onChange(slider, 33)
     assert(AB.db.bars.bar2.width == 33, "popup slider did not write the bar")
     ns.DB:Set(AB, "bars.bar2.width", before)
+    -- exact position: anchor and X / Y write the frame's saved place; opening the popup alone saves nothing
+    local get = function() return e.store and e.store.get() or Mv.db.frames[e.key] end
+    local old = get() and ns.Util.DeepCopy(get())
+    assert(p.anchor and p.x and p.y, "popup has no anchor / X / Y controls")
+    p.anchor.onChange(p.anchor, "BOTTOMLEFT")
+    p.x.slider.onChange(p.x.slider, 120)
+    p.y.slider.onChange(p.y.slider, 40)
+    local s = get()
+    assert(s and s.point == "BOTTOMLEFT" and s.x == 120 and s.y == 40,
+        "position not saved: " .. tostring(s and s.point) .. " " .. tostring(s and s.x) .. "," .. tostring(s and s.y))
+    if e.store then if old then e.store.set(old) else e.store.reset() end else Mv.db.frames[e.key] = old end
     Mv:ClosePopup()
     assert(not p:IsShown(), "popup did not close")
 end)
@@ -1904,6 +1915,33 @@ try("preview zero-width panel", function()
         if not ok then bad = kind .. ": " .. tostring(err) end
     end
     assert(not bad, bad)
+end)
+-- element chips tighten before they wrap (defect #17)
+try("chips tighten before wrapping", function()
+    local W = ns.Widgets
+    local c = W:Chips(CreateFrame("Frame", nil, UIParent), {})
+    local items = {}
+    for i = 1, 8 do items[i] = { value = i, label = "Bar " .. i } end
+    c:SetItems(items)
+    c:SetWidth(450); c:Arrange()
+    assert(c.tight and c:GetHeight() == 22, "8 chips at 450 px should fit one tight row, height " .. tostring(c:GetHeight()))
+    c:SetWidth(2000); c:Arrange()
+    assert(not c.tight and c:GetHeight() == 22, "wide row should not be tight")
+    c:SetWidth(300); c:Arrange()
+    assert(c:GetHeight() > 22, "a too-narrow row still wraps")
+end)
+-- a small sample is zoomed to fill the stage; the footprint (scale x height) stays the design height
+try("preview zoom small sample", function()
+    local P = ns.Previews
+    local stage = P:Create("castbar", CreateFrame("Frame", nil, UIParent), ns.modules.CastBars, {})
+    local base = stage.baseHeight
+    stage.contentW, stage.contentH, stage.needHeight = 120, 20, nil
+    stage.designWidth = 0
+    local s = stage:Fit(600)
+    assert(s > 1.05 and s <= P.MAX_ZOOM, "small sample not zoomed: " .. tostring(s))
+    assert(math.abs(stage:GetHeight() * s - base) < 0.5, "zoom changed the footprint")
+    stage.contentW, stage.contentH = 560, base
+    assert(stage:Fit(600) == 1, "a sample that fills the stage was zoomed")
 end)
 -- geometry: the options window keeps its size and scale whatever a setting does, stays within 80% x 85% of
 -- the screen at common resolutions, and the top bar's controls never overlap (tools/smoke/geometry.lua)

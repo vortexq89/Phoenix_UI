@@ -42,7 +42,6 @@ local T = {
     SCALE = "缩放",
     FONT_SIZE = "字体大小",
     BADGE_RELOAD = "重载",
-    STATE_ACTIVE = "已启用",
     STATE_ERROR = "错误",
     STATUS_LIVE = "更改立即生效",
     STATUS_COMBAT = "战斗中——部分更改将在战斗结束后生效",

@@ -93,20 +93,32 @@ function W:Chips(parent, items, multi)
         return c
     end
 
+    -- Lays the chips out in rows. When they would wrap, the chips first tighten (less padding and gap) so a
+    -- row of elements (Bar 1 … Item bar) stays one line on narrow pages; only what still does not fit wraps.
+    local TIGHT = 10 -- px saved per chip in tight mode
     function s:Arrange()
         local width = self:GetWidth()
         if not width or width < 40 then width = 10000 end
+        local total, n = 0, 0
+        for _, c in ipairs(self.chips) do
+            if c:IsShown() then total, n = total + (c.fullWidth or c:GetWidth()), n + 1 end
+        end
+        local tight = n > 1 and total + GAP * (n - 1) > width
+        local gap = tight and 4 or GAP
+        self.tight = tight
         local x, y, rowW = 0, 0, 0
         for _, c in ipairs(self.chips) do
             if c:IsShown() then
-                local w = c:GetWidth()
+                c.fullWidth = c.fullWidth or c:GetWidth()
+                local w = tight and c.fullWidth - TIGHT or c.fullWidth
+                c:SetWidth(w)
                 if x > 0 and x + w > width then
-                    x, y = 0, y + H + GAP
+                    x, y = 0, y + H + gap
                 end
                 c:ClearAllPoints()
                 c:SetPoint("TOPLEFT", x, -y)
-                x = x + w + GAP
-                rowW = math.max(rowW, x - GAP)
+                x = x + w + gap
+                rowW = math.max(rowW, x - gap)
             end
         end
         self.naturalWidth = rowW
@@ -130,7 +142,8 @@ function W:Chips(parent, items, multi)
                 if c.icon then c.icon:Hide(); c.icon = nil end
                 c.label:SetPoint("CENTER", 0, 0)
             end
-            c:SetWidth(math.floor(c.label:GetUnboundedStringWidth() + PADX * 2 + (item.icon and 14 or 0) + 0.5))
+            c.fullWidth = math.floor(c.label:GetUnboundedStringWidth() + PADX * 2 + (item.icon and 14 or 0) + 0.5)
+            c:SetWidth(c.fullWidth)
             c:Show()
         end
         self:Arrange()

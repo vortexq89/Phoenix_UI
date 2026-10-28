@@ -42,7 +42,6 @@ local T = {
     SCALE = "크기",
     FONT_SIZE = "글꼴 크기",
     BADGE_RELOAD = "재시작",
-    STATE_ACTIVE = "활성",
     STATE_ERROR = "오류",
     STATUS_LIVE = "변경 사항이 즉시 적용됩니다",
     STATUS_COMBAT = "전투 중 – 일부 변경 사항은 전투가 끝난 뒤 적용됩니다",

@@ -20,11 +20,11 @@ guards it), **open**, or **verify** (needs an in-game look; the cause is not cer
 | 10 | S2 | Every page in self-test shots | Pages look dimmed to ~30% | 35 of 39 self-test shots | fixed - artefact of the self-test (Screenshot() captured the frame the next page started its fade); shots now taken one tick later. Also: a replaced tween now lands on its end value, so no fade can stay stuck |
 | 11 | S2 | Settings rows | Brown/orange tint over whole card bodies | shots 142628, 190640 crop | verify - colour matches the row flash texture (accent at 22%) at full alpha; flash is now hidden except while it plays, and the row highlight starts transparent |
 | 12 | S2 | Settings rows | "OUT OF COMBAT" badge on most rows of bar/unit pages: noise | shot 190312 | fixed stage 1b - only "Reload" keeps a badge; combat note stays in the tooltip |
-| 13 | S2 | Preview stages | Tiny sample in a large empty dark stage (unit frame, cast bar, nameplate) | shots 190323, 190331, 190342 | open - stage 2: fit-to-stage zoom for small samples |
+| 13 | S2 | Preview stages | Tiny sample in a large empty dark stage (unit frame, cast bar, nameplate) | shots 190323, 190331, 190342 | fixed (stage 2) - small samples zoom up to 1.6x to fill the stage, footprint unchanged; test "preview zoom small sample" |
 | 14 | S2 | Top bar | Profile dropdown empty on first open (no text) | shot 190312 | fixed - value set on build and in UpdateFooter; asserted in "options window geometry" |
-| 15 | S2 | Window | Rail labels and list text 12 px on a 2560x1440 screen at UI scale 0.53 look small next to the large panels | all shots | open - stage 2 typography pass (sizes per role) |
-| 16 | S3 | Page header | "117 SETTINGS / ACTIVE" chips under the title compete with the title | shot 190312 | open - stage 2 |
-| 17 | S3 | Chips | Element chips (Bar 1 … Item bar) wrap into two lines at narrow widths without a scroll | shot 190312 | open |
+| 15 | S2 | Window | Rail labels and list text 12 px on a 2560x1440 screen at UI scale 0.53 look small next to the large panels | all shots | fixed (stage 2) - two families, four steps: title 20, heading Inter 13, body 14, desc 12 (Core/Theme.lua) - verify in game |
+| 16 | S3 | Page header | "117 SETTINGS / ACTIVE" chips under the title compete with the title | shot 190312 | fixed (stage 2) - plain muted "N settings" line; the state badge only shows for error / reload |
+| 17 | S3 | Chips | Element chips (Bar 1 … Item bar) wrap into two lines at narrow widths without a scroll | shot 190312 | fixed (stage 2) - chips tighten (padding and gap) before wrapping; test "chips tighten before wrapping" |
 | 18 | S3 | Cards | Section header ticks/icons use mixed game art and glyphs in game-icon mode | shots | open |
 | 19 | S3 | In world | Blizzard Edit Mode shots show Phoenix movers and Blizzard's own grid at once; overlapping labels | shots 150334-150415 | open - stage 3 (hide Blizzard grid while Phoenix layout mode is on) |
 | 20 | S3 | Mail / windows | New: Alts button and Shift-drag move need an in-game look | - | verify |
@@ -34,3 +34,8 @@ Counts: 20 defects (8 S1, 7 S2, 5 S3). Fixed 12 (all 8 S1, 4 S2); verify 2; open
 Not visible from screenshots and therefore not listed: anything inside combat, group frames in a raid,
 nameplates in the world. The self-test now takes shots after the fade and logs per-page audit counts, so the next
 overnight run will extend this list automatically.
+
+## Stage 2 additions
+
+- Mover popup (Layout mode cog): Anchor dropdown (9 points) and X / Y sliders, applied live; opening the popup
+  saves nothing. Test "mover popup" checks anchor and offsets are written.

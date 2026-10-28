@@ -689,13 +689,14 @@ local function buildPageHeader(page, m, schema)
     h.desc:SetPoint("TOPLEFT", h.title, "BOTTOMLEFT", 0, -5)
     h.desc:SetPoint("RIGHT", -250, 0)
     h.desc:SetText(text(m.desc))
-    h.count = W:Badge(h, "", "text.muted", "cog")
+    -- a quiet line under the description, not chips: the title leads (defect #16)
+    h.count = W.Text(h, "small", "text.muted")
     h.count:SetPoint("TOPLEFT", h.desc, "BOTTOMLEFT", 0, -7)
     page.settingCount = Config.CountSettings(schema)
-    h.count:Set(L.SETTINGS_COUNT:format(page.settingCount), "text.muted")
+    h.count:SetText(L.SETTINGS_COUNT:format(page.settingCount))
     h.count:SetShown(page.settingCount > 0)
     h.state = W:Badge(h, "", "state.success")
-    h.state:SetPoint("LEFT", h.count, "RIGHT", 6, 0)
+    h.state:SetPoint("LEFT", h.count, "RIGHT", 10, 0)
     h.state:Hide()
     if not m.locked then
         h.toggle = W:Toggle(h)
@@ -721,13 +722,14 @@ local function buildPageHeader(page, m, schema)
         Skin:Text(self.title, "title", "text.primary", 20)
         Skin:Text(self.desc, "desc", "text.secondary")
         if self.toggleLabel then Skin:Text(self.toggleLabel, "small", "text.secondary") end
+        Skin:Text(self.count, "small", "text.muted")
         W.Color(self.line, "border.subtle", 0.7)
     end)
     function h:Refresh()
         local state, token
         if m.state == "errored" then state, token = L.STATE_ERROR, "state.danger"
         elseif m.needsReload then state, token = L.BADGE_RELOAD, "state.warning"
-        elseif not m.locked and m:IsEnabled() then state, token = L.STATE_ACTIVE, "state.success" end
+        end -- "on" is already said by the toggle; the badge only appears when something needs attention
         if state then self.state:Set(state, token); self.state:Show() else self.state:Hide() end
         if self.state:IsShown() and not self.count:IsShown() then
             self.state:ClearAllPoints(); self.state:SetPoint("TOPLEFT", self.desc, "BOTTOMLEFT", 0, -7)

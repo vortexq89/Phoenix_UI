@@ -42,7 +42,6 @@ local T = {
     SCALE = "Масштаб",
     FONT_SIZE = "Размер шрифта",
     BADGE_RELOAD = "Перезагрузка",
-    STATE_ACTIVE = "Активен",
     STATE_ERROR = "Ошибка",
     STATUS_LIVE = "Изменения применяются сразу",
     STATUS_COMBAT = "В бою – часть изменений ждёт окончания боя",
