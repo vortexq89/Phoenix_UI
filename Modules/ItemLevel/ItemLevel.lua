@@ -204,10 +204,11 @@ end
 
 local function onMerchant()
     if not (M:IsEnabled() and M.db.merchant and MerchantFrame) then return end
-    for i = 1, MERCHANT_ITEMS_PER_PAGE or 10 do
+    local per = tonumber(MERCHANT_ITEMS_PER_PAGE) or 10
+    for i = 1, per do
         local button = _G["MerchantItem" .. i .. "ItemButton"]
         if button then
-            local index = ((MerchantFrame.page or 1) - 1) * (MERCHANT_ITEMS_PER_PAGE or 10) + i
+            local index = ((tonumber(MerchantFrame.page) or 1) - 1) * per + i
             paintLink(button, gearLink(GetMerchantItemLink(index)))
         end
     end
