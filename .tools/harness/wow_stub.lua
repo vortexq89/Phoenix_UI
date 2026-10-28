@@ -3,6 +3,19 @@
 local H = { frames = {}, timers = {}, clock = 1000, output = {}, loaded = {}, cvars = { taintLog = "0" } }
 _G.HARNESS = H
 
+-- The game's string.format takes positional specs (%2$s); plain Lua 5.1 does not.
+do
+  local fmt = string.format
+  local function positional(f, ...)
+    if type(f) ~= "string" or not f:find("%%%d+%$") then return fmt(f, ...) end
+    local args, out = { ... }, {}
+    local plain = f:gsub("%%(%d+)%$", function(n) out[#out + 1] = args[tonumber(n)]; return "%" end)
+    return fmt(plain, unpack(out))
+  end
+  string.format = positional
+  _G.format = positional
+end
+
 local flavor = os.getenv("PUI_FLAVOR") or "retail"
 H.flavor = flavor
 

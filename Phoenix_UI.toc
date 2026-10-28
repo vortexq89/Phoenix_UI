@@ -17,6 +17,7 @@ Core\Secret.lua
 Core\Kernel.lua
 Core\Schema.lua
 Core\DB.lua
+Core\Shaper.lua
 Core\Locale.lua
 Core\Theme.lua
 Core\Media.lua
@@ -81,3 +82,4 @@ Tests\Profiler_test.lua
 Tests\Deferred_test.lua
 Tests\Look_test.lua
 Tests\Plugins_test.lua
+Tests\Shaper_test.lua

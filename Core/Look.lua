@@ -38,6 +38,8 @@ Look.Refresh = refresh
 Look.OUTLINES = { "none", "OUTLINE", "THICKOUTLINE" }
 local font = Media.Font
 function Media:Font(name)
+  local script = PUI.Locale and PUI.Locale:ScriptFont(s.everywhere ~= "keep" and s.everywhere or name)
+  if script then return script end
   if s.everywhere ~= "keep" and self.fonts[s.everywhere] then return self.fonts[s.everywhere] end
   return font(self, name)
 end
