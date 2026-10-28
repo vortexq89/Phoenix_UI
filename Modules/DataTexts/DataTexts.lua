@@ -24,7 +24,7 @@ local M = ns:NewModule("DataTexts", {
         order2 = "", panel2 = false, width = 0, justify = "LEFT", mouseover = false,
         clock24 = true, clockRealm = false, goldCopper = false, goldAccount = true, durabilityWarn = 25,
         tooltips = true, combatTips = true,
-        xpBar = false, xpRep = true, rested = true, barWidth = 520, barHeight = 10, barTextMode = "mouseover",
+        xpBar = false, xpRep = true, rested = true, questXP = true, barWidth = 520, barHeight = 10, barTextMode = "mouseover",
         barHonor = false, barTexture = "", barReverse = false, barSmooth = true, barGradient = "none",
         barText = Style.Text(10, { outline = "OUTLINE" }),
         background = true, scale = 1,

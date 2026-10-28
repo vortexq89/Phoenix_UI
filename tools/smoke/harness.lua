@@ -1854,6 +1854,17 @@ try("move blizzard windows", function()
     assert(next(M.db.movedWindows) == nil, "reset kept positions")
     ns.DB:Set(M, "moveWindows", false)
 end)
+-- data bar: XP waiting in finished quests is a third fill and shows in the hover text
+try("quest xp overlay", function()
+    local M = ns.modules.DataTexts
+    local d = { kind = "xp", cur = 100, max = 1000, rested = 0, quest = 250 }
+    local f = M:NewDataBar(UIParent)
+    M:PaintDataBar(f, d, true, true)
+    assert(f.quest, "no quest fill")
+    local t = M.BarText(d, "percent", true)
+    assert(t:find("25"), "hover text lacks the quest share: " .. t)
+    assert(type(M.PendingQuestXP()) == "number", "pending quest XP not a number")
+end)
 try("dev self-test", function()
     local ST, D = ns.DevDiag.SelfTest, ns.DevDiag
     local old = GetTime

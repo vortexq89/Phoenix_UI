@@ -131,6 +131,8 @@ ns:RegisterOptions("DataTexts", {
     { type = "toggle", key = "xpBar", label = "DT_XP_BAR_SHOW", desc = "DT_XP_BAR_DESC", keywords = "experience reputation rep xp" },
     { type = "toggle", key = "xpRep", label = "DT_XP_REP", desc = "DT_XP_REP_DESC", disabled = noBar },
     { type = "toggle", key = "rested", label = "DT_RESTED", desc = "DT_RESTED_DESC", disabled = noBar },
+    { type = "toggle", key = "questXP", label = "DT_QUEST_XP", desc = "DT_QUEST_XP_DESC", disabled = noBar,
+      keywords = "quest experience completed turn in overlay" },
     { type = "toggle", key = "barHonor", label = "DT_BAR_HONOR", desc = "DT_BAR_HONOR_DESC", disabled = noBar,
       keywords = "honor pvp level bar" },
     { type = "texture", key = "barTexture", label = "BAR_TEXTURE", allowDefault = true, disabled = noBar },

@@ -11,13 +11,29 @@ local M = ns:GetModule("DataTexts")
 
 local bar
 
+-- XP waiting in finished quests (shown as a third fill on the XP bar). Plain numbers, retail quest log only.
+function M.PendingQuestXP()
+    local QL = C_QuestLog
+    if not (QL and QL.GetNumQuestLogEntries and QL.GetInfo and QL.IsComplete and GetQuestLogRewardXP) then return 0 end
+    local total = 0
+    for i = 1, tonumber((QL.GetNumQuestLogEntries())) or 0 do
+        local info = QL.GetInfo(i)
+        if info and info.questID and not info.isHeader and QL.IsComplete(info.questID) then
+            local ok, xp = pcall(GetQuestLogRewardXP, info.questID)
+            if ok and type(xp) == "number" then total = total + xp end
+        end
+    end
+    return total
+end
+
 -- What the bar shows now: { kind = "xp"|"rep", cur, max, rested, name } or nil (nothing to show).
 function M:BarData()
     local db = self.db
     local atCap = IsXPUserDisabled() or (UnitLevel("player") or 0) >= (GetMaxLevelForPlayerExpansion() or 0)
     if not atCap then
         local max = UnitXPMax("player") or 0
-        if max > 0 then return { kind = "xp", cur = UnitXP("player") or 0, max = max, rested = GetXPExhaustion() or 0 } end
+        if max > 0 then return { kind = "xp", cur = UnitXP("player") or 0, max = max, rested = GetXPExhaustion() or 0,
+            quest = db.questXP and M.PendingQuestXP() or 0 } end
     end
     if db.barHonor then
         local cur, max = UnitHonor("player"), UnitHonorMax("player")
@@ -46,7 +62,11 @@ function M.BarText(d, mode, hovered)
     elseif mode == "remaining" then
         return prefix .. L.DT_BAR_REMAINING:format(BreakUpLargeNumbers(d.max - d.cur))
     end
-    return prefix .. pct .. "%"
+    local text = prefix .. pct .. "%"
+    if (d.quest or 0) > 0 and hovered then
+        text = text .. "  " .. L.DT_QUEST_XP_PENDING:format(math.floor(d.quest / d.max * 1000 + 0.5) / 10)
+    end
+    return text
 end
 
 function M:NewDataBar(parent)
@@ -54,14 +74,26 @@ function M:NewDataBar(parent)
     f:SetSize(520, 10)
     f.rested = CreateFrame("StatusBar", nil, f)
     f.rested:SetAllPoints()
+    f.quest = CreateFrame("StatusBar", nil, f)
+    f.quest:SetAllPoints()
+    f.quest:SetFrameLevel(f.rested:GetFrameLevel() + 1)
     f.fill = CreateFrame("StatusBar", nil, f)
     f.fill:SetAllPoints()
-    f.fill:SetFrameLevel(f.rested:GetFrameLevel() + 1)
+    f.fill:SetFrameLevel(f.quest:GetFrameLevel() + 1)
     f.text = f.fill:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     return f
 end
 
 M.BAR_TOKENS = { xp = "accent.primary", rep = "state.success", honor = "state.warning" }
+
+local function paintQuest(f, d, max, texture, reverse)
+    Skin:StatusBar(f.quest, { background = false, texture = texture })
+    f.quest:SetReverseFill(reverse and true or false)
+    f.quest:GetStatusBarTexture():SetVertexColor(ns.Theme:Color("state.warning"))
+    f.quest:SetAlpha(0.7)
+    f.quest:SetMinMaxValues(0, max)
+    f.quest:SetValue(d and (d.quest or 0) > 0 and math.min(max, d.cur + d.quest) or 0)
+end
 
 -- d: BarData() or a preview sample; hovered: show the mouseover text; sample: the preview (never animates).
 function M:PaintDataBar(f, d, hovered, sample)
@@ -84,6 +116,7 @@ function M:PaintDataBar(f, d, hovered, sample)
     f.kind = d and d.kind
     f.rested:SetMinMaxValues(0, max)
     f.rested:SetValue(d and db.rested and d.rested and math.min(max, d.cur + d.rested) or 0)
+    paintQuest(f, d, max, texture, db.barReverse)
     Skin:TextSpec(f.text, db.barText, "number")
     Skin:Place(f.text, f.fill, db.barText)
     f.text:SetText(M.BarText(d, db.barTextMode, hovered))
@@ -108,7 +141,7 @@ function M:EnableBar()
             default = { point = "BOTTOM", x = 0, y = 64 } })
     end
     for _, event in ipairs({ "PLAYER_XP_UPDATE", "UPDATE_EXHAUSTION", "PLAYER_LEVEL_UP", "UPDATE_FACTION", "HONOR_XP_UPDATE",
-        "HONOR_LEVEL_UPDATE" }) do
+        "HONOR_LEVEL_UPDATE", "QUEST_LOG_UPDATE" }) do
         ns.Events:On(event, bar, update)
     end
     update()
