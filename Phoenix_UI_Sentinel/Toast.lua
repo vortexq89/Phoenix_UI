@@ -70,12 +70,3 @@ function Toast:Notify(inc)
   end
 end
 
-function Toast:SafeModeNotice(modules)
-  local names = {}
-  for name in pairs(modules) do names[#names + 1] = name end
-  table.sort(names)
-  self:Show("|cffff7d0aPhoenix UI|r: " .. table.concat(names, ", ") .. " disabled after repeated errors. The rest of the UI is running.",
-    "Re-enable", function()
-      for i = 1, #names do S.SafeMode:Release(names[i]) end
-    end)
-end

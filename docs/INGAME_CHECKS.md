@@ -68,6 +68,8 @@ The offline harness runs every test without drawing anything, so nothing in PRs 
 - [ ] Privacy allow-list with a character whose name matches an addon folder.
 - [ ] Fixed-in paste import: a Companion `fixed-string` output decodes in game (C_EncodingUtil deflate and base64 match Python's raw deflate).
 - [ ] Forever child (Forever client only): `TakeTaxiNode` post-hook slot indexes match `C_TaxiMap.GetAllTaxiNodes` `slotIndex`. `PLAYER_CONTROL_LOST` / `GAINED` with `UnitOnTaxi` around flights. `C_PetInfo.GetPetHappiness` returns 1-3 and a loyalty rate. `UNIT_PET` fires on summon and dismiss.
+- [ ] Forever spellbook and talent skins (Forever client, Skins on): SpellButton1-12 get the Phoenix slot frame and fonts, the rank line is muted (toggle Spell ranks off: Blizzard colour back), skill-line and bottom tabs have Phoenix faces; the talent window shows rings on maxed, chosen and pickable talents and updates on a point spent; no blocked-action message.
+- [ ] Forever fishing helper (Forever page, turn on): casting Fishing shows the bar with the time left, catches count up on each fishing loot, the louder-splash option raises sound effects during the cast and restores them after.
 
 ## Still blocked (no in-game check will fix these)
-- Swing timer (no combat log and no swing API), line-of-sight fade, Group Finder lockout filters and cancel-oldest, Pulse private-aura sounds, Friends app-only removal (taint), Sentinel protected decode (needs an approved pcall tag).
+- Swing timer on retail only (no combat log; Forever has it), line-of-sight fade, Group Finder lockout filters and cancel-oldest, Pulse private-aura sounds, Friends app-only removal (taint).

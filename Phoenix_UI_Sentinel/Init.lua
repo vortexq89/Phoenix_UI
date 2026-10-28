@@ -51,7 +51,7 @@ function S:ApplyOptIn(value) self.db.optIn = value end
 function S:ApplyShareName(value) self.db.shareCharacterName = value end
 function S:ApplyToast(value) self.toastEnabled = value end
 function S:ApplySafeModeThreshold(value) self.safeModeThreshold = value end
-function S:ApplySafeMode(value) self.safeModeEnabled = value end
+function S:ApplySafeMode() end -- retired key, kept so old profiles load
 function S:ApplyTesterMode(value)
   self.testerMode = value
   PUI.SentinelHook.SetRingSize(value and 200 or 50)
