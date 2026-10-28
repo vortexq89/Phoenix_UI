@@ -2354,6 +2354,15 @@ try("inspect phase 4 skin", function()
     S:SkinInspect(); S.db.inspect = false; S:Refresh(); S.db.inspect = true; S:Refresh()
     env.InspectFrame, env.InspectHeadSlot = nil, nil
 end)
+try("gossip phase 4 skin", function()
+    local S = ns.modules.Skins
+    local f = CreateFrame("Frame", "GossipFrame", UIParent)
+    env.GossipFrame = f
+    env.QuestFrameAcceptButton = CreateFrame("Button", nil, UIParent)
+    S.GossipBullet(CreateFrame("Button", nil, f), true)
+    S:SkinGossip(); S.db.gossip = false; S:Refresh(); S.db.gossip = true; S:Refresh()
+    env.GossipFrame, env.QuestFrameAcceptButton = nil, nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
