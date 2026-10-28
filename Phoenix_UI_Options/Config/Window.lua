@@ -154,7 +154,8 @@ local function buildTopBar(f)
     h.profile = W:Dropdown(h, profileItems, nil, 176)
     h.profile:SetPoint("RIGHT", h.layout, "LEFT", -10, 0)
     h.profile:SetHeight(28)
-    h.profile.onChange = function(_, name) ns.DB:SetProfile(name) end
+    h.profile.onChange = function(d, name) ns.DB:SetProfile(name); d:SetValue(name) end
+    h.profile:SetValue(ns.DB:GetProfileName())
     W.AttachTooltip(h.profile, L.PROFILE, L.PROFILE_SWITCH_DESC)
 
     h.search = W:Input(h, 320, L.SEARCH_PLACEHOLDER)
@@ -631,6 +632,7 @@ function Config:Build()
         if self.InvalidateSearch then self:InvalidateSearch() end
         if self.UpdateSearchHint then self:UpdateSearchHint() end
         self:UpdateFooter()
+        f.header.profile:SetValue(ns.DB:GetProfileName())
         for _, row in pairs(self.navRows) do row:Paint() end
         if self.current and self.pages[self.current] and self.pages[self.current].Refresh then self.pages[self.current]:Refresh() end
     end)

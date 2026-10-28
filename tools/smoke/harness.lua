@@ -1914,6 +1914,9 @@ try("options window geometry", function()
     local oldRoot = Geo.root
     Geo.root = UI
     local f = C:Build()
+    C:UpdateFooter()
+    local pl = f.header.profile:GetValue()
+    assert(pl and pl ~= "" and pl == ns.DB:GetProfileName(), "profile dropdown shows no profile: " .. tostring(pl))
     local AB = ns.modules.ActionBars
     for _, res in ipairs({ { 1366, 768 }, { 1920, 1080 }, { 4830, 2717 } }) do
         Geo.rootW, Geo.rootH = res[1], res[2]

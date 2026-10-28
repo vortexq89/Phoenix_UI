@@ -21,7 +21,7 @@ guards it), **open**, or **verify** (needs an in-game look; the cause is not cer
 | 11 | S2 | Settings rows | Brown/orange tint over whole card bodies | shots 142628, 190640 crop | verify - colour matches the row flash texture (accent at 22%) at full alpha; flash is now hidden except while it plays, and the row highlight starts transparent |
 | 12 | S2 | Settings rows | "OUT OF COMBAT" badge on most rows of bar/unit pages: noise | shot 190312 | fixed stage 1b - only "Reload" keeps a badge; combat note stays in the tooltip |
 | 13 | S2 | Preview stages | Tiny sample in a large empty dark stage (unit frame, cast bar, nameplate) | shots 190323, 190331, 190342 | open - stage 2: fit-to-stage zoom for small samples |
-| 14 | S2 | Top bar | Profile dropdown empty on first open (no text) | shot 190312 | open - stage 2 |
+| 14 | S2 | Top bar | Profile dropdown empty on first open (no text) | shot 190312 | fixed - value set on build and in UpdateFooter; asserted in "options window geometry" |
 | 15 | S2 | Window | Rail labels and list text 12 px on a 2560x1440 screen at UI scale 0.53 look small next to the large panels | all shots | open - stage 2 typography pass (sizes per role) |
 | 16 | S3 | Page header | "117 SETTINGS / ACTIVE" chips under the title compete with the title | shot 190312 | open - stage 2 |
 | 17 | S3 | Chips | Element chips (Bar 1 … Item bar) wrap into two lines at narrow widths without a scroll | shot 190312 | open |
