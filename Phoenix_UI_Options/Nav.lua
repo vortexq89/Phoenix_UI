@@ -38,16 +38,26 @@ local INFO = {
   Options = { "dashboard", "Window", "Scale, tint, open key and pinned pages of this window." },
   Sentinel = { "sentinel", "Sentinel", "Errors, taint and performance health." },
   Overrides = { "loadouts", "Overrides", "Values set only for one specialization or one kind of content." },
+  -- Review 2026-10-27: pages added after the sidebar was written (they fell into Interface with a generic label).
+  Arena = { "arena", "Arena", "Enemy arena frames, trinkets, DR tray and match tools.", "Arena" },
+  Pulse = { "pulse", "Pulse", "Boss timeline bars, next abilities and timers.", "Pulse" },
+  Spark = { "spark", "Spark", "Scrolling combat text and notifications.", "Spark" },
+  CastHistory = { "spark", "Cast History", "Your recent casts as a strip of icons.", "CastHistory" },
+  PvP = { "arena", "PvP", "Rated card, scoreboard and battleground tools.", "PvP" },
+  RaidTools = { "raid", "Raid Tools", "Markers, ready check, pull timer, notes and stats.", "RaidTools" },
+  Friends = { "chat", "Friends", "Friends list look, notes and search.", "Friends" },
+  Forever = { "general", "Forever", "Flight timer and pet happiness (Forever client).", "Forever" },
+  QoL = { "chat", "Announcements", "One router for quest, key, reset and interrupt messages." },
   Ledger = { "general", "Changes & uninstall", "Every game setting, key binding and frame Phoenix changed, with one-click restore." },
 }
 Nav.INFO = INFO
 
 Nav.GROUPS = {
   { "Interface", { "Core", "Theme", "Studio", "Minimap", "Tooltip", "DataBars", "QuestTracker", "Skins" } },
-  { "Combat", { "UnitFrames", "ActionBars", "ResourceBars", "CooldownManager", "Nameplates", "Reminders", "ClickCast" } },
-  { "Group", { "RaidFrames", "GroupFinder", "Ascent", "Embers", "Loadouts" } },
-  { "Social & Chat", { "Chat", "Flow" } },
-  { "Tools", { "Vault", "Oracle", "Wisdom", "Setup" } },
+  { "Combat", { "UnitFrames", "ActionBars", "ResourceBars", "CooldownManager", "Nameplates", "Reminders", "ClickCast", "Arena", "Pulse", "Spark", "CastHistory", "PvP" } },
+  { "Group", { "RaidFrames", "GroupFinder", "Ascent", "Embers", "Loadouts", "RaidTools" } },
+  { "Social & Chat", { "Chat", "Flow", "Friends", "QoL" } },
+  { "Tools", { "Vault", "Oracle", "Wisdom", "Setup", "Forever" } },
   { "System", { "Profiles", "Overrides", "Options", "Sentinel", "Ledger" } },
 }
 
