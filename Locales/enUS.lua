@@ -104,6 +104,8 @@ ns.RegisterLocale("enUS", {
     SKINS_MAP_DESC = "The map window and the quest log beside it in the Phoenix look; the open quest log tab in the accent.",
     SKINS_TRANSMOG = "Transmog",
     SKINS_TRANSMOG_DESC = "The transmog window: slots, outfit bar and Apply in the Phoenix look.",
+    SKINS_HOUSING = "Housing dashboard",
+    SKINS_HOUSING_DESC = "The housing dashboard: catalogue, plots and neighbourhood in the Phoenix look.",
     SKINS_CHIP_ALL = "All",
     SKINS_CHIP_COLLECTED = "Collected",
     SKINS_CHIP_MISSING = "Not collected",

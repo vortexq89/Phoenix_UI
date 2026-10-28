@@ -20,15 +20,16 @@ function M.SlotQualityColor(quality)
     return c and { r = c.r, g = c.g, b = c.b } or nil
 end
 
-local function slotQuality(button)
+local function slotQuality(button, unit)
     local id = button.GetID and button:GetID()
     if not id then return nil end
-    return GetInventoryItemQuality and GetInventoryItemQuality("player", id) or nil
+    return GetInventoryItemQuality and GetInventoryItemQuality(unit or "player", id) or nil
 end
 
-function M.StyleSlot(button)
-    if not button then return end
-    local on = M:IsEnabled() and M.db.character
+-- key: the Skins switch that owns these slots ("character", or "inspect" for the inspect window); unit: whose gear.
+function M.StyleSlot(button, key, unit)
+    if type(button) ~= "table" or not button.GetObjectType then return end
+    local on = M:IsEnabled() and M.db[key or "character"]
     local name = button.GetName and button:GetName()
     local art = name and _G[name .. "Frame"]
     local t = tiles[button]
@@ -53,7 +54,7 @@ function M.StyleSlot(button)
     Skin:HideRegion(button.IconBorder)
     t:Show()
     W.Color(t.bg, "bg.sunken", 1)
-    local color = M.SlotQualityColor(slotQuality(button))
+    local color = M.SlotQualityColor(slotQuality(button, unit))
     local icon = button.icon or button.Icon
     if icon then
         Skin:IconFrame(button, icon, { style = "solid", size = 1, color = color }, 0.08, color and nil or "border.subtle")
