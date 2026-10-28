@@ -4,6 +4,9 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Patch watcher auto-fix, branch feat/autofix
+- .tools/autofix.py regenerates manifests, locale keys and missing harness stubs, then runs the full local check set; api-watch runs it before opening its PR and reports the result in the PR body. docs/PATCH_WATCHER.md.
+
 ### Nameplate colour data packs, branch feat/datapacks
 - Pack strings (PUIPACK1|name|instance|rules) for NPC colour rules: import in "Imported NPC colour packs" (validated per rule, live), export with /pui packexport <id>. A pack with an instance id applies only inside that dungeon or raid (switches on zone change).
 - Two built-in original packs (condition rules): casting hostile elites in orange, rares in purple. Per-dungeon NPC lists come as imports from the test phase. Tests: 461.
