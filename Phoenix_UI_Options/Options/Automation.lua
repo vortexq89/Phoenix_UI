@@ -35,6 +35,8 @@ ns:RegisterOptions("Automation", {
     { type = "toggle", key = "bulkBuy", label = "AUTO_BULK", desc = "AUTO_BULK_DESC" },
     { type = "toggle", key = "rareAlert", label = "AUTO_RARE", desc = "AUTO_RARE_DESC" },
     { type = "toggle", key = "alreadyKnown", label = "AUTO_KNOWN", desc = "AUTO_KNOWN_DESC" },
+    { type = "toggle", key = "undercut", label = "AUTO_UNDERCUT", desc = "AUTO_UNDERCUT_DESC",
+      keywords = "auction house sell price undercut post" },
     { type = "button", label = "AUTO_MACROS", desc = "AUTO_MACROS_DESC", button = "AUTO_MACROS_BUTTON", icon = "terminal",
       combat = true, keywords = "macro healthstone potion interrupt focus mount",
       func = function(m) m:WriteSmartMacros() end },

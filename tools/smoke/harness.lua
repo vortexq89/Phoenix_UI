@@ -1937,6 +1937,15 @@ try("tooltip bis list", function()
     T.db.bisList = ""
     assert(#lines == 1 and lines[1] == ns.L.TOOLTIP_BIS_LINE, "BiS line count " .. #lines)
 end)
+-- auction undercut: the smallest step under the lowest foreign offer
+try("auction undercut", function()
+    local A = ns.modules.Automation
+    assert(A.UndercutPrice(1000, "commodity") == 999, "commodity 1 copper under")
+    assert(A.UndercutPrice(123456, "item") == 123300, "item rounds to the silver below")
+    assert(A.UndercutPrice(1, "commodity") == nil and A.UndercutPrice(150, "item") == nil and A.UndercutPrice(nil) == nil,
+        "nothing to undercut")
+    A:SetupUndercut()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

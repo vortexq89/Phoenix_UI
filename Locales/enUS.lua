@@ -567,6 +567,8 @@ ns.RegisterLocale("enUS", {
     AUTO_RARE_SEEN = "Rare: %s",
     AUTO_KNOWN = "Already known at merchants",
     AUTO_KNOWN_DESC = "Recipes, mounts, pets and toys you already know are tinted green at vendors.",
+    AUTO_UNDERCUT = "Auction undercut",
+    AUTO_UNDERCUT_DESC = "Selling at the Auction House: the price is set just under the lowest offer that is not yours. You still press Post.",
     AUTO_MACROS = "Smart macros",
     AUTO_MACROS_DESC = "Writes PUI Heal (healthstone then potion), PUI Kick (interrupt the focus, else the target) and PUI Mount (a random favourite) as character macros.",
     AUTO_MACROS_BUTTON = "Write macros",
