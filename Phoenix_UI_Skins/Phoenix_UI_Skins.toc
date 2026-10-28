@@ -16,9 +16,12 @@ Gear.lua
 Menus.lua
 Extras.lua
 Surfaces.lua
+Extras2.lua
+Surfaces2.lua
 Packs.lua
 QueueTimer.lua
 Tests\Skins_test.lua
 Tests\QueueTimer_test.lua
 Tests\SkinsV2_test.lua
 Tests\SkinsWindows_test.lua
+Tests\SkinsMore_test.lua

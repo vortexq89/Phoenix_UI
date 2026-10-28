@@ -59,12 +59,19 @@ function Previews.Skins(card)
     slot:SetTexture(T("Slot_QualityFrame"))
     if on("skins.controls.quality") then slot:SetVertexColor(c[1], c[2], c[3], 1) else slot:SetVertexColor(0.5, 0.5, 0.5, 1) end
   end
+  local xOn, xAll = 0, 0
+  local SKX = PUI.Skins
+  for name, def in pairs(SKX and SKX.EXTRA_DEFS or {}) do
+    xAll = xAll + 1
+    if def.type ~= "toggle" or SKX.Extras.s[name] ~= false then xOn = xOn + 1 end
+  end
   local n, total = 0, 0
   for _, w in ipairs(PUI.Skins and PUI.Skins.WINDOWS or {}) do total = total + 1; if on("skins." .. w[1]) then n = n + 1 end end
   PX.Gaps.Lines(card, "skins", {
     "Skins " .. (skins and "on" or "off (turn on above or in the setup wizard)"),
     n .. " of " .. total .. " windows and surfaces skinned",
     "Menus " .. (on("skins.menus") and "on" or "off") .. ", toasts " .. (on("skins.toasts") and "on" or "off") .. ", tooltips " .. (on("skins.tooltips") and "on" or "off"),
+    xOn .. " of " .. xAll .. " window extras on (item level, upgrade hints, junk, have/need, vault glow...)",
     "Gear cog in title bars: " .. (on("skins.gear") and "on" or "off"),
   })
 end

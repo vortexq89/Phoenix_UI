@@ -211,3 +211,11 @@ When the media is adopted, every new file gets a `manifest.json` entry (source, 
 - `/workspace/pui_mockups/skins/24_media_sheet.png`
 
 The sources are in `/workspace/pui_mockups/skins/src/` (`sk.py` is the kit; `m01.py`–`m08.py`, `svg.py` and `tex.py` build the pages, the SVGs and the textures). Render with headless Chrome.
+
+
+## Coverage after skins v2 (feat/skins-core, -a, -b; recount October 2026, code level, not yet seen in game)
+
+Of the 97 surfaces: **82 full** (17 Phoenix replacements plus 65 Blizzard windows and surfaces with the Phoenix shell, shared content controls and their extras), **7 partial**, **8 none**.
+
+- Partial: action bars/vehicle/extra ability (owned by the bar modules, not Skins), private auras (Blizzard-restricted art), level-up and party pose banners, money display (Auction House prices only), help plates (help tips are skinned, the full-screen plates are not), chat bubbles (open world only; Blizzard locks them inside instances), minimap (Minimap module).
+- None: in-game shop, secure/legal dialogs and the WoW token window (restricted / purchase flows, left alone on purpose), boss warnings (12.x encounter UI runs in a restricted role set), ping wheel (protected), spectator/commentator (tournament tool, no player window), Plunderstorm/game modes, durability doll.
