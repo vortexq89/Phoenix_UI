@@ -23,6 +23,7 @@ local M = ns:NewModule("Encounters", {
             width = 260, height = 22, spacing = 4, grow = "UP", max = 8, horizon = 0,
             icon = true, texture = "", color = false,
             emphasize = true, emphasizeAt = 5, emphasizeColor = false,
+            rules = "", -- per-ability: "spellID=hide|emph|sound, …" (Bars.lua)
             background = Style.Background({ alpha = 0.7 }),
             border = Style.Border(),
             name = Style.Text(12, { shadow = true }),

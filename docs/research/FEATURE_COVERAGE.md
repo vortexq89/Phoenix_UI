@@ -30,7 +30,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | 8 | Copy armory link in unit menus | Raider.IO (no EUI version) | built (Chat > Armory link in menus) |
 | 9 | Merchant bulk buy | EllesmereUI BlizzardSkin | built (Alt+click at a vendor) |
 | 10 | Already Known tint (built: Automation > Already known at merchants), upgrade planner (built: Item Level > Upgrade planner), aura glows (built: Cooldown Manager > Aura glows), quickdraw ring (built: Action Bars > Quick ring), macro factory (built: Automation > Smart macros), quest item hotkey (built: Action Bars > Quest item key), movement CD row (built: Cooldown Manager > Movement row) | EllesmereUI (WindTools / QoL / CDM / Quickdraw) | later (P3) |
-| 11 | Selling/cancelling in AH, wardrobe collection list, PGF skin, BiS import, BigWigs per-ability grid | Auctionator / BetterWardrobe / PGF / SpecBisTooltip / BigWigs | later (P3) |
+| 11 | Selling/cancelling in AH, wardrobe collection list, PGF skin, BiS import, BigWigs per-ability grid | Auctionator / BetterWardrobe / PGF / SpecBisTooltip / BigWigs | built: Automation > Auction undercut (selling price; cancelling not built), Skins > Transmog set list, Skins > Premade Groups Filter, Tooltip > BiS list, Encounters > Ability rules (hide / emph / sound by spell ID, as rules rather than a grid) |
 
 ## Every feature
 

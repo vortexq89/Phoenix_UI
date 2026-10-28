@@ -1958,6 +1958,17 @@ try("transmog set list", function()
     assert(#S.SortSets(rows, "al") == 2, "search filter")
     local w = S:ShowSets(); assert(w and w:IsShown(), "set list did not open"); w:Hide()
 end)
+-- encounter ability rules: hide / emph / sound by plain spell ID; secret IDs keep the defaults
+try("encounter ability rules", function()
+    local E = ns.modules.Encounters
+    local r = E.ParseAbilityRules("123=hide, 456 = Emph, 789=sound, 1=bogus")
+    assert(r[123] == "hide" and r[456] == "emph" and r[789] == "sound" and r[1] == nil, "rules not parsed")
+    E.db.timeline.rules = "123=hide"
+    assert(E.RuleFor({ spellID = 123 }) == "hide" and E.RuleFor({ spellID = 5 }) == nil, "rule lookup")
+    assert(E.RuleFor({}) == nil, "event without id")
+    E.db.timeline.rules = ""
+    local w, n = E:ShowSeenAbilities(); assert(w and n >= 2, "seen abilities not listed"); w:Hide()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

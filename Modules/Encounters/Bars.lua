@@ -89,12 +89,58 @@ end
 ---------------------------------------------------------------- data
 local function remember(info)
     if type(info) ~= "table" or info.id == nil then return end
-    local e = { info = info, duration = info.duration }
+    local e = { info = info, duration = info.duration, rule = M.RuleFor(info) }
+    if e.rule == "sound" then PlaySound(SOUNDKIT.RAID_WARNING, "Master") end
     if info.source == SOURCE_EDITMODE then
         editCount = editCount + 1
         e.label = L.ENC_TEST_EVENT:format(editCount)
     end
     events[info.id] = e
+end
+
+-- Per-ability overrides (Encounters > Ability rules): "spellID=hide|emph|sound, …". They apply only when the
+-- event's spell ID is a plain number; a secret ID is never compared, so such events keep the defaults.
+local ruleCache, ruleText = {}, nil
+local RULE = { hide = true, emph = true, sound = true }
+function M.ParseAbilityRules(text)
+    local out = {}
+    for id, what in tostring(text or ""):gmatch("(%d+)%s*=%s*(%a+)") do
+        what = what:lower()
+        if RULE[what] then out[tonumber(id)] = what end
+    end
+    return out
+end
+local function ruleFor(info)
+    local db = M.db.timeline
+    if ruleText ~= db.rules then ruleCache, ruleText = M.ParseAbilityRules(db.rules), db.rules end
+    local id = info and info.spellID
+    if id == nil or Secret.IsSecret(id) or type(id) ~= "number" then return nil end
+    M.seenAbilities = M.seenAbilities or {}
+    M.seenAbilities[id] = true
+    return ruleCache[id]
+end
+M.RuleFor = ruleFor
+
+-- The abilities seen this session (plain IDs only), with names, to copy into the rules.
+local seenWin
+function M:ShowSeenAbilities()
+    local W = ns.Widgets
+    if not seenWin then
+        seenWin = W:Popup(L.ENC_RULES_SEEN, 420, 380, "encounters")
+        seenWin.text = W.Text(seenWin, "body", "text.primary")
+        seenWin.text:SetPoint("TOPLEFT", 16, -44); seenWin.text:SetPoint("RIGHT", -16, 0)
+        seenWin.text:SetJustifyH("LEFT"); seenWin.text:SetSpacing(3)
+    end
+    local ids, lines = {}, {}
+    for id in pairs(M.seenAbilities or {}) do ids[#ids + 1] = id end
+    table.sort(ids)
+    for i = 1, math.min(#ids, 20) do
+        local name = C_Spell.GetSpellName(ids[i])
+        lines[i] = ("%d  %s"):format(ids[i], (type(name) == "string" and not Secret.IsSecret(name)) and name or "?")
+    end
+    seenWin.text:SetText(#lines > 0 and table.concat(lines, "\n") or L.ENC_RULES_NONE)
+    seenWin:Show()
+    return seenWin, #ids
 end
 
 local function query(fn, id)
@@ -118,9 +164,10 @@ local function collect(now)
             local track = query(C_EncounterTimeline.GetEventTrack, id)
             local hidden = track == TRACK.Indeterminate or (hideLong and track == TRACK.Long)
                 or (hideQueued and track == TRACK.Queued)
+            if e.rule == "hide" then hidden = true end
             if (state == STATE.Active or state == STATE.Paused) and not hidden and type(left) == "number"
                 and not Secret.IsSecret(left) and (db.horizon <= 0 or left <= db.horizon) then
-                rows[#rows + 1] = { key = id, label = e.label, info = e.info, left = left, total = e.duration,
+                rows[#rows + 1] = { key = id, label = e.label, info = e.info, left = left, total = e.duration, emph = e.rule == "emph",
                     dim = state == STATE.Paused or query(C_EncounterTimeline.IsEventBlocked, id) == true }
             end
         end
@@ -165,7 +212,7 @@ local function draw(now)
     local shown = math.min(#list, db.max)
     for i = 1, shown do
         local r, f = list[i], barAt(i)
-        local emphasized = db.emphasize and r.left <= db.emphasizeAt
+        local emphasized = r.emph or (db.emphasize and r.left <= db.emphasizeAt)
         if f.styled ~= emphasized then M:StyleBar(f, emphasized); place(f, i); f.styled = emphasized end
         if f.key ~= r.key then
             f.key = r.key
