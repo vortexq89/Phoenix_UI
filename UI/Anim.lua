@@ -37,7 +37,13 @@ end
 
 -- key: any unique value (usually the object); set(value) applies the interpolated value.
 function A:Tween(key, duration, from, to, set, done)
-    if tweens[key] then tweens[key] = nil; count = count - 1 end
+    -- a tween replaced before it ends first lands on its end value: an interrupted fade-in used to leave a
+    -- page stuck at partial alpha (the dim pages in the self-test shots)
+    local old = tweens[key]
+    if old then
+        tweens[key] = nil; count = count - 1
+        if old.to ~= to or old.set ~= set then old.set(old.to) end
+    end
     if duration <= 0 or self:ReduceMotion() then
         set(to)
         if done then done() end

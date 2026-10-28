@@ -39,6 +39,19 @@ function W.Icon(parent, name, size, token, layer)
     return ns.Icons:Create(parent, name, size or 16, token or "text.secondary", layer)
 end
 
+-- Icon tiles (module cards, page header, search results): a tinted glyph sits on an accent tile; full-colour
+-- game art instead fills the tile on a neutral backing, so it never reads as an orange square with a speck.
+function W.TileColor(bg, icon, token, alpha)
+    local art = ns.Icons:IsArt(icon)
+    W.Color(bg, art and "bg.sunken" or token, art and 1 or alpha)
+    local w = bg:GetWidth()
+    if type(w) == "number" and w > 0 then
+        icon.puiGlyph = icon.puiGlyph or icon:GetWidth()
+        local size = art and (w - 4) or icon.puiGlyph
+        icon:SetSize(size, size)
+    end
+end
+
 -- Shared disabled handling.
 function W.SetEnabledState(frame, enabled)
     frame.disabled = not enabled

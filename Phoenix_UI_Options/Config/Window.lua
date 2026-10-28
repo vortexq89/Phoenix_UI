@@ -22,7 +22,8 @@ local TOP_H, RAIL_W, LIST_W, FOOTER_H = 52, 64, 212, 34
 local DOCK_MIN, DOCK_MAX, DOCK_AT = 380, 460, 1100
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
 local MIN_W, MIN_H, MAX_W, MAX_H = 900, 560, 1800, 1200
-local DEFAULT_W, DEFAULT_H = 1280, 800
+local DEFAULT_W, DEFAULT_H = 1180, 740
+local SCREEN_W, SCREEN_H = 0.8, 0.85 -- the window never covers more of the screen than this
 local RAIL_BTN = 52
 
 -- info = { label = L key, icon = name, object = module-like page table, schema = table or function } names the
@@ -50,7 +51,28 @@ local function readable()
     if e <= 0 then return 1 end
     return math.max(1, math.min(1.6, 0.71 / e))
 end
-local function setScale(f, v) f:SetScale(v * readable()) end
+-- Keeps the whole window within SCREEN_W x SCREEN_H of the screen: first by shrinking the window (down to its
+-- minimum size), then by lowering the scale. Window size never follows page content.
+local function fitToScreen(f)
+    local uw, uh = UIParent:GetWidth(), UIParent:GetHeight()
+    if type(uw) ~= "number" or uw <= 0 or type(uh) ~= "number" or uh <= 0 then return end
+    local scale = f:GetScale() or 1
+    local maxW, maxH = uw * SCREEN_W / scale, uh * SCREEN_H / scale
+    if maxW < MIN_W or maxH < MIN_H then
+        scale = math.max(0.5, math.min(scale, uw * SCREEN_W / MIN_W, uh * SCREEN_H / MIN_H))
+        f:SetScale(scale)
+        maxW, maxH = uw * SCREEN_W / scale, uh * SCREEN_H / scale
+    end
+    local w, h = f:GetSize()
+    if w > maxW or h > maxH then f:SetSize(math.max(MIN_W, math.min(w, maxW)), math.max(MIN_H, math.min(h, maxH))) end
+end
+Config.FitToScreen = fitToScreen
+Config.SCREEN_W, Config.SCREEN_H = SCREEN_W, SCREEN_H
+
+local function setScale(f, v)
+    f:SetScale(v * readable())
+    fitToScreen(f)
+end
 
 -- 768 / physical height: the UI scale at which one UI pixel is one screen pixel.
 local function pixelPerfect()
@@ -262,7 +284,7 @@ local function navRow(parent, key)
     r.icon:SetPoint("LEFT", 18, 0)
     r.label = W.Text(r, "body", "text.secondary")
     r.label:SetPoint("LEFT", r.icon, "RIGHT", 9, 0)
-    r.label:SetPoint("RIGHT", -64, 0)
+    r.label:SetPoint("RIGHT", -28, 0)
     r.label:SetText(label)
     r.label:SetWordWrap(false)
     r.meter = W.Texture(r, "ARTWORK", 0, Media.textures.PILL)
@@ -290,7 +312,8 @@ local function navRow(parent, key)
         end
         local now, target = Config:Depth(self.key)
         self.now, self.target = now, target
-        local show = target ~= nil and target > 0
+        -- the plan-v2 depth target is a developer metric; players never see it (it read as "117 / 112")
+        local show = false
         self.meter:SetShown(show)
         self.fill:SetShown(show and now > 0)
         if show then
@@ -573,12 +596,16 @@ function Config:Build()
     f:EnableMouse(true)
     local s = uiStore()
     -- windows saved by the 13-group layout (1100 x 720) grow once to the v2 default
-    if s.v ~= 2 then s.w, s.h, s.v = nil, nil, 2 end
+    -- v3: the 1280 x 800 default covered most of a 1440p screen with the readable scale; start smaller once
+    if s.v ~= 3 then s.w, s.h, s.v = nil, nil, 3 end
     f:SetSize(s.w or DEFAULT_W, s.h or DEFAULT_H)
     f:SetPoint(s.point or "CENTER", UIParent, s.rel or "CENTER", s.x or 0, s.y or 0)
     setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
     Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.strong", shadow = 18 }) end)
     self.frame = f
+    for _, ev in ipairs({ "DISPLAY_SIZE_CHANGED", "UI_SCALE_CHANGED" }) do
+        ns.Events:On(ev, f, function() setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(uiStore().scale) or 1))) end)
+    end
 
     buildTopBar(f)
     buildRail(f)

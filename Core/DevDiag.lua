@@ -504,13 +504,20 @@ local function flushPage(key)
     st.pages = st.pages or {}
     st.pages[key] = r
     ns:Print(("self-test %s: %d steps, %d issues%s"):format(key, r.steps, r.count, r.errors > 0 and (", " .. r.errors .. " errors") or ""))
-    if st.shots and Screenshot then pcall(Screenshot) end
+    -- taken on the next tick: Screenshot() captures at the end of this frame, when the next page has only just
+    -- started its fade-in (that made pages look dimmed in the shots)
+    if st.shots then ST.shotDue = true end
 end
 
 function ST:Tick()
     if not self.running then return end
     if InCombatLockdown() then self.paused = true; return end
     self.paused = false
+    if self.shotDue then
+        self.shotDue = nil
+        if Screenshot then pcall(Screenshot) end
+        return
+    end
     if self.waitUntil then
         if GetTime() < self.waitUntil then return end
         self.waitUntil = nil

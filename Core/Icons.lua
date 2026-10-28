@@ -42,6 +42,8 @@ local GAME_LINE = {
     ["chevron-right"] = B .. "UI-SpellbookIcon-NextPage-Up", ["chevron-left"] = B .. "UI-SpellbookIcon-PrevPage-Up",
     ["chevron-down"] = B .. "UI-MinusButton-Up", lock = B .. "LockButton-Locked-Up",
     warning = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", question = "Interface\\Common\\help-i",
+    error = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", ["arrow-up"] = B .. "UI-ScrollBar-ScrollUpButton-Up",
+    ["arrow-down"] = B .. "UI-ScrollBar-ScrollDownButton-Up",
 }
 local GAME_ART = {
     home = "INV_Misc_Rune_01", general = "INV_Misc_Gear_01", theme = "INV_Misc_Gem_Variety_01",
@@ -56,7 +58,21 @@ local GAME_ART = {
     profiles = "INV_Misc_Book_11", bugs = "INV_Misc_Bugsprayer", diagnostics = "INV_Misc_Spyglass_03",
     about = "INV_Misc_Book_07", fonts = "INV_Inscription_Scroll", textures = "INV_Fabric_Linen_01",
     sound = "INV_Misc_Bell_01", tracker = "INV_Misc_PocketWatch_02", presets = "INV_Enchant_ShardBrilliantLarge",
+    -- every other name the UI asks for, so game-icon mode never shows a placeholder dot (smoke-tested)
+    interface = "INV_Misc_Spyglass_03", content = "INV_Misc_Map_01", ["cat-phoenix"] = "INV_Enchant_ShardBrilliantLarge",
+    addon = "INV_Misc_Gear_01", bell = "INV_Misc_Bell_01", border = "INV_Fabric_Linen_01", boss = "Ability_Warrior_Rampage",
+    ["break"] = "Spell_Nature_Sleep", clock = "INV_Misc_PocketWatch_01", cog = "Trade_Engineering", copy = "INV_Inscription_Scroll",
+    deaths = "Ability_Hunter_MarkedForDeath", editmode = "Ability_Rogue_Sprint", encounters = "Ability_Warrior_Rampage",
+    export = "INV_Letter_15", import = "INV_Letter_15", upload = "INV_Letter_15", filter = "INV_Misc_Spyglass_03",
+    forces = "Achievement_GuildPerk_EverybodysFriend", friends = "Achievement_GuildPerk_EverybodysFriend",
+    github = "INV_Misc_Book_09", gold = "INV_Misc_Coin_01", grid = "INV_Misc_EngGizmos_30", heart = "Spell_Holy_PowerWordShield",
+    hide = "Spell_Shadow_Teleport", items = "INV_Chest_Plate04", keyboard = "INV_Misc_Note_01", layout = "Ability_Rogue_Sprint",
+    link = "INV_Misc_Rune_01", mail = "INV_Letter_15", opacity = "Spell_Shadow_Teleport", palette = "INV_Misc_Gem_Variety_01",
+    preview = "INV_Misc_Spyglass_03", sim = "INV_Misc_EngGizmos_30", snap = "INV_Misc_EngGizmos_30", spec = "Ability_Marksmanship",
+    speed = "Ability_Rogue_Sprint", taint = "Spell_Shadow_Teleport", terminal = "INV_Misc_Note_05", test = "INV_Misc_EngGizmos_30",
+    user = "Achievement_Character_Human_Male", web = "INV_Misc_Map02", bin = "INV_Misc_Bugsprayer", delete = "INV_Misc_Bugsprayer",
 }
+I.GameMapped = function(name) return GAME_LINE[name] ~= nil or GAME_ART[name] ~= nil end
 local GAME_DOT = "Interface\\Common\\Indicator-Gray"
 I.game = false
 
@@ -149,6 +165,8 @@ end
 
 -- Read-only view of every tracked texture (texture -> state) for /pui diag.
 function I:Tracked() return tracked end
+-- true when the texture currently shows full-colour game art (game-icon mode), not a tinted glyph
+function I:IsArt(tex) local s = tracked[tex]; return s and s.art and true or false end
 
 -- Atlas currently used by a texture (file name, cell size); for diagnostics and the smoke test.
 function I:GetTier(tex)
