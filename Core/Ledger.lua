@@ -241,7 +241,9 @@ local function snapshot(frame)
     points[i] = { p, rel, rp, x, y }
   end
   return { parent = frame:GetParent(), points = points, shown = frame:IsShown(), alpha = frame:GetAlpha(),
-    scale = frame:GetScale() }
+    scale = frame:GetScale(), strata = frame.GetFrameStrata and frame:GetFrameStrata() or nil,
+    level = frame.GetFrameLevel and frame:GetFrameLevel() or nil,
+    mouse = frame.IsMouseEnabled and frame:IsMouseEnabled(), movable = frame.IsMovable and frame:IsMovable() }
 end
 
 function FrameLedger:Take(owner, frame, id)
@@ -266,6 +268,10 @@ local function restore(e)
   for i = 1, #s.points do local p = s.points[i]; f:SetPoint(p[1], p[2], p[3], p[4], p[5]) end
   f:SetAlpha(s.alpha)
   f:SetScale(s.scale)
+  if s.strata and f.SetFrameStrata then f:SetFrameStrata(s.strata) end
+  if s.level and f.SetFrameLevel then f:SetFrameLevel(s.level) end
+  if type(s.mouse) == "boolean" and f.EnableMouse then f:EnableMouse(s.mouse) end
+  if type(s.movable) == "boolean" and f.SetMovable then f:SetMovable(s.movable) end
   if s.shown then f:Show() else f:Hide() end
 end
 

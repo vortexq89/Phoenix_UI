@@ -44,6 +44,8 @@ Core\Prediction.lua
 Core\Targeting.lua
 Core\Coexist.lua
 Core\Items.lua
+Core\Movers.lua
+Core\Windows.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Tests\Runner.lua
@@ -59,3 +61,4 @@ Tests\Phase6_test.lua
 Tests\Profiles_test.lua
 Tests\Foundations_test.lua
 Tests\Overrides_test.lua
+Tests\Movers_test.lua
