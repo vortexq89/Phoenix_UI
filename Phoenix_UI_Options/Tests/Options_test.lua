@@ -491,3 +491,18 @@ Tests:Add("Options", "loot roll preview follows width and height live", function
   t:ok(r and r:IsShown(), "sample roll")
   t:eq(r:GetHeight(), 30, "height follows the setting")
 end)
+
+Tests:Add("Options", "AFK screen and rare alert previews follow their settings live", function(t)
+  if not (PUI.AFKScreen and PUI.Vignettes) then return end
+  Tests.Keep(t, "afk.model")
+  Tests.Keep(t, "vignette.treasure")
+  local card = CreateFrame("Frame")
+  Schema:Set("afk.model", false)
+  Options.Previews.Update("AFKScreen", card)
+  local f = Options.PreviewsExtras.Bag(card)["afk.sample"]
+  t:eq(f.model:IsShown(), false, "model hidden live")
+  Schema:Set("vignette.treasure", false)
+  Options.Previews.Update("Vignettes", card)
+  local line = Options.PreviewsExtras.Bag(card)["vg.sample"]
+  t:eq(line:GetText():find("Treasure", 1, true), nil, "treasure line gone")
+end)

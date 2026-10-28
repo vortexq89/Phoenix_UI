@@ -188,3 +188,56 @@ function Previews.Update(owner, card, key)
   end
   return baseUpdateLoot(owner, card, key)
 end
+
+-- AFK screen: a scaled sample with the chosen darkness, model and details.
+function Previews.AFKScreen(card)
+  local bag = PX.Bag(card)
+  local f = bag["afk.sample"]
+  if not f then
+    f = CreateFrame("Frame", nil, card)
+    f.bg = f:CreateTexture(nil, "BACKGROUND"); f.bg:SetAllPoints()
+    f.band = f:CreateTexture(nil, "BORDER"); f.band:SetPoint("BOTTOMLEFT"); f.band:SetPoint("BOTTOMRIGHT"); f.band:SetHeight(46)
+    f.model = f:CreateTexture(nil, "ARTWORK"); f.model:SetSize(70, 110); f.model:SetPoint("BOTTOMRIGHT", -16, 10)
+    f.name = f:CreateFontString(nil, "OVERLAY"); f.name:SetFontObject(PUI.Media:FontObject("header")); f.name:SetPoint("BOTTOMLEFT", 14, 48)
+    f.info = f:CreateFontString(nil, "OVERLAY"); f.info:SetFontObject(PUI.Media:FontObject("small")); f.info:SetPoint("TOPLEFT", f.name, "BOTTOMLEFT", 0, -4)
+    f.info:SetJustifyH("LEFT")
+    f.timer = f:CreateFontString(nil, "OVERLAY"); f.timer:SetFontObject(PUI.Media:FontObject("number")); f.timer:SetPoint("BOTTOMLEFT", 14, 8)
+    bag["afk.sample"] = f
+  end
+  f:SetSize(340, 200)
+  f:ClearAllPoints()
+  f:SetPoint("TOP", card, "TOP", 0, -56)
+  f.bg:SetColorTexture(0.05, 0.06, 0.08, get("afk.dim", 0.75))
+  local ar, ag, ab = PUI.Theme:Color("accent")
+  f.band:SetColorTexture(ar or 1, ag or 0.5, ab or 0, 0.12)
+  f.model:SetColorTexture(0.3, 0.3, 0.35, 0.6)
+  f.model:SetShown(get("afk.model", true))
+  f.name:SetText(UnitName("player") or "Player")
+  f.info:SetText("Level 90 Mage\nItem level 678.4   Gold 12,345")
+  f.info:SetShown(get("afk.stats", true))
+  f.timer:SetText("Away 4:12")
+  f:Show()
+end
+
+-- Rare alerts: the chat line and which kinds alert.
+function Previews.Vignettes(card)
+  local line = PX.Line(card, "vg.sample", "body")
+  line:ClearAllPoints()
+  line:SetPoint("TOP", card, "TOP", 0, -70)
+  local parts = {}
+  if get("vignette.rare", true) then parts[#parts + 1] = "Rare: Old Bones" end
+  if get("vignette.treasure", true) then parts[#parts + 1] = "Treasure: Sunken Chest" end
+  if get("vignette.event", false) then parts[#parts + 1] = "Event: Storm Surge" end
+  local extra = {}
+  if get("vignette.sound", true) then extra[#extra + 1] = "sound" end
+  if get("vignette.flash", false) then extra[#extra + 1] = "taskbar flash" end
+  line:SetText((get("vignette.chat", true) and table.concat(parts, "\n") or "(no chat line)") .. "\n\n" .. table.concat(extra, " + "))
+end
+local baseUpdateQoL = Previews.Update
+function Previews.Update(owner, card, key)
+  if owner == "AFKScreen" or owner == "Vignettes" then
+    for _, w in pairs(PX.Bag(card)) do w:Hide() end
+    return Previews[owner](card)
+  end
+  return baseUpdateQoL(owner, card, key)
+end
