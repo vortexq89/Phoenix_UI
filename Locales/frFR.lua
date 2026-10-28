@@ -376,6 +376,9 @@ local T = {
     MOVERS_OVERLAY_TIP = "Glisser : déplacer · molette : échelle · Maj+molette : opacité\nFlèches : décaler · clic droit : réinitialiser · Échap : verrouiller",
     MOVERS_COMBAT = "Impossible de déverrouiller les Déplaceurs en combat.",
     MOVERS_EDITMODE = "Fermez d'abord le mode Édition de Blizzard : les deux modes se superposent.",
+    WHATS_NEW_TITLE = "Nouveautés de %s",
+    WHATS_NEW_OK = "Compris",
+    WHATS_NEW_BODY = "- La fenêtre d'options garde une taille, ne couvre jamais l'écran, et l'Accueil groupe les modules comme la barre latérale.\n- Cliquez sur une partie de l'aperçu pour changer sa taille et sa disposition sur place ; \"Taille et position\" est sur chaque aperçu.\n- Mode disposition : l'engrenage d'un cadre a maintenant Ancrage et X / Y.\n- Nouveau : déplacer les fenêtres Blizzard (Maj+glisser), XP de quêtes sur la barre d'XP, liste des alts dans le courrier.\n- Tailles de texte plus nettes ; les petits exemples remplissent leur aperçu.",
     MOVERS_COMBAT_LOCKED = "Combat engagé – Déplaceurs verrouillés. Vos positions sont enregistrées.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Texte de recharge",

@@ -387,6 +387,9 @@ ns.RegisterLocale("enUS", {
     MOVERS_OVERLAY_TIP = "Drag to move · wheel: scale · Shift+wheel: opacity\nArrow keys: nudge · right-click: reset · Esc: lock",
     MOVERS_COMBAT = "Movers cannot be unlocked in combat.",
     MOVERS_EDITMODE = "Close Blizzard Edit Mode first - the two layout modes overlap.",
+    WHATS_NEW_TITLE = "What's new in %s",
+    WHATS_NEW_OK = "Got it",
+    WHATS_NEW_BODY = "- The settings window keeps one size, never covers your screen, and Home groups modules like the sidebar.\n- Click any part of a preview to change its size and layout right there; \"Size & position\" sits on every preview.\n- Layout mode: the cog on a frame now has Anchor and X / Y.\n- New: move Blizzard windows (Shift+drag), quest XP on the XP bar, alt list in mail.\n- Clearer text sizes; small samples fill their preview.",
     MOVERS_COMBAT_LOCKED = "Combat started – movers locked. Your positions are saved.",
 
     ---------------------------------------------------------------- Cooldown text

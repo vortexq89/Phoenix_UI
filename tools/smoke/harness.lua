@@ -1781,6 +1781,19 @@ try("preview click to setting", function()
         assert(pg.pinned and pg.pinned.size, k .. ": no Size & position button on the preview")
     end
 end)
+-- "What's new": not on a first install, once per new version, /pui whatsnew reopens it
+try("whats new popup", function()
+    local WN = ns.WhatsNew
+    local g = {}
+    assert(WN.WhatsNewDue(g) == false and g.seenVersion == ns.version, "first install showed What's new")
+    assert(WN.WhatsNewDue(g) == false, "same version showed again")
+    g.seenVersion = "0.0.1"
+    assert(WN.WhatsNewDue(g) == true, "an update did not show What's new")
+    local p = WN.ShowWhatsNew()
+    assert(p and p:IsShown() and ns.DB.sv.global.seenVersion == ns.version, "popup did not open or mark the version")
+    p.ok.onClick(); assert(not p:IsShown(), "Got it did not close")
+    ns.TestSlash("whatsnew"); assert(p:IsShown(), "/pui whatsnew did not reopen"); p:Hide()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

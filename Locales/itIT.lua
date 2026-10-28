@@ -376,6 +376,9 @@ local T = {
     MOVERS_OVERLAY_TIP = "Trascina: sposta · rotellina: scala · Maiusc+rotellina: opacità\nFrecce: sposta · clic destro: ripristina · Esc: blocca",
     MOVERS_COMBAT = "Gli Spostatori non si possono sbloccare in combattimento.",
     MOVERS_EDITMODE = "Chiudi prima la Modalità modifica di Blizzard: le due modalità si sovrappongono.",
+    WHATS_NEW_TITLE = "Novità di %s",
+    WHATS_NEW_OK = "Capito",
+    WHATS_NEW_BODY = "- La finestra delle opzioni mantiene una dimensione, non copre mai lo schermo, e la Home raggruppa i moduli come la barra laterale.\n- Fai clic su una parte dell'anteprima per cambiarne dimensione e disposizione sul posto; \"Dimensione e posizione\" è su ogni anteprima.\n- Modalità layout: l'ingranaggio di un riquadro ora ha Ancoraggio e X / Y.\n- Nuovo: sposta le finestre Blizzard (Maiusc+trascina), PE delle missioni sulla barra PE, elenco alt nella posta.\n- Dimensioni del testo più chiare; i campioni piccoli riempiono l'anteprima.",
     MOVERS_COMBAT_LOCKED = "Combattimento iniziato – spostatori bloccati. Le tue posizioni sono salvate.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Testo dei tempi di recupero",

@@ -376,6 +376,9 @@ local T = {
     MOVERS_OVERLAY_TIP = "Arrastar: mover · roda: escala · Shift+roda: opacidade\nSetas: ajustar · clique direito: redefinir · Esc: travar",
     MOVERS_COMBAT = "Não é possível destravar os Movedores em combate.",
     MOVERS_EDITMODE = "Feche primeiro o Modo de Edição da Blizzard: os dois modos se sobrepõem.",
+    WHATS_NEW_TITLE = "Novidades da %s",
+    WHATS_NEW_OK = "Entendi",
+    WHATS_NEW_BODY = "- A janela de opções mantém um tamanho, nunca cobre a tela, e o Início agrupa os módulos como a barra lateral.\n- Clique em uma parte da prévia para mudar tamanho e layout ali mesmo; \"Tamanho e posição\" está em toda prévia.\n- Modo de layout: a engrenagem de um quadro agora tem Âncora e X / Y.\n- Novo: mover janelas da Blizzard (Shift+arrastar), XP de missões na barra de XP, lista de alts no correio.\n- Tamanhos de texto mais claros; amostras pequenas preenchem a prévia.",
     MOVERS_COMBAT_LOCKED = "Combate iniciado – movedores travados. Suas posições estão salvas.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Texto de recarga",

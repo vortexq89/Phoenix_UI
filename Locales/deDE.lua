@@ -376,6 +376,9 @@ local T = {
     MOVERS_OVERLAY_TIP = "Ziehen: verschieben · Mausrad: skalieren · Umschalt+Mausrad: Deckkraft\nPfeiltasten: feinjustieren · Rechtsklick: zurücksetzen · Esc: sperren",
     MOVERS_COMBAT = "Verschieber können im Kampf nicht entsperrt werden.",
     MOVERS_EDITMODE = "Schließe zuerst den Blizzard-Bearbeitungsmodus - die beiden Layoutmodi überlagern sich.",
+    WHATS_NEW_TITLE = "Neu in %s",
+    WHATS_NEW_OK = "Verstanden",
+    WHATS_NEW_BODY = "- Das Einstellungsfenster behält eine Größe, verdeckt nie den Bildschirm, und die Startseite gruppiert Module wie die Seitenleiste.\n- Klicke auf einen Teil der Vorschau, um Größe und Anordnung direkt zu ändern; \"Größe & Position\" gibt es bei jeder Vorschau.\n- Layoutmodus: Das Zahnrad eines Rahmens hat jetzt Anker und X / Y.\n- Neu: Blizzard-Fenster verschieben (Umschalt+Ziehen), Quest-EP auf der EP-Leiste, Twinkliste in der Post.\n- Klarere Schriftgrößen; kleine Beispiele füllen ihre Vorschau.",
     MOVERS_COMBAT_LOCKED = "Kampf begonnen – Verschieber gesperrt. Deine Positionen sind gespeichert.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Abklingzeittext",

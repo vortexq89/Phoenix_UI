@@ -23,7 +23,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | 1 | Move Blizzard windows (Shift+drag saves, Ctrl+drag this session, reset) | EllesmereUI QoL Shifter (MoveAny duplicate skipped) | built |
 | 2 | Pending quest XP overlay on the XP bar | EllesmereUI ActionBars XP bar | built |
 | 3 | Mail: alt list next to the recipient box | EllesmereUI BlizzardSkin mail | built |
-| 4 | "What's new" popup after an update | EllesmereUI core | next |
+| 4 | "What's new" popup after an update | EllesmereUI core | built |
 | 5 | CDM entry: show only with talent | EllesmereUI CooldownManager | next |
 | 6 | Casts-on-me bars (secret-safe target check) | EllesmereUI MythicTimer | next |
 | 7 | Rare alert secure target button + waypoint | RareScanner (no EUI version) | next |

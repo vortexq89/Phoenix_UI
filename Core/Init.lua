@@ -34,6 +34,8 @@ local function slash(msg)
         -- Raised on the next frame so it reaches the global error handler like any real addon error.
         ns:Print(L.SLASH_TEST_ERROR)
         C_Timer.After(0, function() error(ns.TEST_ERROR, 0) end)
+    elseif cmd == "whatsnew" then
+        Init.ShowWhatsNew()
     elseif cmd == "diag" then
         ns.Diag:Run(false)
     elseif cmd == "dev" then
@@ -55,6 +57,31 @@ local function slash(msg)
     end
 end
 
+--[[ "What's new" after an update: once per version, a few lines on what changed (L.WHATS_NEW_BODY), shown a
+    few seconds after login, never in combat and never on a first install. /pui whatsnew opens it again. ]]
+local whatsNew
+function Init.ShowWhatsNew()
+    local W = ns.Widgets
+    if not whatsNew then
+        whatsNew = W:Popup(L.WHATS_NEW_TITLE:format(ns.version), 460, 250, "bell")
+        local body = W.Text(whatsNew, "body", "text.primary")
+        body:SetPoint("TOPLEFT", 18, -46); body:SetPoint("RIGHT", -18, 0)
+        body:SetJustifyH("LEFT"); body:SetSpacing(4)
+        body:SetText(L.WHATS_NEW_BODY)
+        whatsNew.body = body
+        whatsNew.ok = W:Button(whatsNew, L.WHATS_NEW_OK, "primary", "check", 120)
+        whatsNew.ok:SetPoint("BOTTOMRIGHT", -16, 14)
+        whatsNew.ok.onClick = function() whatsNew:Hide() end
+    end
+    ns.DB.sv.global.seenVersion = ns.version
+    whatsNew:Show()
+    return whatsNew
+end
+Init.WhatsNewDue = function(g)
+    if not g.seenVersion then g.seenVersion = ns.version; return false end -- first install: nothing is "new"
+    return g.seenVersion ~= ns.version
+end
+
 ns.TestSlash = slash -- the smoke harness drives sub-commands through this
 
 ns.Events:On("ADDON_LOADED", Init, function(_, _, name)
@@ -73,4 +100,8 @@ ns.Events:On("PLAYER_LOGIN", Init, function()
         ns:Print(L.MIGRATION_DONE, report.imported)
         ns.Migrations.legacyReport = nil
     end
+    if Init.WhatsNewDue(ns.DB.sv.global) then
+        C_Timer.After(4, function() ns.Combat:Run("whatsnew", Init.ShowWhatsNew) end)
+    end
 end)
+ns.WhatsNew = Init
