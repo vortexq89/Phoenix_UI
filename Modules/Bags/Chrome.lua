@@ -183,5 +183,5 @@ function M:SetupChrome()
         hooksecurefunc(panel, "RefreshBankTabs", function(p) M.PaintBankTabs(p) end)
     end
     ns.Events:On("BANKFRAME_OPENED", self, function() M:DressAllChrome(); M.PaintBankTabs(_G.BankPanel) end)
-    ns.Events:Listen("PUI_THEME_CHANGED", self, function() M.PaintBankTabs(_G.BankPanel) end)
+    -- theme changes reach the bank tabs through Bags:Refresh (one PUI_THEME_CHANGED listener per owner)
 end
