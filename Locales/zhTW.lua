@@ -106,6 +106,12 @@ local T = {
     SKINS_READYCHECK = "準備確認",
     SKINS_READYCHECK_DESC = "美化準備確認提示。",
     SKINS_NOTE = "外觀只改變美術，視窗中的安全按鈕不受影響。關閉後重新載入即恢復暴雪外觀。",
+    SKINS_MOVE = "移動視窗",
+    SKINS_MOVE_WINDOWS = "移動暴雪視窗",
+    SKINS_MOVE_WINDOWS_DESC = "Shift+拖曳可移動暴雪視窗（角色、法術書、隊伍搜尋器、郵件等）並記住位置；Ctrl+拖曳僅本次登入有效。",
+    SKINS_MOVE_RESET = "視窗位置",
+    SKINS_MOVE_RESET_DESC = "將所有移動過的暴雪視窗恢復到預設位置。",
+    SKINS_MOVE_RESET_BUTTON = "重設",
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "快捷列",
     ACTIONBARS_DESC = "Phoenix 自有的安全快捷列：版面、翻頁、淡出、形狀、高亮與距離提示。",

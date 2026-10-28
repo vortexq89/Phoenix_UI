@@ -19,6 +19,7 @@ local M = ns:NewModule("Skins", {
         trade = true, dressUp = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
+        moveWindows = false, movedWindows = {},
     },
 })
 
@@ -203,10 +204,15 @@ function M:OnEnable()
             apply(entry)
         end
     end
+    local moveByAddon = {}
+    for _, entry in ipairs(self.WINDOWS) do if entry.addon and not entry.dialog then moveByAddon[entry.addon] = entry end end
     ns.Events:On("ADDON_LOADED", self, function(_, _, name)
         local entry = byAddon[name]
         if entry then byAddon[name] = nil; apply(entry) end
+        local mv = moveByAddon[name]
+        if mv then for _, f in ipairs(mv.frames) do M:HookMovable(f) end end
     end)
+    if self.SetupMoving then self:SetupMoving() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then
         tabHooked = true
         hooksecurefunc("PanelTemplates_SelectTab", function(tab)

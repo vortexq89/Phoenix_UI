@@ -106,6 +106,12 @@ local T = {
     SKINS_READYCHECK = "Appello",
     SKINS_READYCHECK_DESC = "Applica lo stile alla richiesta di appello.",
     SKINS_NOTE = "Le skin cambiano solo la grafica; i pulsanti sicuri in queste finestre non vengono toccati. Disattivarne una ripristina l'aspetto Blizzard dopo il ricaricamento.",
+    SKINS_MOVE = "Sposta finestre",
+    SKINS_MOVE_WINDOWS = "Sposta finestre Blizzard",
+    SKINS_MOVE_WINDOWS_DESC = "Maiusc+trascina sposta una finestra Blizzard (personaggio, libro magie, ricerca gruppo, posta …) e ricorda il punto; Ctrl+trascina solo per questa sessione.",
+    SKINS_MOVE_RESET = "Posizioni finestre",
+    SKINS_MOVE_RESET_DESC = "Riporta tutte le finestre spostate al posto di Blizzard.",
+    SKINS_MOVE_RESET_BUTTON = "Ripristina",
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "Barre delle azioni",
     ACTIONBARS_DESC = "Le barre sicure di Phoenix: layout, pagine, dissolvenza, forme, bagliori e portata.",

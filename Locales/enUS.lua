@@ -105,6 +105,12 @@ ns.RegisterLocale("enUS", {
     SKINS_READYCHECK = "Ready check",
     SKINS_READYCHECK_DESC = "Skin the ready-check prompt.",
     SKINS_NOTE = "Skins only change artwork; secure buttons inside these windows are untouched. Turning one off restores Blizzard's look after a reload.",
+    SKINS_MOVE = "Move windows",
+    SKINS_MOVE_WINDOWS = "Move Blizzard windows",
+    SKINS_MOVE_WINDOWS_DESC = "Shift+drag a Blizzard window (character, spellbook, group finder, mail …) to move it and keep the spot; Ctrl+drag moves it for this session only.",
+    SKINS_MOVE_RESET = "Window positions",
+    SKINS_MOVE_RESET_DESC = "Put every moved Blizzard window back where Blizzard places it.",
+    SKINS_MOVE_RESET_BUTTON = "Reset",
 
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "Action Bars",

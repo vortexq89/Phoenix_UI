@@ -106,6 +106,12 @@ local T = {
     SKINS_READYCHECK = "Bereitschaftscheck",
     SKINS_READYCHECK_DESC = "Gestaltet die Abfrage beim Bereitschaftscheck.",
     SKINS_NOTE = "Skins ändern nur die Grafik; geschützte Knöpfe in den Fenstern bleiben unberührt. Ausschalten stellt Blizzards Optik nach einem Neuladen wieder her.",
+    SKINS_MOVE = "Fenster verschieben",
+    SKINS_MOVE_WINDOWS = "Blizzard-Fenster verschieben",
+    SKINS_MOVE_WINDOWS_DESC = "Umschalt+Ziehen verschiebt ein Blizzard-Fenster (Charakter, Zauberbuch, Gruppensuche, Post …) dauerhaft; Strg+Ziehen nur für diese Sitzung.",
+    SKINS_MOVE_RESET = "Fensterpositionen",
+    SKINS_MOVE_RESET_DESC = "Alle verschobenen Blizzard-Fenster an Blizzards Standardplatz zurücksetzen.",
+    SKINS_MOVE_RESET_BUTTON = "Zurücksetzen",
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "Aktionsleisten",
     ACTIONBARS_DESC = "Phoenix' eigene sichere Leisten: Anordnung, Blättern, Ausblenden, Formen, Leuchten und Reichweitenanzeige.",

@@ -106,6 +106,12 @@ local T = {
     SKINS_READYCHECK = "就位确认",
     SKINS_READYCHECK_DESC = "美化就位确认提示。",
     SKINS_NOTE = "皮肤只改变美术，窗口中的安全按钮不受影响。关闭后重载即恢复暴雪外观。",
+    SKINS_MOVE = "移动窗口",
+    SKINS_MOVE_WINDOWS = "移动暴雪窗口",
+    SKINS_MOVE_WINDOWS_DESC = "Shift+拖动可移动暴雪窗口（角色、法术书、队伍查找器、邮件等）并记住位置；Ctrl+拖动仅本次登录有效。",
+    SKINS_MOVE_RESET = "窗口位置",
+    SKINS_MOVE_RESET_DESC = "将所有移动过的暴雪窗口恢复到默认位置。",
+    SKINS_MOVE_RESET_BUTTON = "重置",
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "动作条",
     ACTIONBARS_DESC = "Phoenix 自有的安全动作条：布局、翻页、渐隐、形状、高亮与距离提示。",

@@ -106,6 +106,12 @@ local T = {
     SKINS_READYCHECK = "Comprobación de disponibilidad",
     SKINS_READYCHECK_DESC = "Aplica el estilo al aviso de comprobación de disponibilidad.",
     SKINS_NOTE = "Las apariencias solo cambian el arte; los botones seguros de estas ventanas no se tocan. Desactivar una restaura el aspecto de Blizzard tras recargar.",
+    SKINS_MOVE = "Mover ventanas",
+    SKINS_MOVE_WINDOWS = "Mover ventanas de Blizzard",
+    SKINS_MOVE_WINDOWS_DESC = "Mayús+arrastrar mueve una ventana de Blizzard (personaje, hechizos, buscador de grupo, correo …) y guarda el sitio; Ctrl+arrastrar solo para esta sesión.",
+    SKINS_MOVE_RESET = "Posiciones de ventanas",
+    SKINS_MOVE_RESET_DESC = "Devuelve todas las ventanas movidas a su sitio de Blizzard.",
+    SKINS_MOVE_RESET_BUTTON = "Restablecer",
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "Barras de acción",
     ACTIONBARS_DESC = "Barras seguras propias de Phoenix: diseño, paginación, desvanecido, formas, brillos y alcance.",

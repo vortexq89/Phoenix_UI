@@ -106,6 +106,12 @@ local T = {
     SKINS_READYCHECK = "Verificação de prontidão",
     SKINS_READYCHECK_DESC = "Estiliza o aviso de verificação de prontidão.",
     SKINS_NOTE = "As skins só mudam a arte; os botões seguros dessas janelas não são alterados. Desligar uma restaura o visual da Blizzard após recarregar.",
+    SKINS_MOVE = "Mover janelas",
+    SKINS_MOVE_WINDOWS = "Mover janelas da Blizzard",
+    SKINS_MOVE_WINDOWS_DESC = "Shift+arrastar move uma janela da Blizzard (personagem, grimório, localizador de grupo, correio …) e guarda o lugar; Ctrl+arrastar só nesta sessão.",
+    SKINS_MOVE_RESET = "Posições das janelas",
+    SKINS_MOVE_RESET_DESC = "Devolve todas as janelas movidas ao lugar da Blizzard.",
+    SKINS_MOVE_RESET_BUTTON = "Redefinir",
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "Barras de ação",
     ACTIONBARS_DESC = "Barras seguras próprias do Phoenix: layout, páginas, esmaecimento, formas, brilhos e alcance.",

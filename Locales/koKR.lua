@@ -106,6 +106,12 @@ local T = {
     SKINS_READYCHECK = "전투 준비 확인",
     SKINS_READYCHECK_DESC = "전투 준비 확인 창에 스킨을 적용합니다.",
     SKINS_NOTE = "스킨은 그래픽만 바꾸며 창 안의 보안 버튼은 건드리지 않습니다. 끄면 다시 불러온 뒤 블리자드 모양으로 돌아갑니다.",
+    SKINS_MOVE = "창 이동",
+    SKINS_MOVE_WINDOWS = "블리자드 창 이동",
+    SKINS_MOVE_WINDOWS_DESC = "Shift+드래그로 블리자드 창(캐릭터, 주문책, 파티 찾기, 우편 등)을 옮기고 위치를 저장합니다. Ctrl+드래그는 이번 접속에만 적용됩니다.",
+    SKINS_MOVE_RESET = "창 위치",
+    SKINS_MOVE_RESET_DESC = "옮긴 모든 블리자드 창을 기본 위치로 되돌립니다.",
+    SKINS_MOVE_RESET_BUTTON = "초기화",
     ---------------------------------------------------------------- Action bars
     ACTIONBARS = "행동 단축바",
     ACTIONBARS_DESC = "Phoenix 전용 보안 바: 배치, 페이지, 페이드, 모양, 빛 효과, 사거리 표시.",

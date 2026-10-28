@@ -1834,6 +1834,26 @@ try("tab consistency", function()
 end)
 -- developer diagnostics (/pui dev): opt-in, writes PhoenixUIDevDB with ranked issues and json/text exports
 -- dev self-test: walks pages, tabs, preview states and movers; stops when the player moves
+-- skins: move Blizzard windows (Shift+drag keeps, Ctrl+drag session only), live off, reset
+try("move blizzard windows", function()
+    local M = ns.modules.Skins
+    local f = _G.CharacterFrame or CreateFrame("Frame", "CharacterFrame", UIParent)
+    M.MoveTest.hook(f, "CharacterFrame")
+    ns.DB:Set(M, "moveWindows", true)
+    M.MoveTest.session.CharacterFrame = nil
+    M.db.movedWindows.CharacterFrame = { x = 120, y = -40 }
+    f:Show()
+    local got
+    local old = f.SetPoint
+    f.SetPoint = function(_, p, _, _, x, y) got = { p, x, y } end
+    f.IsShown = function() return true end
+    M.MoveTest.place(f)
+    f.SetPoint, f.IsShown = old, nil
+    assert(got and got[1] == "CENTER" and got[2] == 120 and got[3] == -40, "saved spot not applied")
+    M:ResetWindows()
+    assert(next(M.db.movedWindows) == nil, "reset kept positions")
+    ns.DB:Set(M, "moveWindows", false)
+end)
 try("dev self-test", function()
     local ST, D = ns.DevDiag.SelfTest, ns.DevDiag
     local old = GetTime
