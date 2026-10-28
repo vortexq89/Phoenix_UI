@@ -59,6 +59,13 @@ function M:SkinTalents()
             end
         end
     end
+    -- loadout bar: the loadout picker and its buttons on a raised Phoenix card along the bottom bar
+    if tf then
+        local load = rawget(tf, "LoadSystem") or rawget(tf, "LoadoutDropDown") or rawget(tf, "LoadoutDropdown")
+        if load == nil then M.FramePath(tf, { "LoadSystem" }) end -- reported to the dev self-test
+        M.KitCard(load, isOn, "raised", true)
+        M.SkinPopupButton(rawget(tf, "ApplyButton"), "primary", isOn)
+    end
     local sb = psf.SpellBookFrame
     local ts = sb and sb.CategoryTabSystem
     if ts and type(ts.tabs) == "table" then

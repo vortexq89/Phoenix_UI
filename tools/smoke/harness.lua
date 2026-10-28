@@ -2198,6 +2198,7 @@ try("talents skin", function()
     psf.TalentsFrame = CreateFrame("Frame", nil, psf)
     psf.TalentsFrame.EnumerateAllTalentButtons = function() local d; return function() if not d then d = true; return node end end end
     env.PlayerSpellsFrame = psf
+    psf.TalentsFrame.LoadSystem = CreateFrame("Frame", nil, psf.TalentsFrame)
     S:SkinTalents(); S.db.spellbook = false; S:SkinTalents(); S.db.spellbook = true; S:SkinTalents()
     env.PlayerSpellsFrame = nil
 end)
