@@ -332,6 +332,27 @@ Tests:Add("Sentinel", "batch D: fixed-in list from the Companion marks errors fi
   t:eq((F.Import("garbage")), nil, "garbage refused")
 end)
 
+Tests:Add("Sentinel", "fixed-in sync: Uploader-written list applied once at load, checksum checked, ignored kept", function(t)
+  local S = scratch(t)
+  local F = S.FixedSync
+  local rows = { { hash = "aaaaaaaa11111111", fixedIn = "2.0.3" }, { hash = "bbbbbbbb22222222", fixedIn = "2.0.4" } }
+  t:eq(F.Sum(rows), 794168324, "same Adler-32 as the Uploader (Go test TestFixedSumMatchesSentinel)")
+  S.Store:SetState("bbbbbbbb22222222", "ignored")
+  local saved = rawget(_G, "PhoenixUISentinelFixed")
+  t:cleanup(function() rawset(_G, "PhoenixUISentinelFixed", saved) end)
+  rawset(_G, "PhoenixUISentinelFixed", { kind = "fixed-in", at = 1, sum = F.Sum(rows), fixed = rows })
+  F.LoadCompanion()
+  t:eq(rawget(_G, "PhoenixUISentinelFixed"), nil, "cleared after load")
+  t:eq(F.last.applied, 1, "one applied")
+  t:eq(S.Store:DB().resolved["aaaaaaaa11111111"].fixedIn, "2.0.3", "marked fixed in that version")
+  t:eq(S.Store:DB().resolved["bbbbbbbb22222222"].state, "ignored", "a local Ignored state wins")
+  local bad = { kind = "fixed-in", sum = F.Sum(rows) + 1, fixed = rows }
+  t:eq((F.ApplyCompanion(bad)), nil, "wrong checksum refused")
+  t:eq((F.ApplyCompanion({ kind = "report" })), nil, "other data refused")
+  F.LoadCompanion()
+  t:eq(F.last.applied, 1, "nothing to load: last result kept")
+end)
+
 Tests:Add("Sentinel", "attribution: AddOns/<Folder>/, Blizzard folders and FrameXML, Unknown fallback", function(t)
   t:eq(Hook.AddonOf("[string \"@Interface/AddOns/WeakAuras/Init.lua\"]:5", "x"), "WeakAuras", "folder from the stack")
   t:eq(Hook.AddonOf("", "Interface/AddOns/Details/core.lua:9: bad"), "Details", "the message wins")

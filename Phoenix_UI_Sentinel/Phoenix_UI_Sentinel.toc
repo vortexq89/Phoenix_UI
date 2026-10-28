@@ -10,7 +10,7 @@
 ## Group: Phoenix_UI
 ## LoadOnDemand: 1
 ## Dependencies: Phoenix_UI
-## SavedVariables: PhoenixUISentinelDB
+## SavedVariables: PhoenixUISentinelDB, PhoenixUISentinelFixed
 
 Init.lua
 Ring.lua

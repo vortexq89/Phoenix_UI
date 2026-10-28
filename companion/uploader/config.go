@@ -13,7 +13,7 @@ import (
 // Set at build time:  -ldflags "-X main.defaultIngestKey=<PHOENIX_INGEST_KEY> -X main.defaultEndpoint=<url>"
 // A config.json next to the exe (or in the data folder) overrides both.
 var (
-	version          = "1.1.0"
+	version          = "1.2.0"
 	defaultEndpoint  = "https://vq8s.com/phoenix/api/ingest"
 	defaultIngestKey = "" // placeholder: filled at release time, never committed
 )
