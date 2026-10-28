@@ -44,6 +44,7 @@ local INFO = {
   Spark = { "spark", "Spark", "Scrolling combat text and notifications.", "Spark" },
   CastHistory = { "casthistory", "Cast History", "Your recent casts as a strip of icons.", "CastHistory" },
   PvP = { "pvp", "PvP", "Rated card, scoreboard and battleground tools.", "PvP" },
+  PartyCD = { "raid", "Party Cooldowns", "Party interrupts, defensives, battle res and lust on the party frames.", "PartyCD" },
   RaidTools = { "raidtools", "Raid Tools", "Markers, ready check, pull timer, notes and stats.", "RaidTools" },
   Friends = { "friends", "Friends", "Friends list look, notes and search.", "Friends" },
   Forever = { "forever", "Forever", "Flight timer and pet happiness (Forever client).", "Forever" },
@@ -60,7 +61,7 @@ Nav.INFO = INFO
 Nav.GROUPS = {
   { "Interface", { "Core", "Theme", "Fonts", "Colors", "Glows", "Cursor", "Celebrations", "Studio", "Minimap", "Tooltip", "DataBars", "QuestTracker", "Skins" } },
   { "Combat", { "UnitFrames", "ActionBars", "ResourceBars", "CooldownManager", "Nameplates", "Reminders", "ClickCast", "Arena", "Pulse", "Spark", "CastHistory", "PvP" } },
-  { "Group", { "RaidFrames", "GroupFinder", "Ascent", "Embers", "Loadouts", "RaidTools" } },
+  { "Group", { "RaidFrames", "PartyCD", "GroupFinder", "Ascent", "Embers", "Loadouts", "RaidTools" } },
   { "Social & Chat", { "Chat", "Flow", "Friends", "QoL" } },
   { "Tools", { "Vault", "Oracle", "Wisdom", "Setup", "Forever" } },
   { "System", { "Profiles", "Overrides", "Options", "Sentinel", "Ledger" } },

@@ -174,6 +174,7 @@ Also narrow Blizzard's search: needs my role
 Also prints the rating change in your chat window after each rated match.
 Also shows a dot for each boss targeting this member.
 Also shows the addons listed in Blizzard's addon compartment as buttons in the bin.
+Also track your own cooldowns.
 Alt+click Phoenix UI in the minimap addon menu to show or clear the Cast History test strip.
 Alt+click in the addon menu
 Alternate power bar
@@ -239,6 +240,7 @@ Assisted highlight colour
 Assume full health in stealth
 At the banker, shows the bank with Character, Warband, Reagents, Guild bank and Alts tabs beside your bags.
 At which health share the middle (yellow or warning) colour sits.
+Attach each member's icons to their Phoenix party frame, or show one movable list. Without Phoenix party frames the list is used.
 Attribution window (s)
 Auction House
 Aura caster
@@ -593,6 +595,7 @@ Bars in Blizzard's meter use your class colours from the Colours page.
 Bars past this number wait until a slot frees up (soonest first).
 Bars use the game's colour for how dangerous each ability is. Off: every bar uses the normal colour.
 Bars with nothing to show (no aura, no totem slots, no class resource) take no room; the bars below move up.
+Battle res
 Battle res and Bloodlust
 Battle res and Bloodlust placement
 Battle.net toasts
@@ -603,6 +606,7 @@ Below this the bar uses the low colour.
 Best Mythic+ run
 Best-pull marker on my row
 Big Enter button
+Big damage cooldowns
 Big defensive on group frames
 Big defensive: how many
 Big defensive: icon size
@@ -637,6 +641,7 @@ Blizzard's server-side filter for groups missing your current role. Your previou
 Block scale
 Block text colour
 Block width
+Bloodlust / Heroism
 Body text size
 Bonus objective banner
 Bonus roll
@@ -1271,6 +1276,7 @@ Dispel icon size
 Dispel icon size.
 Dispel tint strength
 Dispel tracker
+Distance between the party frame and its icons.
 Distance labels
 Do not share repeatable quests
 Dock several meter windows together under one Studio mover (Embers dock), or leave them free.
@@ -1335,6 +1341,7 @@ Durability percent on damaged items.
 Durability threshold (%)
 EU, US, KR, TW or CN for Battle.net friends.
 Each bracket's rating, season best and this week's record.
+Each member's class interrupt shows from the start; other spells appear once that member casts them.
 Each specialization can keep its own block list for every bar (save one with /pui dbspec save). Specs without a saved set use the normal lists.
 Each specialization can use its own profile. When you change spec, Phoenix switches to that profile (after combat). Content profiles for raid, arena or Mythic+ still apply on top.
 Each time you save in Edit Mode, Phoenix keeps a copy of the active layout in this profile; /pui editmode restore puts it back as a layout named Phoenix.
@@ -1670,6 +1677,7 @@ Gap between custom bar icons.
 Gap between enemy frames (room for the cast bar).
 Gap between icons.
 Gap between items.
+Gap between party cooldown icons.
 Gap between stacked resource bars.
 Gap between the Phoenix minimap buttons.
 Gap between the buttons of bar 1.
@@ -1682,6 +1690,7 @@ Gap between the buttons of bar 6.
 Gap between the buttons of bar 7.
 Gap between the buttons of bar 8.
 Gap between the buttons of bar 9.
+Gap from the frame
 Gap to resource bars
 Gathers every addon's minimap button (LibDBIcon and the rest, even ones made late) into one bin; turning it off puts every button back exactly where it was.
 Gear advisor: stat-weight score and upgrade star in tooltips and bags.
@@ -1731,6 +1740,7 @@ Group Finder panel (detached)
 Group Finder results that declined you fade almost out (Blizzard keeps the row).
 Group absorbs
 Group age
+Group defensives
 Group finder filtering: when another addon does this
 Group frames opacity when hidden
 Group health colour
@@ -2018,6 +2028,7 @@ Icon size.
 Icon size; 0 follows the frame height.
 Icon spacing
 Icon zoom
+Icons per member
 Icons per row on the custom bar.
 Icons per row.
 If you are fighting when the countdown ends, it waits until you are out of combat.
@@ -2041,6 +2052,7 @@ Include addon compartment entries
 Include my character name
 Include other addons' errors in uploads
 Include the loaded addon list in uploads
+Include yourself
 Includes your own frame in the party frames.
 Incoming heals
 Incoming: animation
@@ -2069,6 +2081,7 @@ Interrupted / finished flash
 Interrupted colour
 Interrupted colour of plate cast bars.
 Interrupted-by time
+Interrupts
 Invite on keyword
 Invite words
 Invites friends, Battle.net friends and guild members who whisper one of your words. Never strangers; never during chat lockdown.
@@ -2302,6 +2315,7 @@ Monk colour
 Monk stagger bar
 Most bars shown
 Most friends listed in the tooltip.
+Most icons shown for one party member.
 Most icons shown in this lane.
 Mount collected
 Mount items say whether you already have the mount.
@@ -2542,8 +2556,10 @@ Party (5): gap between groups
 Party (5): grow to the left
 Party (5): grow upwards
 Party (5): members per column
+Party cooldowns
 Party frames
 Party frames: where to show
+Party interrupts, defensives, group cooldowns, battle res and Bloodlust as icons on the party frames or in a list (an OmniCD-style tracker).
 Party kicks
 Party member 1
 Party member 2
@@ -2568,6 +2584,7 @@ Per-spec data bar blocks
 Percent of total
 Percentages where thin lines are drawn on each buff bar (for example 30 for the pandemic window).
 Performance sampler
+Personal defensives
 Personal health, power, class resource, cast, global cooldown and totem bars.
 Personal resource bars: when another addon does this
 Personal resource display
@@ -3236,6 +3253,7 @@ Show every Blizzard element under All
 Show guild under friendly names
 Show in instances
 Show incoming heals
+Show interrupts before first use
 Show my interrupt
 Show names
 Show only friends playing World of Warcraft: others are left out of the Phoenix list and dimmed on Blizzard's list (the game has no such filter of its own).
@@ -3443,6 +3461,7 @@ Shows your rating change on the card.
 Shows your triggers in Spark.
 Shrinks the role bar to its + button.
 Side of the frame the icons sit on.
+Side of the party frame
 Sideways distance from the cursor for the left/right cursor positions.
 SimC export
 SimC export includes bag gear
@@ -3478,6 +3497,7 @@ Size of the enemy target dots.
 Size of the extra action and zone ability buttons. Move them in Studio.
 Size of the micro menu.
 Size of the notes window.
+Size of the party cooldown icons.
 Size of the quest item buttons.
 Size of the raid marker icon.
 Size of the raid tools bar.
@@ -3890,6 +3910,12 @@ Tracked buff bars
 Tracked buff icons
 Tracker width.
 Tracking, calendar and mail buttons
+Tracks Bloodlust, Heroism, Time Warp and Fury of the Aspects.
+Tracks battle res spells (Rebirth, Raise Ally, Soulstone, Intercession).
+Tracks big damage cooldowns such as Combustion, Avatar and Celestial Alignment.
+Tracks group defensives such as Rallying Cry, Spirit Link Totem and Darkness.
+Tracks party interrupts (Kick, Pummel, Counterspell, Wind Shear and the rest).
+Tracks personal defensives such as Ice Block, Divine Shield and Cloak of Shadows.
 Tracks quests for the zone you enter.
 Trade
 Train All button
@@ -4032,6 +4058,7 @@ Where announcements go. Only me prints a local line nobody else sees; Group pick
 Where auto combat logging turns the log on. Works alongside recorder addons: a log they started is never stopped.
 Where each online friend is.
 Where each pet frame sits.
+Where icons go
 Where on the frame the private auras sit.
 Where text lines up in the area.
 Where the M+ block sits
@@ -4084,6 +4111,7 @@ Which session the viewer shows first.
 Which side of the bar the icon sits on.
 Which side of the cast bar the icon sits on.
 Which side of the frame the portrait sits on.
+Which side of the party frame the icons sit on.
 Which side the spec icon sits on.
 Which sound plays: four game sounds, then every sound in the media library (yours and other addons' shared sounds).
 Which tiers the pace line compares against.
