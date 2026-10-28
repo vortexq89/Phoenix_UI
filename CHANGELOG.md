@@ -4,6 +4,9 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Blizzard meter skin, branch feat/meter-skin
+- Embers: Phoenix look on Blizzard's own damage meter windows (Blizzard_DamageMeter, DamageMeterSessionWindowN): backdrop, header, theme fonts, Phoenix bar texture and class colours (secret-safe), header/backdrop fade until hovered, hidden scroll bar, skinned type and fight dropdowns, and an optional docked row/column layout under one Studio mover ("embers.blizzDock"). Post-hooks only (SetupSessionWindow, InitEntry, UpdateStatusBarColor, HookScript); no field writes on Blizzard frames. 11 settings (embers.blizz.*), preview on the Embers page, 3 tests.
+
 ### Review gaps (docs/REVIEW_2026-10-27.md), branch feat/gaps
 - Media: original art for the 6 missing page icons, 13 class and 3 role icons, 16 emoji, 8 shape masks, cursor ring and celebration sprites. Themes (Ember, Midnight, Horde, Alliance), icon shapes, Phoenix class/role icons and emoji.
 - New pages: Fonts, Colours (class/power/reaction colours, colour-blind palettes, health-by-percent colours), Glows, Cursor (cursor ring), Celebrations (opt-in banner with embers; reduced motion keeps only the banner). Theme: border style and thickness for every Phoenix outline.

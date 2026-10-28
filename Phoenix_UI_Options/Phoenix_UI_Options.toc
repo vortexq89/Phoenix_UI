@@ -48,3 +48,4 @@ Tests\StudioB_test.lua
 Tests\Controls_test.lua
 Tests\Dialogs_test.lua
 Tests\Gaps2_test.lua
+Tests\MeterSkin_test.lua

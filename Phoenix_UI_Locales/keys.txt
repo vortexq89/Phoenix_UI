@@ -496,6 +496,7 @@ Bar width
 Bars fill from the right.
 Bars for upcoming boss abilities, read from the game's own encounter timeline. With BigWigs or DBM loaded, you choose who shows them.
 Bars grow
+Bars in Blizzard's meter use your class colours from the Colours page.
 Bars past this number wait until a slot frees up (soonest first).
 Bars use the game's colour for how dangerous each ability is. Off: every bar uses the normal colour.
 Bars with nothing to show (no aura, no totem slots, no class resource) take no room; the bars below move up.
@@ -521,7 +522,19 @@ Bin spacing
 Blizzard can show coordinates itself. Pick who shows them; the Data Bars coordinates block follows this too.
 Blizzard damage meter
 Blizzard elements in Studio
+Blizzard meter dock
+Blizzard meter: Phoenix class colours
+Blizzard meter: Phoenix dropdowns
+Blizzard meter: dock gap
+Blizzard meter: dock windows
+Blizzard meter: docked height
+Blizzard meter: docked width
+Blizzard meter: fade the header until hovered
+Blizzard meter: faded opacity
+Blizzard meter: hide the scroll bar
+Blizzard meter: text size
 Blizzard's objective tracker adds no quests while this tracker is on (it comes back when you turn this off). Blizzard's addon is never disabled.
+Blizzard's own damage meter windows get Phoenix's backdrop, header, fonts and bar texture (post-hooks only; turning it off gives Blizzard's look back).
 Blizzard's own plate
 Blizzard's server-side filter for groups missing your current role. Your previous Blizzard filter is restored when turned off.
 Block scale
@@ -1612,6 +1625,7 @@ Health text position
 Health text size
 Health-by-percent colours
 Height
+Height of each docked Blizzard meter window.
 Height of each enemy frame.
 Height of each frame in this layout.
 Height of each pet frame.
@@ -1692,6 +1706,7 @@ Hides the default stance bar while the Phoenix one is on.
 Hides the enemy's name while it casts so the cast bar is easier to read.
 Hides the expression lines; the list, count and sort stay. Sorting and filters are shared with the full view.
 Hides the game's arena frames while Phoenix shows its own (never moved or changed; shown again when this is off).
+Hides the scroll bar of Blizzard's meter windows; the mouse wheel still scrolls.
 High power colour
 High power colour for the threshold colouring.
 High power from (%)
@@ -1809,6 +1824,7 @@ How the zone name is coloured.
 How visible a filtered row stays (lower is fainter).
 How visible an out-of-range enemy plate stays.
 How visible chat stays while faded.
+How visible the faded header and backdrop are.
 How visible the faded micro menu and bag bar stay.
 How visible the header and background are while the mouse is away.
 How your current target's plate is marked.
@@ -2409,6 +2425,7 @@ Phoenix frame skin for Plater options when that addon is installed.
 Phoenix frame skin for WeakAuras options when that addon is installed.
 Phoenix keybinds
 Phoenix look for 25 Blizzard windows and Details!, Pawn, WeakAuras and Plater; each has its own switch.
+Phoenix look on Blizzard's meter
 Phoenix look on flyouts
 Phoenix minimap: shape, border, texts, coordinates, queue countdown, addon button bin and more.
 Phoenix nameplates: enemy and friendly styles, threat and NPC colours, cast bars with your interrupt, aura lanes, target and focus highlights, quest, execute and Mythic+ forces indicators.
@@ -2581,6 +2598,7 @@ Pulse next abilities
 Pulse timer bars
 Purge border colour
 Purge glow
+Puts every Blizzard meter window together under one Studio mover (Blizzard meter dock). Off gives Blizzard's places back.
 Puts items you just received in their own category at the top.
 Puts the name above the health bar or inside it, left aligned.
 Puts your keystone in the font of power when you open it (out of combat).
@@ -3134,6 +3152,7 @@ Size of each icon.
 Size of each slot.
 Size of names and amounts.
 Size of names and health text.
+Size of names, numbers and header text in Blizzard's meter windows.
 Size of normal window text.
 Size of small labels and hints.
 Size of the Mythic+ block.
@@ -3211,6 +3230,7 @@ Sound played once when the invite is about to expire.
 Sound when ready
 Sound when the countdown starts
 Space between bars
+Space between docked Blizzard meter windows.
 Space between docked windows.
 Space between frames
 Space between groups (columns or rows).
@@ -3463,10 +3483,12 @@ The frame around every button. Each part (border, zoom, fonts) can still be chan
 The game's nameplate scale; 0 keeps the game's value.
 The game's own target plate scale; 0 keeps the game's value. Phoenix's target size above works on top of it.
 The header, background and border fade out and come back while your mouse is over the window; the rows stay.
+The header, dropdowns and backdrop of Blizzard's meter windows fade out and come back while the mouse is over them.
 The health bar under unit tooltips.
 The item bar stays faded until you point at it.
 The latest cast glows.
 The line cap for this area in big pulls.
+The meter type and fight dropdowns in the header get the Phoenix look.
 The mouse wheel scrolls through everyone in the fight; there is no scroll bar.
 The pet bar stays faded until you point at it.
 The profile this specialization uses. No change keeps whatever profile is active.
@@ -3769,6 +3791,7 @@ Widget power bar
 Widgets below the minimap
 Width
 Width and height of the minimap.
+Width of each docked Blizzard meter window.
 Width of each enemy frame.
 Width of each frame in this layout.
 Width of each pet frame.

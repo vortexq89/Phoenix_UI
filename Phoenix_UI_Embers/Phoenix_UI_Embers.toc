@@ -15,4 +15,5 @@ Window.lua
 Recap.lua
 Extras.lua
 Dock.lua
+MeterSkin.lua
 Tests\Embers_test.lua
