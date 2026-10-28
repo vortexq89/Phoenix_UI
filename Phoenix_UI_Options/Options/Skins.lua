@@ -37,6 +37,8 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "keystone", label = "SKINS_KEYSTONE", reload = true, keywords = "mythic plus key", feature = "mythicplus" },
     { type = "toggle", key = "trade", label = "SKINS_TRADE", reload = true, keywords = "trade window" },
     { type = "toggle", key = "dressUp", label = "SKINS_DRESSUP", reload = true, keywords = "dressing room preview" },
+    { type = "button", label = "SKINS_SETS", desc = "SKINS_SETS_DESC", button = "ITEMLEVEL_UPGRADES_BUTTON", icon = "palette",
+      keywords = "transmog sets wardrobe collection appearance", func = function(m) m:ShowSets() end },
     { type = "toggle", key = "pgf", label = "SKINS_PGF", desc = "SKINS_PGF_DESC", reload = true,
       keywords = "premade groups filter pgf addon" },
     { type = "header", label = "SKINS_MOVE", icon = "movers" },

@@ -7,6 +7,7 @@
     <Script file="Skins\Skins.lua"/>
     <Script file="Skins\Move.lua"/>
     <Script file="Skins\MailAlts.lua"/>
+    <Script file="Skins\Wardrobe.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>

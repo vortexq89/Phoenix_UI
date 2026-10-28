@@ -1946,6 +1946,18 @@ try("auction undercut", function()
         "nothing to undercut")
     A:SetupUndercut()
 end)
+-- transmog set list: progress, sorting (closest to complete first, complete last) and the search filter
+try("transmog set list", function()
+    local S = ns.modules.Skins
+    local h, t = S.SetProgress({ { collected = true }, { collected = false }, { collected = true } })
+    assert(h == 2 and t == 3, "set progress")
+    local rows = { { name = "Done", have = 4, total = 4 }, { name = "Half", have = 2, total = 4 },
+        { name = "Almost", have = 3, total = 4 }, { name = "None", have = 0, total = 4 } }
+    local s = S.SortSets(rows)
+    assert(s[1].name == "Almost" and s[2].name == "Half" and s[4].name == "Done", "set order")
+    assert(#S.SortSets(rows, "al") == 2, "search filter")
+    local w = S:ShowSets(); assert(w and w:IsShown(), "set list did not open"); w:Hide()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
