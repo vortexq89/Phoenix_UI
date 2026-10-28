@@ -560,6 +560,11 @@ ns.RegisterLocale("enUS", {
     AUTO_BULK_DESC = "Alt+click an item at a vendor to buy any amount at once.",
     AUTO_BULK_BUY = "Buy",
     AUTO_BULK_CAPPED = "Bought %d (all you could afford).",
+    AUTO_RARE = "Rare alert",
+    AUTO_RARE_DESC = "A rare appears on the minimap: a toast with its name and a sound, a Target button and a waypoint.",
+    AUTO_RARE_TARGET = "Target",
+    AUTO_RARE_WAYPOINT = "Waypoint",
+    AUTO_RARE_SEEN = "Rare: %s",
     AUTO_SKIP_CINEMATICS = "Skip cinematics",
     AUTO_SKIP_CINEMATICS_DESC = "Skip cinematics you've seen. Hold Shift to watch.",
 

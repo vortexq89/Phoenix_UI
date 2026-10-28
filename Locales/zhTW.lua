@@ -540,6 +540,11 @@ local T = {
     AUTO_BULK_DESC = "在商人處 Alt+點擊物品，一次購買任意數量。",
     AUTO_BULK_BUY = "購買",
     AUTO_BULK_CAPPED = "已購買 %d 個（能負擔的全部）。",
+    AUTO_RARE = "稀有提醒",
+    AUTO_RARE_DESC = "小地圖出現稀有怪時：顯示名字並播放聲音，提供選取按鈕和路徑點。",
+    AUTO_RARE_TARGET = "選取",
+    AUTO_RARE_WAYPOINT = "路徑點",
+    AUTO_RARE_SEEN = "稀有：%s",
     AUTO_SKIP_CINEMATICS = "跳過過場動畫",
     AUTO_SKIP_CINEMATICS_DESC = "跳過已看過的過場動畫。按住 Shift 可觀看。",
     ---------------------------------------------------------------- Mythic+

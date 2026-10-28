@@ -1831,6 +1831,17 @@ try("merchant bulk buy", function()
     assert(A.BulkAffordable(7, 0, 1, 0) == 7, "free / currency items not capped")
     A:SetupBulkBuy()
 end)
+-- rare alert: kill vignettes only, once each; the toast has a secure Target macro and a waypoint
+try("rare alert", function()
+    local A = ns.modules.Automation
+    assert(A.IsRareVignette({ name = "Ruthless Rex", atlasName = "VignetteKill" }), "rare not recognised")
+    assert(not A.IsRareVignette({ name = "Chest", atlasName = "VignetteLoot" }), "treasure alerted")
+    assert(not A.IsRareVignette({ name = "X", atlasName = "VignetteKill", isDead = true }), "dead rare alerted")
+    assert(not A.IsRareVignette(nil), "nil info alerted")
+    local t = A:ShowRare("guid-1", { name = "Ruthless Rex" })
+    assert(t and t.target and t.way and t.way.onClick, "no Target / Waypoint buttons")
+    t:Hide()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

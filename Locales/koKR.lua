@@ -540,6 +540,11 @@ local T = {
     AUTO_BULK_DESC = "상인 창에서 아이템을 Alt+클릭하면 원하는 수량을 한 번에 구매합니다.",
     AUTO_BULK_BUY = "구매",
     AUTO_BULK_CAPPED = "%d개 구매함 (구매 가능한 최대).",
+    AUTO_RARE = "희귀 몹 알림",
+    AUTO_RARE_DESC = "미니맵에 희귀 몹이 나타나면 이름과 소리로 알리고 대상 지정 버튼과 경유지를 제공합니다.",
+    AUTO_RARE_TARGET = "대상 지정",
+    AUTO_RARE_WAYPOINT = "경유지",
+    AUTO_RARE_SEEN = "희귀: %s",
     AUTO_SKIP_CINEMATICS = "동영상 건너뛰기",
     AUTO_SKIP_CINEMATICS_DESC = "이미 본 동영상을 건너뜁니다. Shift를 누르고 있으면 시청합니다.",
     ---------------------------------------------------------------- Mythic+

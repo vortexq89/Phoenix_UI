@@ -540,6 +540,11 @@ local T = {
     AUTO_BULK_DESC = "Alt+clique em um item do vendedor para comprar qualquer quantidade de uma vez.",
     AUTO_BULK_BUY = "Comprar",
     AUTO_BULK_CAPPED = "Comprados %d (todos que você podia pagar).",
+    AUTO_RARE = "Alerta de raros",
+    AUTO_RARE_DESC = "Um raro aparece no minimapa: aviso com nome e som, botão Alvo e ponto de referência.",
+    AUTO_RARE_TARGET = "Alvo",
+    AUTO_RARE_WAYPOINT = "Ponto de referência",
+    AUTO_RARE_SEEN = "Raro: %s",
     AUTO_SKIP_CINEMATICS = "Pular cinemáticas",
     AUTO_SKIP_CINEMATICS_DESC = "Pula cinemáticas que você já viu. Segure Shift para assistir.",
     ---------------------------------------------------------------- Mythic+

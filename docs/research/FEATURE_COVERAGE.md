@@ -26,7 +26,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | 4 | "What's new" popup after an update | EllesmereUI core | built |
 | 5 | CDM entry: show only with talent | EllesmereUI CooldownManager | built (?ID / !ID in a custom bar list) |
 | 6 | Casts-on-me bars (secret-safe target check) | EllesmereUI MythicTimer | next |
-| 7 | Rare alert secure target button + waypoint | RareScanner (no EUI version) | next |
+| 7 | Rare alert secure target button + waypoint | RareScanner (no EUI version) | built (Automation > Rare alert) |
 | 8 | Copy armory link in unit menus | Raider.IO (no EUI version) | built (Chat > Armory link in menus) |
 | 9 | Merchant bulk buy | EllesmereUI BlizzardSkin | built (Alt+click at a vendor) |
 | 10 | Already Known tint, upgrade planner, aura glows, quickdraw ring, macro factory, quest item hotkey, movement CD row | EllesmereUI (WindTools / QoL / CDM / Quickdraw) | later (P3) |

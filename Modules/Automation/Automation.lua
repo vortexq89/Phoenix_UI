@@ -11,7 +11,8 @@ local Secret = ns.Secret
 local M = ns:NewModule("Automation", {
     label = "AUTOMATION", desc = "AUTOMATION_DESC", category = "utility", order = 20,
     defaults = {
-        repair = "player", sellJunk = true, fillDelete = true, bulkBuy = true, declineDuels = false, acceptInvites = false,
+        repair = "player", sellJunk = true, fillDelete = true,
+        bulkBuy = true, rareAlert = true, declineDuels = false, acceptInvites = false,
         acceptResurrect = false, autoRelease = false, skipCinematics = false,
         fastLoot = false, confirmBoP = false, gossip = false, declinePetDuels = false, declineGuild = false,
         lowHealth = false, lowHealthSound = "AlertOnYou",
@@ -120,6 +121,7 @@ end
 local hooked
 function M:OnEnable()
     self:SetupBulkBuy() -- BulkBuy.lua
+    self:SetupRareAlert() -- RareAlert.lua
     if not hooked then
         hooked = true
         hooksecurefunc("StaticPopup_Show", onPopup)
