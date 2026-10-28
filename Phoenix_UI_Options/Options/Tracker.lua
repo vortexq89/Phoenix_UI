@@ -192,7 +192,7 @@ ns:RegisterOptions("Tracker", {
       cog = { { type = "color", key = "viewers.@.procColor", label = "AB_PROC_COLOR", token = "accent.glow", reset = true,
         disabled = noProc } } },
     { type = "input", key = "auraGlows", label = "TRACKER_AURA_GLOWS", desc = "TRACKER_AURA_GLOWS_DESC", hidden = notIcons,
-      width = 320, keywords = "aura buff glow while proc highlight" },
+      keywords = "aura buff glow while proc highlight" },
     { type = "select", key = "viewers.@.readyGlow", label = "TRACKER_READY", desc = "TRACKER_READY_DESC", values = READY,
       disabled = unstyled, hidden = notIcons, keywords = "glow ready off cooldown",
       cog = { { type = "color", key = "viewers.@.readyColor", label = "TRACKER_READY_COLOR", token = "state.success", reset = true,
