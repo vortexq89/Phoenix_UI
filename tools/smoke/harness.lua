@@ -101,6 +101,9 @@ frameMethods.SetSize = function(self, w, h) recordSize(self, w, h) end
 frameMethods.GetWidth = function(self) return rawget(self, "__w") or defaults.GetWidth end
 frameMethods.GetHeight = function(self) return rawget(self, "__h") or defaults.GetHeight end
 frameMethods.GetSize = function(self) return self:GetWidth(), self:GetHeight() end
+-- anchors, scales and parents are recorded for the geometry tests (tools/smoke/geometry.lua)
+local Geo = dofile((arg and arg[1] or ".") .. "/tools/smoke/geometry.lua")
+Geo.Install(frameMethods)
 local mt = {}
 mt.__index = function(self, k)
     if regions[self] and FRAME_ONLY[k] then return nil end
@@ -134,9 +137,10 @@ mt.__le = function() return false end
 mt.__len = function() return 0 end
 magic = setmetatable({}, mt)
 
-local function CreateFrame(_, name)
+local function CreateFrame(_, name, parent)
     local f = newMagic()
     owned[f] = true
+    if type(parent) == "table" then Geo.parent[f] = parent end
     frames[#frames + 1] = f
     if name then _G[name] = f end
     return f
@@ -1769,6 +1773,13 @@ try("preview click to setting", function()
     local any = false
     for _, f in ipairs(stage.hots or {}) do if f.key == "bars.@.width" then any = true end end
     assert(any, "no hotspot over the preview buttons")
+    -- and it opens the quick-edit sliders for that part (width, height, buttons …)
+    local pop, n = C.QuickEdit(page, ns.modules.ActionBars, "bars.@.width", stage.hots[1])
+    assert(pop and n and n >= 2, "clicking the preview opened no size controls")
+    for _, k in ipairs({ "ActionBars", "UnitFrames", "CastBars" }) do
+        local pg = C:Show(k)
+        assert(pg.pinned and pg.pinned.size, k .. ": no Size & position button on the preview")
+    end
 end)
 -- settings popup on a mover box: edits the frame's settings live
 try("mover popup", function()
@@ -1893,6 +1904,70 @@ try("preview zero-width panel", function()
         if not ok then bad = kind .. ": " .. tostring(err) end
     end
     assert(not bad, bad)
+end)
+-- geometry: the options window keeps its size and scale whatever a setting does, stays within 80% x 85% of
+-- the screen at common resolutions, and the top bar's controls never overlap (tools/smoke/geometry.lua)
+try("options window geometry", function()
+    local C = ns.Config
+    local UI = env.UIParent
+    local oldW, oldH = rawget(UI, "__w"), rawget(UI, "__h")
+    local oldRoot = Geo.root
+    Geo.root = UI
+    local f = C:Build()
+    local AB = ns.modules.ActionBars
+    for _, res in ipairs({ { 1366, 768 }, { 1920, 1080 }, { 4830, 2717 } }) do
+        Geo.rootW, Geo.rootH = res[1], res[2]
+        rawset(UI, "__w", res[1]); rawset(UI, "__h", res[2])
+        C.FitToScreen(f)
+        local pg = C:Show("ActionBars")
+        local pin = pg and pg.pinned
+        local pinH = pin and pin:GetHeight()
+        local w, h = f:GetSize()
+        local sc = f:GetScale()
+        assert(w * sc <= res[1] * C.SCREEN_W + 1 and h * sc <= res[2] * C.SCREEN_H + 1,
+            ("window %dx%d at %.2f covers too much of %dx%d"):format(w, h, sc, res[1], res[2]))
+        for _, v in ipairs({ 12, 1, 24, 6 }) do
+            ns.DB:Set(AB, "bars.bar1.buttons", v)
+            ns.DB:Set(AB, "bars.bar1.width", v * 6)
+            C:Show("ActionBars")
+            local w2, h2 = f:GetSize()
+            assert(w2 == w and h2 == h and f:GetScale() == sc, "window size changed with an action bar setting")
+            if pin then
+                pin.pane.needHeight = (pin.pane.baseHeight or 120) * (v / 6 + 1)
+                pin:Apply(false)
+                assert(math.abs(pin:GetHeight() - pinH) < 0.5, "preview footprint changed with an action bar setting")
+            end
+        end
+        local top = f.header
+        assert(Geo.Rect(top.search) and Geo.Rect(top.close), "top bar geometry unresolved")
+        local parts = { top.search, top.profile, top.layout, top.test, top.close }
+        for i = 1, #parts do for j = i + 1, #parts do
+            assert(not Geo.Overlap(parts[i], parts[j]), ("top bar controls %d and %d overlap at %dx%d"):format(i, j, res[1], res[2]))
+        end end
+    end
+    ns.DB:Set(AB, "bars.bar1.buttons", AB.defaults.bars.bar1.buttons)
+    ns.DB:Set(AB, "bars.bar1.width", AB.defaults.bars.bar1.width)
+    rawset(UI, "__w", oldW); rawset(UI, "__h", oldH)
+    Geo.root = oldRoot
+end)
+
+-- placeholders: in game-icon mode every icon the UI asks for has stock art (no grey dot), and the Phoenix
+-- atlases know every name requested during the whole run
+try("no placeholder icons", function()
+    local I = ns.Icons
+    local bad = {}
+    for _, s in pairs(I:Tracked()) do
+        if s.name and not I.GameMapped(s.name) then bad[s.name] = true end
+    end
+    for _, m in ipairs(ns.moduleList) do if m.icon and not I.GameMapped(m.icon) then bad[m.icon] = true end end
+    for _, g in ipairs(ns.Config:Groups()) do if not I.GameMapped(g.icon) then bad[g.icon] = true end end
+    local list = {}
+    for k in pairs(bad) do list[#list + 1] = k end
+    table.sort(list)
+    assert(#list == 0, "no game art for: " .. table.concat(list, ", "))
+    local miss = {}
+    for k in pairs(I.missing) do miss[#miss + 1] = k end
+    assert(#miss == 0, "unknown glyphs: " .. table.concat(miss, ", "))
 end)
 try("dev self-test", function()
     local ST, D = ns.DevDiag.SelfTest, ns.DevDiag

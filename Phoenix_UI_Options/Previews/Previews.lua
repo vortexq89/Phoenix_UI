@@ -98,14 +98,21 @@ function P:Create(kind, parent, m, page)
     end)
     stage.designWidth = def and def.width or 0
     -- Scales the stage so its design width fits `width`; returns the scale (1 when it already fits).
+    -- The preview keeps one footprint on the page (its design height) whatever the settings do: content
+    -- that grows wider or taller scales the stage down instead of pushing the page (and the rows) around.
     function stage:Fit(width)
         local scale = 1
         if self.designWidth > 0 and width and width > 0 and width < self.designWidth then scale = width / self.designWidth end
-        self:SetScale(ns.Previews.ClampScale(scale))
+        local base, need = self.baseHeight or 120, self.needHeight or self.baseHeight or 120
+        if need > base then scale = math.min(scale, base / need) end
+        scale = ns.Previews.ClampScale(scale)
+        self:SetScale(scale)
+        self:SetHeight(base / scale)
         return scale
     end
     local draw = def and def.build(stage, m)
     local baseWidth, baseHeight = stage.designWidth, def and def.height or 120
+    stage.baseHeight = baseHeight
     local measureQueued = false
     -- Fit to content: settings can make a sample bigger than the room it was designed for (a 400 px wide
     -- frame, a 40 px font). After each redraw the stage measures what it holds; wider content raises the
@@ -132,9 +139,9 @@ function P:Create(kind, parent, m, page)
         local needW = math.max(r - mid, mid - l) * 2 + pad
         local needH = math.max(t0, t) - b + pad
         local width, height = math.max(baseWidth, math.ceil(needW)), math.max(baseHeight, math.ceil(needH))
-        if width ~= stage.designWidth or math.abs(height - stage:GetHeight()) > 0.5 then
+        if width ~= stage.designWidth or math.abs(height - (stage.needHeight or baseHeight)) > 0.5 then
             stage.designWidth = width
-            stage:SetHeight(height)
+            stage.needHeight = height
             if page.Layout then page:Layout() end
         end
     end
@@ -233,7 +240,7 @@ function P.Hot(stage, part, key, tip)
             if self.tip then W.ShowTooltip(self, self.tip, ns.L.PREVIEW_CLICK_HINT) end
         end)
         hot:SetScript("OnLeave", function(self) self.edge:Hide(); W.HideTooltip() end)
-        hot:SetScript("OnClick", function(self) if stage.onHot then stage.onHot(self.key) end end)
+        hot:SetScript("OnClick", function(self) if stage.onHot then stage.onHot(self.key, self) end end)
         Skin:Register(hot.edge, function(e) Skin:Border(e, "accent.primary") end)
         part.puiHot = hot
         stage.hots = stage.hots or {}

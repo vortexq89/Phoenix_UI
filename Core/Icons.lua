@@ -43,7 +43,7 @@ local GAME_LINE = {
     ["chevron-down"] = B .. "UI-MinusButton-Up", lock = B .. "LockButton-Locked-Up",
     warning = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", question = "Interface\\Common\\help-i",
     error = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", ["arrow-up"] = B .. "UI-ScrollBar-ScrollUpButton-Up",
-    ["arrow-down"] = B .. "UI-ScrollBar-ScrollDownButton-Up",
+    ["arrow-down"] = B .. "UI-ScrollBar-ScrollDownButton-Up", success = B .. "UI-CheckBox-Check",
 }
 local GAME_ART = {
     home = "INV_Misc_Rune_01", general = "INV_Misc_Gear_01", theme = "INV_Misc_Gem_Variety_01",
@@ -70,9 +70,13 @@ local GAME_ART = {
     link = "INV_Misc_Rune_01", mail = "INV_Letter_15", opacity = "Spell_Shadow_Teleport", palette = "INV_Misc_Gem_Variety_01",
     preview = "INV_Misc_Spyglass_03", sim = "INV_Misc_EngGizmos_30", snap = "INV_Misc_EngGizmos_30", spec = "Ability_Marksmanship",
     speed = "Ability_Rogue_Sprint", taint = "Spell_Shadow_Teleport", terminal = "INV_Misc_Note_05", test = "INV_Misc_EngGizmos_30",
-    user = "Achievement_Character_Human_Male", web = "INV_Misc_Map02", bin = "INV_Misc_Bugsprayer", delete = "INV_Misc_Bugsprayer",
+    durability = "INV_Chest_Plate04", fps = "INV_Misc_PocketWatch_02", latency = "INV_Misc_Map02",
+    resize = "INV_Misc_EngGizmos_30", user = "Achievement_Character_Human_Male", web = "INV_Misc_Map02",
+    bin = "INV_Misc_Bugsprayer", delete = "INV_Misc_Bugsprayer",
 }
-I.GameMapped = function(name) return GAME_LINE[name] ~= nil or GAME_ART[name] ~= nil end
+function I.GameMapped(name)
+    return GAME_LINE[name] ~= nil or GAME_ART[name] ~= nil
+end
 local GAME_DOT = "Interface\\Common\\Indicator-Gray"
 I.game = false
 

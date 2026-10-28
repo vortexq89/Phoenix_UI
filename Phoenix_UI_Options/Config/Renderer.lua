@@ -394,9 +394,12 @@ function buildRow(card, page, m, item)
     row:SetHeight(item.height or (hasDesc and ROW_H_DESC or ROW_H))
     row.hl = W.Texture(row, "BACKGROUND", 2)
     row.hl:SetAllPoints()
+    W.Color(row.hl, "bg.hover", 0)
+    -- the flash only exists while it plays: a hidden texture can never tint a row by accident
     row.flash = W.Texture(row, "BACKGROUND", 3)
     row.flash:SetAllPoints()
     row.flash:SetAlpha(0)
+    row.flash:Hide()
     row.label = W.Text(row, "body", "text.primary")
     row.label:SetText(text(item.label))
     if item.icon and item.type == "toggle" then row.icon = W.Icon(row, item.icon, 14, "accent.primary") end
@@ -407,9 +410,9 @@ function buildRow(card, page, m, item)
         row.desc:SetWordWrap(true)
         row.desc:SetText(text(item.desc))
     end
-    if item.reload or item.combat then
-        row.badge = W:Badge(row, item.reload and L.BADGE_RELOAD or L.BADGE_COMBAT,
-            item.reload and "state.warning" or "state.info", item.reload and "reload" or "lock")
+    -- only "needs a reload" earns a badge; "out of combat" is in the tooltip (a badge on half the rows was noise)
+    if item.reload then
+        row.badge = W:Badge(row, L.BADGE_RELOAD, "state.warning", "reload")
     end
     attachSide(row, card, page, m, item)
     Skin:Register(row, function(self)
@@ -592,9 +595,10 @@ function buildRow(card, page, m, item)
     end
 
     function row:Flash()
+        self.flash:Show()
         ns.Anim:Tween(self.flash, 0.9, 1, 0, function(v)
             self.flash:SetAlpha(math.abs(math.sin(v * math.pi * 2)) * v)
-        end)
+        end, function() self.flash:SetAlpha(0); self.flash:Hide() end)
     end
     row:Arrange("line", W.CONTROL_WIDTH * 2)
     return row
@@ -903,6 +907,40 @@ local function worldAction(m)
     end
 end
 
+-- Quick edit: a click on a part of the preview opens the part's size and layout sliders right there (the
+-- same settings as the rows below, written through setValue so multi-select and live apply hold).
+local QUICK = { width = 1, height = 2, buttons = 3, rows = 4, size = 5, spacing = 6, spacingX = 7, spacingY = 8, scale = 9, x = 10, y = 11 }
+local function quickEdit(page, m, key, anchor)
+    local prefix = key and key:match("^(.*%.)[^.]+$")
+    if not (prefix and anchor and page.rows) then return nil end
+    local items = {}
+    for _, row in ipairs(page.rows) do
+        local it = row.item
+        local leaf = it.key and it.key:sub(1, #prefix) == prefix and it.key:sub(#prefix + 1)
+        if it.type == "range" and leaf and QUICK[leaf] and not (it.disabled and it.disabled(m)) then
+            items[#items + 1] = it
+        end
+    end
+    if #items == 0 then return nil end
+    table.sort(items, function(a, b) return QUICK[a.key:sub(#prefix + 1)] < QUICK[b.key:sub(#prefix + 1)] end)
+    local content = CreateFrame("Frame")
+    local y = 4
+    for i = 1, math.min(#items, 8) do
+        local it = items[i]
+        local lab = W.Text(content, "small", "text.secondary")
+        lab:SetPoint("TOPLEFT", 12, -y)
+        lab:SetText(text(it.label))
+        local sl = W:Slider(content, it.min or 0, it.max or 100, it.step or 1, it.percent)
+        sl:SetPoint("TOPLEFT", 12, -(y + 16))
+        sl:SetPoint("RIGHT", -12, 0)
+        sl:SetValue(getValue(page, m, it))
+        sl.onChange = function(_, v) setValue(page, m, it, v) end
+        y = y + 50
+    end
+    return W:Popover(anchor, L.QUICK_EDIT, content, 300, y), #items
+end
+Config.QuickEdit = quickEdit
+
 local function buildPreview(page, m, item)
     local card = W:Card(page, text(item.label or "LIVE_PREVIEW"), "preview")
     card.isPreview = true
@@ -913,7 +951,10 @@ local function buildPreview(page, m, item)
     end)
     card.pane = ns.Previews:Create(item.kind, card, m, page)
     -- a click on a part of the preview jumps to that part's setting and flashes it
-    card.pane.onHot = function(key) if page.FocusKey then page:FocusKey(key) end end
+    card.pane.onHot = function(key, hot)
+        if page.FocusKey then page:FocusKey(key) end
+        quickEdit(page, m, key, hot)
+    end
     card.tag = W.Text(card, "small", "accent.text", "RIGHT")
     card.shade = W.Texture(card, "BACKGROUND", -1, Media.textures.FADE_V)
     card.shade:SetPoint("TOPLEFT", card, "BOTTOMLEFT", 0, 0)
@@ -923,6 +964,21 @@ local function buildPreview(page, m, item)
     card.fold = W:IconButton(card, "hide", 22, L.PREVIEW_FOLD, L.PREVIEW_FOLD_DESC)
     card.fold:SetPoint("TOPRIGHT", -10, -9)
     card.tag:SetPoint("RIGHT", card.fold, "LEFT", -8, 0)
+    -- the obvious way to size and place the element: its width, height and offsets in one popover
+    local sizeKey
+    local function find(list, depth)
+        if type(list) ~= "table" or depth > 6 or sizeKey then return end
+        if list.type == "range" and type(list.key) == "string" and list.key:match("%.width$") then sizeKey = list.key; return end
+        for _, v in ipairs(list) do find(v, depth + 1) end
+        if type(list.items) == "table" then find(list.items, depth + 1) end
+    end
+    find(type(page.schema) == "function" and page.schema() or page.schema, 0)
+    if sizeKey then
+        card.size = W:Button(card, L.SIZE_POSITION, "secondary", "resize", 150)
+        card.size:SetHeight(24)
+        card.size:SetPoint("RIGHT", card.tag, "LEFT", -10, 0)
+        card.size.onClick = function(b) quickEdit(page, m, sizeKey, b) end
+    end
     card.collapsed = previewStore()[m.key] == false
     card.fold.onClick = function()
         card.collapsed = not card.collapsed
