@@ -2320,6 +2320,10 @@ try("vault phase 3 skin", function()
     local S = ns.modules.Skins
     local f = CreateFrame("Frame", "WeeklyRewardsFrame", UIParent)
     env.WeeklyRewardsFrame = f
+    assert(S.VaultFraction({ progress = 2, threshold = 4 }) == 0.5 and S.VaultFraction({ progress = 9, threshold = 4 }) == 1
+        and S.VaultFraction(nil) == 0, "vault fraction")
+    f.Activities = { CreateFrame("Frame", nil, f) }
+    f.Activities[1].info = { progress = 1, threshold = 2 }
     S:SkinVault(); S.db.vault = false; S:Refresh(); S.db.vault = true; S:Refresh()
     env.WeeklyRewardsFrame = nil
 end)

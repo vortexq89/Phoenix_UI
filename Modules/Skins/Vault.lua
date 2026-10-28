@@ -15,6 +15,37 @@ function M.VaultUnlocked(info)
     return p ~= nil and t ~= nil and t > 0 and p >= t
 end
 
+-- Progress ring: a paused Cooldown swipe (native drawing, no OnUpdate) filled to progress / threshold.
+function M.VaultFraction(info)
+    if type(info) ~= "table" then return 0 end
+    local p, t = tonumber(info.progress) or 0, tonumber(info.threshold) or 0
+    if t <= 0 then return 0 end
+    return math.max(0, math.min(1, p / t))
+end
+
+local vaultRings = setmetatable({}, { __mode = "k" })
+function M.VaultRing(card, info, isOn)
+    if type(card) ~= "table" or not card.GetObjectType then return end
+    local r = vaultRings[card]
+    if not isOn then if r then r:Hide() end; return end
+    if not r then
+        r = CreateFrame("Cooldown", nil, card, "CooldownFrameTemplate")
+        r:SetSize(26, 26)
+        r:SetPoint("TOPRIGHT", -6, -6)
+        r:SetSwipeTexture(ns.Media.textures.RING_CIRCLE)
+        r:SetDrawEdge(false)
+        r:SetHideCountdownNumbers(true)
+        r:SetReverse(true)
+        vaultRings[card] = r
+    end
+    local frac = M.VaultFraction(info)
+    local cr, cg, cb = ns.Theme:Color(frac >= 1 and "accent.primary" or "accent.secondary")
+    r:SetSwipeColor(cr, cg, cb, 0.95)
+    r:SetCooldown(GetTime() - frac * 100, 100)
+    r:Pause()
+    r:Show()
+end
+
 function M:SkinVault()
     local wr = _G.WeeklyRewardsFrame
     if not wr then return end
@@ -26,6 +57,7 @@ function M:SkinVault()
         if card and isOn then
             ns.Skin:SetBorderColor(card, M.VaultUnlocked(rawget(a, "info")) and "accent.primary" or "border.subtle")
         end
+        M.VaultRing(card or a, rawget(a, "info"), isOn)
     end
     M.SkinPopupButton(rawget(wr, "SelectRewardButton"), "primary", isOn)
 end
