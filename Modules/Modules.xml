@@ -39,6 +39,7 @@
     <Script file="Tooltip\Tooltip.lua"/>
     <Script file="Tooltip\Extras.lua"/>
     <Script file="ItemLevel\ItemLevel.lua"/>
+    <Script file="ItemLevel\Upgrades.lua"/>
     <Script file="Bags\Bags.lua"/>
     <Script file="Bags\Window.lua"/>
     <Script file="Sim\Export.lua"/>

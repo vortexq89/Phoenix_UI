@@ -1902,6 +1902,15 @@ try("tracker aura glows", function()
     assert(next(T.ParseAuraGlows("junk")) == nil, "junk made a rule")
     T.db.auraGlows = "11366=48108"; T:UpdateAuraGlows(); T.db.auraGlows = ""
 end)
+-- upgrade planner: the game's own "Upgrade Level: %s %d/%d" line is parsed
+try("upgrade planner", function()
+    local IL = ns.modules.ItemLevel
+    local pat = IL.UpgradePattern("Upgrade Level: %s %d/%d")
+    local u = IL.ReadUpgrade({ lines = { { leftText = "Head" }, { leftText = "Upgrade Level: Hero 3/6" } } }, pat)
+    assert(u and u.track == "Hero" and u.level == 3 and u.max == 6, "upgrade line not read")
+    assert(IL.ReadUpgrade({ lines = { { leftText = "x" } } }, pat) == nil, "no line read as an upgrade")
+    local w = IL:ShowUpgrades(); assert(w and w:IsShown(), "planner did not open"); w:Hide()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
