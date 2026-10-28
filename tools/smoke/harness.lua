@@ -2324,8 +2324,9 @@ try("merchant phase 3 skin", function()
     local S = ns.modules.Skins
     local f = CreateFrame("Frame", "MerchantFrame", UIParent)
     env.MerchantFrame = f
+    env.MerchantItem1AltCurrencyFrame = CreateFrame("Frame", nil, f)
     S:SkinMerchant(); S.db.merchant = false; S:Refresh(); S.db.merchant = true; S:Refresh()
-    env.MerchantFrame = nil
+    env.MerchantFrame, env.MerchantItem1AltCurrencyFrame = nil, nil
 end)
 try("vault phase 3 skin", function()
     local S = ns.modules.Skins

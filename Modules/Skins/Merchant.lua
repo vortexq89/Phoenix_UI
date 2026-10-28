@@ -19,6 +19,11 @@ function M:SkinMerchant()
             if isOn then ns.Skin:Text(name, "body", "text.primary") else ns.Skin:Restore(name) end
         end
         if card and isOn then ns.Skin:SetBorderColor(card, "border.subtle") end
+        -- extended cost (currencies / items instead of gold): the cost row on a sunken strip outlined in the
+        -- accent so it reads as a price; the currency icons and amounts stay the game's
+        local alt = _G["MerchantItem" .. i .. "AltCurrencyFrame"]
+        local strip = M.KitCard(alt, isOn and alt and alt.IsShown and alt:IsShown() or false, "sunken", true)
+        if strip and alt then strip:SetFrameLevel(math.max(0, alt:GetFrameLevel() - 1)) end
     end
     M.KitCard(_G.MerchantBuyBackItem, isOn, "sunken", false)
     M.KitCard(_G.MerchantMoneyFrame, isOn, "sunken", false)
