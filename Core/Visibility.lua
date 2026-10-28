@@ -28,6 +28,71 @@ Visibility.HIDE = { "resting", "vehicle", "skyriding", "petBattle", "mounted" }
 Visibility.HIDE_LABELS = { resting = "While resting", vehicle = "In a vehicle", skyriding = "While skyriding",
   petBattle = "In a pet battle", mounted = "While mounted" }
 
+Visibility.MODES = { "always", "when", "never" }
+Visibility.COMBAT = { "any", "in", "out" }
+Visibility.GROUPS = { "solo", "party", "raid" }
+Visibility.GROUP_LABELS = { solo = "Solo", party = "Party", raid = "Raid group" }
+
+-- Shape check for a stored rule (the schema "visibility" type, G26/G27).
+function Visibility.Validate(rule)
+  if type(rule) ~= "table" then return false, "rule must be a table" end
+  local okMode = false
+  for _, m in ipairs(Visibility.MODES) do if rule.mode == m then okMode = true end end
+  if not okMode then return false, "unknown mode" end
+  if rule.combat ~= nil and rule.combat ~= "any" and rule.combat ~= "in" and rule.combat ~= "out" then
+    return false, "combat must be any, in or out"
+  end
+  local sets = { content = Visibility.CONTENT, group = Visibility.GROUPS, hide = Visibility.HIDE }
+  for field, allowed in pairs(sets) do
+    local v = rule[field]
+    if v ~= nil then
+      if type(v) ~= "table" then return false, field .. " must be a set" end
+      local ok = {}
+      for _, a in ipairs(allowed) do ok[a] = true end
+      for k, on in pairs(v) do
+        if not ok[k] or type(on) ~= "boolean" then return false, "bad " .. field .. " entry " .. tostring(k) end
+      end
+    end
+  end
+  if rule.specs ~= nil then
+    if type(rule.specs) ~= "table" then return false, "specs must be a set" end
+    for k, on in pairs(rule.specs) do
+      if type(k) ~= "number" or type(on) ~= "boolean" then return false, "bad spec entry" end
+    end
+  end
+  return true
+end
+
+-- One-line summary for rows and the readout ("Raids, Dungeons & M+ - in combat").
+function Visibility.Describe(rule)
+  if rule == nil or rule.mode == nil or rule.mode == "always" then return "Always shown" end
+  if rule.mode == "never" then return "Never shown" end
+  local parts = {}
+  if rule.content and next(rule.content) then
+    local names = {}
+    for _, c in ipairs(Visibility.CONTENT) do if rule.content[c] then names[#names + 1] = Visibility.CONTENT_LABELS[c] end end
+    parts[#parts + 1] = table.concat(names, ", ")
+  end
+  if rule.combat == "in" then parts[#parts + 1] = "in combat" elseif rule.combat == "out" then parts[#parts + 1] = "out of combat" end
+  if rule.group and next(rule.group) then
+    local names = {}
+    for _, g in ipairs(Visibility.GROUPS) do if rule.group[g] then names[#names + 1] = Visibility.GROUP_LABELS[g]:lower() end end
+    parts[#parts + 1] = table.concat(names, "/")
+  end
+  if rule.hide and next(rule.hide) then
+    local names = {}
+    for _, h in ipairs(Visibility.HIDE) do if rule.hide[h] then names[#names + 1] = Visibility.HIDE_LABELS[h]:lower() end end
+    parts[#parts + 1] = "hidden " .. table.concat(names, ", "):gsub("^while ", "")
+  end
+  if #parts == 0 then return "Always shown" end
+  return table.concat(parts, " - ")
+end
+
+-- "Why hidden right now" for any rule (no watcher needed): shown, reason.
+function Visibility.Explain(rule)
+  return Visibility.Test(rule, Visibility.Probe())
+end
+
 local frame = PUI:CreateFrame("Frame", nil, nil, nil, "Core")
 local petBattle = false
 
@@ -81,6 +146,7 @@ local function evaluate()
   PUI.Ticker:Unregister("visibility.flush")
   local s = Visibility.Probe()
   Visibility.state = s
+  local changed = false
   for i = 1, #Visibility.order do
     local id = Visibility.order[i]
     local w = Visibility.watchers[id]
@@ -89,10 +155,12 @@ local function evaluate()
       w.why = why
       if shown ~= w.shown then
         w.shown = shown
+        changed = true
         securecallfunction(w.fn, shown, why)
       end
     end
   end
+  if changed then PUI.Kernel:Fire("VISIBILITY_CHANGED") end -- options "why hidden" readouts redraw
 end
 Visibility.Evaluate = evaluate
 

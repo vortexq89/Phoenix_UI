@@ -17,10 +17,13 @@ Kit.lua
 Dialogs.lua
 Widgets.lua
 Controls.lua
+VisibilityControl.lua
 Nav.lua
 Panel.lua
 ProfilesPage.lua
 PageView.lua
+OverridesUI.lua
+LedgerPage.lua
 Previews.lua
 Dashboard.lua
 ThemePage.lua

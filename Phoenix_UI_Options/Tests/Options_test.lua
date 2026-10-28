@@ -131,3 +131,70 @@ Tests:Add("Options", "Sentinel viewer lists, filters, resolves and copies incide
   v.detail.copy:GetScript("OnClick")()
   t:ok(S.Panel.copy:IsShown(), "copy window opens")
 end)
+
+-- Foundations leftovers: where-to-show picker, Editing as / overrides, ledger ----------
+Tests:Add("Options", "where-to-show helpers build rules and explain them", function(t)
+  local W = Options.Widgets
+  local r = W.VisFlip({ mode = "always" }, "content", "raid")
+  t:eq(r.mode, "when", "picking a chip switches to 'only when'")
+  t:ok(r.content.raid, "chip added")
+  t:eq(W.VisFlip(r, "content", "raid").content, nil, "second click removes it")
+  t:eq(W.VisSet(nil, "combat", "in").combat, "in", "combat choice set")
+  local text, kind = W.VisReadout({}, { mode = "never" })
+  t:eq(kind, "warn", "never: hidden readout")
+  t:ok(text:find("Hidden right now", 1, true) ~= nil, "readout says why")
+  t:eq(select(2, W.VisReadout({}, { mode = "always" })), "ok", "always: shown readout")
+end)
+
+Tests:Add("Options", "overrides page lists, promotes and removes", function(t)
+  local Ov = PUI.Overrides
+  local key
+  for k, def in pairs(PUI.Schema.defs or {}) do if def.overridable and def.type == "range" then key = k break end end
+  if not key then return end
+  Tests.Keep(t, key)
+  local def = Schema:Def(key)
+  local v = math.min(def.max, def.default + def.step)
+  t:cleanup(function() Ov:Clear("spec", 1, key); Options.frame:Hide() end)
+  Ov:Set("spec", 1, key, v)
+  Options:Open("Overrides")
+  t:ok(Options.views.overrides and Options.views.overrides.count >= 1, "override listed")
+  t:ok(Ov:Get("spec", 1, key) ~= nil, "stored")
+  Ov:Promote("spec", 1, key)
+  t:eq(Ov:Get("spec", 1, key), nil, "promote moves it to the profile")
+  t:eq(PUI.DB:GetRaw(key), v, "profile now holds the value")
+end)
+
+Tests:Add("Options", "ledger page lists changes and uninstall gives them back", function(t)
+  local CV = PUI.CVars
+  local saved = C_CVar.GetCVar("taintLog")
+  local on = {}
+  for _, name in ipairs(PUI.Kernel.order or {}) do
+    if Schema:Def("module." .. name) and Schema:Get("module." .. name) then on[#on + 1] = name end
+  end
+  t:cleanup(function()
+    C_CVar.SetCVar("taintLog", saved)
+    for _, name in ipairs(on) do Schema:Set("module." .. name, true) end
+    Options.frame:Hide()
+  end)
+  CV:Set("OptionsTest", "taintLog", saved == "1" and "0" or "1")
+  Options:Open("Ledger")
+  local entries = Options.LedgerPage.Entries()
+  local found
+  for _, e in ipairs(entries) do if e.title == "taintLog" then found = e end end
+  t:ok(found ~= nil, "CVar change listed with who changed it")
+  t:ok(Options.views.ledger.count >= 1, "page shows it")
+  local r = PUI.Ledger.Uninstall()
+  t:ok(r.cvars >= 1, "uninstall restored the CVar")
+  t:eq(C_CVar.GetCVar("taintLog"), saved, "your value is back")
+end)
+
+Tests:Add("Options", "unit frame preview follows the look and offers test frames", function(t)
+  local UF = PUI.UnitFrames
+  if not UF then return end
+  Tests.Keep(t, "uf.style")
+  t:cleanup(function() Options.frame:Hide() end)
+  Options:Open("UnitFrames")
+  Schema:Set("uf.style", "glass")
+  t:eq(UF.Styles.Resolve(UF.settings.style, {}).portrait, "class", "preview reads the same look table")
+  t:ok(Options.frame:IsShown(), "page still open after a live look switch")
+end)

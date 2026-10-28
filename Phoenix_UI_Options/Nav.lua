@@ -37,6 +37,8 @@ local INFO = {
   Profiles = { "profiles", "Profiles", "Your profiles, content switching, import and export." },
   Options = { "dashboard", "Window", "Scale, tint, open key and pinned pages of this window." },
   Sentinel = { "sentinel", "Sentinel", "Errors, taint and performance health." },
+  Overrides = { "loadouts", "Overrides", "Values set only for one specialization or one kind of content." },
+  Ledger = { "general", "Changes & uninstall", "Every game setting, key binding and frame Phoenix changed, with one-click restore." },
 }
 Nav.INFO = INFO
 
@@ -46,7 +48,7 @@ Nav.GROUPS = {
   { "Group", { "RaidFrames", "GroupFinder", "Ascent", "Embers", "Loadouts" } },
   { "Social & Chat", { "Chat", "Flow" } },
   { "Tools", { "Vault", "Oracle", "Wisdom", "Setup" } },
-  { "System", { "Profiles", "Options", "Sentinel" } },
+  { "System", { "Profiles", "Overrides", "Options", "Sentinel", "Ledger" } },
 }
 
 function Nav.Info(owner)

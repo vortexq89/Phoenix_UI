@@ -332,7 +332,7 @@ function PlaceAction(slot) H.placed = slot end
 function IsModifiedClick() return false end
 
 -- Blizzard frames that get parked/restored.
-for _, n in ipairs({ "PlayerFrame", "TargetFrame", "FocusFrame", "PetFrame", "BossTargetFrameContainer", "MainActionBar",
+for _, n in ipairs({ "BuffFrame", "DebuffFrame", "PlayerFrame", "TargetFrame", "FocusFrame", "PetFrame", "BossTargetFrameContainer", "MainActionBar",
   "MultiBarBottomLeft", "MultiBarBottomRight", "MultiBarRight", "MultiBarLeft", "MultiBar5", "MultiBar6", "MultiBar7",
   "PlayerCastingBarFrame" }) do
   local f = CreateFrame("Frame", n, UIParent)
@@ -348,6 +348,11 @@ function UnitExists(u) return exists(u) end
 function UnitHealth(u) return maybe(exists(u) and 800 or 0) end
 function UnitHealthMax(u) return maybe(exists(u) and 1000 or 0) end
 function UnitHealthMissing(u) return maybe(exists(u) and 200 or 0) end
+function UnitGetTotalAbsorbs(u) return maybe(exists(u) and 20 or 0) end
+function UnitRace() return maybe("Blood Elf"), "BloodElf", 10 end
+function GetCreatureDifficultyColor() return { r = 1, g = 0.82, b = 0 } end
+function GetThreatStatusColor() return 1, 0.6, 0, 1 end
+CLASS_ICON_TCOORDS = { MAGE = { 0.25, 0.49, 0, 0.25 } }
 function UnitHealthPercent(u, pred, curve)
   if curve and curve.isColor then return CreateColor(0.5, 0.5, 0.1, 1) end
   return maybe(80)

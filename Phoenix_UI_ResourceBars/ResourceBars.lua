@@ -64,6 +64,10 @@ end
 function RB.Layout()
   local f = RB.frame
   if not f then return end
+  local width = cfg.width
+  local host = RB.host
+  if host and host.matchWidth and host.frame:GetWidth() > 0 then width = math.floor(host.frame:GetWidth() + 0.5) end
+  RB.widthNow = width
   local y = 0
   CR.kind = nil
   if cfg.class.on then CR.kind = (CR.Resolve()) end
@@ -73,30 +77,52 @@ function RB.Layout()
     slot:ClearAllPoints()
     if shown then
       slot:SetPoint("TOPLEFT", f, "TOPLEFT", 0, -y)
-      slot:SetSize(cfg.width, c.height)
+      slot:SetSize(width, c.height)
       slot:Show()
       y = y + c.height + cfg.spacing
     else
       slot:Hide()
     end
   end
-  f:SetSize(cfg.width, math.max(1, y - cfg.spacing))
+  f:SetSize(width, math.max(1, y - cfg.spacing))
   local el = Layout:Element("rb.stack")
-  if el then el.size = { cfg.width, math.max(1, y - cfg.spacing) } end
+  if el then el.size = { width, math.max(1, y - cfg.spacing) } end
+  if host then
+    f:ClearAllPoints()
+    f:SetPoint("TOP", host.frame, "BOTTOM", 0, -host.gap)
+  elseif RB.wasHosted then
+    RB.wasHosted = nil
+    Layout:Place(f, "rb.stack")
+  end
   RB.LayoutTicks()
-  if cfg.class.on then CR.Configure(RB.slots.class, cfg.width, cfg.class.height) end
+  if cfg.class.on then CR.Configure(RB.slots.class, width, cfg.class.height) end
   local n = 0
   if cfg.totem.on then n = GetNumTotemSlots() end
   for i = 1, n do
     local bar = totemBar(i)
     local h = cfg.totem.height
-    local w = (cfg.width - (n - 1) * 2) / n
+    local w = (width - (n - 1) * 2) / n
     bar.icon:SetSize(h, h)
     bar:ClearAllPoints()
     bar:SetSize(w - h - 1, h)
     bar:SetPoint("LEFT", RB.slots.totem, "LEFT", (i - 1) * (w + 2) + h + 1, 0)
   end
 end
+
+-- Hosting (plan 1.O "Player cast bar / class resource"): Resource Bars owns
+-- the elements; the Unit Frames player frame may host the stack under itself
+-- ("attach here") or leave it where Studio placed it ("keep separate").
+-- SetHost(frame, gap, matchWidth) attaches; SetHost(nil) returns to Studio.
+function RB.SetHost(frame, gap, matchWidth)
+  if frame then
+    RB.host = { frame = frame, gap = gap or 2, matchWidth = matchWidth ~= false }
+  else
+    if RB.host then RB.wasHosted = true end
+    RB.host = nil
+  end
+  if RB.active then RB.Layout() end
+end
+function RB.Host() return RB.host and RB.host.frame or nil end
 
 -- Hash lines on the power bar at fixed percentages (geometry only).
 function RB.LayoutTicks()
@@ -111,7 +137,7 @@ function RB.LayoutTicks()
     end
     t:ClearAllPoints()
     t:SetSize(1, cfg.power.height)
-    t:SetPoint("LEFT", power, "LEFT", math.floor(cfg.width * pct / 100 + 0.5), 0)
+    t:SetPoint("LEFT", power, "LEFT", math.floor((RB.widthNow or cfg.width) * pct / 100 + 0.5), 0)
     t:Show()
   end
 end

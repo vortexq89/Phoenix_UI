@@ -13,10 +13,11 @@ local MODES = { simple = true, advanced = true }
 --   picker via def.preview), text, keybind ("" or "CTRL-SHIFT-K"), color
 --   ({ r, g, b, a } 0..1), anchor ({ point, relPoint, x, y }), list (array of
 --   strings, def.maxItems), grid ({ [row] = { [column] = bool } } over
---   def.rows / def.columns, e.g. per-content switches), layout (hidden table).
+--   def.rows / def.columns, e.g. per-content switches), visibility (a
+--   PUI.Visibility rule; the "where to show" chip picker), layout (hidden table).
 local TYPES = { toggle = "boolean", range = "number", select = "string", text = "string", layout = "table",
-  keybind = "string", color = "table", anchor = "table", list = "table", grid = "table" }
-local TABLE_TYPES = { layout = true, color = true, anchor = true, list = true, grid = true }
+  keybind = "string", color = "table", anchor = "table", list = "table", grid = "table", visibility = "table" }
+local TABLE_TYPES = { layout = true, color = true, anchor = true, list = true, grid = true, visibility = true }
 Schema.TYPES, Schema.TABLE_TYPES = TYPES, TABLE_TYPES
 local POINTS = { TOPLEFT = true, TOP = true, TOPRIGHT = true, LEFT = true, CENTER = true, RIGHT = true,
   BOTTOMLEFT = true, BOTTOM = true, BOTTOMRIGHT = true }
@@ -100,6 +101,10 @@ function Schema:Validate(def, value)
         if not cols[c] or type(on) ~= "boolean" then return false, "bad cell " .. tostring(r) .. "/" .. tostring(c) end
       end
     end
+  elseif def.type == "visibility" then
+    local V = PUI.Visibility
+    if not V then return true end
+    return V.Validate(value)
   elseif def.type == "select" then
     local choices = type(def.choices) == "function" and def.choices() or def.choices
     if choices then

@@ -1,12 +1,15 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- Unit-frame elements (PUI_V2 5.3): health, power, absorb and heal prediction,
--- four text zones, cast bar, portrait and indicators. Builders create the
--- unprotected children of a secure unit button once; Update* functions are the
--- per-channel refreshers the trackers call. Values that may be secret go only
--- to widget methods (SetValue, SetText, SetFormattedText, SetTimerDuration,
--- SetAlphaFromBoolean, SetStatusBarColor).
+-- Unit-frame elements (plan 5.1, 15.3, mockup 01): health, power, absorbs and
+-- heal prediction, four text zones, portrait (2D / 3D / class icon, square or
+-- round, either side), border and background from the look, threat glow,
+-- indicators, and the cast bar through PUI.CastBar (plan 1.O: one cast bar
+-- element; auras live in Auras.lua on PUI.Auras). Builders create the
+-- unprotected children of a secure unit button once; Update* functions are
+-- the per-channel painters the trackers call. Values that may be secret go
+-- only to widget methods (SetValue, SetText, SetFormattedText, SetTimerDuration,
+-- SetAlphaFromBoolean, SetStatusBarColor); Lua never compares them (G1).
 local _, ns = ...
-local Bars, Theme, Media, Secret, Tags = PUI.Bars, PUI.Theme, PUI.Media, PUI.Secret, ns.Tags
+local Bars, Theme, Media, Secret, Tags, Styles = PUI.Bars, PUI.Theme, PUI.Media, PUI.Secret, ns.Tags, ns.Styles
 local OWNER = "UnitFrames"
 
 local E = {}
@@ -14,7 +17,11 @@ ns.Elements = E
 
 local ZONES = { "left", "center", "right", "power" }
 E.ZONES = ZONES
-local CAST_HEIGHT = 14
+local GLOW = "Interface\\AddOns\\Phoenix_UI_Media\\Media\\Textures\\NineSlice\\Shadow_Soft"
+local ROUND_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+local CLASS_ICONS = "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES"
+local OUTLINES = { none = "", outline = "OUTLINE", thick = "THICKOUTLINE", shadow = "" }
+E.NO_CAST = { player = true } -- the player cast bar is Resource Bars' (plan 1.O)
 
 local function fontString(parent, justify)
   local fs = parent:CreateFontString(nil, "OVERLAY")
@@ -48,18 +55,64 @@ local function anchorSegment(o, bar, after, reverse)
   end
 end
 
+-- Four edge textures: a crisp pixel border of any thickness (G23 whole pixels).
+local function buildBorder(parent)
+  local edges = {}
+  for _, side in ipairs({ "top", "bottom", "left", "right" }) do
+    local t = parent:CreateTexture(nil, "BORDER")
+    t:SetColorTexture(0, 0, 0, 1)
+    edges[side] = t
+  end
+  return edges
+end
+
+local function layoutBorder(edges, frame, px)
+  local t, b, l, r = edges.top, edges.bottom, edges.left, edges.right
+  for _, e in pairs(edges) do e:ClearAllPoints(); e:SetShown(px > 0) end
+  if px <= 0 then return end
+  t:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0); t:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0); t:SetHeight(px)
+  b:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0); b:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0); b:SetHeight(px)
+  l:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0); l:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0); l:SetWidth(px)
+  r:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0); r:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0); r:SetWidth(px)
+end
+E.LayoutBorder = layoutBorder
+
+local function paintEdges(edges, r, g, b, a)
+  for _, e in pairs(edges) do e:SetColorTexture(r, g, b, a or 1) end
+end
+
 -- Builds every child once. o = { unit, group, button }.
 function E.Build(o)
   local b = o.button
-  o.bg = Theme:Backdrop(b, "surface.0")
-  o.outline = Theme:Outline(b, "line")
-  o.health = Bars:Create(b, OWNER)
+  -- body: every visual lives here so range fading never touches the secure button.
+  local body = PUI:CreateFrame("Frame", nil, b, nil, OWNER)
+  body:SetAllPoints(b)
+  o.body = body
+  o.bg = body:CreateTexture(nil, "BACKGROUND", nil, -8)
+  o.bg:SetAllPoints(body)
+  o.glow = Theme:Slice(body, GLOW, 12, "BACKGROUND")
+  o.glow:ClearAllPoints()
+  o.glow:SetPoint("TOPLEFT", body, "TOPLEFT", -6, 6)
+  o.glow:SetPoint("BOTTOMRIGHT", body, "BOTTOMRIGHT", 6, -6)
+  o.glow:Hide()
+  o.health = Bars:Create(body, OWNER)
   o.health:SetClipsChildren(true) -- absorb / prediction segments are clipped at the bar end
-  o.power = Bars:Create(b, OWNER)
+  o.power = Bars:Create(body, OWNER)
+  o.edge = o.health:CreateTexture(nil, "OVERLAY")
+  o.edge:SetHeight(1)
+  o.edge:SetPoint("BOTTOMLEFT", o.health, "BOTTOMLEFT")
+  o.edge:SetPoint("BOTTOMRIGHT", o.health, "BOTTOMRIGHT")
+  Theme:Paint(o.edge, "accent", 0.9)
+  o.edge:Hide()
+
+  local borderFrame = PUI:CreateFrame("Frame", nil, body, nil, OWNER)
+  borderFrame:SetAllPoints(body)
+  borderFrame:SetFrameLevel(o.health:GetFrameLevel() + 4)
+  o.borderFrame = borderFrame
+  o.border = buildBorder(borderFrame)
 
   -- Prediction segments start where the health fill ends and are clipped by the bar.
-  local fill = o.health:GetStatusBarTexture()
-  o.fill = fill
+  o.fill = o.health:GetStatusBarTexture()
   o.incoming = overlayBar(o, o.health)
   Bars.Color(o.incoming, 0.3, 0.9, 0.4, 0.5)
   o.absorb = overlayBar(o, o.health)
@@ -67,9 +120,10 @@ function E.Build(o)
   o.healAbsorb = overlayBar(o, o.health)
   Bars.TokenColor(o.healAbsorb, "danger", 0.45)
 
-  local textLayer = PUI:CreateFrame("Frame", nil, b, nil, OWNER)
-  textLayer:SetAllPoints(b)
-  textLayer:SetFrameLevel(o.health:GetFrameLevel() + 3)
+  local textLayer = PUI:CreateFrame("Frame", nil, body, nil, OWNER)
+  textLayer:SetAllPoints(body)
+  textLayer:SetFrameLevel(o.health:GetFrameLevel() + 5)
+  o.textLayer = textLayer
   o.texts = {
     left = fontString(textLayer, "LEFT"),
     center = fontString(textLayer, "CENTER"),
@@ -81,43 +135,23 @@ function E.Build(o)
   o.texts.right:SetPoint("RIGHT", o.health, "RIGHT", -4, 0)
   o.texts.power:SetPoint("CENTER", o.power, "CENTER")
 
-  E.BuildCast(o)
   E.BuildPortrait(o)
   E.BuildIndicators(o, textLayer)
-end
-
-function E.BuildCast(o)
-  local cast = Bars:Create(o.button, OWNER)
-  cast:SetHeight(CAST_HEIGHT)
-  cast:SetPoint("TOPLEFT", o.button, "BOTTOMLEFT", CAST_HEIGHT + 2, -3)
-  cast:SetPoint("TOPRIGHT", o.button, "BOTTOMRIGHT", 0, -3)
-  Bars.TokenColor(cast, "accent")
-  cast.icon = cast:CreateTexture(nil, "ARTWORK")
-  cast.icon:SetSize(CAST_HEIGHT, CAST_HEIGHT)
-  cast.icon:SetPoint("RIGHT", cast, "LEFT", -2, 0)
-  cast.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-  cast.text = fontString(cast, "LEFT")
-  cast.text:SetPoint("LEFT", cast, "LEFT", 3, 0)
-  cast.text:SetPoint("RIGHT", cast, "RIGHT", -3, 0)
-  -- Uninterruptible shield: an overlay whose alpha follows a (possibly secret) boolean.
-  cast.shield = PUI:CreateFrame("Frame", nil, cast, nil, OWNER)
-  cast.shield:SetAllPoints(cast)
-  local tint = cast.shield:CreateTexture(nil, "OVERLAY")
-  tint:SetAllPoints()
-  Theme:Paint(tint, "text.secondary", 0.45)
-  cast.shield:SetAlpha(0)
-  cast:Hide()
-  o.cast = cast
+  o.auraHolders = {}
 end
 
 function E.BuildPortrait(o)
-  local p = PUI:CreateFrame("Frame", nil, o.button, nil, OWNER)
-  p:SetPoint("TOPRIGHT", o.button, "TOPLEFT", -2, 0)
+  local p = PUI:CreateFrame("Frame", nil, o.body, nil, OWNER)
+  p.bg = p:CreateTexture(nil, "BACKGROUND")
+  p.bg:SetAllPoints()
+  p.bg:SetColorTexture(0, 0, 0, 0.6)
   p.tex = p:CreateTexture(nil, "ARTWORK")
-  p.tex:SetAllPoints()
-  p.tex:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+  p.tex:SetPoint("TOPLEFT", 1, -1)
+  p.tex:SetPoint("BOTTOMRIGHT", -1, 1)
   p.model = PUI:CreateFrame("PlayerModel", nil, p, nil, OWNER)
-  p.model:SetAllPoints()
+  p.model:SetPoint("TOPLEFT", 1, -1)
+  p.model:SetPoint("BOTTOMRIGHT", -1, 1)
+  p.border = buildBorder(p)
   p:Hide()
   o.portrait = p
 end
@@ -148,35 +182,118 @@ function E.BuildIndicators(o, layer)
   o.ind = ind
 end
 
+-- Effective look of a group (look + per-attribute settings + group portrait).
+function E.Look(o)
+  local s = ns.settings
+  local edge
+  if s.edge == "on" then edge = true elseif s.edge == "off" then edge = false end
+  local look = Styles.Resolve(s.style, { border = s.border, borderColor = s.borderColor, background = s.background,
+    power = s.powerStyle, shape = s.portraitShape, edge = edge })
+  local p = o.cfg.portrait
+  if p ~= "look" then look.portrait = p end
+  return look
+end
+
+local function applyFont(fs, s)
+  local base = Media:FontObject("number")
+  local path = s.font ~= "global" and Media:Font(s.font) or (base.GetFont and base:GetFont())
+  if path and fs.SetFont then fs:SetFont(path, s.fontSize, OUTLINES[s.fontOutline] or "") end
+  if s.fontOutline == "shadow" then fs:SetShadowOffset(1, -1); fs:SetShadowColor(0, 0, 0, 1)
+  else fs:SetShadowOffset(0, 0) end
+end
+
 -- Geometry from the unit's settings (c = resolved config).
 function E.Layout(o, c)
+  local s = ns.settings
+  local look = E.Look(o)
+  o.look = look
+  local px = look.borderPx
   local power = c.powerHeight
+  local inner = c.height - 2 * px
+  local style = look.power
+  local attached = power > 0 and style == "attached"
   o.health:ClearAllPoints()
-  o.health:SetPoint("TOPLEFT", o.button, "TOPLEFT", 1, -1)
-  o.health:SetPoint("TOPRIGHT", o.button, "TOPRIGHT", -1, -1)
-  o.health:SetHeight(math.max(1, c.height - 2 - (power > 0 and (power + 1) or 0)))
+  o.health:SetPoint("TOPLEFT", o.button, "TOPLEFT", px, -px)
+  o.health:SetPoint("TOPRIGHT", o.button, "TOPRIGHT", -px, -px)
+  o.health:SetHeight(math.max(1, attached and (inner - power - look.gap) or inner))
   o.power:ClearAllPoints()
-  o.power:SetPoint("TOPLEFT", o.health, "BOTTOMLEFT", 0, -1)
-  o.power:SetPoint("TOPRIGHT", o.health, "BOTTOMRIGHT", 0, -1)
+  if style == "inset" then
+    o.power:SetPoint("BOTTOMLEFT", o.health, "BOTTOMLEFT", 4, 3)
+    o.power:SetPoint("BOTTOMRIGHT", o.health, "BOTTOMRIGHT", -4, 3)
+    o.power:SetFrameLevel(o.health:GetFrameLevel() + 2)
+  elseif style == "floating" then
+    o.power:SetPoint("TOP", o.button, "BOTTOM", 0, -2)
+    o.power:SetWidth(math.floor(c.width * 0.8 + 0.5))
+  else
+    o.power:SetPoint("TOPLEFT", o.health, "BOTTOMLEFT", 0, -look.gap)
+    o.power:SetPoint("TOPRIGHT", o.health, "BOTTOMRIGHT", 0, -look.gap)
+  end
   o.power:SetHeight(math.max(1, power))
   o.power:SetShown(power > 0)
   o.texts.power:SetShown(power > 0)
-  Bars:SetFill(o.health, c.reverse, false)
+  Bars:SetFill(o.health, c.reverse, c.vertical)
   Bars:SetFill(o.power, c.reverse, false)
+  local tex = c.texture ~= "global" and (Media:Path("statusbar", c.texture) or Media:Texture(c.texture)) or Bars:TexturePath()
+  o.health:SetStatusBarTexture(tex)
+  o.power:SetStatusBarTexture(tex)
+  o.fill = o.health:GetStatusBarTexture()
   anchorSegment(o, o.incoming, true, c.reverse)
   anchorSegment(o, o.absorb, true, c.reverse)
   anchorSegment(o, o.healAbsorb, false, c.reverse)
-  local w = c.width - 2
+  local w = c.width - 2 * px
   o.incoming:SetWidth(w)
   o.absorb:SetWidth(w)
   o.healAbsorb:SetWidth(w)
-  o.portrait:SetSize(c.height, c.height)
-  o.health:GetStatusBarTexture():SetAlpha(ns.settings.fillAlpha)
+  o.fill:SetAlpha(s.fillAlpha)
+  -- chrome
+  layoutBorder(o.border, o.button, px)
+  E.PaintBorder(o)
+  o.glow:SetShown(look.border == "glow")
+  local r, g, b = Theme:Color("surface.0")
+  o.bg:SetColorTexture(r, g, b, look.bgAlpha)
+  o.health.bg:SetAlpha(look.background == "clear" and 0 or 1)
+  o.edge:SetShown(look.edge == true)
+  -- portrait
+  local p = o.portrait
+  local size = c.height
+  p:ClearAllPoints()
+  p:SetSize(size, size)
+  if c.portraitSide == "right" then p:SetPoint("TOPLEFT", o.button, "TOPRIGHT", 3, 0)
+  else p:SetPoint("TOPRIGHT", o.button, "TOPLEFT", -3, 0) end
+  p.tex:SetMask(look.shape == "circle" and ROUND_MASK or "")
+  layoutBorder(p.border, p, look.shape == "circle" and 0 or math.max(1, px))
+  for _, fs in pairs(o.texts) do applyFont(fs, s) end
+  E.LayoutCast(o, c)
+end
+
+function E.PaintBorder(o)
+  local look = o.look
+  if not look then return end
+  local mode = look.borderColor
+  if mode == "accent" then paintEdges(o.border, Theme:Color("accent"))
+  elseif mode == "gold" then paintEdges(o.border, Styles.GOLD.r, Styles.GOLD.g, Styles.GOLD.b, 1)
+  elseif mode == "class" then
+    local _, token = UnitClass(o.unit)
+    local color = token ~= nil and C_ClassColor.GetClassColor(token)
+    if color then paintEdges(o.border, color:GetRGB()) else paintEdges(o.border, 0, 0, 0, 1) end
+  else paintEdges(o.border, 0, 0, 0, 1) end
+  paintEdges(o.portrait.border, 0, 0, 0, 1)
 end
 
 -- Channels ------------------------------------------------------------------
 function E.UpdateHealthColor(o)
-  local mode, unit, bar = ns.settings.colorMode, o.unit, o.health
+  local s = ns.settings
+  local mode, unit, bar = s.colorMode, o.unit, o.health
+  if mode == "look" then mode = (o.look and o.look.colorMode) or "class" end
+  if s.darkMode then
+    bar:SetStatusBarColor(0.16, 0.16, 0.18, 1)
+    local _, token = UnitClass(unit)
+    local color = token ~= nil and C_ClassColor.GetClassColor(token)
+    if color then bar.bg:SetVertexColor(color:GetRGB()) end
+    return
+  end
+  local tapped = UnitIsTapDenied(unit)
+  if not Secret.IsSecret(tapped) and tapped then bar:SetStatusBarColor(0.5, 0.5, 0.5, 1) return end
   if mode == "class" then
     local isPlayer = UnitIsPlayer(unit)
     if (Secret.IsSecret(isPlayer) or isPlayer) and Bars.ClassColor(bar, unit) then return end
@@ -186,15 +303,23 @@ function E.UpdateHealthColor(o)
   elseif mode == "gradient" then
     local color = UnitHealthPercent(unit, true, Bars:HealthCurve())
     bar:SetStatusBarColor(color:GetRGB())
+  elseif mode == "custom" then
+    local c = s.healthColor
+    bar:SetStatusBarColor(c.r, c.g, c.b, 1)
   else
     Bars.TokenColor(bar, "accent")
   end
 end
 
+local function gradientNow(o)
+  local mode = ns.settings.colorMode
+  return mode == "gradient" or (mode == "look" and o.look ~= nil and o.look.colorMode == "gradient")
+end
+
 function E.UpdateHealth(o)
   local unit = o.unit
   Bars:SetValues(o.health, UnitHealthMax(unit), UnitHealth(unit), ns.settings.smooth)
-  if ns.settings.colorMode == "gradient" then E.UpdateHealthColor(o) end
+  if gradientNow(o) and not ns.settings.darkMode then E.UpdateHealthColor(o) end
   E.UpdateTexts(o, "health")
 end
 
@@ -212,12 +337,15 @@ end
 
 -- Absorbs and incoming heals through one heal-prediction calculator per unit.
 function E.UpdatePrediction(o)
+  local s = ns.settings
+  o.absorb:SetShown(s.absorbs)
+  o.healAbsorb:SetShown(s.absorbs)
+  o.incoming:SetShown(s.healPrediction)
   local calc = o.calc
   if not calc then return end
   local unit = o.unit
   UnitGetDetailedHealPrediction(unit, "player", calc)
   local maxHealth = UnitHealthMax(unit)
-  local s = ns.settings
   if s.absorbs then
     Bars:SetValues(o.absorb, maxHealth, (calc:GetDamageAbsorbs()))
     Bars:SetValues(o.healAbsorb, maxHealth, (calc:GetHealAbsorbs()))
@@ -237,7 +365,8 @@ function E.UpdateTexts(o, channel)
 end
 
 function E.UpdatePortrait(o)
-  local p, mode = o.portrait, o.cfg.portrait
+  local p = o.portrait
+  local mode = (o.look and o.look.portrait) or "off"
   if mode == "off" then p:Hide() return end
   p:Show()
   if mode == "3d" then
@@ -245,38 +374,84 @@ function E.UpdatePortrait(o)
     p.model:Show()
     p.model:SetUnit(o.unit)
     p.model:SetPortraitZoom(1)
-  else
-    p.model:Hide()
-    p.tex:Show()
-    SetPortraitTexture(p.tex, o.unit)
+    return
   end
-end
-
--- Cast bar: the engine animates the fill from a duration object.
-function E.UpdateCast(o)
-  local cast, unit = o.cast, o.unit
-  if not o.cfg.castbar then cast:Hide() return end
-  local direction = Enum.StatusBarTimerDirection
-  local name, _, texture, _, _, _, _, notInterruptible = UnitCastingInfo(unit)
-  local duration, dir = nil, direction.ElapsedTime
-  if type(name) ~= "nil" then
-    duration = UnitCastingDuration(unit)
-  else
-    name, _, texture, _, _, _, notInterruptible = UnitChannelInfo(unit)
-    if type(name) ~= "nil" then
-      duration = UnitChannelDuration(unit)
-      dir = direction.RemainingTime
+  p.model:Hide()
+  p.tex:Show()
+  if mode == "class" then
+    local _, token = UnitClass(o.unit)
+    local coords = token ~= nil and not Secret.IsSecret(token) and CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[token]
+    if coords then
+      p.tex:SetTexture(CLASS_ICONS)
+      p.tex:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+      return
     end
   end
-  if type(duration) == "nil" then cast:Hide() return end
-  cast:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, dir)
-  cast.text:SetText(name)
-  cast.icon:SetTexture(texture)
-  cast.shield:SetAlphaFromBoolean(notInterruptible, 1, 0)
-  cast:Show()
+  p.tex:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+  SetPortraitTexture(p.tex, o.unit)
 end
 
-function E.StopCast(o) o.cast:Hide() end
+-- Cast bar (PUI.CastBar, plan 1.O). Created on first use, disabled when off.
+function E.CastStyle(o, c)
+  local s = ns.settings
+  local height = c.castHeight
+  local width = c.castWidth > 0 and c.castWidth or (c.width - (c.castIcon and (height + 2) or 0))
+  return { width = width, height = height, icon = c.castIcon, iconSide = "LEFT", spellName = c.castName,
+    timer = c.castTimer, shield = c.castShield, kick = c.castKick, fadeOut = s.castFade,
+    texture = c.texture ~= "global" and c.texture or nil, colors = s.castColors }
+end
+
+function E.LayoutCast(o, c)
+  if not c.castbar or E.NO_CAST[o.group] then
+    if o.castbar then o.castbar:Disable() end
+    return
+  end
+  local style = E.CastStyle(o, c)
+  if not o.castbar then
+    o.castbar = PUI.CastBar:Create(OWNER, o.body, o.unit, style)
+  else
+    o.castbar:ApplyStyle(style)
+  end
+  local f = o.castbar.frame
+  f:ClearAllPoints()
+  local offset = c.castIcon and (c.castHeight + 2) or 0
+  if c.castPosition == "above" then
+    f:SetPoint("BOTTOMLEFT", o.button, "TOPLEFT", offset, 3)
+  else
+    f:SetPoint("TOPLEFT", o.button, "BOTTOMLEFT", offset, -3)
+  end
+  if o.live then o.castbar:Enable() else o.castbar:Disable() end
+end
+
+-- Extra space under the frame taken by the cast bar (boss stacking, auras below).
+function E.CastSpace(group, c)
+  if not c.castbar or E.NO_CAST[group] or c.castPosition == "above" then return 0 end
+  return c.castHeight + 3
+end
+
+function E.UpdateCast(o)
+  local cb = o.castbar
+  if cb and cb.enabled then cb:Refresh() end
+end
+
+-- Threat glow: the situation number may be secret; then the glow stays off.
+function E.UpdateThreat(o)
+  local glow = o.threat
+  if not glow then
+    glow = o.borderFrame:CreateTexture(nil, "OVERLAY")
+    glow:SetPoint("TOPLEFT", o.button, "TOPLEFT", -3, 3)
+    glow:SetPoint("BOTTOMRIGHT", o.button, "BOTTOMRIGHT", 3, -3)
+    glow:SetTexture(GLOW)
+    glow:Hide()
+    o.threat = glow
+  end
+  if not ns.settings.threat then glow:Hide() return end
+  local status
+  if o.unit == "player" then status = UnitThreatSituation("player") else status = UnitThreatSituation("player", o.unit) end
+  if status == nil or Secret.IsSecret(status) or status < 1 then glow:Hide() return end
+  glow:SetVertexColor(GetThreatStatusColor(status))
+  glow:Show()
+end
 
 local function flag(tex, on, value)
   if not on or Secret.IsSecret(value) then tex:Hide() return end
@@ -323,5 +498,45 @@ function E.UpdateAll(o)
   E.UpdateTexts(o)
   E.UpdatePortrait(o)
   E.UpdateCast(o)
+  E.UpdateThreat(o)
   E.UpdateIndicators(o)
+  if o.look and o.look.borderColor == "class" then E.PaintBorder(o) end
+end
+
+-- Test frames (plan 13.2 "/pui test boss"): fixed sample values painted
+-- through the same bars and font strings, so the test view is the real paint.
+E.SAMPLES = {
+  player = { name = "Abdulrahman", hp = 0.78, pp = 0.6, level = 80 },
+  target = { name = "Void Reaver", hp = 0.43, pp = 0.9, level = 82, hostile = true },
+  focus = { name = "Healer Bot", hp = 0.91, pp = 0.75, level = 80 },
+  pet = { name = "Shadowfiend", hp = 1, pp = 0.5, level = 80 },
+  targettarget = { name = "Abdulrahman", hp = 0.78, pp = 0, level = 80 },
+  focustarget = { name = "Void Reaver", hp = 0.43, pp = 0, level = 82, hostile = true },
+  boss = { name = "Xal'atath", hp = 0.61, pp = 0.4, level = 83, hostile = true },
+}
+
+function E.PaintSample(o, index)
+  local d = E.SAMPLES[o.group] or E.SAMPLES.target
+  local hp = d.hp
+  if index and index > 1 then hp = math.max(0.12, hp - 0.18 * (index - 1)) end
+  o.health:SetMinMaxValues(0, 1)
+  o.health:SetValue(hp)
+  o.power:SetMinMaxValues(0, 1)
+  o.power:SetValue(d.pp)
+  if d.hostile then o.health:SetStatusBarColor(0.85, 0.2, 0.2, 1)
+  else
+    local _, class = UnitClass("player")
+    local c = class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+    o.health:SetStatusBarColor(c and c.r or 0.4, c and c.g or 0.7, c and c.b or 0.9, 1)
+  end
+  o.power:SetStatusBarColor(0.2, 0.45, 0.95, 1)
+  local name = d.name .. ((index and index > 1) and (" " .. index) or "")
+  for zone, fs in pairs(o.texts) do
+    local tag = o.cfg.texts[zone]
+    if tag == "none" then fs:SetText("")
+    elseif tag:find("^name") or tag == "level:name" then fs:SetText(name)
+    elseif tag:find("^power") then fs:SetFormattedText("%d%%", d.pp * 100)
+    elseif tag:find("^health") or tag:find("^status") or tag == "absorb" then fs:SetFormattedText("%d%%", hp * 100)
+    else fs:SetText(tostring(d.level)) end
+  end
 end

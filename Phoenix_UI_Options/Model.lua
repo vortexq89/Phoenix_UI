@@ -7,9 +7,14 @@ local Model = {}
 Options.Model = Model
 local Schema = PUI.Schema
 
+-- Pages with no schema keys of their own, drawn by a custom view
+-- (Options.CUSTOM): the overrides list and the ledger / uninstall page.
+Model.VIRTUAL = { "Overrides", "Ledger" }
+
 -- Sidebar order; owners not listed follow alphabetically.
 Model.PAGE_ORDER = { "Core", "Theme", "Profiles", "Options", "Studio", "Sentinel" }
-Model.PAGE_LABEL = { Core = "General", Theme = "Theme & media", Options = "Window", Profiles = "Profiles", Studio = "Studio", Sentinel = "Sentinel" }
+Model.PAGE_LABEL = { Core = "General", Theme = "Theme & media", Options = "Window", Profiles = "Profiles", Studio = "Studio", Sentinel = "Sentinel",
+  Overrides = "Overrides", Ledger = "Changes & uninstall" }
 
 function Model.Mode()
   return Schema:Get("options.mode")
@@ -39,6 +44,13 @@ function Model.Pages(mode)
         list[#list + 1] = page
       end
       page.keys[#page.keys + 1] = def.key
+    end
+  end
+  for _, name in ipairs(Model.VIRTUAL) do
+    if not byOwner[name] then
+      local page = { name = name, label = Model.PAGE_LABEL[name] or name, keys = {}, virtual = true }
+      byOwner[name] = page
+      list[#list + 1] = page
     end
   end
   table.sort(list, function(a, b)
