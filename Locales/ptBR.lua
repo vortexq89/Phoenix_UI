@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "Verificação de prontidão",
     SKINS_READYCHECK_DESC = "Estiliza o aviso de verificação de prontidão.",
     SKINS_NOTE = "As skins só mudam a arte; os botões seguros dessas janelas não são alterados. Desligar uma restaura o visual da Blizzard após recarregar.",
+    MODULES_ON_COUNT = "%d de %d ativos",
     SIZE_POSITION = "Tamanho e posição",
     QUICK_EDIT = "Edição rápida",
     SKINS_MAIL_ALTS = "Correio: meus personagens",

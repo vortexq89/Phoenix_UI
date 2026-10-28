@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "Bereitschaftscheck",
     SKINS_READYCHECK_DESC = "Gestaltet die Abfrage beim Bereitschaftscheck.",
     SKINS_NOTE = "Skins ändern nur die Grafik; geschützte Knöpfe in den Fenstern bleiben unberührt. Ausschalten stellt Blizzards Optik nach einem Neuladen wieder her.",
+    MODULES_ON_COUNT = "%d von %d an",
     SIZE_POSITION = "Größe & Position",
     QUICK_EDIT = "Schnell anpassen",
     SKINS_MAIL_ALTS = "Post: meine Charaktere",

@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "Appello",
     SKINS_READYCHECK_DESC = "Applica lo stile alla richiesta di appello.",
     SKINS_NOTE = "Le skin cambiano solo la grafica; i pulsanti sicuri in queste finestre non vengono toccati. Disattivarne una ripristina l'aspetto Blizzard dopo il ricaricamento.",
+    MODULES_ON_COUNT = "%d su %d attivi",
     SIZE_POSITION = "Dimensioni e posizione",
     QUICK_EDIT = "Modifica rapida",
     SKINS_MAIL_ALTS = "Posta: i miei personaggi",

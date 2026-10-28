@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "Appel",
     SKINS_READYCHECK_DESC = "Stylise la fenêtre de l'appel.",
     SKINS_NOTE = "Les skins ne changent que l'habillage ; les boutons sécurisés de ces fenêtres restent intacts. En désactiver un rétablit le style Blizzard après rechargement.",
+    MODULES_ON_COUNT = "%d sur %d actifs",
     SIZE_POSITION = "Taille et position",
     QUICK_EDIT = "Réglage rapide",
     SKINS_MAIL_ALTS = "Courrier : mes personnages",

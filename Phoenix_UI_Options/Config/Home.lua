@@ -467,20 +467,41 @@ local function build(parent)
         y = y + self.filter:GetHeight() + GAP
         local cols = math.max(2, math.floor((w + GAP) / (CARD_MIN_W + GAP)))
         local cw = (w - (cols - 1) * GAP) / cols
-        local n = 0
-        for _, c in ipairs(self.cards) do
-            local show = passes(c)
-            c:SetShown(show)
-            if show then
-                local col, row = n % cols, math.floor(n / cols)
-                c:ClearAllPoints()
-                c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + col * (cw + GAP), -(y + row * (CARD_H + GAP)))
-                c:SetWidth(cw)
-                n = n + 1
+        -- cards grouped under their rail group (Bars, Frames, Interface …) with a heading each, in rail order
+        self.groupHeads = self.groupHeads or {}
+        for _, h in pairs(self.groupHeads) do h:Hide() end
+        for _, g in ipairs(Config:Groups()) do
+            local n = 0
+            for _, c in ipairs(self.cards) do
+                if c.group == g.key and passes(c) then
+                    if n == 0 then
+                        local h = self.groupHeads[g.key]
+                        if not h then
+                            h = W.Text(child, "heading", "text.secondary")
+                            Skin:Register(h, function(fs) Skin:Text(fs, "heading", "text.secondary") end)
+                            self.groupHeads[g.key] = h
+                        end
+                        h:SetText((L[g.label] or g.label):upper())
+                        h:ClearAllPoints()
+                        h:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
+                        h:Show()
+                        y = y + 22
+                    end
+                    local col, row = n % cols, math.floor(n / cols)
+                    c:ClearAllPoints()
+                    c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + col * (cw + GAP), -(y + row * (CARD_H + GAP)))
+                    c:SetWidth(cw)
+                    c:Show()
+                    c.placed = true
+                    n = n + 1
+                end
             end
+            if n > 0 then y = y + math.ceil(n / cols) * (CARD_H + GAP) + 8 end
         end
-        local rows = math.ceil(n / cols)
-        child:SetHeight(y + rows * (CARD_H + GAP) + PAD)
+        for _, c in ipairs(self.cards) do
+            if not (c.group and passes(c)) then c:Hide() end
+        end
+        child:SetHeight(y + PAD)
         self.scroll:UpdateBar()
     end
 
@@ -492,7 +513,7 @@ local function build(parent)
                 if m:IsEnabled() then on = on + 1 end
             end
         end
-        self.stats[1]:Set(("%d / %d"):format(on, total), L.MODULES_ENABLED)
+        self.stats[1]:Set(L.MODULES_ON_COUNT:format(on, total), L.MODULES_ENABLED)
         self.stats[2]:Set(ns.DB:GetProfileName(), L.ACTIVE_PROFILE)
         self.stats[3]:Set(L["THEME_" .. Theme.settings.preset:upper()], L.THEME)
         for _, c in ipairs(self.cards) do c:Paint() end

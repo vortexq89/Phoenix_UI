@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "Comprobación de disponibilidad",
     SKINS_READYCHECK_DESC = "Aplica el estilo al aviso de comprobación de disponibilidad.",
     SKINS_NOTE = "Las apariencias solo cambian el arte; los botones seguros de estas ventanas no se tocan. Desactivar una restaura el aspecto de Blizzard tras recargar.",
+    MODULES_ON_COUNT = "%d de %d activos",
     SIZE_POSITION = "Tamaño y posición",
     QUICK_EDIT = "Edición rápida",
     SKINS_MAIL_ALTS = "Correo: mis personajes",

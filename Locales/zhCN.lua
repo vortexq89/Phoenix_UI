@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "就位确认",
     SKINS_READYCHECK_DESC = "美化就位确认提示。",
     SKINS_NOTE = "皮肤只改变美术，窗口中的安全按钮不受影响。关闭后重载即恢复暴雪外观。",
+    MODULES_ON_COUNT = "已开启 %d/%d",
     SIZE_POSITION = "大小与位置",
     QUICK_EDIT = "快速调整",
     SKINS_MAIL_ALTS = "邮件：我的角色",

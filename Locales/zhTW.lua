@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "準備確認",
     SKINS_READYCHECK_DESC = "美化準備確認提示。",
     SKINS_NOTE = "外觀只改變美術，視窗中的安全按鈕不受影響。關閉後重新載入即恢復暴雪外觀。",
+    MODULES_ON_COUNT = "已開啟 %d/%d",
     SIZE_POSITION = "大小與位置",
     QUICK_EDIT = "快速調整",
     SKINS_MAIL_ALTS = "郵件：我的角色",

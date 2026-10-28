@@ -104,6 +104,7 @@ ns.RegisterLocale("enUS", {
     SKINS_READYCHECK = "Ready check",
     SKINS_READYCHECK_DESC = "Skin the ready-check prompt.",
     SKINS_NOTE = "Skins only change artwork; secure buttons inside these windows are untouched. Turning one off restores Blizzard's look after a reload.",
+    MODULES_ON_COUNT = "%d of %d on",
     SIZE_POSITION = "Size & position",
     QUICK_EDIT = "Quick edit",
     SKINS_MAIL_ALTS = "Mail: my characters",

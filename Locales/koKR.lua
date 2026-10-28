@@ -105,6 +105,7 @@ local T = {
     SKINS_READYCHECK = "전투 준비 확인",
     SKINS_READYCHECK_DESC = "전투 준비 확인 창에 스킨을 적용합니다.",
     SKINS_NOTE = "스킨은 그래픽만 바꾸며 창 안의 보안 버튼은 건드리지 않습니다. 끄면 다시 불러온 뒤 블리자드 모양으로 돌아갑니다.",
+    MODULES_ON_COUNT = "%d/%d 사용 중",
     SIZE_POSITION = "크기 및 위치",
     QUICK_EDIT = "빠른 편집",
     SKINS_MAIL_ALTS = "우편: 내 캐릭터",
