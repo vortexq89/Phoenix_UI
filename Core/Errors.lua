@@ -234,14 +234,23 @@ local function bump(h, count)
     return r
 end
 
+-- Where the player was: zone name (plain text only) and the combat lockdown flag. Never errors.
+local function context()
+    local okZone, zone = pcall(GetRealZoneText)
+    local okCombat, combat = pcall(InCombatLockdown)
+    return okZone and readable(zone, 100) or "", okCombat and combat == true
+end
+
 local function add(kind, h, message, stack, locals, source, count)
     if not E.client then build() end
     local t = time()
+    local zone, combat = context()
     local r = {
         id = "", hash = h, kind = kind, message = message, stack = stack, locals = locals or "",
         count = count or 1, firstSeen = t, lastSeen = t, session = 0,
         addonVersion = ns.version, interface = E.client.interface, build = E.client.build, locale = E.client.locale,
         source = source or E.Source(message, stack), uploaded = false,
+        flavor = ns.flavor, zone = zone, combat = combat,
     }
     bySession[h] = r
     if db then place(r) else buffer[#buffer + 1] = r end

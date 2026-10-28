@@ -311,6 +311,7 @@ local T = {
     BUGS_SHARE = "向作者傳送錯誤報告",
     BUGS_SHARE_DESC = "將錯誤內容、呼叫堆疊、區域變數、插件與遊戲版本以及用戶端語言傳送到 VQ8S.com。角色名稱、伺服器、聊天與帳號資訊會先被移除。需要 Phoenix Uploader 正在執行；變更會在下次 /reload 或登出後生效。",
     BUGS_SHARE_ON = "Phoenix Uploader 執行時，錯誤報告將傳送給作者（從下次 /reload 或登出開始）。",
+    BUGS_SUMMARY = "本次工作階段錯誤：%d（共 %d 次）。已儲存總數：%d。",
     BUGS_SHARE_OFF = "錯誤報告只保留在本機。從下次 /reload 或登出開始，Phoenix Uploader 會略過此帳號。",
     BUGS_SHARE_NOTICE = "Phoenix Uploader 執行時會將錯誤報告傳送給作者，絕不包含角色名稱、伺服器或聊天內容。如需關閉：/phoenix bugs share off，或在 /phoenix 的錯誤頁面中設定。",
     BUGS_UPLOAD_TEXT = "插件無法訪問網際網路，因此報告只會在你登出或 /reload 時儲存到你的電腦上（WTF\\Account\\<賬號>\\SavedVariables\\Phoenix_UI.lua）。Windows 應用 Phoenix Uploader 會讀取該檔案，並把新報告傳送到 VQ8S.com，幫助修復 Phoenix UI 和你使用的插件。不執行該應用就不會上傳任何內容。請從下方頁面下載。",

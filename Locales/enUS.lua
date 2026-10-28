@@ -321,6 +321,7 @@ ns.RegisterLocale("enUS", {
     BUGS_SHARE = "Send error reports to the author",
     BUGS_SHARE_DESC = "Sends the error text, call stack, local variables, addon and game version and client language to VQ8S.com. Character names, realms, chat and account details are removed first. Needs Phoenix Uploader running; a change reaches it at your next /reload or logout.",
     BUGS_SHARE_ON = "Error reports will be sent to the author while Phoenix Uploader runs (from your next /reload or logout).",
+    BUGS_SUMMARY = "Bugs this session: %d (%d occurrences). Saved in total: %d.",
     BUGS_SHARE_OFF = "Error reports stay on this PC. Phoenix Uploader skips this account from your next /reload or logout.",
     BUGS_SHARE_NOTICE = "Error reports are sent to the author when Phoenix Uploader is running. Character names, realms and chat are never included. To turn this off: /phoenix bugs share off, or the Bugs page in /phoenix.",
     BUGS_UPLOAD_TEXT = "Addons cannot reach the internet, so reports are only saved to your PC (WTF\\Account\\<account>\\SavedVariables\\Phoenix_UI.lua) when you log out or /reload. The Phoenix Uploader app for Windows reads that file and sends new reports to VQ8S.com, where they help fix Phoenix UI and the addons you use. Nothing is uploaded unless you run the app. Download it from the page below.",

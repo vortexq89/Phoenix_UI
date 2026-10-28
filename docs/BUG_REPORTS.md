@@ -26,6 +26,7 @@ PhoenixUIBugsDB = {
             locals = "self = <table> {\n ...",  -- may be ""
             count = 3, firstSeen = 1792000000, lastSeen = 1792000420, session = 42,
             addonVersion = "2.0.0", interface = 120105, build = "12.1.5.70448", locale = "enUS",
+            flavor = "retail", zone = "Dornogal", combat = false,
             source = "Foo",                 -- "Phoenix_UI" | "<addon folder>" | "Blizzard" | "Unknown"
             uploaded = false,
             reported = true,                -- optional: the player marked it in the viewer; not sent, ignore
@@ -48,6 +49,7 @@ PhoenixUIBugsDB = {
   folders become `"Blizzard"`. When nothing names an addon (rare, e.g. a bare `[string]` chunk) it is
   `"Unknown"`, which the contract's three named values do not list; the server should accept it.
 * **addonVersion**: the TOC `Version` of Phoenix UI (`2.0.0-dev` in an unpackaged checkout).
+* **flavor / zone / combat**: `retail` or `forever`, the zone name when the report was first caught (plain text only), and whether combat lockdown was on. Optional: older reports lack them.
 * **Limits**: message 2000 chars, stack and locals 6000 chars each (cut with `…`). Secret values (12.x) are
   never stored; they appear as `<secret value>`. Locals are not collected during a boss encounter.
 * **Flood protection**: at most 10 captures per second (burst 30); skipped repeats are not stored.

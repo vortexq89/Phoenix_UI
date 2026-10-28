@@ -311,6 +311,7 @@ local T = {
     BUGS_SHARE = "Invia le segnalazioni di errore all'autore",
     BUGS_SHARE_DESC = "Invia a VQ8S.com il testo dell'errore, lo stack delle chiamate, le variabili locali, le versioni dell'addon e del gioco e la lingua del client. Nomi dei personaggi, reami, chat e dati dell'account vengono rimossi prima. Richiede Phoenix Uploader in esecuzione; le modifiche valgono dal prossimo /reload o logout.",
     BUGS_SHARE_ON = "Le segnalazioni di errore verranno inviate all'autore finché Phoenix Uploader è in esecuzione (dal prossimo /reload o logout).",
+    BUGS_SUMMARY = "Errori in questa sessione: %d (%d occorrenze). Salvati in totale: %d.",
     BUGS_SHARE_OFF = "Le segnalazioni di errore restano su questo PC. Phoenix Uploader salterà questo account dal prossimo /reload o logout.",
     BUGS_SHARE_NOTICE = "Le segnalazioni di errore vengono inviate all'autore quando Phoenix Uploader è in esecuzione. Nomi dei personaggi, reami e chat non sono mai inclusi. Per disattivarlo: /phoenix bugs share off, oppure la pagina Errori in /phoenix.",
     BUGS_UPLOAD_TEXT = "Gli addon non possono accedere a internet, quindi le segnalazioni vengono salvate solo sul tuo PC (WTF\\Account\\<account>\\SavedVariables\\Phoenix_UI.lua) quando esci dal gioco o usi /reload. L'app Phoenix Uploader per Windows legge quel file e invia le nuove segnalazioni a VQ8S.com, dove aiutano a correggere Phoenix UI e gli addon che usi. Non viene inviato nulla se non avvii l'app. Scaricala dalla pagina qui sotto.",

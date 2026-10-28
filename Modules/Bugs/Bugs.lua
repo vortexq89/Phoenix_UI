@@ -40,6 +40,10 @@ function M:OnSlash(rest)
         self:SetShare(on)
         return ns:Print(on and L.BUGS_SHARE_ON or L.BUGS_SHARE_OFF)
     end
+    if rest == "count" then
+        local unique, total = Errors:CountSession()
+        return ns:Print(L.BUGS_SUMMARY:format(unique, total, #Errors:GetReports()))
+    end
     if rest == "clear" then
         Errors:Clear("session")
         return self:Refresh()

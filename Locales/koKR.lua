@@ -311,6 +311,7 @@ local T = {
     BUGS_SHARE = "제작자에게 오류 보고서 보내기",
     BUGS_SHARE_DESC = "오류 내용, 호출 스택, 지역 변수, 애드온 및 게임 버전, 클라이언트 언어를 VQ8S.com으로 보냅니다. 캐릭터 이름, 서버, 채팅, 계정 정보는 먼저 제거됩니다. Phoenix Uploader가 실행 중이어야 하며, 변경 사항은 다음 /reload 또는 로그아웃 후 적용됩니다.",
     BUGS_SHARE_ON = "Phoenix Uploader가 실행 중이면 오류 보고서가 제작자에게 전송됩니다 (다음 /reload 또는 로그아웃부터).",
+    BUGS_SUMMARY = "이번 세션 오류: %d개 (%d회 발생). 저장된 전체: %d개.",
     BUGS_SHARE_OFF = "오류 보고서는 이 PC에만 남습니다. 다음 /reload 또는 로그아웃부터 Phoenix Uploader가 이 계정을 건너뜁니다.",
     BUGS_SHARE_NOTICE = "Phoenix Uploader가 실행 중이면 오류 보고서가 제작자에게 전송됩니다. 캐릭터 이름, 서버, 채팅은 절대 포함되지 않습니다. 끄려면: /phoenix bugs share off 또는 /phoenix의 오류 페이지.",
     BUGS_UPLOAD_TEXT = "애드온은 인터넷에 접속할 수 없으므로 보고서는 로그아웃하거나 /reload할 때 PC에만 저장됩니다(WTF\\Account\\<계정>\\SavedVariables\\Phoenix_UI.lua). Windows용 Phoenix Uploader 앱이 이 파일을 읽어 새 보고서를 VQ8S.com으로 보내며, 이는 Phoenix UI와 사용 중인 애드온을 고치는 데 도움이 됩니다. 앱을 실행하지 않으면 아무것도 업로드되지 않습니다. 아래 페이지에서 내려받으세요.",

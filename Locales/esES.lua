@@ -311,6 +311,7 @@ local T = {
     BUGS_SHARE = "Enviar informes de errores al autor",
     BUGS_SHARE_DESC = "Envía a VQ8S.com el texto del error, la pila de llamadas, las variables locales, la versión del addon y del juego y el idioma del cliente. Antes se eliminan los nombres de personaje, reinos, chat y datos de cuenta. Requiere que Phoenix Uploader esté en marcha; los cambios se aplican tras el próximo /reload o al cerrar sesión.",
     BUGS_SHARE_ON = "Los informes de errores se enviarán al autor mientras Phoenix Uploader esté en marcha (a partir del próximo /reload o cierre de sesión).",
+    BUGS_SUMMARY = "Errores en esta sesión: %d (%d apariciones). Guardados en total: %d.",
     BUGS_SHARE_OFF = "Los informes de errores se quedan en este PC. Phoenix Uploader omitirá esta cuenta a partir del próximo /reload o cierre de sesión.",
     BUGS_SHARE_NOTICE = "Los informes de errores se envían al autor cuando Phoenix Uploader está en marcha. Nunca incluyen nombres de personaje, reinos ni chat. Para desactivarlo: /phoenix bugs share off o la página Errores en /phoenix.",
     BUGS_UPLOAD_TEXT = "Los addons no tienen acceso a internet, así que los informes solo se guardan en tu PC (WTF\\Account\\<cuenta>\\SavedVariables\\Phoenix_UI.lua) al cerrar sesión o usar /reload. La aplicación Phoenix Uploader para Windows lee ese archivo y envía los informes nuevos a VQ8S.com, donde ayudan a corregir Phoenix UI y los addons que usas. No se sube nada si no ejecutas la aplicación. Descárgala desde la página de abajo.",

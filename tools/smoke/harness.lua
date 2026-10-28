@@ -477,6 +477,8 @@ try("bugs contract", function()
     assert(r.hash:match("^%x+$") and #r.hash == 16, "hash must be 16 hex")
     assert(r.interface and r.build and r.locale and r.addonVersion and r.firstSeen and r.lastSeen, "missing field")
     assert(r.stack ~= "" and r.locals == "x = 1", "stack/locals not captured")
+    assert(r.flavor == ns.flavor and type(r.zone) == "string" and r.combat == false, "missing flavor/zone/combat")
+    try("/pui bugs count", slashes.pui, "bugs count")
     fire("ADDON_ACTION_BLOCKED", "Bar", "CastSpellByName")
     r = db.reports[#db.reports]
     assert(r.kind == "taint" and r.source == "Bar", "blocked action not recorded")
@@ -489,6 +491,8 @@ try("bugs contract", function()
     E.cap = 5
     for i = 1, 8 do E:Record("error", "cap test " .. string.rep("z", i)) end
     assert(#db.reports == 5, "cap not applied: " .. #db.reports)
+    local long = E:Record("error", string.rep("m", 5000), string.rep("s\n", 5000))
+    assert(#long.message < 2100 and #long.stack < 6100, "string caps not applied")
     E.cap = cap
     local bugs = ns.modules.Bugs
     bugs:OpenViewer()
