@@ -547,6 +547,11 @@ local T = {
     AUTO_RARE_SEEN = "稀有：%s",
     AUTO_KNOWN = "商人处已学会",
     AUTO_KNOWN_DESC = "已学会的配方、坐骑、宠物和玩具在商人处显示为绿色。",
+    AUTO_MACROS = "智能宏",
+    AUTO_MACROS_DESC = "创建角色宏 PUI Heal（治疗石后药水）、PUI Kick（打断焦点，否则目标）和 PUI Mount（随机收藏坐骑）。",
+    AUTO_MACROS_BUTTON = "写入宏",
+    AUTO_MACROS_DONE = "已写入 %d 个宏（PUI …）。从 /macro 拖到动作条。",
+    AUTO_MACROS_COMBAT = "战斗中无法写入宏。",
     AUTO_SKIP_CINEMATICS = "跳过过场动画",
     AUTO_SKIP_CINEMATICS_DESC = "跳过已看过的过场动画。按住 Shift 可观看。",
     ---------------------------------------------------------------- Mythic+

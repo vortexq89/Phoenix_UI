@@ -547,6 +547,11 @@ local T = {
     AUTO_RARE_SEEN = "稀有：%s",
     AUTO_KNOWN = "商人處已學會",
     AUTO_KNOWN_DESC = "已學會的配方、坐騎、寵物和玩具在商人處顯示為綠色。",
+    AUTO_MACROS = "智慧巨集",
+    AUTO_MACROS_DESC = "建立角色巨集 PUI Heal（治療石後藥水）、PUI Kick（打斷焦點，否則目標）和 PUI Mount（隨機最愛坐騎）。",
+    AUTO_MACROS_BUTTON = "寫入巨集",
+    AUTO_MACROS_DONE = "已寫入 %d 個巨集（PUI …）。從 /macro 拖到快捷列。",
+    AUTO_MACROS_COMBAT = "戰鬥中無法寫入巨集。",
     AUTO_SKIP_CINEMATICS = "跳過過場動畫",
     AUTO_SKIP_CINEMATICS_DESC = "跳過已看過的過場動畫。按住 Shift 可觀看。",
     ---------------------------------------------------------------- Mythic+

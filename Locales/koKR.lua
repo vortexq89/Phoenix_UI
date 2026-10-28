@@ -547,6 +547,11 @@ local T = {
     AUTO_RARE_SEEN = "희귀: %s",
     AUTO_KNOWN = "상인에서 이미 배움 표시",
     AUTO_KNOWN_DESC = "이미 배운 제조법, 탈것, 애완동물, 장난감을 상인 창에서 초록색으로 표시합니다.",
+    AUTO_MACROS = "스마트 매크로",
+    AUTO_MACROS_DESC = "PUI Heal(생명석 후 물약), PUI Kick(주시 대상, 없으면 대상 차단), PUI Mount(무작위 즐겨찾기)를 캐릭터 매크로로 만듭니다.",
+    AUTO_MACROS_BUTTON = "매크로 만들기",
+    AUTO_MACROS_DONE = "매크로 %d개를 만들었습니다 (PUI …). /macro에서 바로 끌어 놓으세요.",
+    AUTO_MACROS_COMBAT = "전투 중에는 매크로를 만들 수 없습니다.",
     AUTO_SKIP_CINEMATICS = "동영상 건너뛰기",
     AUTO_SKIP_CINEMATICS_DESC = "이미 본 동영상을 건너뜁니다. Shift를 누르고 있으면 시청합니다.",
     ---------------------------------------------------------------- Mythic+

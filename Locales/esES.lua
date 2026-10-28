@@ -547,6 +547,11 @@ local T = {
     AUTO_RARE_SEEN = "Raro: %s",
     AUTO_KNOWN = "Ya conocido en vendedores",
     AUTO_KNOWN_DESC = "Recetas, monturas, mascotas y juguetes que ya conoces se tiñen de verde en los vendedores.",
+    AUTO_MACROS = "Macros inteligentes",
+    AUTO_MACROS_DESC = "Crea PUI Heal (piedra de salud y luego poción), PUI Kick (interrumpe al foco, si no al objetivo) y PUI Mount (favorita al azar) como macros de personaje.",
+    AUTO_MACROS_BUTTON = "Crear macros",
+    AUTO_MACROS_DONE = "%d macros creadas (PUI …). Arrástralas desde /macro a una barra.",
+    AUTO_MACROS_COMBAT = "No se pueden crear macros en combate.",
     AUTO_SKIP_CINEMATICS = "Saltar cinemáticas",
     AUTO_SKIP_CINEMATICS_DESC = "Salta las cinemáticas que ya has visto. Mantén Mayús para verlas.",
     ---------------------------------------------------------------- Mythic+

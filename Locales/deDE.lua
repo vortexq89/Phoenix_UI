@@ -547,6 +547,11 @@ local T = {
     AUTO_RARE_SEEN = "Selten: %s",
     AUTO_KNOWN = "Bereits bekannt bei Händlern",
     AUTO_KNOWN_DESC = "Bereits bekannte Rezepte, Reittiere, Haustiere und Spielzeuge werden beim Händler grün gefärbt.",
+    AUTO_MACROS = "Intelligente Makros",
+    AUTO_MACROS_DESC = "Schreibt PUI Heal (Gesundheitsstein, dann Trank), PUI Kick (Unterbrechen des Fokus, sonst des Ziels) und PUI Mount (zufälliger Favorit) als Charaktermakros.",
+    AUTO_MACROS_BUTTON = "Makros schreiben",
+    AUTO_MACROS_DONE = "%d Makros geschrieben (PUI …). Zieh sie aus /macro auf eine Leiste.",
+    AUTO_MACROS_COMBAT = "Makros können im Kampf nicht geschrieben werden.",
     AUTO_SKIP_CINEMATICS = "Zwischensequenzen überspringen",
     AUTO_SKIP_CINEMATICS_DESC = "Überspringt bereits gesehene Zwischensequenzen. Halte Umschalt, um sie anzusehen.",
     ---------------------------------------------------------------- Mythic+

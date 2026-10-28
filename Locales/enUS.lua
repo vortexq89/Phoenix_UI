@@ -567,6 +567,11 @@ ns.RegisterLocale("enUS", {
     AUTO_RARE_SEEN = "Rare: %s",
     AUTO_KNOWN = "Already known at merchants",
     AUTO_KNOWN_DESC = "Recipes, mounts, pets and toys you already know are tinted green at vendors.",
+    AUTO_MACROS = "Smart macros",
+    AUTO_MACROS_DESC = "Writes PUI Heal (healthstone then potion), PUI Kick (interrupt the focus, else the target) and PUI Mount (a random favourite) as character macros.",
+    AUTO_MACROS_BUTTON = "Write macros",
+    AUTO_MACROS_DONE = "Wrote %d macros (PUI …). Drag them from /macro to a bar.",
+    AUTO_MACROS_COMBAT = "Macros cannot be written in combat.",
     AUTO_SKIP_CINEMATICS = "Skip cinematics",
     AUTO_SKIP_CINEMATICS_DESC = "Skip cinematics you've seen. Hold Shift to watch.",
 

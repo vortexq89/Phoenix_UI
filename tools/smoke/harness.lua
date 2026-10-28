@@ -1883,6 +1883,17 @@ try("tracker movement row", function()
     assert(T:FillMobility("custom1", "NOPE") == nil, "unknown class filled")
     ns.DB:Set(T, "viewers.custom1.list", before)
 end)
+-- smart macros: bodies fit the 255-character limit; the kick macro only with an interrupt
+try("smart macros", function()
+    local A = ns.modules.Automation
+    local list = A.SmartMacros("Counterspell")
+    assert(#list == 3, "three macros with an interrupt")
+    for _, mac in ipairs(list) do
+        assert(#mac.body <= 255 and #mac.name <= 16, mac.name .. " too long")
+    end
+    assert(list[3].body:find("@focus,exists,harm,nodead", 1, true), "kick macro has no focus condition")
+    assert(#A.SmartMacros(nil) == 2, "kick macro without an interrupt")
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
