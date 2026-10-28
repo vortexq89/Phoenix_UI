@@ -94,7 +94,7 @@ local emoteIndex
 local function emoteLabel(token)
     if not emoteIndex then
         emoteIndex = {}
-        local max = tonumber(rawget(_G, "MAXEMOTEINDEX")) or 1000
+        local max = tonumber((rawget(_G, "MAXEMOTEINDEX"))) or 1000
         for i = 1, max do
             local t = rawget(_G, "EMOTE" .. i .. "_TOKEN")
             if type(t) == "string" and not emoteIndex[t] then emoteIndex[t] = i end
@@ -156,7 +156,7 @@ local function showEmotes(anchor)
             local b = CreateFrame("Button", nil, emotes)
             b:SetSize(EMOTE_W, EMOTE_H)
             b:SetPoint("TOPLEFT", pts[i][1], pts[i][2])
-            b.label = b:CreateFontString(nil, "OVERLAY")
+            b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
             b.label:SetPoint("LEFT", 4, 0)
             b.label:SetPoint("RIGHT", -4, 0)
             b.label:SetJustifyH("LEFT")
@@ -181,7 +181,7 @@ local bar
 local function button(parent, onClick, tip)
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(SIZE, SIZE)
-    b.label = b:CreateFontString(nil, "OVERLAY")
+    b.label = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     b.label:SetPoint("CENTER")
     b:SetScript("OnClick", onClick)
     W.AttachTooltip(b, tip)

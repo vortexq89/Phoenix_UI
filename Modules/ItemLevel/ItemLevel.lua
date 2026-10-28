@@ -34,7 +34,7 @@ end
 local function label(button)
     local fs = labels[button]
     if not fs then
-        fs = button:CreateFontString(nil, "OVERLAY")
+        fs = button:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         labels[button] = fs
     end
     M:StyleLabel(fs, button)
@@ -45,7 +45,7 @@ end
 local function extra(button)
     local fs = extras[button]
     if not fs then
-        fs = button:CreateFontString(nil, "OVERLAY")
+        fs = button:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         fs:SetPoint("BOTTOMLEFT", 1, 1)
         fs:SetPoint("BOTTOMRIGHT", -1, 1)
         fs:SetJustifyH("CENTER")

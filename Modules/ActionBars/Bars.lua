@@ -277,7 +277,7 @@ function M:UpdateArrows()
         arrows.down = arrow(arrows, -1, "-")
         arrows.up:SetPoint("TOP")
         arrows.down:SetPoint("BOTTOM")
-        arrows.page = arrows:CreateFontString(nil, "OVERLAY")
+        arrows.page = arrows:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         arrows.page:SetPoint("CENTER")
         ns.Events:On("ACTIONBAR_PAGE_CHANGED", arrows, function() M:UpdateArrows() end)
     end

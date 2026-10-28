@@ -88,8 +88,8 @@ function M:Dress(b, kind, native)
     over:SetFrameLevel(b.Cooldown:GetFrameLevel() + 2)
     b.Over = over
     b.TypeLines = lines(over)
-    b.Duration = over:CreateFontString(nil, "OVERLAY")
-    b.Count = over:CreateFontString(nil, "OVERLAY")
+    b.Duration = over:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    b.Count = over:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     if not native then
         b:HookScript("OnEnter", function(self) M:Tooltip(self) end)
         b:HookScript("OnLeave", function() GameTooltip:Hide() end)

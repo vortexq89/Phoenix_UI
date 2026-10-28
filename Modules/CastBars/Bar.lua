@@ -49,10 +49,10 @@ function M:BuildBar(parent, key, opts)
     texts:SetAllPoints(b)
     texts:SetFrameLevel(b:GetFrameLevel() + 3)
     f.Texts = texts
-    f.Name = texts:CreateFontString(nil, "OVERLAY")
+    f.Name = texts:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     f.Name:SetWordWrap(false)
-    f.Time = texts:CreateFontString(nil, "OVERLAY")
-    f.Target = texts:CreateFontString(nil, "OVERLAY")
+    f.Time = texts:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    f.Target = texts:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     -- icon
     local icon = CreateFrame("Frame", nil, f)
     icon.tex = icon:CreateTexture(nil, "ARTWORK")

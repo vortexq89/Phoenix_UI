@@ -187,7 +187,7 @@ local function iconFor(i)
     f.Icon:SetAllPoints()
     f.holder = CreateFrame("Frame", nil, f)
     f.holder:SetAllPoints()
-    f.Label = f.holder:CreateFontString(nil, "OVERLAY")
+    f.Label = f.holder:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     f.Label:SetPoint("TOP", f, "BOTTOM", 0, -2)
     icons[i] = f
     return f

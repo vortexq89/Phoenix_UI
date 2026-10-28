@@ -274,7 +274,7 @@ local function onAlert(_, button)
     if alert then
         alert:SetAlpha(style == "blizzard" and 1 or 0)
         if style == "blizzard" and not InCombatLockdown() then
-            alert:SetSize((tonumber(button:GetWidth()) or 45) * 1.4, (tonumber(button:GetHeight()) or 45) * 1.4)
+            alert:SetSize((tonumber((button:GetWidth())) or 45) * 1.4, (tonumber((button:GetHeight())) or 45) * 1.4)
         end
     end
     if has and style ~= "blizzard" and style ~= "none" then

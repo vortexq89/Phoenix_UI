@@ -246,7 +246,7 @@ local function testFrame(i, key)
     t = M:Build(UIParent, key, { sample = {} })
     t:SetFrameStrata("HIGH")
     t:EnableMouse(false)
-    t.tag = t.TextLayer:CreateFontString(nil, "OVERLAY")
+    t.tag = t.TextLayer:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     t.tag:SetPoint("BOTTOMRIGHT", t, "TOPRIGHT", -2, 2)
     tests[i] = t
     return t

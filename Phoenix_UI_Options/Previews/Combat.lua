@@ -195,8 +195,8 @@ P:Register("combattext", {
         end
         return function(self)
             local scroll = m.db.scroll
-            local scale = tonumber(GetCVar("WorldTextScale_v2")) or 1
-            local mode = tonumber(GetCVar("floatingCombatTextFloatMode_v2")) or 1
+            local scale = tonumber((GetCVar("WorldTextScale_v2"))) or 1
+            local mode = tonumber((GetCVar("floatingCombatTextFloatMode_v2"))) or 1
             local w, h = self:GetWidth(), self:GetHeight()
             local font = (ns.Theme:Font("combat"))
             if m.db.damageFont ~= "" then font = Media:Font(m.db.damageFont) end

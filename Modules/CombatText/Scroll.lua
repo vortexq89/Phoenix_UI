@@ -56,7 +56,7 @@ local function placeArea(key)
 end
 
 local function newLine(f)
-    local fs = f:CreateFontString(nil, "OVERLAY")
+    local fs = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     fs:SetWidth(WIDTH)
     fs:SetWordWrap(false)
     return fs

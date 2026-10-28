@@ -120,7 +120,7 @@ local function partsOf(frame, iconHost, icon)
     local holder = CreateFrame("Frame", nil, iconHost)
     holder:SetAllPoints(icon)
     holder:SetFrameLevel(iconHost:GetFrameLevel() + 2)
-    p = { border = holder, keybind = holder:CreateFontString(nil, "OVERLAY") }
+    p = { border = holder, keybind = holder:CreateFontString(nil, "OVERLAY", "GameFontHighlight") }
     parts[frame] = p
     return p
 end

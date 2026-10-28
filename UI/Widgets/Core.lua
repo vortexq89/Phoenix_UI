@@ -18,7 +18,7 @@ function W.Texture(parent, layer, sub, path)
 end
 
 function W.Text(parent, role, token, justify)
-    local fs = parent:CreateFontString(nil, "OVERLAY")
+    local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     Skin:Text(fs, role or "body", token or "text.primary")
     fs:SetJustifyH(justify or "LEFT")
     fs:SetWordWrap(false)

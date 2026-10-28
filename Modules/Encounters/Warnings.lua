@@ -26,7 +26,7 @@ function M:CreateWarningLine(parent)
     Skin:IconZoom(f.icon, 0.08)
     f.iconEdge = CreateFrame("Frame", nil, f)
     f.iconEdge:SetAllPoints(f.icon)
-    f.text = f:CreateFontString(nil, "OVERLAY")
+    f.text = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     f.text:SetJustifyH("CENTER")
     f.text:SetWordWrap(false)
     return f
@@ -138,7 +138,7 @@ local function onWarning(_, _, info)
     local severity = info.severity
     if Secret.IsSecret(severity) then return end
     local level = M.SEVERITY[severity] or "medium"
-    if severity < (tonumber(C_CVar.GetCVar("encounterWarningsLevel")) or 0) then return end
+    if severity < (tonumber((C_CVar.GetCVar("encounterWarningsLevel"))) or 0) then return end
     local duration = (not Secret.IsSecret(info.duration) and type(info.duration) == "number" and info.duration > 0)
         and info.duration or DEFAULT_DURATION
     push(level, formatted(info), info.iconFileID, duration)

@@ -39,7 +39,7 @@ function X.Tokenize(text)
             i = i + 1
         elseif c:match("%d") or (c == "." and text:sub(i + 1, i + 1):match("%d")) then
             local s, e = text:find("^%d*%.?%d+", i)
-            out[#out + 1] = { kind = "num", value = tonumber(text:sub(s, e)), pos = i }
+            out[#out + 1] = { kind = "num", value = tonumber((text:sub(s, e))), pos = i }
             i = e + 1
         elseif c:match("[%a_]") then
             local s, e = text:find("^[%a_][%w_]*", i)

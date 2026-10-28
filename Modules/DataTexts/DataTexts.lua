@@ -144,7 +144,7 @@ local PROVIDERS = {
         return ("%.1f, %.1f"):format(x * 100, y * 100), ""
     end,
     volume = function()
-        local v = tonumber(C_CVar.GetCVar("Sound_MasterVolume")) or 0
+        local v = tonumber((C_CVar.GetCVar("Sound_MasterVolume"))) or 0
         local muted = C_CVar.GetCVar("Sound_EnableAllSound") == "0"
         return math.floor(v * 100 + 0.5), "%", muted and "text.muted" or nil
     end,
@@ -206,7 +206,7 @@ end
 -- Every currency in your currency list (headers expanded as the game has them), for the picker: { id, name }.
 function M.CurrencyChoices()
     local out = {}
-    local n = tonumber(C_CurrencyInfo.GetCurrencyListSize()) or 0
+    local n = tonumber((C_CurrencyInfo.GetCurrencyListSize())) or 0
     for i = 1, n do
         local info = C_CurrencyInfo.GetCurrencyListInfo(i)
         if info and not info.isHeader and info.name then
@@ -222,7 +222,7 @@ end
 -- "14:05" / "2:05" + "PM", local or realm time.
 function M.ClockText(realm, h24)
     local hour, minute
-    if realm then hour, minute = GetGameTime() else hour, minute = tonumber(date("%H")), tonumber(date("%M")) end
+    if realm then hour, minute = GetGameTime() else hour, minute = tonumber((date("%H"))), tonumber((date("%M"))) end
     if h24 then return ("%02d:%02d"):format(hour, minute), "" end
     local suffix = hour >= 12 and TIMEMANAGER_PM or TIMEMANAGER_AM
     hour = hour % 12
@@ -427,9 +427,9 @@ local function segment(o, key)
     s:SetHeight(22)
     s.icon = ns.Icons:Create(s, ICON[key] or key, ICON_SIZE, "accent.primary")
     s.icon:SetPoint("LEFT")
-    s.value = s:CreateFontString(nil, "OVERLAY")
+    s.value = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     s.value:SetPoint("LEFT", s.icon, "RIGHT", 5, 0)
-    s.unit = s:CreateFontString(nil, "OVERLAY")
+    s.unit = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     s.unit:SetPoint("LEFT", s.value, "RIGHT", 3, 0)
     if key == "bugs" and o.live then
         s.glow = W.Texture(s, "BACKGROUND", 0, ns.Media.textures.CIRCLE)
@@ -454,7 +454,7 @@ local function segment(o, key)
         if key == "volume" then
             s:EnableMouseWheel(true)
             s:SetScript("OnMouseWheel", function(_, delta)
-                local v = tonumber(C_CVar.GetCVar("Sound_MasterVolume")) or 0
+                local v = tonumber((C_CVar.GetCVar("Sound_MasterVolume"))) or 0
                 C_CVar.SetCVar("Sound_MasterVolume", math.max(0, math.min(1, v + delta * 0.05)))
                 if bars[1] then M:Update() end
             end)

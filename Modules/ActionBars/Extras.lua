@@ -215,7 +215,7 @@ local function itemButton(parent, i)
     btn.icon:SetAllPoints()
     btn.cooldown = CreateFrame("Cooldown", nil, btn, "CooldownFrameTemplate")
     btn.cooldown:SetAllPoints(btn.icon)
-    btn.count = btn:CreateFontString(nil, "OVERLAY")
+    btn.count = btn:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     btn:SetScript("OnEnter", function(self)
         if not self.itemID then return end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

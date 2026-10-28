@@ -163,7 +163,7 @@ end
 local function header(i)
     local fs = headers[i]
     if not fs then
-        fs = win.content:CreateFontString(nil, "OVERLAY")
+        fs = win.content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         headers[i] = fs
     end
     return fs
@@ -295,7 +295,7 @@ local function build()
     win:EnableMouse(true)
     win:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -60, 110)
     win:Hide()
-    win.title = win:CreateFontString(nil, "OVERLAY")
+    win.title = win:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     win.title:SetPoint("TOPLEFT", PAD, -PAD - 2)
     win.title:SetText(L.BAGS)
     win.close = iconButton(win, "close", CLOSE, function() CloseAllBags() end)
@@ -309,11 +309,11 @@ local function build()
     win.search:SetPoint("RIGHT", win.sort, "LEFT", -8, 0)
     win.content = CreateFrame("Frame", nil, win)
     win.content:SetPoint("TOPLEFT", PAD, -PAD - HEAD)
-    win.money = win:CreateFontString(nil, "OVERLAY")
+    win.money = win:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     win.money:SetPoint("BOTTOMRIGHT", -PAD, PAD)
-    win.currencies = win:CreateFontString(nil, "OVERLAY")
+    win.currencies = win:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     win.currencies:SetPoint("RIGHT", win.money, "LEFT", -12, 0)
-    win.free = win:CreateFontString(nil, "OVERLAY")
+    win.free = win:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     win.free:SetPoint("BOTTOMLEFT", PAD, PAD)
     win:SetScript("OnShow", function() M:Layout() end)
     Skin:Register(win, function() M:StyleWindow() end)

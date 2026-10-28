@@ -153,9 +153,9 @@ function M:BuildSwingFrame(parent, name)
     local s = CreateFrame("Frame", name, parent)
     s.main = statusBar(s)
     s.off = statusBar(s)
-    s.text = s.main:CreateFontString(nil, "OVERLAY")
-    s.mainLabel = s.main:CreateFontString(nil, "OVERLAY")
-    s.offLabel = s.off:CreateFontString(nil, "OVERLAY")
+    s.text = s.main:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    s.mainLabel = s.main:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    s.offLabel = s.off:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     return s
 end
 

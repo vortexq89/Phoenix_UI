@@ -982,7 +982,7 @@ local function countText(cp, info)
         cp.textLayer = CreateFrame("Frame", nil, cp)
         cp.textLayer:SetAllPoints()
         cp.textLayer:SetFrameLevel(cp:GetFrameLevel() + 8)
-        cp.text = cp.textLayer:CreateFontString(nil, "OVERLAY")
+        cp.text = cp.textLayer:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     end
     Skin:TextSpec(cp.text, spec, "number", "text.primary")
     Skin:Place(cp.text, cp, spec)

@@ -141,7 +141,7 @@ local function showBanner(entering)
         banner:SetSize(420, 40)
         banner:SetPoint("TOP", 0, -190)
         banner:SetFrameStrata("HIGH")
-        banner.text = banner:CreateFontString(nil, "OVERLAY")
+        banner.text = banner:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         banner.text:SetPoint("CENTER")
         banner:Hide()
     end

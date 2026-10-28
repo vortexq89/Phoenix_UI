@@ -110,7 +110,7 @@ ns:RegisterOptions("Encounters", {
         { value = "phoenix", label = "ENC_DISPLAY_PHOENIX" }, { value = "blizzard", label = "ENC_DISPLAY_BLIZZARD" },
         { value = "hidden", label = "ENC_DISPLAY_HIDDEN" } } },
     { type = "select", label = "ENC_WARN_LEVEL", desc = "ENC_WARN_LEVEL_DESC", combat = true,
-      get = function() return tonumber(C_CVar.GetCVar("encounterWarningsLevel")) or 0 end,
+      get = function() return tonumber((C_CVar.GetCVar("encounterWarningsLevel"))) or 0 end,
       set = function(_, v) ns.Combat:Run("cvar.encounterWarningsLevel", C_CVar.SetCVar, "encounterWarningsLevel", tostring(v)) end,
       values = { { value = 0, label = "ENC_SEV_LOW" }, { value = 1, label = "ENC_SEV_MEDIUM" }, { value = 2, label = "ENC_SEV_HIGH" } } },
     cvarToggle("encounterWarningsHideIfNotTargetingPlayer", { label = "ENC_WARN_TARGETED", desc = "ENC_WARN_TARGETED_DESC",

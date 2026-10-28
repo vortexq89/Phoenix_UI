@@ -48,7 +48,7 @@ function P.Bar(parent, value, w, h)
 end
 
 function P.Text(parent, layer)
-    local fs = parent:CreateFontString(nil, layer or "OVERLAY")
+    local fs = parent:CreateFontString(nil, layer or "OVERLAY", "GameFontHighlight")
     fs:SetWordWrap(false)
     return fs
 end

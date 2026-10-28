@@ -33,7 +33,7 @@ end)
 function C.CVarAccessors(name, kind)
     local numeric, text = kind == "number", kind == "string"
     local function get()
-        if numeric then return tonumber(C_CVar.GetCVar(name)) end
+        if numeric then return tonumber((C_CVar.GetCVar(name))) end
         if text then return C_CVar.GetCVar(name) end
         return C_CVar.GetCVarBool(name)
     end

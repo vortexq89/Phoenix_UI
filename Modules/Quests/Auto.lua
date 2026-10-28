@@ -42,13 +42,13 @@ local function onGreeting()
     local db = M.db
     if paused() then return end
     if db.autoTurnIn then
-        for i = 1, tonumber(GetNumActiveQuests()) or 0 do
+        for i = 1, tonumber((GetNumActiveQuests())) or 0 do
             local _, isComplete = GetActiveTitle(i)
             if isComplete then SelectActiveQuest(i) return end
         end
     end
     if db.autoAccept then
-        for i = 1, tonumber(GetNumAvailableQuests()) or 0 do
+        for i = 1, tonumber((GetNumAvailableQuests())) or 0 do
             local isTrivial = GetAvailableQuestInfo(i)
             if not (db.hideTrivial and isTrivial) then SelectAvailableQuest(i) return end
         end
@@ -67,7 +67,7 @@ end
 
 -- Index of the reward to take, or nil to leave the choice to you.
 function M:PickReward()
-    local n = tonumber(GetNumQuestChoices()) or 0
+    local n = tonumber((GetNumQuestChoices())) or 0
     if n <= 1 then return n end
     local mode = self.db.reward
     if mode == "off" then return nil end
@@ -96,7 +96,7 @@ local function onComplete()
     if not M.db.autoTurnIn or paused() then return end
     local pick = M:PickReward()
     if pick == nil then return end
-    if (tonumber(GetNumQuestChoices()) or 0) > 1 then
+    if (tonumber((GetNumQuestChoices())) or 0) > 1 then
         ns:Print(L.QUESTS_PICKED:format(GetQuestItemLink("choice", pick) or "?"))
     end
     GetQuestReward(pick)

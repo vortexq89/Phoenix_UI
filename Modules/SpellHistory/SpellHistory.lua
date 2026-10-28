@@ -22,7 +22,7 @@ function M:StyleIcon(f)
     Skin:IconZoom(f.tex, self.db.zoom)
     Skin:BorderSpec(f, self.db.border, "border.black")
     if not f.cross then
-        f.cross = f:CreateFontString(nil, "OVERLAY")
+        f.cross = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         f.cross:SetPoint("CENTER")
         f.cross:SetText("×")
         f.cross:Hide()

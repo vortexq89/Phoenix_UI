@@ -74,7 +74,7 @@ local function bar(parent)
     b.bg = b:CreateTexture(nil, "BACKGROUND")
     b.bg:SetAllPoints()
     b.bg:SetTexture(Media.textures.WHITE)
-    b.text = b:CreateFontString(nil, "OVERLAY")
+    b.text = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     b.text:SetWordWrap(false)
     b:Hide()
     return b

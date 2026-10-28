@@ -49,7 +49,7 @@ local function styleText(fs) M:StyleHealthText(fs, fs:GetParent()) end
 local function textFor(bar)
     local fs = texts[bar]
     if not fs then
-        fs = bar:CreateFontString(nil, "OVERLAY")
+        fs = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         styleText(fs)
         texts[bar] = fs
     end
@@ -61,7 +61,7 @@ local function styleForces(fs) M:StyleForces(fs) end
 local function forcesFor(bar)
     local fs = forcesTexts[bar]
     if not fs then
-        fs = bar:CreateFontString(nil, "OVERLAY")
+        fs = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         fs:SetPoint("LEFT", bar, "RIGHT", 4, 0)
         styleForces(fs)
         forcesTexts[bar] = fs

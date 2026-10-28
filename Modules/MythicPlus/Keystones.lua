@@ -19,8 +19,8 @@ local function short(name)
 end
 
 function K:Own()
-    local level = tonumber(C_MythicPlus.GetOwnedKeystoneLevel()) or 0
-    local mapID = tonumber(C_MythicPlus.GetOwnedKeystoneChallengeMapID()) or 0
+    local level = tonumber((C_MythicPlus.GetOwnedKeystoneLevel())) or 0
+    local mapID = tonumber((C_MythicPlus.GetOwnedKeystoneChallengeMapID())) or 0
     local summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
     local rating = summary and summary.currentSeasonScore
     if Secret.IsSecret(rating) or type(rating) ~= "number" then rating = 0 end

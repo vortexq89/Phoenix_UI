@@ -79,7 +79,7 @@ local function style(cd)
         cd:SetHideCountdownNumbers(hidden[cd])
         hidden[cd] = nil
     end
-    local w = tonumber(cd:GetWidth())
+    local w = tonumber((cd:GetWidth()))
     paint(fs, barSize(cd) or M:SizeFor(w))
     cd:SetCountdownMillisecondsThreshold(db.decimals)
     cd:SetMinimumCountdownDuration(math.floor(db.minDuration * 1000 + 0.5))
@@ -141,7 +141,7 @@ local function bindingFor(cd)
     if b then return b end
     local ok, binding = pcall(C_DurationUtil.CreateDurationTextBinding)
     if not ok or not binding then return nil end
-    b = { binding = binding, fs = cd:CreateFontString(nil, "OVERLAY") }
+    b = { binding = binding, fs = cd:CreateFontString(nil, "OVERLAY", "GameFontHighlight") }
     b.fs:SetPoint("CENTER")
     bindings[cd] = b
     return b
@@ -167,7 +167,7 @@ local function remaining(cd, info)
             binding:SetDuration(C_ActionBar.GetActionCooldownDuration(action, true))
             binding:SetEnabled(true)
         end)
-        paint(b.fs, barSize(cd) or M:SizeFor(tonumber(cd:GetWidth())))
+        paint(b.fs, barSize(cd) or M:SizeFor(tonumber((cd:GetWidth()))))
         b.fs:SetShown(ok)
         if not ok then release(cd) end
     else

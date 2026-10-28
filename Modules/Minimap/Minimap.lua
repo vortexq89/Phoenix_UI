@@ -179,7 +179,7 @@ local function updateCoords()
 end
 
 local function setupCoords(self)
-    if not coords then coords = band():CreateFontString(nil, "OVERLAY") end
+    if not coords then coords = band():CreateFontString(nil, "OVERLAY", "GameFontHighlight") end
     Skin:TextSpec(coords, self.db.coordsText, "number", "text.primary")
     Skin:Place(coords, band(), self.db.coordsText)
     if ticker then ticker:Cancel(); ticker = nil end
@@ -230,7 +230,7 @@ local function onPing(_, unit)
     if not (M:IsEnabled() and M.db.pingNames) or not unit then return end
     local name = UnitName(unit)
     if ns.Secret.IsSecret(name) or not name then return end
-    if not pingText then pingText = band():CreateFontString(nil, "OVERLAY") end
+    if not pingText then pingText = band():CreateFontString(nil, "OVERLAY", "GameFontHighlight") end
     Skin:Text(pingText, "small", "accent.secondary", 11, "OUTLINE")
     pingText:ClearAllPoints()
     pingText:SetPoint("TOP", band(), "TOP", 0, -6)
@@ -275,7 +275,7 @@ local function setupMapCoords()
         mapCoords:SetSize(320, 18)
         mapCoords:SetPoint("BOTTOM", map.ScrollContainer, "BOTTOM", 0, 6)
         mapCoords:SetFrameLevel(map.ScrollContainer:GetFrameLevel() + 20)
-        mapCoords.text = mapCoords:CreateFontString(nil, "OVERLAY")
+        mapCoords.text = mapCoords:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         mapCoords.text:SetPoint("CENTER")
         local elapsed = 0
         mapCoords:SetScript("OnUpdate", function(_, dt)

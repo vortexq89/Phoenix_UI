@@ -57,7 +57,7 @@ function M:NewDataBar(parent)
     f.fill = CreateFrame("StatusBar", nil, f)
     f.fill:SetAllPoints()
     f.fill:SetFrameLevel(f.rested:GetFrameLevel() + 1)
-    f.text = f.fill:CreateFontString(nil, "OVERLAY")
+    f.text = f.fill:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     return f
 end
 

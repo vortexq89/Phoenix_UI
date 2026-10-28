@@ -32,8 +32,8 @@ local function newIcon(parent)
     f.holder = CreateFrame("Frame", nil, f)
     f.holder:SetAllPoints(f.Icon)
     f.holder:SetFrameLevel(f:GetFrameLevel() + 4)
-    f.Count = f.holder:CreateFontString(nil, "OVERLAY")
-    f.Keybind = f.holder:CreateFontString(nil, "OVERLAY")
+    f.Count = f.holder:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    f.Keybind = f.holder:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     f:SetScript("OnEnter", function(self)
         local e = self.entry
         if not e then return end
@@ -343,9 +343,9 @@ local function sampleBars(key, n)
             f.icon = newIcon(f)
             f.Bar = CreateFrame("StatusBar", nil, f)
             f.Bar:SetMinMaxValues(0, 1)
-            f.name = f.Bar:CreateFontString(nil, "OVERLAY")
+            f.name = f.Bar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
             f.name:SetPoint("LEFT", 4, 0)
-            f.time = f.Bar:CreateFontString(nil, "OVERLAY")
+            f.time = f.Bar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
             f.time:SetPoint("RIGHT", -4, 0)
             s[i] = f
         end
