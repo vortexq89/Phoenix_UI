@@ -12,7 +12,7 @@ local STATES = {
     { sample = "PREVIEW_SPELL_LOCKED", barType = "uninterruptable", value = 0.8, time = "0.4", icon = 3 },
 }
 local W_BAR, H_BAR = 220, 18
-local MAX_W, MAX_H = 300, 30
+local MAX_W = 300
 
 local function samplesFor(key)
     local icons = ns.modules.UnitFrames and ns.modules.UnitFrames.SAMPLE_ICONS or {}
@@ -29,6 +29,14 @@ local function samplesFor(key)
           targeted = enemy },
         third,
     }
+end
+local function withReal(key)
+    local list = samplesFor(key)
+    local mine = key == "player" and P.RealSpells(3) or {}
+    for i, sp in ipairs(mine) do
+        if list[i] then list[i].name, list[i].icon = sp.name, sp.icon end
+    end
+    return list
 end
 
 local function legacy(stage, m)
@@ -133,7 +141,7 @@ P:Register("castbar", {
         return function(view, unit)
             local phoenix = m.db.mode == "phoenix" and m.Bar ~= nil and m.BuildBar ~= nil
             old:SetShown(not phoenix)
-            for k, list in pairs(built) do if k ~= "extras" then for _, f in ipairs(list) do f:Hide() end end end
+            for k, list in pairs(built) do if k ~= "extras" and k ~= "scaleText" then for _, f in ipairs(list) do f:Hide() end end end
             if built.extras then
                 built.extras.gcd:Hide()
                 if built.extras.swing then built.extras.swing:Hide() end
@@ -151,15 +159,20 @@ P:Register("castbar", {
                 built[key] = list
             end
             local b = m:Bar(key)
-            local w, h = math.min(b.width, MAX_W), math.min(b.height, MAX_H)
+            -- the real width and height; the whole set is only scaled down to fit the panel
+            local w, h = b.width, b.height
+            local scale = math.min(1, (math.max(1, view:GetWidth()) - 40) / math.max(1, w))
+            built.scaleText = built.scaleText or P.ScaleLabel(view)
+            built.scaleText:Set(scale)
             local g = m.Geometry(b, w, h)
             local shift = (g.icon and b.iconDetached) and ((b.icon == "left" and 1 or -1) * (g.icon[3] + b.iconGap) / 2) or 0
             local pitch = math.max(h + 18, 40)
-            local samples = samplesFor(key)
+            local samples = withReal(key)
             for i, f in ipairs(list) do
                 m:LayoutBar(f, w, h)
+                f:SetScale(scale)
                 f:ClearAllPoints()
-                f:SetPoint("TOP", stage, "TOP", shift, -18 - (i - 1) * pitch)
+                f:SetPoint("TOP", stage, "TOP", shift, (-18 - (i - 1) * pitch * scale) / scale)
                 local s = samples[i]
                 s.frozen = true
                 m:StartSample(f, s)
@@ -172,7 +185,7 @@ P:Register("castbar", {
                 f:SetAlpha(1)
                 f:Show()
             end
-            if key == "player" then drawExtras(stage, m, built, list[1], -18 - #list * pitch) end
+            if key == "player" then drawExtras(stage, m, built, list[1], -18 - #list * pitch * scale) end
         end
     end,
 })

@@ -133,6 +133,12 @@ P:Register("nameplate", {
             end
             local st = view.states
             local samples = m.Samples()
+            -- the first plate wears your real target (or the nearest real unit you have) when there is one
+            local real = P.RealUnit("target") or P.RealUnit("focus")
+            if real and samples[1] then
+                samples[1].name = real.name or samples[1].name
+                if real.level then samples[1].level = real.level end
+            end
             local w = view:GetWidth()
             for i, p in ipairs(plates) do
                 local s = samples[i]

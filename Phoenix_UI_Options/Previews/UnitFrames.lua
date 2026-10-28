@@ -63,6 +63,17 @@ local function drawResources(m, view, built, st)
     end
 end
 
+-- The real unit when it exists: its own name, class, level and reaction, and no made-up auras.
+local function applyReal(m, key, s)
+    local token = type(m.TOKENS[key]) == "string" and m.TOKENS[key] or key
+    local real = P.RealUnit(token)
+    if not real then return end
+    s.name, s.level = real.name or s.name, real.level or s.level
+    if real.class then s.class = real.class end
+    if real.reaction then s.reaction = real.reaction end
+    s.buffs, s.debuffs = nil, nil
+end
+
 local function drawArena(m, view, built, key, st)
     local u = m:Unit(key)
     local holder = built["holder:" .. key]
@@ -130,7 +141,7 @@ P:Register("unitframe", {
             local show = st.resources and m.BuildResources and "resources" or key
             -- hide whatever this view does not show
             for k, f in pairs(built) do
-                if k ~= show and k ~= "totems" and k ~= "holder:" .. show then
+                if k ~= show and k ~= "totems" and k ~= "scaleText" and k ~= "holder:" .. show then
                     if type(f) == "table" and f.Hide then f:Hide()
                     elseif type(f) == "table" then for _, x in ipairs(f) do x:Hide() end end
                 end
@@ -148,13 +159,21 @@ P:Register("unitframe", {
                 built[key] = f
             end
             local s = m.SampleData(key, 1)
+            applyReal(m, key, s)
             if st.low then s.hp = math.floor((s.hpMax or 1) * 0.16) end
             if st.range then s.far = true end
             s.combat = st.combat or s.combat
             f.sample = s
             m:Layout(f)
             f:ClearAllPoints()
-            f:SetPoint("CENTER", view, "CENTER", 0, 4)
+            -- true size; only scaled down when the frame is wider or taller than the panel
+            local u = m:Unit(key)
+            local scale = fit(u.width or 1, u.height or 1)
+            f:SetScale(scale)
+            f:SetPoint("CENTER", view, "CENTER", 0, 4 / scale)
+            built.scaleText = built.scaleText or P.ScaleLabel(view)
+            built.scaleText:Set(scale)
+            built.scaleText:Show()
             m:UpdateAll(f)
             -- (the fading rows act on the real frames; the preview shows the range fade only when asked)
             if not st.range then f:SetAlpha(1) end

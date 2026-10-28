@@ -146,3 +146,51 @@ end
 
 -- The colour a sample bar would get from the theme (healthy friendly unit, hostile mob, …).
 function P.Token(token) return Theme:Color(token) end
+
+---------------------------------------------------------------- real data for the previews
+--[[ The previews show the player's own things where the game has them: the spells on the main action bar, the
+    real name, class and level of a unit that exists. Looked up by name so both flavors run the same code; values
+    are only handed to widgets (never compared), and nothing is read in combat. ]]
+local function api(name, space)
+    local t = space and _G[space]
+    local fn = (type(t) == "table" and t[name]) or _G[name]
+    return type(fn) == "function" and fn or nil
+end
+P.API = api
+
+-- Up to n { name, icon } from the main action bar (first page), skipping empty slots and non-spells.
+function P.RealSpells(n)
+    local out = {}
+    if InCombatLockdown() then return out end
+    local info, tex = api("GetActionInfo", "C_ActionBar"), api("GetActionTexture", "C_ActionBar")
+    local spellName = api("GetSpellName", "C_Spell")
+    if not (info and tex) then return out end
+    for slot = 1, 12 do
+        local kind, id = info(slot)
+        if kind == "spell" and id then
+            local name = spellName and spellName(id)
+            local icon = tex(slot)
+            if name and icon then out[#out + 1] = { name = name, icon = icon } end
+        end
+        if #out >= n then break end
+    end
+    return out
+end
+
+-- name, class token, level and reaction of a unit that exists (out of combat), else nil.
+function P.RealUnit(token)
+    if InCombatLockdown() or not UnitExists(token) then return nil end
+    local _, class = UnitClass(token)
+    return { name = UnitName(token), class = UnitIsPlayer(token) and class or nil, level = UnitLevel(token),
+        reaction = UnitReaction(token, "player") }
+end
+
+-- A small "1:1" / "64%" label in a stage corner telling how much the preview is scaled down to fit.
+function P.ScaleLabel(stage)
+    local fs = W.Text(stage, "small", "text.muted", "RIGHT")
+    fs:SetPoint("BOTTOMRIGHT", -6, 4)
+    function fs:Set(scale)
+        self:SetText(scale < 0.995 and string.format("%d%%", math.floor(scale * 100 + 0.5)) or "1:1")
+    end
+    return fs
+end
