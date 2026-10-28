@@ -52,6 +52,8 @@ def main():
             print("locales: %s has a stale key: %r" % (name, k))
         bad += len(stale)
         print("locales: %-9s %4d of %d strings (%.1f%%)" % (name[:-4], len(found) - len(stale), len(keys), 100.0 * (len(found) - len(stale)) / max(1, len(keys))))
+    import locale_tokens
+    bad += locale_tokens.main()
     print("locales: %s" % ("FAIL" if bad else "ok"))
     return 1 if bad else 0
 

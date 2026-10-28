@@ -564,6 +564,7 @@ PUI.SchemaIndex = {
   ["core.keyLayer.key"] = { module = "Overrides", file = "Core/KeyLayer.lua" },
   ["core.keyLayer.mode"] = { module = "Overrides", file = "Core/KeyLayer.lua" },
   ["core.locale"] = { module = "Core", file = "Core/Locale.lua" },
+  ["core.localeFont"] = { module = "Core", file = "Core/Locale.lua" },
   ["core.profile"] = { module = "Core", file = "Core/DB.lua" },
   ["core.specProfile"] = { module = "Profiles", file = "Core/SpecProfiles.lua" },
   ["core.specProfile.announce"] = { module = "Profiles", file = "Core/SpecProfiles.lua" },

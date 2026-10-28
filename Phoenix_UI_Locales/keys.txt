@@ -2052,6 +2052,7 @@ Label colour for spells IDs.
 Label colour for world IDs.
 Label colour when one label colour is used.
 Language
+Language font
 Language for Phoenix UI text. Auto follows the game client.
 Largest number of buffs shown.
 Largest number of debuffs shown.
@@ -3895,6 +3896,7 @@ When sArena, sArena_Reloaded, sArenaReloaded, Gladius, GladiusEx is loaded, choo
 When someone types !keys in party chat, your key is posted through Phoenix announcements (Keystones topic decides where).
 When the combat timer is shown.
 When the global cooldown bar is drawn.
+When the language uses letters the game font lacks (Arabic, or Russian and Chinese on another client), Phoenix text uses a matching font from the media pack.
 When the warning sound plays.
 When too many lines come at once, the extra ones are counted and shown as one "+N more" line.
 When tooltips are hidden in combat, holding this key shows them anyway.
