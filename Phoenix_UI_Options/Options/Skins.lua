@@ -41,7 +41,7 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "trade", label = "SKINS_TRADE", keywords = "trade window" },
     { type = "toggle", key = "dressUp", label = "SKINS_DRESSUP", keywords = "dressing room preview" },
     { type = "toggle", key = "transmog", label = "SKINS_TRANSMOG", desc = "SKINS_TRANSMOG_DESC", keywords = "transmog appearance outfit" },
-    { type = "toggle", key = "housing", label = "SKINS_HOUSING", desc = "SKINS_HOUSING_DESC", keywords = "housing house decor neighbourhood" },
+    { type = "toggle", key = "housing", label = "SKINS_HOUSING", desc = "SKINS_HOUSING_DESC", keywords = "housing decor" },
     { type = "button", label = "SKINS_SETS", desc = "SKINS_SETS_DESC", button = "ITEMLEVEL_UPGRADES_BUTTON", icon = "palette",
       keywords = "transmog sets wardrobe collection appearance", func = function(m) m:ShowSets() end },
     { type = "toggle", key = "pgf", label = "SKINS_PGF", desc = "SKINS_PGF_DESC", reload = true,
