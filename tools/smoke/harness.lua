@@ -2194,6 +2194,21 @@ try("talents skin", function()
     S:SkinTalents(); S.db.spellbook = false; S:SkinTalents(); S.db.spellbook = true; S:SkinTalents()
     env.PlayerSpellsFrame = nil
 end)
+-- loot and rolls (plan window 9): quality bars, rows and roll cards live off/on
+try("loot skin", function()
+    local S = ns.modules.Skins
+    assert(S.QualityBar(1) == nil and S.QualityBar(nil) == nil, "no bar below uncommon")
+    env.ITEM_QUALITY_COLORS = env.ITEM_QUALITY_COLORS or {}
+    env.ITEM_QUALITY_COLORS[3] = env.ITEM_QUALITY_COLORS[3] or { r = 0, g = 0.44, b = 0.87 }
+    assert(S.QualityBar(3).b == env.ITEM_QUALITY_COLORS[3].b, "rare bar")
+    local row = CreateFrame("Button", nil, UIParent)
+    local lf = CreateFrame("Frame", "LootFrame", UIParent)
+    lf.ScrollBox = { ForEachFrame = function(_, fn) fn(row) end }
+    env.LootFrame = lf
+    env.GroupLootFrame1 = CreateFrame("Frame", nil, UIParent)
+    S:SkinLoot(); S.db.loot = false; S:Refresh(); S.db.loot = true; S:Refresh()
+    env.LootFrame, env.GroupLootFrame1 = nil, nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
