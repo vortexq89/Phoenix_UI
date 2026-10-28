@@ -93,9 +93,11 @@ function M:CustomEntries(key)
     for _, e in ipairs(list) do
         if e.kind == "name" then
             local id = resolveName(e.name)
-            if id then e = { kind = "spell", id = id } end
+            if id then e = { kind = "spell", id = id, need = e.need, without = e.without } end
         end
-        if e.kind == "slot" then
+        if (e.need and not knownSpell(e.need)) or (e.without and knownSpell(e.without)) then
+            -- talent condition not met: skipped
+        elseif e.kind == "slot" then
             local item = GetInventoryItemID("player", e.id)
             local hasUse = item and C_Item.GetItemSpell and C_Item.GetItemSpell(item)
             if item and hasUse then out[#out + 1] = { kind = "item", id = item, slot = e.id } end
@@ -258,7 +260,8 @@ end
 ---------------------------------------------------------------- lifecycle
 local UPDATE_EVENTS = { "SPELL_UPDATE_COOLDOWN", "SPELL_UPDATE_CHARGES", "BAG_UPDATE_COOLDOWN",
     "SPELL_ACTIVATION_OVERLAY_GLOW_SHOW", "SPELL_ACTIVATION_OVERLAY_GLOW_HIDE" }
-local REBUILD_EVENTS = { "SPELLS_CHANGED", "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "PLAYER_SPECIALIZATION_CHANGED",
+local REBUILD_EVENTS = { "SPELLS_CHANGED", "TRAIT_CONFIG_UPDATED",
+    "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "PLAYER_SPECIALIZATION_CHANGED",
     "UPDATE_BINDINGS" }
 
 function M:EnableCustom()

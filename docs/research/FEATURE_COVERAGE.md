@@ -24,7 +24,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | 2 | Pending quest XP overlay on the XP bar | EllesmereUI ActionBars XP bar | built |
 | 3 | Mail: alt list next to the recipient box | EllesmereUI BlizzardSkin mail | built |
 | 4 | "What's new" popup after an update | EllesmereUI core | built |
-| 5 | CDM entry: show only with talent | EllesmereUI CooldownManager | next |
+| 5 | CDM entry: show only with talent | EllesmereUI CooldownManager | built (?ID / !ID in a custom bar list) |
 | 6 | Casts-on-me bars (secret-safe target check) | EllesmereUI MythicTimer | next |
 | 7 | Rare alert secure target button + waypoint | RareScanner (no EUI version) | next |
 | 8 | Copy armory link in unit menus | Raider.IO (no EUI version) | next |

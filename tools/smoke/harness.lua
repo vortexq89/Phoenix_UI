@@ -1794,6 +1794,14 @@ try("whats new popup", function()
     p.ok.onClick(); assert(not p:IsShown(), "Got it did not close")
     ns.TestSlash("whatsnew"); assert(p:IsShown(), "/pui whatsnew did not reopen"); p:Hide()
 end)
+-- Cooldown Manager custom bars: "?ID" shows an entry only with a talent, "!ID" only without it
+try("tracker talent condition", function()
+    local T = ns.modules.Tracker
+    local l = T.ParseList("item:5512 ?108416, 6262 !108416, trinket1")
+    assert(l[1].kind == "item" and l[1].id == 5512 and l[1].need == 108416, "?ID not parsed")
+    assert(l[2].kind == "spell" and l[2].id == 6262 and l[2].without == 108416, "!ID not parsed")
+    assert(l[3].kind == "slot" and not l[3].need, "plain entry got a condition")
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

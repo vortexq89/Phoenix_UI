@@ -163,13 +163,21 @@ function M.ParseList(str)
     local out = {}
     for part in tostring(str or ""):gmatch("[^,;\n]+") do
         part = part:gsub("^%s+", ""):gsub("%s+$", "")
+        -- "?ID" after an entry: shown only with that talent (spell) known; "!ID": only without it
+        local need, without
+        part = part:gsub("%s*([%?!])(%d+)", function(op, id)
+            if op == "?" then need = tonumber(id) else without = tonumber(id) end
+            return ""
+        end)
         local lower = part:lower()
+        local n0 = #out
         local item = lower:match("^item:(%d+)$")
         local slot = lower:match("^trinket([12])$")
         if item then out[#out + 1] = { kind = "item", id = tonumber(item) }
         elseif slot then out[#out + 1] = { kind = "slot", id = 12 + tonumber(slot) }
         elseif part:match("^%d+$") then out[#out + 1] = { kind = "spell", id = tonumber(part) }
         elseif part ~= "" then out[#out + 1] = { kind = "name", name = part } end
+        if #out > n0 then out[#out].need, out[#out].without = need, without end
     end
     return out
 end
