@@ -1,6 +1,6 @@
 ## Interface: 120100, 120105, 16001
 ## Title: Phoenix UI - Nameplates
-## Notes: Phoenix UI nameplates: pooled plates over Blizzard's, one cast dispatcher, threat and reaction colours, icons and CVar control.
+## Notes: Phoenix UI nameplates: enemy and friendly styles, threat and NPC colours, cast bars with your interrupt, aura lanes, target and focus highlights, quest, execute and Mythic+ forces indicators, CVars through the ledger.
 ## Author: VortexQ8
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
@@ -10,6 +10,7 @@
 ## Group: Phoenix_UI
 ## Dependencies: Phoenix_UI
 
+Rules.lua
 Plate.lua
 Nameplates.lua
 Tests\Nameplates_test.lua

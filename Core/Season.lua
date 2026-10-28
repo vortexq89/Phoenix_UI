@@ -43,6 +43,16 @@ function Season:Thresholds(mapID)
   return { d.timeLimit, d.timeLimit * 0.8, d.timeLimit * 0.6 }
 end
 
+-- Enemy forces one unit is worth in the running Mythic+ (plan 1.O "Enemy
+-- forces %": Ascent owns forces data; this is the minimal shared provider
+-- the Nameplates text slot and tooltips read). Returns the game's own
+-- percent text, possibly secret: callers hand it straight to a FontString.
+function Season:UnitForces(unit)
+  if not C_ChallengeMode.IsChallengeModeActive() then return nil end
+  local _, _, text = C_ScenarioInfo.GetUnitCriteriaProgressValues(unit)
+  return text
+end
+
 ------------------------------------------------------------------------------
 -- Score colours. ScoreColor(score) -> r, g, b. Score is a plain number from
 -- the summary APIs; a secret score is never compared: it gets the neutral colour.
