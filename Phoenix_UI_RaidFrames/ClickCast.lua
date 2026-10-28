@@ -1,7 +1,12 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- Click-casting (PUI_V2 5.4): bindings written as secure attributes on every
--- frame in ClickCastFrames (Phoenix unit, party and raid frames register
--- there), always out of combat through the CombatQueue. Mouse bindings set
+-- Click-casting (PUI_V2 5.4, plan 5.2): bindings written as secure attributes
+-- on every frame in ClickCastFrames (Phoenix unit, party and raid frames
+-- register there), always out of combat through the CombatQueue. Bindings are
+-- edited as a list (one binding per row, with a composer in the options:
+-- modifier, mouse button or key, action, spell) and the list is overridable,
+-- so each spec can have its own set. Keyboard (hovercast) keys are recorded in
+-- the binding ledger (PUI.Bindings:Reserve) so conflicts with Blizzard and
+-- other Phoenix bindings are shown next to each row. Mouse bindings set
 -- "<mods>type<n>" attributes; keyboard bindings are hovercast: a secure
 -- handler wraps OnEnter/OnLeave so the restricted environment binds the keys
 -- to the hovered frame and clears them on leave. When Clique is loaded,
@@ -15,7 +20,7 @@ local CC = { active = false, applied = {}, wrapped = {}, bindings = {}, errors =
 ns.CC = CC
 PUI.ClickCast = CC
 
-local s = { text = "1:target; 2:menu", hovercast = true }
+local s = { list = { "1:target", "2:menu" }, hovercast = true }
 CC.settings = s
 
 local ACTIONS = { target = "target", menu = "togglemenu", focus = "focus", spell = "spell", macro = "macro", item = "item", assist = "assist" }
@@ -51,6 +56,69 @@ function CC.Parse(text)
     end
   end
   return out, errors
+end
+
+-- One list row -> its binding record, or nil + why (the list's item check).
+function CC.ParseOne(text)
+  local list, errors = CC.Parse(text)
+  if #errors > 0 or #list ~= 1 then return nil, "use [mods-]button:action[:value], e.g. shift-1:spell:Renew" end
+  return list[1]
+end
+function CC.ValidateOne(text)
+  local b, why = CC.ParseOne(text)
+  if not b then return false, why end
+  return true
+end
+
+-- Builds a list row from composer parts.
+function CC.Compose(mods, button, action, value)
+  local m = {}
+  for _, k in ipairs({ "alt", "ctrl", "shift" }) do if mods and mods[k] then m[#m + 1] = k end end
+  local trigger = (#m > 0 and (table.concat(m, "-") .. "-") or "") .. tostring(button):lower()
+  if VALUE_ATTR[action] then return trigger .. ":" .. action .. ":" .. (value or "") end
+  return trigger .. ":" .. action
+end
+
+CC.BUTTON_LABELS = { ["1"] = "Left click", ["2"] = "Right click", ["3"] = "Middle click", ["4"] = "Mouse button 4", ["5"] = "Mouse button 5" }
+CC.ACTION_LABELS = { target = "Target", menu = "Open menu", focus = "Set focus", assist = "Assist", spell = "Cast", macro = "Run macro",
+  item = "Use item" }
+
+-- Ledger key for a hovercast binding ("SHIFT-F").
+function CC.KeyName(b)
+  local parts = {}
+  for _, m in ipairs(b.mods) do parts[#parts + 1] = m:upper() end
+  parts[#parts + 1] = b.button:upper()
+  return table.concat(parts, "-")
+end
+
+-- "Shift + Left click -> Cast Renew", plus a conflict note when needed.
+function CC.Label(text)
+  local b = CC.ParseOne(text)
+  if not b then return text end
+  local parts = {}
+  for _, m in ipairs(b.mods) do parts[#parts + 1] = m:sub(1, 1):upper() .. m:sub(2) end
+  parts[#parts + 1] = b.mouse and CC.BUTTON_LABELS[b.button] or ("Key " .. b.button:upper() .. " (on hover)")
+  local label = table.concat(parts, " + ") .. "  ->  " .. CC.ACTION_LABELS[b.action] .. (b.value and (" " .. b.value) or "")
+  local note = CC.ConflictText(b)
+  if note then label = label .. "   (" .. note .. ")" end
+  return label
+end
+
+-- Conflicts for one binding: duplicates in the list, and for keys other
+-- Phoenix owners or the user's Blizzard binding (shown, never changed).
+function CC.ConflictText(b)
+  local same = 0
+  for _, other in ipairs(CC.bindings) do
+    if other.button == b.button and table.concat(other.mods, "-") == table.concat(b.mods, "-") then same = same + 1 end
+  end
+  if same > 1 then return "used twice" end
+  if b.mouse then return nil end
+  local out = {}
+  for _, c in ipairs(PUI.Bindings:Conflicts(CC.KeyName(b), "ClickCast")) do
+    out[#out + 1] = c.kind == "blizzard" and ("also " .. c.action .. " while not hovering") or ("also used by " .. c.owner)
+  end
+  if #out == 0 then return nil end
+  return table.concat(out, "; ")
 end
 
 -- Attribute prefix for modifiers ("alt-ctrl-shift-" order is what the secure
@@ -149,7 +217,17 @@ end
 
 function CC.CliqueLoaded() return C_AddOns.IsAddOnLoaded("Clique") == true end
 
+local function reserveKeys()
+  PUI.Bindings:Unreserve(OWNER)
+  if not (CC.active and s.hovercast and not CC.CliqueLoaded()) then return end
+  for _, b in ipairs(CC.bindings) do
+    if not b.mouse then PUI.Bindings:Reserve(OWNER, CC.KeyName(b), "Click-cast on hover: " .. CC.ACTION_LABELS[b.action] .. (b.value and (" " .. b.value) or "")) end
+  end
+end
+CC.ReserveKeys = reserveKeys
+
 function CC.Apply()
+  reserveKeys()
   CQ.Defer("cc.apply", function()
     if CC.active and not CC.CliqueLoaded() then
       local h = getHeader()
@@ -162,7 +240,7 @@ function CC.Apply()
 end
 
 local function parseSetting()
-  CC.bindings, CC.errors = CC.Parse(s.text)
+  CC.bindings, CC.errors = CC.Parse(table.concat(s.list or {}, "; "))
   if #CC.errors > 0 then PUI:Log("clickcast", "unparsed", table.concat(CC.errors, " | ")) end
 end
 
@@ -179,6 +257,7 @@ end
 
 local function onDisable()
   CC.active = false
+  PUI.Bindings:Unreserve(OWNER)
   CQ.Defer("cc.off", function()
     if CC.active then return end
     if header then header:SetAttribute("phx-keys", "") end
@@ -187,10 +266,15 @@ local function onDisable()
 end
 
 local schema = {
-  ["cc.bindings"] = { type = "text", default = "1:target; 2:menu", label = "Click-cast bindings",
-    tooltip = "Entries separated by ';' as [mods-]button:action[:value]. Buttons 1-5 are mouse buttons, any other key is hovercast. Actions: target, menu, focus, assist, spell:<name>, macro:<text>, item:<name>. Example: shift-1:spell:Renew; F:spell:Flash Heal.",
-    mode = "simple", owner = OWNER,
-    apply = function(v) s.text = v; parseSetting(); if CC.active then CC.Apply() end end },
+  ["cc.list"] = { type = "list", default = { "1:target", "2:menu" }, maxItems = 40, label = "Click-cast bindings",
+    tooltip = "One binding per row. Pick a modifier, a mouse button or a key, and what it does: target, menu, focus, assist, cast a spell, run a macro or use an item. Keys work while the mouse is over a frame. Each spec can keep its own list (Editing as). Changes made in combat apply as soon as combat ends.",
+    mode = "simple", owner = OWNER, overridable = true, itemValidate = CC.ValidateOne, itemLabel = function(v) return CC.Label(v) end,
+    composer = "clickcast", searchTags = { "clique", "click cast", "hover", "bindings", "heal" },
+    apply = function(v) s.list = v; parseSetting(); if CC.active then CC.Apply() end end },
+  -- Pre-list text form; kept so older profiles move into the list (never reset).
+  ["cc.bindings"] = { type = "text", default = "", label = "Click-cast bindings (old text form)", hidden = true,
+    tooltip = "Older text form of the bindings; moved into the list automatically.", mode = "advanced", owner = OWNER,
+    apply = function() end },
   ["cc.hovercast"] = { type = "toggle", default = true, label = "Hovercast keys",
     tooltip = "Keyboard bindings cast on the frame under the mouse.", mode = "advanced", owner = OWNER,
     apply = function(v) s.hovercast = v; if CC.active then CC.Apply() end end },
@@ -205,4 +289,24 @@ CC.module = PUI:RegisterModule(OWNER, {
   onEnable = onEnable,
   onDisable = onDisable,
 })
+-- One-time move of the old text form into the list (this profile only).
+function CC.MigrateText()
+  local DB = PUI.DB
+  local text = DB.profile and DB.profile["cc.bindings"]
+  if type(text) ~= "string" or text == "" then return false end
+  if DB.profile["cc.list"] == nil then
+    local list = {}
+    for entry in string.gmatch(text, "[^;]+") do
+      entry = entry:gsub("^%s+", ""):gsub("%s+$", "")
+      if entry ~= "" then list[#list + 1] = entry end
+    end
+    DB.profile["cc.list"] = list
+  end
+  DB.profile["cc.bindings"] = nil
+  return true
+end
+CC.MigrateText()
 for k, def in pairs(schema) do def.apply(Schema:Get(k)) end
+PUI.Kernel:On("PROFILES_CHANGED", function()
+  if CC.MigrateText() then for k, def in pairs(schema) do def.apply(Schema:Get(k)) end end
+end)

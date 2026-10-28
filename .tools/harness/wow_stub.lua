@@ -345,6 +345,8 @@ FocusFrame.totFrame = CreateFrame("Frame", nil, FocusFrame); FocusFrame.totFrame
 H.units = { player = true, target = true }
 local function exists(u) return H.units[u] == true end
 function UnitExists(u) return exists(u) end
+H.hostile = H.hostile or {}
+function UnitCanAttack(a, b) return H.hostile[b] == true end
 function UnitHealth(u) return maybe(exists(u) and 800 or 0) end
 function UnitHealthMax(u) return maybe(exists(u) and 1000 or 0) end
 function UnitHealthMissing(u) return maybe(exists(u) and 200 or 0) end
@@ -478,7 +480,11 @@ H.privateAnchors, H.nextAnchor = {}, 0
 C_UnitAuras = {
   AddPrivateAuraAnchor = function(args) H.nextAnchor = H.nextAnchor + 1; H.privateAnchors[H.nextAnchor] = args; return H.nextAnchor end,
   RemovePrivateAuraAnchor = function(id) H.privateAnchors[id] = nil end,
-  GetAuraDataByIndex = function(u, i, filter) if H.dispellable and H.dispellable[u] then return { auraInstanceID = maybe(7) } end return nil end,
+  GetAuraDataByIndex = function(u, i, filter)
+    local set = (type(filter) == "string" and filter:find("HELPFUL")) and H.purgeable or H.dispellable
+    if set and set[u] then return { auraInstanceID = maybe(7) } end
+    return nil
+  end,
 }
 for _, n in ipairs({ "PartyFrame", "CompactRaidFrameContainer", "CompactRaidFrameManager" }) do
   local f = CreateFrame("Frame", n, UIParent); f.parent = UIParent
@@ -775,6 +781,20 @@ H.secretAuras = false
 C_Secrets.ShouldAurasBeSecret = function() return H.secretAuras == true end
 H.callbacks = {}
 EventRegistry = { RegisterCallback = function(_, event, fn, owner) H.callbacks[event] = H.callbacks[event] or {}; table.insert(H.callbacks[event], fn) end }
+
+-- Phase 4: group frames (dispel colours, corner indicators, arena targeting).
+C_UnitAuras.GetAuraDispelTypeColor = function(u, id, curve) H.dispelColorCalls = (H.dispelColorCalls or 0) + 1; return CreateColor(0.2, 0.6, 1, 1) end
+H.unitAuras = {}
+C_UnitAuras.GetUnitAuraBySpellID = function(u, id) local a = H.unitAuras[u]; if a and a[id] then return { auraInstanceID = maybe(id) } end return nil end
+C_UnitAuras.GetAuraDataBySpellName = function(u, name, filter) local a = H.unitAuras[u]; local id = tonumber(tostring(name):match("%d+") or 0)
+  if a and a[id] then return { auraInstanceID = maybe(id) } end return nil end
+H.unitTargets = {}
+local baseUnitIsUnit = UnitIsUnit
+function UnitIsUnit(a, b)
+  local enemy = type(a) == "string" and a:match("^(.+)target$")
+  if enemy and H.unitTargets[enemy] then return maybe(H.unitTargets[enemy] == b) end
+  return baseUnitIsUnit(a, b)
+end
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,

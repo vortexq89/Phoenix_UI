@@ -198,3 +198,27 @@ Tests:Add("Options", "unit frame preview follows the look and offers test frames
   t:eq(UF.Styles.Resolve(UF.settings.style, {}).portrait, "class", "preview reads the same look table")
   t:ok(Options.frame:IsShown(), "page still open after a live look switch")
 end)
+
+Tests:Add("Options", "raid preview draws the tier grid; click-cast composer validates and adds", function(t)
+  local RF, CC = PUI.RaidFrames, PUI.ClickCast
+  if not (RF and CC) then return end
+  Tests.Keep(t, "rf.corners")
+  Tests.Keep(t, "cc.list")
+  t:cleanup(function() Options.frame:Hide() end)
+  local card = CreateFrame("Frame")
+  Options.Previews.RaidFrames(card, "party")
+  Options.Previews.RaidFrames(card, "large")
+  Options.Previews.RaidFrames(card, "debuffs")
+  t:ok(RF.Elements and RF.Indicators, "module exports its builder for the preview")
+  t:ok(RF.Indicators.PresetFor("DRUID"), "druid heal preset exists")
+  Options:Open("RaidFrames")
+  t:ok(Options.frame:IsShown(), "raid page renders")
+  local Widgets = Options.Widgets
+  local added
+  local parent = CreateFrame("Frame")
+  local c = Widgets.composers.clickcast(parent, {}, function(v) added = v; return true end)
+  c.value:SetText("Rejuvenation")
+  c.add:GetScript("OnClick")(c.add)
+  t:eq(added, "1:spell:Rejuvenation", "composer builds a binding line")
+  t:ok(CC.ValidateOne(added), "composed line validates")
+end)

@@ -58,7 +58,7 @@ local CAST_COLORS = {
 local settings = {
   style = "ember", border = "look", borderColor = "look", background = "look", powerStyle = "look", portraitShape = "look",
   edge = "look", colorMode = "look", healthColor = { r = 0.24, g = 0.86, b = 0.59 }, darkMode = false,
-  smooth = false, absorbs = true, healPrediction = false, fillAlpha = 1, threat = true,
+  smooth = false, absorbs = true, healPrediction = false, fillAlpha = 1, threat = true, overflow = true, purgeGlow = true,
   rangeFade = true, rangeAlpha = 0.45, font = "global", fontSize = 12, fontOutline = "shadow", castFade = 0.35,
   castColors = PUI.Schema.Copy(CAST_COLORS),
   indicators = { raidMarker = true, leader = true, combat = true, resting = false, classification = false, pvp = false },
@@ -78,8 +78,9 @@ for g, d in pairs(GROUPS) do
     auras = {
       buffs = { enabled = d.buffs[1], max = d.buffs[2], size = 22, perRow = 8, position = "below", filter = d.buffs[3], sort = "default" },
       debuffs = { enabled = d.debuffs[1], max = d.debuffs[2], size = 22, perRow = 8, position = g == "boss" and "left" or "below",
-        filter = d.debuffs[3], sort = "expiration" },
-    } }
+        filter = d.debuffs[3], sort = "expiration", hideLockouts = true },
+    },
+    dispel = { enabled = g == "player" or g == "target" or g == "focus", max = 3, size = 20, position = "inside" } }
 end
 
 -- Trackers -----------------------------------------------------------------
@@ -89,6 +90,7 @@ local CHANNEL_EVENTS = {
   prediction = { "UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_PREDICTION" },
   portrait = { "UNIT_PORTRAIT_UPDATE", "UNIT_MODEL_CHANGED" },
   threat = { "UNIT_THREAT_SITUATION_UPDATE" },
+  purge = { "UNIT_AURA" },
 }
 UF.CHANNEL_EVENTS = CHANNEL_EVENTS
 
@@ -109,6 +111,7 @@ local HANDLERS = {
   UNIT_PORTRAIT_UPDATE = function(o) E.UpdatePortrait(o) end,
   UNIT_MODEL_CHANGED = function(o) E.UpdatePortrait(o) end,
   UNIT_THREAT_SITUATION_UPDATE = function(o) E.UpdateThreat(o) end,
+  UNIT_AURA = function(o) E.UpdatePurge(o) end,
 }
 UF.HANDLERS = HANDLERS
 
@@ -129,6 +132,7 @@ function UF.Channels(o)
   local look = o.look or E.Look(o)
   if look.portrait ~= "off" then list.portrait = true end
   if settings.threat and (o.group == "player" or o.group == "target" or o.group == "focus" or o.group == "boss") then list.threat = true end
+  if settings.purgeGlow and E.PURGE_GROUPS[o.group] and E.CanPurge() then list.purge = true end
   return list
 end
 
@@ -141,7 +145,10 @@ function UF.Track(o)
     for i = 1, #events do t:RegisterUnitEvent(events[i], o.unit) end
   end
   if settings.absorbs or settings.healPrediction then
-    o.calc = o.calc or CreateUnitHealPredictionCalculator()
+    if not o.calc then
+      o.calc = CreateUnitHealPredictionCalculator()
+      PUI.Prediction.Configure(o.calc)
+    end
   end
 end
 
@@ -233,6 +240,7 @@ local function place(group)
       end
       E.Layout(o, c)
       A.Setup(o, group, c)
+      A.SetupDispel(o, group, c)
     end
   end
   local el = Layout:Element("uf." .. group)
@@ -545,6 +553,12 @@ global("uf.smooth", { type = "toggle", default = false, label = "Smooth bars",
   tooltip = "Health and power bars glide to new values instead of jumping.", mode = "advanced" }, function(v) settings.smooth = v end)
 global("uf.absorbs", { type = "toggle", default = true, label = "Show absorbs",
   tooltip = "Shows damage absorbs after the health fill and heal absorbs on it.", mode = "advanced" }, function(v) settings.absorbs = v end)
+global("uf.overflow", { type = "toggle", default = true, label = "Overflow marks",
+  tooltip = "A bright edge when absorbs run past full health, and when heal absorbs eat more than the health left.",
+  mode = "advanced", overridable = true, searchTags = { "absorb", "heal absorb", "overflow" } }, function(v) settings.overflow = v end)
+global("uf.purgeGlow", { type = "toggle", default = true, label = "Purge glow",
+  tooltip = "Glows enemy target, focus and boss frames that have a buff you can purge or steal (only if you know an offensive dispel).",
+  mode = "simple", overridable = true, searchTags = { "purge", "spellsteal", "offensive dispel", "tranq" } }, function(v) settings.purgeGlow = v end)
 global("uf.healPrediction", { type = "toggle", default = false, label = "Show incoming heals",
   tooltip = "Shows predicted incoming heals after the health fill.", mode = "advanced" }, function(v) settings.healPrediction = v end)
 global("uf.fillAlpha", { type = "range", default = 1, min = 0.2, max = 1, step = 0.05, label = "Health fill opacity",
@@ -688,6 +702,20 @@ for _, g in ipairs(ORDER) do
         unitFrameDebuff = "Debuff priority", important = "Important first" }, label = label .. " " .. kind .. " order",
       tooltip = "How icons are ordered.", mode = "advanced" }, function(c, v) c.auras[kind].sort = v end)
   end
+  groupKey(g, "auras.debuffs.hideLockouts", { type = "toggle", default = true, label = label .. " hide lockout debuffs",
+    tooltip = "Hides Sated, Exhaustion, Forbearance and similar lockouts from the debuff icons.", mode = "advanced",
+    overridable = true, searchTags = { "sated", "exhaustion", "forbearance", "lockout" } }, function(c, v) c.auras.debuffs.hideLockouts = v end)
+  local dp = cfg[g].dispel
+  groupKey(g, "dispel.enabled", { type = "toggle", default = dp.enabled, label = label .. " dispel slots",
+    tooltip = "Big icons for debuffs you can dispel, apart from the other debuffs.", mode = simple, overridable = true,
+    searchTags = { "dispel", "cleanse", "decurse" } }, function(c, v) c.dispel.enabled = v end)
+  groupKey(g, "dispel.max", { type = "range", default = 3, min = 1, max = 6, step = 1, label = label .. " dispel slots shown",
+    tooltip = "Largest number of dispellable debuffs shown.", mode = "advanced" }, function(c, v) c.dispel.max = v end)
+  groupKey(g, "dispel.size", { type = "range", default = 20, min = 10, max = 48, step = 1, label = label .. " dispel slot size",
+    tooltip = "Dispel icon size.", mode = "advanced", overridable = true }, function(c, v) c.dispel.size = v end)
+  groupKey(g, "dispel.position", { type = "select", default = "inside", choices = { "inside", "left", "right", "above" },
+    choiceLabels = { inside = "Inside, centred", left = "Left", right = "Right", above = "Above" }, label = label .. " dispel slot position",
+    tooltip = "Where the dispel icons sit.", mode = "advanced" }, function(c, v) c.dispel.position = v end)
 end
 
 -- Group-only extras.

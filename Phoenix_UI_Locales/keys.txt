@@ -1,7 +1,9 @@
 /pui cd
 /pui rl
+A bright edge when absorbs run past full health, and when heal absorbs eat more than the health left.
 A coloured glow around player, target, focus and boss frames when you have threat.
 A thin accent-coloured line under the health bar.
+A white edge when a shield is bigger than the missing health, and a red edge when a heal absorb is bigger than the current health.
 Accent colour
 Accent line
 Accept invites from friends
@@ -35,6 +37,7 @@ Alert sound
 All bags in one window with search, sort, item levels and junk selling.
 All tracked quests, only those in progress, or only those ready to turn in.
 Allow Sentinel reports to leave this computer (export string and Companion upload). Nothing is shared while off.
+Also shows a dot for each boss targeting this member.
 Announce differences
 Ascent
 Auction House
@@ -166,6 +169,12 @@ Bar texture
 Bar texture for this frame; Theme bar texture follows Theme & Media.
 Bars fill from the right.
 Bars, compact or minimal rows; switches live.
+Big defensive on group frames
+Big defensive: how many
+Big defensive: icon size
+Big defensive: position
+Big defensive: which ones
+Big icons for debuffs you can dispel, apart from the other debuffs.
 Blizzard's server-side filter for groups missing your current role.
 Blizzard's server-side minimum rating filter; 0 turns it off.
 Border
@@ -191,19 +200,25 @@ Boss debuffs per row
 Boss debuffs position
 Boss debuffs shown
 Boss debuffs size
+Boss dispel slot position
+Boss dispel slot size
+Boss dispel slots
+Boss dispel slots shown
 Boss fill bottom to top
 Boss fill right to left
 Boss frame
 Boss frame spacing
 Boss frames stack
 Boss height
+Boss hide lockout debuffs
 Boss kill times and the difference to your best run.
-Boss mechanics the game hides from addons, drawn by the game on each frame; 0 turns them off.
+Boss mechanics the game hides from addons, drawn by the game itself on each frame; 0 turns them off.
 Boss opacity when hidden
 Boss portrait
 Boss portrait side
 Boss power bar height
 Boss splits
+Boss target dots
 Boss text (center)
 Boss text (left)
 Boss text (power)
@@ -227,6 +242,7 @@ Buff icons: spacing
 Buffs grow
 Buffs icon size
 Buffs new rows
+Buffs on group frames
 Buffs order
 Buffs per row
 Buffs reverse order
@@ -234,6 +250,10 @@ Buffs shown
 Buffs shown at most
 Buffs spacing
 Buffs to show.
+Buffs: how many
+Buffs: icon size
+Buffs: position
+Buffs: which ones
 Button size of bar 1 in pixels.
 Button size of bar 10 in pixels.
 Button size of bar 2 in pixels.
@@ -277,7 +297,7 @@ Chat
 Chat timestamps
 Class buffs
 Class colour (players), reaction colour, a red-to-green gradient by health, the accent colour or your own colour.
-Class colour, a red-to-green gradient by health, or the accent colour.
+Class colour, a red-to-green gradient by health, the accent colour or your own colour.
 Class resource
 Class resource and cast bar
 Class resource height
@@ -286,8 +306,10 @@ Click-cast bindings
 Click-casting
 Closes the talking head popup as it opens.
 Collections
+Colour by debuff type
 Colour for a score of 0 when using your own gradient.
 Colour for the top score when using your own gradient.
+Colour of member names.
 Colour of the frame border.
 Colour wash over the settings window glass. Alpha sets how strong it is (0 = none). Glass opacity is in Theme & Media.
 Columns
@@ -299,9 +321,14 @@ Command palette: search settings, panels, macros, mounts, profiles and commands 
 Completion sound
 Cooldown manager
 Cooldown manager preset
+Corner indicator size
+Corner indicators
+Corner or edge of the frame the icons start from.
 Current subzone on the minimap.
+Custom group health colour
 Custom health colour
 Damage meter on the game's own meter data, with saved segments, graphs, report and export.
+Damage shields after the health fill.
 Dark health fill with the class colour behind it.
 Dark mode
 Data bar 1
@@ -316,6 +343,7 @@ Data bars
 Debuffs grow
 Debuffs icon size
 Debuffs new rows
+Debuffs on group frames
 Debuffs order
 Debuffs per row
 Debuffs reverse order
@@ -323,6 +351,10 @@ Debuffs shown
 Debuffs shown at most
 Debuffs spacing
 Debuffs to show.
+Debuffs: how many
+Debuffs: icon size
+Debuffs: position
+Debuffs: which ones
 Decimal places for short numbers, e.g. 12K, 12.3K or 12.34K.
 Decimal places in the score.
 Decimals on short numbers
@@ -335,12 +367,18 @@ Dim unwanted groups
 Dims groups below your minimum rating or from leaders who declined you.
 Disable a Phoenix module at the next login when it threw too many errors in the previous session.
 Dispel highlight
+Dispel highlight colour
+Dispel highlight shows
+Dispel highlight style
+Dispel icon size.
+Dispel tint strength
 Dragged elements snap to the Studio grid.
 Draw the pixel grid while Studio is open.
 Draws a marker at this health percentage; 0 hides it.
 Draws the frame of buttons that hold no action.
 Dressing room
 Durability threshold (%)
+Effects that eat healing, drawn in red inside the health fill.
 Ember (portrait, flat bars, thick power), Glass (rounded, thin power, class icon), Blizzard-like or Classic-like. Each part of the look can also be changed on its own below.
 Embers
 Embers window 1
@@ -350,7 +388,7 @@ Embers window 4
 Embers window 5
 Enables /pui cd <seconds> for a pull countdown.
 Enables /pui rl to reload the UI.
-Entries separated by ';' as [mods-]button:action[:value]. Buttons 1-5 are mouse buttons, any other key is hovercast. Actions: target, menu, focus, assist, spell:<name>, macro:<text>, item:<name>. Example: shift-1:spell:Renew; F:spell:Flash Heal.
+Enemy target dots
 Error notice
 Errors from one module in a session that trigger safe mode at the next login.
 Essential cooldowns
@@ -390,10 +428,15 @@ Focus debuffs per row
 Focus debuffs position
 Focus debuffs shown
 Focus debuffs size
+Focus dispel slot position
+Focus dispel slot size
+Focus dispel slots
+Focus dispel slots shown
 Focus fill bottom to top
 Focus fill right to left
 Focus frame
 Focus height
+Focus hide lockout debuffs
 Focus opacity when hidden
 Focus portrait
 Focus portrait side
@@ -419,10 +462,15 @@ Focus target debuffs per row
 Focus target debuffs position
 Focus target debuffs shown
 Focus target debuffs size
+Focus target dispel slot position
+Focus target dispel slot size
+Focus target dispel slots
+Focus target dispel slots shown
 Focus target fill bottom to top
 Focus target fill right to left
 Focus target frame
 Focus target height
+Focus target hide lockout debuffs
 Focus target opacity when hidden
 Focus target portrait
 Focus target portrait side
@@ -449,7 +497,6 @@ Friendly plates: name only
 Friendly units show only a class-coloured name.
 Game Menu button
 Gap between boss frames.
-Gap between frames and between raid groups.
 Gap between icons.
 Gap between items.
 Gap between stacked resource bars.
@@ -468,6 +515,7 @@ Gear advisor: stat-weight score and upgrade star in tooltips and bags.
 Global cooldown bar
 Global cooldown bar height
 Global nameplate scale; restored when the module turns off.
+Glows enemy target, focus and boss frames that have a buff you can purge or steal (only if you know an offensive dispel).
 Gossip and quests
 Gradient end colour
 Gradient start colour
@@ -477,17 +525,15 @@ Greys the bar while the cast can't be interrupted.
 Grid uses full-size slots; compact uses smaller ones.
 Group Finder
 Group absorbs
-Group frame height
-Group frame spacing
-Group frame width
+Group frames opacity when hidden
 Group health colour
 Group health text
 Group invite
-Group layout
 Group raid markers
 Groups and orders tracked quests by zone, level, distance or quest type.
 Guild and communities
 Guild and rank
+Heal absorbs
 Healer mana
 Healer mana height
 Health and power bars glide to new values instead of jumping.
@@ -497,9 +543,9 @@ Health bar height
 Health colour
 Health fill opacity
 Health fills upwards instead of sideways.
-Health percentage, missing health, or nothing (dead/offline always show).
+Health percentage, missing health, current health or nothing (dead and offline always show).
 Health text on the plate.
-Height of each party/raid frame.
+Height of each frame in this layout.
 Height of the bar.
 Height of the boss frame in pixels.
 Height of the cast bar under each plate.
@@ -523,15 +569,20 @@ Hide Blizzard party/raid frames
 Hide Blizzard tracker
 Hide Blizzard tracker in keys
 Hide errors in combat
+Hide lockout debuffs
 Hide minimap border and zone bar
+Hide role icons in combat
 Hide talking head
+Hide the damage role icon
+Hides Sated, Exhaustion, Forbearance and similar lockouts from the debuff icons.
 Hides a buff here when the Cooldown Manager's tracked buff bars already show it, so nothing appears twice.
 Hides the default objective tracker while this tracker is on.
 Hides the default party and raid frames while Phoenix group frames are on.
 Hides the default player cast bar while the Phoenix cast bar is shown.
 Highlights items you just received.
-Highlights members carrying a debuff you can dispel.
+Highlights members carrying a debuff that can be dispelled.
 Hovercast keys
+How a dispellable debuff is shown on the frame.
 How icons are ordered.
 How large numbers look everywhere in Phoenix (meters, data bars, unit text, combat text).
 How many buttons bar 1 shows (an action page holds 12).
@@ -546,17 +597,24 @@ How many buttons bar 8 shows (an action page holds 12).
 How many buttons bar 9 shows (an action page holds 12).
 How many finished fights to keep across reloads (pinned ones are always kept).
 How many fit in one row before wrapping (overflow goes to the next row).
+How many frames before a new column (or row) starts. 5 keeps one group per column.
 How many icons fit on one row before a new row starts.
 How many meter windows to show (up to 5); each snaps in Studio.
 How many names a chat report lists.
 How many results the palette lists.
 How often out-of-range units are re-checked (seconds). Lower reacts faster and costs a little more.
+How strongly the health bar is tinted.
 Icon size
+Icon size in pixels.
 Icon size.
+Icon size; 0 follows the frame height.
 Icons per row.
+In Mythic raids only the 20 players in groups 1 to 4 are shown; benched players in groups 5 to 8 are left out.
+In arenas, a coloured dot for each enemy that is targeting this member (the same colours as your arena frames).
 In combat, colour plates by your threat: tanks want aggro (green), others want none.
 Include my character name
 Includes your own frame in the party frames.
+Incoming heals
 Indicator: PvP flag
 Indicator: elite / rare
 Indicator: group leader
@@ -576,11 +634,15 @@ Language
 Language for Phoenix UI text. Auto follows the game client.
 Largest number of buffs shown.
 Largest number of debuffs shown.
+Largest number of dispellable debuffs shown.
+Largest number of icons shown.
 Lays out the game's Cooldown Viewer icons and bars in Phoenix rows (the game still draws every cooldown).
 Leader icon
 Leader score
 Leader scores, missing roles, role fit and declined memory in the group finder. Stands down when Premade Groups Filter is loaded.
 Leave Cooldown Manager buffs to its bars
+Leaves Sated, Exhaustion, Temporal Displacement, Forbearance and similar lockouts off the debuff icons (where the game allows it).
+Lets the game mark the dispel type on private auras.
 Lists Phoenix fonts, textures and sounds in other addons' pickers (LibSharedMedia), when one of them loads it.
 Lists what you picked recently first when the search is empty.
 Loadouts
@@ -602,6 +664,7 @@ Macro conditions that show or hide bar 8, e.g. [combat] show; hide. Empty uses t
 Macro conditions that show or hide bar 9, e.g. [combat] show; hide. Empty uses the default.
 Macro names
 Macros
+Magic blue, curse purple, disease brown, poison green, bleed red. Off uses the colour below.
 Mail
 Mana bar on healers' frames only.
 Map and quest log
@@ -612,6 +675,7 @@ Marks units related to one of your active quests.
 Marks upgrades in Phoenix bags (Vault).
 Material of Phoenix UI windows: Obsidian Glass, Charcoal Solid or Ash Light.
 Max camera distance
+Members stack downwards with each group in its own column, or sideways with each group in its own row.
 Merchant
 Meter type
 Meter windows
@@ -627,16 +691,25 @@ Minimum leader rating
 Mirrored lines fade after this many seconds; 0 keeps them.
 Missing raid buffs and class buffs, checked out of combat.
 Missing roles
+Mythic raids: groups 1 to 4 only
 Mythic+ score
 Mythic+ timer
 Mythic+ timer with thresholds, forces, deaths, boss splits and personal bests.
+Name colour
+Name position
 Nameplates
+New columns are added to the left instead of the right.
 New group sound
 New item glow
+New members are added above instead of below.
 Number font
 Number style
+One binding per row. Pick a modifier, a mouse button or a key, and what it does: target, menu, focus, assist, cast a spell, run a macro or use an item. Keys work while the mouse is over a frame. Each spec can keep its own list (Editing as). Changes made in combat apply as soon as combat ends.
+One large icon in the middle for a big personal or external defensive.
+Only debuffs your class and spec can remove, or any dispellable debuff (useful to call for help).
 Only groups that need my role
 Only in a group
+Only tanks and healers get a role marker.
 Opacity of a frame whose unit is out of range.
 Opacity of bar 1 out of combat when fading is on.
 Opacity of bar 10 out of combat when fading is on.
@@ -652,19 +725,33 @@ Opacity of out-of-range frames.
 Opacity of the dark background behind Phoenix bars.
 Opacity of the health fill.
 Opacity used when the where-to-show rule hides the frame (0 = invisible, higher = faded).
+Opacity used when the where-to-show rule hides the frames (0 = invisible). They stay clickable in combat because the game locks that.
 Open key
 Opens at
 Options mode
 Oracle
-Order raid frames by group, by role (tanks, healers, damage), by class or by name.
+Order of the party frames.
+Order raid frames by group, by role (in the role order below), by class or by name.
+Order used when sorting by role (raid and party).
 Out of range opacity
 Out-of-range opacity
 Outline or shadow behind unit-frame text.
 Outlines your current target's plate in the accent colour.
+Overflow marks
 Pages shown at the top of the sidebar, in this order.
 Palette key
 Panel opacity
+Party (5): arrangement
+Party (5): frame height
+Party (5): frame width
+Party (5): gap between frames
+Party (5): gap between groups
+Party (5): grow to the left
+Party (5): grow upwards
+Party (5): members per column
 Party frames
+Party frames: where to show
+Party sorting
 Pawn
 Per-pull graph
 Performance sampler
@@ -690,10 +777,15 @@ Pet debuffs per row
 Pet debuffs position
 Pet debuffs shown
 Pet debuffs size
+Pet dispel slot position
+Pet dispel slot size
+Pet dispel slots
+Pet dispel slots shown
 Pet fill bottom to top
 Pet fill right to left
 Pet frame
 Pet height
+Pet hide lockout debuffs
 Pet opacity when hidden
 Pet portrait
 Pet portrait side
@@ -715,7 +807,7 @@ Phoenix frame skin for WeakAuras options when that addon is installed.
 Phoenix look for 25 Blizzard windows and Details!, Pawn, WeakAuras and Plater; each has its own switch.
 Phoenix minimap shape, size and texts.
 Phoenix nameplates over the game's plates: health, casts, threat colours and icons.
-Phoenix party and raid frames with status icons, range fade, dispel highlight and private auras.
+Phoenix party and raid frames: layouts by group size, sorting, role icons, dispel highlight, aura icons, corner indicators, private auras, heal prediction, range fade and a test mode.
 Phoenix player, target, focus, pet, target-of-target, focus-target and boss frames, and your buff and debuff rows.
 Phoenix positions the game's buff bars in its own rows; off leaves them to the game.
 Phoenix positions the game's buff icons in its own rows; off leaves them to the game.
@@ -747,6 +839,7 @@ Phoenix skin for the Settings window.
 Phoenix skin for the Spellbook and talents window.
 Phoenix skin for the Trade window.
 Phoenix skin for the Transmog window.
+Pick the layout by group size
 Pick, per content type, whether the profile switches and whether a chat line tells you.
 Picks the only dialogue option when there is no quest. Hold Shift to read.
 Pinned pages
@@ -777,10 +870,15 @@ Player debuffs per row
 Player debuffs position
 Player debuffs shown
 Player debuffs size
+Player dispel slot position
+Player dispel slot size
+Player dispel slots
+Player dispel slots shown
 Player fill bottom to top
 Player fill right to left
 Player frame
 Player height
+Player hide lockout debuffs
 Player opacity when hidden
 Player portrait
 Player portrait side
@@ -803,12 +901,18 @@ Power bar
 Power bar height
 Power bar placement
 Power hash lines
+Predicted heals after the health fill.
 Press this key to open or close Phoenix settings. Empty means no key.
 Print event history
 Print every Phoenix event (module changes, setting changes) to chat as it happens. For troubleshooting.
+Private aura countdown numbers
+Private aura dispel type
+Private aura position
+Private aura size
 Private aura slots
 Professions
 Profile
+Purge glow
 Quest Tracker
 Quest tracker
 Quick loot
@@ -816,8 +920,34 @@ Raid and party frames
 Raid buff reminders only while you are in a group.
 Raid buffs
 Raid frames
+Raid frames: where to show
+Raid layout when not automatic
 Raid sorting
 Raid target markers on group frames.
+Raid up to 10: arrangement
+Raid up to 10: frame height
+Raid up to 10: frame width
+Raid up to 10: gap between frames
+Raid up to 10: gap between groups
+Raid up to 10: grow to the left
+Raid up to 10: grow upwards
+Raid up to 10: members per column
+Raid up to 20: arrangement
+Raid up to 20: frame height
+Raid up to 20: frame width
+Raid up to 20: gap between frames
+Raid up to 20: gap between groups
+Raid up to 20: grow to the left
+Raid up to 20: grow upwards
+Raid up to 20: members per column
+Raid up to 40: arrangement
+Raid up to 40: frame height
+Raid up to 40: frame width
+Raid up to 40: gap between frames
+Raid up to 40: gap between groups
+Raid up to 40: grow to the left
+Raid up to 40: grow upwards
+Raid up to 40: members per column
 Raises the camera zoom limit; restored when turned off.
 Range check speed
 Reaction colour, or class colour for players.
@@ -842,6 +972,8 @@ Results shown
 Reverses the chosen order.
 Role fit
 Role icons
+Role markers fade away while you are in combat.
+Role order
 Rows
 Rows grow to the right or to the left of the anchor.
 Rows per window.
@@ -885,8 +1017,10 @@ Show party frames when solo
 Show the boss frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
 Show the focus frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
 Show the focus target frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
+Show the party frames everywhere, never, or only in the content, combat state and group you pick. The line below explains why they are hidden right now.
 Show the pet frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
 Show the player frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
+Show the raid frames everywhere, never, or only in the content, combat state and group you pick. The line below explains why they are hidden right now.
 Show the target frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
 Show the target of target frame everywhere, never, or only in the content, combat state and group you pick. The line below explains why it is hidden right now.
 Show yourself in party
@@ -903,6 +1037,7 @@ Shows Phoenix action bar 9.
 Shows [2] instead of [2. Trade - City].
 Shows a Sell junk button at vendors when you carry grey items.
 Shows a cast bar for this frame.
+Shows buffs icons on each frame.
 Shows buffs on the boss frame.
 Shows buffs on the focus frame.
 Shows buffs on the focus target frame.
@@ -912,7 +1047,7 @@ Shows buffs on the target frame.
 Shows buffs on the target of target frame.
 Shows casts and channels under each plate (one shared cast dispatcher).
 Shows damage absorbs after the health fill and heal absorbs on it.
-Shows damage absorbs after the health fill.
+Shows debuffs icons on each frame.
 Shows debuffs on the boss frame.
 Shows debuffs on the focus frame.
 Shows debuffs on the focus target frame.
@@ -938,6 +1073,7 @@ Shows the leader's Mythic+ score in its rarity colour.
 Shows the power bar in the resource stack.
 Shows the raid markers icon on unit frames.
 Shows the resting (player) icon on unit frames.
+Shows the seconds left on private auras.
 Shows the spell or item tooltip when the pointer is over an action button.
 Shows the totem bars in the resource stack.
 Shows the unit's name above enemy plates.
@@ -950,8 +1086,10 @@ Side of the frame the icons sit on.
 Simple shows the curated settings; Advanced shows every setting.
 Size of each bar.
 Size of each buffs icon in pixels.
+Size of each corner square.
 Size of each debuffs icon in pixels.
 Size of each icon.
+Size of the enemy target dots.
 Size of the timer window.
 Size of this settings window. Independent of your UI scale.
 Size of unit-frame text.
@@ -965,6 +1103,8 @@ Snap to grid
 Sort quests by
 Sound
 Sound for Phoenix alerts (reminders, group finder, quest complete). None keeps each module's own sound.
+Space between groups (columns or rows).
+Space between members of one group.
 Space between the player frame and the attached resource bars.
 Spacing of the Studio pixel grid, in UI pixels.
 Spec, talent loadout and gear set per kind of content, checked when you zone in.
@@ -972,6 +1112,7 @@ Spell and item IDs
 Spell icon beside the cast bar.
 Spell name on the cast bar.
 Spellbook and talents
+Spells you want to see as small squares in a corner, one per line as CORNER:spellID, then optionally :mine or :any and a colour (RRGGBB). Example: TOPLEFT:774:mine. Use the preset button for your class's heals. In some restricted fights the game hides other players' auras; then a square stays off.
 Spoken warnings
 Square or round minimap.
 Square or round portraits.
@@ -984,7 +1125,7 @@ Switches to the saved loadout on its own when you zone in (out of combat).
 Taint logging this session
 Taint-safe chat mirror with timestamps, short channels, keyword alerts and copy.
 Takes every item as soon as the loot window opens. Hold Shift to choose.
-Tank, healer and damage icons.
+Tank, healer and damage markers as icons, coloured letters, or hidden.
 Target bar texture
 Target buffs
 Target buffs order
@@ -1006,10 +1147,16 @@ Target debuffs per row
 Target debuffs position
 Target debuffs shown
 Target debuffs size
+Target dispel slot position
+Target dispel slot size
+Target dispel slots
+Target dispel slots shown
+Target dot size
 Target fill bottom to top
 Target fill right to left
 Target frame
 Target height
+Target hide lockout debuffs
 Target highlight
 Target of target bar texture
 Target of target buffs
@@ -1032,10 +1179,15 @@ Target of target debuffs per row
 Target of target debuffs position
 Target of target debuffs shown
 Target of target debuffs size
+Target of target dispel slot position
+Target of target dispel slot size
+Target of target dispel slots
+Target of target dispel slots shown
 Target of target fill bottom to top
 Target of target fill right to left
 Target of target frame
 Target of target height
+Target of target hide lockout debuffs
 Target of target opacity when hidden
 Target of target portrait
 Target of target portrait side
@@ -1064,6 +1216,7 @@ Text font
 Text outline
 Text size
 Texture for every Phoenix health, power, cast and resource bar.
+The raid layout used for every raid size when automatic picking is off.
 The single highlight colour of Phoenix UI. Class uses your class colour.
 Threat colours
 Threat glow
@@ -1087,7 +1240,10 @@ Types the confirmation word when deleting a good item.
 Unit frames
 Upgrade star
 Use the profile you picked for raid, Mythic+, arena and other content automatically. Applies when you enter, never in combat.
+Used when Colour by debuff type is off.
+Used when Group health colour is Custom.
 Used when Health colour is Custom.
+Uses the Party, Raid up to 10, Raid up to 20 or Raid up to 40 layout automatically as people join and leave. Turn off to always use one raid layout.
 Utility cooldowns
 Utility cooldowns: Phoenix layout
 Utility cooldowns: growth
@@ -1095,7 +1251,6 @@ Utility cooldowns: icon size
 Utility cooldowns: per row
 Utility cooldowns: spacing
 Vault
-Vertical columns per group, or horizontal rows.
 View
 Warning level for the low durability warning.
 Warns once when any item drops to the threshold.
@@ -1106,6 +1261,9 @@ What the left text zone shows.
 What the power text zone shows.
 What the right text zone shows.
 Where Mythic+ score colours come from in tooltips, Group Finder and data bars.
+Where on the frame the private auras sit.
+Where the dispel icons sit.
+Where the name sits on the frame.
 Where the power bar sits.
 Where the window opens on screen. Dragging the window updates this.
 Where to switch
@@ -1118,6 +1276,7 @@ Which action page (12 slots) bar 6 shows.
 Which action page (12 slots) bar 7 shows.
 Which action page (12 slots) bar 8 shows.
 Which action page (12 slots) bar 9 shows.
+Which auras are shown.
 Which buffs are shown.
 Which debuffs are shown.
 Which side of the frame the portrait sits on.
@@ -1127,7 +1286,7 @@ Which way new icons are added on a row.
 Whisper sound
 Width and height of the minimap.
 Width of Phoenix nameplates in pixels.
-Width of each party/raid frame.
+Width of each frame in this layout.
 Width of the bar; blocks share it equally.
 Width of the boss frame in pixels.
 Width of the cast bar; 0 matches the frame.

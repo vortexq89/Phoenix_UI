@@ -56,6 +56,11 @@ function Auras:Available()
   return self.available
 end
 
+-- Lockout debuffs the "hide lockout debuffs" preset leaves out (Unit Frames
+-- and Raid frames share it): Exhaustion, Sated, Temporal Displacement,
+-- Insanity, Fatigued, Exhaustion (Evoker), Forbearance.
+Auras.LOCKOUTS = { 57723, 57724, 80354, 95809, 264689, 390435, 25771 }
+
 Auras.LAYOUT_DEFAULT = { anchor = "TOPLEFT", growX = "RIGHT", growY = "DOWN", padding = 2, lineSize = 8, axis = "horizontal",
   size = 26 }
 Auras.SORTS = { "default", "expiration", "name", "bigDefensive", "unitFrameDebuff", "important" }
@@ -209,18 +214,31 @@ function Auras:FlushRestyles()
 end
 
 ------------------------------------------------------------------------------
--- Private aura anchors (raid-frame option). opts: { index, size, max, showCountdown, showNumbers }.
+-- Private aura anchors (raid-frame option). opts: { index, size, point,
+-- relativePoint, x, y, showCountdown, showNumbers, showDispel, borderScale }.
+-- The engine draws the aura itself; Phoenix never sees its data.
 function Auras:AddPrivateAnchor(owner, frame, unit, opts)
   opts = opts or {}
   local size = opts.size or 24
+  local point = opts.point or "CENTER"
   local id = C_UnitAuras.AddPrivateAuraAnchor({
     unitToken = unit, auraIndex = opts.index or 1, parent = frame,
     showCountdownFrame = opts.showCountdown ~= false, showCountdownNumbers = opts.showNumbers == true,
-    iconInfo = { iconWidth = size, iconHeight = size,
-      iconAnchor = { point = "CENTER", relativeTo = frame, relativePoint = "CENTER", offsetX = 0, offsetY = 0 } },
+    showDispelIcon = opts.showDispel == true, isContainer = false,
+    iconInfo = { iconWidth = size, iconHeight = size, borderScale = opts.borderScale,
+      iconAnchor = { point = point, relativeTo = frame, relativePoint = opts.relativePoint or point,
+        offsetX = opts.x or 0, offsetY = opts.y or 0 } },
   })
   if id then self.privateAnchors[id] = owner end
   return id
+end
+
+-- Removes one anchor this engine added (frame re-used for another unit).
+function Auras:RemovePrivateAnchor(id)
+  if id == nil or self.privateAnchors[id] == nil then return false end
+  C_UnitAuras.RemovePrivateAuraAnchor(id)
+  self.privateAnchors[id] = nil
+  return true
 end
 
 function Auras:RemovePrivateAnchors(owner)

@@ -13,7 +13,9 @@ local PREVIEW_W = 420
 local TAB_LABEL = { player = "Player", target = "Target", targettarget = "Target of Target", focus = "Focus",
   focustarget = "Focus Target", pet = "Pet", boss = "Boss", arena = "Arena", party = "Party", raid = "Raid",
   general = "General", stance = "Stance", petbar = "Pet", vehicle = "Extra & vehicle",
-  cast = "Cast bars", indicator = "Indicators", auraBars = "Player aura bars" }
+  cast = "Cast bars", indicator = "Indicators", auraBars = "Player aura bars",
+  small = "Raid up to 10", medium = "Raid up to 20", large = "Raid up to 40", debuffs = "Debuffs", buffs = "Buffs",
+  defensive = "Defensives" }
 
 local function tabLabel(id)
   if TAB_LABEL[id] then return TAB_LABEL[id] end
