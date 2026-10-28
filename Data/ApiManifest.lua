@@ -296,7 +296,7 @@ PUI.ApiManifest = {
     ["GetFramerate"] = { owners = { "HUD", "Sentinel" } },
     ["GetGameTime"] = { owners = { "HUD" } },
     ["GetGuildInfo"] = { owners = { "HUD", "Nameplates" } },
-    ["GetInstanceInfo"] = { owners = { "Core", "Flow", "HUD", "Loadouts", "RaidFrames", "RaidTools", "Reminders", "Sentinel" } },
+    ["GetInstanceInfo"] = { owners = { "Core", "Flow", "HUD", "Loadouts", "Nameplates", "RaidFrames", "RaidTools", "Reminders", "Sentinel" } },
     ["GetInventoryItemDurability"] = { owners = { "Flow", "HUD", "Skins" } },
     ["GetInventoryItemLink"] = { owners = { "HUD", "Skins", "Wisdom" } },
     ["GetLocale"] = { owners = { "Core", "Options", "Sentinel", "Setup" } },

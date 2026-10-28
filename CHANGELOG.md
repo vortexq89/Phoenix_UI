@@ -4,6 +4,16 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Nameplate colour data packs, branch feat/datapacks
+- Pack strings (PUIPACK1|name|instance|rules) for NPC colour rules: import in "Imported NPC colour packs" (validated per rule, live), export with /pui packexport <id>. A pack with an instance id applies only inside that dungeon or raid (switches on zone change).
+- Two built-in original packs (condition rules): casting hostile elites in orange, rares in purple. Per-dungeon NPC lists come as imports from the test phase. Tests: 461.
+
+### Plugin API v1, branch feat/plugins
+- PhoenixUI.Plugins:Register(name, spec): prefixed module and settings, live apply, theme colours/backdrop/fonts, owned Ticker jobs, events; versioned. docs/PLUGINS.md and examples/Phoenix_UI_PluginExample (not installed).
+
+### Locales, branch feat/locales
+- Arabic (arSA) as an optional language in Phoenix settings (first pass of core labels; WoW does not shape Arabic text).
+
 ### Pre-release cleanup, branch feat/prerelease-cleanup
 - Forever spellbook and talent skins: on the Forever client the classic spellbook gets Phoenix slot frames on SpellButton1-12, Phoenix fonts, skill-line and bottom tab faces and a muted rank line (new extra "Spell ranks (Forever)", live); the classic talent window gets Phoenix rank fonts and talent rings (maxed, chosen, can pick) from the existing "Talent rings" setting. Post-hooks on Blizzard's update functions only, guarded by PUI.IS_FOREVER and frame existence, reverted when off.
 - Forever fishing helper (off by default, live): a bar with the time left on the Fishing cast and a catch counter for the session; optional louder splash (sound-effects volume raised during the cast and put back after, also at the next login after a disconnect). Edit Mode element "Fishing helper".

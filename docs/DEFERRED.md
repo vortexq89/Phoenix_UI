@@ -236,11 +236,11 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 ## Plan-wide (PLAN section 6)
 
 - **left:** Arabic locale and real translations (needs a translator)
-- **left:** plugin system (build last, by plan)
+- **done:** plugin system (Core/Plugins.lua, docs/PLUGINS.md, branch feat/plugins)
 - **done (deferred D):** Forever child, first slice: learned flight timer and pet happiness (Phoenix_UI_Forever)
 - **done (approved exception, t96u):** Forever swing timer (see Resource Bars)
 - **done (pre-release cleanup):** Forever spellbook and talent skins (classic SpellBookFrame and PlayerTalentFrame parts, Phoenix_UI_Skins/Forever.lua) and the Forever fishing helper (cast bar, catch count, optional louder splash; off by default) (branch feat/prerelease-cleanup)
 - **blocked:** CurseForge/Wago release: an external publishing action that needs your approval; not done by an agent
 - **left:** raid debuff tiles with per-instance data packs (needs data from the test phase)
-- **left:** nameplate NPC colour data packs (needs data)
+- **done:** nameplate NPC colour data packs: engine, import/export strings, per-instance packs, two built-in condition packs (branch feat/datapacks); **left:** per-dungeon NPC lists (data from the test phase)
 - **done (deferred B):** Data Bars user bars and LDB host
