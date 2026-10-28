@@ -1946,6 +1946,27 @@ try("auction undercut", function()
         "nothing to undercut")
     A:SetupUndercut()
 end)
+-- auction cancel helper: undercut auctions found, unchecked items queued once, one step per click
+try("auction cancel helper", function()
+    local A = ns.modules.Automation
+    local owned = { { auctionID = 1, itemID = 10, price = 500, active = true },
+        { auctionID = 2, itemID = 10, price = 400, active = true }, { auctionID = 3, itemID = 11, price = 900, active = true },
+        { auctionID = 4, itemID = 12, price = 100, active = true }, { auctionID = 5, itemID = 12, price = 100, active = true },
+        { auctionID = 6, itemID = 10, price = 999, active = false } }
+    local cancel, check = A.CancelPlan(owned, { [10] = 450, [11] = false })
+    assert(#cancel == 1 and cancel[1] == 1, "only the auction above the foreign price")
+    assert(#check == 1 and check[1].itemID == 12, "unchecked item queued once")
+    assert(A.LowestForeign(function(i) return ({ { containsOwnerItem = true, unitPrice = 5 }, { unitPrice = 7 } })[i] end, 2,
+        "unitPrice") == 7, "skips own results")
+    local cancelled
+    _G.C_AuctionHouse = _G.C_AuctionHouse or {}
+    local old = C_AuctionHouse.CancelAuction
+    C_AuctionHouse.CancelAuction = function(id) cancelled = id end
+    A.CancelStep()
+    C_AuctionHouse.CancelAuction = old
+    assert(cancelled == nil, "nothing happens before the AH is opened")
+    A:Refresh()
+end)
 -- transmog set list: progress, sorting (closest to complete first, complete last) and the search filter
 try("transmog set list", function()
     local S = ns.modules.Skins
