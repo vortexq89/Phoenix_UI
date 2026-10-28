@@ -2235,6 +2235,13 @@ try("professions skin", function()
     S:SkinProfessions(); S.db.professions = false; S:Refresh(); S.db.professions = true; S:Refresh()
     env.ProfessionsFrame = nil
 end)
+try("friends skin", function()
+    local S = ns.modules.Skins
+    local row = CreateFrame("Button", nil, UIParent)
+    env.FriendsListFrame = { ScrollBox = { ForEachFrame = function(_, fn) fn(row) end } }
+    S:SkinFriends(); S.db.friends = false; S:Refresh(); S.db.friends = true; S:Refresh()
+    env.FriendsListFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
