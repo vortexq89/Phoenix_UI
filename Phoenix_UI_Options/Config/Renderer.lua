@@ -49,7 +49,8 @@ local function setValue(page, m, item, value, key)
         item.set(m, value, page.scope and page.scope.unit)
         ns.Events:Fire("PUI_SETTING_CHANGED", m.key, key or item.label, value)
     elseif page.scope and key:find("@", 1, true) then
-        for _, unit in ipairs(page:Targets()) do
+        -- item.single: a per-element value (a position) that must never be copied onto the other selected elements
+        for _, unit in ipairs(item.single and { page.scope.unit } or page:Targets()) do
             ns.DB:Set(m, (key:gsub("@", unit)), type(value) == "table" and U.DeepCopy(value) or value)
         end
     else
@@ -62,6 +63,22 @@ local function setValue(page, m, item, value, key)
         Config:SetStatus(L.STATUS_AFTER_COMBAT, "state.warning")
     end
 end
+
+-- Do the elements being edited (Targets) hold different values for this row? Rows with their own getter,
+-- single rows and rows outside the scope are never mixed.
+function Config.IsMixed(page, m, item)
+    if not (page.scope and page.Targets and item.key and not item.get and not item.single) then return false end
+    if not item.key:find("@", 1, true) or item.type == "button" or item.type == "colors" then return false end
+    local targets = page:Targets()
+    if #targets < 2 then return false end
+    local first = U.GetPath(m.db, (item.key:gsub("@", targets[1])))
+    for i = 2, #targets do
+        if not U.Equal(U.GetPath(m.db, (item.key:gsub("@", targets[i]))), first) then return true end
+    end
+    return false
+end
+
+Config.SetRowValue = setValue -- the path every control takes (the smoke harness drives it directly)
 
 ---------------------------------------------------------------- reset to default
 -- The default of a row comes from the module's defaults at the same path (scope aware). Rows backed by
@@ -308,7 +325,7 @@ local function rowKeys(item)
 end
 
 local function isScoped(page, item)
-    if not page.scope or item.get or item.set then return false end
+    if not page.scope or item.get or item.set or item.single then return false end
     for _, key in ipairs(rowKeys(item)) do if key:find("@", 1, true) then return true end end
     return false
 end
@@ -534,6 +551,7 @@ function buildRow(card, page, m, item)
         elseif c and c.SetValue and item.type ~= "button" and (item.key or item.get) then
             c:SetValue(getValue(page, m, item))
         end
+        self:ShowMixed(Config.IsMixed(page, m, item))
         local enabled = not (item.disabled and item.disabled(m, page.scope and page.scope.unit)) and not gatedOff()
         self.enabledState = enabled
         if self.reset then self.reset:SetShown(enabled and self:IsModified()) end
@@ -542,6 +560,16 @@ function buildRow(card, page, m, item)
         if self.applyAll then W.SetEnabledState(self.applyAll, enabled) end
         self.label:SetAlpha(enabled and 1 or 0.45)
         if self.icon then self.icon:SetAlpha(enabled and 1 or 0.45) end
+    end
+
+    -- "MIXED": the selected elements hold different values for this row (multi-select / Edit all)
+    function row:ShowMixed(on)
+        if on and not self.mixed then
+            self.mixed = W.Text(self, "small", "state.warning")
+            self.mixed:SetText(L.MIXED_VALUES:upper())
+            self.mixed:SetPoint("LEFT", self.label, "RIGHT", 8, 0)
+        end
+        if self.mixed then self.mixed:SetShown(on and true or false) end
     end
 
     function row:IsModified()
@@ -771,6 +799,18 @@ local function buildScope(page, m, item)
         end
     end
 
+    -- the hint line names what is being edited once more than one element is selected
+    local function summary()
+        local t = page:Targets()
+        if #t < 2 then bar.hint:SetText(L.CHIPS_SHIFT_HINT); return end
+        local names = {}
+        for _, unit in ipairs(t) do
+            for _, v in ipairs(values) do if v.value == unit then names[#names + 1] = v.label end end
+        end
+        bar.hint:SetText(L.EDITING_SEVERAL:format(#t) .. ": " .. table.concat(names, ", "))
+    end
+    scope.Summary = summary
+
     local function relayout()
         page:Layout()
         if page.preview then page.preview:Redraw() end
@@ -781,24 +821,36 @@ local function buildScope(page, m, item)
         if shift then
             scope.multi = U.DeepCopy(chips:GetExtra())
             if scope.mode ~= "all" then scope.mode = next(scope.multi) and "multi" or "this" end
+            summary()
+            page:Refresh()
             return
         end
         scope.unit = v
         scope.multi = {}
         if scope.mode ~= "all" then scope.mode = "this" end
         bar.copy:SetValue(nil)
+        summary()
         page:Refresh()
         relayout()
     end
     bar.all.onChange = function(_, on)
         scope.mode = on and "all" or (next(scope.multi) and "multi" or "this")
         Config:SetStatus(on and L.APPLY_ALL_ON or L.APPLY_ALL_OFF, on and "state.warning" or nil, "apply-all")
+        summary()
+        page:Refresh()
     end
     bar.copy.onChange = function(_, src)
         local data = src and m.db[scope.root] and m.db[scope.root][src]
         if type(data) ~= "table" then return end
+        -- every setting except where each element sits (item.keep, default point/x/y): copying a bar's position
+        -- would stack the bars on top of each other
+        local keep = item.keep or { "point", "x", "y", "relativePoint", "relativeTo", "enabled" }
         for _, unit in ipairs(page:Targets()) do
-            if unit ~= src then ns.DB:Set(m, scope.root .. "." .. unit, U.DeepCopy(data)) end
+            if unit ~= src then
+                local copy, old = U.DeepCopy(data), m.db[scope.root][unit]
+                for _, k in ipairs(keep) do if type(old) == "table" then copy[k] = old[k] end end
+                ns.DB:Set(m, scope.root .. "." .. unit, copy)
+            end
         end
         Config:SetStatus(L.COPIED_FROM:format(text(bar.copy.current and bar.copy.current.label or src)), "state.success", "copy")
         bar.copy:SetValue(nil)

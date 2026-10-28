@@ -1689,6 +1689,94 @@ try("movers: default positions do not overlap", function()
     assert(#list >= 8, "too few elements checked: " .. #list)
     assert(#bad == 0, #bad .. " overlapping defaults")
 end)
+local function U_GetPath(t, path)
+    for part in path:gmatch("[^.]+") do if type(t) ~= "table" then return nil end; t = t[part] end
+    return t
+end
+-- multi-select: shift-selected / Edit all elements all get the edit; positions stay per element; "Copy from"
+-- keeps each element's position; rows show "mixed" when the selected elements differ
+try("multi-select editing", function()
+    local C = ns.Config
+    for _, case in ipairs({ { "ActionBars", "bars.@.width", 30 }, { "UnitFrames", "units.@.height", 33 },
+                            { "CastBars", "bars.@.height", 21 }, { "NamePlates", "styles.@.width", 111 } }) do
+        local key, path, v = case[1], case[2], case[3]
+        local m = ns.modules[key]
+        local page = C:Show(key)
+        local sc = page.scope
+        if m and m:IsEnabled() and sc and #sc.values >= 2 then
+            local a, b = sc.values[1].value, sc.values[2].value
+            local c = (sc.values[3] or sc.values[1]).value
+            local root = path:match("^([^.]+)")
+            local leaf = path:match("@%.(.+)$")
+            if m.db[root][a] and U_GetPath(m.db[root][a], leaf) ~= nil then
+                sc.unit, sc.mode, sc.multi = a, "multi", { [b] = true }
+                local row
+                for _, r in ipairs(page.rows) do if r.item.key == path then row = r end end
+                assert(row, key .. ": no row " .. path)
+                local old = { U_GetPath(m.db[root][a], leaf), U_GetPath(m.db[root][b], leaf), U_GetPath(m.db[root][c], leaf) }
+                local three = sc.values[3] ~= nil
+                C.SetRowValue(page, m, row.item, v)
+                assert(U_GetPath(m.db[root][a], leaf) == v and U_GetPath(m.db[root][b], leaf) == v, key .. ": multi edit missed an element")
+                assert(not three or U_GetPath(m.db[root][c], leaf) == old[3], key .. ": an unselected element changed")
+                ns.DB:Set(m, root .. "." .. b .. "." .. leaf, v + 1)
+                assert(C.IsMixed(page, m, row.item), key .. ": mixed values not detected")
+                sc.mode = "all"
+                C.SetRowValue(page, m, row.item, v)
+                for _, e in ipairs(sc.values) do
+                    local ev = m.db[root][e.value] and U_GetPath(m.db[root][e.value], leaf)
+                    assert(ev == nil or ev == v, key .. ": Edit all missed " .. e.value)
+                end
+                -- positions are per element even with Edit all
+                local xrow
+                for _, r in ipairs(page.rows) do if r.item.key == root .. ".@.x" then xrow = r end end
+                if xrow and m.db[root][b].x ~= nil then
+                    local bx = m.db[root][b].x
+                    C.SetRowValue(page, m, xrow.item, 7)
+                    assert(m.db[root][a].x == 7 and m.db[root][b].x == bx, key .. ": a position was copied to every element")
+                    m.db[root][a].x = old.x or m.defaults[root][a].x
+                end
+                sc.mode, sc.multi = "this", {}
+                ns.DB:Set(m, root .. "." .. a .. "." .. leaf, old[1])
+                ns.DB:Set(m, root .. "." .. b .. "." .. leaf, old[2])
+                if three then ns.DB:Set(m, root .. "." .. c .. "." .. leaf, old[3]) end
+            end
+        end
+    end
+end)
+-- previews sit at the top of the page (never in the narrow side dock) so they can show real size
+try("preview at top", function()
+    local C = ns.Config
+    local page = C:Show("ActionBars")
+    C:LayoutShell()
+    assert(page.pinned, "action bar page has no preview")
+    assert(not page.docked, "the preview was docked in the side column")
+end)
+-- tab consistency: every tab of every module page has settings, no setting appears on two tabs
+try("tab consistency", function()
+    local C = ns.Config
+    local problems = {}
+    for _, m in ipairs(ns.moduleList) do
+        if not m.hidden and C:EntryExists(m.key) then
+            local page = C:Show(m.key)
+            if page and page.tabList and #page.tabList > 1 then
+                local perTab, seen = {}, {}
+                for _, r in ipairs(page.rows) do
+                    local tab = r.card and r.card.tab or 1
+                    perTab[tab] = (perTab[tab] or 0) + 1
+                    local k = not r.hiddenState and r.item.key -- mode-exclusive rows (hidden) do not count
+                    if k and r.item.type ~= "header" and r.item.type ~= "scope" and r.item.type ~= "preview" then
+                        if seen[k] and seen[k] ~= tab then problems[#problems + 1] = m.key .. ": " .. k .. " on two tabs" end
+                        seen[k] = seen[k] or tab
+                    end
+                end
+                for i = 1, #page.tabList do
+                    if (perTab[i] or 0) < 2 then problems[#problems + 1] = m.key .. ": tab " .. i .. " has " .. (perTab[i] or 0) .. " rows" end
+                end
+            end
+        end
+    end
+    assert(#problems == 0, table.concat(problems, "; "))
+end)
 -- developer diagnostics (/pui dev): opt-in, writes PhoenixUIDevDB with ranked issues and json/text exports
 try("dev diagnostics", function()
     local D = ns.DevDiag

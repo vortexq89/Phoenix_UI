@@ -85,9 +85,9 @@ ns:RegisterOptions("Auras", {
     hx({ type = "select", key = "headers.@.separateOwn", label = "AURAS_OWN", desc = "AURAS_OWN_DESC", values = OWN,
       combat = true }),
     { type = "header", label = "UF_POSITION", icon = "movers" },
-    hx({ type = "select", key = "headers.@.point", label = "UF_POINT", values = Opt.ANCHOR, combat = true }),
-    hx({ type = "range", key = "headers.@.x", label = "OFFSET_X", min = -1200, max = 1200, step = 1, combat = true }),
-    hx({ type = "range", key = "headers.@.y", label = "OFFSET_Y", min = -800, max = 800, step = 1, combat = true }),
+    hx({ type = "select", key = "headers.@.point", single = true, label = "UF_POINT", values = Opt.ANCHOR, combat = true }),
+    hx({ type = "range", key = "headers.@.x", single = true, label = "OFFSET_X", min = -1200, max = 1200, step = 1, combat = true }),
+    hx({ type = "range", key = "headers.@.y", single = true, label = "OFFSET_Y", min = -800, max = 800, step = 1, combat = true }),
     ------------------------------------------------------------ look
     { type = "tab", label = "AURAS_TAB_LOOK" },
     { type = "header", label = "AURAS_STYLE", icon = "theme" },

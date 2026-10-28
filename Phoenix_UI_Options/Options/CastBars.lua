@@ -89,9 +89,9 @@ ns:RegisterOptions("CastBars", {
       disabled = attached }),
     px({ type = "select", key = "bars.@.growth", label = "UF_GROWTH", values = GROWTH, hidden = notGroup, disabled = attached }),
     { type = "header", label = "CB_POSITION", icon = "movers" },
-    { type = "select", key = "bars.@.point", label = "UF_POINT", values = Opt.ANCHOR, disabled = placed },
-    { type = "range", key = "bars.@.x", label = "OFFSET_X", min = -1200, max = 1200, step = 1, disabled = placed },
-    { type = "range", key = "bars.@.y", label = "OFFSET_Y", min = -800, max = 800, step = 1, disabled = placed },
+    { type = "select", key = "bars.@.point", single = true, label = "UF_POINT", values = Opt.ANCHOR, disabled = placed },
+    { type = "range", key = "bars.@.x", single = true, label = "OFFSET_X", min = -1200, max = 1200, step = 1, disabled = placed },
+    { type = "range", key = "bars.@.y", single = true, label = "OFFSET_Y", min = -800, max = 800, step = 1, disabled = placed },
     { type = "description", text = "CB_ATTACH_NOTE", hidden = notAttachable },
     ------------------------------------------------------------ look
     { type = "tab", label = "CB_TAB_LOOK" },
