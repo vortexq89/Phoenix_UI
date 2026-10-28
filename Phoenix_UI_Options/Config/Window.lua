@@ -43,6 +43,15 @@ local function savePosition(f)
     s.w, s.h = f:GetSize()
 end
 
+-- The window scale is relative to a readable base: with a very small UI scale (0.53 on a 1440p screen)
+-- the window is scaled up so its text is as large as at Blizzard's default UI scale (about 0.71).
+local function readable()
+    local e = UIParent:GetEffectiveScale() or 1
+    if e <= 0 then return 1 end
+    return math.max(1, math.min(1.6, 0.71 / e))
+end
+local function setScale(f, v) f:SetScale(v * readable()) end
+
 -- 768 / physical height: the UI scale at which one UI pixel is one screen pixel.
 local function pixelPerfect()
     local _, ph = GetPhysicalScreenSize()
@@ -480,9 +489,9 @@ local function buildFooter(f)
     ft.scale:SetValue(uiStore().scale or 1)
     ft.scale.onChange = function(_, v)
         uiStore().scale = v
-        if not IsMouseButtonDown("LeftButton") then f:SetScale(v) end
+        if not IsMouseButtonDown("LeftButton") then setScale(f, v) end
     end
-    ft.scale.bar:HookScript("OnMouseUp", function() f:SetScale(uiStore().scale or 1) end)
+    ft.scale.bar:HookScript("OnMouseUp", function() setScale(f, uiStore().scale or 1) end)
     ft.scaleLabel = W.Text(ft, "small", "text.muted", "RIGHT")
     ft.scaleLabel:SetPoint("RIGHT", ft.scale, "LEFT", -8, 0)
     ft.scaleLabel:SetText(L.WINDOW_SCALE:upper())
@@ -565,7 +574,7 @@ function Config:Build()
     if s.v ~= 2 then s.w, s.h, s.v = nil, nil, 2 end
     f:SetSize(s.w or DEFAULT_W, s.h or DEFAULT_H)
     f:SetPoint(s.point or "CENTER", UIParent, s.rel or "CENTER", s.x or 0, s.y or 0)
-    f:SetScale(math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
+    setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
     Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.strong", shadow = 18 }) end)
     self.frame = f
 
@@ -633,7 +642,7 @@ function Config:ResetPosition()
     f:ClearAllPoints()
     f:SetPoint("CENTER")
     f:SetSize(DEFAULT_W, DEFAULT_H)
-    f:SetScale(1)
+    setScale(f, 1)
     f.footer.scale:SetValue(1)
 end
 

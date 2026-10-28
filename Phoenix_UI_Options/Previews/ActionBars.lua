@@ -1,15 +1,36 @@
 local _, ns = ...
 local P, Skin, Media = ns.Previews, ns.Skin, ns.Media
 
---[[ The bar picked in the scope bar, laid out by ActionBars.Layout (the function the real bars use) and dressed
+--[[ The bar picked in the scope bar shows the spells really on that bar (GetActionTexture, the pet and
+    stance info) at its real size; it is only scaled down to fit the panel, and the label says by how much.
+    The bar picked in the scope bar, laid out by ActionBars.Layout (the function the real bars use) and dressed
     by the module's own Dress/StyleButton, with sample states: out of range, not enough power, unusable, on
     cooldown, a proc glow and the assisted-combat highlight. Slots past the samples are empty slots. ]]
-local SAMPLES = {
-    { key = "1" }, { key = "2", count = "3", proc = true }, { key = "3", cooldown = 0.6 }, { key = "4", state = "range" },
-    { key = "SHIFT-E", macro = "Burst", assist = true }, { key = "Q", state = "power" }, { key = "BUTTON4", count = "12" },
-    { key = "CTRL-2", state = "unusable" }, { key = "F" },
-}
 local STAGE_W, STAGE_H = 440, 132
+
+-- What is really in slot i of a bar: { tex, key } or nil for an empty slot.
+local function actionSlot(def, i)
+    if not def then return nil end
+    if def.kind == "pet" then
+        if not GetPetActionInfo then return nil end
+        local _, tex = GetPetActionInfo(i)
+        return tex and { tex = tex } or nil
+    elseif def.kind == "stance" then
+        if not GetShapeshiftFormInfo or i > (GetNumShapeshiftForms and GetNumShapeshiftForms() or 0) then return nil end
+        local tex = GetShapeshiftFormInfo(i)
+        return tex and { tex = tex } or nil
+    elseif def.kind == "items" then
+        return nil
+    end
+    local page = def.page or (GetActionBarPage and GetActionBarPage()) or 1
+    local slot = (page - 1) * 12 + i
+    local tex = GetActionTexture and GetActionTexture(slot)
+    if not tex then return nil end
+    local real = def.prefix and _G[def.prefix .. i]
+    local hk = real and real.HotKey and real.HotKey:GetText()
+    if hk == RANGE_INDICATOR then hk = nil end
+    return { tex = tex, real = true, keyText = hk }
+end
 
 local function button(parent, i)
     local b = P.Icon(parent, 36, i)
@@ -35,7 +56,8 @@ local function dress(m, btn, s)
     end
     m:StyleButton(btn, btn.tex, btn.hotkey, btn.count, btn.macro, true)
     btn.tex:SetShown(s ~= nil)
-    btn.hotkey:SetText(s and hotkeyText(m, s.key) or "")
+    if s and s.tex then btn.tex:SetTexture(s.tex) end
+    btn.hotkey:SetText(s and (s.keyText or (s.key and hotkeyText(m, s.key))) or "")
     btn.hotkey:SetShown(db.hotkeys)
     btn.count:SetText(s and s.count or "")
     btn.macro:SetText(s and s.macro or "")
@@ -100,23 +122,27 @@ P:Register("actionbar", {
         holder:SetPoint("CENTER")
         local buttons = {}
         for i = 1, 12 do buttons[i] = button(holder, i) end
+        local scaleText = ns.Widgets.Text(stage, "small", "text.muted", "RIGHT")
+        scaleText:SetPoint("BOTTOMRIGHT", -6, 4)
         return function(self, bar)
             local db = m.db
             local b = db.bars[bar or "bar1"] or db.bars.bar1
             local showEmpty = b.showEmpty or self.states.empty
-            local samples = (bar == "pet" or bar == "stance") and 6 or #SAMPLES
+            local def = m.BAR_BY_KEY and m.BAR_BY_KEY[bar or "bar1"]
             local n = math.min(b.buttons, 12)
             local points, W, H, w, h = m.Layout(b, n)
             local pad = b.backdrop.show and b.backdrop.padding or 0
             holder:SetSize(W + pad * 2, H + pad * 2)
-            local fit = math.min(1.25, (STAGE_W - 24) / math.max(1, W + pad * 2), (STAGE_H - 20) / math.max(1, H + pad * 2))
-            holder:SetScale(math.max(0.3, fit))
+            local fit = math.min(1, (STAGE_W - 24) / math.max(1, W + pad * 2), (STAGE_H - 20) / math.max(1, H + pad * 2))
+            fit = math.max(0.2, fit)
+            holder:SetScale(fit)
+            scaleText:SetText(fit < 1 and string.format("%d%%", math.floor(fit * 100 + 0.5)) or "1:1")
             Skin:Backdrop(holder, { alpha = b.backdrop.show and b.backdrop.alpha or 0, color = b.backdrop.color,
                 style = b.backdrop.style }, "bg.sunken")
             Skin:BorderSpec(holder, b.border, "border.black")
             holder:SetAlpha(b.vis.alpha)
             for i, btn in ipairs(buttons) do
-                local sample = SAMPLES[i] and i <= samples and SAMPLES[i] or nil
+                local sample = actionSlot(def, i)
                 local p = points[i]
                 btn:SetShown(p ~= nil and (sample ~= nil or showEmpty))
                 if p then
