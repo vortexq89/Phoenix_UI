@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
 )
@@ -29,6 +29,7 @@ type App struct {
 	done      map[string]time.Time // file -> mtime whose reports are all delivered
 	holdUntil time.Time            // server asked us to wait (429 / 5xx / offline)
 	status    string
+	fixedAt   time.Time // last fixed-in list fetch
 }
 
 // Summary of one cycle.
@@ -119,6 +120,7 @@ func (a *App) Cycle(force bool) Summary {
 			}
 		}
 	}
+	a.syncFixed(folders, force)
 	if err := a.state.Save(); err != nil {
 		a.log.Printf("could not save state: %v", err)
 	}
