@@ -2209,6 +2209,20 @@ try("loot skin", function()
     S:SkinLoot(); S.db.loot = false; S:Refresh(); S.db.loot = true; S:Refresh()
     env.LootFrame, env.GroupLootFrame1 = nil, nil
 end)
+try("auction house skin", function()
+    local S = ns.modules.Skins
+    local row = CreateFrame("Button", nil, UIParent)
+    local box = { ForEachFrame = function(_, fn) fn(row) end }
+    local ah = CreateFrame("Frame", "AuctionHouseFrame", UIParent)
+    ah.CategoriesList = { ScrollBox = box }
+    ah.SearchBar = CreateFrame("Frame", nil, ah)
+    ah.BuyDialog = CreateFrame("Frame", nil, ah)
+    ah.BuyDialog.BuyNowButton = CreateFrame("Button", nil, ah.BuyDialog)
+    assert(S.FramePath(ah, { "CategoriesList", "ScrollBox" }) == box and S.FramePath({}, { "Nope", "X" }) == nil, "paths")
+    env.AuctionHouseFrame = ah
+    S:SkinAuction(); S.db.auction = false; S:Refresh(); S.db.auction = true; S:Refresh()
+    env.AuctionHouseFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

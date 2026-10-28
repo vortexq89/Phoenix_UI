@@ -46,7 +46,7 @@ end
 M.PaintPopupButton = paintButton
 
 function M.SkinPopupButton(b, variant, on)
-    if not b then return end
+    if type(b) ~= "table" or not b.GetObjectType then return end
     local f = fills[b]
     if not on then
         if f then

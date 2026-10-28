@@ -18,6 +18,7 @@
     <Script file="Skins\GroupFinder.lua"/>
     <Script file="Skins\Talents.lua"/>
     <Script file="Skins\Loot.lua"/>
+    <Script file="Skins\Auction.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>

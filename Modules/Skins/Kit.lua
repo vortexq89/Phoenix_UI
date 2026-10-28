@@ -40,7 +40,7 @@ M.PaintKitRow = paintRow
 
 -- opts: alpha (stripe strength), bar = true (always show the left bar), barColor = { r, g, b } (e.g. quality)
 function M.KitRow(row, on, opts)
-    if not row then return end
+    if type(row) ~= "table" or not row.CreateTexture then return end
     local d = rows[row]
     if not on then if d then d:Hide(); d.stripe:Hide() end; return end
     opts = opts or {}
@@ -68,7 +68,7 @@ end
 
 -- A Phoenix card behind `frame` (style "raised" | "sunken", accent = outline in the accent).
 function M.KitCard(frame, on, style, accent)
-    if not frame then return end
+    if type(frame) ~= "table" or not frame.GetFrameLevel then return end
     local c = cards[frame]
     if not on then if c then c:Hide() end; return end
     if not c then
@@ -84,7 +84,7 @@ end
 
 -- Dress every visible row of a ScrollBox now and after each of its updates. fn(row, on).
 function M.KitScrollBox(box, isOn, fn)
-    if not (box and box.ForEachFrame) then return end
+    if type(box) ~= "table" or type(box.ForEachFrame) ~= "function" then return end
     local function run(b) local on = isOn(); b:ForEachFrame(function(row) fn(row, on) end) end
     if not hookedBoxes[box] and box.Update then
         hookedBoxes[box] = true
