@@ -356,8 +356,18 @@ function Pages.role(f)
     c.role = role
     return c
   end)
+  -- Spec auto-switch (plan 1.7 / 3.3): one profile per specialization.
+  v.specToggle = Kit.Toggle(v, function(on) SU.choices.specProfile = on end)
+  v.specToggle:SetPoint("BOTTOMLEFT", 4, 6)
+  v.specLabel = Kit.Text(v, "body", "text.primary")
+  v.specLabel:SetPoint("LEFT", v.specToggle, "RIGHT", 10, 0)
+  v.specLabel:SetText("Give each specialization its own profile and switch with my spec")
+  v.specHint = Kit.Text(v, "small", "muted")
+  v.specHint:SetPoint("TOPLEFT", v.specLabel, "BOTTOMLEFT", 0, -2)
+  v.specHint:SetText("Off by default. You can change which profile each spec uses later under Profiles.")
   function v:Refresh()
     local _, spec = playerLine()
+    self.specToggle:SetValue_(SU.choices.specProfile == true)
     self.sub = "We detected |cff3ddc97" .. spec .. "|r. Your role shapes the starting layout and which modules are on."
     f.sub:SetText(self.sub)
     for _, c in ipairs(self.cards) do c:Select(c.role == SU.choices.role) end

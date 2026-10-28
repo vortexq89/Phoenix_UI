@@ -45,6 +45,7 @@ function Region:SetValue(v) self.value = v end
 function Region:GetValue() return rawget(self, "value") end
 function Region:SetColorTexture(r, g, b, a) self.color = { r, g, b, a } end
 function Region:CreateFontString() return newObject("FontString") end
+function Region:CreateMaskTexture() return newObject("MaskTexture") end
 function Region:CreateAnimationGroup()
   local g = newObject("AnimationGroup")
   g.playing = false
@@ -370,7 +371,7 @@ function UnitPowerMax(u, ptype)
   if ptype ~= nil then return H.powerMaxByType and H.powerMaxByType[ptype] or 0 end
   return maybe(100)
 end
-function UnitPowerPercent() return maybe(50) end
+function UnitPowerPercent(u, t, p, c) if type(c) == "table" and c.isColor then H.powerCurve = c; return CreateColor(0.2, 0.9, 0.3, 1) end return maybe(50) end
 function UnitPowerType() return 0, "MANA", 0, 0, 1 end
 function UnitName(u) return maybe(u == "player" and "Tester" or "Dummy"), nil end
 function UnitEffectiveLevel() return maybe(80) end
@@ -386,9 +387,15 @@ function UnitFactionGroup() return "Horde", "Horde" end
 function IsResting() return false end
 function GetRaidTargetIndex() if H.secretMode then return H.secret(3) end return nil end
 function UnitCastingInfo(u) if H.casting then return maybe("Fireball"), nil, 135812, 0, 1, false, "id", maybe(false), 133 end return nil end
-function UnitChannelInfo() return nil end
+function UnitChannelInfo()
+  local c = H.channel
+  if c then return maybe(c.name or "Channel"), nil, 136243, c.start or 0, c.stop or 3000, false, maybe(false), c.spellID, c.empowered or false, c.stages or 0 end
+  return nil
+end
+H.empowerStages = { 500, 400, 400, 400 }
+function GetUnitEmpowerStageDuration(unit, i) return H.empowerStages[i + 1] or 0 end
 function UnitCastingDuration() if H.casting then return { duration = true } end return nil end
-function UnitChannelDuration() return nil end
+function UnitChannelDuration() if H.channel then return { duration = true } end return nil end
 function UnitStagger() return maybe(0) end
 function UnitPartialPower() return maybe(0) end
 function GetComboPoints() return maybe(0) end
@@ -423,7 +430,9 @@ Enum.PowerType = { Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, R
 H.spec = 1
 C_SpecializationInfo.GetSpecialization = function() return H.spec end
 function H.duration(tag)
-  return { tag = tag, IsZero = function() return maybe(false) end, SetTimeFromStart = function(self, s, d) self.start, self.length = s, d end }
+  return { tag = tag, IsZero = function() return maybe(false) end, SetTimeFromStart = function(self, s, d) self.start, self.length = s, d end,
+    EvaluateRemainingDuration = function(self, curve) H.evaluated = curve; return CreateColor(1, 0.33, 0.33, 1) end,
+    EvaluateRemainingPercent = function(self, curve) H.evaluated = curve; return CreateColor(1, 0.33, 0.33, 1) end }
 end
 C_Spell = { GetSpellCooldownDuration = function() return H.duration("gcd") end }
 C_DurationUtil = { CreateDuration = function() return H.duration("custom") end }
@@ -474,6 +483,7 @@ H.friendly = {}
 function UnitIsFriend(_, u) return maybe(H.friendly[u] == true) end
 C_QuestLog = { UnitIsRelatedToActiveQuest = function() return maybe(false) end }
 C_SpecializationInfo.GetSpecializationInfo = function() return 62, "Arcane", "", 0, H.role or "DAMAGER" end
+C_SpecializationInfo.GetNumSpecializationsForClassID = function() return 3 end
 function UnitInRange() return maybe(true), maybe(true) end
 H.roles = {}
 function UnitGroupRolesAssigned(u) return maybe(H.roles[u] or "NONE") end
@@ -780,6 +790,8 @@ local function auraContainer()
   rawset(c, "SetAuraGroupFilterString", function(self, key, filter) self.groupLog[#self.groupLog + 1] = { "filter", key, filter } end)
   rawset(c, "SetAuraGroupMaxFrameCount", function(self, key, n) self.groupLog[#self.groupLog + 1] = { "cap", key, n } end)
   rawset(c, "SetAuraGroupSortMethod", function(self, key, m, d) self.groupLog[#self.groupLog + 1] = { "sort", key, m, d } end)
+  rawset(c, "SetAuraGroupDispelTypeTextureOptions", function(self, key, o) self.groupLog[#self.groupLog + 1] = { "dispelTexture", key, o } end)
+  rawset(c, "SetAuraGroupDurationTextOptions", function(self, key, o) self.groupLog[#self.groupLog + 1] = { "durationText", key, o } end)
   H.auraContainers[#H.auraContainers + 1] = c
   return c
 end
@@ -788,6 +800,11 @@ function CreateFrame(frameType, name, parent, template)
   if frameType == "AuraContainer" then return auraContainer() end
   return baseCreateFrame(frameType, name, parent, template)
 end
+C_AuraContainerUtil = { ProcessCustomAuraButtonDispelTypeTextureOptions = function(o) return o end,
+  ProcessCustomAuraButtonDurationTextOptions = function(o) return o end }
+Enum.CustomAuraButtonDispelTypeStealableFilter = { Stealable = 0, NotStealable = 1 }
+Enum.CustomAuraButtonDispelTypeTextureStyle = { Border = 0, BorderWithIcon = 1, Icon = 2, PreserveAsset = 3, CustomAsset = 4 }
+Enum.DurationTextBindingProperty = Enum.DurationTextBindingProperty or { RemainingDuration = 0, RemainingPercent = 1 }
 AuraContainerSortMethod = { Default = 0, BigDefensive = 1, UnitFrameDebuff = 2, ImportantOnly = 3, Expiration = 4, ExpirationOnly = 5, Name = 6 }
 AuraContainerSortDirection = { Normal = 0, Reverse = 1 }
 H.addonLoaded.Blizzard_AuraContainer = true
@@ -1090,6 +1107,32 @@ LOCALIZED_CLASS_NAMES_MALE = { MAGE = "Mage", PRIEST = "Priest", WARRIOR = "Warr
 LOCALIZED_CLASS_NAMES_FEMALE = LOCALIZED_CLASS_NAMES_MALE
 C_RecentAllies = { GetRecentAllies = function() return { { characterData = { fullName = "Rae-Silvermoon", classFile = "PRIEST" }, stateData = { isOnline = true, currentLocation = "Dornogal" } } } end }
 
+
+-- Deferred batch A: nameplate extras.
+H.creatureTypes, H.controlled = {}, {}
+function UnitCreatureType(u) return maybe(H.creatureTypes[u]) end
+function UnitPlayerControlled(u) return maybe(H.controlled[u] == true) end
+function UnitNameFromGUID(g) return maybe(H.guidNames and H.guidNames[g]) end
+if not rawget(_G, "GetPlayerInfoByGUID") then function GetPlayerInfoByGUID() return "Mage", "MAGE" end end
+H.tooltipUnits = {}
+C_TooltipInfo = rawget(_G, "C_TooltipInfo") or {}
+C_TooltipInfo.GetUnit = function(u) return H.tooltipUnits[u] end
+Enum.TooltipDataLineType = Enum.TooltipDataLineType or { UnitName = 2, QuestObjective = 8, QuestTitle = 17 }
+Enum.NamePlateType = { Friendly = 0, Enemy = 1 }
+H.insets = { [0] = { 0, 0, 0, 0 }, [1] = { 0, 0, 0, 0 } }
+C_NamePlateManager = {
+  GetNamePlateHitTestInsets = function(t) return unpack(H.insets[t]) end,
+  SetNamePlateHitTestInsets = function(t, l, r, tp, b) H.insets[t] = { l, r, tp, b } end,
+  SetNamePlateSimplified = function() end,
+}
+H.inRange = {}
+C_Spell.IsSpellInRange = function(spell, u) return maybe(H.inRange[u] ~= false) end
+H.editMode = { layouts = {}, activeLayout = 1 }
+C_EditMode = { GetLayouts = function() return H.editMode end }
+Enum.EditModeSystem = { ActionBar = 0 }
+H.inHouse = false
+C_Housing = rawget(_G, "C_Housing") or {}
+C_Housing.IsInsideHouse = function() return maybe(H.inHouse) end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
   AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }
@@ -1100,4 +1143,7 @@ setmetatable(_G, {
   end,
 })
 
+H.craftedQuality = {}
+C_TradeSkillUI = rawget(_G, "C_TradeSkillUI") or {}
+C_TradeSkillUI.GetItemCraftedQualityByItemInfo = function(id) return H.craftedQuality[id] end
 return H

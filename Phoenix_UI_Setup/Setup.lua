@@ -114,7 +114,27 @@ function SU.ApplyChoices(c)
   if c.look then SU.ApplyLook(c.look) end
   if c.accent then Schema:Set("theme.accent", c.accent) end
   if c.panel then Schema:Set("theme.panel", c.panel) end
+  if c.specProfile ~= nil then SU.ApplySpecProfiles(c.specProfile) end
   saveState({ wizardDone = true })
+end
+
+-- Spec auto-switch from the wizard: each specialization gets a copy of the
+-- current profile named after it (existing profiles are reused, never
+-- overwritten) and the switch turns on. Off leaves the map and turns it off.
+function SU.ApplySpecProfiles(on)
+  local SP, Profiles, DB = PUI.SpecProfiles, PUI.Profiles, PUI.DB
+  if on then
+    local current = DB.sv.chars[DB:CharKey()]
+    local classID = select(3, UnitClass("player"))
+    local n = classID and C_SpecializationInfo.GetNumSpecializationsForClassID(classID) or 0
+    for i = 1, math.min(n, SP.MAX_SPECS) do
+      local specName = select(2, C_SpecializationInfo.GetSpecializationInfo(i))
+      local name = current .. " - " .. (type(specName) == "string" and specName or ("Spec " .. i))
+      if not Profiles:Exists(name) then Profiles:Create(name, current) end
+      if not SP:Map(i) then SP.CharRec(true)[i] = name end
+    end
+  end
+  Schema:Set("core.specProfile", on and true or false)
 end
 
 -- Wizard UI lives in Wizard.lua (SU.OpenWizard, SU.Render, SU.Go, SU.Cycle).

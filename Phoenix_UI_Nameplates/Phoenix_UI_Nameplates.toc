@@ -13,4 +13,6 @@
 Rules.lua
 Plate.lua
 Nameplates.lua
+Extras.lua
 Tests\Nameplates_test.lua
+Tests\Extras_test.lua
