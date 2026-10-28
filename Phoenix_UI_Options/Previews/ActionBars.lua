@@ -8,6 +8,15 @@ local P, Skin, Media = ns.Previews, ns.Skin, ns.Media
     cooldown, a proc glow and the assisted-combat highlight. Slots past the samples are empty slots. ]]
 local STAGE_W, STAGE_H = 440, 132
 
+-- Retail has these in C_ActionBar, Forever as globals; looked up by name so both flavors lint clean.
+local function api(name)
+    local ns_ = _G["C_ActionBar"]
+    local fn = (type(ns_) == "table" and ns_[name]) or _G[name]
+    return type(fn) == "function" and fn or nil
+end
+local function apiPage() local fn = api("GetActionBarPage"); return fn and fn() end
+local function apiTexture(slot) local fn = api("GetActionTexture"); return fn and fn(slot) end
+
 -- What is really in slot i of a bar: { tex, key } or nil for an empty slot.
 local function actionSlot(def, i)
     if not def then return nil end
@@ -22,9 +31,9 @@ local function actionSlot(def, i)
     elseif def.kind == "items" then
         return nil
     end
-    local page = def.page or (C_ActionBar and C_ActionBar.GetActionBarPage and C_ActionBar.GetActionBarPage()) or 1
+    local page = def.page or (apiPage() or 1) or 1
     local slot = (page - 1) * 12 + i
-    local tex = C_ActionBar and C_ActionBar.GetActionTexture and C_ActionBar.GetActionTexture(slot)
+    local tex = apiTexture(slot)
     if not tex then return nil end
     local real = def.prefix and _G[def.prefix .. i]
     local hk = real and real.HotKey and real.HotKey:GetText()
