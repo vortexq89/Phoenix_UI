@@ -63,6 +63,7 @@ end
 
 ns:RegisterOptions("Bags", {
     { type = "preview", kind = "bags" },
+    { type = "tab", label = "TRACKER_TAB_LAYOUT" },
     { type = "header", label = "BAGS_LAYOUT", icon = "items" },
     { type = "select", key = "view", label = "BAGS_VIEW", desc = "BAGS_VIEW_DESC", values = VIEWS, reload = true,
       keywords = "combined categories one bag window baganator" },
@@ -94,6 +95,7 @@ ns:RegisterOptions("Bags", {
       keywords = "bag bar equipped bags containers highlight" },
     { type = "button", label = "UF_LAYOUT_MODE", desc = "BAGS_MOVE_DESC", button = "AB_LAYOUT_MODE_BUTTON", icon = "movers",
       combat = true, func = openLayout, disabled = phoenixOff, keywords = "move drag unlock position" },
+    { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "BAGS_SLOTS", icon = "border" },
     { type = "toggle", key = "quality", label = "BAGS_QUALITY", desc = "BAGS_QUALITY_DESC", keywords = "rarity border color",
       disabled = skinOff },
@@ -110,6 +112,7 @@ ns:RegisterOptions("Bags", {
     { type = "toggle", key = "simArrow", label = "BAGS_SIM_ARROW", desc = "BAGS_SIM_ARROW_DESC", icon = "sim", feature = "sim",
       keywords = "simulationcraft simc dps upgrade", disabled = function(m) return not m.db.upgrade end },
     mirror("ItemLevel", "bags", { label = "BAGS_ILVL", desc = "BAGS_ILVL_DESC", keywords = "item level ilvl" }),
+    { type = "tab", label = "TAB_BEHAVIOUR" },
     { type = "header", label = "BAGS_BEHAVIOUR", icon = "automation" },
     { type = "toggle", key = "bankSkin", label = "BAGS_BANK", desc = "BAGS_BANK_DESC", reload = true,
       keywords = "bank warband account reagent tabs" },
