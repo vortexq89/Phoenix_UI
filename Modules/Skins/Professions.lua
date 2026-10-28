@@ -31,6 +31,19 @@ function M:SkinProfessions()
             M.SkinPopupButton(page.CreateButton, "primary", isOn)
             M.SkinPopupButton(page.CreateAllButton, "secondary", isOn)
         end
+        -- specialization tree: the same node rings as talents (accent once a node has points)
+        local spec = rawget(pf, "SpecPage")
+        local tree = type(spec) == "table" and (rawget(spec, "TreeView") or spec)
+        if type(tree) == "table" and type(tree.EnumerateAllTalentButtons) == "function" then
+            local n = 0
+            for button in tree:EnumerateAllTalentButtons() do
+                n = n + 1
+                if n > 600 or type(button) ~= "table" then break end
+                M.TalentRing(button, isOn)
+            end
+        elseif spec ~= nil then
+            M.FramePath(pf, { "SpecPage", "TreeView" }) -- reported to the dev self-test
+        end
         local orders = pf.OrdersPage
         if orders then M.KitScrollBox(M.FramePath(pf, { "OrdersPage", "BrowseFrame", "OrderList", "ScrollBox" }), on, M.KitRow) end
     end
