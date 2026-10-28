@@ -444,13 +444,15 @@ local function buildDock(f)
     f.dock = d
 end
 
--- Puts the current page's preview (or side panel) in the dock when the window is wide enough.
+-- Puts the current page's side panel in the dock when the window is wide enough. Live previews are not docked
+-- (t123u): they sit at the top of the page under the element chips, full content width so they can show the
+-- element at its real size, and stick there while the settings scroll (the EllesmereUI-style content header).
 function Config:LayoutShell()
     local f = self.frame
     if not f then return end
     local width = f:GetWidth() or DEFAULT_W
     local page = self.current and self.pages[self.current]
-    local side = page and (page.pinned or page.side)
+    local side = page and not page.pinned and page.side or nil
     local docked = side ~= nil and width >= DOCK_AT
     local dockW = math.floor(math.max(DOCK_MIN, math.min(DOCK_MAX, width * 0.3)))
     f.dock:SetWidth(dockW)
