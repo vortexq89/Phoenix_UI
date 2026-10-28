@@ -4,6 +4,9 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Release prep, branch feat/release-prep
+- Draft 2.0.0-beta2 release notes in docs/releases/2.0.0-beta2.md (not published).
+
 ### Patch watcher auto-fix, branch feat/autofix
 - .tools/autofix.py regenerates manifests, locale keys and missing harness stubs, then runs the full local check set; api-watch runs it before opening its PR and reports the result in the PR body. docs/PATCH_WATCHER.md.
 
