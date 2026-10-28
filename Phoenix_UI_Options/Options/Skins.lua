@@ -37,6 +37,8 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "keystone", label = "SKINS_KEYSTONE", reload = true, keywords = "mythic plus key", feature = "mythicplus" },
     { type = "toggle", key = "trade", label = "SKINS_TRADE", reload = true, keywords = "trade window" },
     { type = "toggle", key = "dressUp", label = "SKINS_DRESSUP", reload = true, keywords = "dressing room preview" },
+    { type = "toggle", key = "pgf", label = "SKINS_PGF", desc = "SKINS_PGF_DESC", reload = true,
+      keywords = "premade groups filter pgf addon" },
     { type = "header", label = "SKINS_MOVE", icon = "movers" },
     { type = "toggle", key = "moveWindows", label = "SKINS_MOVE_WINDOWS", desc = "SKINS_MOVE_WINDOWS_DESC",
       keywords = "move drag reposition blizzard windows shifter" },

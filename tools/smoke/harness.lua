@@ -3637,6 +3637,10 @@ try("window skins (S13b)", function()
     fire("ADDON_LOADED", "Blizzard_Collections")
     assert(ns.Skin:IsSkinned(f), "Collections not skinned on ADDON_LOADED")
     S.PaintTab(f.Tabs[1])
+    -- another addon's window: Premade Groups Filter's dialog is dressed when that addon loads
+    local pgf = env.CreateFrame("Frame", "PremadeGroupsFilterDialog")
+    fire("ADDON_LOADED", "PremadeGroupsFilter")
+    assert(ns.Skin:IsSkinned(pgf), "Premade Groups Filter dialog not skinned")
     for _, title in ipairs({ "phoenix", "minimal", "blizzard" }) do
         S.db.titleStyle, S.db.closeStyle, S.db.tabs = title, title == "phoenix" and "phoenix" or "blizzard", title ~= "blizzard"
         S.db.character = title ~= "minimal"

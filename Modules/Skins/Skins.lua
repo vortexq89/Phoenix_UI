@@ -16,7 +16,7 @@ local M = ns:NewModule("Skins", {
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
-        trade = true, dressUp = true, alerts = false,
+        trade = true, dressUp = true, pgf = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
         moveWindows = false, movedWindows = {}, mailAlts = true,
@@ -50,6 +50,8 @@ M.WINDOWS = {
     { key = "keystone", frames = { "ChallengesKeystoneFrame" }, addon = "Blizzard_ChallengesUI", feature = "mythicplus" },
     { key = "trade", frames = { "TradeFrame" } },
     { key = "dressUp", frames = { "DressUpFrame" } },
+    -- other addons' windows (skinned only when that addon is loaded)
+    { key = "pgf", frames = { "PremadeGroupsFilterDialog" }, addon = "PremadeGroupsFilter", dialog = true },
 }
 
 local ART = { "Border", "NineSlice", "BG", "Bg", "Background", "TopTileStreaks", "PortraitContainer" }

@@ -2775,6 +2775,8 @@ ns.RegisterLocale("enUS", {
     SKINS_KEYSTONE = "Keystone slot",
     SKINS_TRADE = "Trade",
     SKINS_DRESSUP = "Dressing room",
+    SKINS_PGF = "Premade Groups Filter",
+    SKINS_PGF_DESC = "The filter dialog of the Premade Groups Filter addon, when it is installed.",
     SKINS_STYLE = "Look",
     SKINS_BACKGROUND = "Window background",
     SKINS_BORDER = "Window border",
