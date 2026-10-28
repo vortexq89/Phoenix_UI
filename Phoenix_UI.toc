@@ -23,6 +23,7 @@ Core\Media.lua
 Core\Bars.lua
 Core\CombatQueue.lua
 Core\Ticker.lua
+Core\Plugins.lua
 Core\Budget.lua
 Core\API.lua
 Core\Slash.lua
@@ -79,3 +80,4 @@ Tests\Reporter_test.lua
 Tests\Profiler_test.lua
 Tests\Deferred_test.lua
 Tests\Look_test.lua
+Tests\Plugins_test.lua
