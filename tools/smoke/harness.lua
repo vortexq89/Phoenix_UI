@@ -2288,6 +2288,13 @@ try("achievements phase 3 skin", function()
     S:SkinAchievements(); S.db.achievements = false; S:Refresh(); S.db.achievements = true; S:Refresh()
     env.AchievementFrame = nil
 end)
+try("collections phase 3 skin", function()
+    local S = ns.modules.Skins
+    local f = CreateFrame("Frame", "CollectionsJournal", UIParent)
+    env.CollectionsJournal = f
+    S:SkinCollections(); S.db.collections = false; S:Refresh(); S.db.collections = true; S:Refresh()
+    env.CollectionsJournal = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
