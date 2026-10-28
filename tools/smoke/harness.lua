@@ -2177,6 +2177,13 @@ try("group finder skin", function()
     env.LFGListFrame = { SearchPanel = { ScrollBox = box } }
     env.LFGDungeonReadyDialog = CreateFrame("Frame", nil, UIParent)
     S:SkinGroupFinder(); S.db.groupFinder = false; S:Refresh(); S.db.groupFinder = true; S:Refresh()
+    -- details: search chips history, ring timer, rating cards
+    local list = S.RememberSearch({}, " +15 ")
+    S.RememberSearch(list, "tank"); S.RememberSearch(list, "+15")
+    assert(list[1] == "+15" and list[2] == "tank" and #list == 2, "search history, newest first, no repeats")
+    for i = 1, 10 do S.RememberSearch(list, "k" .. i) end
+    assert(#list == S.CHIP_MAX, "history capped")
+    S:ReadyRing(true, true); S:ReadyRing(false); S:RatingCards(true); S:SearchChips(true); S:SearchChips(false)
     ns.Events:Fire("PUI_THEME_CHANGED")
     env.LFGListFrame, env.LFGDungeonReadyDialog = nil, nil
 end)

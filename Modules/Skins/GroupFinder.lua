@@ -38,6 +38,102 @@ function M:SkinGroupFinder()
     if pvp then M.SkinPopupButton(pvp.QueueButton, "primary", isOn) end
     local conq = _G.ConquestFrame
     if conq then M.SkinPopupButton(conq.JoinButton, "primary", isOn) end
+    self:ReadyRing(isOn, false)
+    self:RatingCards(isOn)
+    self:SearchChips(isOn)
+end
+
+---------------------------------------------------------------- details
+-- Role ring timer: a Cooldown (native swipe animation, no OnUpdate) around the role icon of the ready
+-- dialog, in the accent, counting the proposal's 40 seconds.
+M.PROPOSAL_SECONDS = 40
+local ringTimer
+function M:ReadyRing(isOn, start)
+    local ready = _G.LFGDungeonReadyDialog
+    local icon = ready and (ready.roleIcon or _G.LFGDungeonReadyDialogRoleIcon)
+    if type(icon) ~= "table" or not icon.GetObjectType then return end
+    if not isOn then if ringTimer then ringTimer:Hide() end; return end
+    if not ringTimer then
+        ringTimer = CreateFrame("Cooldown", nil, icon, "CooldownFrameTemplate")
+        ringTimer:SetPoint("TOPLEFT", -4, 4); ringTimer:SetPoint("BOTTOMRIGHT", 4, -4)
+        ringTimer:SetSwipeTexture(ns.Media.textures.RING_CIRCLE)
+        ringTimer:SetDrawEdge(false)
+        ringTimer:SetHideCountdownNumbers(false)
+    end
+    local r, g, b = ns.Theme:Color("accent.primary")
+    ringTimer:SetSwipeColor(r, g, b, 0.9)
+    if start then ringTimer:SetCooldown(GetTime(), M.PROPOSAL_SECONDS) end
+    ringTimer:Show()
+end
+
+-- Rated PvP: the bracket buttons as rating cards, the picked one outlined in the accent.
+M.RATED_BUTTONS = { "Arena2v2", "Arena3v3", "RatedBG", "RatedSoloShuffle", "RatedBGBlitz" }
+function M:RatingCards(isOn)
+    local conq = _G.ConquestFrame
+    if not conq then return end
+    for _, key in ipairs(self.RATED_BUTTONS) do
+        local b = conq[key]
+        local card = M.KitCard(b, isOn, "raised", false)
+        if card and isOn then
+            ns.Skin:SetBorderColor(card, M.RowSelected(b) and "accent.primary" or "border.subtle")
+        end
+    end
+end
+
+-- Premade search chips: your last searches as chips under the search box; a click puts the text back in
+-- the box (you still press Search / Enter yourself, so the search stays your own action).
+M.CHIP_MAX = 6
+function M.RememberSearch(list, text)
+    text = tostring(text or ""):gsub("^%s+", ""):gsub("%s+$", "")
+    if text == "" then return list end
+    for i = #list, 1, -1 do if list[i] == text then table.remove(list, i) end end
+    table.insert(list, 1, text)
+    while #list > M.CHIP_MAX do table.remove(list) end
+    return list
+end
+
+local chipBar
+function M:SearchChips(isOn)
+    local panel = M.FramePath(_G.LFGListFrame, { "SearchPanel" })
+    local box = panel and panel.SearchBox
+    if type(box) ~= "table" or not box.GetObjectType then return end
+    if not isOn then if chipBar then chipBar:Hide() end; return end
+    self.db.premadeSearches = self.db.premadeSearches or {}
+    local W = ns.Widgets
+    if not chipBar then
+        chipBar = CreateFrame("Frame", nil, panel)
+        chipBar:SetHeight(18)
+        chipBar:SetPoint("TOPLEFT", box, "BOTTOMLEFT", -4, -4)
+        chipBar.chips = {}
+        box:HookScript("OnEnterPressed", function(self)
+            M.RememberSearch(M.db.premadeSearches, self:GetText()); M:SearchChips(true)
+        end)
+    end
+    local prev
+    for i = 1, M.CHIP_MAX do
+        local text = self.db.premadeSearches[i]
+        local c = chipBar.chips[i]
+        if text and not c then
+            c = CreateFrame("Button", nil, chipBar)
+            c.label = W.Text(c, "small", "text.secondary", "CENTER")
+            c.label:SetPoint("CENTER")
+            c:SetScript("OnClick", function(self) box:SetText(self.text); box:SetFocus() end)
+            chipBar.chips[i] = c
+        end
+        if c then
+            c:SetShown(text ~= nil)
+            if text then
+                c.text = text
+                c.label:SetText(text)
+                c:SetSize(math.max(30, (c.label:GetStringWidth() or 30) + 12), 18)
+                c:ClearAllPoints()
+                if prev then c:SetPoint("LEFT", prev, "RIGHT", 3, 0) else c:SetPoint("LEFT") end
+                ns.Skin:Panel(c, "sunken", { border = "border.subtle" })
+                prev = c
+            end
+        end
+    end
+    chipBar:Show()
 end
 
 local gfHooked, readyHooked
@@ -45,7 +141,7 @@ function M:SetupGroupFinder()
     self:SkinGroupFinder()
     if not readyHooked then
         readyHooked = true
-        ns.Events:On("LFG_PROPOSAL_SHOW", self, function() M:SkinGroupFinder() end)
+        ns.Events:On("LFG_PROPOSAL_SHOW", self, function() M:SkinGroupFinder(); M:ReadyRing(on(), true) end)
     end
     if gfHooked or not _G.PVEFrame then return end
     gfHooked = true

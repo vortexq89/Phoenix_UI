@@ -19,7 +19,7 @@ local M = ns:NewModule("Skins", {
         trade = true, dressUp = true, pgf = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
-        moveWindows = false, movedWindows = {}, mailAlts = true,
+        moveWindows = false, movedWindows = {}, mailAlts = true, premadeSearches = {},
     },
 })
 
