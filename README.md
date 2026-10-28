@@ -217,6 +217,18 @@ lua5.1 tools/smoke/harness.lua .    # offline load test
 python3 tools/check_flavors.py      # all of the above for retail and again for WoW Forever 1.60.1
 ```
 
+### Pre-push guard (no red CI)
+
+```bash
+tools/install_hooks.sh   # once per clone: installs .git/hooks/pre-push
+tools/prepush.sh         # runs exactly what CI runs: syntax, luacheck (retail + Forever std), check_api,
+                         # check_ids (both flavors), check_locales, smoke harness (both flavors)
+```
+
+Any failure blocks the push. A passing run writes a git note (`refs/notes/prepush`) on HEAD; on a machine
+without Lua the hook only verifies that note, so an unchecked commit can never be pushed from anywhere.
+Every push goes through it.
+
 CI runs them on every push, for both games. The in-game checklist for a release is [`docs/TESTING.md`](docs/TESTING.md).
  Read [`AGENTS.md`](AGENTS.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 before contributing. They cover the module contract, taint and secret-value rules, and the theme tokens.
