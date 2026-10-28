@@ -269,6 +269,74 @@ Auto combat logging
 Auto decline duels
 Auto decline guild invites
 Auto gossip
+Auto item bar 1
+Auto item bar 1 button size
+Auto item bar 1 buttons per row
+Auto item bar 1 cooldowns
+Auto item bar 1 fade opacity
+Auto item bar 1 fade until mouse-over
+Auto item bar 1 grow direction
+Auto item bar 1 hides missing custom items
+Auto item bar 1 item counts
+Auto item bar 1 order
+Auto item bar 1 spacing
+Auto item bar 1 stays faded until you point at it.
+Auto item bar 1: where to show
+Auto item bar 2
+Auto item bar 2 button size
+Auto item bar 2 buttons per row
+Auto item bar 2 cooldowns
+Auto item bar 2 fade opacity
+Auto item bar 2 fade until mouse-over
+Auto item bar 2 grow direction
+Auto item bar 2 hides missing custom items
+Auto item bar 2 item counts
+Auto item bar 2 order
+Auto item bar 2 spacing
+Auto item bar 2 stays faded until you point at it.
+Auto item bar 2: where to show
+Auto item bar 3
+Auto item bar 3 button size
+Auto item bar 3 buttons per row
+Auto item bar 3 cooldowns
+Auto item bar 3 fade opacity
+Auto item bar 3 fade until mouse-over
+Auto item bar 3 grow direction
+Auto item bar 3 hides missing custom items
+Auto item bar 3 item counts
+Auto item bar 3 order
+Auto item bar 3 spacing
+Auto item bar 3 stays faded until you point at it.
+Auto item bar 3: where to show
+Auto item bar 4
+Auto item bar 4 button size
+Auto item bar 4 buttons per row
+Auto item bar 4 cooldowns
+Auto item bar 4 fade opacity
+Auto item bar 4 fade until mouse-over
+Auto item bar 4 grow direction
+Auto item bar 4 hides missing custom items
+Auto item bar 4 item counts
+Auto item bar 4 order
+Auto item bar 4 spacing
+Auto item bar 4 stays faded until you point at it.
+Auto item bar 4: where to show
+Auto item bar 5
+Auto item bar 5 button size
+Auto item bar 5 buttons per row
+Auto item bar 5 cooldowns
+Auto item bar 5 fade opacity
+Auto item bar 5 fade until mouse-over
+Auto item bar 5 grow direction
+Auto item bar 5 hides missing custom items
+Auto item bar 5 item counts
+Auto item bar 5 order
+Auto item bar 5 spacing
+Auto item bar 5 stays faded until you point at it.
+Auto item bar 5: where to show
+Auto item bars: battle res charges
+Auto item bars: custom items
+Auto item bars: what each bar shows
 Auto release
 Auto repair
 Auto sell junk
@@ -689,6 +757,11 @@ Button borders
 Button look
 Button order
 Button size
+Button size of auto item bar 1 in pixels.
+Button size of auto item bar 2 in pixels.
+Button size of auto item bar 3 in pixels.
+Button size of auto item bar 4 in pixels.
+Button size of auto item bar 5 in pixels.
 Button size of bar 1 in pixels.
 Button size of bar 10 in pixels.
 Button size of bar 2 in pixels.
@@ -706,6 +779,11 @@ Button size of the vehicle exit button in pixels.
 Button spacing
 Buttons corner
 Buttons grow
+Buttons in each row (or column) of auto item bar 1.
+Buttons in each row (or column) of auto item bar 2.
+Buttons in each row (or column) of auto item bar 3.
+Buttons in each row (or column) of auto item bar 4.
+Buttons in each row (or column) of auto item bar 5.
 Buttons in each row of bar 1.
 Buttons in each row of bar 10.
 Buttons in each row of bar 2.
@@ -1042,6 +1120,11 @@ Custom groups: Tanks at most
 Custom groups: expression
 Custom groups: sort
 Custom health colour
+Custom items you do not carry are left off auto item bar 1 (otherwise shown greyed out).
+Custom items you do not carry are left off auto item bar 2 (otherwise shown greyed out).
+Custom items you do not carry are left off auto item bar 3 (otherwise shown greyed out).
+Custom items you do not carry are left off auto item bar 4 (otherwise shown greyed out).
+Custom items you do not carry are left off auto item bar 5 (otherwise shown greyed out).
 DR countdown numbers
 DR icon size
 DR icon spacing
@@ -1575,6 +1658,11 @@ Gap between DR icons.
 Gap between bars.
 Gap between boss frames.
 Gap between buttons in the bin.
+Gap between buttons of auto item bar 1.
+Gap between buttons of auto item bar 2.
+Gap between buttons of auto item bar 3.
+Gap between buttons of auto item bar 4.
+Gap between buttons of auto item bar 5.
 Gap between buttons of the item bar.
 Gap between buttons of the pet bar.
 Gap between buttons of the stance bar.
@@ -1984,6 +2072,7 @@ Interrupted-by time
 Invite on keyword
 Invite words
 Invites friends, Battle.net friends and guild members who whisper one of your words. Never strangers; never during chat lockdown.
+Item IDs for the Custom item list category, in order.
 Item IDs shown in the Pinned category and never sold as junk. Use Pin mode in the bags to add items by clicking.
 Item IDs shown on the Action Bars item bar and the Cooldown Manager custom bar, in order (for example Healthstone 5512, healing potions, quest items, toys).
 Item IDs that say when they are ready again (Healthstone is 5512). Potions you add here work the same.
@@ -2324,6 +2413,11 @@ Only online players in the search panel.
 Only tanks and healers get a role marker.
 Opacity
 Opacity of a frame whose unit is out of range.
+Opacity of auto item bar 1 while faded.
+Opacity of auto item bar 2 while faded.
+Opacity of auto item bar 3 while faded.
+Opacity of auto item bar 4 while faded.
+Opacity of auto item bar 5 while faded.
 Opacity of bar 1 while faded.
 Opacity of bar 10 while faded.
 Opacity of bar 2 while faded.
@@ -2370,6 +2464,11 @@ Oracle
 Oracle search
 Order of Phoenix's list, e.g. 'mprating desc, age asc'. Empty keeps Blizzard's order.
 Order of categories, highest first. Words: cc, defensive, important. Leave one out to never show it ("cc" alone shows only crowd control).
+Order of the buttons on auto item bar 1.
+Order of the buttons on auto item bar 2.
+Order of the buttons on auto item bar 3.
+Order of the buttons on auto item bar 4.
+Order of the buttons on auto item bar 5.
 Order of the party frames.
 Order of the search panel.
 Order raid frames by group, by role (in the role order below), by class or by name.
@@ -3112,6 +3211,11 @@ Show Rated BG
 Show Solo Shuffle
 Show Studio grid
 Show absorbs
+Show auto item bar 1 everywhere, never, or only in the content, combat state, group and specialization you pick.
+Show auto item bar 2 everywhere, never, or only in the content, combat state, group and specialization you pick.
+Show auto item bar 3 everywhere, never, or only in the content, combat state, group and specialization you pick.
+Show auto item bar 4 everywhere, never, or only in the content, combat state, group and specialization you pick.
+Show auto item bar 5 everywhere, never, or only in the content, combat state, group and specialization you pick.
 Show bar 1 everywhere, never, or only in the content, combat state, group and specialization you pick. Combat, vehicle, pet battle, mounted and skyriding apply instantly even in combat.
 Show bar 10 everywhere, never, or only in the content, combat state, group and specialization you pick. Combat, vehicle, pet battle, mounted and skyriding apply instantly even in combat.
 Show bar 2 everywhere, never, or only in the content, combat state, group and specialization you pick. Combat, vehicle, pet battle, mounted and skyriding apply instantly even in combat.
@@ -3191,6 +3295,11 @@ Shows buffs on the player frame.
 Shows buffs on the target frame.
 Shows buffs on the target of target frame.
 Shows casts and channels under enemy plates, with the shield for casts you cannot interrupt.
+Shows cooldown swipes on auto item bar 1.
+Shows cooldown swipes on auto item bar 2.
+Shows cooldown swipes on auto item bar 3.
+Shows cooldown swipes on auto item bar 4.
+Shows cooldown swipes on auto item bar 5.
 Shows currency in Spark.
 Shows damage absorbs after the health fill and heal absorbs on it.
 Shows damage you take in Spark.
@@ -3212,6 +3321,11 @@ Shows hits you avoid (dodge, parry, absorb...) in Spark.
 Shows honor in Spark.
 Shows how many bosses a raid group has already killed and adds the filter word bossesdown. Uses a game function Blizzard's own list uses; it turns off by itself if a patch removes it.
 Shows how many minutes ago the group was listed.
+Shows how many of each item you carry on auto item bar 1.
+Shows how many of each item you carry on auto item bar 2.
+Shows how many of each item you carry on auto item bar 3.
+Shows how many of each item you carry on auto item bar 4.
+Shows how many of each item you carry on auto item bar 5.
 Shows interrupt counts for your group (from the Embers meter data).
 Shows item or potion ready in Spark.
 Shows leaving combat in Spark.
@@ -3671,6 +3785,7 @@ The action page bar 8 shows while its paging modifier is held.
 The action page bar 9 shows while its paging modifier is held.
 The bar stays invisible until you point at it.
 The bar turns red when this many seconds are left.
+The battle res button shows the group's shared charges and recharge timer (keys and boss fights) instead of the spell's own cooldown.
 The border and backdrop style of every plate. Each part below can still be changed on its own.
 The border around every Phoenix window, frame and icon outline.
 The clock block uses 24-hour time.
@@ -3733,6 +3848,7 @@ Tick a topic for the content types where it may be announced. Everything starts 
 Tick an option for the content types where it should apply. Everything starts unticked; sound options return to your own values when they stop applying.
 Tick marks for your channels: spell ID = number of ticks, comma-separated, e.g. 15407=6, 5143=5.
 Tick marks on the timer bar where +3 and +2 run out.
+Tick the categories each auto item bar fills itself with, from your bags and gear. Rows run top to bottom in the order the buttons appear.
 Ticket status
 Time format
 Time in front of each line. Lines the game keeps secret in restricted content are shown unchanged.
@@ -3788,6 +3904,11 @@ Turn off Blizzard's outgoing combat text
 Turn on the client's taint log until logout so blocked actions can be traced.
 Turns /combatlog on in the content types ticked below and off elsewhere (only a log Flow started). Raids and Mythic+ are ticked to start with.
 Turns :name: codes such as :star: or :tank: into icons, with suggestions while you type.
+Turns auto item bar 1 on. It fills itself with the categories ticked for it.
+Turns auto item bar 2 on. It fills itself with the categories ticked for it.
+Turns auto item bar 3 on. It fills itself with the categories ticked for it.
+Turns auto item bar 4 on. It fills itself with the categories ticked for it.
+Turns auto item bar 5 on. It fills itself with the categories ticked for it.
 Turns off the game's tutorial pop-ups; your setting comes back when this is off.
 Turns on the game's own enemy DR tracking (setting spellDiminishPVPEnemiesEnabled) and shows it in Phoenix's tray. Off: no DR is shown. Your old value comes back when this goes off.
 Turns the Phoenix filter for this category on or off without losing your chips.
@@ -3962,6 +4083,11 @@ Which side of the frame the portrait sits on.
 Which side the spec icon sits on.
 Which sound plays: four game sounds, then every sound in the media library (yours and other addons' shared sounds).
 Which tiers the pace line compares against.
+Which way auto item bar 1 adds buttons.
+Which way auto item bar 2 adds buttons.
+Which way auto item bar 3 adds buttons.
+Which way auto item bar 4 adds buttons.
+Which way auto item bar 5 adds buttons.
 Which way boss frames 2 to 5 are added.
 Which way buttons fill a line; the popup opens and the bar docks on that side.
 Which way extra rows are added.

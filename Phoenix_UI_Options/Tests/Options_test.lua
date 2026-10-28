@@ -446,3 +446,22 @@ Tests:Add("Options", "minimap preview shows the button bin layout, order, badge 
   t:ok(h.binNote:GetText():find("badge 12", 1, true), "hidden buttons leave the sample")
   t:eq(h.bin[13]:IsShown(), false, "fewer cells")
 end)
+
+Tests:Add("Options", "auto item bar preview follows its size, categories and counts live", function(t)
+  if not (PUI.ActionBars and PUI.ActionBars.ItemBars) then return end
+  Tests.Keep(t, "ab.ibar1.size")
+  Tests.Keep(t, "ab.ibar1.count")
+  local card = CreateFrame("Frame")
+  Schema:Set("ab.ibar1.size", 40)
+  Options.Previews.ActionBars(card, "ibar1")
+  local bag = Options.PreviewsExtras.Bag(card)
+  local b = bag["ib.b1.1"]
+  t:ok(b and b:IsShown(), "sample button for the first ticked category")
+  t:eq(b:GetWidth(), 40, "size follows the setting")
+  t:ok(b.count:GetText() ~= "", "sample count")
+  Schema:Set("ab.ibar1.count", false)
+  Options.Previews.ActionBars(card, "ibar1")
+  t:eq(b.count:GetText(), "", "counts off in the preview")
+  local st = Options.Previews.State(card)
+  t:ok(not (st.icons and st.icons[1] and st.icons[1]:IsShown()), "action bar samples are not drawn on item bar tabs")
+end)

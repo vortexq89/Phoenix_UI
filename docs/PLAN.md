@@ -243,6 +243,7 @@ Every lint rule above ships with a self-proof fixture that must fail (QDB). Full
 | Window sets by content | Embers auto-switch, content profiles | **Core content profiles** (D-SET-UI); Embers has no own switcher. |
 | Threat meter (Forever) | Embers, §5.20, §13.10 | **Embers** window type, code in `Phoenix_UI_Forever`. |
 | Extra item bar | Action Bars, Quickdraw, CDM custom bar | **Action Bars** clickable item bar; CDM custom bar is display-only; one item-list service feeds both. |
+| Auto item bars (consumables, trinkets, battle res) | Action Bars | **Action Bars** `ItemBars.lua`: five self-filling bars by category (curated `Data/ItemBarData.lua` + item class/subclass), class battle res with shared charges; feat/item-bars. |
 | Buff bars | Player Aura Bars, CDM tracked buff bars | Both stay (different sources); new dedupe setting hides an aura already shown in CDM bars. |
 
 

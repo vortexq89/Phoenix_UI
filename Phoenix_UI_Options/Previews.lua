@@ -234,6 +234,7 @@ end
 local SAMPLE_KEYS = { "1", "2", "3", "4", "5", "SHIFT-1", "CTRL-2", "BUTTON4", "MOUSEWHEELUP", "F", "ALT-Q", "NUMPAD5" }
 local STATES = { [2] = "cooldown", [3] = "proc", [6] = "range", [7] = "power", [8] = "unusable", [10] = "assist" }
 function Previews.ActionBars(card, tab)
+  if tab and tab:match("^ibar") and Previews.AutoItemBarSample then return Previews.AutoItemBarSample(card, tab) end
   local barId = (tab and tab:match("^bar%d+$")) and tab or "bar1"
   local size = math.min(52, get("ab." .. barId .. ".size", 40) or 40)
   local perRow = math.max(1, math.min(12, get("ab." .. barId .. ".perRow", 6) or 6))

@@ -52,6 +52,7 @@ end
 function KB.Apply()
   PUI.Bindings:Release(LEDGER)
   for _, b in ipairs(Btn.all) do b.extraKey = false end
+  for _, b in ipairs(ns.ItemBars and ns.ItemBars.buttons or {}) do b.extraKey = false end
   local AB = ns.AB
   if not (AB and AB.active) then return end
   for name, keys in pairs(KB.map) do
@@ -126,6 +127,7 @@ end
 
 function KB.Hovered()
   for _, b in ipairs(Btn.all) do if b.live and b:IsMouseOver() then return b end end
+  for _, b in ipairs(ns.ItemBars and ns.ItemBars.buttons or {}) do if b.live and b:IsMouseOver() then return b end end
   return nil
 end
 
