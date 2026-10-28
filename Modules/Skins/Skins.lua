@@ -195,13 +195,22 @@ local function unwindow(frame)
     end
     local title = titleOf(frame)
     if title then Skin:Restore(title) end
+    for _, tab in ipairs(tabsOf(frame)) do
+        if skinnedTabs[tab] then
+            skinnedTabs[tab] = nil
+            for _, key in ipairs(TAB_ART) do Skin:Restore(tab[key]) end
+            local fs = tab.Text or (tab.GetFontString and tab:GetFontString())
+            if fs then Skin:Restore(fs) end
+            Skin:Restore(tab)
+        end
+    end
     Skin:Restore(frame)
 end
 M.UnskinWindow = unwindow
 function M.IsWindowOn(frame) return winOn[frame] and true or false end
 
 -- Windows whose switch applies live both ways (the rest restore Blizzard's look after /reload).
-M.LIVE = { gameMenu = true }
+M.LIVE = { gameMenu = true, character = true }
 function M:ApplyLive()
     for _, entry in ipairs(self.WINDOWS) do
         if self.LIVE[entry.key] then
@@ -271,6 +280,7 @@ function M:OnEnable()
     if self.SetupGameMenu then self:SetupGameMenu() end -- GameMenu.lua
     if self.SkinMicroMenu then self:SkinMicroMenu() end -- MicroMenu.lua
     if self.SetupWorldMap then self:SetupWorldMap() end -- WorldMap.lua
+    if self.SetupCharacter then self:SetupCharacter() end -- Character.lua
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then

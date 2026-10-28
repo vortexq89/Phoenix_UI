@@ -17,7 +17,7 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "alerts", label = "SKINS_ALERTS", desc = "SKINS_ALERTS_DESC", reload = true,
       keywords = "alerts toasts achievement loot popup banner" },
     { type = "header", label = "SKINS_WINDOWS", icon = "layout" },
-    { type = "toggle", key = "character", label = "SKINS_CHARACTER", reload = true, keywords = "paper doll equipment reputation currency" },
+    { type = "toggle", key = "character", label = "SKINS_CHARACTER", keywords = "paper doll equipment reputation currency" },
     { type = "toggle", key = "inspect", label = "SKINS_INSPECT", reload = true, keywords = "inspect player gear" },
     { type = "toggle", key = "spellbook", label = "SKINS_SPELLBOOK", reload = true, keywords = "talents spellbook specialization" },
     { type = "toggle", key = "groupFinder", label = "SKINS_GROUP_FINDER", reload = true, keywords = "lfg dungeon finder pvp premade" },

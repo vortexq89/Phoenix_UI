@@ -72,5 +72,5 @@ function M:SetupWorldMap()
     if mapHooked or not map then return end
     mapHooked = true
     map:HookScript("OnShow", function() M:SkinWorldMap() end)
-    ns.Events:Listen("PUI_THEME_CHANGED", self, function() if map:IsShown() then M:SkinWorldMap() end end)
+    ns.Events:Listen("PUI_THEME_CHANGED", SIDE_TABS, function() if map:IsShown() then M:SkinWorldMap() end end)
 end

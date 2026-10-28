@@ -2097,6 +2097,27 @@ try("map and quest log skin", function()
     Q.HeaderTick(module, true); Q.HeaderTick(module, true); Q.HeaderTick(module, false)
     env.WorldMapFrame, env.QuestMapFrame = nil, nil
 end)
+-- character skin (plan window 6): quality border colours, slot tiles, live off/on with the window and its tabs
+try("character skin", function()
+    local S = ns.modules.Skins
+    assert(S.SlotQualityColor(nil) == nil and S.SlotQualityColor(1) == nil, "empty / common slots use the theme border")
+    env.ITEM_QUALITY_COLORS = env.ITEM_QUALITY_COLORS or {}
+    env.ITEM_QUALITY_COLORS[4] = env.ITEM_QUALITY_COLORS[4] or { r = 0.64, g = 0.21, b = 0.93 }
+    assert(S.SlotQualityColor(4).r == env.ITEM_QUALITY_COLORS[4].r, "epic border")
+    local b = CreateFrame("Button", "CharacterHeadSlot", UIParent)
+    env.CharacterHeadSlot = b
+    b.icon = b:CreateTexture()
+    S.StyleSlot(b); S.StyleSlot(b)
+    local cf = CreateFrame("Frame", "CharacterFrame", UIParent)
+    env.CharacterFrame = cf
+    cf.Tabs = { CreateFrame("Button", nil, cf) }
+    S.SkinWindow(cf, false)
+    S.db.character = false; S:Refresh()
+    assert(not S.IsWindowOn(cf), "character window back live")
+    S.db.character = true; S:Refresh()
+    assert(S.IsWindowOn(cf), "character window again live")
+    env.CharacterHeadSlot, env.CharacterFrame = nil, nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
