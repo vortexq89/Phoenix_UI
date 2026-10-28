@@ -105,3 +105,30 @@ Tests:Add("Forever", "swing timer: off by default, combat log only in Forever wh
   t:eq(FV.module.handlers[Swing.EVENT], nil, "handler gone")
   t:eq(PUI.Ticker.entries["forever.swing"], nil, "job gone")
 end)
+
+Tests:Add("Forever", "fishing helper: fishing spells only, bar text, louder splash restored", function(t)
+  if not H then return end
+  local saved = { FV.active, FV.settings.fishHelper, FV.settings.fishLoud }
+  t:cleanup(function()
+    FV.Fish.Stop()
+    FV.active, FV.settings.fishHelper, FV.settings.fishLoud = saved[1], saved[2], saved[3]
+    H.channel = nil
+  end)
+  local Fish = FV.Fish
+  t:eq(Fish.IsFishing(7620), true, "Fishing")
+  t:eq(Fish.IsFishing(133), false, "not fishing")
+  t:ok(Fish.Text(12.34, 3):find("12.3", 1, true) and Fish.Text(12.34, 3):find("catches 3", 1, true), "bar text")
+  FV.active, FV.settings.fishHelper, FV.settings.fishLoud = true, false, true
+  t:eq(Fish.Start(7620, 10), false, "off by default: nothing")
+  FV.settings.fishHelper = true
+  t:eq(Fish.Start(133, 10), false, "other channels ignored")
+  C_CVar.SetCVar("Sound_SFXVolume", "0.3")
+  local now = GetTime()
+  H.channel = { spellID = 7620, start = now * 1000, stop = (now + 21) * 1000 }
+  t:eq(Fish.Start(7620, now), true, "fishing starts the bar")
+  t:ok(Fish.t1 and math.abs(Fish.t1 - (now + 21)) < 0.01, "end time from the channel")
+  t:eq(C_CVar.GetCVar("Sound_SFXVolume"), "1", "louder while fishing")
+  Fish.Stop()
+  t:eq(C_CVar.GetCVar("Sound_SFXVolume"), "0.3", "volume restored")
+  t:eq(FV.DB().fishVolume, nil, "nothing left to restore")
+end)

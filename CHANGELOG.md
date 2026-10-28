@@ -4,6 +4,12 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Pre-release cleanup, branch feat/prerelease-cleanup
+- Forever spellbook and talent skins: on the Forever client the classic spellbook gets Phoenix slot frames on SpellButton1-12, Phoenix fonts, skill-line and bottom tab faces and a muted rank line (new extra "Spell ranks (Forever)", live); the classic talent window gets Phoenix rank fonts and talent rings (maxed, chosen, can pick) from the existing "Talent rings" setting. Post-hooks on Blizzard's update functions only, guarded by PUI.IS_FOREVER and frame existence, reverted when off.
+- Forever fishing helper (off by default, live): a bar with the time left on the Fishing cast and a catch counter for the session; optional louder splash (sound-effects volume raised during the cast and put back after, also at the next login after a disconnect). Edit Mode element "Fishing helper".
+- Sentinel: retired safe-mode code removed (no threshold evaluation or notice); the panel's fourth switch is now Tester mode; anything an older build left in safe mode is released at load; `/pui sentinel enable` kept.
+- Offline harness: stubs for the APIs Sentinel's drift check resolves at load (it now completes in the harness, so these checks pass on CI). Docs: the Forever swing timer and the Sentinel decode shown as approved and built. Tests: 457 (retail and Forever).
+
 ### Minimap button bin, branch feat/minimap-bin (t97u)
 - Collects every addon's minimap button: LibDBIcon and plain addon buttons on the Minimap / MinimapCluster (Blizzard's, Phoenix's, protected and panel-sized frames left alone), late ones too (rescan on ADDON_LOADED plus a 30 s Ticker scan job after login). Optional addon compartment entries as Phoenix proxy buttons.
 - Popup grid or a docked bar (along the minimap edge, or anywhere with the Studio mover "Minimap button bar"); grow right / left / down / up; A-Z or your own drag order (saved); search box; Edit mode (Shift-click the bin button) with a right-click menu to hide / show / pin to the minimap / never collect / move first or last.

@@ -9,6 +9,7 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 --  * Pet happiness: a small badge (Happy / Content / Unhappy) with your pet's
 --    loyalty rate, polled every 2 s by a Ticker job only while you have a pet;
 --    optional chat line when it becomes unhappy.
+--  * Fishing helper (opt-in, off by default): cast bar, catch count, louder splash.
 --  * Swing timer (opt-in, off by default): see the Swing section below; the
 --    only combat-log reader in Phoenix UI (approved guardrail exception).
 -- Threat is Embers' Threat window.
@@ -263,6 +264,81 @@ function Swing.Refresh()
   end
 end
 
+-- Fishing helper (opt-in, off by default) ----------------------------------------------------------
+-- While you channel Fishing: a bar with the time left on the cast (Ticker job
+-- only while channelling), a catch counter for the session (LOOT_OPENED with
+-- IsFishingLoot), and an optional louder splash: the sound-effects volume is
+-- raised for the cast and put back the moment it ends. The original volume is
+-- also kept in PhoenixUIForeverDB so a disconnect mid-cast restores it at login.
+local Fish = { catches = 0 }
+FV.Fish = Fish
+Fish.SPELLS = { [7620] = true, [7731] = true, [7732] = true, [18248] = true, [33095] = true, [51294] = true, [88868] = true, [131474] = true }
+function Fish.IsFishing(spellID) return type(spellID) == "number" and not PUI.Secret.IsSecret(spellID) and Fish.SPELLS[spellID] == true end
+function Fish.Text(left, catches)
+  return string.format("Fishing  %.1f   catches %d", math.max(0, left), catches or 0)
+end
+PUI.Layout:RegisterElement("forever.fish", { label = "Fishing helper", owner = OWNER, size = { 220, 16 }, default = { point = "CENTER", x = 0, y = -210 } })
+function Fish.Build()
+  local b = PUI:CreateFrame("StatusBar", "PhoenixUIForeverFish", UIParent, nil, OWNER)
+  b:SetSize(220, 16)
+  PUI.Layout:Place(b, "forever.fish")
+  b:SetStatusBarTexture(PUI.Bars and PUI.Bars:TexturePath() or PUI.Media:Texture("flat"))
+  b:SetMinMaxValues(0, 1)
+  local r, g, bl = PUI.Theme:Color("accent")
+  b:SetStatusBarColor(r or 1, g or 0.48, bl or 0.1, 0.9)
+  PUI.Theme:Backdrop(b, "surface.0")
+  b.text = b:CreateFontString(nil, "OVERLAY")
+  b.text:SetFontObject(PUI.Media:FontObject("small"))
+  b.text:SetPoint("CENTER")
+  Fish.bar = b
+  return b
+end
+function Fish.Boost(on)
+  local db = FV.DB()
+  if on and s.fishLoud then
+    if db.fishVolume == nil then
+      db.fishVolume = C_CVar.GetCVar("Sound_SFXVolume")
+      C_CVar.SetCVar("Sound_SFXVolume", "1")
+    end
+  elseif db.fishVolume ~= nil then
+    C_CVar.SetCVar("Sound_SFXVolume", db.fishVolume)
+    db.fishVolume = nil
+  end
+end
+function Fish.Stop()
+  PUI.Ticker:Unregister("forever.fish")
+  Fish.t0, Fish.t1 = nil, nil
+  Fish.Boost(false)
+  if Fish.bar then Fish.bar:Hide() end
+end
+function Fish.Paint()
+  if not (Fish.t1 and s.fishHelper and FV.active) then return Fish.Stop() end
+  local now = GetTime()
+  if now > Fish.t1 + 0.5 then return Fish.Stop() end
+  local b = Fish.bar or Fish.Build()
+  b:SetScale(s.fishScale or 1)
+  b.text:SetText(Fish.Text(Fish.t1 - now, Fish.catches))
+  b:SetValue(math.min(1, math.max(0, (now - Fish.t0) / math.max(0.1, Fish.t1 - Fish.t0))))
+  b:Show()
+end
+-- Channel start: (t0, t1) in seconds from UnitChannelInfo, or a 21 s cast.
+function Fish.Start(spellID, now)
+  if not (FV.active and s.fishHelper and Fish.IsFishing(spellID)) then return false end
+  local _, _, _, startMS, endMS = UnitChannelInfo("player")
+  if type(startMS) == "number" and type(endMS) == "number" and not PUI.Secret.IsSecret(endMS) and endMS > startMS then
+    Fish.t0, Fish.t1 = startMS / 1000, endMS / 1000
+  else
+    Fish.t0, Fish.t1 = now, now + 21
+  end
+  Fish.Boost(true)
+  PUI.Ticker:Register("forever.fish", 0.1, Fish.Paint, OWNER)
+  Fish.Paint()
+  return true
+end
+function Fish.OnLoot()
+  if FV.active and s.fishHelper and rawget(_G, "IsFishingLoot") and IsFishingLoot() then Fish.catches = Fish.catches + 1 end
+end
+
 -- Module --------------------------------------------------------------------------------------------
 local schema = {}
 FV.schema = schema
@@ -275,6 +351,9 @@ local function key(name, def)
     if name == "flightTimer" or name == "flightScale" then
       if s.flightTimer and Flight.trip then PUI.Ticker:Register("forever.flight", 0.2, Flight.Paint, OWNER) else PUI.Ticker:Unregister("forever.flight") end
       Flight.Paint()
+    elseif name == "fishHelper" or name == "fishScale" or name == "fishLoud" then
+      if not s.fishHelper or not s.fishLoud then Fish.Boost(false) end
+      if Fish.t1 then Fish.Paint() end
     elseif name == "swingTimer" or name == "swingScale" then
       Swing.Refresh()
       if Swing.t0 then Swing.Paint() end
@@ -290,13 +369,18 @@ key("petHappiness", { type = "toggle", default = true, mode = "simple", label = 
 key("swingTimer", { type = "toggle", default = false, mode = "simple", label = "Swing timer",
   tooltip = "A bar that counts down to your next melee swing. Off by default; Forever only. It reads your own swings from the combat log." })
 key("swingScale", { type = "range", default = 1, min = 0.6, max = 1.8, step = 0.05, label = "Swing timer size", tooltip = "Scale of the swing bar." })
+key("fishHelper", { type = "toggle", default = false, mode = "simple", label = "Fishing helper",
+  tooltip = "While you fish: a bar with the time left on the cast and a catch counter for this session. Off by default." })
+key("fishLoud", { type = "toggle", default = false, label = "Louder splash while fishing",
+  tooltip = "Raises the sound-effects volume during the cast so the bobber splash is easy to hear, and puts it back when the cast ends." })
+key("fishScale", { type = "range", default = 1, min = 0.6, max = 1.8, step = 0.05, label = "Fishing bar size", tooltip = "Scale of the fishing bar." })
 key("petWarn", { type = "toggle", default = false, label = "Chat line when the pet is unhappy", tooltip = "One line each time your pet becomes unhappy." })
 
 local hooked = false
 FV.module = PUI:RegisterModule(OWNER, {
   enabledByDefault = true,
   label = "Forever",
-  tooltip = "Flight timer, pet happiness and an optional swing timer for the Forever client.",
+  tooltip = "Flight timer, pet happiness, an optional swing timer and an optional fishing helper for the Forever client.",
   loadCondition = function() return PUI.IS_FOREVER == true end,
   schema = schema,
   onEnable = function(mod)
@@ -310,12 +394,17 @@ FV.module = PUI:RegisterModule(OWNER, {
     mod:RegisterEvent("PLAYER_CONTROL_LOST", function() if UnitOnTaxi("player") then Flight.Start() end end)
     mod:RegisterEvent("PLAYER_CONTROL_GAINED", function() if Flight.trip and not UnitOnTaxi("player") then Flight.Land() end end)
     mod:RegisterEvent("UNIT_PET", function(_, _, unit) if unit == "player" then Pet.Refresh() end end)
+    mod:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", function(_, _, unit, _, spellID) if unit == "player" then Fish.Start(spellID, GetTime()) end end)
+    mod:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", function(_, _, unit) if unit == "player" and Fish.t1 then Fish.Stop() end end)
+    mod:RegisterEvent("LOOT_OPENED", Fish.OnLoot)
+    Fish.Boost(false) -- a volume left raised by a disconnect mid-cast comes back
     Pet.Refresh()
     Swing.Refresh()
   end,
   onDisable = function()
     FV.active = false
     Swing.Refresh()
+    Fish.Stop()
     Flight.trip, Flight.pending = nil, nil
     if Flight.bar then Flight.bar:Hide() end
     Pet.Paint(nil)

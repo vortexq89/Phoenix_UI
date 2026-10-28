@@ -85,7 +85,7 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 - **done (deferred A):** latency overlay and channel ticks
 - **done (deferred A):** empower stages
 - **done (deferred A):** GCD bar instance/instant-only modes
-- **blocked:** needs COMBAT_LOG_EVENT_UNFILTERED (not delivered to addons; guardrails DEPRECATED_TOKENS) and there is no swing event or API; swing timer (Forever)
+- **done (approved exception, t96u):** swing timer (Forever): opt-in bar from the player's own combat-log swings, read only when PUI.IS_FOREVER and the setting is on (Phoenix_UI_Forever; docs/GUARDRAIL_EXCEPTIONS.md, branch feat/approved-exceptions). Retail has no combat log for addons, so there is no retail swing timer
 - **done (deferred A):** spec helpers on hidden aura slots
 - **done (deferred A):** threshold colour curves
 - **done (deferred A):** bar shifting when a resource is missing
@@ -219,9 +219,9 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 - **done (deferred C):** dev event-trace panel (`sentinel.trace`, `/pui trace`; wraps Kernel.Fire only while on; Phoenix_UI_Sentinel/Extras.lua)
 - **done (deferred C):** warning baseline (errors seen in 3+ sessions) and the one-time excess warning (`sentinel.baselineWarn`)
 - **done (deferred D):** fixed-in sync, manual half: Companion `fixed-string` turns the dashboard's fixed list into a string, `/pui sentinel fixed` imports it (Phoenix_UI_Sentinel/FixedSync.lua); **left:** automatic sync needs a per-install server read scope and a Companion SavedVariables writer (design in docs/FIXED_SYNC.md)
-- **blocked:** protected decode of a received report: needs an approved pcall exception tag (guardrails); the checksum guards it today
+- **done (approved exception, t96u):** protected decode of a received report: one tagged pcall around base64, inflate and JSON, after the size cap and the checksum (Phoenix_UI_Sentinel/Share.lua; docs/GUARDRAIL_EXCEPTIONS.md, branch feat/approved-exceptions)
 - **done (deferred D):** BugGrabber display object through a Core shim (Core/BugDisplay.lua, `## X-BugGrabber-Display: PhoenixUIBugDisplay` in Phoenix_UI.toc)
-- **left:** removing the retired safe-mode code paths: cleanup for the polish pass (setting hidden and inert)
+- **done (pre-release cleanup):** retired safe-mode code removed: no threshold evaluation, no safe-mode notice, the panel's safe-mode switch is now Tester mode; a module left in safe mode by an older build is released at load, and `/pui sentinel enable <module>` stays (it also lifts an API-drift stop). The two settings keys stay so old profiles load (branch feat/prerelease-cleanup)
 - **done (deferred C):** sound list from the media library (four game sounds, then every media sound)
 
 ## Diagnostics and profiler (PR #43, this PR)
@@ -237,7 +237,9 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 
 - **left:** Arabic locale and real translations (needs a translator)
 - **left:** plugin system (build last, by plan)
-- **done (deferred D):** Forever child, first slice: learned flight timer and pet happiness (Phoenix_UI_Forever); **left:** spellbook/talent skins and fishing; **blocked:** swing timer (see Resource Bars)
+- **done (deferred D):** Forever child, first slice: learned flight timer and pet happiness (Phoenix_UI_Forever)
+- **done (approved exception, t96u):** Forever swing timer (see Resource Bars)
+- **done (pre-release cleanup):** Forever spellbook and talent skins (classic SpellBookFrame and PlayerTalentFrame parts, Phoenix_UI_Skins/Forever.lua) and the Forever fishing helper (cast bar, catch count, optional louder splash; off by default) (branch feat/prerelease-cleanup)
 - **blocked:** CurseForge/Wago release: an external publishing action that needs your approval; not done by an agent
 - **left:** raid debuff tiles with per-instance data packs (needs data from the test phase)
 - **left:** nameplate NPC colour data packs (needs data)

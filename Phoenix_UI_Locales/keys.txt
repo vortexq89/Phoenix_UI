@@ -1411,6 +1411,8 @@ Filter chip. Off when unticked. Ticks in the same difficulty row mean any of the
 Find Legend and Strategist achievements
 Finished quests
 Fire is orange, frost light blue and so on.
+Fishing bar size
+Fishing helper
 Fixed width of each whisper tab; tabs shrink evenly only when they no longer fit.
 Flash the game icon
 Flash when out of sight
@@ -1418,7 +1420,7 @@ Flashes the taskbar icon when a keyword matches.
 Flight map
 Flight timer
 Flight timer size
-Flight timer, pet happiness and an optional swing timer for the Forever client.
+Flight timer, pet happiness, an optional swing timer and an optional fishing helper for the Forever client.
 Flips every part to the other side (for frames on the left of the screen).
 Flow
 Focus bar colour
@@ -1541,6 +1543,7 @@ For raid groups, shows how many of that raid's bosses you have already killed th
 For timed keys
 Force unit
 Forever
+Forever spellbook: the rank line under each spell name in the theme's muted colour (off: Blizzard's colour).
 Frame border thickness.
 Frame rate text
 Frames grow
@@ -2124,6 +2127,7 @@ Loot: message
 Loot: sound
 Loss of control
 Loss of control swipe
+Louder splash while fishing
 Low durability warning
 Low power below (%)
 Low power colour
@@ -2884,6 +2888,7 @@ Raids: expression
 Raids: only these
 Raids: sort
 Raises the camera zoom limit; restored when turned off.
+Raises the sound-effects volume during the cast so the bobber splash is easy to hear, and puts it back when the cast ends.
 Range check speed
 Range spell ID
 Rank numbers
@@ -3031,6 +3036,7 @@ Scale of bar 6.
 Scale of bar 7.
 Scale of bar 8.
 Scale of bar 9.
+Scale of the fishing bar.
 Scale of the flight bar.
 Scale of the swing bar.
 Scales every Phoenix UI font.
@@ -3460,6 +3466,7 @@ Spell icons
 Spell name
 Spell name on the cast bar.
 Spell name size
+Spell ranks (Forever)
 Spell used to check range. Empty uses a ranged spell of your class.
 Spellbook and talents
 Spells label colour
@@ -3986,6 +3993,7 @@ While a report waits, it also opens in the copy box so you can paste it yourself
 While a tooltip shows IDs, this key opens them in the copy box. It is only taken while IDs are on screen, and never over a key you bound yourself. Empty turns it off.
 While an achievement ID setting is 0, Phoenix looks up the season's title achievement in the game's list (once per season) and reads its progress.
 While the developer profiler has samples, each module page shows how much time that module took.
+While you fish: a bar with the time left on the cast and a catch counter for this session. Off by default.
 Whisper sound
 Whisper tab width
 Whisper window width
