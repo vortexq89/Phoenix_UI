@@ -1802,6 +1802,18 @@ try("tracker talent condition", function()
     assert(l[2].kind == "spell" and l[2].id == 6262 and l[2].without == 108416, "!ID not parsed")
     assert(l[3].kind == "slot" and not l[3].need, "plain entry got a condition")
 end)
+-- unit menus: Copy armory link builds the official armory address
+try("armory link", function()
+    local C = ns.modules.Chat
+    local us = C.ArmoryURL("Vortex", "TwistingNether", "US")
+    assert(us == "https://worldofwarcraft.blizzard.com/en-us/character/us/twisting-nether/vortex", "bad us url " .. tostring(us))
+    assert(C.ArmoryURL("Abc", "Twisting Nether", "EU"):find("/en%-gb/character/eu/twisting%-nether/abc$"), "bad eu url")
+    assert(C.ArmoryURL("Abc", "", "EU") == nil and C.ArmoryURL(nil, "x") == nil, "empty input made a url")
+    local made = {}
+    local root = { CreateDivider = function() end, CreateButton = function(_, label) made[#made + 1] = label end }
+    C.AddArmory(nil, root, { name = "Abc", server = "Draenor" })
+    assert(made[1] == ns.L.CHAT_ARMORY_LINK, "menu entry not added")
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

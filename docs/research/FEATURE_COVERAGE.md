@@ -27,7 +27,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | 5 | CDM entry: show only with talent | EllesmereUI CooldownManager | built (?ID / !ID in a custom bar list) |
 | 6 | Casts-on-me bars (secret-safe target check) | EllesmereUI MythicTimer | next |
 | 7 | Rare alert secure target button + waypoint | RareScanner (no EUI version) | next |
-| 8 | Copy armory link in unit menus | Raider.IO (no EUI version) | next |
+| 8 | Copy armory link in unit menus | Raider.IO (no EUI version) | built (Chat > Armory link in menus) |
 | 9 | Merchant bulk buy | EllesmereUI BlizzardSkin | later |
 | 10 | Already Known tint, upgrade planner, aura glows, quickdraw ring, macro factory, quest item hotkey, movement CD row | EllesmereUI (WindTools / QoL / CDM / Quickdraw) | later (P3) |
 | 11 | Selling/cancelling in AH, wardrobe collection list, PGF skin, BiS import, BigWigs per-ability grid | Auctionator / BetterWardrobe / PGF / SpecBisTooltip / BigWigs | later (P3) |

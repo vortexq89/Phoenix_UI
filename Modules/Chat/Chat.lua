@@ -17,7 +17,7 @@ local W, Secret, Skin, Style, Media, Theme = ns.Widgets, ns.Secret, ns.Skin, ns.
 local M = ns:NewModule("Chat", {
     label = "CHAT", desc = "CHAT_DESC", category = "social", order = 10,
     defaults = {
-        urls = true, copyButton = true, arrowKeys = true, keepHistory = true, fastScroll = true,
+        urls = true, copyButton = true, armoryLink = true, arrowKeys = true, keepHistory = true, fastScroll = true,
         tabFlash = true, whisperTabs = true,
         urlColor = false,                                  -- false = the theme's info colour
         styleText = false,
@@ -101,6 +101,34 @@ local function showURL(url)
     urlPopup.input:SetFocus()
     urlPopup.input:HighlightText()
 end
+
+M.ShowURL = showURL
+
+---------------------------------------------------------------- armory link in unit menus
+-- The official armory address for a player: worldofwarcraft.blizzard.com/<locale>/character/<region>/<realm>/<name>.
+local REGION_LOCALE = { us = "en-us", eu = "en-gb", kr = "ko-kr", tw = "zh-tw", cn = "zh-cn" }
+function M.ArmoryURL(name, realm, region)
+    if type(name) ~= "string" or name == "" then return nil end
+    region = tostring(region or "us"):lower()
+    realm = tostring(realm or ""):gsub("(%l)(%u)", "%1-%2"):gsub("'", ""):gsub("%s+", "-"):lower()
+    if realm == "" then return nil end
+    return ("https://worldofwarcraft.blizzard.com/%s/character/%s/%s/%s"):format(REGION_LOCALE[region] or "en-us",
+        region, realm, name:lower())
+end
+local MENUS = { "MENU_UNIT_PLAYER", "MENU_UNIT_FRIEND", "MENU_UNIT_PARTY", "MENU_UNIT_RAID_PLAYER",
+    "MENU_UNIT_ENEMY_PLAYER", "MENU_UNIT_COMMUNITIES_GUILD_MEMBER", "MENU_UNIT_GUILD" }
+local function addArmory(_, root, ctx)
+    if not (M:IsEnabled() and M.db.armoryLink) or type(ctx) ~= "table" then return end
+    local name, realm = ctx.name, ctx.server
+    if Secret.IsSecret(name) or Secret.IsSecret(realm) or type(name) ~= "string" then return end
+    if not realm or realm == "" then realm = GetNormalizedRealmName and GetNormalizedRealmName() or GetRealmName() end
+    local region = GetCurrentRegionName and GetCurrentRegionName()
+    local url = M.ArmoryURL(name, realm, region)
+    if not url then return end
+    root:CreateDivider()
+    root:CreateButton(L.CHAT_ARMORY_LINK, function() showURL(url) end)
+end
+M.AddArmory = addArmory
 
 local function clean(text)
     return (text:gsub("|T.-|t", ""):gsub("|A.-|a", ""):gsub("|H.-|h(.-)|h", "%1"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""))
@@ -206,6 +234,10 @@ end
 function M:OnEnable()
     self:EnableMessages()
     EventRegistry:RegisterCallback("SetItemRef", onLink, self)
+    if not self.menuHooks and Menu and Menu.ModifyMenu then
+        self.menuHooks = true -- hooks stay for the session; addArmory checks the setting each time
+        for _, tag in ipairs(MENUS) do Menu.ModifyMenu(tag, addArmory) end
+    end
     if not self.windowHooks then
         -- New and temporary (whisper) windows get the copy button, arrow keys and scrolling too.
         self.windowHooks = true
