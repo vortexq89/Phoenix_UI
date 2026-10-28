@@ -17,15 +17,6 @@ M.AUCTION_LISTS = {
     { "ItemSellList", "ScrollBox" }, { "CommoditiesSellList", "ScrollBox" },
 }
 
-function M.FramePath(root, path)
-    local f = root
-    for _, k in ipairs(path) do
-        if type(f) ~= "table" then return nil end
-        f = f[k]
-    end
-    return f
-end
-
 function M:SkinAuction()
     local ah = _G.AuctionHouseFrame
     if not ah then return end

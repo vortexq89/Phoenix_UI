@@ -259,6 +259,11 @@ local function auditState()
         for _, k in ipairs(ns.Combat.Pending and ns.Combat:Pending() or {}) do issue(2, "combat-leftover", k, "queued job never ran") end
     end
     for _, t in ipairs(taint) do issue(1, "taint", t.what, t.detail) end
+    -- window skins: lists / frames a skin looked for inside a loaded window and did not find (stay unstyled)
+    local Skins = ns.modules.Skins
+    if Skins and Skins.MissingSkinFrames then
+        for _, path in ipairs(Skins.MissingSkinFrames()) do issue(3, "skin-missing", path, "not found; stays unstyled") end
+    end
     for _, k in ipairs(localeOrder) do issue(3, "locale-missing", k, localeMiss[k] .. " lookups") end
 end
 

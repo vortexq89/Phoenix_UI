@@ -2219,6 +2219,14 @@ try("auction house skin", function()
     ah.BuyDialog = CreateFrame("Frame", nil, ah)
     ah.BuyDialog.BuyNowButton = CreateFrame("Button", nil, ah.BuyDialog)
     assert(S.FramePath(ah, { "CategoriesList", "ScrollBox" }) == box and S.FramePath({}, { "Nope", "X" }) == nil, "paths")
+    -- the dev self-test sees the missing path, and forgets it once found
+    S.missingFrames = {}
+    local root = { GetName = function() return "Root" end, A = {} }
+    S.FramePath(root, { "A", "B" })
+    assert(S.MissingSkinFrames()[1] == "Root.A.B", "missing path recorded")
+    root.A.B = {}
+    S.FramePath(root, { "A", "B" })
+    assert(#S.MissingSkinFrames() == 0, "found path cleared")
     env.AuctionHouseFrame = ah
     S:SkinAuction(); S.db.auction = false; S:Refresh(); S.db.auction = true; S:Refresh()
     env.AuctionHouseFrame = nil

@@ -93,6 +93,39 @@ function M.KitScrollBox(box, isOn, fn)
     run(box)
 end
 
+-- Walk `path` from `root`. When the root exists but a step is missing, the full path is remembered in
+-- M.missingFrames (the dev self-test reports it: a list that stays unstyled after a client rename).
+M.missingFrames = {}
+local function rootName(root)
+    if root == _G then return "_G" end
+    local ok, n = pcall(function() return root.GetName and root:GetName() end)
+    return ok and n or "?"
+end
+function M.FramePath(root, path)
+    local f = root
+    for i, k in ipairs(path) do
+        if type(f) ~= "table" then
+            if type(root) == "table" then M.missingFrames[rootName(root) .. "." .. table.concat(path, ".")] = i end
+            return nil
+        end
+        f = f[k]
+    end
+    if f == nil and type(root) == "table" then
+        M.missingFrames[rootName(root) .. "." .. table.concat(path, ".")] = #path
+    elseif f ~= nil and type(root) == "table" then
+        M.missingFrames[rootName(root) .. "." .. table.concat(path, ".")] = nil
+    end
+    return f
+end
+
+-- Sorted list of the frame paths a skin looked for and did not find (dev self-test).
+function M.MissingSkinFrames()
+    local out = {}
+    for k in pairs(M.missingFrames) do out[#out + 1] = k end
+    table.sort(out)
+    return out
+end
+
 -- Repaint every kit row on theme change (one listener for the kit).
 ns.Events:Listen("PUI_THEME_CHANGED", rows, function()
     for row in pairs(rows) do if rows[row]:IsShown() then paintRow(row) end end

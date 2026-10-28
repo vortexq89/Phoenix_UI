@@ -26,13 +26,13 @@ function M:SkinProfessions()
     if pf then
         local page = pf.CraftingPage
         if page then
-            M.KitScrollBox(M.FramePath(page, { "RecipeList", "ScrollBox" }), on, recipeRow)
+            M.KitScrollBox(M.FramePath(pf, { "CraftingPage", "RecipeList", "ScrollBox" }), on, recipeRow)
             M.KitCard(page.SchematicForm, isOn, "raised", false)
             M.SkinPopupButton(page.CreateButton, "primary", isOn)
             M.SkinPopupButton(page.CreateAllButton, "secondary", isOn)
         end
         local orders = pf.OrdersPage
-        if orders then M.KitScrollBox(M.FramePath(orders, { "BrowseFrame", "OrderList", "ScrollBox" }), on, M.KitRow) end
+        if orders then M.KitScrollBox(M.FramePath(pf, { "OrdersPage", "BrowseFrame", "OrderList", "ScrollBox" }), on, M.KitRow) end
     end
     local co = _G.ProfessionsCustomerOrdersFrame
     if co then

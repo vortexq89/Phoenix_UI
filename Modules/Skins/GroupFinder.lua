@@ -14,14 +14,12 @@ local function lists()
     local out = {}
     local lfg = _G.LFGListFrame
     if lfg then
-        out[#out + 1] = lfg.SearchPanel and lfg.SearchPanel.ScrollBox
-        out[#out + 1] = lfg.ApplicationViewer and lfg.ApplicationViewer.ScrollBox
-        out[#out + 1] = lfg.CategorySelection and lfg.CategorySelection.ScrollBox
+        out[#out + 1] = M.FramePath(lfg, { "SearchPanel", "ScrollBox" })
+        out[#out + 1] = M.FramePath(lfg, { "ApplicationViewer", "ScrollBox" })
+        out[#out + 1] = M.FramePath(lfg, { "CategorySelection", "ScrollBox" })
     end
     local lfd = _G.LFDQueueFrame
-    if lfd and lfd.Specific then out[#out + 1] = lfd.Specific.ScrollBox end
-    local raid = _G.RaidFinderQueueFrame
-    if raid then out[#out + 1] = raid.ScrollBox end
+    if lfd then out[#out + 1] = M.FramePath(lfd, { "Specific", "ScrollBox" }) end
     return out
 end
 
