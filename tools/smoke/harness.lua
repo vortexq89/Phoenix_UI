@@ -2161,6 +2161,25 @@ try("character lists skin", function()
     S:SkinCharacterLists(); S.db.character = false; S:SkinCharacterLists(); S.db.character = true; S:SkinCharacterLists()
     env.TokenFrame = nil
 end)
+-- skin kit + group finder (plan window 7): rows, selection, cards, ScrollBox dressing, live off/on
+try("group finder skin", function()
+    local S = ns.modules.Skins
+    local row = CreateFrame("Button", nil, UIParent)
+    row.Selected = row:CreateTexture()
+    assert(S.RowSelected(row) == true and S.RowSelected(nil) == false, "row selection")
+    S.KitRow(row, true); S.KitRow(row, true, { bar = true, barColor = { r = 1, g = 0, b = 0 } }); S.KitRow(row, false)
+    local panel = CreateFrame("Frame", nil, UIParent)
+    S.KitCard(panel, true, "raised", true); S.KitCard(panel, false)
+    local box = { ForEachFrame = function(_, fn) fn(row) end, Update = function() end }
+    local seen = 0
+    S.KitScrollBox(box, function() return true end, function(_, on) if on then seen = seen + 1 end end)
+    assert(seen == 1, "scrollbox rows dressed")
+    env.LFGListFrame = { SearchPanel = { ScrollBox = box } }
+    env.LFGDungeonReadyDialog = CreateFrame("Frame", nil, UIParent)
+    S:SkinGroupFinder(); S.db.groupFinder = false; S:Refresh(); S.db.groupFinder = true; S:Refresh()
+    ns.Events:Fire("PUI_THEME_CHANGED")
+    env.LFGListFrame, env.LFGDungeonReadyDialog = nil, nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

@@ -23,6 +23,12 @@ local M = ns:NewModule("Skins", {
     },
 })
 
+-- Dedicated window skins register here: SETUPS run on enable and whenever a Blizzard addon loads (they must be
+-- safe to call again), RESKINS run on every settings change (live on / off).
+M.SETUPS, M.RESKINS = {}, {}
+function M:RunSetups() for _, fn in ipairs(self.SETUPS) do ns.SafeCall(self[fn], self) end end
+function M:RunReskins() for _, fn in ipairs(self.RESKINS) do ns.SafeCall(self[fn], self) end end
+
 -- key -> frames (global names), the Blizzard addon that creates them (nil = always loaded), dialog = small
 -- panel look (no title strip), feature = client gate (ns:Supports).
 M.WINDOWS = {
@@ -33,6 +39,7 @@ M.WINDOWS = {
     { key = "inspect", frames = { "InspectFrame" }, addon = "Blizzard_InspectUI" },
     { key = "spellbook", frames = { "PlayerSpellsFrame" }, addon = "Blizzard_PlayerSpells" },
     { key = "groupFinder", frames = { "PVEFrame" }, addon = "Blizzard_GroupFinder" },
+    { key = "groupFinder", frames = { "PVPUIFrame" }, addon = "Blizzard_PVPUI" },
     { key = "collections", frames = { "CollectionsJournal" }, addon = "Blizzard_Collections" },
     { key = "professions", frames = { "ProfessionsFrame" }, addon = "Blizzard_Professions" },
     { key = "auction", frames = { "AuctionHouseFrame" }, addon = "Blizzard_AuctionHouseUI" },
@@ -210,7 +217,8 @@ M.UnskinWindow = unwindow
 function M.IsWindowOn(frame) return winOn[frame] and true or false end
 
 -- Windows whose switch applies live both ways (the rest restore Blizzard's look after /reload).
-M.LIVE = { gameMenu = true, character = true, popups = true, readyCheck = true }
+M.LIVE = { gameMenu = true, character = true, popups = true, readyCheck = true, groupFinder = true, spellbook = true,
+    loot = true, auction = true, professions = true, friends = true, communities = true }
 function M:ApplyLive()
     for _, entry in ipairs(self.WINDOWS) do
         if self.LIVE[entry.key] then
@@ -274,6 +282,7 @@ function M:OnEnable()
     ns.Events:On("ADDON_LOADED", self, function(_, _, name)
         local entry = byAddon[name]
         if entry then byAddon[name] = nil; apply(entry) end
+        if name:find("^Blizzard_") then M:RunSetups() end
         local mv = moveByAddon[name]
         if mv then for _, f in ipairs(mv.frames) do M:HookMovable(f) end end
     end)
@@ -283,6 +292,7 @@ function M:OnEnable()
     if self.SetupCharacter then self:SetupCharacter() end -- Character.lua
     if self.SetupCharacterLists then self:SetupCharacterLists() end -- CharacterLists.lua
     if self.SetupPopups then self:SetupPopups() end -- Popups.lua
+    self:RunSetups()
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then

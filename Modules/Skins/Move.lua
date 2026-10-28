@@ -97,5 +97,6 @@ function M:Refresh()
     if self.SkinCharacterSlots then self:SkinCharacterSlots() end -- Character.lua, live
     if self.SkinCharacterLists then self:SkinCharacterLists() end -- CharacterLists.lua, live
     if self.SkinPopups then self:SkinPopups() end -- Popups.lua, live
+    if self.RunReskins then self:RunReskins() end -- dedicated window skins, live
     if not self.db.moveWindows and not InCombatLockdown() and UpdateUIPanelPositions then UpdateUIPanelPositions() end
 end
