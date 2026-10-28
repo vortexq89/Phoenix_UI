@@ -4,6 +4,9 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Fixed-in auto-sync, branch feat/fixed-sync
+- Errors marked fixed on the dashboard reach every tester: vq8s.com publishes a signed (Ed25519) fixed list, Phoenix Uploader 1.2.0 checks the signature and writes it into Sentinel's saved data only while WoW is closed (staged write, recovery copy), and Sentinel applies it at load (checksum checked, local Ignored kept) so errors show "Fixed in X" and "Back after fix". Tests: 462 (retail and Forever), Uploader go test.
+
 ### Release prep, branch feat/release-prep
 - Draft 2.0.0-beta2 release notes in docs/releases/2.0.0-beta2.md (not published).
 

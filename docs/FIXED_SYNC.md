@@ -12,17 +12,14 @@ When an error is marked fixed on the dashboard, every tester's Sentinel should k
 2. `sentinel-companion fixed-string issues.json` (`companion/sentinel_companion/fixedin.py`) keeps the rows whose status is `fixed` and that have a valid hash and version. It drops duplicates, caps the list at 500 rows and prints a `!PUI_SEN` string. That is the same encoding as report exports (JSON, deflate, base64).
 3. The tester runs `/pui sentinel fixed` in game, pastes the string and clicks Import (`Phoenix_UI_Sentinel/FixedSync.lua`). The addon checks the payload kind and every row's hash and version against the same rules. Valid rows are marked Fixed through `Store:SetState`; nothing else changes. The open viewer repaints at once.
 
-## Part 2: automatic sync (needs infrastructure, not built)
-- **Server:** a per-install read scope that returns only `hash -> fixedIn` for the hashes that install reported. It must not expose other installs' data. Today the read token is admin-only and must never ship to players.
-- **Companion:**
-  - Pull that list after each upload.
-  - Write it into `PhoenixUISentinelDB.fixedSync`, but only while Wow.exe is not running. The client would overwrite the change otherwise, and this is the same rule the installer follows.
-  - Work like the installer: write to a staged copy, then swap it in, keeping a recovery copy.
-- **Addon:** at load, apply `fixedSync` through the same `FixedSync.Apply` validation, then clear it.
-- **Open questions:**
-  - Signing the list, so a hand-edited SavedVariables file cannot mark errors fixed. A low-risk option is an HMAC with the install's upload key.
-  - Whether "fixed" from the dashboard should override a tester's own "ignored" state. The proposal is no: local states win.
+## Part 2: automatic sync (built, branch feat/fixed-sync)
+- **Server (vq8-website, worker/phoenix/fixed.mjs):** `GET /phoenix/api/fixed` is public and returns `{ alg: "ed25519", keyId, payload, sig }`. The payload lists only `hash -> fixedIn` for issues marked fixed with a version (no report text, installs or addresses), at most 500 rows, newest first. It is signed with the Worker secret `PHOENIX_FIXED_SIGNING_KEY` (Ed25519, PKCS#8), cacheable for 5 minutes, limited to 60 requests per 10 minutes per address, and answers 503 rather than serve an unsigned list.
+- **Uploader (companion/uploader/fixedsync.go, 1.2.0):** every 30 minutes, and only while no WoW client process is running, it fetches the list, checks the signature against the embedded public key, and writes `PhoenixUISentinelFixed = {...}` into every account's `Phoenix_UI_Sentinel.lua`: staged file, then swap, with the previous file kept as `Phoenix_UI_Sentinel.lua.phoenix-bak`. An unchanged list is not rewritten.
+- **Addon (Phoenix_UI_Sentinel/FixedSync.lua):** `PhoenixUISentinelFixed` is a declared SavedVariable. At load Sentinel checks its checksum (Adler-32 over `hash=version;` rows, the same as the Uploader), applies it through `F.Apply` (marks Fixed in that version, so the viewer shows "Fixed in X" and "Back after fix" if it returns), keeps local Ignored states, then clears the variable.
+- **Decisions:** the signature is verified in the Uploader (Lua has no fast Ed25519); the addon trusts only Uploader-written data with a matching checksum. Local Ignored wins over the dashboard's Fixed.
 
 ## Tests
 - Companion: `FixedInTests`, which covers filtering, duplicates, bad hashes and versions, and the 500-row cap.
-- Addon: the Sentinel test "fixed-in list from the Companion marks errors fixed, refuses bad input".
+- Addon: the Sentinel tests "fixed-in list from the Companion marks errors fixed, refuses bad input" and "fixed-in sync: Uploader-written list applied once at load".
+- Uploader: `go test ./...` (signature, tampering, wrong key, checksum parity with Lua, staged write and recovery copy).
+- Server: `node --test worker/phoenix/fixed.test.mjs` in vq8-website.

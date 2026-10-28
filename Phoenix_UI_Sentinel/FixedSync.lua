@@ -41,3 +41,45 @@ function F.Prompt()
     PUI.Slash.Print(string.format("fixed-in list: %d marked fixed, %d skipped", applied, skipped))
   end)
 end
+
+-- Automatic half (docs/FIXED_SYNC.md part 2). The Phoenix Uploader fetches the
+-- dashboard's signed fixed list, checks the Ed25519 signature, and writes it
+-- into this addon's SavedVariables as PhoenixUISentinelFixed while the game
+-- is closed. The signature is checked by the Uploader (Lua has no fast
+-- Ed25519); here the list must carry the Uploader's checksum (Adler-32 over
+-- "hash=version;" for every row in order), so a damaged or hand-edited file
+-- is refused. Applied once at load through Apply's own validation, then
+-- cleared; local Ignored states win (Apply only marks Fixed).
+function F.Sum(rows)
+  local a, b = 1, 0
+  for _, row in ipairs(rows) do
+    local text = tostring(row.hash) .. "=" .. tostring(row.fixedIn) .. ";"
+    for i = 1, #text do
+      a = (a + text:byte(i)) % 65521
+      b = (b + a) % 65521
+    end
+  end
+  return b * 65536 + a
+end
+
+-- ApplyCompanion(data) -> applied, skipped or nil, reason
+function F.ApplyCompanion(data)
+  if type(data) ~= "table" or data.kind ~= F.KIND or type(data.fixed) ~= "table" then return nil, "no list" end
+  if type(data.sum) ~= "number" or F.Sum(data.fixed) ~= data.sum then return nil, "checksum does not match" end
+  local keep = {}
+  for _, row in ipairs(data.fixed) do
+    local hash = type(row) == "table" and row.hash
+    local st = type(hash) == "string" and S.Store:DB().resolved[hash]
+    if not (st and st.state == "ignored") then keep[#keep + 1] = row end
+  end
+  return F.Apply({ kind = F.KIND, fixed = keep })
+end
+
+function F.LoadCompanion()
+  local data = rawget(_G, "PhoenixUISentinelFixed")
+  if data == nil then return end
+  -- lint-allow: global own SavedVariables
+  PhoenixUISentinelFixed = nil
+  local applied, skipped = F.ApplyCompanion(data)
+  F.last = { applied = applied, skipped = skipped, at = type(data) == "table" and data.at or nil }
+end
