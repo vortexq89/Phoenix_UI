@@ -57,6 +57,13 @@ function M:BuildToolbar()
     t.grid = W:IconButton(t, "grid", 28, L.MOVERS_GRID, L.MOVERS_GRID_DESC)
     t.grid:SetPoint("RIGHT", t.snap, "LEFT", -4, 0)
     t.grid.onClick = function() M:ShowGrid(not M.db.grid) end
+    -- off: boxes only for frames on screen; on: also hidden ones (empty party frames, Blizzard message frames)
+    t.hidden = W:IconButton(t, "preview", 28, L.MOVERS_SHOW_HIDDEN, L.MOVERS_SHOW_HIDDEN_DESC)
+    t.hidden:SetPoint("RIGHT", t.grid, "LEFT", -4, 0)
+    t.hidden.onClick = function()
+        M.db.showHidden = not M.db.showHidden
+        M:SetUnlocked(true)
+    end
 
     -- second row: nudge, scale, opacity, reset
     local arrows = {}

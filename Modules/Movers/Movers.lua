@@ -17,7 +17,7 @@ local W, Skin = ns.Widgets, ns.Skin
       none of them Edit Mode systems; scaled on show, protected ones out of combat only). ]]
 local M = ns:NewModule("Movers", {
     label = "MOVERS", desc = "MOVERS_DESC", category = "interface", order = 95,
-    defaults = { grid = true, gridSize = 32, snap = true, frames = {}, snapFrames = true, arrows = true, coords = true,
+    defaults = { showHidden = false, grid = true, gridSize = 32, snap = true, frames = {}, snapFrames = true, arrows = true, coords = true,
         unlockKey = "", windowScale = 1 },
 })
 
@@ -71,8 +71,9 @@ local function usable(e)
     local f = resolve(e)
     if not f or f:IsForbidden() then return nil end
     if e.store and e.store.active and not e.store.active() then return nil end
-    -- a Phoenix frame of a module or element that is switched off is hidden: no mover for it
-    if e.owned and not (e.store and e.store.active) and not f:IsShown() then return nil end
+    -- only frames that are on screen get a box (a switched-off module, an empty party frame when solo, a
+    -- Blizzard message frame with nothing to say). Test frames (/pui test) make the group and boss frames show.
+    if not f:IsVisible() and not M.db.showHidden then return nil end
     if not e.owned and M.IsManaged(f) then
         if not e.refused then e.refused = true; ns:Debug("Movers: %s is managed by Edit Mode, skipped", e.key) end
         return nil
@@ -461,6 +462,7 @@ function M:SetUnlocked(on)
     if unlocked then
         grid = grid or buildGrid()
         if self.db.grid then grid:Layout(); grid:Show() else grid:Hide() end
+        for _, o in pairs(overlays) do o:Hide() end
         for _, e in ipairs(entries) do
             if usable(e) then
                 local o = overlayFor(e)
@@ -470,7 +472,11 @@ function M:SetUnlocked(on)
         end
         toolbar = toolbar or self:BuildToolbar() -- Toolbar.lua
         toolbar:Show()
-        selectEntry(selected or entries[1])
+        if not (selected and usable(selected)) then
+            selected = nil
+            for _, e in ipairs(entries) do if usable(e) then selected = e; break end end
+        end
+        selectEntry(selected)
     else
         if grid then grid:Hide() end
         for _, o in pairs(overlays) do

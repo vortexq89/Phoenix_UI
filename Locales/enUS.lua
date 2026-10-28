@@ -341,6 +341,8 @@ ns.RegisterLocale("enUS", {
     MOVERS_UNLOCK_DESC = "Also: /pui movers. Press Escape on a handle or Done to lock again.",
     MOVERS_UNLOCK_BUTTON = "Unlock",
     MOVERS_GRID = "Grid",
+    MOVERS_SHOW_HIDDEN = "Show hidden frames",
+    MOVERS_SHOW_HIDDEN_DESC = "Also show boxes for frames that are not on screen right now (empty party and raid frames, boss frames, Blizzard message frames). Tip: Test frames shows sample group and boss frames.",
     MOVERS_GRID_DESC = "Show an alignment grid while unlocked.",
     MOVERS_GRID_SIZE = "Grid size",
     MOVERS_SNAP = "Snap to grid",
