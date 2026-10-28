@@ -2100,6 +2100,14 @@ try("map and quest log skin", function()
     assert(not S.IsWindowOn(map.BorderFrame), "map back to Blizzard live")
     S.db.worldMap = true; S:SkinWorldMap()
     assert(S.IsWindowOn(map.BorderFrame), "map skinned again live")
+    -- campaign cards
+    local st, bar = S.QuestCardStyle("campaign")
+    assert(st == "raised" and bar and not select(2, S.QuestCardStyle("header")), "card styles")
+    local h = CreateFrame("Button", nil, UIParent)
+    env.QuestScrollFrame = { campaignHeaderFramePool = { EnumerateActive = function()
+        local d; return function() if not d then d = true; return h end end end } }
+    S:SkinQuestCards(); S.db.worldMap = false; S:SkinQuestCards(); S.db.worldMap = true; S:SkinQuestCards()
+    env.QuestScrollFrame = nil
     local module = { Header = CreateFrame("Frame", nil, UIParent) }
     module.Header.Text = module.Header:CreateFontString()
     Q.HeaderTick(module, true); Q.HeaderTick(module, true); Q.HeaderTick(module, false)
