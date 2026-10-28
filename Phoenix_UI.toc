@@ -65,6 +65,7 @@ Core\DiagExtras.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Data\ItemBarData.lua
+Data\PartyCooldowns.lua
 Tests\Runner.lua
 Tests\ClientGate_test.lua
 Tests\Kernel_test.lua

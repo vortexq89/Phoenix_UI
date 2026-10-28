@@ -465,3 +465,18 @@ Tests:Add("Options", "auto item bar preview follows its size, categories and cou
   local st = Options.Previews.State(card)
   t:ok(not (st.icons and st.icons[1] and st.icons[1]:IsShown()), "action bar samples are not drawn on item bar tabs")
 end)
+
+Tests:Add("Options", "party cooldown preview follows size and side live", function(t)
+  if not PUI.PartyCD then return end
+  Tests.Keep(t, "pcd.size")
+  Tests.Keep(t, "pcd.side")
+  local card = CreateFrame("Frame")
+  Schema:Set("pcd.size", 30)
+  Options.Previews.Update("PartyCD", card)
+  local b = Options.PreviewsExtras.Bag(card)["pcd.icon1.1"]
+  t:ok(b and b:IsShown(), "sample icon")
+  t:eq(b:GetWidth(), 30, "size follows the setting")
+  Schema:Set("pcd.side", "LEFT")
+  Options.Previews.Update("PartyCD", card)
+  if rawget(_G, "HARNESS") then t:eq(rawget(b, "point") and b.point[1], "RIGHT", "left side anchors the icon's right edge") end
+end)

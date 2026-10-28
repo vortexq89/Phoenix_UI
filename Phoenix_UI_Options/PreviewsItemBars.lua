@@ -85,3 +85,69 @@ function Previews.AutoItemBarSample(card, tab)
   local y = -56
   for k = 1, 3 do y = y - drawBar(card, k, y, true) - 8 end
 end
+
+-- Party cooldowns: two sample party frames with icons on the chosen side,
+-- or the standalone list, at the chosen size and spacing.
+function Previews.PartyCD(card)
+  local bag = PX.Bag(card)
+  local size, gap = get("pcd.size", 22), get("pcd.spacing", 2)
+  local side, attach, offset = get("pcd.side", "RIGHT"), get("pcd.attach", "frames"), get("pcd.offset", 2)
+  local samples = PUI.IS_RETAIL and { { "Shaman", { 57994, 108271, 98008, 2825 } }, { "Druid", { 106839, 22812, 740, 20484 } } }
+    or { { "Rogue", { 1766, 5277, 13750 } }, { "Druid", { 20484, 740, 29166 } } }
+  local cats = PUI.PartyCooldownData.spells
+  for i, smp in ipairs(samples) do
+    local fk = "pcd.frame" .. i
+    local f = bag[fk]
+    if not f then
+      f = CreateFrame("Frame", nil, card)
+      f.bg = f:CreateTexture(nil, "BACKGROUND")
+      f.bg:SetAllPoints()
+      f.bg:SetColorTexture(0.12, 0.12, 0.14, 1)
+      f.label = f:CreateFontString(nil, "OVERLAY")
+      f.label:SetFontObject(PUI.Media:FontObject("small"))
+      f.label:SetPoint("CENTER")
+      bag[fk] = f
+    end
+    f:SetSize(120, 36)
+    f:ClearAllPoints()
+    f:SetPoint("TOP", card, "TOP", -60, -70 - (i - 1) * 90)
+    f.label:SetText(smp[1])
+    f:SetShown(attach == "frames")
+    local n = 0
+    for j, id in ipairs(smp[2]) do
+      local k = "pcd.icon" .. i .. "." .. j
+      local b = bag[k]
+      if not b then
+        b = CreateFrame("Frame", nil, card)
+        b.tex = b:CreateTexture(nil, "ARTWORK")
+        b.tex:SetAllPoints()
+        bag[k] = b
+      end
+      local info = cats[id]
+      if info and get("pcd.cat." .. info.cat, true) and n < get("pcd.max", 8) then
+        n = n + 1
+        b:SetSize(size, size)
+        b.tex:SetTexture(C_Spell.GetSpellTexture(id))
+        b.tex:SetDesaturated(j == 2)
+        b:ClearAllPoints()
+        local step = (n - 1) * (size + gap)
+        if attach ~= "frames" then b:SetPoint("TOPLEFT", card, "TOP", -40 + step, -70 - (i - 1) * (size + gap + 6))
+        elseif side == "LEFT" then b:SetPoint("RIGHT", f, "LEFT", -offset - step, 0)
+        elseif side == "TOP" then b:SetPoint("BOTTOMLEFT", f, "TOPLEFT", step, offset)
+        elseif side == "BOTTOM" then b:SetPoint("TOPLEFT", f, "BOTTOMLEFT", step, -offset)
+        else b:SetPoint("LEFT", f, "RIGHT", offset + step, 0) end
+        b:Show()
+      else
+        b:Hide()
+      end
+    end
+  end
+end
+local basePreviewUpdate = Previews.Update
+function Previews.Update(owner, card, key)
+  if owner == "PartyCD" then
+    for _, w in pairs(PX.Bag(card)) do w:Hide() end
+    return Previews.PartyCD(card)
+  end
+  return basePreviewUpdate(owner, card, key)
+end
