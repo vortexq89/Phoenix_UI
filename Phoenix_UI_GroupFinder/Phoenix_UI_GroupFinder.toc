@@ -17,4 +17,5 @@ GroupFinder.lua
 Panel.lua
 QueueHelper.lua
 Extras.lua
+Gaps.lua
 Tests\GroupFinder_test.lua

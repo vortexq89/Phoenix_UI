@@ -46,7 +46,7 @@ function D.FromWoW(i, f)
   local status = not f.connected and "offline" or (f.dnd and "dnd") or (f.afk and "afk") or "online"
   return { source = "friends", kind = "wow", index = i, name = plain(f.name), online = f.connected == true, status = status,
     classFile = D.ClassFile(f.className), level = plain(f.level), zone = plain(f.area), activity = D.Activity(f.area),
-    note = plain(f.notes), guid = plain(f.guid) }
+    note = plain(f.notes), guid = plain(f.guid), inWoW = f.connected == true, sameGame = f.connected == true }
 end
 function D.FromBNet(i, a)
   local g = a.gameAccountInfo or {}
@@ -57,7 +57,8 @@ function D.FromBNet(i, a)
     account = plain(a.accountName), online = online, status = status, classFile = D.ClassFile(g.className), level = plain(g.characterLevel),
     zone = plain(g.areaName), activity = D.Activity(g.richPresence) or D.Activity(g.areaName), region = D.REGIONS[plain(g.regionID) or 0],
     faction = plain(g.factionName), note = plain(a.note), appOnly = online and client ~= nil and D.APP_CLIENTS[client] == true,
-    client = client, guid = plain(g.playerGuid), realm = plain(g.realmName) }
+    client = client, guid = plain(g.playerGuid), realm = plain(g.realmName),
+    inWoW = online and client == "WoW", sameGame = online and client == "WoW" and plain(g.wowProjectID) == (rawget(_G, "WOW_PROJECT_ID") or plain(g.wowProjectID)) }
 end
 
 function D.Friends()
@@ -104,11 +105,14 @@ function D.Recent()
   return out
 end
 
--- Filter(list, opts): app-only and offline filters.
+-- Filter(list, opts): app-only, offline and in-game-only filters (W7b: in game
+-- means playing World of Warcraft; sameGame narrows it to this game version).
+function D.InGame(e, sameGame) if sameGame then return e.sameGame == true end return e.inWoW == true end
 function D.Filter(list, opts)
   local out = {}
   for _, e in ipairs(list) do
-    if not (opts.hideAppOnly and e.appOnly) and not (opts.hideOffline and not e.online) then out[#out + 1] = e end
+    if not (opts.hideAppOnly and e.appOnly) and not (opts.hideOffline and not e.online)
+      and not (opts.wowOnly and e.source ~= "guild" and e.source ~= "recent" and not D.InGame(e, opts.sameGame)) then out[#out + 1] = e end
   end
   return out
 end

@@ -55,7 +55,7 @@ function K.Paint(button, s)
     if s.activity and e.activity then line = (line ~= "" and (line .. "  -  ") or "") .. e.activity end
     if line ~= "" then button.info:SetText(line) end
   end
-  if s.hideAppOnly and e.appOnly then button:SetAlpha(s.appOnlyAlpha) end
+  if (s.hideAppOnly and e.appOnly) or (s.wowOnly and not D.InGame(e, s.sameGame)) then button:SetAlpha(s.appOnlyAlpha) end
 end
 
 function K.Hook(s)

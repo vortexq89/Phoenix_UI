@@ -163,7 +163,7 @@ Generated from the Deferred lists in `docs/PLAN.md` (sections 4, 5 and 5.21 step
 ## Pulse (PR #42)
 
 - **done (deferred C):** next-three HUD (Ticker `pulse.next`, boss fights only; Phoenix_UI_Pulse/Extras.lua)
-- **blocked:** private-aura sounds: UnitAuraDocumentation.lua (12.1.5) has only AddPrivateAuraAnchor/RemovePrivateAuraAnchor; no sound or applied-event API for private auras
+- **done (gaps 2026-10-27):** private-aura sounds through C_UnitAuras.AddAuraSound (12.1.0; the earlier "blocked" note missed it), `pulse.auraSounds` (Phoenix_UI_Pulse/Sounds.lua)
 - **done (deferred C):** per-boss options (`pulse.bossRules`)
 - **done (deferred C):** BigWigs bar-style bridge (BigWigsAPI.RegisterBarStyle)
 - **done (deferred C):** Blizzard timeline view hide (C_EncounterTimeline.SetViewType, restored when off)

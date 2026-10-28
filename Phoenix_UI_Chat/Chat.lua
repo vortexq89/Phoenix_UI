@@ -381,6 +381,9 @@ key("urls", { type = "toggle", default = true, label = "Clickable links",
   tooltip = "Web addresses in chat become links; click one to copy it.", mode = "simple", searchTags = { "url", "copy", "link" } })
 key("emoji", { type = "toggle", default = true, label = "Emoji",
   tooltip = "Turns :name: codes such as :star: or :tank: into icons, with suggestions while you type.", mode = "simple" })
+key("phoenixEmoji", { type = "toggle", default = true, label = "Phoenix emoji art",
+  tooltip = "Adds Phoenix's own emoji: :smile: :grin: :laugh: :wink: :sad: :cry: :angry: :cool: :wow: :think: :sleep: :gg: :heart: :fire: :thumbsup: :dead:.",
+  mode = "advanced" }, function(v) T.SetPhoenixEmoji(v) end)
 key("idleFade", { type = "range", default = 0, min = 0, max = 120, step = 5, label = "Fade when idle (seconds)",
   tooltip = "Chat fades after this many quiet seconds and wakes on a new line, hover or typing. 0 never fades.", mode = "simple" })
 key("whisperSound", { type = "toggle", default = true, label = "Whisper sound", tooltip = "Plays a sound on incoming whispers.", mode = "simple" })

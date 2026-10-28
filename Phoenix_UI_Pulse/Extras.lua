@@ -8,9 +8,7 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 --    API documents for addons that draw the timeline themselves); restored when off.
 --  * BigWigs bar style: registers a "Phoenix" style through BigWigsAPI's public
 --    RegisterBarStyle, so BigWigs bars can match Pulse's look.
--- Blocked: private-aura sounds. The 12.1.5 API documentation (UnitAuraDocumentation.lua)
--- has only AddPrivateAuraAnchor / RemovePrivateAuraAnchor; there is no call to attach
--- a sound to a private aura, and private auras never reach addon code.
+-- Private-aura sounds: see Sounds.lua (C_UnitAuras.AddAuraSound, 12.1.0).
 local _, ns = ...
 local Schema, Kernel, Ticker = PUI.Schema, PUI.Kernel, PUI.Ticker
 local PL = PUI.Pulse or ns.PL

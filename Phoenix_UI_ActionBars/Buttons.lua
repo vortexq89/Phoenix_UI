@@ -128,6 +128,7 @@ function Btn.Skin(b)
   b.onHover = b.onHover or false
   b.bg = Theme:Backdrop(b, "surface.1")
   b.icon = b:CreateTexture(nil, "ARTWORK")
+  PUI.Look.Shape(b.icon, b) -- icon shape mask (Theme > Icon shape), live
   b.dim = b:CreateTexture(nil, "ARTWORK", nil, 2) -- "dim while on cooldown" veil
   b.dim:SetAllPoints(b.icon)
   b.dim:SetColorTexture(0, 0, 0, 1)

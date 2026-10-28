@@ -8,10 +8,8 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 --  * click-to-insert word list: the panel's Words button opens a list; a click
 --    adds the word to this category's expression.
 --  * Studio mover for the detached panel (element gf.panel).
--- Blocked (not in the 12.1.5 API documentation, so not in Data/ApiCatalog.json):
--- raid boss-defeated / lockout filters need C_LFGList.GetSearchResultEncounterInfo
--- and a cancel-oldest button needs C_LFGList.CancelApplication. Blizzard's own
--- LFGList.lua and QueueStatusFrame.lua call both, but neither is documented.
+-- Bosses down and cancel-oldest use two undocumented functions behind an
+-- existence check: see Gaps.lua.
 local _, ns = ...
 local GF, Data, Expr, P = ns.GF, ns.Data, ns.Expr, ns.Panel
 local Schema, Layout = PUI.Schema, PUI.Layout

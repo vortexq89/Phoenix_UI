@@ -4,6 +4,16 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Review gaps (docs/REVIEW_2026-10-27.md), branch feat/gaps
+- Media: original art for the 6 missing page icons, 13 class and 3 role icons, 16 emoji, 8 shape masks, cursor ring and celebration sprites. Themes (Ember, Midnight, Horde, Alliance), icon shapes, Phoenix class/role icons and emoji.
+- New pages: Fonts, Colours (class/power/reaction colours, colour-blind palettes, health-by-percent colours), Glows, Cursor (cursor ring), Celebrations (opt-in banner with embers; reduced motion keeps only the banner). Theme: border style and thickness for every Phoenix outline.
+- Raid frames: pets, party targets, an extra role block and Grid Mode. Unit frames: free text slots (extra texts per frame group). Nameplates: an "Out of sight" flash after a line-of-sight error (class power on the target plate and the enemy range fade were already built).
+- Group Finder: bosses down on raid rows and the "bossesdown" word (undocumented function, existence-checked), your own lockout on raid rows (documented API), the age of your oldest application with a Cancel oldest button (existence-checked), a queue pop reminder.
+- Tooltip: crests needed to max an item. Wisdom: SimulationCraft export (`/pui simc`). Raid Tools: Council (`/pui council <item>`). Pulse: aura sounds through C_UnitAuras.AddAuraSound, including private boss debuffs. Friends: In game only. Cooldown Manager: Skin only.
+- Embers: header and background fade until hovered, mouse-wheel scrolling with no scroll bar, docked windows (row or column) under one Studio mover, a meter/fight list on header click, and reports blocked by the game posted after the key, match or boss ends (Say/Yell ask first) with a copy box.
+- Core: a notice when a change you made waits for combat (W14), the frame provider API (PUI.API.GetUnitFrame/GetUnitFrames/RegisterFrameProvider), your Edit Mode layout kept in the profile and restored as "Phoenix" (`/pui editmode`, W13). Reset: this module or (Shift-click) everything, with a confirm.
+- Not built (awaiting approval): the Forever swing timer and the Sentinel pcall exception. Tests: 422 (from 403).
+
 ### Deferred batch D: Sentinel, Diagnostics, Forever
 - Sentinel: an opt-in developer recorder (`/pui record`) that keeps one row per change and recovers a recording a crash left open; Phoenix registers as BugGrabber's display from Core, so BugGrabber stops its own chat line when Phoenix shows errors; a fixed-in list from the Companion (`sentinel-companion fixed-string`) can be pasted with `/pui sentinel fixed`; a privacy allow-list keeps addon and system words in file paths.
 - Diagnostics: its own page under System, the game profiler's measurement of Phoenix (signature checked) in the report, the heaviest addons on hover, and an A/B timing window (`/pui ab`).

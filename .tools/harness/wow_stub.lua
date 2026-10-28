@@ -70,6 +70,8 @@ function CreateFont(name)
   local f = { name = name }
   function f:SetFont(path, size, flags) self.path, self.size, self.flags = path, size, flags end
   function f:GetFont() return self.path, self.size, self.flags end
+  function f:SetShadowOffset(x, y) self.shadow = { x, y } end
+  function f:SetShadowColor() end
   _G[name] = f
   return f
 end
@@ -528,6 +530,8 @@ end
 Minimap = CreateFrame("Minimap", "Minimap", UIParent)
 Minimap:SetSize(198, 198)
 function Region:SetMaskTexture(t) self.mask = t end
+function Region:AddMaskTexture(m) rawset(self, "masks", rawget(self, "masks") or {}); self.masks[m] = true end
+function Region:RemoveMaskTexture(m) if rawget(self, "masks") then self.masks[m] = nil end end
 MinimapCluster = CreateFrame("Frame", "MinimapCluster", UIParent)
 MinimapCluster.BorderTop = CreateFrame("Frame", nil, MinimapCluster)
 MinimapCluster.ZoneTextButton = CreateFrame("Button", nil, MinimapCluster)
@@ -1023,6 +1027,13 @@ function SetLFGRoles(l, t, h, d) H.lfgRoles = { l, t, h, d }; H.calls[#H.calls +
 function GetAvailableRoles() return H.availRoles and H.availRoles[1], H.availRoles and H.availRoles[2], H.availRoles and H.availRoles[3] end
 H.activities = {}
 C_LFGList.GetActivityInfoTable = function(id) return H.activities[id] end
+-- Review gaps: own raid lockout (Group Finder). H.ejMaps[mapID] = journalID, H.ejBosses[journalID] = { encounterIDs }, H.kills["map:enc:diff"] = true
+H.ejMaps, H.ejBosses, H.kills = {}, {}, {}
+C_EncounterJournal = C_EncounterJournal or {}
+C_EncounterJournal.GetInstanceForGameMap = function(m) return H.ejMaps[m] end
+function EJ_GetEncounterInfoByIndex(i, j) local b = H.ejBosses[j]; local id = b and b[i]; if not id then return nil end return "Boss" .. i, "", i, 0, "", j, id, 0 end
+C_RaidLocks = C_RaidLocks or {}
+C_RaidLocks.IsEncounterComplete = function(m, e, d) return H.kills[m .. ":" .. e .. ":" .. d] == true end
 C_LFGList.GetActivityGroupInfo = function(id) return H.activityGroups and H.activityGroups[id] end
 function LFGListApplicationDialog_Show(dialog, resultID) H.dialogShown = resultID end
 LFGListApplicationDialog = CreateFrame("Frame", "LFGListApplicationDialog", UIParent)
@@ -1237,4 +1248,20 @@ setmetatable(_G, {
 H.craftedQuality = {}
 C_TradeSkillUI = rawget(_G, "C_TradeSkillUI") or {}
 C_TradeSkillUI.GetItemCraftedQualityByItemInfo = function(id) return H.craftedQuality[id] end
+-- Review gaps (2026-10-27): SimC export, aura sounds, Edit Mode export, cursor ring
+C_ClassTalents.GetActiveConfigID = C_ClassTalents.GetActiveConfigID or function() return H.config end
+C_Traits.GenerateImportString = C_Traits.GenerateImportString or function(id) return id and ("TALENTS" .. id) or nil end
+function GetCurrentRegionName() return "EU" end
+C_Container.GetContainerItemLink = C_Container.GetContainerItemLink or function(bag, i) return H.bagLinks and H.bagLinks[bag .. ":" .. i] end
+C_Container.GetContainerNumSlots = C_Container.GetContainerNumSlots or function() return 0 end
+H.auraSounds = {}
+H.auraSoundNext = 0
+C_UnitAuras.AddAuraSound = function(trigger, info) H.auraSoundNext = H.auraSoundNext + 1; H.auraSounds[H.auraSoundNext] = { trigger, info }; return H.auraSoundNext end
+C_UnitAuras.RemoveAuraSound = function(id) H.auraSounds[id] = nil end
+Enum.UnitAuraSoundTrigger = Enum.UnitAuraSoundTrigger or { Added = 0, ApplicationsIncreased = 1, Removed = 2 }
+C_EditMode.ConvertLayoutInfoToString = function(info) return "EM:" .. tostring(info and info.layoutName) end
+C_EditMode.ConvertStringToLayoutInfo = function(str) local n = type(str) == "string" and str:match("^EM:(.+)$"); return n and { layoutName = n, layoutType = 1, systems = {} } or nil end
+C_EditMode.SaveLayouts = function(layouts) H.editModeSaved = layouts end
+C_EditMode.SetActiveLayout = function(i) H.editModeActive = i end
+function GetAchievementInfo(id) return id, "Achievement " .. tostring(id) end
 return H

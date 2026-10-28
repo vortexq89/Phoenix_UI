@@ -53,7 +53,7 @@ local ICONS = {}
 for _, n in ipairs({ "actionbars", "arena", "ascent", "chat", "clickcast", "cooldowns", "dashboard", "databars", "embers",
   "flow", "general", "groupfinder", "loadouts", "locales", "minimap", "nameplates", "oracle", "profiles", "pulse", "quests",
   "raid", "reminders", "resource", "sentinel", "setup", "skins", "spark", "studio", "theme", "tooltip", "unitframes",
-  "vault", "wisdom" }) do
+  "vault", "wisdom", "casthistory", "pvp", "friends", "raidtools", "forever", "diagnostics" }) do
   ICONS[n] = true
 end
 A.ICON_NAMES = ICONS

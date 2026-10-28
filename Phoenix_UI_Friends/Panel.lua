@@ -24,7 +24,7 @@ function P.Results(s, query, source)
   if (source == "all" and s.searchGuild) or source == "guild" then sources[#sources + 1] = D.Guild() end
   if (source == "all" and s.searchRecent) or source == "recent" then sources[#sources + 1] = D.Recent() end
   local list = D.Search(query, sources)
-  list = D.Filter(list, { hideAppOnly = s.hideAppOnly, hideOffline = s.hideOffline })
+  list = D.Filter(list, { hideAppOnly = s.hideAppOnly, hideOffline = s.hideOffline, wowOnly = s.wowOnly, sameGame = s.sameGame })
   return D.Sort(list, s.sort)
 end
 

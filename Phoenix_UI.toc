@@ -37,6 +37,8 @@ Core\SpecProfiles.lua
 Core\Ledger.lua
 Core\Visibility.lua
 Core\Services.lua
+Core\Look.lua
+Core\Gaps.lua
 Core\Season.lua
 Core\Search.lua
 Core\Dialogs.lua
@@ -76,3 +78,4 @@ Tests\Movers_test.lua
 Tests\Reporter_test.lua
 Tests\Profiler_test.lua
 Tests\Deferred_test.lua
+Tests\Look_test.lua

@@ -404,3 +404,21 @@ Tests:Add("Options", "Forever page preview follows its settings live", function(
   Options.Previews.Forever(card)
   t:eq(bag(card).fvC2:GetText(), "Flight timer off", "live")
 end)
+
+Tests:Add("Options", "review gaps: Fonts, Colours, Glows and Theme previews draw and follow settings", function(t)
+  local bag = Options.PreviewsExtras.Bag
+  Tests.Keep(t, "glows.reducedMotion", "theme.preset")
+  for _, owner in ipairs({ "Fonts", "Colors", "Glows", "Theme" }) do
+    local card = CreateFrame("Frame")
+    Options.Previews[owner](card)
+    t:ok(bag(card)[({ Fonts = "fo", Colors = "co", Glows = "gl", Theme = "th" })[owner] .. "G1"]:IsShown(), owner .. " preview drawn")
+  end
+  local card = CreateFrame("Frame")
+  Schema:Set("glows.reducedMotion", true)
+  Options.Previews.Glows(card)
+  t:ok(bag(card).glG4:GetText():find("reduced", 1, true), "glow setting shows live")
+  Schema:Set("theme.preset", "midnight")
+  Options.Previews.Theme(card)
+  t:ok(bag(card).thG1:GetText():find("midnight", 1, true), "theme shows live")
+  t:ok(Options.Nav.INFO.Fonts and Options.Nav.INFO.Colors and Options.Nav.INFO.Glows, "sidebar entries")
+end)

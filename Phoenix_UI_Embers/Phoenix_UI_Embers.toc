@@ -14,4 +14,5 @@ Embers.lua
 Window.lua
 Recap.lua
 Extras.lua
+Dock.lua
 Tests\Embers_test.lua

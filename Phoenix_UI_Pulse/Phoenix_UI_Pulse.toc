@@ -13,4 +13,5 @@
 Bars.lua
 Pulse.lua
 Extras.lua
+Sounds.lua
 Tests\Pulse_test.lua
