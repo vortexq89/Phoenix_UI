@@ -456,7 +456,6 @@ function M:OnEnable()
     ns.Events:On("PLAYER_ENTERING_WORLD", self, function() if M.db.bin then scanSoon() end; M:ApplyElements() end)
     ns.Events:On("ADDON_LOADED", self, onAddOn)
     ns.Events:On("MINIMAP_UPDATE_ZOOM", self, scheduleZoomOut)
-    ns.Events:On("MINIMAP_PING", self, onPing)
     self:Refresh()
 end
 
