@@ -2242,6 +2242,16 @@ try("friends skin", function()
     S:SkinFriends(); S.db.friends = false; S:Refresh(); S.db.friends = true; S:Refresh()
     env.FriendsListFrame = nil
 end)
+try("guild skin", function()
+    local S = ns.modules.Skins
+    local row = CreateFrame("Button", nil, UIParent)
+    local cf = CreateFrame("Frame", "CommunitiesFrame", UIParent)
+    cf.CommunitiesList = { ScrollBox = { ForEachFrame = function(_, fn) fn(row) end } }
+    cf.Chat = CreateFrame("Frame", nil, cf)
+    env.CommunitiesFrame = cf
+    S:SkinGuild(); S.db.communities = false; S:Refresh(); S.db.communities = true; S:Refresh()
+    env.CommunitiesFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

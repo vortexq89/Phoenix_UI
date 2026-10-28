@@ -21,6 +21,7 @@
     <Script file="Skins\Auction.lua"/>
     <Script file="Skins\Professions.lua"/>
     <Script file="Skins\Friends.lua"/>
+    <Script file="Skins\Guild.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>
