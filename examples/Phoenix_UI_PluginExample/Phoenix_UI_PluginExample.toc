@@ -1,0 +1,8 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Plugin Example
+## Notes: Example third-party plugin for the Phoenix UI plugin API (docs/PLUGINS.md). Not installed by default.
+## Author: VortexQ8
+## Version: 1.0.0
+## Dependencies: Phoenix_UI
+
+Example.lua

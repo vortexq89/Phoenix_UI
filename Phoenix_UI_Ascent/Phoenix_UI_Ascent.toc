@@ -15,4 +15,5 @@ Ascent.lua
 Keystones.lua
 Display.lua
 Summary.lua
+Extras.lua
 Tests\Ascent_test.lua

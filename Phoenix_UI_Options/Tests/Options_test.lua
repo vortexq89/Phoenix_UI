@@ -257,3 +257,237 @@ Tests:Add("Options", "action bar, cooldown manager and resource bar previews fol
   Options:Open("ResourceBars")
   t:ok(Options.frame:IsShown(), "resource bars page renders")
 end)
+
+Tests:Add("Options", "batch A extras show in the action bar, cooldown manager and resource bar previews", function(t)
+  local AB, CDM, RB = PUI.ActionBars, PUI.CooldownManager, PUI.ResourceBars
+  if not (AB and AB.Extras and CDM and CDM.Extras and RB and RB.Extras) then return end
+  for _, k in ipairs({ "ab.micro.mode", "ab.cdColors", "cdm.glow.mode", "cdm.assist", "cdm.focusKick", "rb.cast.latency", "rb.power.thresholds", "rb.aura.enabled" }) do Tests.Keep(t, k) end
+  local card = CreateFrame("Frame")
+  local bag = Options.PreviewsExtras.Bag
+  Schema:Set("ab.micro.mode", "hide")
+  Schema:Set("ab.cdColors", true)
+  Options.Previews.ActionBars(card, "bar1")
+  t:ok(bag(card).abMicro:GetAlpha() < 0.2, "micro menu strip follows the mode")
+  t:ok(bag(card).abExtrasNote:GetText():find("hide", 1, true), "note names the mode")
+  Schema:Set("cdm.glow.mode", "proc"); Schema:Set("cdm.assist", true); Schema:Set("cdm.focusKick", true)
+  Options.Previews.CooldownManager(card)
+  t:eq(bag(card).cdmGlow:IsShown(), true, "glow sample")
+  t:eq(bag(card).cdmAssist:IsShown(), true, "assist icon sample")
+  t:eq(bag(card).cdmKick:IsShown(), true, "focus kick sample")
+  Schema:Set("cdm.glow.mode", "off")
+  Options.Previews.CooldownManager(card)
+  t:eq(bag(card).cdmGlow:IsShown(), false, "glow off")
+  Schema:Set("rb.cast.latency", true); Schema:Set("rb.aura.enabled", true); Schema:Set("rb.power.thresholds", true)
+  Options.Previews.ResourceBars(card)
+  t:eq(bag(card).rbAura:IsShown(), true, "aura stack sample")
+  t:ok(bag(card).rbNote:GetText():find("aura stacks", 1, true), "note explains the samples")
+  t:eq(Options.Previews.State(card).rb[2].barColor[1], RB.Extras.settings.midColor.r, "power sample in the middle colour")
+end)
+
+Tests:Add("Options", "a key can show on another module's page: queue pop time on Group Finder", function(t)
+  local Model = PUI.Options.Model
+  local def = PUI.Schema:Def("queue.lfgSeconds")
+  t:eq(def.owner, "Core", "still owned by Core")
+  t:eq(def.page, "GroupFinder", "shown on the Group Finder page")
+  local found, onCore = false, false
+  for _, k in ipairs(Model.Page("advanced", "GroupFinder").keys) do if k == "queue.lfgSeconds" then found = true end end
+  for _, p in ipairs(Model.Pages("advanced")) do
+    if p.name == "Core" then for _, k in ipairs(p.keys) do if k == "queue.lfgSeconds" then onCore = true end end end
+  end
+  t:ok(found, "listed on Group Finder")
+  t:ok(not onCore, "not on the Core page any more")
+  local hits = Model.Search("group finder queue")
+  local hit = false
+  for _, k in ipairs(hits) do if k == "queue.lfgSeconds" then hit = true end end
+  t:ok(hit, "search finds it under the page name")
+end)
+
+Tests:Add("Options", "batch B HUD extras show in the minimap, tooltip, data bar and group finder previews", function(t)
+  if not (PUI.Minimap and PUI.Minimap.Buttons and PUI.Tooltip and PUI.Tooltip.Extras) then return end
+  for _, k in ipairs({ "mm.buttons", "tt.lines.upgrade", "db.spec.on", "skins.queueTimer", "queue.lfgSeconds" }) do Tests.Keep(t, k) end
+  local card = CreateFrame("Frame")
+  local bag = Options.PreviewsExtras.Bag
+  Schema:Set("mm.buttons", "phoenix")
+  Options.Previews.Minimap(card)
+  t:ok(bag(card).mmBtn1:IsShown() and bag(card).mmBtn3:IsShown(), "Phoenix buttons drawn")
+  Schema:Set("mm.buttons", "blizzard")
+  Options.Previews.Minimap(card)
+  t:eq(bag(card).mmBtn1:IsShown(), false, "hidden for Blizzard's buttons")
+  Options.Previews.Tooltip(card)
+  t:eq(bag(card).ttExtra1:GetText(), "Item level 678  -  Arms", "inspect sample line")
+  Schema:Set("tt.lines.upgrade", false)
+  Options.Previews.Tooltip(card)
+  t:eq(bag(card).ttExtra3:GetText(), "Set pieces equipped: 2", "upgrade line drops out live")
+  Schema:Set("db.spec.on", true)
+  Options.Previews.DataBars(card)
+  t:ok(bag(card).dbExtrasNote:GetText():find("Per-spec blocks on", 1, true), "per-spec state shown")
+  Schema:Set("queue.lfgSeconds", 50)
+  Options.Previews.GroupFinder(card)
+  t:ok(bag(card).gfQueueText:GetText():find("30 of 50", 1, true), "queue timer sample follows queue.lfgSeconds")
+  Schema:Set("skins.queueTimer", false)
+  Options.Previews.GroupFinder(card)
+  t:eq(bag(card).gfQueue:IsShown(), false, "timer off live")
+end)
+
+Tests:Add("Options", "batch C extras show live on every module preview", function(t)
+  local bag = Options.PreviewsExtras.Bag
+  local pages = { QuestTracker = "qt", Reminders = "rm", Embers = "em", Ascent = "as", Flow = "fl", GroupFinder = "gf", RaidTools = "rt",
+    Pulse = "pl", Arena = "ar", Spark = "sp", CastHistory = "ch", PvP = "pv", Friends = "fr", Sentinel = "sn" }
+  for _, k in ipairs({ "pulse.nextHud", "arena.pets", "flow.gg" }) do Tests.Keep(t, k) end
+  for owner, id in pairs(pages) do
+    local card = CreateFrame("Frame")
+    Options.Previews[owner](card)
+    local first = bag(card)[id .. "C1"]
+    t:ok(first and first:IsShown(), owner .. ": batch C lines drawn")
+  end
+  local card = CreateFrame("Frame")
+  Schema:Set("pulse.nextHud", true)
+  Options.Previews.Pulse(card)
+  t:ok(bag(card).plC2:GetText():find("Devouring Cosmos", 1, true), "next abilities sample")
+  Schema:Set("pulse.nextHud", false)
+  Options.Previews.Pulse(card)
+  t:ok(bag(card).plC1:GetText():find("(off)", 1, true), "setting change shows live")
+  Schema:Set("arena.pets", false)
+  Options.Previews.Arena(card)
+  t:ok(bag(card).arC2:GetText():find("Pet frames off", 1, true), "arena pets off in the preview")
+end)
+
+Tests:Add("Options", "CPU chip shows the open page's profiler time live", function(t)
+  local Chip, P = Options.CpuChip, PUI.Profiler
+  Tests.Keep(t, "sentinel.cpuChip")
+  local saved = P.stats
+  P.stats = { a = { owner = "Embers", self = 1.5 }, b = { owner = "Arena", self = 9 } }
+  t:cleanup(function() P.stats = saved end)
+  t:ok(Chip.Text("Embers"):find("1.50 ms", 1, true), "page total")
+  t:eq(Chip.Text("Dashboard"), nil, "not on the Dashboard")
+  t:eq(Chip.Text("Flow"), nil, "nothing without samples")
+  Schema:Set("sentinel.cpuChip", false)
+  t:eq(Chip.Text("Embers"), nil, "off")
+end)
+
+Tests:Add("Options", "Diagnostics page: own System entry, report lines, developer settings on it", function(t)
+  local Page = Options.DiagPage
+  local found = false
+  for _, g in ipairs(Options.Nav.GROUPS) do if g[1] == "System" then for _, n in ipairs(g[2]) do if n == "Diagnostics" then found = true end end end end
+  t:ok(found, "listed under System")
+  t:eq(Schema:Def("sentinel.recorder").page, "Diagnostics", "recorder setting on the page")
+  local p = Model.Page("advanced", "Diagnostics")
+  t:eq(p.name, "Diagnostics", "page exists")
+  local lines = Page.Lines(80)
+  t:eq(lines[1], "Phoenix UI diagnostics", "report first line")
+  local self = false
+  for _, l in ipairs(lines) do if l:find("Self-measurement", 1, true) then self = true end end
+  t:ok(self, "self-measurement in the report")
+  local host = CreateFrame("Frame")
+  Page:Show(host)
+  t:eq(Options.views.diagnostics.lines[1]:GetText(), "Phoenix UI diagnostics", "drawn")
+end)
+
+Tests:Add("Options", "batch D settings show live in the Sentinel preview", function(t)
+  local bag = Options.PreviewsExtras.Bag
+  Tests.Keep(t, "sentinel.privacyAllow")
+  local card = CreateFrame("Frame")
+  Schema:Set("sentinel.privacyAllow", { "Healbot", "Grid" })
+  Options.Previews.Sentinel(card)
+  t:ok(bag(card).snC6:GetText():find("2 of yours", 1, true), "allow-list count")
+  t:ok(bag(card).snC5:GetText():find("off", 1, true), "recorder off")
+end)
+
+Tests:Add("Options", "Forever page preview follows its settings live", function(t)
+  if not PUI.Forever then return end
+  local bag = Options.PreviewsExtras.Bag
+  Tests.Keep(t, "forever.flightTimer")
+  local card = CreateFrame("Frame")
+  Options.Previews.Forever(card)
+  t:ok(bag(card).fvC2:GetText():find("Stormwind  1:45", 1, true), "flight sample")
+  Schema:Set("forever.flightTimer", false)
+  Options.Previews.Forever(card)
+  t:eq(bag(card).fvC2:GetText(), "Flight timer off", "live")
+  Tests.Keep(t, "forever.swingTimer")
+  Schema:Set("forever.swingTimer", false)
+  Options.Previews.Forever(card)
+  t:eq(bag(card).fvC4:GetText(), "Swing timer off (opt-in)", "swing off by default")
+  Schema:Set("forever.swingTimer", true)
+  Options.Previews.Forever(card)
+  t:ok(bag(card).fvC4:GetText():find("Swing  1.3", 1, true), "swing sample follows the setting")
+end)
+
+Tests:Add("Options", "review gaps: Fonts, Colours, Glows and Theme previews draw and follow settings", function(t)
+  local bag = Options.PreviewsExtras.Bag
+  Tests.Keep(t, "glows.reducedMotion", "theme.preset")
+  for _, owner in ipairs({ "Fonts", "Colors", "Glows", "Theme" }) do
+    local card = CreateFrame("Frame")
+    Options.Previews[owner](card)
+    t:ok(bag(card)[({ Fonts = "fo", Colors = "co", Glows = "gl", Theme = "th" })[owner] .. "G1"]:IsShown(), owner .. " preview drawn")
+  end
+  local card = CreateFrame("Frame")
+  Schema:Set("glows.reducedMotion", true)
+  Options.Previews.Glows(card)
+  t:ok(bag(card).glG4:GetText():find("reduced", 1, true), "glow setting shows live")
+  Schema:Set("theme.preset", "midnight")
+  Options.Previews.Theme(card)
+  t:ok(bag(card).thG1:GetText():find("midnight", 1, true), "theme shows live")
+  t:ok(Options.Nav.INFO.Fonts and Options.Nav.INFO.Colors and Options.Nav.INFO.Glows, "sidebar entries")
+end)
+
+Tests:Add("Options", "minimap preview shows the button bin layout, order, badge and hidden buttons live", function(t)
+  if not (PUI.Minimap and PUI.ButtonBin) then return end
+  for _, k in ipairs({ "mm.bin.enabled", "mm.bin.layout", "mm.bin.grow", "mm.bin.hidden", "mm.bin.sort" }) do Tests.Keep(t, k) end
+  Schema:Set("mm.bin.enabled", true)
+  local card = CreateFrame("Frame")
+  Options.Previews.Minimap(card)
+  local h = Options.Previews.State(card).hud.mm
+  t:ok(h.binNote:GetText():find("Popup grid, grows right, A-Z", 1, true), "popup sample")
+  Schema:Set("mm.bin.layout", "bar"); Schema:Set("mm.bin.grow", "down"); Schema:Set("mm.bin.sort", "custom")
+  Options.Previews.Minimap(card)
+  t:ok(h.binNote:GetText():find("Docked bar, grows down, my order", 1, true), "bar sample live")
+  Schema:Set("mm.bin.hidden", { "A", "B" })
+  Options.Previews.Minimap(card)
+  t:ok(h.binNote:GetText():find("badge 12", 1, true), "hidden buttons leave the sample")
+  t:eq(h.bin[13]:IsShown(), false, "fewer cells")
+end)
+
+Tests:Add("Options", "auto item bar preview follows its size, categories and counts live", function(t)
+  if not (PUI.ActionBars and PUI.ActionBars.ItemBars) then return end
+  Tests.Keep(t, "ab.ibar1.size")
+  Tests.Keep(t, "ab.ibar1.count")
+  local card = CreateFrame("Frame")
+  Schema:Set("ab.ibar1.size", 40)
+  Options.Previews.ActionBars(card, "ibar1")
+  local bag = Options.PreviewsExtras.Bag(card)
+  local b = bag["ib.b1.1"]
+  t:ok(b and b:IsShown(), "sample button for the first ticked category")
+  t:eq(b:GetWidth(), 40, "size follows the setting")
+  t:ok(b.count:GetText() ~= "", "sample count")
+  Schema:Set("ab.ibar1.count", false)
+  Options.Previews.ActionBars(card, "ibar1")
+  t:eq(b.count:GetText(), "", "counts off in the preview")
+  local st = Options.Previews.State(card)
+  t:ok(not (st.icons and st.icons[1] and st.icons[1]:IsShown()), "action bar samples are not drawn on item bar tabs")
+end)
+
+Tests:Add("Options", "party cooldown preview follows size and side live", function(t)
+  if not PUI.PartyCD then return end
+  Tests.Keep(t, "pcd.size")
+  Tests.Keep(t, "pcd.side")
+  local card = CreateFrame("Frame")
+  Schema:Set("pcd.size", 30)
+  Options.Previews.Update("PartyCD", card)
+  local b = Options.PreviewsExtras.Bag(card)["pcd.icon1.1"]
+  t:ok(b and b:IsShown(), "sample icon")
+  t:eq(b:GetWidth(), 30, "size follows the setting")
+  Schema:Set("pcd.side", "LEFT")
+  Options.Previews.Update("PartyCD", card)
+  if rawget(_G, "HARNESS") then t:eq(rawget(b, "point") and b.point[1], "RIGHT", "left side anchors the icon's right edge") end
+end)
+
+Tests:Add("Options", "loot roll preview follows width and height live", function(t)
+  if not PUI.LootRoll then return end
+  Tests.Keep(t, "loot.height")
+  local card = CreateFrame("Frame")
+  Schema:Set("loot.height", 30)
+  Options.Previews.Update("LootRoll", card)
+  local r = Options.PreviewsExtras.Bag(card)["loot.row1"]
+  t:ok(r and r:IsShown(), "sample roll")
+  t:eq(r:GetHeight(), 30, "height follows the setting")
+end)

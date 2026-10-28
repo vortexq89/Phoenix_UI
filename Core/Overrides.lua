@@ -12,8 +12,12 @@ local Overrides = { editing = nil, last = {} }
 PUI.Overrides = Overrides
 local DB, Schema = PUI.DB, PUI.Schema
 
-Overrides.CONDITIONS = { "arena", "bg", "raid", "party", "solo" } -- priority order
-Overrides.CONDITION_LABELS = { arena = "Arena", bg = "Battleground", raid = "Raid group", party = "Party", solo = "Solo" }
+-- "keybind" is the layer key (Core/KeyLayer.lua): while it is held or toggled
+-- on, its values win over every other layer.
+Overrides.CONDITIONS = { "arena", "bg", "raid", "party", "solo", "keybind" } -- priority order (keybind is checked first)
+Overrides.CONDITION_LABELS = { arena = "Arena", bg = "Battleground", raid = "Raid group", party = "Party", solo = "Solo",
+  keybind = "While my layer key is active" }
+Overrides.keyLayer = false
 local LAYER = { spec = "@spec", cond = "@cond" }
 local VALID_COND = {}
 for _, c in ipairs(Overrides.CONDITIONS) do VALID_COND[c] = true end
@@ -53,6 +57,12 @@ end
 -- Lookup(key) -> value, source  (nil when no override applies). Pure (G18).
 function Overrides:Lookup(key)
   local spec, cond = self.Context()
+  if self.keyLayer then
+    for _, prof in ipairs({ DB.profile, DB.base }) do
+      local t = layerTable(prof, "cond", "keybind")
+      if t and t[key] ~= nil then return t[key], "cond:keybind" end
+    end
+  end
   for _, prof in ipairs({ DB.profile, DB.base }) do
     local t = layerTable(prof, "cond", cond)
     if t and t[key] ~= nil then return t[key], "cond:" .. cond end

@@ -1,0 +1,19 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Arena
+## Notes: Phoenix UI arena frames: enemies with trinket, racial, a DR tray from the game's own DR data, casts, targeting dots, match timer, dampening, Shadowsight and a card after each match.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Logo\PhoenixUI_Icon_64
+## Category: Phoenix UI
+## Group: Phoenix_UI
+## Dependencies: Phoenix_UI
+
+State.lua
+DR.lua
+Match.lua
+Frames.lua
+Arena.lua
+Extras.lua
+Tests\Arena_test.lua

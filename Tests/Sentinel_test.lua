@@ -60,7 +60,7 @@ Tests:Add("Sentinel", "secret-value error signatures are tagged", function(t)
   t:eq(inc.apiFamily, "C_UnitAuras", "api family from the ring")
 end)
 
-Tests:Add("Sentinel", "safe mode disables only the failing module", function(t)
+Tests:Add("Sentinel", "legacy safe mode is released at load and never turns modules off", function(t)
   local S = scratch(t)
   for _, n in ipairs({ "PUITest_Bad", "PUITest_Good" }) do
     PUI:RegisterModule(n, { enabledByDefault = true })
@@ -72,15 +72,14 @@ Tests:Add("Sentinel", "safe mode disables only the failing module", function(t)
       PUI.Kernel:Unregister(n)
     end
   end)
-  local hit = S.SafeMode:Evaluate({ PUITest_Bad = 6, PUITest_Good = 1, Core = 99 }, 5)
-  t:eq(#hit, 1, "one module over threshold (Core is never disabled)")
-  t:eq(hit[1], "PUITest_Bad", "the failing module")
   S.db.safeModed.PUITest_Bad = 6
   PUI.Kernel:SetSafeMode("PUITest_Bad", true)
-  t:eq(PUI.Modules.PUITest_Bad.enabled, false, "failing module off")
+  t:eq(PUI.Modules.PUITest_Bad.enabled, false, "legacy safe-moded module off")
   t:eq(PUI.Modules.PUITest_Good.enabled, true, "other module still on")
-  S.SafeMode:Release("PUITest_Bad")
-  t:eq(PUI.Modules.PUITest_Bad.enabled, true, "re-enabled live")
+  S.SafeMode:ApplyAtLoad()
+  t:eq(PUI.Modules.PUITest_Bad.enabled, true, "legacy safe mode released at load")
+  t:eq(next(S.db.safeModed), nil, "no module left in safe mode")
+  t:eq(S.SafeMode.Evaluate, nil, "safe mode can no longer turn modules off")
 end)
 
 Tests:Add("Sentinel", "export string decodes to the same contract v2 payload", function(t)
@@ -107,6 +106,22 @@ Tests:Add("Sentinel", "export string decodes to the same contract v2 payload", f
   t:eq(S.Export:Build(), nil, "export refused without opt-in")
 end)
 
+Tests:Add("Sentinel", "every report carries the game flavor (retail | forever)", function(t)
+  local S = scratch(t)
+  Hook.Simulate("Interface/AddOns/Phoenix_UI/Core/Fake.lua:30: flavor me", CORE_STACK, "")
+  local saved = PUI.IS_FOREVER
+  t:cleanup(function() PUI.IS_FOREVER = saved end)
+  PUI.IS_FOREVER = false
+  local p = S.Export:Payload()
+  t:eq(p.flavor, "retail", "payload flavor on retail")
+  for i = 1, #p.reports do t:eq(p.reports[i].flavor, "retail", "report " .. i .. " flavor on retail") end
+  PUI.IS_FOREVER = true
+  p = S.Export:Payload()
+  t:eq(p.flavor, "forever", "payload flavor on Forever")
+  for i = 1, #p.reports do t:eq(p.reports[i].flavor, "forever", "report " .. i .. " flavor on Forever") end
+  t:eq(S.Export.FromJSON(S.Export.ToJSON(p)).reports[1].flavor, "forever", "flavor survives the JSON round trip")
+end)
+
 Tests:Add("Sentinel", "the previous error handler is still called", function(t)
   local S = scratch(t)
   local calls = 0
@@ -122,7 +137,9 @@ end)
 Tests:Add("Sentinel", "taint, drift, integrity and perf create incidents", function(t)
   local S = scratch(t)
   t:ok(S.Taint:OnAction("ADDON_ACTION_BLOCKED", "Phoenix_UI", "CastSpellByName()"), "taint for Phoenix")
-  t:eq(S.Taint:OnAction("ADDON_ACTION_BLOCKED", "OtherAddon", "x()"), nil, "others ignored")
+  local other = S.Taint:OnAction("ADDON_ACTION_BLOCKED", "OtherAddon", "x()")
+  t:eq(other and other.addon, "OtherAddon", "other addons' blocked actions join their own list")
+  t:eq(other and other.kind, "taint", "kept as taint")
   PUI:RegisterModule("PUITest_Drift", { enabledByDefault = true })
   PUI.Kernel:Evaluate("PUITest_Drift")
   t:cleanup(function() PUI.Kernel:SetSafeMode("PUITest_Drift", false); PUI.Kernel:Unregister("PUITest_Drift") end)

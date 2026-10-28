@@ -126,8 +126,10 @@ function Btn.Skin(b)
   -- Plain fields start as false (never read through to the frame's methods).
   b.slot, b.live, b.bindKey, b.extraKey, b.glowOn, b.assistOn, b.entry, b.autocast = false, false, false, false, false, false, false, false
   b.onHover = b.onHover or false
+  b.puiMasque = false
   b.bg = Theme:Backdrop(b, "surface.1")
   b.icon = b:CreateTexture(nil, "ARTWORK")
+  PUI.Look.Shape(b.icon, b) -- icon shape mask (Theme > Icon shape), live
   b.dim = b:CreateTexture(nil, "ARTWORK", nil, 2) -- "dim while on cooldown" veil
   b.dim:SetAllPoints(b.icon)
   b.dim:SetColorTexture(0, 0, 0, 1)
@@ -172,7 +174,8 @@ function Btn.ApplyLook(b)
   e[2]:ClearAllPoints(); e[2]:SetPoint("BOTTOMLEFT"); e[2]:SetPoint("BOTTOMRIGHT"); e[2]:SetHeight(w)
   e[3]:ClearAllPoints(); e[3]:SetPoint("TOPLEFT"); e[3]:SetPoint("BOTTOMLEFT"); e[3]:SetWidth(w)
   e[4]:ClearAllPoints(); e[4]:SetPoint("TOPRIGHT"); e[4]:SetPoint("BOTTOMRIGHT"); e[4]:SetWidth(w)
-  for i = 1, 4 do e[i]:SetColorTexture(c.r, c.g, c.b, c.a or 1); e[i]:SetShown(px > 0) end
+  local masqued = b.puiMasque == true -- Masque draws its own border
+  for i = 1, 4 do e[i]:SetColorTexture(c.r, c.g, c.b, c.a or 1); e[i]:SetShown(px > 0 and not masqued) end
   local r = S.rangeColor
   b.range:SetColorTexture(r.r, r.g, r.b, S.rangeMode == "overlay" and (r.a or 0.5) or 0)
   b.cooldown:SetHideCountdownNumbers(not S.cdText)

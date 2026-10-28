@@ -1,0 +1,17 @@
+from nu import *
+cl=''.join(f'<div class="row{" hl" if i==0 else ""}" style="height:44px;font-size:11px">{ic(GL[i+8],CL[i],30)}<div style="flex:1"><b>{n}</b><div class="mut" style="font-size:9.5px">{s}</div></div>'+(px(f'<span class="badge">{u}</span>') if u else '')+'</div>' for i,(n,s,u) in enumerate([('Ashen Wing','Guild',3),('Raid Team','Community',0),('M+ Pals','Community',12),('Battle.net','Group',0)]))+'<div class="row" style="height:36px;font-size:11px">＋ Join or create community</div>'
+chat=''.join(f'<div style="font-size:11px;margin:3px 0"><span class="mut">[{t}]</span> <b style="color:{c}">{n}</b>: {m}</div>' for t,n,c,m in [('19:02','Thrall','#c41e3a','Raid at 20:00'),('19:05','Jaina','#3fc7eb','Bring flasks'),('19:07','Baine','#ff7c0a','omw')])
+mem=''.join(f'<div style="font-size:11px;padding:2px 0;color:{c}">{n}</div>' for n,c in [('Thrall','#c41e3a'),('Jaina','#3fc7eb'),('Baine','#ff7c0a'),('Anduin','#fff')])
+b=at(10,30,'<div style="width:200px">'+cl+'</div>')
+b+=at(220,6,'<div style="width:420px;display:flex;gap:6px">'+dd('# General',120)+'<span style="margin-left:auto">'+btn('🔇')+btn('🎧')+btn('📅')+btn('⚙ Settings')+'</span></div>')
+b+=at(220,38,'<div style="width:420px;height:290px;background:var(--bg0);border-radius:6px;padding:6px">'+chat+'<div style="margin-top:180px" class="acc">↓ Jump to unread</div></div>')
+b+=at(220,336,inp('Type a message…',420,26))
+b+=at(650,6,'<div style="width:150px"><div class="lbl">Members 4/120</div>'+mem+'<div style="margin-top:8px">'+ck('Show offline')+'</div><div style="margin-top:6px">'+btn('Invite')+'</div></div>')
+b+=at(814,50,'<div class="rtab">'+''.join(f'<span class="{"on" if i==0 else ""}" style="font-size:12px">{s}</span>' for i,s in enumerate(['💬','👥','🏆','ℹ']))+'</div>')
+w=bwin(X,Y,814,426,'Ashen Wing',b,icon='Icons__Modules__64__vault')
+ro=card('Roster view',rows([('Name','Rank','Zone','Note'),('Thrall','Officer','Orgrimmar','tank'),('Jaina','Member','Dalaran','')])+'<div style="margin-top:4px">'+dd('Professions',100)+btn('Add member')+btn('Guild controls')+btn('Recruitment')+'</div>',400)
+be=card('Guild benefits','<div>Perks: Mass Resurrection · Mobile Banking</div><div>Rewards: Guild Tabard · Banner</div>',400)
+info=card('Info','<div><b>MOTD</b> <span class="acc">✎</span> Raid Tue/Thu 20:00</div><div class="mut">Details · News '+dd('Filter',70)+' · '+btn('Log')+'</div>',400)
+cf=card('Club finder','<div>'+chip('Guilds',True)+chip('Communities')+' '+inp('⌕ Search',160)+'</div>',400)
+fl=fly(X+420,Y+460,'Communities',[('Unread badges','<span class="tg on"></span>'),('Roster columns','<span class="dd" style="width:80px;height:20px">Name, Zone…</span>')])
+page2('19_guild_communities','Blizzard CommunitiesFrame (list left, chat, members, right-edge tabs) · Ember',w+fl+at(X,Y+460,'<div style="display:grid;grid-template-columns:400px;gap:8px">'+ro+be+'</div>',z=12)+at(X+420,Y+590,'<div style="display:flex;flex-direction:column;gap:8px">'+info+cf+'</div>',z=12))

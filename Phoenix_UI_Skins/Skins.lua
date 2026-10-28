@@ -120,11 +120,36 @@ function P.title(id, frame)
   if title then font(id, title, "header") end
 end
 
-local DEFAULT_PARTS = { "shell", "inset", "close", "tabs", "buttons", "title" }
+local DEFAULT_PARTS = { "shell", "inset", "close", "tabs", "buttons", "title", "controls", "gear" }
+SK.DEFAULT_PARTS = DEFAULT_PARTS
+SK.Font = font
+SK.Backdrop = backdrop
+SK.Fade = fade
+
+-- Post-hooks a pack asks for ({ "GlobalFunction" } or { table, "method" }):
+-- installed once, they re-run the pack's update while it is applied, so
+-- pooled or refreshed Blizzard content keeps the Phoenix look.
+SK.hooked = {}
+local function installHooks(id, pack)
+  for _, h in ipairs(pack.hooks or {}) do
+    local tbl, name = h[1], h[2]
+    if type(tbl) == "string" then tbl, name = _G, tbl end
+    if type(tbl) == "string" then tbl = rawget(_G, tbl) end
+    local tag = id .. ":" .. tostring(name)
+    local target = type(tbl) == "table" and (tbl == _G and rawget(_G, name) or (tbl ~= _G and tbl[name]))
+    if type(target) == "function" and not SK.hooked[tag] then
+      SK.hooked[tag] = true
+      hooksecurefunc(tbl, name, function(...)
+        if SK.applied[id] and pack.update then securecallfunction(pack.update, ...) end
+      end)
+    end
+  end
+end
+SK.InstallHooks = installHooks
 
 -- Apply / revert -----------------------------------------------------------------
 function SK.Register(id, pack)
-  assert(type(id) == "string" and type(pack.frames) == "table", "skin needs an id and frames")
+  assert(type(id) == "string" and (pack.global or type(pack.frames) == "table"), "skin needs an id and frames")
   if not SK.packs[id] then SK.order[#SK.order + 1] = id end
   pack.id = id
   SK.packs[id] = pack
@@ -132,6 +157,7 @@ end
 
 function SK.Frames(pack)
   local list = {}
+  if pack.global then return { UIParent } end
   for _, name in ipairs(pack.frames) do
     local f = rawget(_G, name)
     if type(f) == "table" and f.GetObjectType then list[#list + 1] = f end
@@ -150,9 +176,12 @@ function SK.Apply(id)
   local done = false
   securecallfunction(function()
     for _, f in ipairs(frames) do
-      for _, part in ipairs(pack.parts or DEFAULT_PARTS) do P[part](id, f) end
+      for _, part in ipairs(pack.parts or DEFAULT_PARTS) do
+        if part ~= "gear" or f == frames[1] then P[part](id, f) end
+      end
       if pack.extra then pack.extra(f, P, id) end
     end
+    installHooks(id, pack)
     done = true
   end)
   if not done then
@@ -166,14 +195,19 @@ function SK.Apply(id)
 end
 
 function SK.Revert(id)
-  for _, obj in ipairs(SK.owned[id] or {}) do
-    if SK.alpha[obj] then obj:SetAlpha(SK.alpha[obj]); SK.alpha[obj] = nil end
-    if SK.fonts[obj] ~= nil then
+  local list = SK.owned[id] or {}
+  for i = #list, 1, -1 do
+    local obj = list[i]
+    if type(obj) == "function" then obj()
+    elseif SK.alpha[obj] then obj:SetAlpha(SK.alpha[obj]); SK.alpha[obj] = nil
+    end
+    if type(obj) == "table" and SK.fonts[obj] ~= nil then
       if SK.fonts[obj] then obj:SetFontObject(SK.fonts[obj]) end
       SK.fonts[obj] = nil
     end
-    if obj.Hide and not SK.alpha[obj] and SK.IsBackdrop(obj) then obj:Hide() end
+    if type(obj) == "table" and obj.Hide and not SK.alpha[obj] and SK.IsBackdrop(obj) then obj:Hide() end
   end
+  if SK.packs[id] and SK.packs[id].revert then SK.packs[id].revert() end
   SK.owned[id] = nil
   SK.applied[id] = nil
 end

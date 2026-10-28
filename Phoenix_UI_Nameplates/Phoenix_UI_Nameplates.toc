@@ -13,4 +13,9 @@
 Rules.lua
 Plate.lua
 Nameplates.lua
+Extras.lua
+Gaps.lua
+DataPacks.lua
 Tests\Nameplates_test.lua
+Tests\Extras_test.lua
+Tests\DataPacks_test.lua

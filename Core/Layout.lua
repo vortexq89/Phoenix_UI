@@ -312,6 +312,9 @@ local function refade()
     local f = Layout.frames[id]
     if f and r.fade and not r.hide and f.SetAlpha then f:SetAlpha(Layout:FadeFor(id, r) or r.alpha or 1) end
   end
+  -- Blizzard elements Studio fades follow the same state events (deferred A/B).
+  local M = PUI.Movers
+  if M and M:UsesFade() then M:Refade() end
 end
 Layout.Refade = refade
 local function queue() PUI.Ticker:Register("layout.fade", 0, refade, "Studio") end
@@ -334,6 +337,7 @@ function Layout:RefreshFade(positions)
       end
     end
   end
+  if not any and PUI.Movers and PUI.Movers:UsesFade() then any = true end
   for _, e in ipairs(FADE_EVENTS) do
     if any then fadeFrame:RegisterEvent(e) else fadeFrame:UnregisterEvent(e) end
   end

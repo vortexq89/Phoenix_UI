@@ -1,6 +1,6 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
--- Setup wizard UI (mockups 05-11): welcome, five steps with a progress rail
--- (language, scale, role, layout, look) and a finish summary. Built from the
+-- Setup wizard UI (mockups 05-11): welcome, six steps with a progress rail
+-- (language, scale, role, layout, look, skins) and a finish summary. Built from the
 -- options design kit (Phoenix_UI_Options is loaded on open). Choices apply
 -- through the schema on Finish, live, without a reload; the look step
 -- previews accent and panel live. Never opens in combat.
@@ -11,7 +11,7 @@ local W, H, RAIL = 1200, 700, 280
 local CARD_W, GAP = 252, 14
 local Kit, A -- bound when the options child loads
 
-SU.STEP_LABELS = { "Language", "Scale", "Role", "Layout", "Look" }
+SU.STEP_LABELS = { "Language", "Scale", "Role", "Layout", "Look", "Skins" }
 SU.LANGS = {
   { "enUS", "English", "English" }, { "deDE", "Deutsch", "German" }, { "frFR", "Fran\195\167ais", "French" },
   { "esES", "Espa\195\177ol", "Spanish" }, { "ptBR", "Portugu\195\170s", "Portuguese" },
@@ -356,8 +356,18 @@ function Pages.role(f)
     c.role = role
     return c
   end)
+  -- Spec auto-switch (plan 1.7 / 3.3): one profile per specialization.
+  v.specToggle = Kit.Toggle(v, function(on) SU.choices.specProfile = on end)
+  v.specToggle:SetPoint("BOTTOMLEFT", 4, 6)
+  v.specLabel = Kit.Text(v, "body", "text.primary")
+  v.specLabel:SetPoint("LEFT", v.specToggle, "RIGHT", 10, 0)
+  v.specLabel:SetText("Give each specialization its own profile and switch with my spec")
+  v.specHint = Kit.Text(v, "small", "muted")
+  v.specHint:SetPoint("TOPLEFT", v.specLabel, "BOTTOMLEFT", 0, -2)
+  v.specHint:SetText("Off by default. You can change which profile each spec uses later under Profiles.")
   function v:Refresh()
     local _, spec = playerLine()
+    self.specToggle:SetValue_(SU.choices.specProfile == true)
     self.sub = "We detected |cff3ddc97" .. spec .. "|r. Your role shapes the starting layout and which modules are on."
     f.sub:SetText(self.sub)
     for _, c in ipairs(self.cards) do c:Select(c.role == SU.choices.role) end
@@ -477,6 +487,80 @@ function Pages.look(f)
   return v
 end
 
+-- Skins step: Phoenix skins or the Blizzard look for Blizzard's own windows,
+-- each card with a small sample window (title bar, tabs, dropdown, checkbox,
+-- scroll bar) drawn in that look.
+local function skinTex(name) return PUI.Media:Path("texture", "Skins/" .. name) end
+local BLIZZ_BG = "Interface\\DialogFrame\\UI-DialogBox-Background"
+local function sampleWindow(c, phoenix)
+  local box = CreateFrame("Frame", nil, c)
+  box:SetPoint("TOPLEFT", 12, -12)
+  box:SetPoint("TOPRIGHT", -12, -12)
+  box:SetHeight(196)
+  local bg = box:CreateTexture(nil, "BACKGROUND")
+  bg:SetAllPoints()
+  bg:SetTexture(phoenix and (skinTex("Panel_EmberGlass")) or BLIZZ_BG)
+  local bar = box:CreateTexture(nil, "BORDER")
+  bar:SetPoint("TOPLEFT"); bar:SetPoint("TOPRIGHT"); bar:SetHeight(24)
+  if phoenix then bar:SetTexture(skinTex("TitleBar_Ember")) else bar:SetColorTexture(0.35, 0.27, 0.12, 1) end
+  local title = Kit.Text(box, "label", phoenix and "text.primary" or "warn")
+  title:SetPoint("TOP", 0, -5)
+  title:SetText("Character")
+  local edges = phoenix and Theme:Outline(box, "accent", 0.7) or Theme:Outline(box, "warn", 0.9)
+  box.edges = edges
+  local lines = { "Dropdown", "Checkbox", "Scroll bar", "Item slots" }
+  for i, l in ipairs(lines) do
+    local y = -36 - (i - 1) * 34
+    local t = Kit.Text(box, "small", "text.secondary")
+    t:SetPoint("TOPLEFT", 14, y - 6)
+    t:SetText(l)
+    local ctl = box:CreateTexture(nil, "ARTWORK")
+    ctl:SetPoint("TOPRIGHT", -14, y)
+    if i == 1 then ctl:SetSize(120, 22) elseif i == 2 then ctl:SetSize(18, 18) elseif i == 3 then ctl:SetSize(8, 26) else ctl:SetSize(26, 26) end
+    local name = ({ "Border_R10_1px", "Check_Box", "Scroll_Thumb", "Slot_QualityFrame" })[i]
+    if phoenix then
+      ctl:SetTexture(skinTex(name))
+      if i ~= 2 then Theme:Paint(ctl, "accent", 1, "vertex") end
+    else
+      ctl:SetColorTexture(0.45, 0.36, 0.2, 1)
+    end
+  end
+  return box
+end
+
+function Pages.skins(f)
+  local v = CreateFrame("Frame", nil, f.body)
+  v:SetAllPoints()
+  v.title = "Skin Blizzard's windows?"
+  v.sub = "Phoenix keeps every Blizzard window's layout and every feature, and restyles it in your theme with options behind a gear in each title bar. You can change this any time under Skins."
+  v.cards = {}
+  local opts = {
+    { true, "Phoenix skins", "Recommended", "Character, bags, mail, auction house, menus, tooltips, popups and more in your theme." },
+    { false, "Blizzard look", "Stock", "Leave Blizzard's windows as they are. Phoenix modules still work." },
+  }
+  for i, o in ipairs(opts) do
+    local c = choiceCard(v, 2 * CARD_W - 40, 300, function() SU.choices.skins = o[1]; v:Refresh() end)
+    c:SetPoint("TOPLEFT", (i - 1) * (2 * CARD_W - 40 + GAP), 0)
+    c.preview = sampleWindow(c, o[1])
+    local n = Kit.Text(c, "label", "text.primary")
+    n:SetPoint("TOPLEFT", c.preview, "BOTTOMLEFT", 2, -14)
+    n:SetText(o[2])
+    c.badge = Kit.Badge(c, o[3], o[1] and "accent" or "neutral")
+    c.badge:SetPoint("TOPRIGHT", c.preview, "BOTTOMRIGHT", -2, -12)
+    local d = Kit.Text(c, "small", "muted")
+    d:SetPoint("TOPLEFT", n, "BOTTOMLEFT", 0, -6)
+    d:SetWidth(2 * CARD_W - 64)
+    d:SetJustifyH("LEFT")
+    d:SetText(o[4])
+    c.value = o[1]
+    v.cards[i] = c
+  end
+  function v:Refresh()
+    for _, c in ipairs(self.cards) do c:Select(c.value == (SU.choices.skins ~= false)) end
+  end
+  return v
+end
+
 function Pages.finish(f)
   local v = CreateFrame("Frame", nil, f)
   v:SetAllPoints()
@@ -496,10 +580,10 @@ function Pages.finish(f)
   s:SetPoint("TOP", v.head, "BOTTOM", 0, -8)
   s:SetText("Phoenix UI is live. No reload needed.")
   local card = Kit.Card(v)
-  card:SetSize(500, 5 * 40 + 16)
+  card:SetSize(500, 6 * 40 + 16)
   card:SetPoint("TOP", s, "BOTTOM", 0, -22)
   v.rows = {}
-  for i, label in ipairs({ "Language", "Scale", "Role", "Layout", "Accent" }) do
+  for i, label in ipairs({ "Language", "Scale", "Role", "Layout", "Accent", "Skins" }) do
     local l = Kit.Text(card, "text", "muted")
     l:SetPoint("TOPLEFT", 22, -8 - (i - 1) * 40 - 12)
     l:SetText(label)
@@ -529,12 +613,13 @@ function Pages.finish(f)
     self.rows[3]:SetText(P.ROLE_LABELS[c.role] or "-")
     self.rows[4]:SetText(P.LAYOUTS[c.layout] and P.LAYOUTS[c.layout].label or "-")
     self.rows[5]:SetText((Theme.ACCENT_LABELS[c.accent] or "-") .. " - " .. (Theme.PANEL_LABELS[c.panel] or "-"))
+    self.rows[6]:SetText(c.skins == false and "Blizzard look" or "Phoenix skins")
   end
   return v
 end
 
 -- Flow ----------------------------------------------------------------------------------
--- SU.step: 0 welcome, 1..5 the steps, 6 finish.
+-- SU.step: 0 welcome, 1..6 the steps, 7 finish.
 local function page(f, id)
   local p = f.pages[id]
   if not p then
@@ -596,6 +681,7 @@ local OPTIONS = {
   role = function() return P.WIZARD_ROLES end,
   layout = function() return P.LAYOUT_ORDER end,
   look = function() return Theme.DESIGN_ACCENTS end,
+  skins = function() return { true, false } end,
 }
 SU.OPTIONS = OPTIONS
 

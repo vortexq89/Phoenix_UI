@@ -1,0 +1,18 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Friends
+## Notes: Phoenix UI Friends: styles Blizzard's friends list through hooks only (class icons and colours, status orb, zone and activity, region and faction), one search across friends, guild and recent players, sort options, an app-only filter, BattleTag copy, notes and per-source invite accept (off at first install).
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Logo\PhoenixUI_Icon_64
+## Category: Phoenix UI
+## Group: Phoenix_UI
+## Dependencies: Phoenix_UI
+
+Data.lua
+Skin.lua
+Panel.lua
+Friends.lua
+Extras.lua
+Tests\Friends_test.lua

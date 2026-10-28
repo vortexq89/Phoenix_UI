@@ -38,6 +38,7 @@ end
 local ROLE_COORDS = { TANK = { 0, 19 / 64, 22 / 64, 41 / 64 }, HEALER = { 20 / 64, 39 / 64, 1 / 64, 20 / 64 },
   DAMAGER = { 20 / 64, 39 / 64, 22 / 64, 41 / 64 } }
 E.ROLE_COORDS = ROLE_COORDS
+E.ROLE_TEXTURE = "Interface\\LFGFrame\\UI-LFG-ICON-PORTRAITROLES"
 local ROLE_LETTERS = { TANK = "T", HEALER = "H", DAMAGER = "D" }
 local ROLE_TOKENS = { TANK = "frost", HEALER = "life", DAMAGER = "void" }
 E.ROLE_LETTERS = ROLE_LETTERS
@@ -214,9 +215,9 @@ function E.UpdateName(o, s)
   local color
   if s and s.nameColor == "class" then
     local _, token = UnitClass(o.unit)
-    if token ~= nil then color = C_ClassColor.GetClassColor(token) end
+    if token ~= nil then color = { PUI.Look.ClassRGB(token) } end
   end
-  if color then o.name:SetTextColor(color:GetRGB()) else o.name:SetTextColor(1, 1, 1) end
+  if color and color[1] then o.name:SetTextColor(color[1], color[2], color[3]) else o.name:SetTextColor(1, 1, 1) end
 end
 
 function E.UpdatePower(o, s)
@@ -238,8 +239,14 @@ function E.UpdateRole(o, s)
     Theme:Paint(o.roleText, ROLE_TOKENS[known], 1, "text")
     o.roleText:Show()
   elseif show then
-    local c = ROLE_COORDS[known]
-    o.role:SetTexCoord(c[1], c[2], c[3], c[4])
+    local phoenix = PUI.Look.RoleIcon(known)
+    if phoenix then
+      o.role:SetTexture(phoenix); o.role:SetTexCoord(0, 1, 0, 1)
+    else
+      o.role:SetTexture(E.ROLE_TEXTURE)
+      local c = ROLE_COORDS[known]
+      o.role:SetTexCoord(c[1], c[2], c[3], c[4])
+    end
     o.role:Show()
   end
   local healer = s.healerMana and known == "HEALER" or false
@@ -390,7 +397,12 @@ function E.PaintSample(o, s, i)
   o.role:Hide(); o.roleText:Hide()
   if s.roleStyle ~= "none" and not (s.roleHideDamager and role == "DAMAGER") then
     if s.roleStyle == "letter" then o.roleText:SetText(ROLE_LETTERS[role]); o.roleText:Show()
-    else local rc = ROLE_COORDS[role]; o.role:SetTexCoord(rc[1], rc[2], rc[3], rc[4]); o.role:Show() end
+    else
+      local phoenix = PUI.Look.RoleIcon(role)
+      if phoenix then o.role:SetTexture(phoenix); o.role:SetTexCoord(0, 1, 0, 1)
+      else local rc = ROLE_COORDS[role]; o.role:SetTexture(E.ROLE_TEXTURE); o.role:SetTexCoord(rc[1], rc[2], rc[3], rc[4]) end
+      o.role:Show()
+    end
   end
   o.leader:SetShown(s.leader and st.leader == true)
   o.marker:Hide()

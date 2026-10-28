@@ -278,7 +278,7 @@ key("lines.mountOwned", { type = "toggle", default = true, label = "Mount collec
   tooltip = "Mount items say whether you already have the mount.", mode = "advanced" }, "mountOwned")
 
 TT.module = PUI:RegisterModule(OWNER, {
-  label = "Tooltip", tooltip = "Tooltip position, style, info lines and IDs (27 kinds, click-free copy).", enabledByDefault = false,
+  label = "Tooltip", tooltip = "Tooltip position, style, info lines and IDs (28 kinds, click-free copy).", enabledByDefault = false,
   schema = schema,
   onEnable = function() TT.active = true; hook(); TT.StyleHealth() end,
   onDisable = function()

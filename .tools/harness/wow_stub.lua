@@ -3,6 +3,19 @@
 local H = { frames = {}, timers = {}, clock = 1000, output = {}, loaded = {}, cvars = { taintLog = "0" } }
 _G.HARNESS = H
 
+-- The game's string.format takes positional specs (%2$s); plain Lua 5.1 does not.
+do
+  local fmt = string.format
+  local function positional(f, ...)
+    if type(f) ~= "string" or not f:find("%%%d+%$") then return fmt(f, ...) end
+    local args, out = { ... }, {}
+    local plain = f:gsub("%%(%d+)%$", function(n) out[#out + 1] = args[tonumber(n)]; return "%" end)
+    return fmt(plain, unpack(out))
+  end
+  string.format = positional
+  _G.format = positional
+end
+
 local flavor = os.getenv("PUI_FLAVOR") or "retail"
 H.flavor = flavor
 
@@ -45,6 +58,7 @@ function Region:SetValue(v) self.value = v end
 function Region:GetValue() return rawget(self, "value") end
 function Region:SetColorTexture(r, g, b, a) self.color = { r, g, b, a } end
 function Region:CreateFontString() return newObject("FontString") end
+function Region:CreateMaskTexture() return newObject("MaskTexture") end
 function Region:CreateAnimationGroup()
   local g = newObject("AnimationGroup")
   g.playing = false
@@ -69,12 +83,14 @@ function CreateFont(name)
   local f = { name = name }
   function f:SetFont(path, size, flags) self.path, self.size, self.flags = path, size, flags end
   function f:GetFont() return self.path, self.size, self.flags end
+  function f:SetShadowOffset(x, y) self.shadow = { x, y } end
+  function f:SetShadowColor() end
   _G[name] = f
   return f
 end
 RAID_CLASS_COLORS = { MAGE = { r = 0.25, g = 0.78, b = 0.92 } }
 function IsShiftKeyDown() return false end
-function IsAltKeyDown() return false end
+function IsAltKeyDown() return H.altDown == true end
 function IsControlKeyDown() return false end
 UISpecialFrames = {}
 SlashCmdList = {}
@@ -115,9 +131,11 @@ function H.step(dt)
     local f = H.frames[i]
     if f.scripts.OnUpdate then dispatch(f.scripts.OnUpdate, f, dt) end
   end
-  for g in pairs(H.groups) do
+  local live = {}
+  for g in pairs(H.groups) do live[#live + 1] = g end -- a loop may start new groups (as the engine allows)
+  for _, g in ipairs(live) do
     g.elapsed = g.elapsed + dt
-    if g.duration and g.elapsed >= g.duration then
+    if H.groups[g] and g.duration and g.elapsed >= g.duration then
       g.elapsed = 0
       if g.scripts.OnLoop then dispatch(g.scripts.OnLoop, g, "FORWARD") end
     end
@@ -159,7 +177,10 @@ C_SpecializationInfo = { GetSpecialization = function() return 1 end }
 C_ChallengeMode = { GetActiveKeystoneInfo = function() return 0 end }
 C_CVar = { GetCVar = function(k) return H.cvars[k] end, SetCVar = function(k, v) H.cvars[k] = v; return true end }
 C_UI = { Reload = function() H.reloaded = true end }
-C_AddOnProfiler = { IsEnabled = function() return true end, GetAddOnMetric = function() return 0.0001 end }
+C_AddOnProfiler = { IsEnabled = function() return true end, GetAddOnMetric = function() return 0.0001 end,
+  GetApplicationMetric = function() return 0.01 end,
+  GetTopKAddOnsForMetric = function(_, k) local out = {}; for i = 1, math.min(k, 3) do out[i] = { addOnName = "Addon" .. i, metricValue = 0.5 / i } end; return out end,
+  MeasureCall = function(fn, ...) fn(...); return { elapsedMilliseconds = 0.002 } end }
 Enum = { AddOnProfilerMetric = { RecentAverageTime = 1 } }
 function print(...)
   local parts = {}
@@ -368,7 +389,7 @@ function UnitPowerMax(u, ptype)
   if ptype ~= nil then return H.powerMaxByType and H.powerMaxByType[ptype] or 0 end
   return maybe(100)
 end
-function UnitPowerPercent() return maybe(50) end
+function UnitPowerPercent(u, t, p, c) if type(c) == "table" and c.isColor then H.powerCurve = c; return CreateColor(0.2, 0.9, 0.3, 1) end return maybe(50) end
 function UnitPowerType() return 0, "MANA", 0, 0, 1 end
 function UnitName(u) return maybe(u == "player" and "Tester" or "Dummy"), nil end
 function UnitEffectiveLevel() return maybe(80) end
@@ -378,15 +399,24 @@ function UnitSelectionColor() return maybe(1), maybe(0.2), maybe(0.2), 1 end
 function UnitIsConnected() return maybe(true) end
 function UnitIsDeadOrGhost() return maybe(false) end
 function UnitIsGroupLeader() return maybe(false) end
-function UnitAffectingCombat() return maybe(false) end
+H.combatUnits = {}
+function UnitAffectingCombat(u) return maybe(H.combatUnits[u] == true) end
 function UnitIsPVP() return maybe(false) end
 function UnitFactionGroup() return "Horde", "Horde" end
 function IsResting() return false end
 function GetRaidTargetIndex() if H.secretMode then return H.secret(3) end return nil end
 function UnitCastingInfo(u) if H.casting then return maybe("Fireball"), nil, 135812, 0, 1, false, "id", maybe(false), 133 end return nil end
-function UnitChannelInfo() return nil end
+
+function UnitAttackSpeed() return 2.6, nil end
+function UnitChannelInfo()
+  local c = H.channel
+  if c then return maybe(c.name or "Channel"), nil, 136243, c.start or 0, c.stop or 3000, false, maybe(false), c.spellID, c.empowered or false, c.stages or 0 end
+  return nil
+end
+H.empowerStages = { 500, 400, 400, 400 }
+function GetUnitEmpowerStageDuration(unit, i) return H.empowerStages[i + 1] or 0 end
 function UnitCastingDuration() if H.casting then return { duration = true } end return nil end
-function UnitChannelDuration() return nil end
+function UnitChannelDuration() if H.channel then return { duration = true } end return nil end
 function UnitStagger() return maybe(0) end
 function UnitPartialPower() return maybe(0) end
 function GetComboPoints() return maybe(0) end
@@ -421,7 +451,9 @@ Enum.PowerType = { Mana = 0, Rage = 1, Focus = 2, Energy = 3, ComboPoints = 4, R
 H.spec = 1
 C_SpecializationInfo.GetSpecialization = function() return H.spec end
 function H.duration(tag)
-  return { tag = tag, IsZero = function() return maybe(false) end, SetTimeFromStart = function(self, s, d) self.start, self.length = s, d end }
+  return { tag = tag, IsZero = function() return maybe(false) end, SetTimeFromStart = function(self, s, d) self.start, self.length = s, d end,
+    EvaluateRemainingDuration = function(self, curve) H.evaluated = curve; return CreateColor(1, 0.33, 0.33, 1) end,
+    EvaluateRemainingPercent = function(self, curve) H.evaluated = curve; return CreateColor(1, 0.33, 0.33, 1) end }
 end
 C_Spell = { GetSpellCooldownDuration = function() return H.duration("gcd") end }
 C_DurationUtil = { CreateDuration = function() return H.duration("custom") end }
@@ -450,7 +482,8 @@ C_ActionBar = {
 
 -- Phase 3: nameplates, group frames, click-casting.
 function Region:WrapScript(frame, script, pre) H.wrapped = H.wrapped or {}; H.wrapped[#H.wrapped + 1] = { header = self, frame = frame, script = script, pre = pre } end
-function Region:SetTextColor(r, g, b) self.textColor = { r, g, b } end
+function Region:SetTextColor(r, g, b, a) self.textColor = { r, g, b, a } end
+function Region:GetTextColor() local c = self.textColor or { 1, 0.82, 0, 1 }; return c[1], c[2], c[3], c[4] or 1 end
 H.plates = {}
 function H.addPlate(unit)
   local plate = CreateFrame("Frame", nil, UIParent)
@@ -471,7 +504,8 @@ function UnitIsUnit(a, b) return maybe(a == b) end
 H.friendly = {}
 function UnitIsFriend(_, u) return maybe(H.friendly[u] == true) end
 C_QuestLog = { UnitIsRelatedToActiveQuest = function() return maybe(false) end }
-C_SpecializationInfo.GetSpecializationInfo = function() return 62, "Arcane", "", 0, H.role or "DAMAGER" end
+C_SpecializationInfo.GetSpecializationInfo = function() return H.specID or 62, "Arcane", "", 0, H.role or "DAMAGER" end
+C_SpecializationInfo.GetNumSpecializationsForClassID = function() return 3 end
 function UnitInRange() return maybe(true), maybe(true) end
 H.roles = {}
 function UnitGroupRolesAssigned(u) return maybe(H.roles[u] or "NONE") end
@@ -512,6 +546,8 @@ end
 Minimap = CreateFrame("Minimap", "Minimap", UIParent)
 Minimap:SetSize(198, 198)
 function Region:SetMaskTexture(t) self.mask = t end
+function Region:AddMaskTexture(m) rawset(self, "masks", rawget(self, "masks") or {}); self.masks[m] = true end
+function Region:RemoveMaskTexture(m) if rawget(self, "masks") then self.masks[m] = nil end end
 MinimapCluster = CreateFrame("Frame", "MinimapCluster", UIParent)
 MinimapCluster.BorderTop = CreateFrame("Frame", nil, MinimapCluster)
 MinimapCluster.ZoneTextButton = CreateFrame("Button", nil, MinimapCluster)
@@ -620,7 +656,7 @@ H.auras = {}
 C_UnitAuras.GetPlayerAuraBySpellID = function(id) local a = H.auras[id]; if a then return maybe(a) end return nil end
 H.known = {}
 C_SpellBook = { IsSpellKnown = function(id) return H.known[id] == true end }
-C_Spell.GetSpellTexture = function(id) return 100000 + id end
+C_Spell.GetSpellTexture = function(id) if id == nil then return nil end if H.secrets[id] ~= nil then return H.secret(100000 + H.secrets[id]) end return 100000 + id end
 C_Spell.GetSpellName = function(id) return "Spell " .. id end
 function IsInGroup() return (H.group and #H.group or 0) > 0 end
 function IsInRaid() return false end
@@ -723,7 +759,7 @@ C_Item.GetItemInfoInstant = function(id) if type(id) == "string" then return 1, 
 H.equipped = {}
 function GetInventoryItemLink(unit, slot) return H.equipped[slot] end
 local baseInstance = GetInstanceInfo
-function GetInstanceInfo() if H.instanceInfo then return unpack(H.instanceInfo) end return baseInstance() end
+function GetInstanceInfo() if H.instanceInfo then return unpack(H.instanceInfo, 1, 8) end return baseInstance() end
 H.specIndex = 1
 C_SpecializationInfo.GetSpecialization = function() return H.specIndex end
 C_SpecializationInfo.SetSpecialization = function(i) H.calls[#H.calls + 1] = { "SetSpecialization", i }; H.specIndex = i; return true end
@@ -737,8 +773,10 @@ C_EquipmentSet = { GetEquipmentSetIDs = function() return { 1, 2 } end,
 H.lfg = {}
 C_LFGList = {
   HasSearchResultInfo = function(id) return H.lfg[id] ~= nil end,
-  GetSearchResultInfo = function(id) local r = H.lfg[id]; return r and { leaderName = r.leader, leaderOverallDungeonScore = r.score, numMembers = #r.roles } end,
-  GetSearchResultPlayerInfo = function(id, i) local r = H.lfg[id]; return r and { assignedRole = r.roles[i] } end,
+  GetSearchResultInfo = function(id) local r = H.lfg[id]; return r and { leaderName = r.leader, leaderOverallDungeonScore = r.score, numMembers = #r.roles,
+    activityIDs = { r.activity or 1 }, age = r.age or 0, isDelisted = r.delisted == true, numBNetFriends = r.friends or 0, numCharFriends = 0, numGuildMates = 0,
+    voiceChat = r.voice or "", requiredItemLevel = r.ilvl or 0, leaderDungeonScoreInfo = r.best and { { bestRunLevel = r.best } } or nil } end,
+  GetSearchResultPlayerInfo = function(id, i) local r = H.lfg[id]; return r and { assignedRole = r.roles[i], classFilename = r.classes and r.classes[i], isLeader = i == 1 } end,
   GetSearchResults = function() local t = {}; for id in pairs(H.lfg) do t[#t + 1] = id end; table.sort(t); return #t, t end,
   GetAdvancedFilter = function() return H.lfgFilter or { minimumRating = 0, needsTank = false, needsHealer = false, needsDamage = false } end,
   SaveAdvancedFilter = function(f) H.lfgFilter = f end,
@@ -776,6 +814,8 @@ local function auraContainer()
   rawset(c, "SetAuraGroupFilterString", function(self, key, filter) self.groupLog[#self.groupLog + 1] = { "filter", key, filter } end)
   rawset(c, "SetAuraGroupMaxFrameCount", function(self, key, n) self.groupLog[#self.groupLog + 1] = { "cap", key, n } end)
   rawset(c, "SetAuraGroupSortMethod", function(self, key, m, d) self.groupLog[#self.groupLog + 1] = { "sort", key, m, d } end)
+  rawset(c, "SetAuraGroupDispelTypeTextureOptions", function(self, key, o) self.groupLog[#self.groupLog + 1] = { "dispelTexture", key, o } end)
+  rawset(c, "SetAuraGroupDurationTextOptions", function(self, key, o) self.groupLog[#self.groupLog + 1] = { "durationText", key, o } end)
   H.auraContainers[#H.auraContainers + 1] = c
   return c
 end
@@ -784,13 +824,19 @@ function CreateFrame(frameType, name, parent, template)
   if frameType == "AuraContainer" then return auraContainer() end
   return baseCreateFrame(frameType, name, parent, template)
 end
+C_AuraContainerUtil = { ProcessCustomAuraButtonDispelTypeTextureOptions = function(o) return o end,
+  ProcessCustomAuraButtonDurationTextOptions = function(o) return o end }
+Enum.CustomAuraButtonDispelTypeStealableFilter = { Stealable = 0, NotStealable = 1 }
+Enum.CustomAuraButtonDispelTypeTextureStyle = { Border = 0, BorderWithIcon = 1, Icon = 2, PreserveAsset = 3, CustomAsset = 4 }
+Enum.DurationTextBindingProperty = Enum.DurationTextBindingProperty or { RemainingDuration = 0, RemainingPercent = 1 }
 AuraContainerSortMethod = { Default = 0, BigDefensive = 1, UnitFrameDebuff = 2, ImportantOnly = 3, Expiration = 4, ExpirationOnly = 5, Name = 6 }
 AuraContainerSortDirection = { Normal = 0, Reverse = 1 }
 H.addonLoaded.Blizzard_AuraContainer = true
 H.secretAuras = false
 C_Secrets.ShouldAurasBeSecret = function() return H.secretAuras == true end
 H.callbacks = {}
-EventRegistry = { RegisterCallback = function(_, event, fn, owner) H.callbacks[event] = H.callbacks[event] or {}; table.insert(H.callbacks[event], fn) end }
+EventRegistry = { RegisterCallback = function(_, event, fn, owner) H.callbacks[event] = H.callbacks[event] or {}; table.insert(H.callbacks[event], fn) end,
+  TriggerEvent = function(_, event, ...) H.triggered = H.triggered or {}; H.triggered[#H.triggered + 1] = event; for _, fn in ipairs(H.callbacks[event] or {}) do fn(nil, ...) end end }
 
 -- Phase 4: group frames (dispel colours, corner indicators, arena targeting).
 C_UnitAuras.GetAuraDispelTypeColor = function(u, id, curve) H.dispelColorCalls = (H.dispelColorCalls or 0) + 1; return CreateColor(0.2, 0.6, 1, 1) end
@@ -848,7 +894,7 @@ H.itemCounts, H.itemSpells = { [5512] = 2 }, {}
 C_Item.GetItemCount = function(id) return H.itemCounts[id] or 0 end
 C_Item.GetItemIconByID = function(id) return 1000 + id end
 C_Item.GetItemCooldown = function() return 0, 0, 1 end
-C_Item.GetItemSpell = function(id) return H.itemSpells[id] end
+C_Item.GetItemSpell = function(id) local v = H.itemSpells[id]; if v ~= nil then return "Item spell", v end end
 H.assistSpell = nil
 C_AssistedCombat = { GetNextCastSpell = function() return H.assistSpell end }
 function Region:IsMouseOver() return rawget(self, "mouseOver") == true end
@@ -916,6 +962,7 @@ C_Item.GetItemNameByID = function(id) return H.itemNames and H.itemNames[id] or 
 C_Item.IsItemKeystoneByID = function(id) return id == 180653 end
 C_Item.GetItemQualityColor = function(q) return 0.1 * q, 0.5, 0.5 end
 C_Item.GetItemIconByID = function(id) return 1000 + (id or 0) end
+C_Spell.GetSpellInfo = function(x) if type(x) == "number" then return { spellID = x, name = "Spell " .. x } end return nil end
 C_Item.GetItemQualityByID = function() return 1 end
 local baseInstant = C_Item.GetItemInfoInstant
 C_Item.GetItemInfoInstant = function(id)
@@ -947,7 +994,7 @@ C_DeathRecap = {
   GetRecapMaxHealth = function() return 100 end,
 }
 H.threatPct = {} -- [unit] = pct
-function UnitDetailedThreatSituation(unit, mob) local p = H.threatPct[unit]; if p == nil then return nil end return maybe(unit == "player"), maybe(3), maybe(p), maybe(p), maybe(p * 1000) end
+function UnitDetailedThreatSituation(unit, mob) local p = H.threatPct[unit]; if p == nil then return nil end return maybe(unit == "player" and not H.notTanking), maybe(3), maybe(p), maybe(p), maybe(p * 1000) end
 H.charges = nil -- { cur, max }
 C_Spell.GetSpellCharges = function(id) if id == 20484 and H.charges then return { currentCharges = maybe(H.charges[1]), maxCharges = H.charges[2], cooldownStartTime = 0, cooldownDuration = 600 } end return nil end
 C_MythicPlus.GetOwnedKeystoneLevel = function() return H.ownedKeyLevel or 0 end
@@ -956,7 +1003,7 @@ C_ChallengeMode.SlotKeystone = function() H.slotted = true end
 C_Container.GetContainerItemID = function(bag, slot) local it = H.items[bag .. ":" .. slot]; return it and it.itemID end
 H.addonMsgs = {}
 C_ChatInfo.RegisterAddonMessagePrefix = function() return 0 end
-C_ChatInfo.SendAddonMessage = function(prefix, msg, channel) H.addonMsgs[#H.addonMsgs + 1] = { prefix, msg, channel } return 0 end
+C_ChatInfo.SendAddonMessage = function(prefix, msg, channel, target) H.addonMsgs[#H.addonMsgs + 1] = { prefix, msg, channel, target } return 0 end
 LE_PARTY_CATEGORY_INSTANCE = 2
 H.waypoint = nil
 H.superTracked = {}
@@ -981,9 +1028,232 @@ C_QuestLog.IsRepeatableQuest = function() return false end
 C_QuestLog.GetLogIndexForQuestID = function(id) return id end
 C_QuestLog.RemoveQuestWatch = function(id) H.removedWatch = id end
 
+-- Step 9a: Flow quiet mode, Raid Tools, Group Finder queue helper.
+local function rec(name) return function(...) H.calls[#H.calls + 1] = { name, ... }; return H.ret and H.ret[name] end end
+for _, n in ipairs({ "SetRaidTarget", "CompleteLFGRoleCheck", "AcceptProposal", "RaidNotice_Clear", "AcceptBattlefieldPort",
+  "LFGListSearchPanel_SelectResult", "LFGListSearchPanel_SignUp" }) do _G[n] = rec(n) end
+C_PartyInfo.DoReadyCheck = rec("DoReadyCheck")
+C_PartyInfo.CanInvite = function() return true end
+C_PartyInfo.InviteUnit = rec("InviteUnit")
+function UnitIsGroupAssistant() return H.assist == true end
+function GetNumSubgroupMembers() return H.group and #H.group or 0 end
+H.lfgRoles = { false, false, false, true }
+function GetLFGRoles() return unpack(H.lfgRoles) end
+function SetLFGRoles(l, t, h, d) H.lfgRoles = { l, t, h, d }; H.calls[#H.calls + 1] = { "SetLFGRoles", l, t, h, d } end
+function GetAvailableRoles() return H.availRoles and H.availRoles[1], H.availRoles and H.availRoles[2], H.availRoles and H.availRoles[3] end
+H.activities = {}
+C_LFGList.GetActivityInfoTable = function(id) return H.activities[id] end
+-- Review gaps: own raid lockout (Group Finder). H.ejMaps[mapID] = journalID, H.ejBosses[journalID] = { encounterIDs }, H.kills["map:enc:diff"] = true
+H.ejMaps, H.ejBosses, H.kills = {}, {}, {}
+C_EncounterJournal = C_EncounterJournal or {}
+C_EncounterJournal.GetInstanceForGameMap = function(m) return H.ejMaps[m] end
+function EJ_GetEncounterInfoByIndex(i, j) local b = H.ejBosses[j]; local id = b and b[i]; if not id then return nil end return "Boss" .. i, "", i, 0, "", j, id, 0 end
+C_RaidLocks = C_RaidLocks or {}
+C_RaidLocks.IsEncounterComplete = function(m, e, d) return H.kills[m .. ":" .. e .. ":" .. d] == true end
+C_LFGList.GetActivityGroupInfo = function(id) return H.activityGroups and H.activityGroups[id] end
+function LFGListApplicationDialog_Show(dialog, resultID) H.dialogShown = resultID end
+LFGListApplicationDialog = CreateFrame("Frame", "LFGListApplicationDialog", UIParent)
+LFGListApplicationDialog.SignUpButton = CreateFrame("Button", nil, LFGListApplicationDialog)
+LFGListApplicationDialog.SignUpButton.IsEnabled = function() return true end
+LFGListApplicationDialog.SignUpButton.Click = function() H.signUpClicked = (H.signUpClicked or 0) + 1 end
+AlertFrame = CreateFrame("Frame", "AlertFrame", UIParent)
+AlertFrame.AddAlertFrame = function() end
+RaidBossEmoteFrame = CreateFrame("MessageFrame", "RaidBossEmoteFrame", UIParent)
+function RaidNotice_AddMessage() end
+H.cvars.Sound_EnableErrorSpeech = "1"
+H.cvars.Sound_EnableSFX = "1"
+H.cvars.Sound_EnableMusic = "1"
+SOUNDKIT.READY_CHECK = 8960
+
+
+-- Step 9b: Pulse, Arena, Spark, Cast History.
+C_EncounterTimeline = {
+  GetEventTimer = function(id) return H.duration("timeline" .. tostring(id)) end,
+  GetEventTimeRemaining = function() return H.timelineLeft or 10 end,
+  GetEventInfo = function(id) return H.timeline and H.timeline[id] end,
+  GetEventColor = function() return nil end,
+  GetSortedEventList = function(n) local out = {}; for id in pairs(H.timeline or {}) do out[#out + 1] = id end; table.sort(out); while n and #out > n do table.remove(out) end; return out end,
+  GetViewType = function() return H.timelineView or 1 end,
+  SetViewType = function(v) H.timelineView = v end,
+}
+
+function UnitGUID(u) return "Player-1-" .. tostring(u) end
+CompactArenaFrame = CreateFrame("Frame", "CompactArenaFrame", UIParent)
+H.specRoles = { [256] = "HEALER", [105] = "HEALER", [65] = "HEALER", [264] = "HEALER", [270] = "HEALER", [257] = "HEALER", [1468] = "HEALER" }
+function GetSpecializationInfoForSpecID(id) return id, "Spec" .. tostring(id), "", 200000 + (id or 0), H.specRoles[id] or "DAMAGER" end
+C_SpellDiminish = { IsSystemSupported = function() return true end,
+  GetSpellDiminishCategoryInfo = function(c) return { category = c, name = "Cat" .. tostring(c), icon = 300000 + c } end }
+H.arenaCC = {}
+C_PvP.GetArenaCrowdControlInfo = function(u) local x = H.arenaCC[u]; if x then return x[1], x[2], x[3] end end
+C_PvP.RequestCrowdControlSpell = rec("RequestCrowdControlSpell")
+C_PvP.GetArenaOpponentSpec = function(i) return H.arenaSpecs and H.arenaSpecs[i] or 0, 0 end
+C_PvP.GetActiveMatchDuration = function() return H.matchDuration or 0 end
+C_PvP.IsMatchActive = function() return H.matchActive == true end
+C_PvP.GetScoreInfo = function(i) return H.scores and H.scores[i] end
+C_PvP.GetScoreInfoByPlayerGuid = function() return H.scores and H.scores[1] end
+
+C_Item.GetItemQualityByID = function(link) return H.itemQuality or 3 end
+H.itemCD = {}
+C_Container.GetItemCooldown = function(id) local c = H.itemCD[id]; if c then return c[1], c[2], 1 end return 0, 0, 1 end
+for _, k in ipairs({ "floatingCombatTextCombatDamage", "floatingCombatTextCombatHealing", "floatingCombatTextPetMeleeDamage", "floatingCombatTextPetSpellDamage",
+  "enableFloatingCombatText", "floatingCombatTextCombatState", "floatingCombatTextReactives", "floatingCombatTextLowManaHealth", "floatingCombatTextHonorGains",
+  "floatingCombatTextRepChanges", "floatingCombatTextEnergyGains", "floatingCombatTextAuras", "floatingCombatTextDodgeParryMiss", "spellDiminishPVPEnemiesEnabled" }) do
+  H.cvars[k] = H.cvars[k] or "1"
+end
+H.cvars.spellDiminishPVPEnemiesEnabled = "0"
+H.cvars.spellDiminishPVPOnlyTriggerableByMe = "0"
+
+
+-- Step 9c: PvP UI, Friends, Sentinel reporter, diagnostics, profiler.
+H.rated = {}
+function GetPersonalRatedInfo(i) local r = H.rated[i]; if not r then return 0, 0, 0, 0, 0, 0, 0 end
+  return r.rating, r.best, r.weeklyBest, r.sp, r.sw, r.wp, r.ww, 0, false, 0, 0, r.rsp, r.rsw, r.rwp, r.rww end
+function RequestRatedInfo() end
+function GetNumBattlefieldScores() return H.scores and #H.scores or 0 end
+function LeaveBattlefield() H.leftBattlefield = (H.leftBattlefield or 0) + 1 end
+C_PvP.IsMatchComplete = function() return H.matchComplete == true end
+C_PvP.IsRatedSoloShuffle = function() return H.ratedShuffle == true end
+C_PvP.IsSoloShuffle = function() return H.soloShuffle == true end
+C_PvP.IsRatedSoloRBG = function() return false end
+C_PvP.IsRatedBattleground = function() return false end
+C_PvP.IsRatedArena = function() return H.ratedArena == true end
+C_PvP.GetActiveMatchState = function() return H.matchState end
+C_PvP.GetUIDisplaySeason = function() return 7 end
+C_PvP.GetPVPSeasonRewardAchievementID = function() return 0 end
+C_PvP.AreTrainingGroundsEnabled = function() return true end
+C_PvP.CanPlayerUseTrainingGroundsUI = function() return true end
+C_PvP.HasRandomTrainingGroundBGWinToday = function() return false end
+C_PvP.HasRandomTrainingGroundArenaWinToday = function() return false end
+C_PvP.JoinRandomTrainingGroundBG = rec("JoinRandomTrainingGroundBG")
+C_PvP.JoinRandomTrainingGroundArena = rec("JoinRandomTrainingGroundArena")
+Enum.PvPMatchState = { Inactive = 0, Waiting = 1, StartUp = 2, Engaged = 3, PostRound = 4, Complete = 5 }
+Enum.WeeklyRewardChestThresholdType = { None = 0, Activities = 1, RankedPvP = 2, Raid = 3, World = 6 }
+C_WeeklyRewards.GetActivities = function() return H.vaultActs or {} end
+function UnitIsInMyGuild() return false end
+function GetAchievementNumCriteria() return 0 end
+function GetAchievementCriteriaInfo() return nil end
+function GetBattlefieldArenaFaction() return 0 end
+function ChatFrame_SendTell(n) H.calls[#H.calls + 1] = { "SendTell", n } end
+function ChatFrame_SendBNetTell(n) H.calls[#H.calls + 1] = { "SendBNetTell", n } end
+function UpdateAddOnMemoryUsage() end
+function GetAddOnMemoryUsage() return 1234 end
+function GetTimePreciseSec() return os.clock() end
+function GetGuildRosterInfo(i) if i == 1 then return "Gil-Silvermoon", "Officer", 1, 90, "Mage", "Dornogal", "tank alt", "", true, 0, "MAGE", 0, 0, false, false, 0, "Player-1-GIL" end end
+LOCALIZED_CLASS_NAMES_MALE = { MAGE = "Mage", PRIEST = "Priest", WARRIOR = "Warrior" }
+LOCALIZED_CLASS_NAMES_FEMALE = LOCALIZED_CLASS_NAMES_MALE
+C_RecentAllies = { GetRecentAllies = function() return { { characterData = { fullName = "Rae-Silvermoon", classFile = "PRIEST" }, stateData = { isOnline = true, currentLocation = "Dornogal" } } } end }
+
+
+-- Deferred batch A: nameplate extras.
+H.creatureTypes, H.controlled = {}, {}
+function UnitCreatureType(u) return maybe(H.creatureTypes[u]) end
+function UnitPlayerControlled(u) return maybe(H.controlled[u] == true) end
+function UnitNameFromGUID(g) return maybe(H.guidNames and H.guidNames[g]) end
+if not rawget(_G, "GetPlayerInfoByGUID") then function GetPlayerInfoByGUID() return "Mage", "MAGE" end end
+H.tooltipUnits = {}
+C_TooltipInfo = rawget(_G, "C_TooltipInfo") or {}
+C_TooltipInfo.GetUnit = function(u) return H.tooltipUnits[u] end
+Enum.TooltipDataLineType = Enum.TooltipDataLineType or { UnitName = 2, QuestObjective = 8, QuestTitle = 17 }
+Enum.NamePlateType = { Friendly = 0, Enemy = 1 }
+H.insets = { [0] = { 0, 0, 0, 0 }, [1] = { 0, 0, 0, 0 } }
+C_NamePlateManager = {
+  GetNamePlateHitTestInsets = function(t) return unpack(H.insets[t]) end,
+  SetNamePlateHitTestInsets = function(t, l, r, tp, b) H.insets[t] = { l, r, tp, b } end,
+  SetNamePlateSimplified = function() end,
+}
+H.inRange = {}
+C_Spell.IsSpellInRange = function(spell, u) return maybe(H.inRange[u] ~= false) end
+H.editMode = { layouts = {}, activeLayout = 1 }
+C_EditMode = { GetLayouts = function() return H.editMode end }
+Enum.EditModeSystem = { ActionBar = 0 }
+H.inHouse = false
+C_Housing = rawget(_G, "C_Housing") or {}
+C_Housing.IsInsideHouse = function() return maybe(H.inHouse) end
+-- Deferred B: inspect, transmog, upgrade track, set pieces, achievement criteria.
+H.inspect = { can = {}, ilvl = {}, spec = {} }
+H.inspected = {}
+H.players = {}
+H.ttUnit = nil
+function NotifyInspect(u) H.inspected[#H.inspected + 1] = u end
+function CanInspect(u) return maybe(H.inspect.can[u] == true) end
+C_PaperDollInfo = rawget(_G, "C_PaperDollInfo") or {}
+C_PaperDollInfo.GetInspectItemLevel = function(u) return maybe(H.inspect.ilvl[u] or 0) end
+C_SpecializationInfo.GetInspectSpecialization = function(u) return maybe(H.inspect.spec[u] or 0) end
+H.specNames = { [71] = "Arms", [65] = "Holy" }
+function GetSpecializationInfoByID(id) return id, H.specNames[id] or ("Spec " .. tostring(id)) end
+local basePlayer = UnitIsPlayer
+function UnitIsPlayer(u) if H.players[u] then return maybe(true) end return basePlayer(u) end
+function Region:GetUnit() return "Tester", H.ttUnit or "player" end
+H.transmogHas = {}
+C_TransmogCollection.PlayerHasTransmogByItemInfo = function(r) return maybe(H.transmogHas[r] == true) end
+H.upgrade = {}
+C_Item.GetItemUpgradeInfo = function(link) return H.upgrade[link] end
+H.itemSet = {}
+local baseItemInfo = C_Item.GetItemInfo
+C_Item.GetItemInfo = function(id)
+  local t = { baseItemInfo(id) }
+  if H.itemSet[id] then t[16] = maybe(H.itemSet[id]) end
+  return unpack(t, 1, 16)
+end
+H.criteria = {}
+function GetAchievementNumCriteria(a) return #(H.criteria[a] or {}) end
+function GetAchievementCriteriaInfo(a, i)
+  local c = (H.criteria[a] or {})[i]
+  if not c then return nil end
+  return "Criteria " .. i, c.type or 0, false, 0, 0, "", c.flags or 0, c.asset or 0, "", c.id
+end
+CRITERIA_TYPE_ACHIEVEMENT = 8
+EVALUATION_TREE_FLAG_PROGRESS_BAR = 1
+bit = rawget(_G, "bit") or { band = function(a, b)
+  local r, p = 0, 1
+  while a > 0 and b > 0 do
+    if a % 2 == 1 and b % 2 == 1 then r = r + p end
+    a, b, p = math.floor(a / 2), math.floor(b / 2), p * 2
+  end
+  return r
+end }
+H.mailSenders = {}
+function GetLatestThreeSenders() return unpack(H.mailSenders) end
+H.professions = {}
+function GetProfessions() return H.professions[1], H.professions[2] end
+H.professionInfo = {}
+function GetProfessionInfo(p) local i = H.professionInfo[p]; if i then return i[1], "", i[2], i[3] end end
+H.bind = "Dornogal"
+function GetBindLocation() return H.bind end
+-- Deferred C stubs.
+H.questItems, H.pushed = {}, {}
+function GetQuestLogSpecialItemInfo(i) local it = H.questItems[i]; if it then return it.link, it.icon, it.charges, it.showComplete end end
+function QuestLogPushQuest(i) H.pushed[#H.pushed + 1] = i end
+H.pushable = {}
+C_QuestLog.IsPushableQuest = function(id) return H.pushable[id] == true end
+H.weaponEnchant = true
+C_PaperDollInfo.GetTemporaryEnchantmentInfo = function() if H.weaponEnchant then return { remainingTimeMs = 3600000 } end end
+C_Traits = rawget(_G, "C_Traits") or {}
+C_Traits.GetConfigInfo = C_Traits.GetConfigInfo or function(id) return { name = "Loadout " .. tostring(id) } end
+H.mapBest, H.runHistory = {}, {}
+C_MythicPlus.GetSeasonBestAffixScoreInfoForMap = function(id) return {}, maybe(H.mapBest[id] or 0) end
+C_MythicPlus.GetRunHistory = function() return H.runHistory end
+H.trainer = {}
+function GetNumTrainerServices() return #H.trainer end
+function GetTrainerServiceInfo(i) return "Skill " .. i, H.trainer[i] end
+function BuyTrainerService(i) H.calls[#H.calls + 1] = { "BuyTrainerService", i } end
+function Screenshot() H.calls[#H.calls + 1] = { "Screenshot" } end
+C_PartyInfo.LeaveParty = function() H.calls[#H.calls + 1] = { "LeaveParty" } end
+function GetNormalizedRealmName() return "Silvermoon" end
+-- Forever child: taxi map, taxi state and pet happiness (Forever only).
+H.taxiNodes = {}
+H.onTaxi = false
+C_TaxiMap = { GetAllTaxiNodes = function() return H.taxiNodes end }
+Enum.FlightPathState = { Current = 0, Reachable = 1, Unreachable = 2 }
+function UnitOnTaxi() return H.onTaxi end
+function TakeTaxiNode(slot) H.tookTaxi = slot end
+if flavor == "forever" then
+  C_PetInfo = { GetPetHappiness = function() return H.petHappiness or 3, 0, H.petLoyalty or 0 end }
+end
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
-  AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }
+  AnchorUtil = true, RaiderIO = true, LibStub = true, BigWigsAPI = true, FrameSortApi = true, CustomAuraContainerTemplate = true, PhoenixUIBugDisplay = true, C_PetInfo = true, PhoenixUIForeverDB = true }
 setmetatable(_G, {
   __index = function(_, k)
     if OPTIONAL[k] then return nil end
@@ -991,4 +1261,41 @@ setmetatable(_G, {
   end,
 })
 
+H.craftedQuality = {}
+C_TradeSkillUI = rawget(_G, "C_TradeSkillUI") or {}
+C_TradeSkillUI.GetItemCraftedQualityByItemInfo = function(id) return H.craftedQuality[id] end
+-- Review gaps (2026-10-27): SimC export, aura sounds, Edit Mode export, cursor ring
+C_ClassTalents.GetActiveConfigID = C_ClassTalents.GetActiveConfigID or function() return H.config end
+C_Traits.GenerateImportString = C_Traits.GenerateImportString or function(id) return id and ("TALENTS" .. id) or nil end
+function GetCurrentRegionName() return "EU" end
+C_Container.GetContainerItemLink = C_Container.GetContainerItemLink or function(bag, i) return H.bagLinks and H.bagLinks[bag .. ":" .. i] end
+C_Container.GetContainerNumSlots = C_Container.GetContainerNumSlots or function() return 0 end
+H.auraSounds = {}
+H.auraSoundNext = 0
+C_UnitAuras.AddAuraSound = function(trigger, info) H.auraSoundNext = H.auraSoundNext + 1; H.auraSounds[H.auraSoundNext] = { trigger, info }; return H.auraSoundNext end
+C_UnitAuras.RemoveAuraSound = function(id) H.auraSounds[id] = nil end
+Enum.UnitAuraSoundTrigger = Enum.UnitAuraSoundTrigger or { Added = 0, ApplicationsIncreased = 1, Removed = 2 }
+C_EditMode.ConvertLayoutInfoToString = function(info) return "EM:" .. tostring(info and info.layoutName) end
+C_EditMode.ConvertStringToLayoutInfo = function(str) local n = type(str) == "string" and str:match("^EM:(.+)$"); return n and { layoutName = n, layoutType = 1, systems = {} } or nil end
+C_EditMode.SaveLayouts = function(layouts) H.editModeSaved = layouts end
+C_EditMode.SetActiveLayout = function(i) H.editModeActive = i end
+function GetAchievementInfo(id) return id, "Achievement " .. tostring(id) end
+-- APIs listed in Data/ApiManifest.lua that Sentinel's Drift check resolves at load.
+C_AddOns.GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function() return 2 end
+C_Calendar = rawget(_G, "C_Calendar") or {}
+C_Calendar.GetNumDayEvents = C_Calendar.GetNumDayEvents or function() return 0 end
+C_Calendar.GetDayEvent = C_Calendar.GetDayEvent or function() return nil end
+C_MerchantFrame = rawget(_G, "C_MerchantFrame") or {}
+C_MerchantFrame.GetItemInfo = C_MerchantFrame.GetItemInfo or function() return nil end
+C_PartyInfo = rawget(_G, "C_PartyInfo") or {}
+C_PartyInfo.IsDelveInProgress = C_PartyInfo.IsDelveInProgress or function() return false end
+C_Spell.GetSpellCooldown = C_Spell.GetSpellCooldown or function() return { startTime = 0, duration = 0, isEnabled = true, modRate = 1 } end
+H.lootRolls, H.rolled = {}, {}
+function GetLootRollItemInfo(id) local r = H.lootRolls[id]; if r then return r.tex, r.name, r.count or 1, r.quality or 3, false, r.need, r.greed, false, nil, nil, nil, nil, r.transmog end end
+function GetLootRollItemLink(id) local r = H.lootRolls[id]; return r and r.link end
+function GetLootRollTimeLeft(id) local r = H.lootRolls[id]; return r and r.left or 0 end
+function RollOnLoot(id, kind) H.rolled[#H.rolled + 1] = { id, kind } end
+H.paragon = {}
+C_Reputation.IsFactionParagon = function(id) return H.paragon[id] ~= nil end
+C_Reputation.GetFactionParagonInfo = function(id) local p = H.paragon[id]; if p then return p[1], p[2], nil, p[3] end end
 return H

@@ -217,6 +217,7 @@ function RF.InitButton(button)
   button:HookScript("OnLeave", function() GameTooltip:Hide() end)
   E.Build(o)
   RF.buttons[#RF.buttons + 1] = o
+  PUI.FocusKey.Apply(button, true)
   local clickCast = rawget(_G, "ClickCastFrames")
   if clickCast == nil then
     clickCast = {}
@@ -229,8 +230,16 @@ function RF.InitButton(button)
 end
 
 -- Header attributes from the kind's tier, growth and sort settings.
+-- Grid Mode (review gaps): frames touch and share one 1 px outline (spacing -1).
+function RF.Spacing(t)
+  if s.gridMode then return -1, 0 end
+  return t.spacing, t.groupSpacing
+end
+
 local function applyAttributes(h, kind)
-  local t = s.tiers[kindTier(kind)]
+  local t0 = s.tiers[kindTier(kind)]
+  local sp, gsp = RF.Spacing(t0)
+  local t = setmetatable({ spacing = sp, groupSpacing = gsp }, { __index = t0 })
   local vertical = t.orientation == "vertical"
   h:SetAttribute("phx-width", t.width)
   h:SetAttribute("phx-height", t.height)
@@ -410,7 +419,8 @@ function RF.TestPosition(i, t)
   local col, row = math.floor((i - 1) / t.perColumn), (i - 1) % t.perColumn
   local x, y
   if t.orientation == "vertical" then
-    x, y = col * (t.width + t.groupSpacing), row * (t.height + t.spacing)
+    local sp, gsp = RF.Spacing(t)
+    x, y = col * (t.width + gsp), row * (t.height + sp)
   else
     x, y = row * (t.width + t.spacing), col * (t.height + t.groupSpacing)
   end

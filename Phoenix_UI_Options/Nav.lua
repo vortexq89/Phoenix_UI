@@ -38,16 +38,33 @@ local INFO = {
   Options = { "dashboard", "Window", "Scale, tint, open key and pinned pages of this window." },
   Sentinel = { "sentinel", "Sentinel", "Errors, taint and performance health." },
   Overrides = { "loadouts", "Overrides", "Values set only for one specialization or one kind of content." },
+  -- Review 2026-10-27: pages added after the sidebar was written (they fell into Interface with a generic label).
+  Arena = { "arena", "Arena", "Enemy arena frames, trinkets, DR tray and match tools.", "Arena" },
+  Pulse = { "pulse", "Pulse", "Boss timeline bars, next abilities and timers.", "Pulse" },
+  Spark = { "spark", "Spark", "Scrolling combat text and notifications.", "Spark" },
+  CastHistory = { "casthistory", "Cast History", "Your recent casts as a strip of icons.", "CastHistory" },
+  PvP = { "pvp", "PvP", "Rated card, scoreboard and battleground tools.", "PvP" },
+  PartyCD = { "raid", "Party Cooldowns", "Party interrupts, defensives, battle res and lust on the party frames.", "PartyCD" },
+  RaidTools = { "raidtools", "Raid Tools", "Markers, ready check, pull timer, notes and stats.", "RaidTools" },
+  Friends = { "friends", "Friends", "Friends list look, notes and search.", "Friends" },
+  Forever = { "forever", "Forever", "Flight timer and pet happiness (Forever client).", "Forever" },
+  LootRoll = { "flow", "Loot Rolls", "Compact Need, Greed, Transmog and Pass rolls with item level.", "LootRoll" },
+  QoL = { "chat", "Announcements", "One router for quest, key, reset and interrupt messages." },
+  Fonts = { "theme", "Fonts", "One font everywhere, outline, shadow, sizes and per-module fonts, with specimens." },
+  Colors = { "theme", "Colours", "Class, power and reaction colours and colour-blind palettes." },
+  Glows = { "theme", "Glows", "Thickness, speed, colour and reduced motion for every Phoenix glow." },
+  Cursor = { "general", "Cursor", "A ring around the mouse cursor, in the accent or class colour." },
+  Celebrations = { "spark", "Celebrations", "A banner with rising embers for achievements, timed keys and level ups." },
   Ledger = { "general", "Changes & uninstall", "Every game setting, key binding and frame Phoenix changed, with one-click restore." },
 }
 Nav.INFO = INFO
 
 Nav.GROUPS = {
-  { "Interface", { "Core", "Theme", "Studio", "Minimap", "Tooltip", "DataBars", "QuestTracker", "Skins" } },
-  { "Combat", { "UnitFrames", "ActionBars", "ResourceBars", "CooldownManager", "Nameplates", "Reminders", "ClickCast" } },
-  { "Group", { "RaidFrames", "GroupFinder", "Ascent", "Embers", "Loadouts" } },
-  { "Social & Chat", { "Chat", "Flow" } },
-  { "Tools", { "Vault", "Oracle", "Wisdom", "Setup" } },
+  { "Interface", { "Core", "Theme", "Fonts", "Colors", "Glows", "Cursor", "Celebrations", "Studio", "Minimap", "Tooltip", "DataBars", "QuestTracker", "Skins" } },
+  { "Combat", { "UnitFrames", "ActionBars", "ResourceBars", "CooldownManager", "Nameplates", "Reminders", "ClickCast", "Arena", "Pulse", "Spark", "CastHistory", "PvP" } },
+  { "Group", { "RaidFrames", "PartyCD", "GroupFinder", "Ascent", "Embers", "Loadouts", "RaidTools" } },
+  { "Social & Chat", { "Chat", "Flow", "LootRoll", "Friends", "QoL" } },
+  { "Tools", { "Vault", "Oracle", "Wisdom", "Setup", "Forever" } },
   { "System", { "Profiles", "Overrides", "Options", "Sentinel", "Ledger" } },
 }
 

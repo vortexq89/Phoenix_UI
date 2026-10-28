@@ -50,15 +50,6 @@ function A.release()
   did("release")
 end
 
-function A.acceptRes()
-  if not s.acceptRes or InCombatLockdown() then return end
-  AcceptResurrect()
-  StaticPopup_Hide("RESURRECT")
-  StaticPopup_Hide("RESURRECT_NO_SICKNESS")
-  StaticPopup_Hide("RESURRECT_NO_TIMER")
-  did("acceptRes")
-end
-
 function A.declineDuel()
   if not s.declineDuels then return end
   CancelDuel()
@@ -79,22 +70,11 @@ function FL.IsTrusted(guid)
 end
 
 function A.invite(_, _, _, _, _, _, inviterGUID)
+  if PUI.Friends and PUI.Friends.active then return end -- Friends owns invite accept while it is on (plan 1.O)
   if not s.acceptInvites or not FL.IsTrusted(inviterGUID) then return end
   AcceptGroup()
   StaticPopup_Hide("PARTY_INVITE")
   did("acceptInvite")
-end
-
-function A.cinematic()
-  if not s.skipCinematics or skip() then return end
-  CinematicFrame_CancelCinematic()
-  did("skipCinematic")
-end
-
-function A.movie()
-  if not s.skipCinematics or skip() then return end
-  if MovieFrame:IsShown() then MovieFrame:StopMovie() end
-  did("skipMovie")
 end
 
 function A.delete()
@@ -147,17 +127,18 @@ function A.durability()
   end
 end
 
+-- Auto combat logging (Flow owns it, plan 1.O): on in the content types you
+-- tick, off elsewhere. Only turns off a log Flow itself turned on, so a log
+-- you or a recorder addon started by hand keeps running.
 function A.combatLog()
   if not s.combatLog then return end
-  local _, kind, difficulty = GetInstanceInfo()
-  local want = kind == "raid" or difficulty == 8
-  if want ~= LoggingCombat() then LoggingCombat(want); did("combatLog") end
+  local content = PUI.Profiles:Content()
+  local want = ((s.combatLogWhere or {}).log or {})[content] == true
+  if want and not LoggingCombat() then LoggingCombat(true); FL.loggingByFlow = true; did("combatLog")
+  elseif not want and FL.loggingByFlow and LoggingCombat() then LoggingCombat(false); FL.loggingByFlow = false; did("combatLogOff") end
 end
 
 -- Hook-driven toggles ------------------------------------------------------
-function FL.OnTalkingHead()
-  if FL.active and s.hideTalkingHead then TalkingHeadFrame:CloseImmediately(); did("talkingHead") end
-end
 function FL.OnError()
   if FL.active and s.hideErrors and InCombatLockdown() then UIErrorsFrame:Clear() end
 end
@@ -172,11 +153,9 @@ local EVENTS = {
   repair = { MERCHANT_SHOW = A.repair },
   sellJunk = { MERCHANT_SHOW = A.sellJunk },
   release = { PLAYER_DEAD = A.release },
-  acceptRes = { RESURRECT_REQUEST = A.acceptRes },
   declineDuels = { DUEL_REQUESTED = A.declineDuel },
   declineGuild = { GUILD_INVITE_REQUEST = A.declineGuild },
   acceptInvites = { PARTY_INVITE_REQUEST = A.invite },
-  skipCinematics = { CINEMATIC_START = A.cinematic, PLAY_MOVIE = A.movie },
   autoDelete = { DELETE_ITEM_CONFIRM = A.delete },
   autoGossip = { GOSSIP_SHOW = A.gossip },
   quickLoot = { LOOT_READY = A.loot },
@@ -186,6 +165,7 @@ local EVENTS = {
 FL.EVENTS = EVENTS
 
 local function isOn(name)
+  if name == "quiet" then return FL.Quiet ~= nil and FL.Quiet.AnyCell() end
   local v = s[name]
   return v == true or (type(v) == "string" and v ~= "off")
 end
@@ -195,6 +175,7 @@ function FL.Sync()
   local mod = FL.module
   if not (FL.active and mod and mod.enabled) then return end
   local wanted = {}
+  if FL.Quiet then EVENTS.quiet = FL.Quiet.EVENTS end
   for name, map in pairs(EVENTS) do
     if isOn(name) then
       for event, fn in pairs(map) do
@@ -209,7 +190,7 @@ function FL.Sync()
     mod:RegisterEvent(event, function(_, _, ...) for i = 1, #list do list[i](...) end end)
   end
   FL.wanted = wanted
-  if s.hideTalkingHead then hookOnce("talkingHead", function() hooksecurefunc(TalkingHeadFrame, "PlayCurrent", FL.OnTalkingHead) end) end
+  if FL.Quiet and FL.Quiet.AnyCell() then FL.Quiet.Hook() end
   if s.hideErrors then hookOnce("errors", function() hooksecurefunc(UIErrorsFrame, "AddMessage", FL.OnError) end) end
 end
 
@@ -237,11 +218,7 @@ end
 
 -- Slash shortcuts (Phoenix slash: /pui rl, /pui cd N).
 Slash:Register("rl", function() if FL.active and s.reloadSlash then ReloadUI() end end, "reload the UI (Flow)")
-Slash:Register("cd", function(rest)
-  if not (FL.active and s.countdown) then return end
-  local n = tonumber(rest) or 10
-  C_PartyInfo.DoCountdown(math.max(1, math.min(30, n)))
-end, "start a pull countdown (Flow)")
+-- /pui cd and the pull, break and ready-check tools belong to Raid Tools (plan 1.O).
 
 local schema = {}
 FL.schema = schema
@@ -257,30 +234,62 @@ key("repair", { type = "select", default = "off", choices = { "off", "player", "
 toggle("sellJunk", "Auto sell junk", "Sells grey items when you open a vendor. While Vault is on, Vault's own junk setting decides instead.")
 key("release", { type = "select", default = "off", choices = { "off", "world", "instances" }, label = "Auto release",
   tooltip = "Releases your spirit on death. World only, or also in dungeons and raids; never in battlegrounds or arenas, and never when you can self-resurrect." })
-toggle("acceptRes", "Auto accept resurrection", "Accepts a resurrection out of combat.")
 toggle("declineDuels", "Auto decline duels", "Declines duel requests.")
 toggle("declineGuild", "Auto decline guild invites", "Declines guild invitations.")
-toggle("acceptInvites", "Accept invites from friends", "Accepts group invites from friends, Battle.net friends and guild members.")
-toggle("skipCinematics", "Skip cinematics", "Skips cinematics and movies. Hold Shift to watch.")
+toggle("acceptInvites", "Accept invites from friends", "Accepts group invites from friends, Battle.net friends and guild members. While the Friends module is on, its own per-source switches decide instead.")
 toggle("autoDelete", "Fill DELETE", "Types the confirmation word when deleting a good item.")
 toggle("autoGossip", "Auto gossip", "Picks the only dialogue option when there is no quest. Hold Shift to read.")
 toggle("quickLoot", "Quick loot", "Takes every item as soon as the loot window opens. Hold Shift to choose.")
 toggle("durabilityWarn", "Low durability warning", "Warns once when any item drops to the threshold.")
 key("durabilityThreshold", { type = "range", default = 20, min = 5, max = 50, step = 5, label = "Durability threshold (%)",
   tooltip = "Warning level for the low durability warning." })
-toggle("hideTalkingHead", "Hide talking head", "Closes the talking head popup as it opens.")
 toggle("hideErrors", "Hide errors in combat", "Clears red error text (out of range, not ready) during combat.")
-toggle("combatLog", "Combat log in raids and M+", "Turns /combatlog on in raids and Mythic+ and off elsewhere.")
+toggle("combatLog", "Auto combat logging", "Turns /combatlog on in the content types ticked below and off elsewhere (only a log Flow started). Raids and Mythic+ are ticked to start with.")
+schema["flow.combatLogWhere"] = { type = "grid", default = { log = { raid = true, mythicplus = true, world = false, dungeon = false, arena = false, battleground = false, delve = false } },
+  rows = { { id = "log", label = "Combat log" } }, columns = function()
+    local out = {}
+    for i, c in ipairs(PUI.Profiles.CONTENT) do out[i] = { id = c, label = PUI.Profiles.CONTENT_LABEL[c] } end
+    return out
+  end, owner = OWNER, mode = "advanced", label = "Combat log by content", tooltip = "Where auto combat logging turns the log on. Works alongside recorder addons: a log they started is never stopped.",
+  searchTags = { "combat log", "logging", "warcraftlogs", "recorder" }, apply = function(v) s.combatLogWhere = v; FL.Sync(); if FL.active then A.combatLog() end end }
 toggle("maxCamera", "Max camera distance", "Raises the camera zoom limit; restored when turned off.")
 toggle("reloadSlash", "/pui rl", "Enables /pui rl to reload the UI.")
-toggle("countdown", "/pui cd", "Enables /pui cd <seconds> for a pull countdown.")
 schema["flow.savedCVars"] = { type = "layout", default = {}, mode = "advanced", owner = OWNER, label = "Saved game settings",
   tooltip = "Original values of game settings Flow changed, restored when the switch is turned off.", apply = function() end }
 
+-- Quiet mode (Quiet.lua) adds its keys first; it calls FL.Register().
+function FL.Register()
 FL.module = PUI:RegisterModule(OWNER, {
   label = "Flow", tooltip = "Automations: repair, junk, release, invites, cinematics, quick loot and more. Each one off until you turn it on.",
   enabledByDefault = false, schema = schema,
-  onEnable = function() FL.active = true; FL.Sync(); FL.ApplyCVars() end,
-  onDisable = function() FL.active = false; FL.ApplyCVars() end,
+  onEnable = function() FL.active = true; FL.Sync(); FL.ApplyCVars(); if FL.Quiet then FL.Quiet.Recompute() end end,
+  onDisable = function() FL.active = false; FL.ApplyCVars(); if FL.Quiet then FL.Quiet.Recompute() end end,
 })
 for k, def in pairs(schema) do def.apply(Schema:Get(k)) end
+end
+
+-- Step 9a carry-over (never resets a choice): the old single switches for
+-- skipping cinematics, hiding the talking head and accepting resurrection
+-- become Quiet mode cells ticked in every content type; /pui cd moves to
+-- Raid Tools with the same on/off state.
+PUI.DB:RegisterMigration("0009a_flow_quiet", function(sv)
+  local map = { skipCinematics = "movies", hideTalkingHead = "talkingHead", acceptRes = "acceptRes" }
+  for _, p in pairs(sv.profiles or {}) do
+    if type(p) == "table" then
+      for old, opt in pairs(map) do
+        if p["flow." .. old] == true then
+          local g = p["flow.quiet.where"] or FL.Quiet.EmptyGrid()
+          g[opt] = g[opt] or {}
+          for _, c in ipairs(PUI.Profiles.CONTENT) do g[opt][c] = true end
+          p["flow.quiet.where"] = g
+        end
+        p["flow." .. old] = nil
+      end
+      if p["flow.countdown"] ~= nil then
+        if p["rt.slash"] == nil then p["rt.slash"] = p["flow.countdown"] end
+        p["flow.countdown"] = nil
+      end
+    end
+  end
+  return true
+end)

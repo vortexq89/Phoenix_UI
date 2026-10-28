@@ -12,4 +12,6 @@
 
 ClassResource.lua
 ResourceBars.lua
+Extras.lua
 Tests\ResourceBars_test.lua
+Tests\Extras_test.lua

@@ -101,7 +101,7 @@ function CDM.Items(viewer, all)
       CDM.hidden[f] = true
       f:SetAlpha(0)
     else
-      if CDM.hidden[f] then CDM.hidden[f] = nil; f:SetAlpha(1) end
+      if CDM.hidden[f] and not all then CDM.hidden[f] = nil; f:SetAlpha(1) end
       list[#list + 1] = f
     end
   end
@@ -170,6 +170,14 @@ function CDM.Place(v)
   local viewer = _G[VIEWERS[v].global]
   if not viewer then return end
   local c, bars, a = cfg[v], VIEWERS[v].bars, anchor(v)
+  if look.skinOnly then
+    -- W11 skin only: Blizzard keeps every position, size and item; Phoenix only restyles.
+    for _, f in ipairs(CDM.Items(viewer, true)) do
+      if CDM.hidden[f] then CDM.hidden[f] = nil; f:SetAlpha(1) end
+      CDM.Skin(f, bars)
+    end
+    return
+  end
   local point = c.growth == "left" and "TOPRIGHT" or c.growth == "center" and "TOP" or "TOPLEFT"
   local items = CDM.Items(viewer)
   for i, f in ipairs(items) do
@@ -253,6 +261,7 @@ function CDM.Custom()
       b = PUI:CreateFrame("Frame", nil, frame, nil, OWNER)
       b.icon = b:CreateTexture(nil, "ARTWORK")
       b.icon:SetAllPoints()
+      PUI.Look.Shape(b.icon, b)
       b.cd = PUI:CreateFrame("Cooldown", nil, b, "CooldownFrameTemplate", OWNER)
       b.cd:SetAllPoints()
       b.count = b:CreateFontString(nil, "OVERLAY")
@@ -425,6 +434,9 @@ lookKey("cdText", { type = "toggle", default = true, label = "Cooldown numbers o
   function(v) look.cdText = v end)
 lookKey("cdTextSize", { type = "range", default = 14, min = 8, max = 32, step = 1, label = "Cooldown number size",
   tooltip = "Font size of the cooldown numbers on icons.", mode = "advanced" }, function(v) look.cdTextSize = v end)
+lookKey("skinOnly", { type = "toggle", default = false, label = "Skin only (keep Blizzard's layout)",
+  tooltip = "Phoenix only restyles the cooldown icons and bars; their places, sizes and which ones show stay as Blizzard's Cooldown Manager sets them (from the game's next layout pass). The safest mode for testing.",
+  mode = "simple", searchTags = { "skin", "blizzard layout" } }, function(v) look.skinOnly = v end)
 lookKey("hideOnBars", { type = "toggle", default = false, label = "Leave out cooldowns already on your bars",
   tooltip = "An essential or utility cooldown that is on one of your shown action bars is left out of these rows, so it appears once.",
   mode = "simple", overridable = true, searchTags = { "duplicate", "dedupe", "action bars" } }, function(v) look.hideOnBars = v end)

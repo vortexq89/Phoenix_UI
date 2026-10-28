@@ -211,8 +211,8 @@ end
 local function setRow(i, y, text, r, g, b, data, size)
   local rw = row(i)
   local fs = QT.text[rw]
-  local path = Media:Font(Schema:Get("media.uiFont"))
-  if path and fs.SetFont then fs:SetFont(path, size, "") end
+  local path = PUI.Look.FontFor("quests")
+  if path and fs.SetFont then fs:SetFont(path, size, PUI.Look.Flags()) end
   fs:SetText(text)
   fs:SetTextColor(r, g, b)
   rw:ClearAllPoints()
