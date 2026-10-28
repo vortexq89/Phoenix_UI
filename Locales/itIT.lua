@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "Opacità",
     MOVERS_OVERLAY_TIP = "Trascina: sposta · rotellina: scala · Maiusc+rotellina: opacità\nFrecce: sposta · clic destro: ripristina · Esc: blocca",
     MOVERS_COMBAT = "Gli Spostatori non si possono sbloccare in combattimento.",
+    MOVERS_EDITMODE = "Chiudi prima la Modalità modifica di Blizzard: le due modalità si sovrappongono.",
     MOVERS_COMBAT_LOCKED = "Combattimento iniziato – spostatori bloccati. Le tue posizioni sono salvate.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Testo dei tempi di recupero",

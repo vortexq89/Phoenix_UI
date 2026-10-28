@@ -25,8 +25,8 @@ guards it), **open**, or **verify** (needs an in-game look; the cause is not cer
 | 15 | S2 | Window | Rail labels and list text 12 px on a 2560x1440 screen at UI scale 0.53 look small next to the large panels | all shots | fixed (stage 2) - two families, four steps: title 20, heading Inter 13, body 14, desc 12 (Core/Theme.lua) - verify in game |
 | 16 | S3 | Page header | "117 SETTINGS / ACTIVE" chips under the title compete with the title | shot 190312 | fixed (stage 2) - plain muted "N settings" line; the state badge only shows for error / reload |
 | 17 | S3 | Chips | Element chips (Bar 1 … Item bar) wrap into two lines at narrow widths without a scroll | shot 190312 | fixed (stage 2) - chips tighten (padding and gap) before wrapping; test "chips tighten before wrapping" |
-| 18 | S3 | Cards | Section header ticks/icons use mixed game art and glyphs in game-icon mode | shots | open |
-| 19 | S3 | In world | Blizzard Edit Mode shots show Phoenix movers and Blizzard's own grid at once; overlapping labels | shots 150334-150415 | open - stage 3 (hide Blizzard grid while Phoenix layout mode is on) |
+| 18 | S3 | Cards | Section header ticks/icons use mixed game art and glyphs in game-icon mode | shots | fixed (stage 3) - icons under 18 px are one-colour theme-tinted silhouettes in game-icon mode; test "game icons not mixed" |
+| 19 | S3 | In world | Blizzard Edit Mode shots show Phoenix movers and Blizzard's own grid at once; overlapping labels | shots 150334-150415 | fixed (stage 3) - Phoenix layout mode refuses to open while Blizzard Edit Mode is shown (it already closed itself when Edit Mode opens); test "layout mode vs edit mode" |
 | 20 | S3 | Mail / windows | New: Alts button and Shift-drag move need an in-game look | - | verify |
 
 Counts: 20 defects (8 S1, 7 S2, 5 S3). Fixed 12 (all 8 S1, 4 S2); verify 2; open 6.
@@ -39,3 +39,8 @@ overnight run will extend this list automatically.
 
 - Mover popup (Layout mode cog): Anchor dropdown (9 points) and X / Y sliders, applied live; opening the popup
   saves nothing. Test "mover popup" checks anchor and offsets are written.
+
+## Stage 3 additions
+
+- Unit frame and nameplate defaults: no text under 10-11 px (blurry at UI scale under 0.7); pet and focus-target
+  frames 24 px tall. Only unchanged (default) values move; saved settings are kept.

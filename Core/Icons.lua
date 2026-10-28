@@ -157,13 +157,18 @@ function I:Apply(tex, name, size)
     if s.size <= 0 then s.size = 16 end
     if I.game then
         local file, art = gameIcon(name)
-        s.tier, s.art = nil, art
+        -- small icons (section headers, badges, chips) sit next to line glyphs: game art there is drawn as a
+        -- one-colour theme-tinted silhouette so a row never mixes colour art and glyphs (defect #18)
+        local small = art and (s.size or 0) < 18
+        s.tier, s.art, s.mono = nil, art and not small, small or nil
         tex:SetTexture(file)
+        if tex.SetDesaturated then tex:SetDesaturated(small and true or false) end
         if art then tex:SetTexCoord(0.08, 0.92, 0.08, 0.92) else tex:SetTexCoord(0, 1, 0, 1) end
         indexOf(name) -- still records unknown names
         return
     end
-    s.art = nil
+    s.art, s.mono = nil, nil
+    if tex.SetDesaturated then tex:SetDesaturated(false) end
     local t = tierFor(physicalPixels(tex, s.size))
     s.tier = t
     tex:SetTexture(DIR .. t.file)

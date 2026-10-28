@@ -116,6 +116,7 @@ local function arenaExtras(u)
     return u
 end
 
+-- Visual defaults: no unit-frame or plate text under 10-11 px (blurry at UI scale < 0.7); small frames 24 px tall.
 local DEFAULTS = {
     mode = "phoenix",
     units = {
@@ -129,9 +130,9 @@ local DEFAULTS = {
                               healthTag = "", nameLength = 12 }),
         focus = unit({ w = 180, h = 36, x = -470, y = 40, text = 12, range = true, portrait = "game", cast = "below", debuffs = "below",
                        auraSize = 18, auraMax = 6 }),
-        focustarget = unit({ w = 110, h = 22, x = -320, y = 40, text = 10, power = "off", range = true, leader = false,
+        focustarget = unit({ w = 110, h = 24, x = -320, y = 40, text = 11, power = "off", range = true, leader = false,
                              healthTag = "", nameLength = 12 }),
-        pet = unit({ w = 120, h = 22, x = -350, y = -232, text = 10, portrait = "game", power = "always", ph = 4, range = true,
+        pet = unit({ w = 120, h = 24, x = -350, y = -232, text = 11, portrait = "game", power = "always", ph = 4, range = true,
                      leader = false,
                      healthTag = "", nameLength = 12, color = "reaction" }),
         boss = unit({ point = "RIGHT", w = 200, h = 40, x = -260, y = 200, text = 12, portrait = "game", portraitPos = "right",
@@ -140,7 +141,7 @@ local DEFAULTS = {
         arena = arenaExtras(unit({ enabled = false, point = "RIGHT", w = 200, h = 40, x = -260, y = 100, text = 12, cast = "below",
                        range = true, trinket = true, spec = true, debuffs = "left", auraSize = 22, auraMax = 4,
                        healthTag = "[health:percent]", targetBorder = true })),
-        arenapet = unit({ enabled = false, point = "RIGHT", w = 90, h = 18, x = -520, y = 100, text = 9, power = "off",
+        arenapet = unit({ enabled = false, point = "RIGHT", w = 90, h = 18, x = -520, y = 100, text = 11, power = "off",
                           range = true, leader = false, healthTag = "", nameLength = 10, color = "reaction" }),
     },
     -- nicknames: "Name=Nick, Other=Nick2" (plain names only)

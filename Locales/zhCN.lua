@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "透明度",
     MOVERS_OVERLAY_TIP = "拖动：移动 · 滚轮：缩放 · Shift+滚轮：透明度\n方向键：微调 · 右键：重置 · Esc：锁定",
     MOVERS_COMBAT = "战斗中无法解锁框体移动。",
+    MOVERS_EDITMODE = "请先关闭暴雪编辑模式，两种布局模式会重叠。",
     MOVERS_COMBAT_LOCKED = "进入战斗——框体移动已锁定。你的位置已保存。",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "冷却文字",

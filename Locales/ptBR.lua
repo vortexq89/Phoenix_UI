@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "Opacidade",
     MOVERS_OVERLAY_TIP = "Arrastar: mover · roda: escala · Shift+roda: opacidade\nSetas: ajustar · clique direito: redefinir · Esc: travar",
     MOVERS_COMBAT = "Não é possível destravar os Movedores em combate.",
+    MOVERS_EDITMODE = "Feche primeiro o Modo de Edição da Blizzard: os dois modos se sobrepõem.",
     MOVERS_COMBAT_LOCKED = "Combate iniciado – movedores travados. Suas posições estão salvas.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Texto de recarga",

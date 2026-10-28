@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "Deckkraft",
     MOVERS_OVERLAY_TIP = "Ziehen: verschieben · Mausrad: skalieren · Umschalt+Mausrad: Deckkraft\nPfeiltasten: feinjustieren · Rechtsklick: zurücksetzen · Esc: sperren",
     MOVERS_COMBAT = "Verschieber können im Kampf nicht entsperrt werden.",
+    MOVERS_EDITMODE = "Schließe zuerst den Blizzard-Bearbeitungsmodus - die beiden Layoutmodi überlagern sich.",
     MOVERS_COMBAT_LOCKED = "Kampf begonnen – Verschieber gesperrt. Deine Positionen sind gespeichert.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Abklingzeittext",

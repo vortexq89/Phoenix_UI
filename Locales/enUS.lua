@@ -386,6 +386,7 @@ ns.RegisterLocale("enUS", {
     MOVERS_OPACITY = "Opacity",
     MOVERS_OVERLAY_TIP = "Drag to move · wheel: scale · Shift+wheel: opacity\nArrow keys: nudge · right-click: reset · Esc: lock",
     MOVERS_COMBAT = "Movers cannot be unlocked in combat.",
+    MOVERS_EDITMODE = "Close Blizzard Edit Mode first - the two layout modes overlap.",
     MOVERS_COMBAT_LOCKED = "Combat started – movers locked. Your positions are saved.",
 
     ---------------------------------------------------------------- Cooldown text

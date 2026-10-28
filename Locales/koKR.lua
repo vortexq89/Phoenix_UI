@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "투명도",
     MOVERS_OVERLAY_TIP = "드래그: 이동 · 휠: 크기 · Shift+휠: 투명도\n방향키: 미세 이동 · 오른쪽 클릭: 초기화 · Esc: 잠금",
     MOVERS_COMBAT = "전투 중에는 창 이동 잠금을 해제할 수 없습니다.",
+    MOVERS_EDITMODE = "먼저 블리자드 편집 모드를 닫으세요. 두 배치 모드가 겹칩니다.",
     MOVERS_COMBAT_LOCKED = "전투 시작 – 창 이동이 잠겼습니다. 위치는 저장되었습니다.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "재사용 대기시간 문자",

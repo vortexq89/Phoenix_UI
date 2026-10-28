@@ -1781,6 +1781,32 @@ try("preview click to setting", function()
         assert(pg.pinned and pg.pinned.size, k .. ": no Size & position button on the preview")
     end
 end)
+-- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
+try("game icons not mixed", function()
+    local I = ns.Icons
+    local old = I.game
+    I.game = true
+    local f = CreateFrame("Frame", nil, UIParent)
+    local small, big = f:CreateTexture(), f:CreateTexture()
+    I:Apply(small, "general", 14); I:Apply(big, "general", 22)
+    I.game = old
+    assert(not I:IsArt(small), "a 14 px section icon is drawn as colour art")
+    assert(I:IsArt(big), "a 22 px module icon lost its art")
+end)
+-- Phoenix layout mode does not open on top of Blizzard Edit Mode (defect #19)
+try("layout mode vs edit mode", function()
+    local Mv = ns.modules.Movers
+    local em = env.EditModeManagerFrame
+    local old = rawget(em, "IsShown")
+    rawset(em, "IsShown", function() return true end)
+    Mv:SetUnlocked(true)
+    local blocked = not Mv:IsUnlocked()
+    rawset(em, "IsShown", old)
+    assert(blocked, "layout mode opened while Edit Mode was shown")
+    Mv:SetUnlocked(true)
+    assert(Mv:IsUnlocked(), "layout mode did not open without Edit Mode")
+    Mv:SetUnlocked(false)
+end)
 -- settings popup on a mover box: edits the frame's settings live
 try("mover popup", function()
     local Mv, AB = ns.modules.Movers, ns.modules.ActionBars

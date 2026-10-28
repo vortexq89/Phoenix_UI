@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "透明度",
     MOVERS_OVERLAY_TIP = "拖動：移動 · 滾輪：縮放 · Shift+滾輪：透明度\n方向鍵：微調 · 右鍵：重置 · Esc：鎖定",
     MOVERS_COMBAT = "戰鬥中無法解鎖框架移動。",
+    MOVERS_EDITMODE = "請先關閉暴雪編輯模式，兩種版面模式會重疊。",
     MOVERS_COMBAT_LOCKED = "進入戰鬥——框架移動已鎖定。你的位置已儲存。",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "冷卻文字",

@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "Opacidad",
     MOVERS_OVERLAY_TIP = "Arrastrar: mover · rueda: escala · Mayús+rueda: opacidad\nFlechas: desplazar · clic derecho: restablecer · Esc: bloquear",
     MOVERS_COMBAT = "Los Movedores no se pueden desbloquear en combate.",
+    MOVERS_EDITMODE = "Cierra primero el Modo edición de Blizzard: los dos modos se superponen.",
     MOVERS_COMBAT_LOCKED = "Combate iniciado – movedores bloqueados. Tus posiciones están guardadas.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Texto de reutilización",

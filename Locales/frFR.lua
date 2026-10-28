@@ -375,6 +375,7 @@ local T = {
     MOVERS_OPACITY = "Opacité",
     MOVERS_OVERLAY_TIP = "Glisser : déplacer · molette : échelle · Maj+molette : opacité\nFlèches : décaler · clic droit : réinitialiser · Échap : verrouiller",
     MOVERS_COMBAT = "Impossible de déverrouiller les Déplaceurs en combat.",
+    MOVERS_EDITMODE = "Fermez d'abord le mode Édition de Blizzard : les deux modes se superposent.",
     MOVERS_COMBAT_LOCKED = "Combat engagé – Déplaceurs verrouillés. Vos positions sont enregistrées.",
     ---------------------------------------------------------------- Cooldown text
     COOLDOWNTEXT = "Texte de recharge",

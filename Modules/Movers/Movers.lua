@@ -488,12 +488,22 @@ local function buildGrid()
 end
 
 ---------------------------------------------------------------- unlock mode
+function M.EditModeActive()
+    local em = _G.EditModeManagerFrame
+    return em ~= nil and em.IsShown ~= nil and em:IsShown() == true
+end
+
 function M:SetUnlocked(on)
     if on and InCombatLockdown() then
         ns:Print(L.MOVERS_COMBAT)
         return
     end
     if on and not self:IsEnabled() then return end
+    -- Blizzard Edit Mode draws its own grid and labels over the same frames (defect #19): one mode at a time
+    if on and M.EditModeActive() then
+        ns:Print(L.MOVERS_EDITMODE)
+        return
+    end
     unlocked = on and true or false
     if unlocked then
         grid = grid or buildGrid()

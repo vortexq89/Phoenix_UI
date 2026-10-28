@@ -100,15 +100,15 @@ local DEFAULTS = {
     bar = "",                                       -- "" = the theme's bar texture
     border = Style.Border(),
     background = Style.Background({ alpha = 0.75 }),
-    health = Style.Text(10, { outline = "OUTLINE", shadow = false }),
-    name = Style.Text(10, { styled = true }),
-    forcesText = Style.Text(10, { outline = "OUTLINE", shadow = false }),
+    health = Style.Text(11, { outline = "OUTLINE", shadow = false }),
+    name = Style.Text(11, { styled = true }),
+    forcesText = Style.Text(11, { outline = "OUTLINE", shadow = false }),
     highlight = { target = false, targetColor = false, focus = false, focusColor = false },
     threat = { enabled = false, aggro = false, warning = false, safe = false },
-    castbar = { style = true, texture = "", color = false, text = Style.Text(9, { outline = "OUTLINE", shadow = false }) },
+    castbar = { style = true, texture = "", color = false, text = Style.Text(10, { outline = "OUTLINE", shadow = false }) },
     auras = { style = true, zoom = 0.08, border = Style.Border({ style = "solid" }),
-        count = Style.Text(9, { outline = "OUTLINE", shadow = false }),
-        timer = Style.Text(9, { outline = "OUTLINE", shadow = false }) },
+        count = Style.Text(10, { outline = "OUTLINE", shadow = false }),
+        timer = Style.Text(10, { outline = "OUTLINE", shadow = false }) },
 }
 
 local M = ns:NewModule("NamePlates", {
