@@ -217,6 +217,7 @@ function RF.InitButton(button)
   button:HookScript("OnLeave", function() GameTooltip:Hide() end)
   E.Build(o)
   RF.buttons[#RF.buttons + 1] = o
+  PUI.FocusKey.Apply(button, true)
   local clickCast = rawget(_G, "ClickCastFrames")
   if clickCast == nil then
     clickCast = {}

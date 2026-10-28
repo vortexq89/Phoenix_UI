@@ -53,6 +53,7 @@ Core\Targeting.lua
 Core\Coexist.lua
 Core\Items.lua
 Core\Masque.lua
+Core\FocusKey.lua
 Core\Movers.lua
 Core\Windows.lua
 Core\Queue.lua

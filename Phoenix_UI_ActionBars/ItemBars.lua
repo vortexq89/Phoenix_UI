@@ -35,6 +35,8 @@ IB.CATEGORIES = {
   { id = "quest", label = "Quest items" },
   { id = "custom", label = "Custom item list" },
   { id = "brez", label = "Battle res (your class)" },
+  { id = "teleport", label = "Mythic+ teleports", retail = true },
+  { id = "hearth", label = "Hearthstones" },
 }
 function IB.Categories()
   local out = {}
@@ -53,6 +55,7 @@ local DEFAULT_CATS = {
   bar2 = { healing = true, combat = true, trinket = true, gear = true, brez = true },
   bar3 = { quest = true },
   bar4 = { custom = true },
+  bar5 = { teleport = true, hearth = true },
 }
 local function defaultGrid()
   local g = {}
@@ -69,7 +72,7 @@ local POS = { { "BOTTOM", -330, 176 }, { "BOTTOM", 330, 176 }, { "BOTTOM", 0, 21
 local BASE_VIS = "[petbattle][vehicleui][overridebar][possessbar] hide; show"
 local MACRO_HIDE = { vehicle = "[vehicleui]", petBattle = "[petbattle]", mounted = "[mounted]", skyriding = "[bonusbar:5]" }
 
-local cfg = { grid = defaultGrid(), custom = { "5512" }, brezCharges = true }
+local cfg = { grid = defaultGrid(), custom = { "5512" }, brezCharges = true, seasonOnly = false, hearthToys = true }
 IB.cfg = cfg
 for i = 1, NUM do
   cfg[i] = { on = DEFAULT_ON[i] == true, size = 32, spacing = 2, perRow = 12, grow = "RIGHT", sort = "category",
@@ -114,6 +117,21 @@ function IB.BrezSpell()
   return nil
 end
 
+-- Known Mythic+ teleport spells, sorted by spell ID (optionally only this season's maps).
+function IB.Teleports()
+  local season
+  if cfg.seasonOnly and C_ChallengeMode and C_ChallengeMode.GetMapTable then
+    season = {}
+    for _, m in ipairs(C_ChallengeMode.GetMapTable() or {}) do season[m] = true end
+  end
+  local out = {}
+  for spell, map in pairs(D.TELEPORTS) do
+    if spellKnown(spell) and (not season or season[map]) then out[#out + 1] = spell end
+  end
+  table.sort(out)
+  return out
+end
+
 -- Shared battle-res charges (Ascent's reading when it is loaded).
 function IB.BrezCharges()
   if PUI.Ascent and PUI.Ascent.BattleRes then return PUI.Ascent.BattleRes() end
@@ -153,6 +171,20 @@ function IB.Entries(i)
   if wants.custom then
     for _, id in ipairs(PUI.ItemList.Parse(cfg.custom)) do
       if not c.hideMissing or count(id) > 0 then table.insert(buckets.custom, { kind = "item", id = id, cat = "custom" }) end
+    end
+  end
+  if wants.teleport then
+    for _, id in ipairs(IB.Teleports()) do table.insert(buckets.teleport, { kind = "spell", id = id, cat = "teleport" }) end
+  end
+  if wants.hearth then
+    for _, id in ipairs(D.HEARTH_ITEMS) do
+      if count(id) > 0 then table.insert(buckets.hearth, { kind = "item", id = id, cat = "hearth" }) end
+    end
+    local hasToy = rawget(_G, "PlayerHasToy")
+    if cfg.hearthToys and hasToy then
+      for _, id in ipairs(D.HEARTH_TOYS) do
+        if hasToy(id) then table.insert(buckets.hearth, { kind = "toy", id = id, cat = "hearth" }) end
+      end
     end
   end
   if wants.brez then
@@ -200,6 +232,7 @@ local function button(bar, j)
     GameTooltip_SetDefaultAnchor(GameTooltip, self)
     local e = self.entry
     if e.kind == "slot" then GameTooltip:SetInventoryItem("player", e.slot)
+    elseif e.kind == "toy" then GameTooltip:SetToyByItemID(e.id)
     elseif e.kind == "spell" then GameTooltip:SetSpellByID(e.id)
     else GameTooltip:SetItemByID(e.id) end
     GameTooltip:Show()
@@ -216,6 +249,11 @@ local function configure(b, e)
     b:SetAttribute("type", "spell")
     b:SetAttribute("spell", e.id)
     b:SetAttribute("item", nil)
+  elseif e.kind == "toy" then
+    b:SetAttribute("type", "toy")
+    b:SetAttribute("toy", e.id)
+    b:SetAttribute("item", nil)
+    b:SetAttribute("spell", nil)
   else
     b:SetAttribute("type", "item")
     b:SetAttribute("item", e.kind == "slot" and tostring(e.slot) or ("item:" .. e.id))
@@ -312,9 +350,14 @@ function IB.Paint(i)
     if b and e then
       b.count:SetShown(c.count)
       b.cooldown:SetShown(c.cooldown)
-      if e.kind == "spell" then
+      if e.kind == "toy" then
+        b.icon:SetTexture(C_Item.GetItemIconByID(e.id))
+        b.count:SetText("")
+        local start, dur = C_Item.GetItemCooldown(e.id)
+        b.cooldown:SetCooldown(start or 0, dur or 0)
+      elseif e.kind == "spell" then
         b.icon:SetTexture(C_Spell.GetSpellTexture(e.id))
-        local br = cfg.brezCharges and IB.BrezCharges()
+        local br = e.cat == "brez" and cfg.brezCharges and IB.BrezCharges()
         if br then
           b.count:SetText(Secret.ToText(br.charges))
           b.cooldown:SetCooldown(br.start or 0, br.duration or 0)
@@ -395,6 +438,7 @@ function IB.Wire(mod)
   chain(mod, "BAG_UPDATE_COOLDOWN", IB.Refresh)
   chain(mod, "SPELL_UPDATE_CHARGES", IB.Refresh)
   chain(mod, "SPELL_UPDATE_COOLDOWN", IB.Refresh)
+  chain(mod, "TOYS_UPDATED", rebuild)
 end
 
 PUI.ItemList:OnChange("ab.ibars", function() IB.ApplyAll() end)
@@ -419,6 +463,12 @@ key("ab.ibars.categories", { type = "grid", default = defaultGrid(), rows = IB.C
 key("ab.ibars.custom", { type = "list", default = { "5512" }, maxItems = 24, label = "Auto item bars: custom items",
   tooltip = "Item IDs for the Custom item list category, in order.", mode = "simple",
   itemValidate = function(v) return tonumber(v) ~= nil, "an item ID" end }, function(v) cfg.custom = v end)
+key("ab.ibars.seasonOnly", { type = "toggle", default = false, label = "Auto item bars: this season's teleports only",
+  tooltip = "The Mythic+ teleports category shows only the dungeons in the current Mythic+ season (otherwise every teleport you know).",
+  mode = "advanced", searchTags = { "teleport", "mythic", "hero's path" } }, function(v) cfg.seasonOnly = v end)
+key("ab.ibars.hearthToys", { type = "toggle", default = true, label = "Auto item bars: hearthstone toys",
+  tooltip = "The Hearthstones category also shows the hearthstone toys you own (retail).",
+  mode = "advanced", searchTags = { "hearthstone", "toy" } }, function(v) cfg.hearthToys = v end)
 key("ab.ibars.brezCharges", { type = "toggle", default = true, label = "Auto item bars: battle res charges",
   tooltip = "The battle res button shows the group's shared charges and recharge timer (keys and boss fights) instead of the spell's own cooldown.",
   mode = "advanced", searchTags = { "battle res", "brez", "rebirth" } }, function(v) cfg.brezCharges = v end)

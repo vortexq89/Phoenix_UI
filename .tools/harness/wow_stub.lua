@@ -1295,4 +1295,7 @@ function GetLootRollItemInfo(id) local r = H.lootRolls[id]; if r then return r.t
 function GetLootRollItemLink(id) local r = H.lootRolls[id]; return r and r.link end
 function GetLootRollTimeLeft(id) local r = H.lootRolls[id]; return r and r.left or 0 end
 function RollOnLoot(id, kind) H.rolled[#H.rolled + 1] = { id, kind } end
+H.paragon = {}
+C_Reputation.IsFactionParagon = function(id) return H.paragon[id] ~= nil end
+C_Reputation.GetFactionParagonInfo = function(id) local p = H.paragon[id]; if p then return p[1], p[2], nil, p[3] end end
 return H
