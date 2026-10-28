@@ -1925,6 +1925,18 @@ try("quick ring", function()
     AB.db.ring.enabled, AB.db.ring.list, AB.db.ring.key = false, "", ""
     AB:RefreshRing()
 end)
+-- BiS list: pasted IDs or a PUI-BIS: string; a matching item gets one tooltip line
+try("tooltip bis list", function()
+    local T = ns.modules.Tooltip
+    local set = T.ParseBiS("PUI-BIS: 212345, 212346 212347")
+    assert(set[212345] and set[212346] and set[212347] and not set[1], "BiS list not parsed")
+    local lines = {}
+    local tt = { AddLine = function(_, text) lines[#lines + 1] = text end }
+    T.db.bisList = "212345"
+    T:AddBiS(tt, { id = 212345 }); T:AddBiS(tt, { id = 999 })
+    T.db.bisList = ""
+    assert(#lines == 1 and lines[1] == ns.L.TOOLTIP_BIS_LINE, "BiS line count " .. #lines)
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

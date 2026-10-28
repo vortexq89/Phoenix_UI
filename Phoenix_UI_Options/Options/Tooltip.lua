@@ -87,6 +87,7 @@ ns:RegisterOptions("Tooltip", {
       keywords = "mythic plus score rating io keystone" },
     { type = "toggle", key = "simLine", label = "TOOLTIP_SIM", desc = "TOOLTIP_SIM_DESC", feature = "sim",
       keywords = "simulationcraft simc dps upgrade sim" },
+    { type = "input", key = "bisList", label = "TOOLTIP_BIS", desc = "TOOLTIP_BIS_DESC", keywords = "bis best in slot import list" },
     { type = "toggle", key = "ids", label = "TOOLTIP_IDS", desc = "TOOLTIP_IDS_DESC", keywords = "spellid itemid npcid idtip",
       cog = idCog },
 })

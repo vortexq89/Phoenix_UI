@@ -11,7 +11,7 @@ local M = ns:NewModule("Tooltip", {
     label = "TOOLTIP", desc = "TOOLTIP_DESC", category = "interface", order = 60, reloadOnToggle = true,
     defaults = {
         skin = true, anchor = "DEFAULT", hideInCombat = false, target = true, role = true, ids = false,
-        classBorder = true, qualityBorder = true, healthBar = true, mplusRating = true, simLine = true,
+        classBorder = true, qualityBorder = true, healthBar = true, mplusRating = true, simLine = true, bisList = "",
         backdrop = Style.Background({ alpha = 0.97 }),
         border = Style.Border(),
         fonts = true,
@@ -183,9 +183,26 @@ local function onItem(tt, data)
         end
     end
     if M.db.simLine then addSim(tt, data) end
+    if M.db.bisList ~= "" then M:AddBiS(tt, data) end
     if M.db.itemCount then M:AddItemCount(tt, data) end
     M:ItemExtras(tt, data)
     M:AddID(tt, "item", data)
+end
+
+-- Best in slot from your own list (Tooltip > BiS list): pasted item IDs, or a "PUI-BIS:" share string. No
+-- third-party data ships with Phoenix; the list is whatever you import.
+local bisCache, bisText = {}, nil
+function M.ParseBiS(text)
+    local set = {}
+    text = tostring(text or ""):gsub("^%s*PUI%-BIS:", "")
+    for id in text:gmatch("%d+") do set[tonumber(id)] = true end
+    return set
+end
+function M:AddBiS(tt, data)
+    if bisText ~= self.db.bisList then bisCache, bisText = M.ParseBiS(self.db.bisList), self.db.bisList end
+    local id = data and data.id
+    if not (plain(id) and type(id) == "number" and bisCache[id]) then return end
+    tt:AddLine(L.TOOLTIP_BIS_LINE, 0.4, 0.85, 1)
 end
 
 -- IDs for the other tooltip kinds (spell, aura, currency, quest, achievement, mount).
