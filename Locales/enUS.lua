@@ -102,6 +102,8 @@ ns.RegisterLocale("enUS", {
     SKINS_MICRO_DESC = "The small menu buttons (character, talents, quests …) as flat tiles with Phoenix glyphs; alert badges stay.",
     SKINS_MAP = "World map and quest log",
     SKINS_MAP_DESC = "The map window and the quest log beside it in the Phoenix look; the open quest log tab in the accent.",
+    SKINS_TRANSMOG = "Transmog",
+    SKINS_TRANSMOG_DESC = "The transmog window: slots, outfit bar and Apply in the Phoenix look.",
     SKINS_POPUPS = "Popups",
     SKINS_POPUPS_DESC = "Skin confirmation dialogs.",
     SKINS_READYCHECK = "Ready check",

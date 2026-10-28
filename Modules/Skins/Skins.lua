@@ -16,7 +16,7 @@ local M = ns:NewModule("Skins", {
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
-        trade = true, dressUp = true, pgf = true, alerts = false,
+        trade = true, dressUp = true, transmog = true, pgf = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
         moveWindows = false, movedWindows = {}, mailAlts = true, premadeSearches = {},
@@ -218,7 +218,8 @@ function M.IsWindowOn(frame) return winOn[frame] and true or false end
 
 -- Windows whose switch applies live both ways (the rest restore Blizzard's look after /reload).
 M.LIVE = { gameMenu = true, character = true, popups = true, readyCheck = true, groupFinder = true, spellbook = true,
-    loot = true, auction = true, professions = true, friends = true, communities = true }
+    loot = true, auction = true, professions = true, friends = true, communities = true, journal = true,
+    achievements = true, collections = true, mail = true, merchant = true, vault = true, calendar = true, dressUp = true }
 function M:ApplyLive()
     for _, entry in ipairs(self.WINDOWS) do
         if self.LIVE[entry.key] then

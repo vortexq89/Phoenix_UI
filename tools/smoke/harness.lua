@@ -2274,6 +2274,13 @@ try("guild skin", function()
     S:SkinGuild(); S.db.communities = false; S:Refresh(); S.db.communities = true; S:Refresh()
     env.CommunitiesFrame = nil
 end)
+try("journal phase 3 skin", function()
+    local S = ns.modules.Skins
+    local f = CreateFrame("Frame", "EncounterJournal", UIParent)
+    env.EncounterJournal = f
+    S:SkinJournal(); S.db.journal = false; S:Refresh(); S.db.journal = true; S:Refresh()
+    env.EncounterJournal = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
