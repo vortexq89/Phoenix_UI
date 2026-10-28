@@ -31,6 +31,8 @@ function M:SetupMerchant()
     if merchantHooked or not root then return end
     merchantHooked = true
     root:HookScript("OnShow", function() M:SkinMerchant() end)
+    -- page turns and buyback refill the same rows: repaint after Blizzard's own update
+    if _G.MerchantFrame_Update then hooksecurefunc("MerchantFrame_Update", function() M:SkinMerchant() end) end
 end
 M.SETUPS[#M.SETUPS + 1] = "SetupMerchant"
 M.RESKINS[#M.RESKINS + 1] = "SkinMerchant"

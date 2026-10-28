@@ -39,8 +39,15 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   10 Auction House (`Auction.lua`), 11 Professions (`Professions.lua`), 12 Friends (`Friends.lua`),
   13 Guild & communities (`Guild.lua`). Lists are found by their Blizzard paths; a path that a client build
   renames is skipped (no error), so the in-game check is where any missing list shows up.
-- Not in phase 2: the ready-dialog role ring timer, rating cards, premade filter chips, the spellbook two-column
-  layout and loadout bar, sortable AH columns, the specialization tree accent, the community avatar rail art.
+- Phase 2 details closed: ready-dialog role ring timer, rated PvP cards, premade search chips (your last
+  searches), talents loadout bar, Auction House column headers, professions specialization rings, community
+  avatar rings. Declined: the spellbook two-column layout (it would re-anchor Blizzard frames, outside the
+  taint-safe rules); the spellbook keeps Blizzard's page layout with Phoenix tabs.
+- Phase 3 built: 14 Adventure Guide (`Journal.lua`), 15 Achievements, 16 Collections, 17 Transmog, 18 Mail,
+  19 Merchant, 20 Great Vault (`Vault.lua`), 21 Calendar. Not in phase 3: the Great Vault progress rings (cards
+  are outlined instead), collection favourite stars and filter chips, the Merchant extended-cost layout.
+- Dev self-test: every list path a window skin looks for inside a loaded window and does not find is reported
+  as `skin-missing` (Core/DevDiag.lua), so the overnight loop shows lists that stay unstyled.
 
 ## Delivery phases (ordered by how often players open the window)
 | Phase | Windows |

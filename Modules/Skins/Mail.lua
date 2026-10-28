@@ -42,6 +42,8 @@ function M:SetupMail()
     if mailHooked or not root then return end
     mailHooked = true
     root:HookScript("OnShow", function() M:SkinMail() end)
+    -- page turns and buyback refill the same rows: repaint after Blizzard's own update
+    if _G.InboxFrame_Update then hooksecurefunc("InboxFrame_Update", function() M:SkinMail() end) end
 end
 M.SETUPS[#M.SETUPS + 1] = "SetupMail"
 M.RESKINS[#M.RESKINS + 1] = "SkinMail"
