@@ -1873,6 +1873,16 @@ try("quest item hotkey", function()
     assert(AB.itemHotkey == "SHIFT-E", "hotkey not taken")
     AB.db.items.hotkey = ""; AB.BindItemHotkey()
 end)
+-- movement row: a custom bar filled with the class's movement spells
+try("tracker movement row", function()
+    local T = ns.modules.Tracker
+    local before = T.db.viewers.custom1.list
+    local list = T:FillMobility("custom1", "MAGE")
+    assert(list == "1953, 212653" and T.db.viewers.custom1.list == list, "mage list not written")
+    for class, ids in pairs(T.MOBILITY) do assert(#ids > 0, class .. " has no movement spells") end
+    assert(T:FillMobility("custom1", "NOPE") == nil, "unknown class filled")
+    ns.DB:Set(T, "viewers.custom1.list", before)
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

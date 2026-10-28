@@ -82,6 +82,24 @@ local function itemCount(id)
     return tonumber(n) or 0
 end
 
+-- Movement cooldowns per class (spell IDs; unknown or untalented ones are skipped like any entry).
+M.MOBILITY = {
+    WARRIOR = { 6544, 100, 3411 }, PALADIN = { 190784, 1044 }, HUNTER = { 781, 186257 },
+    ROGUE = { 2983, 36554, 195457 }, PRIEST = { 121536, 73325 }, DEATHKNIGHT = { 48265, 212552 },
+    SHAMAN = { 58875, 192063, 79206 }, MAGE = { 1953, 212653 }, WARLOCK = { 48020, 111400 },
+    MONK = { 109132, 115008, 119996 }, DRUID = { 1850, 252216, 102401 }, DEMONHUNTER = { 195072, 198793, 189110 },
+    EVOKER = { 358267 },
+}
+-- "Movement row": fills a custom bar's list with the class's movement spells.
+function M:FillMobility(key, class)
+    class = class or select(2, UnitClass("player"))
+    local ids = M.MOBILITY[class]
+    if not ids then return nil end
+    local list = table.concat(ids, ", ")
+    ns.DB:Set(self, "viewers." .. key .. ".list", list)
+    return list
+end
+
 -- The entries a custom bar shows now: known spells, items you carry, equipped trinkets with a use.
 function M:CustomEntries(key)
     local v, out = self:Viewer(key), {}

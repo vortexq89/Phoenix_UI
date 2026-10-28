@@ -109,6 +109,12 @@ ns:RegisterOptions("Tracker", {
       hidden = notCustom },
     { type = "input", key = "viewers.@.list", label = "TRACKER_CUSTOM_LIST", desc = "TRACKER_CUSTOM_LIST_DESC", hidden = notCustom,
       disabled = customOff, width = 320, keywords = "spell id item trinket list custom" },
+    { type = "button", label = "TRACKER_MOBILITY", desc = "TRACKER_MOBILITY_DESC", button = "TRACKER_MOBILITY_BUTTON",
+      icon = "speed", hidden = notCustom, disabled = customOff, keywords = "movement mobility blink dash sprint",
+      func = function(m, page)
+          local key = page and page.scope and page.scope.unit
+          if key then m:FillMobility(key); if page.Refresh then page:Refresh() end end
+      end },
     { type = "toggle", key = "viewers.@.trinkets", label = "TRACKER_CUSTOM_TRINKETS", desc = "TRACKER_CUSTOM_TRINKETS_DESC",
       hidden = notCustom, disabled = customOff },
     { type = "select", key = "viewers.@.show", label = "TRACKER_SHOW", desc = "TRACKER_SHOW_DESC", values = SHOW,
