@@ -17,6 +17,7 @@ codes = true
 globals = {
   "GetMinimapShape",
   "PhoenixUIDB",
+  "PhoenixUIDevDB", -- developer diagnostics (/pui dev, Core/DevDiag.lua)
   "PhoenixUIBugsDB", -- captured error reports (account-wide; read by the Phoenix Uploader app)
   "Phoenix_UIDB", "Phoenix_UIPerCharDB", -- legacy, read once by the migration then set to nil
   "PhoenixUISimDB", -- sim requests and results (account-wide; read by the Phoenix app)

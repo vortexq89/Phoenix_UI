@@ -76,6 +76,10 @@ function P:Create(kind, parent, m, page)
     stage:SetHeight(def and def.height or 120)
     stage:SetClipsChildren(true)
     stage.states = {}
+    stage.kind = kind
+    -- every stage built, for the developer diagnostics' "preview fit" check (Core/DevDiag.lua)
+    self.stages = self.stages or {}
+    self.stages[#self.stages + 1] = stage
     stage.floor = W.Texture(stage, "BACKGROUND", 1, Media.textures.FADE_V)
     stage.floor:SetPoint("BOTTOMLEFT"); stage.floor:SetPoint("BOTTOMRIGHT")
     stage.floor:SetHeight(60)

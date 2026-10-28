@@ -36,6 +36,8 @@ local function slash(msg)
         C_Timer.After(0, function() error(ns.TEST_ERROR, 0) end)
     elseif cmd == "diag" then
         ns.Diag:Run(false)
+    elseif cmd == "dev" then
+        ns.DevDiag:Slash(rest) -- developer diagnostics (opt-in), see Core/DevDiag.lua
     elseif cmd == "debug" then
         ns.debug = not ns.debug
         ns:Print(L.SLASH_DEBUG, ns.debug and L.ENABLED or L.DISABLED)

@@ -1689,6 +1689,47 @@ try("movers: default positions do not overlap", function()
     assert(#list >= 8, "too few elements checked: " .. #list)
     assert(#bad == 0, #bad .. " overlapping defaults")
 end)
+-- developer diagnostics (/pui dev): opt-in, writes PhoenixUIDevDB with ranked issues and json/text exports
+try("dev diagnostics", function()
+    local D = ns.DevDiag
+    env.PhoenixUIDevDB = nil
+    assert(not D:IsEnabled(), "dev mode must be off by default")
+    ns.TestSlash("dev on")
+    assert(D:IsEnabled(), "/pui dev on did not enable")
+    local r = D:Audit("test")
+    assert(r.summary and r.summary.critical and r.json and r.text, "report incomplete")
+    assert(r.json:sub(1, 1) == "{" and r.json:find('"summary"', 1, true), "json export malformed")
+    assert(env.PhoenixUIDevDB.last == r, "report not saved")
+    assert(#r.modules > 0, "module states missing")
+    -- a Blizzard button left at Edit Mode's icon scale must be caught (the 24-vs-40 bug)
+    local AB = ns.modules.ActionBars
+    local btn = env.ActionButton1
+    if AB:IsEnabled() and AB:IsPhoenix() and btn and env.PhoenixUI_ActionBar_bar1 then
+        local h = env.PhoenixUI_ActionBar_bar1
+        local yes = function() return true end
+        local o1, o2, o3 = rawget(btn, "GetScale"), rawget(btn, "IsVisible"), rawget(h, "IsVisible")
+        rawset(btn, "GetScale", function() return 0.6 end)
+        rawset(btn, "IsVisible", yes); rawset(h, "IsVisible", yes)
+        local r2 = D:Audit("test")
+        rawset(btn, "GetScale", o1); rawset(btn, "IsVisible", o2); rawset(h, "IsVisible", o3)
+        local found = false
+        for _, i in ipairs(r2.issues) do if i.kind == "button-scale" then found = true end end
+        assert(found, "button scale 0.6 not reported")
+    end
+    -- missing locale keys hit at runtime are counted
+    D.HookLocale()
+    local _ = ns.L.PUI_DEV_TEST_MISSING_KEY
+    local r3 = D:Audit("test")
+    local miss = false
+    for _, i in ipairs(r3.issues) do if i.kind == "locale-missing" and i.what == "PUI_DEV_TEST_MISSING_KEY" then miss = true end end
+    assert(miss, "missing locale key not reported")
+    -- severity order
+    for k = 2, #r3.issues do assert(r3.issues[k - 1].sev <= r3.issues[k].sev, "issues not ranked") end
+    assert(D.JSON({ a = { 1, 2 }, b = "x\"y" }) == '{"a":[1,2],"b":"x\\"y"}', "json encoder")
+    ns.TestSlash("dev clear")
+    ns.TestSlash("dev off")
+    assert(not D:IsEnabled(), "/pui dev off did not disable")
+end)
 try("entry points", function()
     local Lc = ns.Launcher
     assert(Lc.Refresh and Lc:IsShown(), "minimap button should be on by default")

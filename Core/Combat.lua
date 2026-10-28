@@ -28,6 +28,13 @@ ns.Events:On("PLAYER_REGEN_ENABLED", C, function()
     ns.Events:Fire("PUI_COMBAT_END")
 end)
 
+-- Keys still waiting for combat to end (developer diagnostics: leftovers out of combat are a bug).
+function C:Pending()
+    local out = {}
+    for _, k in ipairs(order) do if queue[k] then out[#out + 1] = tostring(k) end end
+    return out
+end
+
 -- get/set pair for a CVar exposed as an option (writes are deferred out of combat).
 -- kind: "bool" (default), "number" or "string" (the raw value, for CVars that hold a choice).
 function C.CVarAccessors(name, kind)

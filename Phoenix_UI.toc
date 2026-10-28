@@ -20,7 +20,7 @@
 #@end-non-debug@
 ## Category: User Interface
 ## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
-## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, Phoenix_UIDB, PhoenixUISimDB
+## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, PhoenixUIDevDB, Phoenix_UIDB, PhoenixUISimDB
 ## SavedVariablesPerCharacter: Phoenix_UIPerCharDB
 ## OptionalDeps: !BugGrabber, Details
 ## X-License: MIT
