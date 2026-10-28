@@ -11,7 +11,11 @@
 ## Dependencies: Phoenix_UI
 
 Skins.lua
+Controls.lua
+Gear.lua
+Menus.lua
 Packs.lua
 QueueTimer.lua
 Tests\Skins_test.lua
 Tests\QueueTimer_test.lua
+Tests\SkinsV2_test.lua

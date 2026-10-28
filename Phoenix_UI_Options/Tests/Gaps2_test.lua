@@ -332,3 +332,19 @@ Tests:Add("Gaps2", "nameplates: line-of-sight flash only for the line-of-sight e
   local o = X.Flash(f)
   t:ok(o:IsShown() and o.tag:GetText() == "Out of sight", "flash and tag")
 end)
+
+Tests:Add("Options", "Skins page preview follows the control switches live", function(t)
+  if not rawget(_G, "HARNESS") then return end
+  local Previews = PUI.Options.Previews
+  local card = CreateFrame("Frame", nil, UIParent)
+  local saved = Schema:Get("skins.controls.checks")
+  t:cleanup(function() Schema:Set("skins.controls.checks", saved) end)
+  Schema:Set("skins.controls.checks", true)
+  Previews.Skins(card)
+  local bag = PUI.Options.PreviewsExtras.Bag(card)
+  t:ok(bag.skWin:IsShown(), "sample window")
+  t:ok(bag.skCheck:IsShown(), "checkbox shown")
+  Schema:Set("skins.controls.checks", false)
+  Previews.Skins(card)
+  t:eq(bag.skCheck:IsShown(), false, "checkbox family off")
+end)

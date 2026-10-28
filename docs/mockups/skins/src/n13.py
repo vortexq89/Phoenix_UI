@@ -1,0 +1,15 @@
+from nu import *
+cats=['Weapons','Armor','Containers','Gems','Item Enhancement','Consumables','Glyphs','Trade Goods','Recipes','Profession Equip.','Housing','Battle Pets','Quest Items','Miscellaneous','WoW Token']
+cl='<div style="width:150px">'+''.join(f'<div class="row{" hl" if i==7 else ""}" style="height:24px;font-size:11px;padding-left:{8 if i!=8 else 18}px">{c}</div>' for i,c in enumerate(cats))+'</div>'
+res=''.join(f'<div class="row{" alt" if i%2 else ""}" style="height:30px;font-size:11px">{ic(GL[i],CL[i%8],22)}<span style="flex:1">{n}</span><span style="width:90px">{money(p)}</span><span style="width:70px;text-align:right">{q:,}</span></div>' for i,(n,p,q) in enumerate([('Ashen Ore',4,12040),('Ember Thread',12,3011),('Radiant Gem',240,88),('Cinder Leather',7,5490),('Phoenix Feather',85,402),('Charred Herb',2,22004),('Blazing Shard',31,770)]))
+hdr='<div style="display:flex;font-size:10px;color:var(--mut);padding:0 8px;height:22px;align-items:center;border-bottom:1px solid var(--line)"><span style="flex:1">Name ▴</span><span style="width:90px">Price</span><span style="width:70px;text-align:right">Available</span></div>'
+b=at(60,6,'<div style="display:flex;gap:6px;width:720px">'+'<span class="btn">★</span>'+inp('⌕ Search',280,24)+dd('Filter',90)+btn('Search','pri')+'<span style="margin-left:auto;font-size:11px" class="mut">WoW Token: '+money(312400)+'</span></div>')
+b+=at(10,42,cl)+at(170,42,'<div style="width:610px">'+hdr+res+'</div>')
+b+=at(170,300,card('Commodity buy — Ashen Ore','<div style="display:flex;gap:8px;align-items:center">'+ic(GL[0],CL[0],40)+'Quantity '+inp('200',60)+' Unit '+money(4)+' Total '+money(800)+btn('Buy Now','pri')+'</div>',600,'box-shadow:none'))
+b+=at(10,410,'<div style="width:770px;text-align:right">'+money(284512,40,12)+'</div>')
+w=bwin(X,Y,800,470,'Auction House',b,icon='Icons__Modules__64__vault',btabs=['Buy','Sell','Auctions'],on=0,portrait=True)
+it=card('Item buy (bid / buyout)',rows([('Bid','Buyout','Time'),(money(90),money(120),'Long'),(money(100),money(140),'Short')])+'<div style="margin-top:6px">'+inp('Bid 95g',90)+btn('Bid')+btn('Buyout','pri')+'</div>',300)
+se=card('Sell (tab 2)','<div style="display:flex;gap:8px">'+ic('diamond_hard','#5a3a90',44,q='rare')+'<div>Qty '+inp('3',40)+btn('Max')+'<br>Price '+inp('230 g',90)+'<br>Duration '+dd('24 h',70)+'</div></div><div style="margin-top:6px">Deposit '+money(4)+' '+btn('Post','pri')+'</div>',300)
+au=card('Auctions (tab 3)','<div>'+chip('Auctions',True)+chip('Bids')+' '+btn('↻')+'</div>'+rows([('Radiant Gem ×3',money(230),'Long'),('Ember Thread ×20',money(12),'Short')])+'<div style="margin-top:6px">'+btn('Cancel Auction')+'</div>',300)
+fl=fly(X+500,Y+500,'Auction House',[('Price font','<span class="dd" style="width:80px;height:20px">Mono</span>'),('Favourites first','<span class="tg on"></span>')])
+page2('13_auction_house','Blizzard AuctionHouseFrame (Buy / Sell / Auctions) · Ember',w+at(X+820,Y,'<div style="display:flex;flex-direction:column;gap:10px">'+it+se+au+'</div>',z=12)+at(X,Y+590,'<div style="width:800px">'+''.join([])+'</div>')+fl)
