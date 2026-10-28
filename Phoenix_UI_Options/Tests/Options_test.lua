@@ -403,6 +403,13 @@ Tests:Add("Options", "Forever page preview follows its settings live", function(
   Schema:Set("forever.flightTimer", false)
   Options.Previews.Forever(card)
   t:eq(bag(card).fvC2:GetText(), "Flight timer off", "live")
+  Tests.Keep(t, "forever.swingTimer")
+  Schema:Set("forever.swingTimer", false)
+  Options.Previews.Forever(card)
+  t:eq(bag(card).fvC4:GetText(), "Swing timer off (opt-in)", "swing off by default")
+  Schema:Set("forever.swingTimer", true)
+  Options.Previews.Forever(card)
+  t:ok(bag(card).fvC4:GetText():find("Swing  1.3", 1, true), "swing sample follows the setting")
 end)
 
 Tests:Add("Options", "review gaps: Fonts, Colours, Glows and Theme previews draw and follow settings", function(t)

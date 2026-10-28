@@ -8,7 +8,8 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 --   C|id|i|data                  chunk i      (sent 4 per second by one
 --   Ticker entry that exists only while a transfer runs)
 local S = PUI.Sentinel
-local Share = { PREFIX = "PUISEN", CHUNK = 220, out = {}, inbox = {}, nextId = 0 }
+local Share = { PREFIX = "PUISEN", CHUNK = 220, MAX_CHUNKS = 60, out = {}, inbox = {}, nextId = 0 }
+Share.MAX_BYTES = Share.MAX_CHUNKS * Share.CHUNK -- the size cap: nothing larger is ever decoded
 S.Share = Share
 
 function Share.Checksum(text) return S.Capture.Hash(text) end
@@ -89,13 +90,35 @@ function Share:Accept(sender, id)
   send("A|" .. id, sender)
 end
 
+-- Decode(text) -> report table or nil. Called only after the size cap and the
+-- checksum above have passed.
+-- APPROVED GUARDRAIL EXCEPTION (pcall), 2026-10-28, approver VortexQ8 (t96u):
+-- the text comes from another player, so a checksum-valid but malformed body
+-- (bad base64, a bomb that fails to inflate, broken JSON) must not raise a Lua
+-- error inside our own event handler. The pcall wraps only these three decode
+-- calls; anything that fails is dropped as "bad data". It never wraps Phoenix
+-- logic, so our own bugs still surface. See docs/GUARDRAIL_EXCEPTIONS.md.
+local function decode(text)
+  local packed = C_EncodingUtil.DecodeBase64(text)
+  local json = packed and C_EncodingUtil.DecompressString(packed)
+  if type(json) ~= "string" or #json > Share.MAX_BYTES * 16 then return nil end
+  return S.Export.FromJSON(json)
+end
+function Share.Decode(text)
+  if type(text) ~= "string" or #text > Share.MAX_BYTES then return nil end
+  -- guardrails-allow: pcall 2026-10-28 approver=VortexQ8 reason=decode-untrusted-received-report-after-size-cap-and-checksum-(t96u,docs/GUARDRAIL_EXCEPTIONS.md)
+  local ok, report = pcall(decode, text)
+  if ok and type(report) == "table" and type(report.message) == "string" then return report end
+  return nil
+end
+
 -- OnMessage(prefix, msg, channel, sender) -> what happened (tests read it).
 function Share:OnMessage(prefix, msg, _, sender)
   if prefix ~= self.PREFIX or type(msg) ~= "string" or PUI.Secret.IsSecret(msg) then return nil end
   local kind, id, rest = msg:match("^(%u)|([^|]+)|?(.*)$")
   if kind == "O" then
     local n, sum, bytes = rest:match("^(%d+)|(%x+)|(%d+)$")
-    if not n or tonumber(n) > 60 then return "bad offer" end
+    if not n or tonumber(n) > Share.MAX_CHUNKS or tonumber(bytes) > Share.MAX_BYTES then return "bad offer" end
     local offer = { chunks = tonumber(n), sum = sum, bytes = tonumber(bytes), parts = {}, got = 0 }
     self.inbox[sender .. "|" .. id] = offer
     return self:Prompt(sender, id, offer)
@@ -111,11 +134,10 @@ function Share:OnMessage(prefix, msg, _, sender)
     if box.got < box.chunks then return "chunk" end
     self.inbox[sender .. "|" .. id] = nil
     local text = table.concat(box.parts)
+    if #text > Share.MAX_BYTES or (box.bytes and #text ~= box.bytes) then return "bad size" end
     if Share.Checksum(text) ~= box.sum then return "checksum failed" end
-    local packed = C_EncodingUtil.DecodeBase64(text)
-    local json = packed and C_EncodingUtil.DecompressString(packed)
-    if not json then return "bad data" end
-    local report = S.Export.FromJSON(json)
+    local report = Share.Decode(text)
+    if not report then return "bad data" end
     report.receivedFrom, report.receivedAt = sender, time()
     local db = S.db
     db.received = db.received or {}
