@@ -1178,6 +1178,7 @@ PUI.SchemaIndex = {
   ["np.resource.color"] = { module = "Nameplates", file = "Phoenix_UI_Nameplates/Nameplates.lua" },
   ["np.resource.enabled"] = { module = "Nameplates", file = "Phoenix_UI_Nameplates/Nameplates.lua" },
   ["np.resource.height"] = { module = "Nameplates", file = "Phoenix_UI_Nameplates/Nameplates.lua" },
+  ["np.rules.imported"] = { module = "Nameplates", file = "Phoenix_UI_Nameplates/DataPacks.lua" },
   ["np.rules.list"] = { module = "Nameplates", file = "Phoenix_UI_Nameplates/Nameplates.lua" },
   ["np.rules.packs"] = { module = "Nameplates", file = "Phoenix_UI_Nameplates/Extras.lua" },
   ["np.rules.priority"] = { module = "Nameplates", file = "Phoenix_UI_Nameplates/Nameplates.lua" },

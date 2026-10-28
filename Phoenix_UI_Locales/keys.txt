@@ -1938,6 +1938,7 @@ Ignore my own lines
 Important aura border colour
 Important cast glow colour
 Important or purgeable buffs, right of the plate.
+Imported NPC colour packs
 In Mythic raids only the 20 players in groups 1 to 4 are shown; benched players in groups 5 to 8 are left out.
 In Mythic+, hide reminders on keys at or above this level (0 never hides).
 In Mythic+, how much enemy forces an enemy is worth (data from the M+ tracker).
@@ -2448,6 +2449,7 @@ Party sorting
 Party target dots
 Party target frames
 Party: you
+Paste a Phoenix pack string (PUIPACK1|name|instance|rules). Then add its name, shown on the row, to Rule packs in use. A pack with an instance id works only inside that dungeon or raid.
 Pause key
 Pause on hover
 Pauses Phoenix's stats while BigWigs or DBM is loaded, so nothing is counted twice.
