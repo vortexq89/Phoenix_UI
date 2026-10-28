@@ -50,9 +50,11 @@ local function setValue(page, m, item, value, key)
         ns.Events:Fire("PUI_SETTING_CHANGED", m.key, key or item.label, value)
     elseif page.scope and key:find("@", 1, true) then
         -- item.single: a per-element value (a position) that must never be copied onto the other selected elements
-        for _, unit in ipairs(item.single and { page.scope.unit } or page:Targets()) do
+        local targets = item.single and { page.scope.unit } or page:Targets()
+        for _, unit in ipairs(targets) do
             ns.DB:Set(m, (key:gsub("@", unit)), type(value) == "table" and U.DeepCopy(value) or value)
         end
+        if #targets > 1 and page.scope.bar then page.scope.bar.units:Flash(targets) end
     else
         ns.DB:Set(m, key, value)
     end
@@ -343,6 +345,11 @@ local function applyToAll(page, m, item)
         end
     end
     Config:SetStatus(L.APPLIED_TO_ALL:format(text(item.label)), "state.success", "apply-all")
+    if page.scope.bar then
+        local all = {}
+        for k, e in ipairs(page.scope.values) do all[k] = e.value end
+        page.scope.bar.units:Flash(all)
+    end
     return n
 end
 Config.ApplyRowToAll = applyToAll
@@ -740,6 +747,7 @@ local function buildScope(page, m, item)
     local scope = page.scope
 
     local bar = CreateFrame("Frame", nil, page.scroll.child)
+    scope.bar = bar
     bar:SetHeight(64)
     bar.title = W.Text(bar, "heading", "text.muted")
     bar.title:SetPoint("TOPLEFT", 0, -2)
@@ -852,6 +860,7 @@ local function buildScope(page, m, item)
                 ns.DB:Set(m, scope.root .. "." .. unit, copy)
             end
         end
+        bar.units:Flash(page:Targets())
         Config:SetStatus(L.COPIED_FROM:format(text(bar.copy.current and bar.copy.current.label or src)), "state.success", "copy")
         bar.copy:SetValue(nil)
         page:Refresh()

@@ -36,6 +36,24 @@ function W:Chips(parent, items, multi)
         end
     end
 
+    -- "applied" flash: a pulse on the chips whose element just received an edit (multi-select, Edit all, copy)
+    function s:Flash(values)
+        local set = {}
+        for _, v in ipairs(values or {}) do set[v] = true end
+        for _, c in ipairs(self.chips) do
+            if c:IsShown() and set[c.value] then
+                if not c.glow then
+                    c.glow = W.Texture(c, "ARTWORK", 3, Media.textures.PILL)
+                    c.glow:SetAllPoints()
+                    c.glow:SetAlpha(0)
+                end
+                W.Color(c.glow, "accent.primary", 1)
+                ns.Anim:Tween(c.glow, 0.8, 1, 0, function(v) c.glow:SetAlpha(0.55 * v) end)
+            end
+        end
+        self.lastFlash = values
+    end
+
     local function chip(i)
         local c = s.chips[i]
         if c then return c end

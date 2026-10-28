@@ -1720,6 +1720,8 @@ try("multi-select editing", function()
                 assert(not three or U_GetPath(m.db[root][c], leaf) == old[3], key .. ": an unselected element changed")
                 ns.DB:Set(m, root .. "." .. b .. "." .. leaf, v + 1)
                 assert(C.IsMixed(page, m, row.item), key .. ": mixed values not detected")
+                local fl = sc.bar.units.lastFlash
+                assert(fl and #fl == 2, key .. ": the edited elements did not flash")
                 sc.mode = "all"
                 C.SetRowValue(page, m, row.item, v)
                 for _, e in ipairs(sc.values) do
