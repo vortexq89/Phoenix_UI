@@ -1787,6 +1787,25 @@ try("mover popup", function()
     Mv:ClosePopup()
     assert(not p:IsShown(), "popup did not close")
 end)
+-- setup wizard: style -> modules -> scale and layout; rerunnable from Presets
+try("setup wizard", function()
+    local C, ui = ns.Config, ns.DB.sv.global.ui
+    local gen = ns.modules.General
+    local before = gen.db.scale.enabled
+    local pk = C:RunSetupWizard()
+    assert(pk and pk:IsShown(), "wizard did not start")
+    pk.skip.onClick()
+    local mp = C:ShowModulePicker(true)
+    mp.keep.onClick()
+    local f = C:ShowSetupFinish(true)
+    assert(f and f:IsShown(), "the last step did not open")
+    f.scale.onChange(f.scale, "pixel")
+    assert(gen.db.scale.enabled and gen.db.scale.auto, "pixel-perfect choice not applied")
+    f.done.onClick()
+    assert(ui.setupDone and not f:IsShown(), "finish did not close the wizard")
+    assert(C:ShowSetupFinish() == nil, "the last step reopened after it was done")
+    ns.DB:Set(gen, "scale.enabled", before)
+end)
 -- tab consistency: every tab of every module page has settings, no setting appears on two tabs
 try("tab consistency", function()
     local C = ns.Config

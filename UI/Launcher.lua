@@ -39,7 +39,8 @@ function Launcher:Load()
 end
 
 -- Front-door methods; Phoenix_UI_Options' Window.lua replaces them on the same table.
-for _, name in ipairs({ "Toggle", "Show", "ResetPosition", "ShowStylePicker", "ShowModulePicker" }) do
+for _, name in ipairs({ "Toggle", "Show", "ResetPosition", "ShowStylePicker", "ShowModulePicker", "ShowSetupFinish",
+    "RunSetupWizard" }) do
     local front
     front = function(self, ...)
         if not Launcher:Load() or Config[name] == front then return end
@@ -130,6 +131,9 @@ ns.Events:On("PLAYER_LOGIN", Launcher, function()
     local ui = ns.DB.sv.global.ui
     if not ns.DB.fresh or ui.stylePicked then return end
     C_Timer.After(4, function()
-        if not InCombatLockdown() then ns.SafeCall(Config.ShowStylePicker, Config) end
+        if not InCombatLockdown() then
+            ns.SafeCall(Config.ShowStylePicker, Config)
+            ns.SafeCall(Config.ShowSetupFinish, Config) -- the wizard's last step, when a module reload cut it off
+        end
     end)
 end)

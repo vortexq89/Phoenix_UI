@@ -198,6 +198,8 @@ local schema = {
       end },
     { type = "button", label = "PRESETS_PICKER", desc = "PRESETS_PICKER_DESC", button = "PRESETS_PICKER_BUTTON", icon = "preview",
       func = function() Config:ShowStylePicker(true) end },
+    { type = "button", label = "SETUP_WIZARD", desc = "SETUP_WIZARD_DESC", button = "SETUP_WIZARD_BUTTON", icon = "presets",
+      keywords = "first install setup wizard start", func = function() Config:RunSetupWizard() end },
     { type = "button", label = "MODPICK_OPEN", desc = "MODPICK_OPEN_DESC", button = "MODPICK_OPEN_BUTTON", icon = "addon",
       keywords = "modules choose enable disable first install", func = function() Config:ShowModulePicker(true) end },
 }
@@ -212,6 +214,7 @@ function Config:ShowStylePicker(force)
     local ui = ns.DB.sv.global.ui
     if not force and (ui.stylePicked or not ns.DB.fresh) then return end
     if InCombatLockdown() then return end
+    ui.setupStarted = true
     if not picker then
         picker = W:Popup(L.STYLE_PICKER_TITLE, 760, 286, "presets")
         picker.intro = W.Text(picker, "body", "text.secondary", "LEFT")
@@ -225,14 +228,16 @@ function Config:ShowStylePicker(force)
                 applied(choice)
                 ui.stylePicked = choice.key
                 picker:Hide()
-                Config:ShowModulePicker()
+                Config:ShowModulePicker(Config.wizardForce)
             end)
             c:SetPoint("TOPLEFT", 18 + (i - 1) * 244, -80)
             picker.cards[i] = c
         end
         picker.skip = W:Button(picker, L.STYLE_PICKER_SKIP, "secondary", nil, 140)
         picker.skip:SetPoint("BOTTOMRIGHT", -18, 14)
-        picker.skip.onClick = function() ui.stylePicked = "skip"; picker:Hide(); Config:ShowModulePicker() end
+        picker.skip.onClick = function()
+            ui.stylePicked = "skip"; picker:Hide(); Config:ShowModulePicker(Config.wizardForce)
+        end
         picker.close.onClick = picker.skip.onClick
     end
     picker:Show()
@@ -319,7 +324,7 @@ function Config:ShowModulePicker(force)
         modPicker.keep:SetPoint("RIGHT", modPicker.apply, "LEFT", -10, 0)
     end
     for _, r in ipairs(modPicker.rows) do r.toggle:SetValue(r.module.db.enabled) end
-    modPicker.keep.onClick = function() ui.modulesPicked = true; modPicker:Hide() end
+    modPicker.keep.onClick = function() ui.modulesPicked = true; modPicker:Hide(); Config:ShowSetupFinish(Config.wizardForce) end
     modPicker.close.onClick = modPicker.keep.onClick
     modPicker.apply.onClick = function()
         local reload = needsReload()
@@ -329,11 +334,71 @@ function Config:ShowModulePicker(force)
         end
         ui.modulesPicked = true
         modPicker:Hide()
-        if reload then ReloadUI() return end
+        if reload then ReloadUI() return end -- the last step opens after the reload (UI/Launcher.lua)
         Config:SetStatus(L.MODPICK_DONE:format(n), "state.success", "addon")
         refreshPage()
+        Config:ShowSetupFinish(Config.wizardForce)
     end
     refreshApply()
     modPicker:Show()
     return modPicker
+end
+
+---------------------------------------------------------------- first-install last step: scale and layout
+--[[ Third and last step of the setup wizard (style -> modules -> this): pick the UI scale (pixel-perfect for
+    this screen, or keep the game's), then finish or go straight to Layout mode to arrange the frames. Opens by
+    itself once after the module step (also after its reload); rerun the whole wizard from Presets. ]]
+local finish
+function Config:ShowSetupFinish(force)
+    local ui = ns.DB.sv.global.ui
+    if not force and (ui.setupDone or not ui.setupStarted) then return end
+    if InCombatLockdown() then return end
+    Config.wizardForce = nil
+    local gen = ns.modules.General
+    if not finish then
+        finish = W:Popup(L.SETUP_FINISH_TITLE, 560, 230, "layout")
+        finish.intro = W.Text(finish, "body", "text.secondary", "LEFT")
+        finish.intro:SetPoint("TOPLEFT", 18, -44)
+        finish.intro:SetPoint("RIGHT", -18, 0)
+        finish.intro:SetWordWrap(true)
+        finish.intro:SetText(L.SETUP_FINISH_INTRO)
+        finish.scaleLabel = W.Text(finish, "heading", "text.muted")
+        finish.scaleLabel:SetPoint("TOPLEFT", 18, -96)
+        finish.scaleLabel:SetText(L.SETUP_SCALE:upper())
+        finish.scale = W:Chips(finish, { { value = "pixel", label = L.SETUP_SCALE_PIXEL },
+            { value = "game", label = L.SETUP_SCALE_GAME } })
+        finish.scale:SetPoint("TOPLEFT", 18, -116)
+        finish.scale.onChange = function(_, v)
+            if not gen or not gen.db then return end
+            ns.DB:Set(gen, "scale.enabled", v == "pixel")
+            if v == "pixel" then ns.DB:Set(gen, "scale.auto", true) end
+        end
+        finish.arrange = W:Button(finish, L.SETUP_ARRANGE, "primary", "movers", 190)
+        finish.arrange:SetPoint("BOTTOMRIGHT", -18, 14)
+        finish.done = W:Button(finish, L.SETUP_DONE, "secondary", "check", 140)
+        finish.done:SetPoint("RIGHT", finish.arrange, "LEFT", -10, 0)
+        local function close()
+            ui.setupDone = true
+            finish:Hide()
+        end
+        finish.done.onClick = close
+        finish.close.onClick = close
+        finish.arrange.onClick = function()
+            close()
+            local mv = ns.modules.Movers
+            if mv and mv:IsEnabled() then
+                if _G.PhoenixUI_Config then _G.PhoenixUI_Config:Hide() end
+                mv:SetUnlocked(true)
+            end
+        end
+    end
+    finish.scale:SetValue(gen and gen.db and gen.db.scale and gen.db.scale.enabled and "pixel" or "game")
+    finish:Show()
+    return finish
+end
+
+-- The whole wizard again (Presets > Setup wizard): every step opens even when it was done before.
+function Config:RunSetupWizard()
+    Config.wizardForce = true
+    return Config:ShowStylePicker(true)
 end
