@@ -16,6 +16,7 @@
     <Script file="Skins\Popups.lua"/>
     <Script file="Skins\Kit.lua"/>
     <Script file="Skins\GroupFinder.lua"/>
+    <Script file="Skins\Talents.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>

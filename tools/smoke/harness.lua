@@ -2180,6 +2180,20 @@ try("group finder skin", function()
     ns.Events:Fire("PUI_THEME_CHANGED")
     env.LFGListFrame, env.LFGDungeonReadyDialog = nil, nil
 end)
+-- talents & spellbook (plan window 8): ring colour from plain ranks, rings and vignette live off/on
+try("talents skin", function()
+    local S = ns.modules.Skins
+    assert(S.NodeRingToken({ activeRank = 1 }) == "accent.primary" and S.NodeRingToken({ activeRank = 0 }) == "border.subtle"
+        and S.NodeRingToken(nil) == "border.subtle", "ring tokens")
+    local node = CreateFrame("Button", nil, UIParent)
+    node.GetNodeInfo = function() return { activeRank = 2 } end
+    local psf = CreateFrame("Frame", "PlayerSpellsFrame", UIParent)
+    psf.TalentsFrame = CreateFrame("Frame", nil, psf)
+    psf.TalentsFrame.EnumerateAllTalentButtons = function() local d; return function() if not d then d = true; return node end end end
+    env.PlayerSpellsFrame = psf
+    S:SkinTalents(); S.db.spellbook = false; S:SkinTalents(); S.db.spellbook = true; S:SkinTalents()
+    env.PlayerSpellsFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
