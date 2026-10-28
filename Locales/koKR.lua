@@ -545,6 +545,8 @@ local T = {
     AUTO_RARE_TARGET = "대상 지정",
     AUTO_RARE_WAYPOINT = "경유지",
     AUTO_RARE_SEEN = "희귀: %s",
+    AUTO_KNOWN = "상인에서 이미 배움 표시",
+    AUTO_KNOWN_DESC = "이미 배운 제조법, 탈것, 애완동물, 장난감을 상인 창에서 초록색으로 표시합니다.",
     AUTO_SKIP_CINEMATICS = "동영상 건너뛰기",
     AUTO_SKIP_CINEMATICS_DESC = "이미 본 동영상을 건너뜁니다. Shift를 누르고 있으면 시청합니다.",
     ---------------------------------------------------------------- Mythic+

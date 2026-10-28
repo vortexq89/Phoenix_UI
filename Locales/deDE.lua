@@ -545,6 +545,8 @@ local T = {
     AUTO_RARE_TARGET = "Anvisieren",
     AUTO_RARE_WAYPOINT = "Wegpunkt",
     AUTO_RARE_SEEN = "Selten: %s",
+    AUTO_KNOWN = "Bereits bekannt bei Händlern",
+    AUTO_KNOWN_DESC = "Bereits bekannte Rezepte, Reittiere, Haustiere und Spielzeuge werden beim Händler grün gefärbt.",
     AUTO_SKIP_CINEMATICS = "Zwischensequenzen überspringen",
     AUTO_SKIP_CINEMATICS_DESC = "Überspringt bereits gesehene Zwischensequenzen. Halte Umschalt, um sie anzusehen.",
     ---------------------------------------------------------------- Mythic+

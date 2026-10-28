@@ -29,7 +29,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | 7 | Rare alert secure target button + waypoint | RareScanner (no EUI version) | built (Automation > Rare alert) |
 | 8 | Copy armory link in unit menus | Raider.IO (no EUI version) | built (Chat > Armory link in menus) |
 | 9 | Merchant bulk buy | EllesmereUI BlizzardSkin | built (Alt+click at a vendor) |
-| 10 | Already Known tint, upgrade planner, aura glows, quickdraw ring, macro factory, quest item hotkey, movement CD row | EllesmereUI (WindTools / QoL / CDM / Quickdraw) | later (P3) |
+| 10 | Already Known tint (built: Automation > Already known at merchants), upgrade planner, aura glows, quickdraw ring, macro factory, quest item hotkey, movement CD row | EllesmereUI (WindTools / QoL / CDM / Quickdraw) | later (P3) |
 | 11 | Selling/cancelling in AH, wardrobe collection list, PGF skin, BiS import, BigWigs per-ability grid | Auctionator / BetterWardrobe / PGF / SpecBisTooltip / BigWigs | later (P3) |
 
 ## Every feature

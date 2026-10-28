@@ -545,6 +545,8 @@ local T = {
     AUTO_RARE_TARGET = "Bersaglio",
     AUTO_RARE_WAYPOINT = "Punto di passaggio",
     AUTO_RARE_SEEN = "Raro: %s",
+    AUTO_KNOWN = "Già conosciuto dai mercanti",
+    AUTO_KNOWN_DESC = "Ricette, cavalcature, mascotte e giocattoli già conosciuti sono colorati di verde dai mercanti.",
     AUTO_SKIP_CINEMATICS = "Salta i filmati",
     AUTO_SKIP_CINEMATICS_DESC = "Salta i filmati già visti. Tieni premuto Maiusc per guardarli.",
     ---------------------------------------------------------------- Mythic+

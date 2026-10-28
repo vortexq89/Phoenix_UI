@@ -75,6 +75,7 @@
     <Script file="Automation\Automation.lua"/>
     <Script file="Automation\BulkBuy.lua"/>
     <Script file="Automation\RareAlert.lua"/>
+    <Script file="Automation\AlreadyKnown.lua"/>
     <Script file="Quests\Quests.lua"/>
     <Script file="Quests\Tracker.lua"/>
     <Script file="Quests\Pins.lua"/>

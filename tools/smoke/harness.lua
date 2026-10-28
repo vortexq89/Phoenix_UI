@@ -1853,6 +1853,17 @@ try("casts on me", function()
     assert(CB.bars.onme and #CB.bars.onme == 6, "casts-on-me bars not built")
     assert(CB:Bar("onme").enabled == false and CB:Bar("onme").count == 4, "defaults")
 end)
+-- already known: the game's own tooltip line decides
+try("already known tint", function()
+    local A = ns.modules.Automation
+    local old = rawget(env, "ITEM_SPELL_KNOWN")
+    rawset(env, "ITEM_SPELL_KNOWN", "Already known")
+    assert(A.TooltipSaysKnown({ lines = { { leftText = "Recipe" }, { leftText = "Already known" } } }), "known line missed")
+    assert(not A.TooltipSaysKnown({ lines = { { leftText = "Recipe" } } }), "unknown item tinted")
+    assert(not A.TooltipSaysKnown(nil), "nil data tinted")
+    rawset(env, "ITEM_SPELL_KNOWN", old)
+    A:SetupAlreadyKnown(); A.PaintKnown()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

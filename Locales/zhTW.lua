@@ -545,6 +545,8 @@ local T = {
     AUTO_RARE_TARGET = "選取",
     AUTO_RARE_WAYPOINT = "路徑點",
     AUTO_RARE_SEEN = "稀有：%s",
+    AUTO_KNOWN = "商人處已學會",
+    AUTO_KNOWN_DESC = "已學會的配方、坐騎、寵物和玩具在商人處顯示為綠色。",
     AUTO_SKIP_CINEMATICS = "跳過過場動畫",
     AUTO_SKIP_CINEMATICS_DESC = "跳過已看過的過場動畫。按住 Shift 可觀看。",
     ---------------------------------------------------------------- Mythic+

@@ -545,6 +545,8 @@ local T = {
     AUTO_RARE_TARGET = "Objetivo",
     AUTO_RARE_WAYPOINT = "Punto de ruta",
     AUTO_RARE_SEEN = "Raro: %s",
+    AUTO_KNOWN = "Ya conocido en vendedores",
+    AUTO_KNOWN_DESC = "Recetas, monturas, mascotas y juguetes que ya conoces se tiñen de verde en los vendedores.",
     AUTO_SKIP_CINEMATICS = "Saltar cinemáticas",
     AUTO_SKIP_CINEMATICS_DESC = "Salta las cinemáticas que ya has visto. Mantén Mayús para verlas.",
     ---------------------------------------------------------------- Mythic+

@@ -545,6 +545,8 @@ local T = {
     AUTO_RARE_TARGET = "Cibler",
     AUTO_RARE_WAYPOINT = "Point de passage",
     AUTO_RARE_SEEN = "Rare : %s",
+    AUTO_KNOWN = "Déjà connu chez les marchands",
+    AUTO_KNOWN_DESC = "Les recettes, montures, mascottes et jouets déjà connus sont teintés en vert chez les marchands.",
     AUTO_SKIP_CINEMATICS = "Passer les cinématiques",
     AUTO_SKIP_CINEMATICS_DESC = "Passe les cinématiques déjà vues. Maintenez Maj pour les regarder.",
     ---------------------------------------------------------------- Mythic+

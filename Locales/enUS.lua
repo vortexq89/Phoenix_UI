@@ -565,6 +565,8 @@ ns.RegisterLocale("enUS", {
     AUTO_RARE_TARGET = "Target",
     AUTO_RARE_WAYPOINT = "Waypoint",
     AUTO_RARE_SEEN = "Rare: %s",
+    AUTO_KNOWN = "Already known at merchants",
+    AUTO_KNOWN_DESC = "Recipes, mounts, pets and toys you already know are tinted green at vendors.",
     AUTO_SKIP_CINEMATICS = "Skip cinematics",
     AUTO_SKIP_CINEMATICS_DESC = "Skip cinematics you've seen. Hold Shift to watch.",
 
