@@ -200,7 +200,8 @@ end
 function Sk:Text(fs, role, colorToken, size, flags)
     recordFont(fs)
     local path, rsize, rflags = Theme:Font(role, size)
-    fs:SetFont(path, rsize, flags or rflags)
+    -- Phoenix's own interface text never goes under 12 (user text specs are left alone: see TextSpec)
+    fs:SetFont(path, math.max(12, rsize), flags or rflags)
     if flags == nil and rflags == "" then
         fs:SetShadowColor(0, 0, 0, 0.85)
         fs:SetShadowOffset(1, -1)

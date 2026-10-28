@@ -13,17 +13,19 @@ end
 
 -- Surfaces & text are shared by every preset; presets change the accent family.
 T.base = {
-    ["bg.base"]       = c("0E0F13", 0.94),
-    ["bg.raised"]     = c("16181E", 0.97),
-    ["bg.sunken"]     = c("0A0B0E", 0.92),
-    ["bg.hover"]      = c("1F222A", 1),
-    ["bg.overlay"]    = c("000000", 0.55),
-    ["border.subtle"] = c("262A33", 1),
-    ["border.strong"] = c("3A3F4B", 1),
+    -- opaque surfaces: a see-through window tinted every card with the world behind it (brown and muddy over
+    -- the red and orange zones); contrast steps between base, raised and sunken are wide enough to read at a glance
+    ["bg.base"]       = c("0B0C10", 1),
+    ["bg.raised"]     = c("15171D", 1),
+    ["bg.sunken"]     = c("07080A", 1),
+    ["bg.hover"]      = c("20232B", 1),
+    ["bg.overlay"]    = c("000000", 0.6),
+    ["border.subtle"] = c("2B2F39", 1),
+    ["border.strong"] = c("454B59", 1),
     ["border.black"]  = c("000000", 1),
-    ["text.primary"]  = c("ECEEF2", 1),
-    ["text.secondary"] = c("A3A9B6", 1),
-    ["text.muted"]    = c("6B7180", 1),
+    ["text.primary"]  = c("F4F5F8", 1),
+    ["text.secondary"] = c("B9BFCB", 1),
+    ["text.muted"]    = c("8A90A0", 1),
     ["state.success"] = c("3DDC97", 1),
     ["state.warning"] = c("FFC24B", 1),
     ["state.danger"]  = c("FF4D5E", 1),
@@ -39,14 +41,15 @@ T.presets = {
     { key = "custom", label = "THEME_CUSTOM" },
 }
 
+-- No role below 12: smaller sizes turn into blurry, blocky glyphs once the UI scale goes under 0.7.
 T.fontRoles = {
     brand   = { font = "CinzelBold",        size = 20, flags = "" },
-    title   = { font = "InterBold",         size = 17, flags = "" },
-    heading = { font = "CondensedBold",     size = 11, flags = "" },
-    body    = { font = "RobotoMedium",      size = 12, flags = "" },
-    desc    = { font = "Roboto",            size = 11, flags = "" },
-    number  = { font = "CondensedSemiBold", size = 12, flags = "" },
-    small   = { font = "CondensedMedium",   size = 10, flags = "" },
+    title   = { font = "InterBold",         size = 18, flags = "" },
+    heading = { font = "CondensedBold",     size = 12, flags = "" },
+    body    = { font = "RobotoMedium",      size = 13, flags = "" },
+    desc    = { font = "Roboto",            size = 12, flags = "" },
+    number  = { font = "CondensedSemiBold", size = 13, flags = "" },
+    small   = { font = "CondensedMedium",   size = 12, flags = "" },
     unit    = { font = "CondensedSemiBold", size = 12, flags = "" },
     combat  = { font = "CondensedBold",     size = 16, flags = "OUTLINE" },
 }
@@ -112,7 +115,7 @@ function T:Rebuild()
     tokens["accent.primary"] = { r, g, b, 1 }
     tokens["accent.secondary"] = { p.secondary[1], p.secondary[2], p.secondary[3], 1 }
     tokens["accent.glow"] = { p.glow[1], p.glow[2], p.glow[3], 0.35 }
-    tokens["accent.soft"] = { r, g, b, 0.14 }
+    tokens["accent.soft"] = { r, g, b, 0.10 }
     local tr, tg, tb = lighten(r, g, b, 0.15)
     tokens["accent.text"] = { tr, tg, tb, 1 }
     -- Appearance & General overrides every module inherits: the colour of element borders that follow the theme
