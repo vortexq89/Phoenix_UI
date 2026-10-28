@@ -247,9 +247,31 @@ function M:LayoutItems(h, points, w, hh, pad, n)
     end
 end
 
+-- "shift-e" / "Ctrl + Q" -> "SHIFT-E" / "CTRL-Q"; nil for an empty or unusable key.
+function M.NormalizeKey(text)
+    local k = tostring(text or ""):upper():gsub("%s*%+%s*", "-"):gsub("%s+", "")
+    if k == "" or k:sub(-1) == "-" then return nil end
+    return k
+end
+
+-- The item hotkey presses the first item button (out of combat only: bindings cannot change in combat).
+local hotkeyOwner
+local function bindHotkey()
+    hotkeyOwner = hotkeyOwner or CreateFrame("Frame")
+    ClearOverrideBindings(hotkeyOwner)
+    local key = M.NormalizeKey(M.db.items.hotkey)
+    local first = itemButtons[1]
+    if key and first and first.itemID and first:IsShown() then
+        SetOverrideBindingClick(hotkeyOwner, true, key, first:GetName(), "LeftButton")
+    end
+    M.itemHotkey = key
+end
+M.BindItemHotkey = bindHotkey
+
 local function itemsNow()
     scanItems()
     M:RefreshBar("items")
+    bindHotkey()
 end
 
 function M:RefreshItems()

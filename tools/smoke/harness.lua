@@ -1864,6 +1864,15 @@ try("already known tint", function()
     rawset(env, "ITEM_SPELL_KNOWN", old)
     A:SetupAlreadyKnown(); A.PaintKnown()
 end)
+-- quest item hotkey: key text normalised; binding only set out of combat through the item bar refresh
+try("quest item hotkey", function()
+    local AB = ns.modules.ActionBars
+    assert(AB.NormalizeKey("shift-e") == "SHIFT-E" and AB.NormalizeKey("Ctrl + Q") == "CTRL-Q", "normalise")
+    assert(AB.NormalizeKey("") == nil and AB.NormalizeKey("SHIFT-") == nil, "empty / broken key bound")
+    AB.db.items.hotkey = "SHIFT-E"; AB.BindItemHotkey()
+    assert(AB.itemHotkey == "SHIFT-E", "hotkey not taken")
+    AB.db.items.hotkey = ""; AB.BindItemHotkey()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

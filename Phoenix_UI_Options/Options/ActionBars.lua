@@ -178,4 +178,6 @@ ns:RegisterOptions("ActionBars", {
     { type = "toggle", key = "items.quest", label = "AB_ITEMS_QUEST", desc = "AB_ITEMS_QUEST_DESC", disabled = noBars, combat = true },
     { type = "input", key = "items.list", label = "AB_ITEMS_LIST", desc = "AB_ITEMS_LIST_DESC", disabled = noBars, combat = true,
       keywords = "item id consumables potions" },
+    { type = "input", key = "items.hotkey", label = "AB_ITEMS_HOTKEY", desc = "AB_ITEMS_HOTKEY_DESC", disabled = noBars, combat = true,
+      keywords = "quest item key bind hotkey" },
 })

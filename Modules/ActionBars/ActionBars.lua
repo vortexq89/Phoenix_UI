@@ -79,7 +79,7 @@ local DEFAULTS = {
     extra = { skin = true, scale = 1, hideArt = false },
     vehicle = { enabled = true, size = 36 },
     micro = "bar", bags = "bar",
-    items = { quest = true, list = "" },
+    items = { quest = true, list = "", hotkey = "" }, -- hotkey: uses the first item (e.g. "SHIFT-E")
 }
 
 local M = ns:NewModule("ActionBars", {

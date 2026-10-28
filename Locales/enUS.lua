@@ -807,6 +807,8 @@ ns.RegisterLocale("enUS", {
     AB_ITEMS = "Item bar",
     AB_ITEMS_LIST = "Extra items",
     AB_ITEMS_LIST_DESC = "Item IDs separated by spaces or commas; shown while you carry them.",
+    AB_ITEMS_HOTKEY = "Quest item key",
+    AB_ITEMS_HOTKEY_DESC = "A key that uses the first item on the bar, e.g. SHIFT-E. Empty: none.",
     AB_ITEMS_NOTE = "The item bar works with Phoenix bars. Turn it on and place it in the Bars tab.",
     AB_ITEMS_QUEST = "Usable quest items",
     AB_ITEMS_QUEST_DESC = "Quest items in your bags that have a use appear on the bar by themselves.",
