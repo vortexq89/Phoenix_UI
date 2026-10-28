@@ -12,5 +12,7 @@
 
 CooldownManager.lua
 Extras.lua
+Masque.lua
 Tests\CooldownManager_test.lua
 Tests\Extras_test.lua
+Tests\Masque_test.lua

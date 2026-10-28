@@ -2256,6 +2256,10 @@ Marks units tied to one of your active quests.
 Marks upgrades in Phoenix bags (Vault).
 Mask applied to each skinned button's icon.
 Masque skins
+Masque: Cooldown Manager icons
+Masque: action bars
+Masque: auto item bars
+Masque: stance, pet, vehicle and item bar
 Match the player frame width when attached
 Match time above the frames.
 Match timer
@@ -4185,6 +4189,10 @@ Wisdom
 With BigWigs loaded, adds a "Phoenix UI" bar style you can pick in BigWigs' bar options.
 With FrameSort loaded, the arena numbers follow its sorted enemy order (matching its EnemyFrame macros).
 With In game only, also leave out friends playing a different version of World of Warcraft.
+With Masque installed, Cooldown Manager icons use the "Phoenix UI: Cooldown Manager" Masque group.
+With Masque installed, Phoenix action bars use the skin you pick for each "Phoenix UI: Action bar" group in Masque.
+With Masque installed, each auto item bar uses its own Masque group.
+With Masque installed, the stance, pet, vehicle exit and item bars use their Masque groups.
 With Masque loaded, cast icons use the skin you pick for "Phoenix UI: Cast History" in Masque.
 With Raider.IO loaded, adds the leader's Raider.IO score to each row (filter words rio and riomain work either way).
 With several elements selected, dragging one moves them all.

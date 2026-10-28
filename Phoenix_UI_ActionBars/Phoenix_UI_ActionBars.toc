@@ -16,6 +16,7 @@ ItemBars.lua
 KeybindMode.lua
 ActionBars.lua
 Extras.lua
+Masque.lua
 Tests\ActionBars_test.lua
 Tests\Extras_test.lua
 Tests\ItemBars_test.lua

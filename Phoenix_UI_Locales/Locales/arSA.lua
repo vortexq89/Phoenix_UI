@@ -4273,4 +4273,12 @@ PUI.Locale:Add("arSA", {
   ["Which way auto item bar 3 adds buttons."] = "الاتجاه الذي يضيف فيه شريط الأغراض التلقائي 3 الأزرار.",
   ["Which way auto item bar 4 adds buttons."] = "الاتجاه الذي يضيف فيه شريط الأغراض التلقائي 4 الأزرار.",
   ["Which way auto item bar 5 adds buttons."] = "الاتجاه الذي يضيف فيه شريط الأغراض التلقائي 5 الأزرار.",
+  ["Masque: Cooldown Manager icons"] = "Masque: أيقونات مدير فترات التهدئة",
+  ["Masque: action bars"] = "Masque: أشرطة الأفعال",
+  ["Masque: auto item bars"] = "Masque: أشرطة الأغراض التلقائية",
+  ["Masque: stance, pet, vehicle and item bar"] = "Masque: أشرطة الوضعيات والحيوان الأليف والمركبة والأغراض",
+  ["With Masque installed, Cooldown Manager icons use the \"Phoenix UI: Cooldown Manager\" Masque group."] = "عند تثبيت Masque، تستخدم أيقونات مدير فترات التهدئة مجموعة Masque \"Phoenix UI: Cooldown Manager\".",
+  ["With Masque installed, Phoenix action bars use the skin you pick for each \"Phoenix UI: Action bar\" group in Masque."] = "عند تثبيت Masque، تستخدم أشرطة أفعال Phoenix المظهر الذي تختاره لكل مجموعة \"Phoenix UI: Action bar\" في Masque.",
+  ["With Masque installed, each auto item bar uses its own Masque group."] = "عند تثبيت Masque، يستخدم كل شريط أغراض تلقائي مجموعة Masque الخاصة به.",
+  ["With Masque installed, the stance, pet, vehicle exit and item bars use their Masque groups."] = "عند تثبيت Masque، تستخدم أشرطة الوضعيات والحيوان الأليف والخروج من المركبة والأغراض مجموعات Masque الخاصة بها.",
 })

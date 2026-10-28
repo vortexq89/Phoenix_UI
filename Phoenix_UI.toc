@@ -9,7 +9,7 @@
 ## Category: Phoenix UI
 ## AddonCompartmentFunc: PhoenixUI_OnAddonCompartmentClick
 ## SavedVariables: PhoenixUIDB
-## OptionalDeps: !BugGrabber
+## OptionalDeps: !BugGrabber, Masque
 ## X-BugGrabber-Display: PhoenixUIBugDisplay
 
 Core\ClientGate.lua
@@ -52,6 +52,7 @@ Core\Prediction.lua
 Core\Targeting.lua
 Core\Coexist.lua
 Core\Items.lua
+Core\Masque.lua
 Core\Movers.lua
 Core\Windows.lua
 Core\Queue.lua
