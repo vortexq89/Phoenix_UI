@@ -35,13 +35,13 @@ P:Register("datatexts", {
             local scale = math.min(db.scale * 1.05, 1.4)
             m:StyleBar(o)
             m:FillBar(o, values, m:Order1())
-            o.frame:SetScale(scale)
+            o.frame:SetScale(ns.Previews.ClampScale(scale))
             o.frame:SetAlpha(db.mouseover and 0.35 or 1)
             o2.frame:SetShown(db.panel2)
             if db.panel2 then
                 m:StyleBar(o2)
                 m:FillBar(o2, values, m:Order2())
-                o2.frame:SetScale(scale)
+                o2.frame:SetScale(ns.Previews.ClampScale(scale))
                 o2.frame:SetAlpha(db.mouseover and 0.35 or 1)
             end
             xp:SetShown(db.xpBar)

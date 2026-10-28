@@ -1877,6 +1877,23 @@ try("mail alts", function()
     assert(#list >= 1 and list[1].name == "Zzalt", "alt not listed")
     g[realm].Zzalt = nil
 end)
+-- previews: a 0-width (not yet laid out) panel never reaches SetScale with 0 or less; it retries later
+try("preview zero-width panel", function()
+    local P = ns.Previews
+    assert(P.ClampScale(-0.75) == P.MIN_SCALE and P.ClampScale(0) == P.MIN_SCALE, "negative/zero not clamped")
+    assert(P.ClampScale(0 / 0) == 1 and P.ClampScale(nil) == 1, "NaN/nil not made 1")
+    assert(P.ClampScale(0.5) == 0.5, "valid scale changed")
+    local bad
+    for kind in pairs(P.kinds) do
+        local parent = CreateFrame("Frame", nil, UIParent)
+        local stage = P:Create(kind, parent, ns.modules[P.kinds[kind].module or ""] or ns.modules.CastBars, {})
+        stage.GetWidth = function() return 0 end
+        stage.IsVisible = function() return true end
+        local ok, err = pcall(stage.Redraw, stage)
+        if not ok then bad = kind .. ": " .. tostring(err) end
+    end
+    assert(not bad, bad)
+end)
 try("dev self-test", function()
     local ST, D = ns.DevDiag.SelfTest, ns.DevDiag
     local old = GetTime

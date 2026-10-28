@@ -36,7 +36,7 @@ local function drawItem(item, m, db)
     end
     for i = ishown + 1, #item.lines do item.lines[i]:Hide() end
     item:SetHeight(iheight)
-    item:SetScale(db.scale or 1)
+    item:SetScale(ns.Previews.ClampScale(db.scale or 1))
 end
 
 -- A unit tooltip with the extra lines Tooltip adds (guild rank, realm, inspect, mount, targeted by...), a
@@ -126,7 +126,7 @@ P:Register("tooltip", {
             ns.Skin:Text(tt.hp, "small")
             tt.hp:SetText("82%")
             tt.hp:SetShown(db.healthBar and db.healthText)
-            tt:SetScale(db.scale or 1)
+            tt:SetScale(ns.Previews.ClampScale(db.scale or 1))
             drawItem(item, m, db)
             ns.Skin:Backdrop(tt.bar, { alpha = 0.9 }, "bg.sunken")
         end

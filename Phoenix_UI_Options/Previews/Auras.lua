@@ -16,7 +16,7 @@ local MAX_W, MAX_H = 380, 120
 local function legacy(stage, m)
     local row = CreateFrame("Frame", nil, stage)
     row:SetSize(#AURAS * (SIZE + GAP), SIZE + 16)
-    row:SetScale(SCALE)
+    row:SetScale(ns.Previews.ClampScale(SCALE))
     row:SetPoint("CENTER", 0, 4)
     local items = {}
     for i, def in ipairs(AURAS) do
@@ -70,7 +70,7 @@ P:Register("auras", {
             local n = math.min(perRow * vh.rows, #list * 2)
             local w, ht = m.HolderSize(vh)
             local scale = math.min(1.25, MAX_W / math.max(1, w), MAX_H / math.max(1, ht))
-            grid:SetScale(scale)
+            grid:SetScale(ns.Previews.ClampScale(scale))
             grid:SetSize(w, ht)
             grid:ClearAllPoints()
             grid:SetPoint("CENTER", stage, "CENTER", 0, 0)

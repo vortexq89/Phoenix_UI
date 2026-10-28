@@ -18,7 +18,7 @@ local VIEW_W, VIEW_H = 600, 250
 local function blizzardRow(stage)
     local row = CreateFrame("Frame", nil, stage)
     row:SetSize(#PARTY * W_ + (#PARTY - 1) * GAP, H_)
-    row:SetScale(SCALE)
+    row:SetScale(ns.Previews.ClampScale(SCALE))
     row:SetPoint("CENTER")
     row.frames = {}
     for i in ipairs(PARTY) do
@@ -85,7 +85,7 @@ P:Register("groupframe", {
             local w, h = m:DrawSampleGroup(root, key, m.SIZE_OF[key], pool)
             root:SetSize(w, h)
             local scale = math.min(1.4, (VIEW_W - 24) / math.max(1, w), (VIEW_H - 24) / math.max(1, h))
-            root:SetScale(scale)
+            root:SetScale(ns.Previews.ClampScale(scale))
             -- (range fading acts on the real frames; the preview shows it only when asked)
             if not (view.states and view.states.range) then
                 for _, f in ipairs(pool) do f:SetAlpha(1) end

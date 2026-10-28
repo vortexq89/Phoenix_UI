@@ -22,7 +22,7 @@ local function legacy(stage, m)
         for i, sample in ipairs(SAMPLES) do
             local holder = CreateFrame("Frame", nil, stage)
             holder:SetSize(PLATE_W, 40)
-            holder:SetScale(SCALE)
+            holder:SetScale(ns.Previews.ClampScale(SCALE))
             local bar = P.Bar(holder, sample.value, PLATE_W, PLATE_H)
             bar:SetPoint("BOTTOM", 0, 4)
             local name = P.Text(holder)
@@ -62,7 +62,7 @@ local function legacy(stage, m)
             local st = self.states
             for i, p in ipairs(plates) do
                 -- "targeted": the hostile plate is selected, the rest dim like unselected plates
-                p.holder:SetScale(st.target and i == 1 and SCALE * 1.12 or SCALE)
+                p.holder:SetScale(ns.Previews.ClampScale(st.target and i == 1 and SCALE * 1.12 or SCALE))
                 p.holder:SetAlpha(st.target and i ~= 1 and 0.55 or 1)
                 p.holder:ClearAllPoints()
                 p.holder:SetPoint("CENTER", self, "LEFT", (w * (i - 0.5) / #plates), (p.cast and -9 or -4) / SCALE)

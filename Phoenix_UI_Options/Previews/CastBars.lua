@@ -170,7 +170,7 @@ P:Register("castbar", {
             local samples = withReal(key)
             for i, f in ipairs(list) do
                 m:LayoutBar(f, w, h)
-                f:SetScale(scale)
+                f:SetScale(ns.Previews.ClampScale(scale))
                 f:ClearAllPoints()
                 f:SetPoint("TOP", stage, "TOP", shift, (-18 - (i - 1) * pitch * scale) / scale)
                 local s = samples[i]

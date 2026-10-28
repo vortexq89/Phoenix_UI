@@ -144,7 +144,7 @@ P:Register("actionbar", {
             holder:SetSize(W + pad * 2, H + pad * 2)
             local fit = math.min(1, (STAGE_W - 24) / math.max(1, W + pad * 2), (STAGE_H - 20) / math.max(1, H + pad * 2))
             fit = math.max(0.2, fit)
-            holder:SetScale(fit)
+            holder:SetScale(ns.Previews.ClampScale(fit))
             scaleText:SetText(fit < 1 and string.format("%d%%", math.floor(fit * 100 + 0.5)) or "1:1")
             Skin:Backdrop(holder, { alpha = b.backdrop.show and b.backdrop.alpha or 0, color = b.backdrop.color,
                 style = b.backdrop.style }, "bg.sunken")

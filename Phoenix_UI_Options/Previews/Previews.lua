@@ -17,6 +17,14 @@ ns.Previews = P
 
 function P:Register(kind, def) self.kinds[kind] = def end
 
+-- Every fit-to-panel scale goes through this: a 0 or not-yet-laid-out panel gives 0 or NaN, which
+-- Frame:SetScale rejects. Clamped to [0.05, ...]; anything that is not a usable number becomes 1.
+P.MIN_SCALE = 0.05
+function P.ClampScale(s)
+    if type(s) ~= "number" or s ~= s or s == math.huge then return 1 end
+    return math.max(P.MIN_SCALE, s)
+end
+
 -- def.states = { { key, label, icon }, ... }: sample states the page can switch on (low health, casting …).
 -- The draw function reads them from stage.states[key].
 function P:States(kind)
@@ -93,7 +101,7 @@ function P:Create(kind, parent, m, page)
     function stage:Fit(width)
         local scale = 1
         if self.designWidth > 0 and width and width > 0 and width < self.designWidth then scale = width / self.designWidth end
-        self:SetScale(scale)
+        self:SetScale(ns.Previews.ClampScale(scale))
         return scale
     end
     local draw = def and def.build(stage, m)
@@ -130,7 +138,17 @@ function P:Create(kind, parent, m, page)
             if page.Layout then page:Layout() end
         end
     end
+    local retry
     function stage:Redraw()
+        -- not laid out yet (0 width or height): skip and try again on the next frame
+        local w, h = tonumber((self:GetWidth())) or 0, tonumber((self:GetHeight())) or 0
+        if not (w > 0 and h > 0) then
+            if not retry and self:IsVisible() then
+                retry = true
+                C_Timer.After(0, function() retry = false; if stage:IsVisible() then stage:Redraw() end end)
+            end
+            return
+        end
         if draw then ns.SafeCall(draw, self, page.scope and page.scope.unit) end
         if not measureQueued and self:IsVisible() then
             measureQueued = true
