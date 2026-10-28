@@ -70,6 +70,9 @@ local DEFAULTS = {
                      targeted = true }),
         arena = bar({ attach = "frame", w = 200, h = 16, point = "RIGHT", x = -260, y = 78, kick = true, important = true,
                       targeted = true }),
+        -- casts aimed at you from enemy nameplates (OnMe.lua); not one of KEYS
+        onme = bar({ enabled = false, w = 220, h = 16, point = "CENTER", x = 0, y = 170, spacing = 20, kick = true,
+                     important = true }),
     },
     -- player extras
     latency = true, ticks = true, customTicks = "", empower = true,
@@ -85,6 +88,7 @@ local M = ns:NewModule("CastBars", {
     label = "CASTBARS", desc = "CASTBARS_DESC", category = "interface", order = 40, reloadOnToggle = true,
     defaults = DEFAULTS,
 })
+DEFAULTS.bars.onme.count = 4
 M.KEYS, M.COUNT, M.TOKENS, M.ATTACHABLE, M.DEFAULTS = KEYS, COUNT, TOKENS, ATTACHABLE, DEFAULTS
 -- The settings shape of one bar; other modules that draw bars with this engine (nameplates, S10) build theirs with it.
 M.NewBarSettings = bar

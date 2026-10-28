@@ -226,10 +226,12 @@ function M:SpawnExtras()
         buildSwing()
         ns.Events:On("PLAYER_SWING", self, onSwing)
     end
+    self:SpawnOnMe() -- OnMe.lua
     self:RefreshExtras()
 end
 
 function M:RefreshExtras()
+    if self.RefreshOnMe then self:RefreshOnMe() end
     layoutGCD()
     layoutSwing()
 end

@@ -1842,6 +1842,17 @@ try("rare alert", function()
     assert(t and t.target and t.way and t.way.onClick, "no Target / Waypoint buttons")
     t:Hide()
 end)
+-- casts on me: nameplate casts claim a slot, shown through the secret-safe spell-target boolean
+try("casts on me", function()
+    local CB = ns.modules.CastBars
+    assert(CB.IsPlateUnit("nameplate12") and not CB.IsPlateUnit("target") and not CB.IsPlateUnit(nil), "plate unit check")
+    local list = { { active = true }, { unitClaim = "nameplate2" }, {} }
+    assert(CB.FreeOnMeSlot(list, 3) == list[3], "free slot")
+    assert(CB.FreeOnMeSlot(list, 2) == nil, "count limit ignored")
+    if CB.SpawnOnMe then CB:SpawnOnMe() end
+    assert(CB.bars.onme and #CB.bars.onme == 6, "casts-on-me bars not built")
+    assert(CB:Bar("onme").enabled == false and CB:Bar("onme").count == 4, "defaults")
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

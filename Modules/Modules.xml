@@ -27,6 +27,7 @@
     <Script file="CastBars\Update.lua"/>
     <Script file="CastBars\Spawn.lua"/>
     <Script file="CastBars\Extras.lua"/>
+    <Script file="CastBars\OnMe.lua"/>
     <Script file="CastBars\Blizzard.lua"/>
     <Script file="Auras\Auras.lua"/>
     <Script file="Auras\Containers.lua"/>

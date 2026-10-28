@@ -25,7 +25,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | 3 | Mail: alt list next to the recipient box | EllesmereUI BlizzardSkin mail | built |
 | 4 | "What's new" popup after an update | EllesmereUI core | built |
 | 5 | CDM entry: show only with talent | EllesmereUI CooldownManager | built (?ID / !ID in a custom bar list) |
-| 6 | Casts-on-me bars (secret-safe target check) | EllesmereUI MythicTimer | next |
+| 6 | Casts-on-me bars (secret-safe target check) | EllesmereUI MythicTimer | built (Cast Bars > Target > Casts on me) |
 | 7 | Rare alert secure target button + waypoint | RareScanner (no EUI version) | built (Automation > Rare alert) |
 | 8 | Copy armory link in unit menus | Raider.IO (no EUI version) | built (Chat > Armory link in menus) |
 | 9 | Merchant bulk buy | EllesmereUI BlizzardSkin | built (Alt+click at a vendor) |
