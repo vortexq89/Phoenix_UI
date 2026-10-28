@@ -2374,13 +2374,14 @@ try("trade phase 4 skin", function()
 end)
 try("settings phase 4 skin", function()
     local S = ns.modules.Skins
-    local sp = CreateFrame("Frame", "SettingsPanel", UIParent)
-    local em = CreateFrame("Frame", "EditModeManagerFrame", UIParent)
+    local oldSp, oldEm = env.SettingsPanel, env.EditModeManagerFrame
+    local sp = CreateFrame("Frame", nil, UIParent)
+    local em = CreateFrame("Frame", nil, UIParent)
     env.SettingsPanel, env.EditModeManagerFrame = sp, em
     local sys = CreateFrame("Frame", nil, UIParent); sys.Selection = CreateFrame("Frame", nil, sys)
     em.registeredSystemFrames = { sys }
     S:SkinSettings(); S.db.settings = false; S:Refresh(); S.db.settings = true; S:Refresh()
-    env.SettingsPanel, env.EditModeManagerFrame = nil, nil
+    env.SettingsPanel, env.EditModeManagerFrame = oldSp, oldEm
 end)
 try("housing phase 4 skin", function()
     local S = ns.modules.Skins
