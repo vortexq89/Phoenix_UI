@@ -47,7 +47,11 @@ end
 -- forces %": Ascent owns forces data; this is the minimal shared provider
 -- the Nameplates text slot and tooltips read). Returns the game's own
 -- percent text, possibly secret: callers hand it straight to a FontString.
+-- When the Ascent child is loaded it owns this data (its settings can turn it
+-- off or leave it to MythicDungeonTools); otherwise this minimal read is used.
 function Season:UnitForces(unit)
+  local AS = PUI.Ascent
+  if AS and AS.UnitForces then return AS.UnitForces(unit) end
   if not C_ChallengeMode.IsChallengeModeActive() then return nil end
   local _, _, text = C_ScenarioInfo.GetUnitCriteriaProgressValues(unit)
   return text

@@ -737,6 +737,156 @@ function Previews.Vault(card)
   for i = #sections + 1, #h.heads do h.heads[i]:Hide() end
 end
 
+-- Shared row helper for the step 8c previews: a pooled bar with left/right text.
+local function meterRow(h, i)
+  h.mrows = rawget(h, "mrows") or {}
+  local r = h.mrows[i]
+  if not r then
+    r = bar(h, 300, 16)
+    r.l = Kit.Text(r, "small", "text.primary", "OVERLAY"); r.l:SetPoint("LEFT", 4, 0)
+    r.r = Kit.Text(r, "small", "text.primary", "OVERLAY"); r.r:SetPoint("RIGHT", -4, 0)
+    h.mrows[i] = r
+  end
+  r:Show()
+  return r
+end
+local function hideFrom(list, n) for i = n + 1, #(list or {}) do list[i]:Hide() end end
+
+-- Embers: sample fight drawn with the module's own number format, look,
+-- pinned own row (you are 15th) and best-pull marker.
+function Previews.Embers(card)
+  local EM = PUI.Embers
+  if not EM then return end
+  local S = EM.settings
+  local h = hudHolder(card, "embers")
+  local sample = { { "Thrall", "SHAMAN", 1.42e6 }, { "Liadrin", "PALADIN", 1.38e6 }, { "Vex", "MAGE", 1.21e6 }, { "Nyx", "ROGUE", 1.05e6 },
+    { "Durotan", "WARRIOR", 0.98e6 }, { "Jaina", "MAGE", 0.91e6 }, { "Anduin", "PRIEST", 0.85e6 }, { "Tyrande", "PRIEST", 0.8e6 } }
+  local data, total = {}, 0
+  for i, x in ipairs(sample) do data[i] = { name = x[1], class = x[2], value = x[3], rank = i }; total = total + x[3] end
+  for i = #sample + 1, 15 do data[i] = { name = "Raider " .. i, class = "HUNTER", value = 0.5e6 - i * 1e4, rank = i } end
+  data[15] = { name = "You", class = "MAGE", value = 0.41e6, rank = 15, me = true }
+  local look = (EM.Window and EM.Window.LOOKS or {})[S.look] or { bar = true, alphaScale = 1, heightScale = 1 }
+  local shown = math.min(S.rows, 10)
+  local visible = PUI.Embers and EM.Window and EM.Window.Visible(data, shown, S.pinSelf) or data
+  h.head = rawget(h, "head") or Kit.Text(h, "small", "text.primary", "OVERLAY")
+  h.head:ClearAllPoints(); h.head:SetPoint("TOPLEFT", 4, -2)
+  h.head:SetText((S.header and ("Damage - Current" .. (S.headerTimer and "   3:42" or "") .. (S.compareBest and "   best 1.02M/s" or ""))) or "")
+  local rh = math.max(10, math.floor(S.rowHeight * (look.heightScale or 1) + 0.5))
+  local ar, ag, ab = Theme:Color("accent")
+  local n = 0
+  for i = 1, shown do
+    local d = visible[i]
+    if d then
+      n = i
+      local r = meterRow(h, i)
+      r:ClearAllPoints()
+      r:SetPoint("TOPLEFT", 4, -18 - (i - 1) * (rh + S.spacing))
+      r:SetSize(math.min(370, S.width), rh)
+      local cr, cg, cb = ar, ag, ab
+      if S.classColors then cr, cg, cb = EM.ClassColor(d.class) end
+      paintBar(r, d.value / sample[1][3] * 100, cr, cg, cb)
+      r:SetStatusBarColor(cr, cg, cb, look.bar and S.barAlpha * (look.alphaScale or 1) or 0)
+      r.l:SetText((S.showRank and (d.rank .. ". ") or "") .. d.name)
+      r.r:SetText(EM.FormatNumber(d.value) .. (S.showPercent and string.format("  %.0f%%", d.value / total * 100) or ""))
+    end
+  end
+  hideFrom(h.mrows, n)
+  st(card).embersRows = n
+end
+
+-- Ascent: a sample key at 18:42 of 33:00 with forces, pace and splits, using
+-- the module's own threshold and pace maths.
+function Previews.Ascent(card)
+  local AS = PUI.Ascent
+  if not AS then return end
+  local S = AS.settings
+  local h = hudHolder(card, "ascent")
+  h.lines = rawget(h, "lines") or {}
+  local elapsed, limit, pct = 1122, 1980, 78.4
+  local t = AS.Thresholds(limit)
+  local pace = AS.Pace(elapsed, limit, pct)
+  local out = {
+    "Ara-Kara +12   Xal'atath's Bargain, Tyrannical, Fortified",
+    AS.Clock(elapsed, S.timerFormat) .. " / " .. AS.Clock(limit) .. "   +3 " .. AS.Clock(math.max(0, t[1] - elapsed)) .. "   +2 " .. AS.Clock(t[2] - elapsed),
+    "Enemy forces " .. (S.forcesFormat == "count" and "312/398" or S.forcesFormat == "percent" and "78.4%" or "78.4% (312/398)"),
+  }
+  if S.pace and AS.Display then out[#out + 1] = AS.Display.PaceText(pace, elapsed, limit) end
+  if S.splits then out[#out + 1] = "+ Avanoxx 4:31  -0:22 vs best" end
+  out[#out + 1] = "Deaths 2 (-0:10)" .. (S.brLust and S.brLustPlacement == "block" and "   BR 1   Lust ready" or "")
+  if S.kicks then out[#out + 1] = "Kicks  Thrall 6   Zinn 4" end
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, i == 2 and "header" or "small")
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 18)
+    fs:SetText(text)
+  end
+  hideFrom(h.lines, #out)
+  st(card).ascentLines = #out
+end
+
+-- Quest Tracker: sample quests through the tracker's own colour helpers.
+function Previews.QuestTracker(card)
+  local QT = PUI.QuestTracker
+  if not QT then return end
+  local S = QT.settings
+  local h = hudHolder(card, "qt")
+  h.lines = rawget(h, "lines") or {}
+  local rows = {}
+  local ar, ag, ab = Theme:Color("accent")
+  if S.mplusBlock then rows[#rows + 1] = { "Ara-Kara +12   18:42 / 33:00", ar, ag, ab } end
+  rows[#rows + 1] = { "- CAMPAIGN  2", ar, ag, ab }
+  rows[#rows + 1] = { (S.showLevel and "[80] " or "") .. "> The Voidspire Accord", 1, 0.82, 0 }
+  rows[#rows + 1] = { "   Seal the breach 2/3", QT.ProgressColor("2/3") }
+  rows[#rows + 1] = { "   Gather shards 1/7", QT.ProgressColor("1/7") }
+  if S.completed ~= "hide" then
+    local r, g, b = Theme:Color("success")
+    if S.completed == "fade" then r, g, b = r * 0.6, g * 0.6, b * 0.6 end
+    rows[#rows + 1] = { "Hunting Wyrms  (turn in)", r, g, b }
+  end
+  for i, x in ipairs(rows) do
+    local fs = line(h, h.lines, i, "body")
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * (S.fontSize + S.rowSpacing + 2))
+    fs:SetText(x[1])
+    fs:SetTextColor(x[2], x[3], x[4])
+  end
+  hideFrom(h.lines, #rows)
+  st(card).qtLines = #rows
+end
+
+-- Reminders: sample icons per group with the current size, spacing and names.
+function Previews.Reminders(card)
+  local RM = PUI.Reminders
+  if not RM then return end
+  local S = RM.settings
+  local h = hudHolder(card, "rm")
+  h.icons = rawget(h, "icons") or {}
+  local sample = {}
+  if S.raid then sample[#sample + 1] = { 135932, "Arcane Intellect" } end
+  if S.class then sample[#sample + 1] = { 132273, "Lethal poison" } end
+  if S.pet then sample[#sample + 1] = { 136218, "Summon your pet" } end
+  for _, c in ipairs(RM.ParseCustom(S.customList)) do sample[#sample + 1] = { C_Spell.GetSpellTexture(c.any[1]), c.label or "Custom" } end
+  local size = math.min(S.size, 48)
+  for i, x in ipairs(sample) do
+    if i > 8 then break end
+    local ic = h.icons[i]
+    if not ic then
+      ic = CreateFrame("Frame", nil, h)
+      ic.tex = ic:CreateTexture(nil, "ARTWORK"); ic.tex:SetAllPoints()
+      ic.label = Kit.Text(ic, "small", "text.primary", "OVERLAY"); ic.label:SetPoint("TOP", ic, "BOTTOM", 0, -2)
+      h.icons[i] = ic
+    end
+    ic:ClearAllPoints()
+    ic:SetSize(size, size)
+    ic:SetPoint("TOPLEFT", 8 + (i - 1) * (size + S.spacing + 30), -10)
+    ic.tex:SetTexture(x[1])
+    ic.label:SetText(S.text and x[2] or "")
+    ic:Show()
+  end
+  hideFrom(h.icons, math.min(8, #sample))
+  st(card).rmIcons = math.min(8, #sample)
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {}, st(card).cdm or {} }) do
     for _, f in pairs(list) do f:Hide() end
@@ -761,7 +911,8 @@ function Previews.Update(owner, card, key)
 end
 
 -- wrap builders so switching page/tab always starts clean
-for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars", "Chat", "Vault" }) do
+for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars", "Chat", "Vault",
+  "Embers", "Ascent", "QuestTracker", "Reminders" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end

@@ -931,6 +931,56 @@ Enum.ItemClass = Enum.ItemClass or { Consumable = 0, Container = 1, Weapon = 2, 
   Tradegoods = 7, ItemEnhancement = 8, Recipe = 9, Questitem = 12, Key = 13, Miscellaneous = 15, Glyph = 16, Battlepet = 17, Profession = 19 }
 function BNSendWhisper(id, text) H.chat[#H.chat + 1] = { text, "BN", id } end
 
+
+-- Step 8c: Embers breakdown/recap/threat, Ascent keystones/BR/lust, Quest Tracker waypoints.
+H.meter.spells = {} -- [guid] = { { spellID, amount } }
+C_DamageMeter.GetCombatSessionSourceFromType = function(sessionType, kind, guid)
+  local list = H.meter.spells[guid]; if not list then return nil end
+  local out = { totalAmount = maybe(0), combatSpells = {} }
+  for i, sp in ipairs(list) do out.combatSpells[i] = { spellID = sp[1], totalAmount = maybe(sp[2]), amountPerSecond = maybe(sp[2] / 10) } end
+  return out
+end
+H.recaps = {} -- [id] = { { spellName, amount, currentHP, sourceName } }
+C_DeathRecap = {
+  HasRecapEvents = function(id) return H.recaps[id] ~= nil end,
+  GetRecapEvents = function(id) local out = {}; for i, e in ipairs(H.recaps[id] or {}) do out[i] = { spellName = maybe(e[1]), amount = maybe(e[2]), currentHP = maybe(e[3]), sourceName = maybe(e[4]), timestamp = i } end; return out end,
+  GetRecapMaxHealth = function() return 100 end,
+}
+H.threatPct = {} -- [unit] = pct
+function UnitDetailedThreatSituation(unit, mob) local p = H.threatPct[unit]; if p == nil then return nil end return maybe(unit == "player"), maybe(3), maybe(p), maybe(p), maybe(p * 1000) end
+H.charges = nil -- { cur, max }
+C_Spell.GetSpellCharges = function(id) if id == 20484 and H.charges then return { currentCharges = maybe(H.charges[1]), maxCharges = H.charges[2], cooldownStartTime = 0, cooldownDuration = 600 } end return nil end
+C_MythicPlus.GetOwnedKeystoneLevel = function() return H.ownedKeyLevel or 0 end
+C_ChallengeMode.HasSlottedKeystone = function() return H.slotted == true end
+C_ChallengeMode.SlotKeystone = function() H.slotted = true end
+C_Container.GetContainerItemID = function(bag, slot) local it = H.items[bag .. ":" .. slot]; return it and it.itemID end
+H.addonMsgs = {}
+C_ChatInfo.RegisterAddonMessagePrefix = function() return 0 end
+C_ChatInfo.SendAddonMessage = function(prefix, msg, channel) H.addonMsgs[#H.addonMsgs + 1] = { prefix, msg, channel } return 0 end
+LE_PARTY_CATEGORY_INSTANCE = 2
+H.waypoint = nil
+H.superTracked = {}
+UiMapPoint = { CreateFromCoordinates = function(mapID, x, y) return { uiMapID = mapID, position = { x = x, y = y } } end }
+C_Map.CanSetUserWaypointOnMap = function(mapID) return mapID ~= 0 end
+C_Map.SetUserWaypoint = function(p) H.waypoint = p end
+C_Map.ClearUserWaypoint = function() H.waypoint = nil end
+C_Map.HasUserWaypoint = function() return H.waypoint ~= nil end
+C_Map.GetUserWaypoint = function() return H.waypoint end
+C_Map.GetMapInfo = function(id) return { mapID = id, name = "Map " .. id } end
+C_SuperTrack = {
+  SetSuperTrackedUserWaypoint = function(v) H.superTracked.waypoint = v end,
+  SetSuperTrackedQuestID = function(id) H.superTracked.quest = id end,
+  GetSuperTrackedQuestID = function() return H.superTracked.quest or 0 end,
+  IsSuperTrackingUserWaypoint = function() return H.superTracked.waypoint == true end,
+  ClearAllSuperTracked = function() H.superTracked = {} end,
+}
+H.trackerModules = true
+ObjectiveTrackerManager = { SetCanAddModules = function(self, v) H.trackerModules = v end }
+C_QuestLog.IsQuestTrivial = function() return false end
+C_QuestLog.IsRepeatableQuest = function() return false end
+C_QuestLog.GetLogIndexForQuestID = function(id) return id end
+C_QuestLog.RemoveQuestWatch = function(id) H.removedWatch = id end
+
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
   AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }
