@@ -4,6 +4,12 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Deferred batch D: Sentinel, Diagnostics, Forever
+- Sentinel: an opt-in developer recorder (`/pui record`) that keeps one row per change and recovers a recording a crash left open; Phoenix registers as BugGrabber's display from Core, so BugGrabber stops its own chat line when Phoenix shows errors; a fixed-in list from the Companion (`sentinel-companion fixed-string`) can be pasted with `/pui sentinel fixed`; a privacy allow-list keeps addon and system words in file paths.
+- Diagnostics: its own page under System, the game profiler's measurement of Phoenix (signature checked) in the report, the heaviest addons on hover, and an A/B timing window (`/pui ab`).
+- New child Phoenix UI - Forever (turns on only in Forever): a flight timer that learns each route, and a pet happiness badge.
+- Tools: guardrails accept a Forever-only API when it is gated by PUI.IS_FOREVER. docs/INGAME_CHECKS.md lists every in-game check still needed; docs/FIXED_SYNC.md designs the automatic fixed-in sync. Tests: 403 (from 392).
+
 ### Deferred batch C: every remaining module
 - Quest Tracker: quest-item buttons beside each quest and auto-share. Reminders: season consumables, weapon oil, talents by zone, per-reminder sound and icon. Embers: show/hide and reset hotkeys, window snapping, a threat warning. Ascent: current-pull forces, score projection, `/pui vaultplan`.
 - Flow: leave-queue popups, open containers, Train All, tutorials and banners, `/gg`, queue protection, Tab binder, screenshot on achievement. Group Finder: Raider.IO words and region badge, plugin sorts, a click-to-insert word list, a Studio mover for the detached panel. Raid Tools: notes window (hidden in combat), boss tooltip line, stats window.

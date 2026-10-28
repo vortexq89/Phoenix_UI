@@ -30,6 +30,7 @@ PreviewsExtras.lua
 PreviewsExtrasB.lua
 PreviewsExtrasHUD.lua
 PreviewsExtrasC.lua
+PreviewsExtrasD.lua
 Dashboard.lua
 ThemePage.lua
 SentinelPage.lua
@@ -38,6 +39,7 @@ Studio.lua
 StudioPanels.lua
 StudioExtras.lua
 BlizzardPage.lua
+DiagPage.lua
 Tests\Options_test.lua
 Tests\Studio_test.lua
 Tests\Studio2_test.lua

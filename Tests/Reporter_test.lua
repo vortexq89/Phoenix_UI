@@ -212,3 +212,105 @@ Tests:Add("Sentinel", "batch C: media sounds, baseline warning once per session,
   Schema:Set("sentinel.trace", false)
   t:eq(#X.ring, 0, "cleared when off")
 end)
+
+Tests:Add("Sentinel", "batch D: recorder keeps change-only rows, recovers an unfinished recording, stops live", function(t)
+  local S = scratch(t)
+  local R = S.Recorder
+  Tests.Keep(t, "sentinel.recorder")
+  local print0 = PUI.Slash.Print
+  local printed = {}
+  PUI.Slash.Print = function(m) printed[#printed + 1] = m end
+  t:cleanup(function() PUI.Slash.Print = print0; R.Stop(); R.recovered = false end)
+  S.db.recordings = { { session = S.db.session - 1, started = 1, rows = { { 0, "zone", "Dornogal" } } } }
+  R.recovered = false
+  Schema:Set("sentinel.recorder", true)
+  t:eq(S.db.recordings[1].recovered, true, "previous open recording marked recovered")
+  t:ok(printed[1] and printed[1]:find("1 unfinished", 1, true), "one line says so")
+  t:ok(PUI.Ticker:IsRegistered("sentinel.recorder"), "Ticker job while on")
+  local rec = R.Current()
+  local n = #rec.rows
+  t:eq(n, 4, "first sample writes every channel")
+  R.Sample()
+  t:eq(#rec.rows, n, "no change, no row")
+  H.group = { "a", "b" }
+  R.Sample()
+  H.group = nil
+  t:eq(rec.rows[#rec.rows][2], "group", "a change adds one row")
+  t:eq(#rec.rows, n + 1, "only that channel")
+  S.Alerts:OnError({ hash = "abc", kind = "error", message = "x" }, true)
+  t:eq(rec.rows[#rec.rows][3], "abc", "errors join the stream")
+  t:ok(R.Text()[1]:find("rows", 1, true), "window header")
+  Schema:Set("sentinel.recorder", false)
+  t:eq(PUI.Ticker:IsRegistered("sentinel.recorder"), false, "Ticker job gone when off")
+  t:ok(rec.stopped ~= nil, "recording closed")
+end)
+
+Tests:Add("Sentinel", "batch D: BugGrabber display shim formats errors and registers once when Phoenix shows errors", function(t)
+  local D = PUI.BugDisplay
+  t:eq(rawget(_G, "PhoenixUIBugDisplay"), D, "global display object for the TOC field")
+  local text = D:FormatError({ message = "boom", counter = 3, stack = "a.lua:1\nb.lua:2" })
+  t:ok(text:find("x3", 1, true) and text:find("boom", 1, true) and text:find("a.lua:1", 1, true) and not text:find("b.lua", 1, true), "short format")
+  local saved = rawget(_G, "BugGrabber")
+  t:cleanup(function() rawset(_G, "BugGrabber", saved); D.registered = nil end)
+  rawset(_G, "BugGrabber", nil)
+  D.registered = nil
+  t:eq(D.Register(), false, "nothing without BugGrabber")
+  rawset(_G, "BugGrabber", {})
+  H.triggered = {}
+  t:eq(D.Register(), true, "registers with BugGrabber loaded")
+  t:eq(H.triggered[1], "BugGrabber.DisplayRegistered", "BugGrabber told")
+  t:eq(D.Register(), false, "only once")
+end)
+
+Tests:Add("Sentinel", "batch D: privacy allow-list keeps a system word in paths only", function(t)
+  local P = PUI.Sentinel.Privacy
+  Tests.Keep(t, "sentinel.privacyAllow")
+  local text = "Interface/AddOns/Healbot/x.lua:3: Healbot attacked"
+  t:eq(P.Redact(text, "Healbot"), "Interface/AddOns/[player]/x.lua:3: [player] attacked", "not listed: hidden everywhere")
+  Schema:Set("sentinel.privacyAllow", { "Healbot" })
+  t:eq(P.Redact(text, "Healbot"), "Interface/AddOns/Healbot/x.lua:3: [player] attacked", "listed: path kept, prose still hidden")
+  t:eq(P.Redact("Blizzard.lua: Blizzard", "Blizzard"), "Blizzard.lua: [player]", "built-in system word")
+  t:eq(P.Redact("Bob/x Bob", "Bob"), "[player]/x [player]", "ordinary names always hidden")
+end)
+
+Tests:Add("Sentinel", "batch D: self-measurement with signature check, top addons, A/B pairs", function(t)
+  local X = PUI.Diag.Extras
+  local ok = X.Verify()
+  t:eq(ok, true, "signature verified")
+  local m = X.SelfMeasure()
+  t:ok(m.ok and m.phoenix > 0 and m.share, "Phoenix measured with its share")
+  t:eq(X.TopAddons(5)[1].name, "Addon1", "top addons")
+  t:ok(X.TopText(5)[2]:find("Addon1", 1, true), "readout lines")
+  local saved = C_AddOnProfiler.GetAddOnMetric
+  rawset(C_AddOnProfiler, "GetAddOnMetric", function() return "x" end)
+  local ok2, why = X.Verify()
+  rawset(C_AddOnProfiler, "GetAddOnMetric", saved)
+  t:eq(ok2, false, "bad signature refused")
+  t:ok(why:find("plain number", 1, true), "reason given")
+  local n = 0
+  X.RegisterAB("test.ab", "Test pair", function() n = n + 1 end, function() n = n + 2 end, "one", "two")
+  local r = X.RunAB("test.ab", 10)
+  t:eq(n, 30, "both variants ran every round")
+  t:eq(r.how, "game", "game profiler clock when verified")
+  t:ok(X.ABText(r)[2]:find("one", 1, true), "report lines")
+  X.ShowAB("test.ab")
+  t:ok(X.abLines[1]:GetText():find("Test pair", 1, true), "window shows the pair")
+  X.pairs["test.ab"] = nil
+  for i, id in ipairs(X.order) do if id == "test.ab" then table.remove(X.order, i) end end
+end)
+
+Tests:Add("Sentinel", "batch D: fixed-in list from the Companion marks errors fixed, refuses bad input", function(t)
+  local S = scratch(t)
+  local F = S.FixedSync
+  local text = S.Export.Encode({ kind = "fixed-in", schema = 1, fixed = {
+    { hash = "1a2b3c4d", fixedIn = "1.4.2" }, { hash = "zz", fixedIn = "1.0" }, { hash = "cafebabe", fixedIn = "bad version" } } })
+  local applied, skipped = F.Import(text)
+  t:eq(applied, 1, "one valid row applied")
+  t:eq(skipped, 2, "two malformed rows skipped")
+  t:eq(S.Store:DB().resolved["1a2b3c4d"].fixedIn, "1.4.2", "marked fixed in that version")
+  t:eq(select(2, F.Import(text)), 3, "same list again: nothing changes")
+  local none, why = F.Import(S.Export.Encode({ kind = "report", fixed = {} }))
+  t:eq(none, nil, "other kinds refused")
+  t:ok(why:find("not a fixed-in", 1, true), "reason")
+  t:eq((F.Import("garbage")), nil, "garbage refused")
+end)

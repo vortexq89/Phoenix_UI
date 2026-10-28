@@ -4,7 +4,7 @@
 local here = (arg and arg[0] or ""):match("^(.*)[/\\]") or "."
 local H = dofile(here .. "/wow_stub.lua")
 H.loadAddon("Phoenix_UI")
-for _, child in ipairs({ "Phoenix_UI_UnitFrames", "Phoenix_UI_ResourceBars", "Phoenix_UI_ActionBars", "Phoenix_UI_Nameplates", "Phoenix_UI_RaidFrames", "Phoenix_UI_CooldownManager", "Phoenix_UI_HUD", "Phoenix_UI_Chat", "Phoenix_UI_Skins", "Phoenix_UI_Vault", "Phoenix_UI_Flow", "Phoenix_UI_QuestTracker", "Phoenix_UI_Reminders", "Phoenix_UI_Setup", "Phoenix_UI_Embers", "Phoenix_UI_Ascent", "Phoenix_UI_Oracle", "Phoenix_UI_Wisdom", "Phoenix_UI_Loadouts", "Phoenix_UI_GroupFinder", "Phoenix_UI_RaidTools", "Phoenix_UI_Pulse", "Phoenix_UI_Arena", "Phoenix_UI_Spark", "Phoenix_UI_CastHistory", "Phoenix_UI_PvP", "Phoenix_UI_Friends", "Phoenix_UI_Media" }) do
+for _, child in ipairs({ "Phoenix_UI_UnitFrames", "Phoenix_UI_ResourceBars", "Phoenix_UI_ActionBars", "Phoenix_UI_Nameplates", "Phoenix_UI_RaidFrames", "Phoenix_UI_CooldownManager", "Phoenix_UI_HUD", "Phoenix_UI_Chat", "Phoenix_UI_Skins", "Phoenix_UI_Vault", "Phoenix_UI_Flow", "Phoenix_UI_QuestTracker", "Phoenix_UI_Reminders", "Phoenix_UI_Setup", "Phoenix_UI_Embers", "Phoenix_UI_Ascent", "Phoenix_UI_Oracle", "Phoenix_UI_Wisdom", "Phoenix_UI_Loadouts", "Phoenix_UI_GroupFinder", "Phoenix_UI_RaidTools", "Phoenix_UI_Pulse", "Phoenix_UI_Arena", "Phoenix_UI_Spark", "Phoenix_UI_CastHistory", "Phoenix_UI_PvP", "Phoenix_UI_Friends", "Phoenix_UI_Media", "Phoenix_UI_Forever" }) do
   local fh = io.open(H.root .. "/" .. child .. "/" .. child .. ".toc")
   if fh then fh:close(); H.loadAddon(child) end
 end

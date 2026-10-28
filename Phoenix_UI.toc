@@ -10,6 +10,7 @@
 ## AddonCompartmentFunc: PhoenixUI_OnAddonCompartmentClick
 ## SavedVariables: PhoenixUIDB
 ## OptionalDeps: !BugGrabber
+## X-BugGrabber-Display: PhoenixUIBugDisplay
 
 Core\ClientGate.lua
 Core\Secret.lua
@@ -28,6 +29,7 @@ Core\Slash.lua
 Core\Entry.lua
 Core\Packs.lua
 Core\SentinelHook.lua
+Core\BugDisplay.lua
 Core\Layout.lua
 Core\OptionsHost.lua
 Core\Profiles.lua
@@ -54,6 +56,7 @@ Core\Announce.lua
 Core\Timer.lua
 Core\Profiler.lua
 Core\Diag.lua
+Core\DiagExtras.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Tests\Runner.lua

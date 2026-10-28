@@ -162,5 +162,7 @@ PX.extend("Sentinel", function(card)
   foot(card, "sn", { "Sounds, baseline and trace",
     "Error sound: " .. tostring(g("alertSoundName")) .. (g("alertSound") and "" or "  (sound off)"),
     "Many new errors: " .. (warn > 0 and ("one chat line after " .. warn .. " outside your usual ones") or "off"),
-    "Event trace: " .. (g("trace") and "on  (/pui trace)" or "off") })
+    "Event trace: " .. (g("trace") and "on  (/pui trace)" or "off"),
+    "Developer recorder: " .. (g("recorder") and "recording changes  (/pui record)" or "off"),
+    "Words kept in paths: " .. #(g("privacyAllow") or {}) .. " of yours, plus addon names" })
 end)

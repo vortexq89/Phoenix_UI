@@ -14,6 +14,22 @@ S.Privacy = P
 local GUID_KINDS = { Player = true, Creature = true, Pet = true, GameObject = true, Vehicle = true, Vignette = true, Item = true, BattlePet = true }
 function P.EscapePattern(text) return (text:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")) end
 
+-- Allow-list of system strings (deferred batch D): built-in client words,
+-- every installed addon's folder name and your own list
+-- (sentinel.privacyAllow). Only matters when your character's name is one
+-- of them; elsewhere the name is still replaced.
+P.SYSTEM = { interface = true, addons = true, blizzard = true, framexml = true, sharedxml = true, uiparent = true, phoenix = true }
+function P.Allowed(name)
+  local low = name:lower()
+  if P.SYSTEM[low] then return true end
+  for _, w in ipairs(PUI.Schema:Get("sentinel.privacyAllow") or {}) do if type(w) == "string" and w:lower() == low then return true end end
+  for i = 1, C_AddOns.GetNumAddOns() do
+    local n = C_AddOns.GetAddOnInfo(i)
+    if type(n) == "string" and n:lower() == low then return true end
+  end
+  return false
+end
+
 function P.Redact(text, name)
   if type(text) ~= "string" or text == "" then return text end
   text = text:gsub("(%a+)%-[%x%-]+%-%x%x%x%x%x%x%x%x", function(kind)
@@ -22,11 +38,15 @@ function P.Redact(text, name)
   if name and name ~= "" then
     -- Whole word: the characters on both sides must not be letters or digits.
     local out, pos, pat = {}, 1, P.EscapePattern(name)
+    local allowed = P.Allowed(name)
     while true do
       local s, e = text:find(pat, pos)
       if not s then break end
       local before, after = text:sub(s - 1, s - 1), text:sub(e + 1, e + 1)
       local whole = not before:find("^[%w]$") and not after:find("^[%w]$")
+      -- System strings: a name that is also an allow-listed system word stays
+      -- when it is part of a path (Interface/AddOns/<it>/, <it>.lua).
+      if whole and allowed and (before:find("^[/\\]$") or after:find("^[/\\%.]$")) then whole = false end
       out[#out + 1] = text:sub(pos, s - 1) .. (whole and "[player]" or text:sub(s, e))
       pos = e + 1
     end

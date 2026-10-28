@@ -218,6 +218,10 @@ rep("alertSoundName", { type = "select", default = "Raid Warning", choices = fun
   end, label = "Error sound", tooltip = "Which sound plays: four game sounds, then every sound in the media library (yours and other addons' shared sounds)." })
 rep("baselineWarn", { type = "range", default = 0, min = 0, max = 50, step = 1, label = "Warn once on many new errors",
   tooltip = "0 = off. Errors seen in 3 or more sessions become your baseline; when this many errors outside the baseline happen in one session, one chat line says so (once per session)." })
+rep("privacyAllow", { type = "list", default = {}, maxItems = 30, label = "Words never hidden in paths",
+  tooltip = "If your character shares a name with an addon or a system word, it stays visible inside file paths in reports. Addon folder names and client words are already on this list." })
+rep("recorder", { type = "toggle", default = false, label = "Developer recorder",
+  tooltip = "Records zone, combat, group size, frame-rate band and Phoenix errors, one row per change, into your saved data (/pui record). Off records nothing." })
 rep("trace", { type = "toggle", default = false, label = "Developer event trace",
   tooltip = "Keeps the last 200 Phoenix bus signals (module enabled, profile changes, settings) for /pui trace. Off costs nothing." })
 rep("alertChat", { type = "toggle", default = false, label = "Chat line on a new error", tooltip = "Prints one line with a link that opens the viewer." })
