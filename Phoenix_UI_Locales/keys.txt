@@ -19,6 +19,7 @@ A Phoenix search box: items on the page that do not match fade.
 A banner with rising embers when you earn an achievement, time a key or level up. Reduced motion (Glows page) keeps only the banner.
 A bar for spec resources that live in an aura (for example a stacking buff). Set the spell below.
 A bar glows when the game marks the ability as about to happen (the timing comes from the game).
+A bar that counts down to your next melee swing. Off by default; Forever only. It reads your own swings from the combat log.
 A block of extra frames for every tank (or healer) in the group, in addition to the normal frames.
 A bright edge when absorbs run past full health, and when heal absorbs eat more than the health left.
 A bright line where the bar is draining.
@@ -1399,8 +1400,8 @@ Flash when out of sight
 Flashes the taskbar icon when a keyword matches.
 Flight map
 Flight timer
-Flight timer and pet happiness for the Forever client.
 Flight timer size
+Flight timer, pet happiness and an optional swing timer for the Forever client.
 Flips every part to the other side (for frames on the left of the screen).
 Flow
 Focus bar colour
@@ -3005,6 +3006,7 @@ Scale of bar 7.
 Scale of bar 8.
 Scale of bar 9.
 Scale of the flight bar.
+Scale of the swing bar.
 Scales every Phoenix UI font.
 Score decimals
 Score if timed
@@ -3491,6 +3493,8 @@ Summary: Deaths column
 Summary: Healing column
 Summary: Kicks column
 Swaps the red and green state colours (good/bad, friendly/hostile) for pairs you can tell apart.
+Swing timer
+Swing timer size
 Switch automatically
 Switch profile by content
 Switch profile by specialization

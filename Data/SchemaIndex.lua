@@ -730,6 +730,8 @@ PUI.SchemaIndex = {
   ["forever.flightTimer"] = { module = "Forever", file = "Phoenix_UI_Forever/Forever.lua" },
   ["forever.petHappiness"] = { module = "Forever", file = "Phoenix_UI_Forever/Forever.lua" },
   ["forever.petWarn"] = { module = "Forever", file = "Phoenix_UI_Forever/Forever.lua" },
+  ["forever.swingScale"] = { module = "Forever", file = "Phoenix_UI_Forever/Forever.lua" },
+  ["forever.swingTimer"] = { module = "Forever", file = "Phoenix_UI_Forever/Forever.lua" },
   ["format.decimals"] = { module = "Core", file = "Core/Services.lua" },
   ["format.numberStyle"] = { module = "Core", file = "Core/Services.lua" },
   ["friends.activity"] = { module = "Friends", file = "Phoenix_UI_Friends/Friends.lua" },
