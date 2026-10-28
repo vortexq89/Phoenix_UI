@@ -278,6 +278,50 @@ local function onAlert(_, frame)
     end
 end
 
+---------------------------------------------------------------- aura glows
+-- "Glow this cooldown while an aura is on me": "spellID=auraID, …" (Cooldown Manager > Aura glows). Only the
+-- aura's presence is used (GetPlayerAuraBySpellID returns a table or nil); nothing inside it is read.
+function M.ParseAuraGlows(text)
+    local out = {}
+    for spell, aura in tostring(text or ""):gmatch("(%d+)%s*=%s*(%d+)") do
+        spell, aura = tonumber(spell), tonumber(aura)
+        out[spell] = out[spell] or {}
+        table.insert(out[spell], aura)
+    end
+    return out
+end
+
+local function hasAura(id)
+    if not (C_UnitAuras and C_UnitAuras.GetPlayerAuraBySpellID) then return false end
+    local ok, data = pcall(C_UnitAuras.GetPlayerAuraBySpellID, id)
+    return ok and data ~= nil
+end
+
+local auraQueued = false
+function M:UpdateAuraGlows()
+    auraQueued = false
+    local rules = M.ParseAuraGlows(self.db.auraGlows)
+    for frame, key in pairs(itemKey) do
+        local auras = rules[spellOf(frame) or -1]
+        local on = false
+        if auras and self:IsEnabled() then
+            for _, id in ipairs(auras) do if hasAura(id) then on = true; break end end
+        end
+        if on then
+            local r, g, b, a = M:GlowColor(key, "procColor")
+            ns.Glow:Show(frame, "pixel", r, g, b, a, "aura")
+        else
+            ns.Glow:Hide(frame, "aura")
+        end
+    end
+end
+local function queueAuraGlows()
+    if auraQueued then return end
+    auraQueued = true
+    C_Timer.After(0, function() M:UpdateAuraGlows() end)
+end
+M.QueueAuraGlows = queueAuraGlows
+
 ---------------------------------------------------------------- layout on Phoenix's grid
 local function sorted(viewer, key)
     local list, v = {}, M:Viewer(key)
@@ -535,6 +579,7 @@ function M:EnableViewers()
         for key in pairs(viewers) do eachItem(key, updateKeybind) end
     end
     self:On("UPDATE_BINDINGS", rebind)
+    self:On("UNIT_AURA", function(_, _, unit) if unit == "player" and M.db.auraGlows ~= "" then queueAuraGlows() end end)
     self:On("ACTIONBAR_SLOT_CHANGED", rebind)
     self:On("PLAYER_LOGIN", rebind)
     M.RebuildSlotKeys()
@@ -548,10 +593,12 @@ function M:DisableViewers()
         if ct and ct.Claim and frame.Cooldown then ct:Claim(frame.Cooldown, false) end
         ns.Glow:Hide(frame, "proc")
         ns.Glow:Hide(frame, "ready")
+        ns.Glow:Hide(frame, "aura")
     end
 end
 
 function M:RefreshViewers()
+    queueAuraGlows()
     for key in pairs(viewers) do
         styleViewer(key)
         self:QueueLayout(key)

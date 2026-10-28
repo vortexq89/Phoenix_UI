@@ -1894,6 +1894,14 @@ try("smart macros", function()
     assert(list[3].body:find("@focus,exists,harm,nodead", 1, true), "kick macro has no focus condition")
     assert(#A.SmartMacros(nil) == 2, "kick macro without an interrupt")
 end)
+-- aura glows: rules parsed; the update runs without reading aura contents
+try("tracker aura glows", function()
+    local T = ns.modules.Tracker
+    local r = T.ParseAuraGlows("11366=48108, 11366 = 48107; 133=1")
+    assert(#r[11366] == 2 and r[133][1] == 1, "aura glow rules not parsed")
+    assert(next(T.ParseAuraGlows("junk")) == nil, "junk made a rule")
+    T.db.auraGlows = "11366=48108"; T:UpdateAuraGlows(); T.db.auraGlows = ""
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

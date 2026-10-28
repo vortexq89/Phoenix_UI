@@ -1174,6 +1174,8 @@ local T = {
     TRACKER_MOBILITY = "Fila de movimiento",
     TRACKER_MOBILITY_DESC = "Llena esta barra con los tiempos de reutilización de movimiento de tu clase (traslación, carrera, carga…).",
     TRACKER_MOBILITY_BUTTON = "Rellenar",
+    TRACKER_AURA_GLOWS = "Brillo por aura",
+    TRACKER_AURA_GLOWS_DESC = "Ilumina un tiempo de reutilización mientras tengas un aura: IDhechizo=IDaura, separados por comas (p. ej. 11366=48108).",
     TRACKER_CUSTOM_TRINKETS = "Abalorios equipados",
     TRACKER_CUSTOM_TRINKETS_DESC = "Añade las dos ranuras de abalorio cuando el abalorio tiene efecto de uso.",
     TRACKER_DESAT = "Gris en reutilización",

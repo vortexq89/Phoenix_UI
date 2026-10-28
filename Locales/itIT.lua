@@ -1174,6 +1174,8 @@ local T = {
     TRACKER_MOBILITY = "Riga movimento",
     TRACKER_MOBILITY_DESC = "Riempie questa barra con le ricariche di movimento della tua classe (traslazione, scatto, carica…).",
     TRACKER_MOBILITY_BUTTON = "Riempi",
+    TRACKER_AURA_GLOWS = "Bagliori aura",
+    TRACKER_AURA_GLOWS_DESC = "Fa brillare una ricarica finché hai un'aura: IDincantesimo=IDaura, separati da virgole (es. 11366=48108).",
     TRACKER_CUSTOM_TRINKETS = "Monili equipaggiati",
     TRACKER_CUSTOM_TRINKETS_DESC = "Aggiunge entrambi gli slot dei monili quando hanno un effetto d'uso.",
     TRACKER_DESAT = "Grigio in ricarica",

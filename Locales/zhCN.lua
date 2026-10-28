@@ -1174,6 +1174,8 @@ local T = {
     TRACKER_MOBILITY = "位移技能行",
     TRACKER_MOBILITY_DESC = "用你职业的位移技能（闪现、疾跑、冲锋等）填充此条。",
     TRACKER_MOBILITY_BUTTON = "填充",
+    TRACKER_AURA_GLOWS = "光环发光",
+    TRACKER_AURA_GLOWS_DESC = "身上有某光环时让冷却发光：法术ID=光环ID，用逗号分隔（例如 11366=48108）。",
     TRACKER_CUSTOM_TRINKETS = "已装备饰品",
     TRACKER_CUSTOM_TRINKETS_DESC = "饰品有使用效果时加入两个饰品栏位。",
     TRACKER_DESAT = "冷却时变灰",

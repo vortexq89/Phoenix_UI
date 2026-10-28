@@ -1200,6 +1200,8 @@ ns.RegisterLocale("enUS", {
     TRACKER_MOBILITY = "Movement row",
     TRACKER_MOBILITY_DESC = "Fill this bar with your class's movement cooldowns (blink, dash, charge …).",
     TRACKER_MOBILITY_BUTTON = "Fill",
+    TRACKER_AURA_GLOWS = "Aura glows",
+    TRACKER_AURA_GLOWS_DESC = "Glow a cooldown while an aura is on you: spellID=auraID, separated by commas (e.g. 11366=48108).",
     TRACKER_CUSTOM_TRINKETS = "Equipped trinkets",
     TRACKER_CUSTOM_TRINKETS_DESC = "Adds both trinket slots when the trinket has a use effect.",
     TRACKER_DESAT = "Grey out on cooldown",

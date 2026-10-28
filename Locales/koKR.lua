@@ -1174,6 +1174,8 @@ local T = {
     TRACKER_MOBILITY = "이동기 줄",
     TRACKER_MOBILITY_DESC = "이 바를 직업의 이동기 재사용 대기시간(점멸, 질주, 돌진 등)으로 채웁니다.",
     TRACKER_MOBILITY_BUTTON = "채우기",
+    TRACKER_AURA_GLOWS = "오라 반짝임",
+    TRACKER_AURA_GLOWS_DESC = "오라가 있는 동안 재사용 대기시간을 반짝이게 합니다: 주문ID=오라ID, 쉼표로 구분 (예: 11366=48108).",
     TRACKER_CUSTOM_TRINKETS = "착용한 장신구",
     TRACKER_CUSTOM_TRINKETS_DESC = "사용 효과가 있는 장신구 두 칸을 추가합니다.",
     TRACKER_DESAT = "재사용 대기 중 흑백",

@@ -1174,6 +1174,8 @@ local T = {
     TRACKER_MOBILITY = "Ligne de mobilité",
     TRACKER_MOBILITY_DESC = "Remplit cette barre avec les temps de recharge de déplacement de votre classe (transfert, sprint, charge…).",
     TRACKER_MOBILITY_BUTTON = "Remplir",
+    TRACKER_AURA_GLOWS = "Lueurs d'aura",
+    TRACKER_AURA_GLOWS_DESC = "Fait briller un temps de recharge tant qu'une aura est sur vous : IDsort=IDaura, séparés par des virgules (ex. 11366=48108).",
     TRACKER_CUSTOM_TRINKETS = "Bijoux équipés",
     TRACKER_CUSTOM_TRINKETS_DESC = "Ajoute les deux emplacements de bijou quand le bijou a un effet à l'utilisation.",
     TRACKER_DESAT = "Griser en recharge",

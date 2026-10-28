@@ -1174,6 +1174,8 @@ local T = {
     TRACKER_MOBILITY = "Bewegungsleiste",
     TRACKER_MOBILITY_DESC = "Füllt diese Leiste mit den Bewegungs-Abklingzeiten deiner Klasse (Blinzeln, Spurt, Sturmangriff …).",
     TRACKER_MOBILITY_BUTTON = "Füllen",
+    TRACKER_AURA_GLOWS = "Aura-Leuchten",
+    TRACKER_AURA_GLOWS_DESC = "Lässt eine Abklingzeit leuchten, solange eine Aura auf dir ist: ZauberID=AuraID, durch Kommas getrennt (z. B. 11366=48108).",
     TRACKER_CUSTOM_TRINKETS = "Angelegte Schmuckstücke",
     TRACKER_CUSTOM_TRINKETS_DESC = "Fügt beide Schmuckplätze hinzu, wenn das Schmuckstück einen Benutzen-Effekt hat.",
     TRACKER_DESAT = "Bei Abklingzeit entsättigen",

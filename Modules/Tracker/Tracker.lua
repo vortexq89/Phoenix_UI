@@ -70,6 +70,7 @@ local M = ns:NewModule("Tracker", {
             custom1 = custom(1), custom2 = custom(2), custom3 = custom(3),
         },
         fade = { enabled = false, alpha = 0.35 },
+        auraGlows = "", -- "spellID=auraID, …": glow a cooldown while that aura is on you (Viewers.lua)
         reminders = {
             enabled = true, instancesOnly = true, flask = true, food = true, rune = false, oil = true, raidBuff = true,
             pet = true, healthstone = true, readyMana = true, manaPercent = 90, sound = "",

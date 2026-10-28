@@ -1174,6 +1174,8 @@ local T = {
     TRACKER_MOBILITY = "Linha de mobilidade",
     TRACKER_MOBILITY_DESC = "Preenche esta barra com as recargas de movimento da sua classe (lampejo, disparada, investida…).",
     TRACKER_MOBILITY_BUTTON = "Preencher",
+    TRACKER_AURA_GLOWS = "Brilho por aura",
+    TRACKER_AURA_GLOWS_DESC = "Faz uma recarga brilhar enquanto uma aura estiver em você: IDfeitiço=IDaura, separados por vírgulas (ex.: 11366=48108).",
     TRACKER_CUSTOM_TRINKETS = "Berloques equipados",
     TRACKER_CUSTOM_TRINKETS_DESC = "Adiciona os dois espaços de berloque quando ele tem efeito de uso.",
     TRACKER_DESAT = "Cinza em recarga",
