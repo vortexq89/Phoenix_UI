@@ -428,7 +428,7 @@ PUI.ApiManifest = {
     ["UnitXPMax"] = { owners = { "HUD" } },
     ["UnregisterStateDriver"] = { owners = { "ActionBars", "RaidFrames", "UnitFrames" } },
     ["UnregisterUnitWatch"] = { owners = { "Arena", "UnitFrames" } },
-    ["date"] = { owners = { "ActionBars", "Chat", "Core", "HUD", "Options", "PvP", "RaidTools", "Sentinel", "Vault" } },
+    ["date"] = { owners = { "ActionBars", "Chat", "Core", "HUD", "Options", "PvP", "RaidTools", "Sentinel", "Vault", "examples" } },
     ["debuglocals"] = { owners = { "Core" } },
     ["debugprofilestop"] = { owners = { "Core", "Tests" } },
     ["debugstack"] = { owners = { "Core", "Sentinel", "Tests" } },
