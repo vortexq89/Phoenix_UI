@@ -19,6 +19,7 @@
     <Script file="Skins\Talents.lua"/>
     <Script file="Skins\Loot.lua"/>
     <Script file="Skins\Auction.lua"/>
+    <Script file="Skins\Professions.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>

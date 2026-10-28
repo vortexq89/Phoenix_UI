@@ -2223,6 +2223,18 @@ try("auction house skin", function()
     S:SkinAuction(); S.db.auction = false; S:Refresh(); S.db.auction = true; S:Refresh()
     env.AuctionHouseFrame = nil
 end)
+try("professions skin", function()
+    local S = ns.modules.Skins
+    local row = CreateFrame("Button", nil, UIParent)
+    row.Label = row:CreateFontString()
+    row.GetElementData = function() return { GetData = function() return { categoryInfo = {} } end } end
+    local pf = CreateFrame("Frame", "ProfessionsFrame", UIParent)
+    pf.CraftingPage = { RecipeList = { ScrollBox = { ForEachFrame = function(_, fn) fn(row) end } },
+        SchematicForm = CreateFrame("Frame", nil, pf), CreateButton = CreateFrame("Button", nil, pf) }
+    env.ProfessionsFrame = pf
+    S:SkinProfessions(); S.db.professions = false; S:Refresh(); S.db.professions = true; S:Refresh()
+    env.ProfessionsFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
