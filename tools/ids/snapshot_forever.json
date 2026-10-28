@@ -377,8 +377,17 @@
   "Interface\\Icons\\Trade_Engineering": {
    "fileDataID": 136243
   },
+  "Interface\\Minimap\\MiniMap-TrackingBorder": {
+   "fileDataID": 136430
+  },
   "Interface\\Minimap\\MinimapArrow": {
    "fileDataID": 136431
+  },
+  "Interface\\Minimap\\UI-Minimap-Background": {
+   "fileDataID": 136467
+  },
+  "Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight": {
+   "fileDataID": 136477
   },
   "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag": {
    "fileDataID": 136511

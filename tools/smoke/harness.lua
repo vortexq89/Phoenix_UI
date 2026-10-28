@@ -1689,6 +1689,13 @@ try("movers: default positions do not overlap", function()
     assert(#list >= 8, "too few elements checked: " .. #list)
     assert(#bad == 0, #bad .. " overlapping defaults")
 end)
+try("entry points", function()
+    local Lc = ns.Launcher
+    assert(Lc.Refresh and Lc:IsShown(), "minimap button should be on by default")
+    Lc:SetShown(false); assert(not Lc:IsShown(), "minimap button did not hide")
+    Lc:SetShown(true); assert(Lc:IsShown(), "minimap button did not come back")
+    assert(ns.DB.sv.launcher and ns.DB.sv.launcher.angle, "button angle not saved")
+end)
 -- paired cells: compact rows sit two per line on a wide card, one per line on a narrow one
 try("paired cells", function()
     local C = ns.Config

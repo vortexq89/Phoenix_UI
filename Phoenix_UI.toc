@@ -35,3 +35,4 @@ UI\UI.xml
 Modules\Modules.xml
 Sim\Results.lua
 Core\Init.lua
+UI\MinimapButton.lua
