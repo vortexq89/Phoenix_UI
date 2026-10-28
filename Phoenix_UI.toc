@@ -48,6 +48,7 @@ Core\Movers.lua
 Core\Windows.lua
 Core\Queue.lua
 Core\Wallet.lua
+Core\Announce.lua
 Data\ApiManifest.lua
 Data\SchemaIndex.lua
 Tests\Runner.lua

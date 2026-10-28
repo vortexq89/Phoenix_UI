@@ -1,6 +1,6 @@
 ## Interface: 120100, 120105, 16001
 ## Title: Phoenix UI - Vault
-## Notes: Phoenix UI bags: one window with search, sort, item levels and junk selling.
+## Notes: Phoenix UI bags and bank: categories with your own rules, junk, keystone shelf, undo sort, warband and guild bank, alts and gold history.
 ## Author: VortexQ8
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
@@ -10,5 +10,11 @@
 ## Group: Phoenix_UI
 ## Dependencies: Phoenix_UI
 
+Rules.lua
+Sort.lua
 Vault.lua
+View.lua
+Store.lua
+Bank.lua
+Module.lua
 Tests\Vault_test.lua

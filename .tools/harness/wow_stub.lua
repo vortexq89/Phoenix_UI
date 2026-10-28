@@ -555,6 +555,7 @@ for i = 1, 2 do
   rawset(c, "GetJustifyH", function() return "LEFT" end)
   rawset(c, "GetSpacing", function() return 0 end)
 end
+DEFAULT_CHAT_FRAME = ChatFrame1
 function Region:AddMessage(msg) self.messages = rawget(self, "messages") or {}; self.messages[#self.messages + 1] = msg end
 function Region:SetScrollOffset(o) self.offset = o end
 function Region:GetScrollOffset() return rawget(self, "offset") or 0 end
@@ -902,6 +903,33 @@ function Region:GetNumPoints() return 0 end
 function Region:NumLines() return #(rawget(self, "lines") or {}) end
 function Region:AddDoubleLine(a, b) self.lines = rawget(self, "lines") or {}; self.lines[#self.lines + 1] = { a, b } end
 C_UnitAuras.GetAuraDataByAuraInstanceID = function(unit, id) return H.auraSource and { sourceUnit = maybe(H.auraSource) } end
+
+-- Step 8b: Vault categories, bank, sort undo; Chat whispers.
+C_NewItems = { IsNewItem = function(bag, slot) return H.newItems and H.newItems[bag .. ":" .. slot] == true end, RemoveNewItem = function() end }
+C_Container.GetContainerItemEquipmentSetInfo = function(bag, slot) local v = H.itemSets and H.itemSets[bag .. ":" .. slot]; return v ~= nil, v end
+C_Container.PickupContainerItem = function(bag, slot) H.picks = H.picks or {}; H.picks[#H.picks + 1] = bag .. ":" .. slot end
+C_Container.UseContainerItem = call("UseContainerItem")
+C_Container.SortBankBags = call("SortBankBags")
+C_Container.SortAccountBankBags = call("SortAccountBankBags")
+C_Container.SetSortBagsRightToLeft = function() end
+C_Item.GetItemNameByID = function(id) return H.itemNames and H.itemNames[id] or ("Item " .. tostring(id)) end
+C_Item.IsItemKeystoneByID = function(id) return id == 180653 end
+C_Item.GetItemQualityColor = function(q) return 0.1 * q, 0.5, 0.5 end
+C_Item.GetItemIconByID = function(id) return 1000 + (id or 0) end
+C_Item.GetItemQualityByID = function() return 1 end
+local baseInstant = C_Item.GetItemInfoInstant
+C_Item.GetItemInfoInstant = function(id)
+  local c = H.itemClass and H.itemClass[id]
+  if c then return id, "", "", c.loc or "", 1, c.class, c.sub or 0 end
+  return baseInstant(id)
+end
+C_Bank = { AutoDepositItemsIntoBank = call("AutoDepositItemsIntoBank") }
+function GetCursorInfo() return nil end
+function ClearCursor() end
+BankFrame = CreateFrame("Frame", "BankFrame", UIParent)
+Enum.ItemClass = Enum.ItemClass or { Consumable = 0, Container = 1, Weapon = 2, Gem = 3, Armor = 4, Reagent = 5, Projectile = 6,
+  Tradegoods = 7, ItemEnhancement = 8, Recipe = 9, Questitem = 12, Key = 13, Miscellaneous = 15, Glyph = 16, Battlepet = 17, Profession = 19 }
+function BNSendWhisper(id, text) H.chat[#H.chat + 1] = { text, "BN", id } end
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,

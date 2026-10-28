@@ -638,6 +638,105 @@ function Previews.DataBars(card)
   h.pb:SetShown(P.enabled)
 end
 
+-- Chat: sample lines run through the module's own text helpers with the
+-- current settings (timestamps, channel names, links, emoji, keywords, panel).
+function Previews.Chat(card)
+  local CH = PUI.Chat
+  if not CH then return end
+  local T, S = CH.Text, CH.settings
+  local h = hudHolder(card, "chat")
+  if not rawget(h, "panel") then
+    h.panel = h:CreateTexture(nil, "BACKGROUND")
+    h.panel:SetPoint("TOPLEFT", 4, -4)
+    h.panel:SetSize(376, 190)
+    h.lines = {}
+  end
+  local c = S.panelColor
+  local style = CH.STYLES[S.style] or CH.STYLES.phoenix
+  h.panel:SetColorTexture(c.r, c.g, c.b, math.max(0.08, style.bg * S.panelAlpha))
+  local kw = T.ParseKeywords(S.keywords ~= "" and S.keywords or "summon")
+  local fmt = CH.STAMPS[S.timestamps]
+  local stamp = fmt and ("|cff" .. CH.Hex(S.stampColor, "8a8a8a") .. "19:42|r ") or ""
+  local samples = {
+    "[" .. T.ShortChannel("2. Trade - City", S.channelNames) .. "] Thrall: WTS key +12, see raider.io/x :star:",
+    "[Party] Liadrin: need a summon please :healer:",
+    "|cffe0a0ffVex whispers:|r you still need a tank? :tank:",
+    "|cff8a8a8aBattleground: 6 joined, 2 left|r",
+  }
+  for i, text in ipairs(samples) do
+    local out = text
+    if S.urls then out = T.LinkURLs(out, CH.Hex(S.urlColor, "4fb3ff")) end
+    if S.emoji then out = T.ReplaceEmoji(out, S.emojiSize) end
+    if S.keywordHighlight then out = T.Highlight(out, kw, CH.Hex(S.keywordColor, "ffd24a")) end
+    local fs = line(h, h.lines, i, "body")
+    local path = CH.FontPath()
+    if path then fs:SetFont(path, S.fontSize, S.outline == "none" and "" or S.outline) end
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 4 + S.padding + 6, -(10 + (i - 1) * (S.fontSize + 10)))
+    fs:SetWidth(360)
+    fs:SetJustifyH("LEFT")
+    fs:SetText(stamp .. out)
+    fs:SetAlpha((S.idleFade > 0 and i == 1) and math.max(S.fadeAlpha, 0.3) or 1)
+  end
+  local n = line(h, h.lines, #samples + 1, "small")
+  n:ClearAllPoints()
+  n:SetPoint("TOPLEFT", 8, -204)
+  n:SetText("Window 1 is placed with Edit Mode. The voice transcription window is never changed.")
+end
+
+-- Vault: sample items grouped by the real rules engine with your rules,
+-- pins and hidden categories; borders use the same quality colours.
+function Previews.Vault(card)
+  local VA = PUI.Vault
+  if not VA or not VA.Context then return end
+  local S = VA.settings
+  local R = VA.Rules
+  local h = hudHolder(card, "vault")
+  h.tiles = rawget(h, "tiles") or {}
+  h.heads = rawget(h, "heads") or {}
+  local sample = {
+    { id = 1, quality = 4, classID = 4, ilvl = 645, name = "Helm", sets = { "PvP" } }, { id = 2, quality = 3, classID = 2, ilvl = 639, name = "Blade" },
+    { id = 3, quality = 1, classID = 0, name = "Flask" }, { id = 4, quality = 1, classID = 0, name = "Feast" },
+    { id = 5, quality = 2, classID = 7, name = "Ore" }, { id = 6, quality = 2, classID = 7, name = "Herb" },
+    { id = 7, quality = 4, keystone = true, name = "Keystone" }, { id = 8, quality = 0, classID = 15, name = "Grey" },
+  }
+  local entries = {}
+  for _, f in ipairs(sample) do entries[#entries + 1] = { facts = f } end
+  local ctx = VA.Context()
+  ctx.rules = ctx.rules or {}
+  local sections = R.Group(entries, ctx)
+  local size = math.min(32, S.view == "compact" and S.compactSize or S.slotSize)
+  local y, ti = 8, 0
+  for i, sec in ipairs(sections) do
+    local head = line(h, h.heads, i, "small")
+    head:ClearAllPoints()
+    head:SetPoint("TOPLEFT", 8, -y)
+    head:SetText(S.view == "category" and (sec.label:upper() .. "  " .. #sec.items) or "")
+    if S.view == "category" then y = y + 16 end
+    for k, e in ipairs(sec.items) do
+      ti = ti + 1
+      local tile = h.tiles[ti]
+      if not tile then
+        tile = CreateFrame("Frame", nil, h)
+        tile.fill = tile:CreateTexture(nil, "ARTWORK"); tile.fill:SetAllPoints()
+        tile.edge = Theme:Slice(tile, A.border1, 4, "OVERLAY")
+        h.tiles[ti] = tile
+      end
+      local col = S.view == "category" and 0 or (ti - 1)
+      tile:ClearAllPoints()
+      tile:SetSize(size, size)
+      tile:SetPoint("TOPLEFT", 8 + ((S.view == "category" and (k - 1) or (col % S.columns)) * (size + S.gap)), -y)
+      tile.fill:SetColorTexture(0.18 + e.facts.id * 0.04, 0.2, 0.26, 1)
+      local r, g, b = VA.QualityColor(e.facts.quality)
+      tile.edge:SetVertexColor(r or 0, g or 0, b or 0, (S.qualityBorder and (e.facts.quality or 0) >= S.qualityMin and r) and 1 or 0.3)
+      tile:Show()
+    end
+    if S.view == "category" then y = y + size + S.gap + 6 end
+  end
+  for i = ti + 1, #h.tiles do h.tiles[i]:Hide() end
+  for i = #sections + 1, #h.heads do h.heads[i]:Hide() end
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {}, st(card).cdm or {} }) do
     for _, f in pairs(list) do f:Hide() end
@@ -662,7 +761,7 @@ function Previews.Update(owner, card, key)
 end
 
 -- wrap builders so switching page/tab always starts clean
-for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars" }) do
+for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars", "Chat", "Vault" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end
