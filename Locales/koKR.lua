@@ -1864,6 +1864,7 @@ local T = {
     APPLY_ALL_ON = "모든 요소를 한 번에 편집 중입니다.",
     APPLY_ALL_OFF = "선택한 요소만 편집 중입니다.",
     CHIPS_SHIFT_HINT = "Shift-클릭으로 여러 개 편집",
+    PREVIEW_CLICK_HINT = "클릭하면 이 설정으로 이동합니다",
     MIXED_VALUES = "혼합",
     EDITING_SEVERAL = "%d개 편집 중",
     PREVIEW_WORLD = "게임 화면에 표시",

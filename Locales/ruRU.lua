@@ -1864,6 +1864,7 @@ local T = {
     APPLY_ALL_ON = "Редактируются все элементы сразу.",
     APPLY_ALL_OFF = "Редактируются только выбранные элементы.",
     CHIPS_SHIFT_HINT = "Shift-клик — изменить несколько",
+    PREVIEW_CLICK_HINT = "Нажмите, чтобы перейти к настройке",
     MIXED_VALUES = "Разные",
     EDITING_SEVERAL = "Редактируется: %d",
     PREVIEW_WORLD = "Показать в мире",

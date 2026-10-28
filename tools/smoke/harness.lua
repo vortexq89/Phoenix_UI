@@ -1751,6 +1751,23 @@ try("preview at top", function()
     assert(page.pinned, "action bar page has no preview")
     assert(not page.docked, "the preview was docked in the side column")
 end)
+-- click-to-setting: a preview part jumps to its row
+try("preview click to setting", function()
+    local C = ns.Config
+    local page = C:Show("ActionBars")
+    local stage = page.pinned and page.pinned.pane
+    assert(stage and stage.onHot, "preview has no click handler")
+    stage:Redraw()
+    local focused
+    local orig = page.Focus
+    rawset(page, "Focus", function(self, item) focused = item.key; return orig(self, item) end)
+    stage.onHot("bars.@.width")
+    rawset(page, "Focus", orig)
+    assert(focused == "bars.@.width", "clicking the preview did not focus its setting")
+    local any = false
+    for _, f in ipairs(stage.hots or {}) do if f.key == "bars.@.width" then any = true end end
+    assert(any, "no hotspot over the preview buttons")
+end)
 -- tab consistency: every tab of every module page has settings, no setting appears on two tabs
 try("tab consistency", function()
     local C = ns.Config

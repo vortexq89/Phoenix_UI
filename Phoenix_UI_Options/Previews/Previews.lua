@@ -198,3 +198,33 @@ function P.ScaleLabel(stage)
     end
     return fs
 end
+
+-- Click-to-setting: a transparent button over a preview part; hovering outlines it in the accent and a click
+-- asks the page to jump to and flash the setting `key` (stage.onHot, set by the renderer). One per part, reused.
+function P.Hot(stage, part, key, tip)
+    if not (stage and part) then return end
+    local hot = part.puiHot
+    if not hot then
+        hot = CreateFrame("Button", nil, stage)
+        hot:RegisterForClicks("LeftButtonUp")
+        hot.edge = CreateFrame("Frame", nil, hot)
+        hot.edge:SetAllPoints()
+        hot.edge:Hide()
+        hot:SetScript("OnEnter", function(self)
+            self.edge:Show()
+            if self.tip then W.ShowTooltip(self, self.tip, ns.L.PREVIEW_CLICK_HINT) end
+        end)
+        hot:SetScript("OnLeave", function(self) self.edge:Hide(); W.HideTooltip() end)
+        hot:SetScript("OnClick", function(self) if stage.onHot then stage.onHot(self.key) end end)
+        Skin:Register(hot.edge, function(e) Skin:Border(e, "accent.primary") end)
+        part.puiHot = hot
+        stage.hots = stage.hots or {}
+        stage.hots[#stage.hots + 1] = hot
+    end
+    hot.key, hot.tip = key, tip
+    hot:ClearAllPoints()
+    hot:SetAllPoints(part)
+    hot:SetFrameLevel((part:GetFrameLevel() or 1) + 20)
+    hot:SetShown(part:IsShown())
+    return hot
+end

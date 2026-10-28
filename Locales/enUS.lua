@@ -1890,6 +1890,7 @@ ns.RegisterLocale("enUS", {
     APPLY_ALL_ON = "Editing every element at once.",
     APPLY_ALL_OFF = "Editing the picked elements only.",
     CHIPS_SHIFT_HINT = "Shift-click to edit several",
+    PREVIEW_CLICK_HINT = "Click to jump to this setting",
     MIXED_VALUES = "Mixed",
     EDITING_SEVERAL = "Editing %d",
     PREVIEW_WORLD = "Show in world",

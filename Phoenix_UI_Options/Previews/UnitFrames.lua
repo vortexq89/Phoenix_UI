@@ -175,6 +175,7 @@ P:Register("unitframe", {
             built.scaleText:Set(scale)
             built.scaleText:Show()
             m:UpdateAll(f)
+            P.Hot(view, f, "units.@.width", ns.L.UF_WIDTH)
             -- (the fading rows act on the real frames; the preview shows the range fade only when asked)
             if not st.range then f:SetAlpha(1) end
             f:Show()

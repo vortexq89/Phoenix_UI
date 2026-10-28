@@ -1864,6 +1864,7 @@ local T = {
     APPLY_ALL_ON = "正在同時編輯所有元素。",
     APPLY_ALL_OFF = "僅編輯所選元素。",
     CHIPS_SHIFT_HINT = "Shift-點擊可同時編輯多個",
+    PREVIEW_CLICK_HINT = "點擊跳至此設定",
     MIXED_VALUES = "混合",
     EDITING_SEVERAL = "正在編輯 %d 個",
     PREVIEW_WORLD = "在遊戲中顯示",

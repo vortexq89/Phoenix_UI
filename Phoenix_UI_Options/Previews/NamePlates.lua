@@ -153,6 +153,7 @@ P:Register("nameplate", {
                 p:SetPoint("CENTER", stage, "LEFT", w * (i - 0.5) / #plates, 4)
                 p:Show()
                 m:DrawSample(p, s)
+                P.Hot(stage, p, "styles.@.width", L.UF_WIDTH)
             end
         end
     end,

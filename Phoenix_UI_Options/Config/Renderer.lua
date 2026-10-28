@@ -903,6 +903,8 @@ local function buildPreview(page, m, item)
         if not page.docked then page.scroll:GetScript("OnMouseWheel")(page.scroll, delta) end
     end)
     card.pane = ns.Previews:Create(item.kind, card, m, page)
+    -- a click on a part of the preview jumps to that part's setting and flashes it
+    card.pane.onHot = function(key) if page.FocusKey then page:FocusKey(key) end end
     card.tag = W.Text(card, "small", "accent.text", "RIGHT")
     card.shade = W.Texture(card, "BACKGROUND", -1, Media.textures.FADE_V)
     card.shade:SetPoint("TOPLEFT", card, "BOTTOMLEFT", 0, 0)
@@ -1225,6 +1227,13 @@ function Config.BuildSchemaPage(parent, m, schema)
     local function owns(row, item)
         if row.item == item then return true end
         for _, sub in ipairs(row.item.cog or {}) do if sub == item then return true end end
+        return false
+    end
+
+    function page:FocusKey(k)
+        for _, row in ipairs(self.rows) do
+            if row.item.key == k then self:Focus(row.item); return true end
+        end
         return false
     end
 

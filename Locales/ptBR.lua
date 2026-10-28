@@ -1864,6 +1864,7 @@ local T = {
     APPLY_ALL_ON = "Editando todos os elementos de uma vez.",
     APPLY_ALL_OFF = "Editando só os elementos escolhidos.",
     CHIPS_SHIFT_HINT = "Shift-clique para editar vários",
+    PREVIEW_CLICK_HINT = "Clique para ir a esta configuração",
     MIXED_VALUES = "Misto",
     EDITING_SEVERAL = "Editando %d",
     PREVIEW_WORLD = "Mostrar no mundo",

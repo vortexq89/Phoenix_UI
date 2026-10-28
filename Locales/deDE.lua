@@ -1864,6 +1864,7 @@ local T = {
     APPLY_ALL_ON = "Alle Elemente werden gleichzeitig bearbeitet.",
     APPLY_ALL_OFF = "Nur die gewählten Elemente werden bearbeitet.",
     CHIPS_SHIFT_HINT = "Umschalt-Klick, um mehrere zu bearbeiten",
+    PREVIEW_CLICK_HINT = "Klicken, um zu dieser Einstellung zu springen",
     MIXED_VALUES = "Gemischt",
     EDITING_SEVERAL = "%d werden bearbeitet",
     PREVIEW_WORLD = "In der Welt zeigen",

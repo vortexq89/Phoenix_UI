@@ -159,6 +159,7 @@ P:Register("actionbar", {
                     btn:SetPoint("TOPLEFT", holder, "TOPLEFT", pad + p[1], -(pad + p[2]))
                     btn:SetSize(w, h)
                 end
+                P.Hot(stage, btn, "bars.@.width", ns.L.AB_WIDTH)
                 dress(m, btn, sample)
                 feedback(m, btn, sample)
                 cooldown(m, btn, sample and (sample.cooldown or (self.states.cooldown and i == 1 and 0.35)), h)

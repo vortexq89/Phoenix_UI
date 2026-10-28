@@ -184,6 +184,7 @@ P:Register("castbar", {
                 end
                 f:SetAlpha(1)
                 f:Show()
+                P.Hot(stage, f, "bars.@.width", L.UF_WIDTH)
             end
             if key == "player" then drawExtras(stage, m, built, list[1], -18 - #list * pitch * scale) end
         end
