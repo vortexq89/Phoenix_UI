@@ -46,6 +46,12 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
 - Phase 3 built: 14 Adventure Guide (`Journal.lua`), 15 Achievements, 16 Collections, 17 Transmog, 18 Mail,
   19 Merchant, 20 Great Vault (`Vault.lua`), 21 Calendar. Not in phase 3: the Great Vault progress rings (cards
   are outlined instead), collection favourite stars and filter chips, the Merchant extended-cost layout.
+  All three were added after phase 3 (Vault rings, favourite star + mount filter chips, cost cards).
+- Phase 4 built: 22 Housing (`Housing.lua`, new switch, cosmetic only), 24 Settings & Edit Mode
+  (`Settings.lua`: rail and list rows, Edit Mode dialog, our own accent outline on each system's selection;
+  nothing in Edit Mode is moved or saved by us), 27 Gossip/quest (`Gossip.lua`), trade (`Trade.lua`),
+  inspect (`Inspect.lua`). 23 Shop: launcher only, the micro menu's Shop tile; `StoreFrame` is never touched
+  (harness checks this). Settings, gossip, trade and inspect now switch live.
 - Dev self-test: every list path a window skin looks for inside a loaded window and does not find is reported
   as `skin-missing` (Core/DevDiag.lua), so the overnight loop shows lists that stay unstyled.
 

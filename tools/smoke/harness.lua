@@ -2389,6 +2389,15 @@ try("housing phase 4 skin", function()
     S:SkinHousing(); S.db.housing = false; S:Refresh(); S.db.housing = true; S:Refresh()
     env.HousingDashboardFrame = nil
 end)
+try("shop launcher only", function()
+    local found = false
+    for _, e in ipairs(ns.modules.Skins.MICRO or {}) do if e[1] == "StoreMicroButton" then found = true end end
+    for _, f in ipairs({ "MicroMenu", "GameMenu", "Settings", "Housing", "Skins" }) do
+        local h = io.open("Modules/Skins/" .. f .. ".lua"); local src = h and h:read("*a") or ""; if h then h:close() end
+        assert(not src:find("StoreFrame", 1, true), f .. " touches StoreFrame")
+    end
+    assert(found, "shop tile missing")
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
