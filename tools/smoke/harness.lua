@@ -2118,6 +2118,20 @@ try("character skin", function()
     assert(S.IsWindowOn(cf), "character window again live")
     env.CharacterHeadSlot, env.CharacterFrame = nil, nil
 end)
+-- popups and ready check (plan window 26): primary first button, secondary others, field, live off/on
+try("popup skin", function()
+    local S = ns.modules.Skins
+    assert(S.PopupVariant(1) == "primary" and S.PopupVariant(2) == "secondary", "button variants")
+    local p = CreateFrame("Frame", "StaticPopup1", UIParent)
+    env.StaticPopup1 = p
+    p.ButtonContainer = { Button1 = CreateFrame("Button", nil, p), Button2 = CreateFrame("Button", nil, p) }
+    p.EditBox = CreateFrame("EditBox", nil, p)
+    S:SkinPopups(); S:SkinPopups()
+    S.PaintPopupButton(p.ButtonContainer.Button1); S.PaintPopupButton(p.ButtonContainer.Button2)
+    S.db.popups = false; S:Refresh(); S.db.popups = true; S:Refresh()
+    ns.Events:Fire("PUI_THEME_CHANGED")
+    env.StaticPopup1 = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

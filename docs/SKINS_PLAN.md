@@ -26,9 +26,14 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   windows: truncation, overlap, small fonts, icon rule).
 
 ## Status
-- Built (awaiting the in-game checklist): 1 Game Menu (`Skins/GameMenu.lua`), 2 Micro menu (`Skins/MicroMenu.lua`),
-  4 Bags/bank chrome (`Bags/Chrome.lua`; slots were already dressed by `Bags.lua`). Game Menu groups keep
-  Blizzard's own spacing (no extra dividers), and the bag category chips belong to the Phoenix bag window view.
+- Phase 1 built (awaiting the in-game checklist), each switch live both ways (no /reload):
+  1 Game Menu (`Skins/GameMenu.lua`, with group dividers), 2 Micro menu (`Skins/MicroMenu.lua`),
+  3 Chat pill tabs + channel bar (`Chat/Pills.lua`), 4 Bags/bank chrome (`Bags/Chrome.lua`; slots in `Bags.lua`),
+  5 World map + quest log (`Skins/WorldMap.lua`) and tracker header ticks (`Quests/Tracker.lua`),
+  6 Character slots (`Skins/Character.lua`; stats in ItemLevel), 26 Popups / ready check (`Skins/Popups.lua`;
+  tooltips are the Tooltip module's 1 px border with quality and class colours).
+- Not yet: bag category chips on Blizzard's bags (they belong to the Phoenix bag window view), reputation rows
+  and the currency list on the character sheet, quest log campaign cards.
 
 ## Delivery phases (ordered by how often players open the window)
 | Phase | Windows |

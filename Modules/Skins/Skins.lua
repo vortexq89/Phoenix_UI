@@ -210,7 +210,7 @@ M.UnskinWindow = unwindow
 function M.IsWindowOn(frame) return winOn[frame] and true or false end
 
 -- Windows whose switch applies live both ways (the rest restore Blizzard's look after /reload).
-M.LIVE = { gameMenu = true, character = true }
+M.LIVE = { gameMenu = true, character = true, popups = true, readyCheck = true }
 function M:ApplyLive()
     for _, entry in ipairs(self.WINDOWS) do
         if self.LIVE[entry.key] then
@@ -281,6 +281,7 @@ function M:OnEnable()
     if self.SkinMicroMenu then self:SkinMicroMenu() end -- MicroMenu.lua
     if self.SetupWorldMap then self:SetupWorldMap() end -- WorldMap.lua
     if self.SetupCharacter then self:SetupCharacter() end -- Character.lua
+    if self.SetupPopups then self:SetupPopups() end -- Popups.lua
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then

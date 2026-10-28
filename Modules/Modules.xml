@@ -12,6 +12,7 @@
     <Script file="Skins\MicroMenu.lua"/>
     <Script file="Skins\WorldMap.lua"/>
     <Script file="Skins\Character.lua"/>
+    <Script file="Skins\Popups.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>
