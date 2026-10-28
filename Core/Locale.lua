@@ -8,7 +8,7 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 local Locale = { strings = {}, active = "enUS", missing = {}, CHILD = "Phoenix_UI_Locales" }
 PUI.Locale = Locale
 
-local LOCALES = { "auto", "enUS", "deDE", "frFR", "esES", "esMX", "ptBR", "ruRU", "koKR", "zhCN", "zhTW" }
+local LOCALES = { "auto", "enUS", "deDE", "frFR", "esES", "esMX", "ptBR", "ruRU", "koKR", "zhCN", "zhTW", "arSA" }
 Locale.CHOICES = LOCALES
 
 PUI.L = setmetatable({}, {
