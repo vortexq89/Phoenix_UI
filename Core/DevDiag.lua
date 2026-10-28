@@ -39,6 +39,7 @@ local function db()
     if type(PhoenixUIDevDB) ~= "table" then PhoenixUIDevDB = { enabled = false } end
     return PhoenixUIDevDB
 end
+D.Store = function() return db() end
 function D:IsEnabled() return db().enabled == true end
 
 ---------------------------------------------------------------- report building
@@ -342,6 +343,22 @@ local function finish()
             lines[#lines + 1] = ("  %s: %s"):format(tostring(e.source), tostring(e.message):sub(1, 160))
         end
     end
+    local st = db().selftest
+    if st and st.pages and next(st.pages) then
+        report.selftest = { loops = st.loops, started = st.started, stopReason = st.stopReason, pages = st.pages }
+        lines[#lines + 1] = ""
+        lines[#lines + 1] = ("Self-test: %d loops, stop: %s"):format(st.loops or 0, tostring(st.stopReason or "running"))
+        local keys = {}
+        for k in pairs(st.pages) do keys[#keys + 1] = k end
+        table.sort(keys)
+        for _, k in ipairs(keys) do
+            local r = st.pages[k]
+            lines[#lines + 1] = ("  %-22s steps %d  issues %d  errors %d"):format(k, r.steps or 0, r.count or 0, r.errors or 0)
+            for _, x in ipairs(r.issues or {}) do
+                lines[#lines + 1] = ("    [%s] %s %s  %s"):format(SEV[x.sev] or "?", tostring(x.kind), tostring(x.what), tostring(x.detail))
+            end
+        end
+    end
     report.text = table.concat(lines, "\n")
     local copy = {}
     for k, v in pairs(report) do if k ~= "text" then copy[k] = v end end
@@ -406,6 +423,179 @@ function D:AuditPages(done)
     return true
 end
 
+
+---------------------------------------------------------------- self-test (dev only, opt-in)
+-- /pui dev selftest on: walks every options page, every tab, every preview state and movers on/off,
+-- one step per timer tick, auditing after each step. No input is sent to the game and nothing is
+-- played: it pauses in combat and stops for good as soon as the player moves, casts or opens a vehicle.
+-- ReloadUI / C_UI.Reload need a hardware event, so results reach PhoenixUIDevDB at the next /reload,
+-- logout or idle disconnect. Each finished page is also printed to chat and (optionally) screenshotted.
+local ST = { running = false, paused = false }
+D.SelfTest = ST
+local STEP, LOOP_WAIT, MAX_LOOPS = 0.6, 60, 500
+
+local function stepIssues(label)
+    report = { issues = {} }
+    textSeen = 0
+    local cfg = _G.PhoenixUI_Config
+    if cfg and cfg:IsVisible() then auditText(cfg, label) end
+    pcall(auditPreviews)
+    return report.issues
+end
+
+local function buildSteps()
+    local C, steps = ns.Config, {}
+    for _, g in ipairs(C:Groups()) do
+        for _, key in ipairs(g.entries or {}) do
+            steps[#steps + 1] = { page = key, label = key, run = function() return C:Show(key) end }
+            steps[#steps + 1] = { page = key, expand = true }
+        end
+    end
+    local mv = ns.modules and ns.modules.Movers
+    if mv and mv.SetUnlocked then
+        steps[#steps + 1] = { page = "movers", label = "movers on", run = function() mv:SetUnlocked(true) end }
+        steps[#steps + 1] = { page = "movers", label = "movers off", run = function() mv:SetUnlocked(false) end }
+    end
+    return steps
+end
+
+-- Tabs and preview states of a page become their own steps right after the page opens.
+local function expand(page, key)
+    local out = {}
+    if not page then return out end
+    local function tabs(n)
+        if not page.tabs or not page.tabList then return end
+        out[#out + 1] = { page = key, label = key .. " tab " .. n, run = function()
+            page.tabs:SetValue(n); page.tabs.onChange(page.tabs, n)
+        end }
+    end
+    for n = 1, #(page.tabList or {}) do tabs(n) end
+    local card = page.pinned
+    if card and card.states and card.states.chips then
+        for _, it in ipairs(card.states.chips) do if it:IsShown() then
+            out[#out + 1] = { page = key, label = key .. " preview " .. tostring(it.value), run = function()
+                card.states:SetValue({ [it.value] = true }); card.states.onChange(card.states, card.states:GetValue())
+            end }
+        end end
+        out[#out + 1] = { page = key, label = key .. " preview plain", run = function()
+            card.states:SetValue({}); card.states.onChange(card.states, card.states:GetValue())
+        end }
+    end
+    return out
+end
+
+local function store()
+    local d = db()
+    d.selftest = d.selftest or {}
+    return d.selftest
+end
+
+function ST:Stop(why)
+    if self.ticker then self.ticker:Cancel() end
+    self.ticker, self.running = nil, false
+    local st = store()
+    st.stopped, st.stopReason = time(), why
+    ns:Print("self-test stopped: " .. tostring(why))
+end
+
+local function flushPage(key)
+    local st, r = store(), ST.cur
+    if not r then return end
+    st.pages = st.pages or {}
+    st.pages[key] = r
+    ns:Print(("self-test %s: %d steps, %d issues%s"):format(key, r.steps, r.count, r.errors > 0 and (", " .. r.errors .. " errors") or ""))
+    if st.shots and Screenshot then pcall(Screenshot) end
+end
+
+function ST:Tick()
+    if not self.running then return end
+    if InCombatLockdown() then self.paused = true; return end
+    self.paused = false
+    if self.waitUntil then
+        if GetTime() < self.waitUntil then return end
+        self.waitUntil = nil
+    end
+    local s = self.steps[self.i]
+    if not s then
+        if self.curKey then flushPage(self.curKey); self.curKey, self.cur = nil, nil end
+        local st = store()
+        st.loops = (st.loops or 0) + 1
+        st.lastLoop = time()
+        if ns.Config and _G.PhoenixUI_Config then _G.PhoenixUI_Config:Hide() end
+        if st.loops >= MAX_LOOPS then return self:Stop("loop cap") end
+        self.steps, self.i, self.waitUntil = buildSteps(), 1, GetTime() + LOOP_WAIT
+        return
+    end
+    self.i = self.i + 1
+    if s.page ~= self.curKey then
+        if self.curKey then flushPage(self.curKey) end
+        self.curKey, self.cur = s.page, { steps = 0, count = 0, errors = 0, issues = {}, time = time() }
+    end
+    if s.expand then
+        local add = expand(ns.Config.pages[s.page], s.page)
+        for n = #add, 1, -1 do table.insert(self.steps, self.i, add[n]) end
+        return
+    end
+    local ok, err = pcall(s.run)
+    local r = self.cur
+    r.steps = r.steps + 1
+    if not ok then
+        r.errors = r.errors + 1
+        r.issues[#r.issues + 1] = { sev = 1, kind = "selftest-error", what = s.label, detail = tostring(err) }
+    end
+    for _, x in ipairs(stepIssues(s.label)) do
+        r.count = r.count + 1
+        if #r.issues < 40 then
+            r.issues[#r.issues + 1] = { sev = x.sev, kind = x.kind, what = s.label .. ": " .. tostring(x.what), detail = x.detail }
+        end
+    end
+end
+
+function ST:Start()
+    local C = ns.Config
+    if InCombatLockdown() then return false, "in combat" end
+    if not C or not C.Groups then
+        if ns.Launcher and ns.Launcher.Load then ns.Launcher:Load() end
+        C = ns.Config
+    end
+    if not (C and C.Groups and C.Show) then return false, "options not loaded" end
+    D:SetEnabled(true)
+    local st = store()
+    st.started, st.loops, st.pages, st.stopReason = time(), 0, {}, nil
+    self.steps, self.i, self.curKey, self.cur, self.running = buildSteps(), 1, nil, nil, true
+    self.ticker = C_Timer.NewTicker(STEP, function() ST:Tick() end)
+    return true
+end
+
+-- the player taking over ends the test; nothing is ever pressed for them
+local function playerActs(_, event, unit)
+    if ST.running and (event ~= "UNIT_SPELLCAST_SENT" or unit == "player") then ST:Stop("player " .. event) end
+end
+for _, ev in ipairs({ "PLAYER_STARTED_MOVING", "UNIT_SPELLCAST_SENT", "PLAYER_TARGET_CHANGED", "UNIT_ENTERED_VEHICLE" }) do
+    ns.Events:On(ev, ST, playerActs)
+end
+ns.Events:On("PLAYER_LOGOUT", ST, function()
+    if ST.running then store().stopReason = "logout (results saved)" end
+end)
+
+function ST:Slash(arg)
+    if arg == "on" then
+        local ok, why = self:Start()
+        ns:Print(ok and "self-test ON - stops when you move, cast or target; /reload or log out to save results"
+            or ("self-test not started: " .. tostring(why)))
+    elseif arg == "off" then
+        if self.running then self:Stop("off") end
+    elseif arg == "shots on" or arg == "shots off" then
+        store().shots = arg == "shots on"
+        ns:Print("self-test screenshots " .. (store().shots and "ON" or "OFF"))
+    else
+        local st = store()
+        local state = self.running and (self.paused and "paused (combat)" or "running") or "off"
+        ns:Print(("self-test %s, loops %d%s"):format(state,
+            st.loops or 0, st.stopReason and (", last stop: " .. st.stopReason) or ""))
+    end
+end
+
 ---------------------------------------------------------------- hooks
 local function hookLocale()
     local mt = getmetatable(ns.L)
@@ -458,11 +648,13 @@ function D:Slash(rest)
         if not self:AuditPages(function(r)
             ns:Print(summaryLine("dev page audit", r))
         end) then ns:Print("dev page audit: not in combat") end
+    elseif rest:match("^selftest") then
+        ST:Slash(rest:match("^selftest%s*(.-)%s*$"))
     elseif rest == "clear" then
         db().last = nil
         wipe(taint); wipe(localeMiss); wipe(localeOrder)
         ns:Print("dev diagnostics cleared")
     else
-        ns:Print("/pui dev [on|off|audit|pages|clear]")
+        ns:Print("/pui dev [on|off|audit|pages|clear|selftest on|off|shots on|off]")
     end
 end

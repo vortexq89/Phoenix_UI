@@ -1833,6 +1833,28 @@ try("tab consistency", function()
     assert(#problems == 0, table.concat(problems, "; "))
 end)
 -- developer diagnostics (/pui dev): opt-in, writes PhoenixUIDevDB with ranked issues and json/text exports
+-- dev self-test: walks pages, tabs, preview states and movers; stops when the player moves
+try("dev self-test", function()
+    local ST, D = ns.DevDiag.SelfTest, ns.DevDiag
+    local old = GetTime
+    local now = 0
+    GetTime = function() return now end
+    assert(ST:Start(), "self-test did not start")
+    local guard = 0
+    while ST.running and (D:IsEnabled() and (D.Store().selftest.loops or 0) < 1) and guard < 5000 do
+        ST:Tick(); now = now + 1; guard = guard + 1
+    end
+    local st = D.Store().selftest
+    assert((st.loops or 0) >= 1, "no full loop")
+    local n = 0
+    for _, r in pairs(st.pages) do n = n + 1; assert(r.errors == 0, "step error: " .. tostring(r.issues[1] and r.issues[1].detail)) end
+    assert(n > 10 and st.pages.movers, "pages not recorded")
+    fire("PLAYER_STARTED_MOVING")
+    assert(not ST.running and st.stopReason:find("MOVING"), "moving did not stop it")
+    GetTime = old
+    local mv = ns.modules.Movers
+    if mv.SetUnlocked then mv:SetUnlocked(false) end
+end)
 try("dev diagnostics", function()
     local D = ns.DevDiag
     env.PhoenixUIDevDB = nil
