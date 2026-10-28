@@ -393,6 +393,8 @@ function UnitFactionGroup() return "Horde", "Horde" end
 function IsResting() return false end
 function GetRaidTargetIndex() if H.secretMode then return H.secret(3) end return nil end
 function UnitCastingInfo(u) if H.casting then return maybe("Fireball"), nil, 135812, 0, 1, false, "id", maybe(false), 133 end return nil end
+
+function UnitAttackSpeed() return 2.6, nil end
 function UnitChannelInfo()
   local c = H.channel
   if c then return maybe(c.name or "Channel"), nil, 136243, c.start or 0, c.stop or 3000, false, maybe(false), c.spellID, c.empowered or false, c.stages or 0 end
@@ -467,7 +469,8 @@ C_ActionBar = {
 
 -- Phase 3: nameplates, group frames, click-casting.
 function Region:WrapScript(frame, script, pre) H.wrapped = H.wrapped or {}; H.wrapped[#H.wrapped + 1] = { header = self, frame = frame, script = script, pre = pre } end
-function Region:SetTextColor(r, g, b) self.textColor = { r, g, b } end
+function Region:SetTextColor(r, g, b, a) self.textColor = { r, g, b, a } end
+function Region:GetTextColor() local c = self.textColor or { 1, 0.82, 0, 1 }; return c[1], c[2], c[3], c[4] or 1 end
 H.plates = {}
 function H.addPlate(unit)
   local plate = CreateFrame("Frame", nil, UIParent)
@@ -1264,4 +1267,13 @@ C_EditMode.ConvertStringToLayoutInfo = function(str) local n = type(str) == "str
 C_EditMode.SaveLayouts = function(layouts) H.editModeSaved = layouts end
 C_EditMode.SetActiveLayout = function(i) H.editModeActive = i end
 function GetAchievementInfo(id) return id, "Achievement " .. tostring(id) end
+-- APIs listed in Data/ApiManifest.lua that Sentinel's Drift check resolves at load.
+C_AddOns.GetAddOnEnableState = C_AddOns.GetAddOnEnableState or function() return 2 end
+C_Calendar = rawget(_G, "C_Calendar") or {}
+C_Calendar.GetNumDayEvents = C_Calendar.GetNumDayEvents or function() return 0 end
+C_Calendar.GetDayEvent = C_Calendar.GetDayEvent or function() return nil end
+C_MerchantFrame = rawget(_G, "C_MerchantFrame") or {}
+C_MerchantFrame.GetItemInfo = C_MerchantFrame.GetItemInfo or function() return nil end
+C_PartyInfo = rawget(_G, "C_PartyInfo") or {}
+C_PartyInfo.IsDelveInProgress = C_PartyInfo.IsDelveInProgress or function() return false end
 return H
