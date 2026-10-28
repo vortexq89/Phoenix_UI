@@ -55,5 +55,5 @@ if [ $fail -ne 0 ]; then echo "prepush: FAILED - push blocked"; exit 1; fi
 if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
     echo "prepush: passed, but the work tree has uncommitted changes - no note written"; exit 0
 fi
-git notes --ref=prepush add -f -m ok HEAD >/dev/null
+if ! git notes --ref=prepush add -f -m ok HEAD >/dev/null; then echo "prepush: passed, but the note could not be written (git user.name/email?)"; exit 1; fi
 echo "prepush: all checks passed for $(git rev-parse --short HEAD)"
