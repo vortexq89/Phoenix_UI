@@ -42,8 +42,8 @@ local GAME_LINE = {
     ["chevron-right"] = B .. "UI-SpellbookIcon-NextPage-Up", ["chevron-left"] = B .. "UI-SpellbookIcon-PrevPage-Up",
     ["chevron-down"] = B .. "UI-MinusButton-Up", lock = B .. "LockButton-Locked-Up",
     warning = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", question = "Interface\\Common\\help-i",
-    error = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", ["arrow-up"] = B .. "UI-ScrollBar-ScrollUpButton-Up",
-    ["arrow-down"] = B .. "UI-ScrollBar-ScrollDownButton-Up", success = B .. "UI-CheckBox-Check",
+    error = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew", ["arrow-up"] = B .. "UI-PlusButton-Up",
+    ["arrow-down"] = B .. "UI-MinusButton-Up", success = B .. "UI-CheckBox-Check",
 }
 local GAME_ART = {
     home = "INV_Misc_Rune_01", general = "INV_Misc_Gear_01", theme = "INV_Misc_Gem_Variety_01",
@@ -65,14 +65,17 @@ local GAME_ART = {
     deaths = "Ability_Hunter_MarkedForDeath", editmode = "Ability_Rogue_Sprint", encounters = "Ability_Warrior_Rampage",
     export = "INV_Letter_15", import = "INV_Letter_15", upload = "INV_Letter_15", filter = "INV_Misc_Spyglass_03",
     forces = "Achievement_GuildPerk_EverybodysFriend", friends = "Achievement_GuildPerk_EverybodysFriend",
-    github = "INV_Misc_Book_09", gold = "INV_Misc_Coin_01", grid = "INV_Misc_EngGizmos_30", heart = "Spell_Holy_PowerWordShield",
-    hide = "Spell_Shadow_Teleport", items = "INV_Chest_Plate04", keyboard = "INV_Misc_Note_01", layout = "Ability_Rogue_Sprint",
-    link = "INV_Misc_Rune_01", mail = "INV_Letter_15", opacity = "Spell_Shadow_Teleport", palette = "INV_Misc_Gem_Variety_01",
-    preview = "INV_Misc_Spyglass_03", sim = "INV_Misc_EngGizmos_30", snap = "INV_Misc_EngGizmos_30", spec = "Ability_Marksmanship",
-    speed = "Ability_Rogue_Sprint", taint = "Spell_Shadow_Teleport", terminal = "INV_Misc_Note_05", test = "INV_Misc_EngGizmos_30",
+    github = "INV_Misc_Book_09", gold = "INV_Misc_Gem_Variety_01", grid = "INV_Misc_EngGizmos_30", heart = "Spell_Holy_PowerWordShield",
+    hide = "INV_Fabric_Linen_01", items = "INV_Chest_Plate04", keyboard = "INV_Misc_Note_01", layout = "Ability_Rogue_Sprint",
+    link = "INV_Misc_Rune_01", mail = "INV_Letter_15", opacity = "INV_Fabric_Linen_01", palette = "INV_Misc_Gem_Variety_01",
+    preview = "INV_Misc_Spyglass_03", sim = "INV_Misc_EngGizmos_30", snap = "INV_Misc_EngGizmos_30", spec = "Ability_Hunter_MarkedForDeath",
+    speed = "Ability_Rogue_Sprint", taint = "INV_Fabric_Linen_01", terminal = "INV_Misc_Note_05", test = "INV_Misc_EngGizmos_30",
     durability = "INV_Chest_Plate04", fps = "INV_Misc_PocketWatch_02", latency = "INV_Misc_Map02",
     resize = "INV_Misc_EngGizmos_30", user = "Achievement_Character_Human_Male", web = "INV_Misc_Map02",
     bin = "INV_Misc_Bugsprayer", delete = "INV_Misc_Bugsprayer",
+    ["apply-all"] = "INV_Enchant_ShardBrilliantLarge", ["arrow-left"] = "INV_Misc_Book_09", ["arrow-right"] = "INV_Misc_Book_09",
+    duplicate = "INV_Inscription_Scroll", fingerprint = "INV_Misc_Spyglass_03", guild = "Achievement_GuildPerk_EverybodysFriend",
+    play = "Spell_Nature_Lightning", rename = "INV_Inscription_Scroll",
 }
 function I.GameMapped(name)
     return GAME_LINE[name] ~= nil or GAME_ART[name] ~= nil
