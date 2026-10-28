@@ -32,8 +32,15 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   5 World map + quest log (`Skins/WorldMap.lua`) and tracker header ticks (`Quests/Tracker.lua`),
   6 Character slots (`Skins/Character.lua`; stats in ItemLevel), 26 Popups / ready check (`Skins/Popups.lua`;
   tooltips are the Tooltip module's 1 px border with quality and class colours).
-- Not yet: bag category chips on Blizzard's bags (they belong to the Phoenix bag window view), reputation rows
-  and the currency list on the character sheet, quest log campaign cards.
+- Phase 1 gaps closed: bag category chips (`Bags/Chrome.lua`), reputation and currency lists with search
+  (`Skins/CharacterLists.lua`), quest log campaign cards (`Skins/WorldMap.lua`).
+- Phase 2 built on the shared kit (`Skins/Kit.lua`: rows, cards, ScrollBox dressing), every switch live both ways:
+  7 Group Finder / PvP (`GroupFinder.lua`), 8 Talents & spellbook (`Talents.lua`), 9 Loot & rolls (`Loot.lua`),
+  10 Auction House (`Auction.lua`), 11 Professions (`Professions.lua`), 12 Friends (`Friends.lua`),
+  13 Guild & communities (`Guild.lua`). Lists are found by their Blizzard paths; a path that a client build
+  renames is skipped (no error), so the in-game check is where any missing list shows up.
+- Not in phase 2: the ready-dialog role ring timer, rating cards, premade filter chips, the spellbook two-column
+  layout and loadout bar, sortable AH columns, the specialization tree accent, the community avatar rail art.
 
 ## Delivery phases (ordered by how often players open the window)
 | Phase | Windows |
