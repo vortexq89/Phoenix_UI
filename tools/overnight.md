@@ -8,13 +8,13 @@ no key presses, clicks or macros from outside WoW. The game sits idle in a safe 
 | Thing | Possible? | Why |
 |---|---|---|
 | Addon calling `ReloadUI()` / `C_UI.Reload()` by itself | **No** | Marked *restricted, #hwevent*: it needs a real key or mouse press. A timer cannot do it. |
-| Addon calling `Screenshot()` | Yes | Not protected. Saves into `<game>\_retail_\Screenshots` (format set by CVar `screenshotFormat`). Opt-in via `/pui dev selftest shots on`. |
+| Addon calling `Screenshot()` | Yes | Not protected. Saves into the game's own Screenshots folder (opt-in, `/pui dev selftest shots on`); the PC helper never reads or copies that folder. |
 | SavedVariables written mid-session | No | Only on /reload, logout, exit or disconnect. |
 | Passive capture of the PC screen | Yes | `tools/pc/phoenix_shots.ps1`, read-only `CopyFromScreen`. Needs an unlocked desktop session (no lock screen). |
 
 **Fallback for "no self-reload":** results build up in memory and are flushed to `PhoenixUIDevDB.selftest` at the
 next /reload, logout or idle disconnect. Each finished page is also printed to chat and (with shots on)
-screenshotted, so the in-game screenshots carry the per-page counts even before the save.
+screenshotted, so the 10-minute screen captures show the per-page counts even before the save.
 In the morning, one `/reload` (or logging out) writes everything; bugwatch then turns it into the diag files.
 
 ## In game (before bed)
@@ -33,7 +33,8 @@ starts again, capped at 500 loops. It only uses C_Timer (no OnUpdate). `/pui dev
 `tools\bugwatch.ps1 -Watch` (the hidden PhoenixBugWatch task) runs on every SavedVariables change and writes:
 - `bugs\phoenix_bugs.txt/.json` (errors)
 - `bugs\phoenix_diag.txt/.json` (DevDiag, including the self-test pages)
-- `bugs\shots\screen_*.png` (full screen) and `bugs\shots\game_*` (in-game screenshots), newest 50 kept
+- `bugs\shots\screen_*.png` (full screen), on every save **and every 10 minutes while Wow.exe runs**, so the
+  self-test's chat lines are visible overnight without a /reload. Newest 50 kept; only its own screen_*.png are pruned.
 
 ## The agent's loop
 
