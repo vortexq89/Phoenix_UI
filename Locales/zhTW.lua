@@ -536,6 +536,10 @@ local T = {
     AUTO_RELEASE_DESC = "在戰場中自動釋放靈魂。",
     AUTO_FILL_DELETE = "自動填寫「DELETE」",
     AUTO_FILL_DELETE_DESC = "摧毀優質物品時替你輸入確認詞。",
+    AUTO_BULK = "商人大量購買",
+    AUTO_BULK_DESC = "在商人處 Alt+點擊物品，一次購買任意數量。",
+    AUTO_BULK_BUY = "購買",
+    AUTO_BULK_CAPPED = "已購買 %d 個（能負擔的全部）。",
     AUTO_SKIP_CINEMATICS = "跳過過場動畫",
     AUTO_SKIP_CINEMATICS_DESC = "跳過已看過的過場動畫。按住 Shift 可觀看。",
     ---------------------------------------------------------------- Mythic+

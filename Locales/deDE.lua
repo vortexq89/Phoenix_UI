@@ -536,6 +536,10 @@ local T = {
     AUTO_RELEASE_DESC = "Lässt deinen Geist auf Schlachtfeldern automatisch frei.",
     AUTO_FILL_DELETE = "„LÖSCHEN“ eintragen",
     AUTO_FILL_DELETE_DESC = "Gibt das Bestätigungswort für dich ein, wenn du gute Gegenstände zerstörst.",
+    AUTO_BULK = "Großeinkauf bei Händlern",
+    AUTO_BULK_DESC = "Alt+Klick auf einen Gegenstand beim Händler kauft eine beliebige Menge auf einmal.",
+    AUTO_BULK_BUY = "Kaufen",
+    AUTO_BULK_CAPPED = "%d gekauft (so viele, wie du dir leisten kannst).",
     AUTO_SKIP_CINEMATICS = "Zwischensequenzen überspringen",
     AUTO_SKIP_CINEMATICS_DESC = "Überspringt bereits gesehene Zwischensequenzen. Halte Umschalt, um sie anzusehen.",
     ---------------------------------------------------------------- Mythic+

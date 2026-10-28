@@ -556,6 +556,10 @@ ns.RegisterLocale("enUS", {
     AUTO_RELEASE_DESC = "Release your spirit automatically in battlegrounds.",
     AUTO_FILL_DELETE = "Fill \"DELETE\"",
     AUTO_FILL_DELETE_DESC = "Type the confirmation word for you when deleting good items.",
+    AUTO_BULK = "Bulk buy at merchants",
+    AUTO_BULK_DESC = "Alt+click an item at a vendor to buy any amount at once.",
+    AUTO_BULK_BUY = "Buy",
+    AUTO_BULK_CAPPED = "Bought %d (all you could afford).",
     AUTO_SKIP_CINEMATICS = "Skip cinematics",
     AUTO_SKIP_CINEMATICS_DESC = "Skip cinematics you've seen. Hold Shift to watch.",
 

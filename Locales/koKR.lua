@@ -536,6 +536,10 @@ local T = {
     AUTO_RELEASE_DESC = "전장에서 자동으로 영혼을 해방합니다.",
     AUTO_FILL_DELETE = "\"DELETE\" 입력",
     AUTO_FILL_DELETE_DESC = "좋은 아이템을 파괴할 때 확인 단어를 대신 입력합니다.",
+    AUTO_BULK = "상인 대량 구매",
+    AUTO_BULK_DESC = "상인 창에서 아이템을 Alt+클릭하면 원하는 수량을 한 번에 구매합니다.",
+    AUTO_BULK_BUY = "구매",
+    AUTO_BULK_CAPPED = "%d개 구매함 (구매 가능한 최대).",
     AUTO_SKIP_CINEMATICS = "동영상 건너뛰기",
     AUTO_SKIP_CINEMATICS_DESC = "이미 본 동영상을 건너뜁니다. Shift를 누르고 있으면 시청합니다.",
     ---------------------------------------------------------------- Mythic+

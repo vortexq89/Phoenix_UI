@@ -536,6 +536,10 @@ local T = {
     AUTO_RELEASE_DESC = "在战场中自动释放灵魂。",
     AUTO_FILL_DELETE = "自动填写“DELETE”",
     AUTO_FILL_DELETE_DESC = "摧毁优质物品时替你输入确认词。",
+    AUTO_BULK = "商人批量购买",
+    AUTO_BULK_DESC = "在商人处 Alt+点击物品，一次购买任意数量。",
+    AUTO_BULK_BUY = "购买",
+    AUTO_BULK_CAPPED = "已购买 %d 个（能负担的全部）。",
     AUTO_SKIP_CINEMATICS = "跳过过场动画",
     AUTO_SKIP_CINEMATICS_DESC = "跳过已看过的过场动画。按住 Shift 可观看。",
     ---------------------------------------------------------------- Mythic+

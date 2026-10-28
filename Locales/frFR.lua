@@ -536,6 +536,10 @@ local T = {
     AUTO_RELEASE_DESC = "Libère automatiquement votre esprit en champ de bataille.",
     AUTO_FILL_DELETE = "Remplir « SUPPRIMER »",
     AUTO_FILL_DELETE_DESC = "Tape le mot de confirmation à votre place quand vous détruisez de bons objets.",
+    AUTO_BULK = "Achat en gros chez les marchands",
+    AUTO_BULK_DESC = "Alt+clic sur un objet chez un marchand pour en acheter n'importe quelle quantité d'un coup.",
+    AUTO_BULK_BUY = "Acheter",
+    AUTO_BULK_CAPPED = "%d achetés (tout ce que vous pouviez payer).",
     AUTO_SKIP_CINEMATICS = "Passer les cinématiques",
     AUTO_SKIP_CINEMATICS_DESC = "Passe les cinématiques déjà vues. Maintenez Maj pour les regarder.",
     ---------------------------------------------------------------- Mythic+

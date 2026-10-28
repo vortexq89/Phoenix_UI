@@ -536,6 +536,10 @@ local T = {
     AUTO_RELEASE_DESC = "Libera tu espíritu automáticamente en los campos de batalla.",
     AUTO_FILL_DELETE = "Rellenar \"BORRAR\"",
     AUTO_FILL_DELETE_DESC = "Escribe por ti la palabra de confirmación al destruir objetos buenos.",
+    AUTO_BULK = "Compra al por mayor",
+    AUTO_BULK_DESC = "Alt+clic en un objeto del vendedor para comprar cualquier cantidad de una vez.",
+    AUTO_BULK_BUY = "Comprar",
+    AUTO_BULK_CAPPED = "Comprados %d (todos los que podías pagar).",
     AUTO_SKIP_CINEMATICS = "Saltar cinemáticas",
     AUTO_SKIP_CINEMATICS_DESC = "Salta las cinemáticas que ya has visto. Mantén Mayús para verlas.",
     ---------------------------------------------------------------- Mythic+

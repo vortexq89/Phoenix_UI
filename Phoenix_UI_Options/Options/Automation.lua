@@ -32,6 +32,7 @@ ns:RegisterOptions("Automation", {
     { type = "sound", key = "lowHealthSound", label = "AUTO_LOW_HEALTH_SOUND" },
     { type = "header", label = "AUTO_MISC", icon = "automation" },
     { type = "toggle", key = "fillDelete", label = "AUTO_FILL_DELETE", desc = "AUTO_FILL_DELETE_DESC" },
+    { type = "toggle", key = "bulkBuy", label = "AUTO_BULK", desc = "AUTO_BULK_DESC" },
     { type = "toggle", key = "autoRelease", label = "AUTO_RELEASE", desc = "AUTO_RELEASE_DESC", keywords = "battleground spirit" },
     { type = "toggle", key = "skipCinematics", label = "AUTO_SKIP_CINEMATICS", desc = "AUTO_SKIP_CINEMATICS_DESC",
       keywords = "movie cutscene" },

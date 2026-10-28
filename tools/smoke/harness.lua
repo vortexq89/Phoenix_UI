@@ -1820,6 +1820,17 @@ try("armory link", function()
     C.AddArmory(nil, root, { name = "Abc", server = "Draenor" })
     assert(made[1] == ns.L.CHAT_ARMORY_LINK, "menu entry not added")
 end)
+-- merchant bulk buy: stack-sized chunks, capped by money
+try("merchant bulk buy", function()
+    local A = ns.modules.Automation
+    local c = A.BulkChunks(45, 20)
+    assert(#c == 3 and c[1] == 20 and c[3] == 5, "45 in stacks of 20")
+    assert(#A.BulkChunks(0, 20) == 0 and #A.BulkChunks(5, 0) == 5, "edge chunks")
+    assert(A.BulkAffordable(100, 50, 1, 1000) == 20, "money cap")
+    assert(A.BulkAffordable(100, 50, 5, 1000) == 100, "per-5 price")
+    assert(A.BulkAffordable(7, 0, 1, 0) == 7, "free / currency items not capped")
+    A:SetupBulkBuy()
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
