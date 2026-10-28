@@ -7,23 +7,25 @@ local Config = ns.Config
     never touches saved settings, and a module that is missing here (a new one, or a third-party plug-in)
     falls into the group for its category, so every page stays reachable. Pages a client lacks (Mythic+ and
     Sim on WoW Forever) simply drop out of their group. ]]
+-- Order (t119u): what players change most comes first. Bars before frames, the main page of each group first,
+-- and in the Phoenix group the setup tools (Layout mode, profiles, presets) ahead of the look pages.
 Config.GROUPS = {
     { key = "home", label = "HOME", icon = "home", entries = { "home" } },
+    { key = "bars", label = "RAIL_BARS", icon = "actionbars", entries = { "ActionBars", "Tracker", "CooldownText" } },
     { key = "frames", label = "RAIL_FRAMES", icon = "unitframes",
-      entries = { "UnitFrames", "GroupFrames", "NamePlates", "CastBars", "Auras" } },
-    { key = "bars", label = "RAIL_BARS", icon = "actionbars", entries = { "ActionBars", "CooldownText", "Tracker" } },
-    { key = "combat", label = "CAT_COMBAT", icon = "cat-combat", entries = { "CombatText", "DamageMeter", "SpellHistory" } },
+      entries = { "UnitFrames", "GroupFrames", "CastBars", "NamePlates", "Auras" } },
     { key = "interface", label = "RAIL_INTERFACE", icon = "interface",
       entries = { { heading = "SUB_CHAT_MAPS" }, "Chat", "Minimap", "DataTexts",
                   { heading = "SUB_ITEMS" }, "Tooltip", "Bags", "ItemLevel",
                   { heading = "SUB_WINDOWS" }, "Skins" } },
+    { key = "combat", label = "CAT_COMBAT", icon = "cat-combat", entries = { "CombatText", "DamageMeter", "SpellHistory" } },
     { key = "content", label = "RAIL_CONTENT", icon = "content",
       entries = { { heading = "SUB_QUESTING" }, "Quests", "GroupFinder",
                   { heading = "SUB_INSTANCES" }, "MythicPlus", "Encounters", "PvP",
                   { heading = "SUB_GEAR" }, "Sim" } },
     { key = "phoenix", label = "RAIL_PHOENIX", icon = "cat-phoenix",
-      entries = { { heading = "SUB_LOOK" }, "General", "fonts", "textures", "sounds", "presets",
-                  { heading = "SUB_SETUP" }, "profiles", "Movers",
+      entries = { { heading = "SUB_SETUP" }, "Movers", "profiles", "presets",
+                  { heading = "SUB_LOOK" }, "General", "fonts", "textures", "sounds",
                   { heading = "SUB_UTILITY" }, "Quality", "Automation", "AFK",
                   { heading = "SUB_SUPPORT" }, "Bugs", "diagnostics", "about" } },
 }
