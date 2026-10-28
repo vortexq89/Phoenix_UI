@@ -12,8 +12,10 @@
 
 Buttons.lua
 Special.lua
+ItemBars.lua
 KeybindMode.lua
 ActionBars.lua
 Extras.lua
 Tests\ActionBars_test.lua
 Tests\Extras_test.lua
+Tests\ItemBars_test.lua

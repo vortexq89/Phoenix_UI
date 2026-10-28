@@ -4,6 +4,9 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Auto item bars, branch feat/item-bars
+- Action Bars > Auto item bars: five bars (1-3 on by default) that fill themselves from your bags and gear by category: healing potions and healthstones, combat potions, flasks/phials/elixirs, food and drink, augment runes (retail only), weapon oils and stones, on-use trinkets, on-use gear (engineering), quest items, a custom item list, and your class battle res with the shared charges. Secure item/spell buttons, changes in combat wait for combat to end, keybind mode, per-bar size, spacing, per row, grow direction, order, counts, cooldowns, mouse-over fade and where-to-show, all live with an Options preview. Tests: 476 (retail and Forever).
+
 ### Fixed-in auto-sync, branch feat/fixed-sync
 - Errors marked fixed on the dashboard reach every tester: vq8s.com publishes a signed (Ed25519) fixed list, Phoenix Uploader 1.2.0 checks the signature and writes it into Sentinel's saved data only while WoW is closed (staged write, recovery copy), and Sentinel applies it at load (checksum checked, local Ignored kept) so errors show "Fixed in X" and "Back after fix". Tests: 462 (retail and Forever), Uploader go test.
 

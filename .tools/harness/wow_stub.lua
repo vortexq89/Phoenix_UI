@@ -1289,4 +1289,5 @@ C_MerchantFrame = rawget(_G, "C_MerchantFrame") or {}
 C_MerchantFrame.GetItemInfo = C_MerchantFrame.GetItemInfo or function() return nil end
 C_PartyInfo = rawget(_G, "C_PartyInfo") or {}
 C_PartyInfo.IsDelveInProgress = C_PartyInfo.IsDelveInProgress or function() return false end
+C_Spell.GetSpellCooldown = C_Spell.GetSpellCooldown or function() return { startTime = 0, duration = 0, isEnabled = true, modRate = 1 } end
 return H

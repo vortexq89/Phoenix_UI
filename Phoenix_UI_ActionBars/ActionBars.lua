@@ -334,6 +334,7 @@ end
 function AB.ApplyAll()
   for i = 1, NUM_BARS do AB.ApplyBar(i) end
   if ns.Special then ns.Special.ApplyAll() end
+  if ns.ItemBars then ns.ItemBars.ApplyAll() end
 end
 
 function AB.ApplyLookAll()
@@ -341,6 +342,7 @@ function AB.ApplyLookAll()
   if AB.active then
     Btn.Each(Btn.Update)
     if ns.Special then ns.Special.Refresh() end
+    if ns.ItemBars then ns.ItemBars.Refresh() end
   end
 end
 
@@ -374,6 +376,7 @@ local function onEnable(mod)
   end)
   mod:RegisterEvent("PLAYER_ENTERING_WORLD", function() Btn.Each(Btn.Update) end)
   if ns.Special then ns.Special.Wire(mod) end
+  if ns.ItemBars then ns.ItemBars.Wire(mod) end
   armAssist()
 end
 
@@ -385,6 +388,7 @@ local function onDisable()
     if AB.active then return end
     for _, bar in pairs(AB.bars) do stopBar(bar) end
     if ns.Special then ns.Special.Off() end
+    if ns.ItemBars then ns.ItemBars.Off() end
     AB.ApplyStock()
     AB.ApplyBindings()
   end)
@@ -558,6 +562,8 @@ end
 
 for k, def in pairs(ns.Special and ns.Special.schema or {}) do schema[k] = def end
 for k, def in pairs(ns.KB and ns.KB.schema or {}) do schema[k] = def end
+for k, def in pairs(ns.ItemBars and ns.ItemBars.schema or {}) do schema[k] = def end
+AB.ItemBars = ns.ItemBars
 
 -- Conflict notice (plan 1.35): other action bar addons.
 local Coexist = PUI.Coexist
