@@ -4306,4 +4306,13 @@ PUI.Locale:Add("zhTW", {
   ["Tracks personal defensives such as Ice Block, Divine Shield and Cloak of Shadows."] = "追蹤個人減傷，例如 Ice Block、Divine Shield 和 Cloak of Shadows。",
   ["Where icons go"] = "圖示位置",
   ["Which side of the party frame the icons sit on."] = "圖示位於隊伍框架的哪一側。",
+  ["A compact, movable list of group loot rolls with item level, a timer bar and Need / Greed / Transmog / Pass buttons, in place of the game's roll frames."] = "緊湊、可移動的隊伍拾取擲骰列表，帶物品等級、計時條和需求 / 貪婪 / 塑形 / 放棄按鈕，取代遊戲內建的擲骰框架。",
+  ["Height of each loot roll row (the icon and buttons follow)."] = "每行拾取擲骰的高度（圖示和按鈕隨之調整）。",
+  ["Keep Blizzard's roll frames"] = "保留暴雪的擲骰框架",
+  ["New rolls grow upwards"] = "新的擲骰向上增長",
+  ["Roll height"] = "擲骰行高度",
+  ["Roll width"] = "擲骰行寬度",
+  ["Show the game's own loot roll frames as well (Phoenix rolls stay)."] = "同時顯示遊戲內建的拾取擲骰框架（Phoenix 擲骰保留）。",
+  ["Stack rolls upwards from the anchor instead of downwards."] = "從錨點向上堆疊擲骰，而不是向下。",
+  ["Width of each loot roll row."] = "每行拾取擲骰的寬度。",
 })

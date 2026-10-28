@@ -13,4 +13,6 @@
 Flow.lua
 Quiet.lua
 Extras.lua
+LootRoll.lua
 Tests\Flow_test.lua
+Tests\LootRoll_test.lua

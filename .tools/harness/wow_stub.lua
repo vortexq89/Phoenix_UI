@@ -1290,4 +1290,9 @@ C_MerchantFrame.GetItemInfo = C_MerchantFrame.GetItemInfo or function() return n
 C_PartyInfo = rawget(_G, "C_PartyInfo") or {}
 C_PartyInfo.IsDelveInProgress = C_PartyInfo.IsDelveInProgress or function() return false end
 C_Spell.GetSpellCooldown = C_Spell.GetSpellCooldown or function() return { startTime = 0, duration = 0, isEnabled = true, modRate = 1 } end
+H.lootRolls, H.rolled = {}, {}
+function GetLootRollItemInfo(id) local r = H.lootRolls[id]; if r then return r.tex, r.name, r.count or 1, r.quality or 3, false, r.need, r.greed, false, nil, nil, nil, nil, r.transmog end end
+function GetLootRollItemLink(id) local r = H.lootRolls[id]; return r and r.link end
+function GetLootRollTimeLeft(id) local r = H.lootRolls[id]; return r and r.left or 0 end
+function RollOnLoot(id, kind) H.rolled[#H.rolled + 1] = { id, kind } end
 return H

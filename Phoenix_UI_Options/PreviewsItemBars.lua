@@ -151,3 +151,40 @@ function Previews.Update(owner, card, key)
   end
   return basePreviewUpdate(owner, card, key)
 end
+
+-- Loot rolls: sample rows drawn at the chosen width and height.
+function Previews.LootRoll(card)
+  local bag = PX.Bag(card)
+  local w, h = math.min(380, get("loot.width", 300)), get("loot.height", 24)
+  local samples = { { "Sample Helm", 4, "639", "NGTP" }, { "Sample Trinket", 3, "626", "NGP" }, { "Sample Cloak", 2, "", "GP" } }
+  for i, smp in ipairs(samples) do
+    local k = "loot.row" .. i
+    local r = bag[k]
+    if not r then
+      r = CreateFrame("Frame", nil, card)
+      r.bg = r:CreateTexture(nil, "BACKGROUND"); r.bg:SetAllPoints()
+      r.fill = r:CreateTexture(nil, "ARTWORK")
+      r.text = r:CreateFontString(nil, "OVERLAY"); r.text:SetFontObject(PUI.Media:FontObject("small"))
+      r.btns = r:CreateFontString(nil, "OVERLAY"); r.btns:SetFontObject(PUI.Media:FontObject("small"))
+      bag[k] = r
+    end
+    r:SetSize(w, h)
+    r:ClearAllPoints()
+    r:SetPoint("TOP", card, "TOP", 0, -60 - (i - 1) * (h + 3))
+    r.bg:SetColorTexture(0.1, 0.1, 0.12, 1)
+    local cr, cg, cb = C_Item.GetItemQualityColor(smp[2])
+    r.fill:SetColorTexture(cr, cg, cb, 0.55)
+    r.fill:ClearAllPoints(); r.fill:SetPoint("TOPLEFT"); r.fill:SetPoint("BOTTOMLEFT"); r.fill:SetWidth(w * (1 - i * 0.25))
+    r.text:ClearAllPoints(); r.text:SetPoint("LEFT", 6, 0); r.text:SetText(smp[3] .. "  " .. smp[1])
+    r.btns:ClearAllPoints(); r.btns:SetPoint("RIGHT", -6, 0); r.btns:SetText(smp[4]:gsub(".", "%0 "))
+    r:Show()
+  end
+end
+local baseUpdateLoot = Previews.Update
+function Previews.Update(owner, card, key)
+  if owner == "LootRoll" then
+    for _, w in pairs(PX.Bag(card)) do w:Hide() end
+    return Previews.LootRoll(card)
+  end
+  return baseUpdateLoot(owner, card, key)
+end

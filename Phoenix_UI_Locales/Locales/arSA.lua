@@ -4309,4 +4309,13 @@ PUI.Locale:Add("arSA", {
   ["Tracks personal defensives such as Ice Block, Divine Shield and Cloak of Shadows."] = "يتتبّع الدفاعات الشخصية مثل Ice Block وDivine Shield وCloak of Shadows.",
   ["Where icons go"] = "مكان الأيقونات",
   ["Which side of the party frame the icons sit on."] = "الجانب الذي توضع عليه الأيقونات من إطار المجموعة.",
+  ["A compact, movable list of group loot rolls with item level, a timer bar and Need / Greed / Transmog / Pass buttons, in place of the game's roll frames."] = "قائمة مدمجة وقابلة للتحريك لرميات غنائم المجموعة مع مستوى الغرض وشريط مؤقت وأزرار حاجة / طمع / تحويل المظهر / تمرير، بدلًا من إطارات الرمي في اللعبة.",
+  ["Height of each loot roll row (the icon and buttons follow)."] = "ارتفاع كل صف من رميات الغنائم (تتبعه الأيقونة والأزرار).",
+  ["Keep Blizzard's roll frames"] = "الإبقاء على إطارات الرمي من Blizzard",
+  ["New rolls grow upwards"] = "الرميات الجديدة تنمو للأعلى",
+  ["Roll height"] = "ارتفاع الرمية",
+  ["Roll width"] = "عرض الرمية",
+  ["Show the game's own loot roll frames as well (Phoenix rolls stay)."] = "اعرض إطارات رمي الغنائم الخاصة باللعبة أيضًا (تبقى رميات Phoenix).",
+  ["Stack rolls upwards from the anchor instead of downwards."] = "كدّس الرميات للأعلى من نقطة الارتكاز بدلًا من الأسفل.",
+  ["Width of each loot roll row."] = "عرض كل صف من رميات الغنائم.",
 })
