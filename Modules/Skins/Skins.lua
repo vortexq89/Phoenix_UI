@@ -19,7 +19,7 @@ local M = ns:NewModule("Skins", {
         trade = true, dressUp = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
-        moveWindows = false, movedWindows = {},
+        moveWindows = false, movedWindows = {}, mailAlts = true,
     },
 })
 
@@ -213,6 +213,7 @@ function M:OnEnable()
         if mv then for _, f in ipairs(mv.frames) do M:HookMovable(f) end end
     end)
     if self.SetupMoving then self:SetupMoving() end
+    if self.RefreshMailAlts then self:RefreshMailAlts() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then
         tabHooked = true
         hooksecurefunc("PanelTemplates_SelectTab", function(tab)

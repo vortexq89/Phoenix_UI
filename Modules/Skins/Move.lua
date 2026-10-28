@@ -88,5 +88,6 @@ M.MoveTest = { session = session, place = place, remember = remember, hook = hoo
 
 -- live: turning the option off hands the windows back to Blizzard's layout at once
 function M:Refresh()
+    if self.RefreshMailAlts then self:RefreshMailAlts() end
     if not self.db.moveWindows and not InCombatLockdown() and UpdateUIPanelPositions then UpdateUIPanelPositions() end
 end

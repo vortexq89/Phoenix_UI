@@ -22,6 +22,8 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "professions", label = "SKINS_PROFESSIONS", reload = true, keywords = "crafting tradeskill" },
     { type = "toggle", key = "auction", label = "SKINS_AUCTION", reload = true, keywords = "auction house ah" },
     { type = "toggle", key = "mail", label = "SKINS_MAIL", reload = true, keywords = "mailbox" },
+    { type = "toggle", key = "mailAlts", label = "SKINS_MAIL_ALTS", desc = "SKINS_MAIL_ALTS_DESC",
+      keywords = "mail alts characters recipient" },
     { type = "toggle", key = "merchant", label = "SKINS_MERCHANT", reload = true, keywords = "vendor shop" },
     { type = "toggle", key = "gossip", label = "SKINS_GOSSIP", reload = true, keywords = "quest npc dialog" },
     { type = "toggle", key = "loot", label = "SKINS_LOOT", reload = true, keywords = "loot rolls need greed" },

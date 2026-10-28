@@ -1865,6 +1865,18 @@ try("quest xp overlay", function()
     assert(t:find("25"), "hover text lacks the quest share: " .. t)
     assert(type(M.PendingQuestXP()) == "number", "pending quest XP not a number")
 end)
+-- mail: alts remembered at login are listed for the recipient box (never the current character)
+try("mail alts", function()
+    local M = ns.modules.Skins
+    M:RememberCharacter()
+    local g = ns.DB.sv.global.alts
+    local realm = next(g)
+    assert(realm, "character not remembered")
+    g[realm].Zzalt = { class = "MAGE", level = 80 }
+    local list = M:MailAlts()
+    assert(#list >= 1 and list[1].name == "Zzalt", "alt not listed")
+    g[realm].Zzalt = nil
+end)
 try("dev self-test", function()
     local ST, D = ns.DevDiag.SelfTest, ns.DevDiag
     local old = GetTime
