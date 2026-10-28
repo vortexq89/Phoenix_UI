@@ -494,21 +494,29 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Threshold bands drawn on the preview with their meaning stated; growth settings that are live (no dead keys).
   - GCD, swing, totem and cast bars on duration objects; a GCD change applies only its own target.
 
-### 5.7 HUD: Minimap (7), Tooltip (6), Data Bars (7) — Phoenix_UI_HUD
+### 5.7 HUD: Minimap, Tooltip, Data Bars — step 8a built (Phoenix_UI_HUD: Minimap.lua, ButtonBin.lua, Tooltip.lua, TooltipIDs.lua, DataBars.lua; Core/Queue.lua, Core/Wallet.lua)
 
 | Feature | Status |
 |---|---|
-| Minimap shape/size/clock/coords/zone/hide cluster | B |
-| Minimap own tracking/calendar/mail/crafting/difficulty/zoom buttons | M |
-| Addon-button flyout (LibDBIcon scan) | M |
-| Ping announcer, queue eye with ETA | M |
-| Tooltip anchor/combat hide/guild rank/IDs/M+ score | B |
-| Tooltip ilvl, mount owned, transmog known, upgrade track, aura source, secret-safe health strip, skin | M/P |
-| Data Bars: 2 fixed bars, 11 blocks (clock, fps, latency, location, coords, gold, bags, durability, ilvl, xp, spec) | P |
-| User-created bars, layout solver, per-spec sets | M |
-| Blocks: professions, travel/hearth, micro menu, currency, crests, vault, audio, friends/guild, mail, CPU, M+ score, LDB host | M |
-| Previews | M |
+| Minimap shape/size/border/opacity/rotate/zoom reset/scroll zoom; Blizzard parts hidden one by one | B |
+| Texts: zone/clock (12/24, server)/coords/instance difficulty, positions, size, colours | B |
+| Coordinates conflict notice (ask / Phoenix / Blizzard; CVar ledger) | B |
+| Queue eye countdown (PUI.Queue shared provider) | B |
+| Middle-click micro menu, friends tooltip (cap, notes), indicators (vault, invites), ping announcer | B |
+| First-install capture and restore (`/pui minimap restore`) | B |
+| Addon-button bin (LibDBIcon scan, search, grid, never-collect / keep lists, full give-back) | B |
+| Minimap own tracking/calendar/mail/crafting buttons (Phoenix-drawn) | M (Blizzard's are kept; hide toggles only) |
+| Tooltip anchor/offsets/scale/combat hide + peek/skin/quality border/class names/health strip | B |
+| Tooltip lines: guild, target, M+ score + best run, forces, aura caster, mount collected | B |
+| Tooltip IDs: 27 kinds, derived IDs, merge, groups, gate, colours, labels, copy key, `/pui ids` | B |
+| Tooltip ilvl/spec of other players (inspect), transmog known, upgrade track, tier-set count | M (deferred, needs an inspect queue) |
+| Data Bars: 4 bars, 22 blocks incl. currencies, session gold, M+ score, volume; clickable; style | B |
+| XP / reputation / honor progress bar (Data Bars owner) | B |
+| User-created bars beyond four, per-spec sets, LDB host, professions/travel secure blocks | M |
+| Previews | B |
 
+- **Step 8a status (feat/hud, stacked on feat/studio):** every look and behaviour above is a setting with Simple and Advanced rows and a live preview drawn by the module's own paint code (Minimap.PlaceTexts/PaintBorder, Tooltip.UnitLines/PaintSkin, TooltipIDs.Line, DataBars.PaintBar/PaintProgress). Tickers only while shown (`mm.texts`, `mm.queue` while a pop is up, one-shot `mm.zoom`/`mm.ping`, `db.update`); no OnUpdate. Secret-safe: IDs and lines are built only from plain values; forces text and bar values are handed to widgets. Defaults (D-MOD-DEF): tooltip IDs always visible (gate off), bonus/trait IDs off, coordinates owner "ask", progress bar off, bin on when the minimap module is on. 8 new offline tests + 3 rewritten.
+- **Deferred to the polish pass (reported):** inspect-based lines (other players' item level and spec), transmog-known and upgrade-track lines, tier-set count; ID sources still to hook: achievement criteria rows (pooled frames), artifact power, garrison and pet-battle ability text; Phoenix-drawn tracking/calendar/mail buttons; LDB host and secure travel/profession blocks; per-spec data-bar sets; queue-popup timer in Skins reading PUI.Queue; Vault's gold history over PUI.Wallet; Group Finder page for `queue.lfgSeconds`.
 - **Study additions (§16, 2026-10-26):**
   - **Tooltip IDs (27 kinds)** + derived IDs (icon, use-spell, enchant, bonus, gems) merged per kind; four groups (Items, Spells, World, Collections), each kind toggleable and searchable; bonus/trait IDs off by default; secret guards before compares; skipped in pet battles.
   - **All-addons parity additions (audit 2026-10-26, `pui_study/others/AllAddons_parity.md`; each a setting with Simple + Advanced views) — Tooltip IDs (idTip):** Extra sources: hyperlinks, action buttons, talents, recipe, transmog wardrobe, achievement criteria, map pins, garrison and pet-battle abilities → Pet-battle ability/aura IDs were excluded; added for the pet journal and battle tooltips (secret-guarded); Show only while a modifier is held, copy the ID, colour per kind → Added modifier gate (Shift default, off/Shift/Ctrl/Alt), click-to-copy into the shared copy box, colour per kind; /idtip slash → Added `/pui ids` (opens the IDs page).

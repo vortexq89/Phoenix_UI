@@ -16,7 +16,9 @@ local TAB_LABEL = { player = "Player", target = "Target", targettarget = "Target
   cast = "Cast bars", indicator = "Indicators", auraBars = "Player aura bars",
   small = "Raid up to 10", medium = "Raid up to 20", large = "Raid up to 40", debuffs = "Debuffs", buffs = "Buffs",
   defensive = "Defensives", enemy = "Enemy", friendly = "Friendly", colors = "Colours", auras = "Aura lanes",
-  icons = "Indicators", resource = "Class resource", rules = "NPC colours", system = "Game settings" }
+  icons = "Indicators", resource = "Class resource", rules = "NPC colours", system = "Game settings",
+  text = "Texts", coords = "Coordinates", queue = "Queue eye", extra = "Extras", hide = "Blizzard parts", bin = "Button bin",
+  ids = "Tooltip IDs", lines = "Info lines", style = "Style", progress = "XP / rep bar", bar1 = "Bar 1", bar2 = "Bar 2", bar3 = "Bar 3", bar4 = "Bar 4" }
 
 local function tabLabel(id)
   if TAB_LABEL[id] then return TAB_LABEL[id] end

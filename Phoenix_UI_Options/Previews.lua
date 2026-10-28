@@ -489,6 +489,155 @@ function Previews.Nameplates(card)
   end
 end
 
+
+-- HUD previews (mockups 13/14): drawn by the modules' own paint functions
+-- (Minimap.PlaceTexts/PaintBorder, Tooltip.UnitLines/PaintSkin, TooltipIDs.Line,
+-- DataBars.PaintBar/PaintProgress) fed sample values.
+local function hudHolder(card, keyName)
+  local s = st(card)
+  s.hud = s.hud or {}
+  local h = s.hud[keyName]
+  if not h then
+    h = CreateFrame("Frame", nil, card)
+    h:SetPoint("TOPLEFT", 18, -64)
+    h:SetSize(384, 300)
+    s.hud[keyName] = h
+  end
+  h:Show()
+  return h
+end
+
+local function line(parent, list, i, role)
+  local fs = list[i]
+  if not fs then fs = Kit.Text(parent, role or "small", "text.primary", "OVERLAY"); list[i] = fs end
+  fs:Show()
+  return fs
+end
+
+function Previews.Minimap(card)
+  local MM = PUI.Minimap
+  if not MM then return end
+  local h = hudHolder(card, "mm")
+  local S = MM.settings
+  local size = math.min(220, S.size)
+  if not rawget(h, "map") then
+    h.map = CreateFrame("Frame", nil, h)
+    h.map.tex = h.map:CreateTexture(nil, "ARTWORK")
+    h.map.tex:SetAllPoints()
+    h.border = CreateFrame("Frame", nil, h)
+    h.border.tex = h.border:CreateTexture(nil, "BACKGROUND")
+    h.border.tex:SetAllPoints()
+    h.texts = {}
+    for _, k in ipairs({ "zone", "clock", "coords", "difficulty", "queue" }) do
+      h.texts[k] = Kit.Text(h.map, "small", "text.primary", "OVERLAY")
+    end
+    h.bin = {}
+  end
+  h.map:ClearAllPoints()
+  h.map:SetPoint("TOPLEFT", 8, -8)
+  h.map:SetSize(size, size)
+  h.map.tex:SetColorTexture(0.16, 0.22, 0.14, 1)
+  h.map.tex:SetMask(MM.MASKS[S.shape])
+  MM.PaintBorder(h.border, h.map, S)
+  MM.PlaceTexts(h.map, h.texts, S)
+  h.texts.zone:SetText("Silvermoon City"); h.texts.zone:SetShown(S.zone)
+  h.texts.clock:SetText(MM.ClockText(S)); h.texts.clock:SetShown(S.clock)
+  h.texts.coords:SetText("48.2, 61.7"); h.texts.coords:SetShown(S.coords)
+  h.texts.difficulty:SetText(MM.DifficultyText(8, 5, 16)); h.texts.difficulty:SetShown(S.difficulty)
+  h.texts.queue:ClearAllPoints()
+  h.texts.queue:SetPoint("BOTTOMLEFT", h.map, "BOTTOMLEFT", 6, 22)
+  h.texts.queue:SetText("0:31"); h.texts.queue:SetShown(S.queueEye)
+  local Bin = PUI.ButtonBin
+  if Bin then
+    local bs = Bin.settings
+    local cells = Bin.Grid(14, bs.columns, math.min(bs.size, 24), bs.spacing)
+    for i = 1, #cells do
+      local b = h.bin[i]
+      if not b then b = h:CreateTexture(nil, "ARTWORK"); h.bin[i] = b end
+      b:ClearAllPoints()
+      b:SetSize(math.min(bs.size, 24), math.min(bs.size, 24))
+      b:SetPoint("TOPLEFT", h, "TOPLEFT", cells[i].x, -size - 30 + cells[i].y + 30)
+      b:SetColorTexture(0.25 + (i % 5) * 0.1, 0.3, 0.45 - (i % 3) * 0.1, 1)
+      b:SetShown(bs.enabled)
+    end
+  end
+end
+
+function Previews.Tooltip(card)
+  local TT, IDs = PUI.Tooltip, PUI.TooltipIDs
+  if not (TT and IDs) then return end
+  local h = hudHolder(card, "tt")
+  local S = TT.settings
+  if not rawget(h, "tip") then
+    h.tip = CreateFrame("Frame", nil, h)
+    h.tip:SetPoint("TOPLEFT", 8, -8)
+    h.tip:SetSize(300, 160)
+    h.skin = TT.SkinFrame(h.tip)
+    h.lines = {}
+  end
+  h.tip:SetScale(S.scale)
+  TT.PaintSkin(h.skin, S.qualityBorder and 0.64 or nil, S.qualityBorder and 0.21 or nil, S.qualityBorder and 0.93 or nil)
+  h.skin:SetShown(S.skin)
+  for _, fs in ipairs(h.lines) do fs:Hide() end
+  local rows = { { "Vex <Phoenix Rising>", S.classNames and 0.25 or 1, S.classNames and 0.78 or 1, S.classNames and 0.92 or 1 } }
+  for _, l in ipairs(TT.UnitLines(TT.SAMPLE_UNIT)) do rows[#rows + 1] = l end
+  if S.forces then rows[#rows + 1] = { "Enemy forces  4 (0.96%)", 1, 0.82, 0 } end
+  if IDs.enabled then
+    for _, kind in ipairs({ "spell", "icon", "npc" }) do
+      if IDs.settings.kinds[kind] then rows[#rows + 1] = { IDs.Line(kind, kind == "spell" and { 12294, 1265418 } or { kind == "icon" and 132355 or 221986 }), 1, 1, 1 } end
+    end
+  end
+  local y = -8
+  for i, r in ipairs(rows) do
+    local fs = line(h.tip, h.lines, i, i == 1 and "label" or "small")
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", h.tip, "TOPLEFT", 10, y)
+    fs:SetText(r[1])
+    fs:SetTextColor(r[2] or 1, r[3] or 1, r[4] or 1)
+    y = y - 16
+  end
+  h.tip:SetHeight(-y + 10)
+  h.rows = rows
+end
+
+function Previews.DataBars(card)
+  local DB = PUI.DataBars
+  if not DB then return end
+  local h = hudHolder(card, "db")
+  h.bars = rawget(h, "bars") or {}
+  local y = -8
+  for i, c in ipairs(DB.cfg) do
+    local list = DB.Parse(c.blocks)
+    local b = h.bars[i]
+    if not b then b = CreateFrame("Frame", nil, h); h.bars[i] = b end
+    if #list > 0 then
+      local copy = {}
+      for k, v in pairs(c) do copy[k] = v end
+      copy.fill = false
+      copy.width = math.min(368, c.width)
+      DB.PaintBar(b, list, copy, true)
+      b:ClearAllPoints()
+      b:SetPoint("TOPLEFT", h, "TOPLEFT", 8, y)
+      b:Show()
+      y = y - c.height - 8
+    else
+      b:Hide()
+    end
+  end
+  if not rawget(h, "pb") then
+    h.pb = CreateFrame("StatusBar", nil, h)
+    h.pb.rested = h.pb:CreateTexture(nil, "ARTWORK")
+    h.pb.text = Kit.Text(h.pb, "small", "text.primary", "OVERLAY")
+    h.pb.text:SetPoint("CENTER")
+  end
+  local P = DB.progress
+  h.pb:ClearAllPoints()
+  h.pb:SetPoint("TOPLEFT", h, "TOPLEFT", 8, y - 4)
+  DB.PaintProgress(h.pb, P.mode == "auto" and "xp" or P.mode, 640, 1000, 40)
+  h.pb:SetWidth(math.min(368, P.width))
+  h.pb:SetShown(P.enabled)
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {}, st(card).cdm or {} }) do
     for _, f in pairs(list) do f:Hide() end
@@ -502,6 +651,7 @@ local function hideAll(card)
   for _, b in pairs(st(card).rfTest or {}) do b:Hide() end
   if st(card).rfPreset then st(card).rfPreset:Hide() end
   if st(card).npHolder then st(card).npHolder:Hide() end
+  for _, h in pairs(st(card).hud or {}) do h:Hide() end
 end
 
 function Previews.Update(owner, card, key)
@@ -512,7 +662,7 @@ function Previews.Update(owner, card, key)
 end
 
 -- wrap builders so switching page/tab always starts clean
-for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager" }) do
+for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end
