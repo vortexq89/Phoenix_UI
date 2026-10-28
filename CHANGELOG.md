@@ -4,6 +4,11 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Skins v2 windows, branch feat/skins-a
+- Window catalog: 62 Blizzard windows and surfaces (up from 25), each with a live switch and the gear cog, in Blizzard's layout with the shared controls: adds Friends/Who/Raid/Quick Join, bags and bank (when Vault is off), guild bank, loot rolls, bonus roll, loot history, LFG ready/role/proposal dialogs, M+ keystone, PvP scoreboard/results, channels, black market, trainer, socketing, item upgrades, catalyst, scrapping, archaeology, pet stable, flight and zone maps, player choice, Delves companion and difficulty, trait trees, expansion summary, housing (dashboard, finder, list, bulletin board, cornerstone), legacy content windows, Game Menu, StaticPopups, Edit Mode, click casting, colour picker, help, clock/stopwatch, queue status, Battle.net toasts and the world loot list. Frame names read from the 12.1.5 source; absent frames are skipped.
+- Alert toasts (post-hook on AlertFrame:AddAlertFrame; background art only, icons untouched) and the tooltips the HUD Tooltip does not own (item reference, comparison, embedded, battle pet).
+- Extras (gear flyout and /pui -> Skins, live): item level, missing-enchant flags and durability on Character/Inspect slots, model backdrop; Collect gold in the inbox (gold-only, skips COD and items, one mail per Ticker step); world map coordinates strip (secret-safe); red accept on destructive popups; Open Phoenix Studio in Edit Mode. Tests: 434.
+
 ### Skins v2 core, branch feat/skins-core
 - Shared controls for every skinned Blizzard window, in Blizzard's own layout: scroll bars (MinimalScrollBar, WowTrimScrollBar), dropdowns (WowStyle1 and UIDropDownMenu), checkboxes and radios, edit and search boxes, sliders, panel buttons and item quality borders (Blizzard's quality colour on a Phoenix slot frame, kept in sync by a SetItemButtonQuality post-hook). Pooled ScrollBox rows are skinned after Blizzard's Update. One switch per family (skins.controls.*), live.
 - Gear cog in the title bar of every skinned window opens an inline flyout with that window's settings (live) and a link to /pui -> Skins; "skins.gear" turns the cog off.

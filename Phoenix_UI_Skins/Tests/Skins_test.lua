@@ -15,7 +15,7 @@ local function enable(t, ...)
 end
 
 Tests:Add("Skins", "window catalog with a live toggle each; module off by default", function(t)
-  t:ok(#SK.WINDOWS >= 25, "25+ windows")
+  t:ok(#SK.WINDOWS >= 60, "60+ windows and surfaces")
   local seen = {}
   for _, w in ipairs(SK.WINDOWS) do t:ok(not seen[w[1]], "unique id " .. w[1]); seen[w[1]] = true; t:ok(Schema:Def("skins." .. w[1]) ~= nil, w[1] .. " toggle") end
   t:eq(Schema:Def("module.Skins").default, false, "module defaults off")

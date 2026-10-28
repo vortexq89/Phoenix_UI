@@ -14,12 +14,14 @@
 24-hour clock
 24-hour clock block
 24-hour time instead of AM/PM.
+A Phoenix button in the inbox that takes only the gold (no items, skips COD) from every mail.
 A banner with rising embers when you earn an achievement, time a key or level up. Reduced motion (Glows page) keeps only the banner.
 A bar for spec resources that live in an aura (for example a stacking buff). Set the spell below.
 A bar glows when the game marks the ability as about to happen (the timing comes from the game).
 A block of extra frames for every tank (or healer) in the group, in addition to the normal frames.
 A bright edge when absorbs run past full health, and when heal absorbs eat more than the health left.
 A bright line where the bar is draining.
+A button in Blizzard's Edit Mode window that opens Phoenix Studio.
 A button on the panel that cancels your oldest application, so a new one fits under the limit of five. In combat it waits until combat ends.
 A button that leaves the vehicle, shown only when you can exit.
 A class icon on each friend row.
@@ -42,6 +44,7 @@ A light Horde or Alliance tint behind Battle.net friends in World of Warcraft.
 A line naming where arena frames, DR and queue status live.
 A progress bar for experience, your watched reputation or honor. Data Bars owns this bar.
 A red cross when a cast is interrupted.
+A red mark on enchantable slots without an enchant.
 A repeat inside this time is hidden when Hide repeated lines is on.
 A right click on the header opens a list of fights (current, overall, last saved) instead of cycling.
 A ring around your mouse cursor, so you never lose it in a busy fight.
@@ -154,6 +157,7 @@ After-match card
 Aggro border
 Alert again after (s)
 Alert sound
+Alert toasts
 Alerts and toasts
 All tracked quests, only those in progress, or only those ready to turn in.
 Also keeps errors from other addons and Blizzard's code in the viewer, on this PC only. They never join Phoenix's reports unless you allow it below.
@@ -179,6 +183,7 @@ Answer !keys
 App-only dimming
 Appearance collected
 Arcane charges
+Archaeology
 Archaeology progress
 Arena
 Arena frames
@@ -271,8 +276,10 @@ Bag 4
 Bag bar
 Bag bar size
 Bags
+Bags (when Vault is off)
 Bags and bank in one window: categories with your own rules, junk, keystone shelf, undo sort, alts and gold history.
 Bags: when another addon does this
+Bank and Warband bank
 Bank columns
 Bar 1
 Bar 1 button order
@@ -520,6 +527,7 @@ Big icons for debuffs you can dispel, apart from the other debuffs.
 Bin button size
 Bin columns
 Bin spacing
+Black market
 Blizzard can show coordinates itself. Pick who shows them; the Data Bars coordinates block follows this too.
 Blizzard damage meter
 Blizzard elements in Studio
@@ -740,6 +748,7 @@ Cast history: You
 Cast time
 Cast, target or open menus by clicking Phoenix unit, party and raid frames (Clique takes over when installed).
 Casts button in Embers
+Catalyst and item interaction
 Catch-up speed
 Categories
 Categories group items by your rules; grid shows bags in order; compact uses smaller slots; list shows names.
@@ -764,6 +773,7 @@ Character limit before a name is shortened.
 Charges and count size
 Chat
 Chat channel button
+Chat channels
 Chat fades after this many quiet seconds and wakes on a new line, hover or typing. 0 never fades.
 Chat font
 Chat line on a new error
@@ -799,6 +809,7 @@ Clears red error text (out of range, not ready) during combat.
 Click a class or custom reminder to cast that spell (set up out of combat).
 Click a timestamp to copy the line
 Click actions
+Click casting
 Click to cast
 Click-cast bindings
 Click-casting
@@ -807,12 +818,14 @@ Clickable links
 Clicks pass through enemy plates to the world. Your old clickable area comes back when this is off.
 Clicks pass through friendly plates to the world. Your old clickable area comes back when this is off.
 Clock
+Clock and stopwatch
 Clock position
 Close summary after (seconds)
 Close up missing bars
 Collapse in combat
 Collapse quests during M+
 Collect addon buttons
+Collect gold button
 Collections
 Collections label colour
 Collections: Battle pet species ID
@@ -925,6 +938,7 @@ Coordinates
 Coordinates are usually unavailable inside instances; on keeps the text where the game allows it.
 Coordinates colour
 Coordinates position
+Coordinates strip
 Copy IDs key
 Corner indicator size
 Corner indicators
@@ -1023,6 +1037,7 @@ Damage your pet takes: colour
 Damage your pet takes: message
 Damage your pet takes: sound
 Dampening
+Danger colour on destructive popups
 Dangerous colour
 Dark health fill with the class colour behind it.
 Dark mode
@@ -1089,6 +1104,8 @@ Declines duel requests.
 Declines guild invitations.
 Deeper capture for designated testers: 200-event history, locals on every error, 1-second performance sampler, test suite on login.
 Default corner position (movable in Edit Mode) or following the cursor.
+Delete, abandon and disband confirmations get a red accept button.
+Delves companion and difficulty
 Delves: Damage at least
 Delves: Damage at most
 Delves: Delve tier at least
@@ -1194,6 +1211,8 @@ Dungeons and Mythic+: expression
 Dungeons and Mythic+: only these
 Dungeons and Mythic+: sort
 Durability figure
+Durability on slots
+Durability percent on damaged items.
 Durability threshold (%)
 EU, US, KR, TW or CN for Battle.net friends.
 Each bracket's rating, season best and this week's record.
@@ -1201,6 +1220,7 @@ Each specialization can keep its own block list for every bar (save one with /pu
 Each specialization can use its own profile. When you change spec, Phoenix switches to that profile (after combat). Content profiles for raid, arena or Mythic+ still apply on top.
 Each time you save in Edit Mode, Phoenix keeps a copy of the active layout in this profile; /pui editmode restore puts it back as a layout named Phoenix.
 Ebon Might
+Edit Mode
 Edit and search boxes
 Effects that eat healing, drawn in red inside the health fill.
 Eight buttons that put a raid marker on your target.
@@ -1289,6 +1309,7 @@ Evoker colour
 Execute colour
 Execute line
 Execute range (%)
+Expansion summary and renown
 Expansion summary button
 Experience
 Experience / reputation bar
@@ -1354,6 +1375,7 @@ Fixed width of each whisper tab; tabs shrink evenly only when they no longer fit
 Flash the game icon
 Flash when out of sight
 Flashes the taskbar icon when a keyword matches.
+Flight map
 Flight timer
 Flight timer and pet happiness for the Forever client.
 Flight timer size
@@ -1497,8 +1519,10 @@ Friends count and tooltip
 Friends only signed in to the Battle.net app are left out of the Phoenix list and dimmed on Blizzard's list.
 Friends search panel
 Friends tooltip cap
+Friends, Who, Raid, Quick Join
 From this the bar uses the high colour.
 Fury bar colour
+Game Menu
 Game Menu button
 Game plate scale
 Game target scale
@@ -1587,6 +1611,7 @@ Grows (positive) or shrinks (negative) the clickable area left and right of enem
 Grows (positive) or shrinks (negative) the clickable area left and right of friendly plates.
 Guild and communities
 Guild and rank
+Guild bank
 HUD safe-zone guides
 Happy, Content or Unhappy, with the loyalty rate, while you have a pet out.
 Heading size
@@ -1662,6 +1687,7 @@ Height of the resource pips under the target plate.
 Height of the target frame in pixels.
 Height of the target of target frame in pixels.
 Height of the totem bars.
+Help and report
 Hidden spells
 Hide Battle.net app-only friends
 Hide Blizzard M+ tracker
@@ -1739,6 +1765,7 @@ Honor: colour
 Honor: message
 Honor: sound
 Hostile colour
+Housing
 Housing controls
 Hover colour
 Hover strength
@@ -1914,6 +1941,8 @@ Item bar spacing
 Item blocklist
 Item level and spec of players
 Item level on gear
+Item level on slots
+Item level under every equipment slot (Character and Inspect).
 Item or potion ready
 Item or potion ready: area
 Item or potion ready: colour
@@ -1921,7 +1950,9 @@ Item or potion ready: message
 Item or potion ready: sound
 Item quality border
 Item quality borders
+Item reference, comparison, embedded and battle pet tooltips (Phoenix HUD Tooltip owns the main tooltip).
 Item tooltips get a border in the item's quality colour.
+Item upgrades
 Items label colour
 Items marked as junk
 Items moved to a category
@@ -1991,6 +2022,7 @@ Leaving combat: message
 Leaving combat: sound
 Left enemy opacity
 Left-click a quest
+Legacy content windows
 Legend achievement ID
 Legend progress
 Legend rating
@@ -2024,7 +2056,10 @@ Loadouts
 Lock action buttons
 Look
 Loot
+Loot history
+Loot rolls
 Loot window
+Loot, achievement, mount, currency and other toasts in Phoenix style.
 Loot: area
 Loot: colour
 Loot: message
@@ -2092,10 +2127,12 @@ Minimap shape
 Minimap size
 Minimap zone text
 Mirror
+Missing enchant flags
 Missing flask, food, rune and oil reminders from the season pack (its IDs arrive once checked in game).
 Missing pet
 Missing raid buffs, class buffs, pets and your own buff list, checked out of combat, with click to cast.
 Missing roles
+Model backdrop
 Money
 Money: area
 Money: colour
@@ -2132,6 +2169,7 @@ Mythic+ block on top
 Mythic+ block: timer with +2/+3 marks and pace, enemy forces, boss splits, deaths, battle res and Bloodlust, keystones and a run summary.
 Mythic+ enemy forces
 Mythic+ key level, arena, battleground, delve or raid when the game shows it.
+Mythic+ keystone
 Mythic+ run summary
 Mythic+ score
 Mythic+ timer: when another addon does this
@@ -2242,6 +2280,7 @@ Opacity of the whole tracker.
 Opacity out of combat
 Opacity used when the where-to-show rule hides the frame (0 = invisible, higher = faded).
 Opacity used when the where-to-show rule hides the frames (0 = invisible). They stay clickable in combat because the game locks that.
+Open Phoenix Studio button
 Open a blocked report in the copy box
 Open containers
 Open key
@@ -2267,6 +2306,7 @@ Order raid frames by group, by role (in the role order below), by class or by na
 Order used when sorting by role (raid and party).
 Other plates' opacity
 Other players' item level and specialization (asked from the server once, then remembered for 5 minutes; never in combat).
+Other tooltips
 Out of range
 Out of range colour
 Out of range opacity
@@ -2405,6 +2445,7 @@ Pet opacity when hidden
 Pet portrait
 Pet portrait side
 Pet power bar height
+Pet stable
 Pet text (center)
 Pet text (left)
 Pet text (power)
@@ -2426,6 +2467,7 @@ Phoenix button face on Blizzard panel buttons.
 Phoenix draws this frame, Blizzard shows the default frame, or hidden shows neither.
 Phoenix draws your buffs and debuffs in two movable rows, or Blizzard's default buff frame stays.
 Phoenix dropdown boxes with an accent arrow.
+Phoenix ember backdrop behind the character model.
 Phoenix emoji art
 Phoenix error reports go to the vq8s.com dashboard through the Companion app (and the export string works). See exactly what leaves this PC with Preview on the error reporter. Nothing is shared while off.
 Phoenix frame skin for Details! windows when that addon is installed.
@@ -2452,28 +2494,65 @@ Phoenix positions the game's utility cooldowns in its own rows; off leaves them 
 Phoenix skin for the Achievements window.
 Phoenix skin for the AddOn list window.
 Phoenix skin for the Adventure Guide window.
+Phoenix skin for the Archaeology window.
 Phoenix skin for the Auction House window.
+Phoenix skin for the Bags (when Vault is off) window.
+Phoenix skin for the Bank and Warband bank window.
+Phoenix skin for the Battle.net toasts window.
+Phoenix skin for the Black market window.
+Phoenix skin for the Bonus roll window.
 Phoenix skin for the Calendar window.
+Phoenix skin for the Catalyst and item interaction window.
 Phoenix skin for the Character window.
+Phoenix skin for the Chat channels window.
+Phoenix skin for the Click casting window.
+Phoenix skin for the Clock and stopwatch window.
 Phoenix skin for the Collections window.
+Phoenix skin for the Colour picker window.
+Phoenix skin for the Delves companion and difficulty window.
 Phoenix skin for the Dressing room window.
+Phoenix skin for the Edit Mode window.
+Phoenix skin for the Expansion summary and renown window.
+Phoenix skin for the Flight map window.
+Phoenix skin for the Friends, Who, Raid, Quick Join window.
+Phoenix skin for the Game Menu window.
 Phoenix skin for the Gossip and quests window.
 Phoenix skin for the Great Vault window.
 Phoenix skin for the Group Finder window.
 Phoenix skin for the Group invite window.
 Phoenix skin for the Guild and communities window.
+Phoenix skin for the Guild bank window.
+Phoenix skin for the Help and report window.
+Phoenix skin for the Housing window.
 Phoenix skin for the Inspect window.
+Phoenix skin for the Item upgrades window.
+Phoenix skin for the Legacy content windows window.
+Phoenix skin for the Loot history window.
+Phoenix skin for the Loot rolls window.
 Phoenix skin for the Loot window.
 Phoenix skin for the Macros window.
 Phoenix skin for the Mail window.
 Phoenix skin for the Map and quest log window.
 Phoenix skin for the Merchant window.
+Phoenix skin for the Mythic+ keystone window.
+Phoenix skin for the Pet stable window.
+Phoenix skin for the Player choice window.
+Phoenix skin for the Popups window.
 Phoenix skin for the Professions window.
+Phoenix skin for the PvP scoreboard and results window.
+Phoenix skin for the Queue status window.
 Phoenix skin for the Ready check window.
+Phoenix skin for the Ready, role check and proposals window.
+Phoenix skin for the Scrapping window.
 Phoenix skin for the Settings window.
+Phoenix skin for the Socketing window.
 Phoenix skin for the Spellbook and talents window.
 Phoenix skin for the Trade window.
+Phoenix skin for the Trainer window.
+Phoenix skin for the Trait trees (Delves, Skyriding) window.
 Phoenix skin for the Transmog window.
+Phoenix skin for the World loot list window.
+Phoenix skin for the Zone map window.
 Phoenix slot frame on Blizzard item buttons, in the item's quality colour.
 Phoenix stance bar (hides the Blizzard one).
 Phoenix style for BigWigs bars
@@ -2507,6 +2586,7 @@ Plater options
 Plates made ahead of time
 Play a short sound with the banner.
 Play the ready sound on the Master channel, so you hear it with effects muted or the game in the background.
+Player and cursor coordinates along the bottom of the world map.
 Player aura bars
 Player bar texture
 Player buffs
@@ -2516,6 +2596,7 @@ Player buffs position
 Player buffs shown
 Player buffs size
 Player cast bar
+Player choice
 Player coordinates on the minimap. If Blizzard's own coordinates are on you are asked who shows them; nothing changes until you pick.
 Player debuffs
 Player debuffs order
@@ -2560,6 +2641,7 @@ Plays an extra ready-check sound when the invite appears.
 Plays this sound with the line (at most once every 0.3 s per row).
 Pointing at any bar that fades until mouse-over shows every such bar at once.
 Pop-up dialog
+Popups
 Portrait beside the frame: from the look, off, 2D, 3D or a class icon.
 Portrait shape
 Possess bar
@@ -2618,6 +2700,7 @@ PvP
 PvP rated card
 PvP ready pop-up
 PvP scoreboard
+PvP scoreboard and results
 PvP trinket
 PvP trinket in faction art
 Quality borders
@@ -2643,6 +2726,7 @@ Queue pop reminder
 Queue pop sound
 Queue pop-up timer
 Queue protection time (seconds)
+Queue status
 Queue status details
 Queue status eye
 Queue timer height
@@ -2764,6 +2848,7 @@ Ready check button
 Ready check summary
 Ready check, incoming resurrection, pending summon and out-of-phase icons.
 Ready status
+Ready, role check and proposals
 Reagent bag
 Realm language badge
 Recent casts for you, your target, focus, party and arena enemies. The one owner of spell history; the damage meter links here.
@@ -2875,6 +2960,7 @@ Score if timed
 Score in tooltips
 Score that gets the end colour; higher scores keep it.
 Scoreboard columns
+Scrapping
 Screenshot on achievement
 Scroll bars
 Scroll over stacked movers to pick the one underneath.
@@ -3224,6 +3310,7 @@ Snap distance
 Snap to
 Snap to grid
 Snapped window gap
+Socketing
 Soft shadow under chat text.
 Solo Shuffle round results
 Solo Shuffle round tracker
@@ -3582,7 +3669,9 @@ Tracking, calendar and mail buttons
 Tracks quests for the zone you enter.
 Trade
 Train All button
+Trainer
 Training Grounds buttons
+Trait trees (Delves, Skyriding)
 Transmog
 Trigger list
 Triggers
@@ -3864,6 +3953,7 @@ With several elements selected, dragging one moves them all.
 Words for the dungeons, raids or delves to keep (see the word list in the help panel; the season's words are added live). Empty keeps all.
 Words never hidden in paths
 World label colour
+World loot list
 World markers
 World: Achievement ID
 World: Area POI ID
@@ -3926,6 +4016,7 @@ Your triggers: message
 Your triggers: sound
 Zone ability
 Zone colour
+Zone map
 Zone name
 Zone on the row
 Zone position
