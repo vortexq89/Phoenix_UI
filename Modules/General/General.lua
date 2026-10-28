@@ -25,6 +25,8 @@ local M = ns:NewModule("General", {
             powerColors = POWER_DEFAULTS, dispelColors = DISPEL_DEFAULTS,
         },
         blizzardFonts = false, mute = "",
+        -- Phoenix's UI scale (UIParent), below the game's 64 % floor too. Off: the game's own setting rules.
+        scale = { enabled = false, auto = true, value = 0.71 },
     },
 })
 
@@ -76,13 +78,52 @@ local function applyMute(list)
     end
 end
 
+---------------------------------------------------------------- UI scale
+M.SCALE_MIN, M.SCALE_MAX = 0.4, 1.15
+local gameScale -- UIParent's scale before Phoenix first changed it (restored when the setting is turned off)
+
+-- 768 / physical screen height: one UI unit per screen pixel.
+function M.PixelPerfectScale()
+    local _, h = GetPhysicalScreenSize()
+    h = tonumber(h)
+    if not h or h <= 0 then return nil end
+    return 768 / h
+end
+
+-- The scale Phoenix wants, or nil when the game's own setting applies.
+function M:WantedScale()
+    local s = self.db.scale
+    if not s.enabled then return nil end
+    local v = s.auto and M.PixelPerfectScale() or tonumber(s.value)
+    if not v then return nil end
+    return math.max(M.SCALE_MIN, math.min(M.SCALE_MAX, v))
+end
+
+-- UIParent is the parent of protected frames: scaled out of combat only (deferred until combat ends).
+local function applyScale()
+    local v = M:WantedScale()
+    if v then
+        gameScale = gameScale or UIParent:GetScale()
+        if math.abs(UIParent:GetScale() - v) > 0.0005 then UIParent:SetScale(v) end
+    elseif gameScale then
+        UIParent:SetScale(gameScale)
+        gameScale = nil
+    end
+end
+function M:ApplyScale() ns.Combat:Run("general.scale", applyScale) end
+
 function M:OnInitialize()
     ns.Theme:Apply(self.db.theme)
     if self.db.blizzardFonts then faceFonts(true) end
     applyMute(M.ParseMute(self.db.mute))
+    -- the client resets UIParent's scale on these; Phoenix's setting is put back each time
+    for _, ev in ipairs({ "PLAYER_ENTERING_WORLD", "UI_SCALE_CHANGED", "DISPLAY_SIZE_CHANGED" }) do
+        ns.Events:On(ev, self, function() if self.db.scale.enabled then self:ApplyScale() end end)
+    end
 end
 
 function M:Refresh()
+    self:ApplyScale()
     ns.Theme:Apply(self.db.theme)
     if self.db.blizzardFonts or next(originals) then faceFonts(self.db.blizzardFonts) end
     applyMute(M.ParseMute(self.db.mute))

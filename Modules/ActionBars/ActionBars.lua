@@ -50,7 +50,8 @@ local DEFAULTS = {
         bar7 = bar("BOTTOM", 0, 246, { enabled = false }),
         bar8 = bar("BOTTOM", 0, 290, { enabled = false }),
         pet = bar("BOTTOM", 0, 158, { buttons = 10, width = 32, height = 32 }),
-        stance = bar("BOTTOMLEFT", 24, 158, { buttons = 10, width = 32, height = 32 }),
+        -- above the pet bar: clear of the player and target frames on a 768 px high UI (pixel-perfect scale)
+        stance = bar("BOTTOM", 0, 194, { buttons = 10, width = 32, height = 32 }),
         items = bar("CENTER", 0, -220, { enabled = false, width = 36, height = 36 }),
     },
     -- bar 1 only: what switches its page

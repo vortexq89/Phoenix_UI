@@ -1,77 +1,61 @@
-# Phoenix UI roadmap (12.1.5 and later)
+# Phoenix UI roadmap (restored design, from 28 Oct 2026)
 
-This roadmap comes from three things: a review of every module, a look at the addons Midnight players use most,
-and what the 12.x API still allows. Items are ranked **Must**, **Should** and **Could**. Every item lists why it
-matters, the API it depends on and a rough effort estimate (S = under a day, M = a few days, L = a week or
-more). If Midnight forbids something (combat log, reading secrets, protected frames, Edit Mode systems), it goes
-under *Not doing* below, not into a tier.
+The original Phoenix design (`restore/v1-ui`) is the base again. This roadmap brings the valuable parts of the v2
+work and of the addon research **into that design**, one item at a time. It replaces the 2.0.0 roadmap, which is
+kept as [plan_v2/ROADMAP_2.0.0.md](plan_v2/ROADMAP_2.0.0.md).
 
-## Where the ecosystem is (October 2026)
+Sources: [research/addons/README.md](research/addons/README.md) (86 addon folders studied),
+[v2-reference/](v2-reference/README.md) (v2 plan, deferred list, review, in-game checks, release notes) and
+[research/RECOVERY_REPORT.md](research/RECOVERY_REPORT.md).
 
-| Area | What players use | What changed in Midnight | What it means for Phoenix |
-|---|---|---|---|
-| Mythic+ | WarpDeplete, MPlusTimer; Platynator / Plater for forces | Timer and criteria APIs stay non-secret. 12.0.5 added `C_ScenarioInfo.GetUnitCriteriaProgressValues` for forces per mob | A timer and forces per mob are now in scope (shipped) |
-| Auras / alerts | WeakAuras forks (M33kauras) | WeakAuras was discontinued: aura and combat data are secret in combat | No custom aura engine. Blizzard's Cooldown Manager is the supported path (already a toggle) |
-| Unit frames | ElvUI, Unhalted, Blizzard + skins | ElvUI lost style filters, aura sorting and complex tags | Phoenix's skin-Blizzard approach is the right one. Do not rebuild frames |
-| Meters | Details! (now on `C_DamageMeter`) | The combat log is closed to addons | The Damage Meter skin plus the Details! style is enough |
-| Party cooldowns | OmniCD (broken), MiniCC (cast events) | Party spell casts are partly secret, and there is no combat log | Not doing (see below) |
-| Chat | Chattynator, Prat | Chat frames are secure mixins. History must come from addon storage | Typed-line history and fast scrolling (shipped). A full replacement is out of scope |
-| Bags | Baganator, BetterBags | Healthy | Item level on bag slots already exists. No bag replacement |
-| Minimap | Leatrix Plus (size up to 400 %), SexyMap | The size is an Edit Mode setting (50–200 %) | Show the size and link to Edit Mode (shipped). Do not override it |
-| Errors | BugSack / BugGrabber | Unchanged | Phoenix Bugs covers this already |
-| Movers | MoveAny, Edit Mode | Edit Mode covers more frames | Movers only handles frames Edit Mode does not manage (already the rule) |
+## Rules for every item
 
-The features players mention most are a Mythic+ timer, forces per mob, rating in tooltips, chat history, bag
-item levels and movers. The first four were missing or partial in 2.0.0.
+1. **One owner.** Each feature goes into the existing module named in the table: its code in
+   `Modules/<Module>/`, its settings on that module's page (`Phoenix_UI_Options/Options/<Module>.lua`), its sample
+   in that page's preview. No new addon folder, no second page for the same thing, no duplicate setting.
+2. **Original code only.** The research describes ideas; nothing is copied from another addon (most are All
+   Rights Reserved or GPL; EllesmereUI and WindTools forbid reuse).
+3. **Game art for game things.** Spell, ability, aura, cooldown and item icons are always the game's own icons.
+   Phoenix glyphs are only for Phoenix's own chrome (window buttons, headers, status markers).
+4. **Live and safe.** Settings apply live with no `/reload`; protected changes wait for the end of combat
+   (`ns.Combat:Run`); secret values are passed to widgets, never compared; no `OnUpdate` for polling.
+5. **Fits.** The options layout check and the default-position check in `tools/smoke/harness.lua` must stay at
+   zero problems; previews fit their card.
+6. **Done means:** luac, `tools/check_api.py`, `tools/check_ids.py`, `tools/check_locales.py` and the offline load
+   test pass for retail and Forever, CI is green, **and an in-game screenshot of the feature with zero errors in
+   the Bugs window** (`/pui bugs count` = 0 Phoenix reports) is attached to its pull request. One item per pull
+   request.
 
-## Must (done in this pass)
+## Order of work
 
-| # | Item | Why | API and feasibility | Effort | Status |
-|---|---|---|---|---|---|
-| M1 | **Secret-safe ordering** in Tooltip, UnitFrames and CastBars | A truthiness test on a secret raises an error before `IsSecret` runs. That is a crash in restricted content | `plain(x)` must come before `x` (Core/Secret.lua) | S | Done, b2f0f8f |
-| M2 | **Mythic+ run timer** | The most requested M+ feature, and it was missing since 2.0.0 | `C_ChallengeMode.GetActiveChallengeMapID/GetMapUIInfo/GetActiveKeystoneInfo/GetDeathCount/GetChallengeCompletionInfo`, `GetWorldElapsedTime`, `C_Scenario.GetStepInfo`, `C_ScenarioInfo.GetCriteriaInfo`. All non-secret. Frame registered with LibEditMode | M | Done, 40f2d6e |
-| M3 | **Chat input history** | Losing what you typed after `/reload` is the most common chat complaint | `EditBox:AddHistoryLine` (post-hook) and `SetAltArrowKeyMode`, saved in `global.history` (32 lines, matches `historyLines`) | S | Done, 631b03a |
-| M4 | **Fast chat scrolling** | Scrolling back through a busy channel one line at a time is slow | `ScrollingMessageFrameSecureMixin` `ScrollToTop/ScrollToBottom/PageUp/PageDown` through `HookScript("OnMouseWheel")`. No taint, because the methods are callable from addon code | S | Done, 631b03a |
-| M5 | **Minimap size, through Edit Mode** | Users asked for the old slider. A Phoenix slider would fight Edit Mode | `MinimapCluster:GetSettingValue(Enum.EditModeMinimapSetting.Size)` is read-only. The button opens Edit Mode | S | Done, 8bac2c6 |
-| M6 | **Mythic+ rating in tooltips** | Rating is the first thing checked on a group applicant or a player in town | `C_PlayerInfo.GetPlayerMythicPlusRatingSummary`, `C_ChallengeMode.GetDungeonScoreRarityColor` | S | Done, ca16483 |
-| M7 | **Theme tokens everywhere** | The range tint and item level text used literal colors and did not follow theme changes | `ns.Theme` `state.danger` and `Skin:Text`, plus `PUI_THEME_CHANGED` | S | Done, a02ce19 |
-| M8 | **Enemy forces on nameplates** | Pulling for count is the core M+ planning task. Platynator proved the API works | `C_ScenarioInfo.GetUnitCriteriaProgressValues(unit)` (12.0.5), which may be secret, so it is shown with `C_StringUtil.WrapString(TruncateWhenZero(count), "+")` and never compared | S | Done, 7140a64. **Verify in game** |
+Phase 0 (now): the user's in-game pass of the restored build. Fix what it finds before anything below.
 
-## Should (done for 2.0.0-beta1)
-
-| # | Item | Why | API and feasibility | Effort | Status |
-|---|---|---|---|---|---|
-| S1 | **Timer: compare against your best splits** | WarpDeplete users rely on "ahead/behind" for each boss | Splits are already stored per run. Store the best run's splits with `best[...]` and show the difference. Plain numbers only | S | Done, 6675461 |
-| S2 | **Timer: forces "pull" preview** | Shows how much the current pull adds before it dies | Sum `GetUnitCriteriaProgressValues` over nameplates in combat. **Only if the values are not secret in game**. If they are, the sum cannot be done and the item is dropped | M | Done, 6675461. The sum is dropped silently when any value is secret. **Verify in game** |
-| S3 | **Keystone list in the Mythic+ page** | Lets you see party keys without asking in chat | Party data needs addon messages (`C_ChatInfo.SendAddonMessage`), which are restricted inside instances in 12.x. Possible in town only. Needs a design decision | M | Done, b1315e3. Speaks LibKeystone (BigWigs, DBM); never sends during chat lockdown |
-| S4 | **Great Vault and season summary on Home** | One glance at weekly progress | `C_WeeklyRewards.GetActivities`, `C_MythicPlus.GetRunHistory`. Non-secret | S | Done, 2466387 |
-| S5 | **Chat: tab flash and whisper tab colors** | Small readability win | `FCF_StartAlertFlash` hooks, theme tokens. Purely cosmetic | S | Done, f613919 |
-| S6 | **Locales** beyond enUS | 756 keys, enUS only before beta1 | Locale files plus `check_locales.py` already enforce the key set. Needs translators | M | Done: deDE, frFR, esES (also esMX), ptBR, ruRU, itIT, koKR, zhCN, zhTW (91bc938…90f6425). check_locales.py and the harness enforce completeness. Native-speaker review welcome |
-| S7 | **In-game test pass** for M2, M8 and the tooltip rating | Secret behaviour of the forces API and completion events can only be confirmed live | A test checklist in docs/TESTING.md | S | Done: docs/TESTING.md (f9cdae4) |
-
-## Could (later, if there is demand)
-
-| # | Item | Why | API and feasibility | Effort |
+| # | Item | Module (existing) | Source | Acceptance criteria (plus rule 6) |
 |---|---|---|---|---|
-| C1 | **Restore received chat messages after a reload** (Chattynator style) | Some users want the scrollback, not just their own lines | Messages must be captured in `ChatFrame_AddMessageEventFilter` and replayed with `AddMessage`. Secret message bodies (12.x) cannot be stored, so the result would have gaps. Large SavedVariables | M |
-| C2 | **Timer: death log** | Who died, and when | `UNIT_DIED`-style data is not available without the combat log. Only the total death count is non-secret. Feasible only as "time of each death" | S |
-| C3 | **Timer: reskin Blizzard's challenge block instead of a separate frame** | Some users prefer one tracker | The Objective Tracker is an Edit Mode system. Restyling (not moving) is allowed, but the block is rebuilt often | M |
-| C4 | **PvP: dampening from the arena widget** | Dampening was a popular arena readout | Only if Blizzard exposes it as a UI widget (`C_UIWidgetManager`). Estimating it from time drifts when Blizzard tunes it | S if a widget exists |
-| C5 | **Minimap: button bin** | Collects LibDBIcon buttons | Optional `LibStub("LibDBIcon-1.0", true)` (embedded by other addons) plus its `LibDBIcon_IconCreated` callback; no new dependency | M | Done (2.0 P2) |
+| 1 | Keystone sharing in the common `LibKS` format (level, map, rating; request "R"), so `/keys` sees BigWigs, DBM and EllesmereUI users | MythicPlus (`Keystones.lua` already speaks part of it) | research #1 | A party member running only BigWigs shows in the keystone list with level and dungeon; no duplicate when they also run Phoenix |
+| 2 | Auto item bars: flasks, food, potions, healthstones, runes, oils, trinkets, quest items, own list; filled from bags | ActionBars (`Extras.lua` item bar grows into up to 3 item bars) | v2 #66 | Each bar fills from real bags with game item icons; size, layout, fade and show rules on the Action Bars page with a live preview; nothing in Forever that Forever lacks |
+| 3 | Battle res button and shared charge counter for classes that have one | ActionBars (item bar slot) + MythicPlus timer (charges) | v2 #66 | Druid/DK/warlock/paladin see the button with charges and recharge time; others never see it |
+| 4 | Compact loot roll bars | Skins (loot roll is a Blizzard window) | v2 #69 | Need/Greed/Transmog/Pass work in a group; item icon and quality from the game; `/pui loottest` sample |
+| 5 | Party cooldown and interrupt tracker on party frames (cast events, own cooldown table; fill in from LibOpenRaid when another addon loaded it) | GroupFrames | v2 #68, research #2 | Icons are the spells' game icons; shows interrupts and major defensives of a 5-player group; off by default; honest "hidden in instance" behaviour |
+| 6 | "Casts on me" targeted spell bars | CastBars | research #5 | A mob casting at the player shows a bar with the spell's icon and time; secret-safe; off by default |
+| 7 | Tank active-mitigation bars (Ironfur, Ignore Pain, Shield Block …) next to stagger | UnitFrames (`Resources.lua`) | research #7 | Correct uptime/charges for each tank spec; spell icons from the game |
+| 8 | Talent conditions on Cooldown Manager / custom bar entries | Tracker | research #6 | An entry tied to a talent hides when the talent is not taken, live on respec |
+| 9 | Move Blizzard windows (Shift-drag saves, Ctrl-drag for the session) | Movers (`M.WINDOWS` already scales them) | research #8 | Character, Spellbook, Collections etc. remember their place; never a protected frame in combat |
+| 10 | "What's new" popup once per version | General (Home page already has the hook) | research #9 | Shows once after an update, closable, links to the changelog; never in combat |
+| 11 | Mythic+ teleport flyout and hearthstones | MythicPlus | v2 #70 | Only teleports the character knows, game spell icons, secure buttons built out of combat |
+| 12 | Paragon progress on the reputation data text | DataTexts | v2 #70 | Paragon factions show progress and reward-ready |
+| 13 | Rare and treasure alerts with a waypoint (vignettes) | Quests (`Collector.lua` already reads vignettes; `Arrow.lua` is the waypoint) | v2 #71, research RareScanner | Alert once per rare, click sets the arrow; no alert spam in cities |
+| 14 | Masque support for action bars, item bars and tracker icons | ActionBars, Tracker | v2 #67 | Does nothing without Masque; with Masque every button skins and Phoenix's border yields |
+| 15 | Already Known tint at merchants, AH and collections | Quality | research #9 | Known recipes, mounts, pets, toys tinted; game icons untouched |
+| 16 | Mail alt list | Automation | research #9 | Alts of the account listed beside Send Mail; click fills the recipient |
+| 17 | Arabic text shaping (letters joined, right to left) for the Arabic locale | Locales + Core (one shaper) | v2 Core/Shaper | Arabic strings render joined and in order on every page; no effect on other locales |
+| 18 | Per-dungeon trash data (dangerous casts, priority mobs) and boss timer data | NamePlates, Encounters | research #3, #4 | Needs the user's in-game runs first; data files load on demand per instance |
+| 19 | Uploader and signed "fixed errors" list (v2 FIXED_SYNC) | Bugs | v2-reference/FIXED_SYNC.md | Only after the bug flow above is proven in daily use |
+| 20 | Small wins: spell queue slider (exists in Quality, verify), focus key (exists in UnitFrames `quickFocus`, verify), AFK screen (exists, verify), mute list (exists in General) | various | v2 #70, #71 | Each verified in game; nothing rebuilt that already exists |
 
-## Not doing, and why
+## Not doing
 
-* **Party cooldown tracking (OmniCD style)**: needs the combat log or party aura data, and both are restricted in
-  12.x. MiniCC's cast-event approach is incomplete by design and would break on every hotfix.
-* **Custom aura/alert engine (WeakAuras style)**: aura contents are secret in combat. The supported path is
-  Blizzard's Cooldown Manager, which Phoenix already exposes.
-* **A Phoenix minimap size slider or scaling of `MinimapCluster`**: it is an Edit Mode system. Writing its scale
-  taints Edit Mode, and writing layouts through `C_EditMode` needs a layout reload. Edit Mode stays the owner.
-* **Arena dampening from aura data**: aura data in arenas is restricted.
-* **Forces as a percentage on nameplates**: the value can be secret, so a percentage (division) is not possible
-  and a zero cannot be hidden without `TruncateWhenZero`, which only works on the raw count.
-* **Hiding Blizzard's challenge block automatically**: it lives in the Objective Tracker (Edit Mode). Users can
-  collapse it themselves. Phoenix will not hide Edit Mode systems.
-* **Whisper sound**: Blizzard already plays one. A second sound only duplicates it.
-* **Replacing the chat, bag or unit frames**: Phoenix skins Blizzard frames. Full replacements (Chattynator,
-  Baganator, ElvUI) are separate projects with their own upkeep.
+- A second UI framework, Studio, Sentinel, or any v2 window: the restored design keeps one options window, one
+  movers mode and one Bugs viewer.
+- Combat-log based features (closed in Midnight), WeakAuras-style custom aura engines (aura data is secret in combat).
+- Bundling other addons' code (the old `main` / `legacy-baseline` did; never again).

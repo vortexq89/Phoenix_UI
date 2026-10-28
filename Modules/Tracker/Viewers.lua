@@ -478,7 +478,10 @@ end
 ---------------------------------------------------------------- movers (viewers placed by Phoenix)
 local function store(key)
     return {
-        active = function() return M:IsEnabled() and M:Viewer(key).position.mode == "mover" end,
+        active = function()
+            local v = M:Viewer(key)
+            return M:IsEnabled() and v.position.mode == "mover" and v.enabled ~= false
+        end,
         get = function() local p = M:Viewer(key).position; return { point = p.point, x = p.x, y = p.y, scale = p.scale } end,
         set = function(val)
             local p = M:Viewer(key).position

@@ -119,6 +119,14 @@ function I:Owns(tex)
     return s ~= nil and s.name ~= nil
 end
 
+-- Stop treating a texture as a Phoenix glyph (it is about to show game art): no tint, full texture.
+function I:Release(tex)
+    if not tracked[tex] then return end
+    tracked[tex] = nil
+    tex:SetTexCoord(0, 1, 0, 1)
+    tex:SetVertexColor(1, 1, 1, 1)
+end
+
 function I:Apply(tex, name, size)
     local s = state(tex)
     s.name = name

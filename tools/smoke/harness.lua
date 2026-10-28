@@ -67,9 +67,44 @@ end
 frameMethods.CreateTexture = function() return newRegion() end
 frameMethods.CreateMaskTexture = function() return newRegion() end
 frameMethods.CreateFontString = function() return newRegion() end
+-- Approximate font metrics for the layout check: text width = characters * GLYPH_W, wrapped at the width
+-- set with SetWidth (anchored widths are not resolved here, as in game until the next layout pass).
+local GLYPH_W, LINE_H = 6, 14
+local function textLines(r)
+    local t = rawget(r, "__text") or ""
+    local w = rawget(r, "__w")
+    if t == "" then return 0 end
+    local n = 0
+    for line in (t .. "\n"):gmatch("(.-)\n") do
+        n = n + ((rawget(r, "__wrap") and w and w > 0) and math.max(1, math.ceil(#line * GLYPH_W / w)) or 1)
+    end
+    return n
+end
+local regionMethods = {
+    SetText = function(self, t) rawset(self, "__text", t ~= nil and tostring(t) or "") end,
+    SetFormattedText = function(self, f, ...)
+        local ok, t = pcall(string.format, tostring(f), ...)
+        rawset(self, "__text", ok and t or tostring(f))
+    end,
+    SetWordWrap = function(self, v) rawset(self, "__wrap", v and true or false) end,
+    GetStringHeight = function(self) return math.max(1, textLines(self)) * LINE_H end,
+    GetUnboundedStringWidth = function(self) return #(rawget(self, "__text") or "") * GLYPH_W end,
+    GetStringWidth = function(self)
+        local u, w = #(rawget(self, "__text") or "") * GLYPH_W, rawget(self, "__w")
+        return w and math.min(u, w) or u
+    end,
+}
+local function recordSize(self, w, h) if w then rawset(self, "__w", w) end; if h then rawset(self, "__h", h) end end
+frameMethods.SetWidth = function(self, w) recordSize(self, w) end
+frameMethods.SetHeight = function(self, h) recordSize(self, nil, h) end
+frameMethods.SetSize = function(self, w, h) recordSize(self, w, h) end
+frameMethods.GetWidth = function(self) return rawget(self, "__w") or defaults.GetWidth end
+frameMethods.GetHeight = function(self) return rawget(self, "__h") or defaults.GetHeight end
+frameMethods.GetSize = function(self) return self:GetWidth(), self:GetHeight() end
 local mt = {}
 mt.__index = function(self, k)
     if regions[self] and FRAME_ONLY[k] then return nil end
+    if regions[self] and regionMethods[k] then return regionMethods[k] end
     if frameMethods[k] then return frameMethods[k] end
     if owned[self] and type(k) == "string" and k:match("^[%l_]") then return nil end
     if type(k) == "string" and defaults[k] ~= nil or (type(k) == "string" and k:match("^Get") and defaults[k] == nil
@@ -1563,6 +1598,97 @@ try("gates", function()
         end
     end
 end)
+-- layout check: on every settings page, at a wide and a narrow window, no row's text runs under its control
+-- or past its bottom (into the next row). Metrics are approximate (GLYPH_W per character, LINE_H per line).
+try("layout: no overlap", function()
+    local C, bad, checked = ns.Config, {}, 0
+    local keys = {}
+    for _, m in ipairs(ns.moduleList) do keys[#keys + 1] = m.key end
+    for k in pairs(C.builders or {}) do keys[#keys + 1] = k end
+    local function fail(page, r, why) bad[#bad + 1] = ("%s / %s: %s"):format(page, tostring(r.item and (r.item.label or r.item.text)), why) end
+    for _, width in ipairs({ 1100, 700 }) do
+        for _, key in ipairs(keys) do
+            local page = C:Show(key)
+            if page and page.Layout and page.scroll then
+                rawset(page.scroll.child, "GetWidth", function() return width end)
+                local tabs = page.tabList and #page.tabList > 1 and #page.tabList or 1
+                for t = 1, tabs do
+                    if page.tabs then page.tabs.onChange(page.tabs, t) else page:Layout() end
+                    for _, r in ipairs(page.rows or {}) do
+                        local rowW, rowH = rawget(r, "__w"), rawget(r, "__h")
+                        if r:IsShown() and rowW and rowH and r.mode ~= "gate" then
+                            checked = checked + 1
+                            if r.isDescription then
+                                local tw = rawget(r.text, "__w")
+                                if not tw then rawset(r.text, "__w", rowW - 32) end
+                                local need = textLines(r.text) * LINE_H + 12
+                                if not tw then rawset(r.text, "__w", nil) end
+                                if rowH + 1 < need then fail(key, r, ("text needs %d px, row is %d"):format(need, rowH)) end
+                            elseif r.desc and r.desc:IsShown() then
+                                local dw = rawget(r.desc, "__w") or 0
+                                local ctrl = (r.control and not r.item.fullWidth) and (rawget(r.control, "__w") or 0) or 0
+                                local indent = r.icon and 38 or 16
+                                if dw <= 0 then
+                                    fail(key, r, "description has no width (measured as one line)")
+                                    rawset(r.desc, "__w", math.max(60, rowW - indent - ctrl - 32)) -- what the anchors give it
+                                elseif indent + dw > rowW - ctrl - 16 + 1 then fail(key, r, "description runs under the control") end
+                                local need = 9 + LINE_H + 4 + textLines(r.desc) * LINE_H + 10
+                                if dw <= 0 then rawset(r.desc, "__w", nil) end
+                                if rowH + 1 < need then fail(key, r, ("needs %d px, row is %d"):format(need, rowH)) end
+                            end
+                            if r.label and r.label:IsShown() and not rawget(r.label, "__w") then fail(key, r, "label has no width") end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    print(("  layout check: %d rows checked, %d problems"):format(checked, #bad))
+    for i = 1, math.min(#bad, tonumber(os.getenv("PUI_LAYOUT_SHOW")) or 15) do print("    " .. bad[i]) end
+    assert(#bad == 0, #bad .. " layout problems")
+end)
+-- default positions: no two Phoenix elements that are on out of the box overlap (1366x768 UIParent)
+try("movers: default positions do not overlap", function()
+    local SW, SH = 1366, 768
+    local function rect(name, point, x, y, w, h)
+        local ax = point:find("LEFT") and 0 or point:find("RIGHT") and SW or SW / 2
+        local ay = point:find("BOTTOM") and 0 or point:find("TOP") and SH or SH / 2
+        local cx = ax + x + (point:find("LEFT") and w / 2 or point:find("RIGHT") and -w / 2 or 0)
+        local cy = ay + y + (point:find("BOTTOM") and h / 2 or point:find("TOP") and -h / 2 or 0)
+        return { name = name, l = cx - w / 2, r = cx + w / 2, b = cy - h / 2, t = cy + h / 2 }
+    end
+    local list = {}
+    local ab = ns.modules.ActionBars.defaults.bars
+    for key, b in pairs(ab) do
+        if b.enabled then
+            local n, rows = b.buttons, b.rows or 1
+            local per = math.ceil(n / rows)
+            local w, h = per * b.width + (per - 1) * b.spacingX, rows * b.height + (rows - 1) * b.spacingY
+            if b.grow == "DOWN" or b.grow == "UP" then w, h = h, w end
+            list[#list + 1] = rect("ab." .. key, b.point, b.x, b.y, w, h)
+        end
+    end
+    for key, u in pairs(ns.modules.UnitFrames.defaults.units or {}) do
+        if u.enabled ~= false and u.width then list[#list + 1] = rect("uf." .. key, u.point or "CENTER", u.x, u.y, u.width, u.height) end
+    end
+    for key, v in pairs(ns.modules.Tracker.defaults.viewers) do
+        if v.position.mode == "mover" and v.enabled ~= false then
+            local n = (v.layout and v.layout.perRow) or 4
+            list[#list + 1] = rect("cdm." .. key, v.position.point, v.position.x, v.position.y, 4 * 38, 36)
+        end
+    end
+    local bad = {}
+    for i = 1, #list do
+        for j = i + 1, #list do
+            local a, b = list[i], list[j]
+            if a.l < b.r - 0.5 and b.l < a.r - 0.5 and a.b < b.t - 0.5 and b.b < a.t - 0.5 then bad[#bad + 1] = a.name .. " x " .. b.name end
+        end
+    end
+    print(("  default positions: %d elements, %d overlaps"):format(#list, #bad))
+    for _, b in ipairs(bad) do print("    " .. b) end
+    assert(#list >= 8, "too few elements checked: " .. #list)
+    assert(#bad == 0, #bad .. " overlapping defaults")
+end)
 -- paired cells: compact rows sit two per line on a wide card, one per line on a narrow one
 try("paired cells", function()
     local C = ns.Config
@@ -1573,9 +1699,10 @@ try("paired cells", function()
     local cells = 0
     for _, r in ipairs(page.rows) do if r:IsShown() and r.mode == "cell" then cells = cells + 1 end end
     assert(cells >= 2, "no paired cells on a wide page")
-    rawset(page.scroll.child, "GetWidth", nil)
+    rawset(page.scroll.child, "GetWidth", function() return 400 end)
     page:Layout()
-    for _, r in ipairs(page.rows) do assert(r.mode ~= "cell", "a narrow page still pairs rows") end
+    for _, r in ipairs(page.rows) do assert(not (r:IsShown() and r.card and r.card:IsShown()) or r.mode ~= "cell", "a narrow page still pairs rows") end
+    rawset(page.scroll.child, "GetWidth", nil)
 end)
 -- ⇄ apply to all copies a scoped row to every element
 try("apply to all", function()

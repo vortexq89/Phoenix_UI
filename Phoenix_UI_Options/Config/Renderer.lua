@@ -437,12 +437,12 @@ function buildRow(card, page, m, item)
             anchor = b
         end
         self.label:SetPoint("TOPLEFT", indent - 2, -9)
-        self.label:SetPoint("RIGHT", anchor or self, anchor and "LEFT" or "RIGHT", -6, 0)
+        self.label:SetWidth(math.max(40, width - indent - #icons * 24 - 10))
         self:SetHeight(item.height or CELL_H)
     end
 
     -- a full line (or a toggle cell): label and description left, the control right
-    local function arrangeLine(self, c, icons, mode, indent)
+    local function arrangeLine(self, c, icons, mode, indent, width)
         if c then
             c:ClearAllPoints()
             if STRETCH[item.type] then c:SetWidth(row.controlW) end
@@ -460,18 +460,22 @@ function buildRow(card, page, m, item)
             anchor = b
         end
         local right = ((c and not item.fullWidth) and c:GetWidth() or 0) + #icons * 24 + 32
+        -- explicit text widths: anchors resolve a frame later, so a wrapped description measured from them
+        -- reads as one line and spills into the next row. The text column ends before the control column.
+        local textW = math.max(60, (width or W.CONTROL_WIDTH * 2) - indent - right)
+        self.textW = textW
+        self.label:SetWidth(textW)
         if self.desc and mode ~= "cell" then
             self.desc:Show()
             self.label:SetPoint("TOPLEFT", indent, -9)
             self.desc:SetPoint("TOPLEFT", self.label, "BOTTOMLEFT", 0, -4)
-            self.desc:SetPoint("RIGHT", self, "RIGHT", -right, 0)
+            self.desc:SetWidth(item.fullWidth and math.max(60, (width or 0) - 32) or textW)
         elseif item.fullWidth then
             self.label:SetPoint("TOPLEFT", 16, -10)
         else
             if self.desc then self.desc:Hide() end
             self.label:SetPoint("LEFT", indent, 0)
         end
-        self.label:SetPoint("RIGHT", self, "RIGHT", -right, 0)
         if mode == "cell" then self:SetHeight(item.height or TOGGLE_CELL_H) end
     end
 
@@ -489,7 +493,7 @@ function buildRow(card, page, m, item)
         if mode == "cell" and item.type ~= "toggle" then
             arrangeCell(self, c, icons, width, indent)
         else
-            arrangeLine(self, c, icons, mode, indent)
+            arrangeLine(self, c, icons, mode, indent, width)
         end
         if self.icon then self.icon:SetPoint("RIGHT", self.label, "LEFT", -8, 0) end
         if self.badge then
@@ -501,8 +505,15 @@ function buildRow(card, page, m, item)
 
     function row:Measure()
         if self.desc and self.desc:IsShown() and self.mode ~= "gate" then
-            local h = 9 + self.label:GetStringHeight() + 4 + self.desc:GetStringHeight() + 10
-            self:SetHeight(math.max(item.height or ROW_H_DESC, math.floor(h + 0.5)))
+            local top = 9 + self.label:GetStringHeight() + 4 + self.desc:GetStringHeight()
+            if item.fullWidth and self.control then
+                -- the control sits under the wrapped description, never on top of it
+                local base = item.height or ROW_H_DESC
+                self.control:SetPoint("TOPLEFT", 16, -math.floor(top + 8))
+                self:SetHeight(math.max(base, math.floor(base - 48 + top + 8 + 0.5)))
+            else
+                self:SetHeight(math.max(item.height or ROW_H_DESC, math.floor(top + 10 + 0.5)))
+            end
         end
     end
 
@@ -566,8 +577,8 @@ local function buildDescription(card, item)
     Skin:Register(row, function(self) Skin:Text(self.text, "desc", "text.secondary") end)
     function row:Refresh() end
     function row:Flash() end
-    function row:Arrange() end
-    function row:Measure() self:SetHeight(self.text:GetStringHeight() + 12) end
+    function row:Arrange(_, width) if width then self.text:SetWidth(math.max(60, width - 32)) end end
+    function row:Measure() self:SetHeight(math.floor(self.text:GetStringHeight() + 12.5)) end
     return row
 end
 

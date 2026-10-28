@@ -380,6 +380,9 @@
   "Interface\\Minimap\\MinimapArrow": {
    "fileDataID": 136431
   },
+  "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag": {
+   "fileDataID": 136511
+  },
   "Interface\\TargetingFrame\\UI-RaidTargetingIcons": {
    "fileDataID": 137009
   },

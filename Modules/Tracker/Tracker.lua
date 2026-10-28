@@ -24,7 +24,7 @@ local function grid(size, extra)
         wrap = "DOWN", center = true, keepInPlace = false, overflow = "row" }, extra)
 end
 
-local function place(mode, y) return { mode = mode, point = "CENTER", x = 0, y = y, scale = 1 } end
+local function place(mode, y, point) return { mode = mode, point = point or "CENTER", x = 0, y = y, scale = 1 } end
 
 local function visibility()
     return { mode = "always", mounted = false, vehicle = true, spec1 = true, spec2 = true, spec3 = true, spec4 = true }
@@ -45,9 +45,11 @@ local function viewer(timer, size, y, extra)
 end
 
 local function custom(n)
-    return viewer(14, 36, -260 - n * 44, {
+    -- above the action bar stack (bars 1-3, pet and stance bars end at 226 px), one 36 px row apart
+    local y = 232 + (n - 1) * 44
+    return viewer(14, 36, y, {
         enabled = n == 1, list = "", trinkets = n == 1, show = "always", charges = true, tooltips = true,
-        position = place("mover", -260 - n * 44), readyGlow = "none",
+        position = place("mover", y, "BOTTOM"), readyGlow = "none",
     })
 end
 

@@ -21,7 +21,7 @@ local M = ns:NewModule("Movers", {
         unlockKey = "", windowScale = 1 },
 })
 
-local OVERLAY_MIN_W, OVERLAY_MIN_H = 160, 36
+local OVERLAY_MIN_W, OVERLAY_MIN_H = 48, 20 -- the box matches the frame; tiny frames still get a grabbable box
 local SCALE_MIN, SCALE_MAX, ALPHA_MIN = 0.5, 2, 0.2
 
 -- noAlpha: Blizzard animates the frame's alpha itself (fading text, banners, toasts), so a stored alpha
@@ -71,6 +71,8 @@ local function usable(e)
     local f = resolve(e)
     if not f or f:IsForbidden() then return nil end
     if e.store and e.store.active and not e.store.active() then return nil end
+    -- a Phoenix frame of a module or element that is switched off is hidden: no mover for it
+    if e.owned and not (e.store and e.store.active) and not f:IsShown() then return nil end
     if not e.owned and M.IsManaged(f) then
         if not e.refused then e.refused = true; ns:Debug("Movers: %s is managed by Edit Mode, skipped", e.key) end
         return nil
@@ -228,7 +230,7 @@ local function paintOverlay(o)
     local sel = selected == o.entry
     Skin:Panel(o, "raised", { border = sel and "accent.primary" or "border.strong" })
     W.Color(o.fill, "accent.primary", sel and 0.22 or 0.1)
-    Skin:Text(o.label, "body", sel and "text.primary" or "text.secondary")
+    Skin:Text(o.label, o.role or "body", sel and "text.primary" or "text.secondary")
 end
 
 local function syncOverlay(o)
@@ -237,9 +239,20 @@ local function syncOverlay(o)
     if not cx then o:Hide(); return end
     o:ClearAllPoints()
     o:SetPoint("CENTER", UIParent, "BOTTOMLEFT", cx, cy)
-    o:SetSize(math.max(OVERLAY_MIN_W, w), math.max(OVERLAY_MIN_H, h))
+    w, h = math.max(OVERLAY_MIN_W, w), math.max(OVERLAY_MIN_H, h)
+    o:SetSize(w, h)
+    -- the name always fits inside its box: smaller type on small boxes, elided when still too long;
+    -- the coordinates line only where there is room for two lines
+    local roomy = h >= 34
+    o.role = (w < 120 or h < 26) and "small" or "body"
+    Skin:Text(o.label, o.role, selected == o.entry and "text.primary" or "text.secondary")
+    o.label:SetWidth(w - 8)
+    o.label:ClearAllPoints()
+    o.label:SetPoint("CENTER", 0, (roomy and M.db.coords) and 6 or 0)
+    o.state:SetWidth(w - 8)
+    o:SetFrameLevel(60 + math.max(0, 20 - math.floor(w * h / 20000))) -- smaller boxes on top, so each stays clickable
     local s = saved(o.entry)
-    o.state:SetShown(M.db.coords)
+    o.state:SetShown(M.db.coords and roomy)
     o.state:SetText(s and s.point and ("%s  %d, %d"):format(s.point, s.x, s.y) or L.MOVERS_DEFAULT_POS)
 end
 

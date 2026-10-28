@@ -93,9 +93,47 @@ function P:Create(kind, parent, m, page)
         return scale
     end
     local draw = def and def.build(stage, m)
+    local baseWidth, baseHeight = stage.designWidth, def and def.height or 120
+    local measureQueued = false
+    -- Fit to content: settings can make a sample bigger than the room it was designed for (a 400 px wide
+    -- frame, a 40 px font). After each redraw the stage measures what it holds; wider content raises the
+    -- design width (the whole stage scales down), taller content raises the height. Nothing is clipped.
+    local function measure()
+        measureQueued = false
+        local l0, r0, t0, b0 = stage:GetLeft(), stage:GetRight(), stage:GetTop(), stage:GetBottom()
+        if not (l0 and r0 and t0 and b0) then return end
+        local l, r, t, b
+        local function grow(obj)
+            if obj == stage.floor or not obj:IsShown() then return end
+            local ol, or_, ot, ob = obj:GetLeft(), obj:GetRight(), obj:GetTop(), obj:GetBottom()
+            if not (ol and or_ and ot and ob) or or_ - ol <= 0 then return end
+            local s = (obj.GetEffectiveScale and obj:GetEffectiveScale() or stage:GetEffectiveScale()) / stage:GetEffectiveScale()
+            ol, or_, ot, ob = ol * s, or_ * s, ot * s, ob * s
+            l, r = math.min(l or ol, ol), math.max(r or or_, or_)
+            t, b = math.max(t or ot, ot), math.min(b or ob, ob)
+        end
+        for _, c in ipairs({ stage:GetChildren() }) do grow(c) end
+        -- the stage's own panel and floor textures span it and say nothing about the sample
+        for _, g in ipairs({ stage:GetRegions() }) do if g:GetObjectType() == "FontString" then grow(g) end end
+        if not l then return end
+        local pad, mid = 8, (l0 + r0) / 2
+        local needW = math.max(r - mid, mid - l) * 2 + pad
+        local needH = math.max(t0, t) - b + pad
+        local width, height = math.max(baseWidth, math.ceil(needW)), math.max(baseHeight, math.ceil(needH))
+        if width ~= stage.designWidth or math.abs(height - stage:GetHeight()) > 0.5 then
+            stage.designWidth = width
+            stage:SetHeight(height)
+            if page.Layout then page:Layout() end
+        end
+    end
     function stage:Redraw()
         if draw then ns.SafeCall(draw, self, page.scope and page.scope.unit) end
+        if not measureQueued and self:IsVisible() then
+            measureQueued = true
+            C_Timer.After(0, function() ns.SafeCall(measure) end)
+        end
     end
+    stage.MeasureContent = measure
     local function onChange(_, _, moduleKey)
         if stage:IsVisible() and (moduleKey == m.key or moduleKey == "General") then stage:Redraw() end
     end

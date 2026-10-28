@@ -16,3 +16,11 @@ unless the licence clearly allows it in an MIT repo (only simc-addon, Unlicense,
 | [naowhforever.md](naowhforever.md) | NaowhForever | all rights reserved | Clean-room only |
 | [wow-forever.md](wow-forever.md) | Blizzard "World of Warcraft: Forever" (interface 16001) | n/a | Platform facts |
 | [game-data.md](game-data.md) | wago.tools DB2 (all flavours) | Blizzard client data | Primary fact source for every generated table |
+
+## Added on 2026-10-28
+
+- [addons/](addons/README.md): one file per addon in the game folder and on the I:\ drive (86 folders, 45 files),
+  each with features, design, code approach (our own words), benefit and a comparison with Phoenix. Written
+  during the v2 work, so its Phoenix comparisons name v2 files; [../ROADMAP.md](../ROADMAP.md) maps each finding
+  to this code base's modules.
+- [RECOVERY_REPORT.md](RECOVERY_REPORT.md): why the v2 rework was set aside and this design restored.

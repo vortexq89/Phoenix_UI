@@ -384,7 +384,10 @@ function M:UpdateBagBar()
     for _, b in ipairs(win.bagBar.buttons) do
         local slot = M.BagSlot(b.bag)
         local tex = slot and GetInventoryItemTexture("player", slot)
-        if tex then b.icon:SetTexture(tex); b.icon:SetAlpha(1) else ns.Icons:Apply(b.icon, "items", 16); b.icon:SetAlpha(0.4) end
+        -- item art is always the game's: the equipped bag's icon, or the game's empty bag-slot art
+        if ns.Icons:Owns(b.icon) then ns.Icons:Release(b.icon) end
+        b.icon:SetTexture(tex or "Interface\\PaperDoll\\UI-PaperDoll-Slot-Bag")
+        b.icon:SetAlpha(tex and 1 or 0.6)
         Skin:BorderSpec(b, self.db.slotBorder, "border.default")
     end
     win.bagBar:Show()
