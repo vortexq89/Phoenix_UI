@@ -229,6 +229,7 @@ local function onUpdateItems(frame)
     skinWindow(frame)
     for _, button in frame:EnumerateValidItems() do
         styleButton(button, ItemLocation:CreateFromBagAndSlot(button:GetBagID(), button:GetID()))
+        if M.DimSlot then M.DimSlot(button, button:GetBagID(), button:GetID()) end -- Chrome.lua chips
     end
 end
 

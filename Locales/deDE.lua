@@ -2620,6 +2620,7 @@ local T = {
     BAGS_CATEGORIES = "Kategorien",
     BAGS_CATEGORIES_DESC = "Reihenfolge der Bereiche in der Kategorieansicht. Ziehen zum Umsortieren; Rechtsklick legt eine Kategorie mit Sonstiges zusammen (abgeblendet) oder holt sie zurück.",
     BAGS_CATEGORIES_TIP = "Ziehen zum Verschieben. Rechtsklick: mit Sonstiges zusammenlegen oder zurückholen.",
+    BAGS_CAT_ALL = "Alle",
     BAGS_CAT_NEW = "Neu",
     BAGS_CAT_EQUIPMENT = "Ausrüstung",
     BAGS_CAT_CONSUMABLES = "Verbrauchsgüter",

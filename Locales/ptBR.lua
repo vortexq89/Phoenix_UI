@@ -2620,6 +2620,7 @@ local T = {
     BAGS_CATEGORIES = "Categorias",
     BAGS_CATEGORIES_DESC = "Ordem das seções na visualização por categoria. Arraste para reordenar; clique direito junta uma categoria a Outros (esmaecida) ou a traz de volta.",
     BAGS_CATEGORIES_TIP = "Arraste para mover. Clique direito: juntar a Outros ou trazer de volta.",
+    BAGS_CAT_ALL = "Tudo",
     BAGS_CAT_NEW = "Novo",
     BAGS_CAT_EQUIPMENT = "Equipamento",
     BAGS_CAT_CONSUMABLES = "Consumíveis",

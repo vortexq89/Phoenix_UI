@@ -2055,6 +2055,14 @@ try("bag chrome skin", function()
     B.db.skin = true; B.SkinWindow(f); B.DressChrome(f); B.SkinSearch(box); B.PaintBankTabs(panel)
     assert(B.IsWindowSkinned(f), "window skinned again")
     B:Refresh()
+    -- category chips: dimming rule and the row on / off
+    assert(B.ChipDims("all", "junk") == false and B.ChipDims("junk", "junk") == false and B.ChipDims("junk", "other") == true,
+        "chip dims")
+    env.ContainerFrameCombinedBags = CreateFrame("Frame", nil, UIParent)
+    B:RefreshChips(); B.activeChip = "equipment"; B.PaintChips(); B.db.skin = false; B:RefreshChips()
+    assert(B.activeChip == "all", "chip resets when the skin goes off")
+    B.db.skin = true; B:RefreshChips()
+    env.ContainerFrameCombinedBags = nil
     rawset(env.Enum, "BankType", hadBankType)
 end)
 -- chat skin (plan window 3): pill states, channel colour, pills on/off live

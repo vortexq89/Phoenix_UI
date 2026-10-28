@@ -2620,6 +2620,7 @@ local T = {
     BAGS_CATEGORIES = "分类",
     BAGS_CATEGORIES_DESC = "分类视图中各分区的顺序。拖动以重新排序；右键将某分类并入“其他”（变暗）或恢复。",
     BAGS_CATEGORIES_TIP = "拖动以移动。右键：并入“其他”或恢复。",
+    BAGS_CAT_ALL = "全部",
     BAGS_CAT_NEW = "新物品",
     BAGS_CAT_EQUIPMENT = "装备",
     BAGS_CAT_CONSUMABLES = "消耗品",

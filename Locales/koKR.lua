@@ -2620,6 +2620,7 @@ local T = {
     BAGS_CATEGORIES = "분류",
     BAGS_CATEGORIES_DESC = "분류 보기의 구역 순서. 끌어서 순서를 바꾸고, 오른쪽 클릭하면 분류를 기타에 합치거나(흐리게) 되돌립니다.",
     BAGS_CATEGORIES_TIP = "끌어서 이동. 오른쪽 클릭: 기타에 합치기 또는 되돌리기.",
+    BAGS_CAT_ALL = "전체",
     BAGS_CAT_NEW = "새 아이템",
     BAGS_CAT_EQUIPMENT = "장비",
     BAGS_CAT_CONSUMABLES = "소비용품",

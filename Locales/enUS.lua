@@ -2646,6 +2646,7 @@ ns.RegisterLocale("enUS", {
     BAGS_CATEGORIES = "Categories",
     BAGS_CATEGORIES_DESC = "Order of the sections in the category view. Drag to reorder; right-click merges a category into Other (dimmed) or brings it back.",
     BAGS_CATEGORIES_TIP = "Drag to move. Right-click: merge into Other or bring back.",
+    BAGS_CAT_ALL = "All",
     BAGS_CAT_NEW = "New",
     BAGS_CAT_EQUIPMENT = "Equipment",
     BAGS_CAT_CONSUMABLES = "Consumables",

@@ -1,5 +1,5 @@
 local _, ns = ...
-local Skin, W = ns.Skin, ns.Widgets
+local L, Skin, W = ns.L, ns.Skin, ns.Widgets
 local M = ns:GetModule("Bags")
 
 --[[ Bag and bank chrome, skins plan window 4 (the slots themselves are dressed in Bags.lua): an accent tick
@@ -158,6 +158,7 @@ function M.PaintBankTabs(panel)
 end
 
 function M:DressAllChrome()
+    if self.RefreshChips then self:RefreshChips() end
     local on = self:IsEnabled() and self.db.skin
     local bank = on and self.db.bankSkin
     local frames = {}
@@ -184,4 +185,90 @@ function M:SetupChrome()
     end
     ns.Events:On("BANKFRAME_OPENED", self, function() M:DressAllChrome(); M.PaintBankTabs(_G.BankPanel) end)
     -- theme changes reach the bank tabs through Bags:Refresh (one PUI_THEME_CHANGED listener per owner)
+end
+
+---------------------------------------------------------------- category chips (plan window 4)
+--[[ A row of chips above the combined bag: All, New, Equipment, Consumables, Reagents, Quest, Junk. Picking one
+    dims every slot that is not in that category with a dark layer of ours over the slot (the item buttons are
+    never hidden, moved or changed, so using and dragging items works as always). The same categories as the
+    Phoenix bag window (M:Categorize). The chips hide with the bag skin switch, live. ]]
+M.CHIPS = { "all", "new", "equipment", "consumables", "reagents", "quest", "junk" }
+M.activeChip = "all"
+local dims = setmetatable({}, { __mode = "k" })
+local chipRow
+
+-- Should a slot of category `cat` be dimmed while `chip` is picked?
+function M.ChipDims(chip, cat)
+    if not chip or chip == "all" then return false end
+    return cat ~= chip
+end
+
+function M.DimSlot(button, bag, slot)
+    if not button then return end
+    local dim = dims[button]
+    local on = M:IsEnabled() and M.db.skin and M.activeChip ~= "all"
+    if not on then if dim then dim:Hide() end; return end
+    local info = C_Container.GetContainerItemInfo(bag, slot)
+    local quest = C_Container.GetContainerItemQuestInfo and C_Container.GetContainerItemQuestInfo(bag, slot)
+    local s = M.SlotInfo(ItemLocation:CreateFromBagAndSlot(bag, slot))
+    local cat = M:Categorize(bag, info, quest, s)
+    if not dim then
+        local holder = CreateFrame("Frame", nil, button)
+        holder:SetAllPoints()
+        holder:SetFrameLevel(button:GetFrameLevel() + 4)
+        dim = holder:CreateTexture(nil, "OVERLAY", nil, 7)
+        dim:SetTexture(ns.Media.textures.WHITE)
+        dim:SetAllPoints()
+        dims[button] = dim
+    end
+    W.Color(dim, "bg.base", 0.72)
+    dim:SetShown(M.ChipDims(M.activeChip, cat))
+end
+
+local function paintChips()
+    if not chipRow then return end
+    for _, c in ipairs(chipRow.chips) do
+        local sel = c.key == M.activeChip
+        Skin:Panel(c, sel and "raised" or "sunken", { border = sel and "accent.primary" or "border.subtle" })
+        Skin:Text(c.label, "small", sel and "accent.text" or "text.secondary")
+    end
+end
+M.PaintChips = paintChips
+
+function M:RefreshChips()
+    local bag = _G.ContainerFrameCombinedBags
+    local on = self:IsEnabled() and self.db.skin
+    if not on then
+        if chipRow then chipRow:Hide() end
+        if self.activeChip ~= "all" then self.activeChip = "all" end
+        for _, dim in pairs(dims) do dim:Hide() end
+        return
+    end
+    if not bag then return end
+    if not chipRow then
+        chipRow = CreateFrame("Frame", nil, bag)
+        chipRow:SetHeight(18)
+        chipRow:SetPoint("BOTTOMLEFT", bag, "TOPLEFT", 6, 2)
+        chipRow:SetPoint("BOTTOMRIGHT", bag, "TOPRIGHT", -6, 2)
+        chipRow.chips = {}
+        local prev
+        for _, key in ipairs(self.CHIPS) do
+            local c = CreateFrame("Button", nil, chipRow)
+            c.key = key
+            c.label = W.Text(c, "small", "text.secondary", "CENTER")
+            c.label:SetPoint("CENTER")
+            c.label:SetText(L["BAGS_CAT_" .. key:upper()])
+            c:SetSize(math.max(34, (c.label:GetStringWidth() or 30) + 12), 18)
+            if prev then c:SetPoint("LEFT", prev, "RIGHT", 3, 0) else c:SetPoint("LEFT") end
+            c:SetScript("OnClick", function(self)
+                M.activeChip = (M.activeChip == self.key) and "all" or self.key
+                paintChips()
+                M:Refresh()
+            end)
+            chipRow.chips[#chipRow.chips + 1] = c
+            prev = c
+        end
+    end
+    chipRow:Show()
+    paintChips()
 end
