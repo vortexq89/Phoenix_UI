@@ -90,7 +90,7 @@ end
 local ticks = setmetatable({}, { __mode = "k" })
 local function headerTick(module, on)
     local h = module.Header
-    if not (h and h.Text) then return end
+    if not (h and h.Text and h.CreateTexture) then return end
     local t = ticks[h]
     if not on then if t then t:Hide() end; return end
     if not t then
