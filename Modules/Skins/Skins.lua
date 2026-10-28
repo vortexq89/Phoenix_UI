@@ -281,6 +281,7 @@ function M:OnEnable()
     if self.SkinMicroMenu then self:SkinMicroMenu() end -- MicroMenu.lua
     if self.SetupWorldMap then self:SetupWorldMap() end -- WorldMap.lua
     if self.SetupCharacter then self:SetupCharacter() end -- Character.lua
+    if self.SetupCharacterLists then self:SetupCharacterLists() end -- CharacterLists.lua
     if self.SetupPopups then self:SetupPopups() end -- Popups.lua
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end

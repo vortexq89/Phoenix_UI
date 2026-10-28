@@ -2140,6 +2140,19 @@ try("popup skin", function()
     ns.Events:Fire("PUI_THEME_CHANGED")
     env.StaticPopup1 = nil
 end)
+-- reputation and currency lists (plan window 6): search match, rows styled, live off/on
+try("character lists skin", function()
+    local S = ns.modules.Skins
+    assert(S.ListMatches("Valorstones", "valor") and S.ListMatches("X", "") and not S.ListMatches("Gold", "valor"), "search")
+    local row = CreateFrame("Frame", nil, UIParent)
+    row.Content = { Name = row:CreateFontString(), ReputationBar = CreateFrame("StatusBar", nil, row) }
+    S.StyleListRow(row, "rep", true); S.StyleListRow(row, "currency", true); S.StyleListRow(row, "rep", false)
+    local tok = CreateFrame("Frame", "TokenFrame", UIParent)
+    tok.ScrollBox = { ForEachFrame = function(_, fn) fn(row) end }
+    env.TokenFrame = tok
+    S:SkinCharacterLists(); S.db.character = false; S:SkinCharacterLists(); S.db.character = true; S:SkinCharacterLists()
+    env.TokenFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
