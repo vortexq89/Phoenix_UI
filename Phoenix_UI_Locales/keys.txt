@@ -66,6 +66,7 @@ A small popup the first time a new error happens (repeats are only counted).
 A small read-only Phoenix panel inside Blizzard's conquest frame with your title progress and conquest.
 A soft glow around reminder icons.
 A soft shadow under Phoenix window text.
+A sound, flash or chat line when a rare, treasure or event appears on your minimap, once each, with an ignore list.
 A spell shown in the cooldown manager's Essential or Utility rows is hidden on your bars. Off while the cooldown manager hides icons that are on your bars (pick one).
 A starting look for size, spacing and icon side. Every part can still be changed on its own below.
 A strip of recent casts for arena 1.
@@ -78,12 +79,14 @@ A strip of recent casts for party 3.
 A strip of recent casts for party 4.
 A strip of recent casts for target.
 A strip of recent casts for you.
+A themed screen with your character, details and an away timer while you are AFK. Moving, combat or a click removes it.
 A thin accent border on the friends frame and an accent line under the open tab.
 A thin accent line at the right edge shows where you are while scrolled.
 A thin accent-coloured line under the health bar.
 A thin dark border around each icon.
 A white edge when a shield is bigger than the missing health, and a red edge when a heal absorb is bigger than the current health.
 A/B report
+AFK screen
 Abilities listed
 Abilities the game only estimates show a ~ until their time is firm.
 Ability icon
@@ -166,9 +169,14 @@ Aggro border
 Alert again after (s)
 Alert sound
 Alert toasts
+Alert when a rare appears on the minimap.
+Alert when a treasure appears on the minimap.
+Alert when a world event marker appears on the minimap.
 Alerts and toasts
+Alerts inside instances too (off: open world only).
 All tracked quests, only those in progress, or only those ready to turn in.
 Alphabetical, or the order you drag them into (Shift-click the bin button to edit).
+Also in dungeons and raids
 Also keeps errors from other addons and Blizzard's code in the viewer, on this PC only. They never join Phoenix's reports unless you allow it below.
 Also narrow Blizzard's search: minimum rating
 Also narrow Blizzard's search: needs my role
@@ -187,6 +195,7 @@ An accent frame on transmog slots with an unsaved change.
 An accent glow on Great Vault slots you have unlocked.
 An accent line under the open tab.
 An accent ring on chosen talents, a dim ring on talents you can still pick.
+An arrow with the distance toward your map waypoint (/way, or a pin placed on the map). Right-click it to clear the waypoint.
 An essential or utility cooldown that is on one of your shown action bars is left out of these rows, so it appears once.
 Animation speed
 Announce boss results
@@ -881,7 +890,9 @@ Channel names
 Channel ticks
 Channels
 Character
+Character details
 Character limit before a name is shortened.
+Character model
 Charges and count size
 Chat
 Chat bubbles
@@ -889,6 +900,7 @@ Chat channel button
 Chat channels
 Chat fades after this many quiet seconds and wakes on a new line, hover or typing. 0 never fades.
 Chat font
+Chat line
 Chat line on a new error
 Chat line when accepted
 Chat line when the pet is unhappy
@@ -1435,6 +1447,7 @@ Essential cooldowns: growth
 Essential cooldowns: icon size
 Essential cooldowns: per row
 Essential cooldowns: spacing
+Event alerts
 Event colours
 Event toasts
 Event trace
@@ -1510,6 +1523,7 @@ Fishing helper
 Fixed width of each whisper tab; tabs shrink evenly only when they no longer fit.
 Flash the game icon
 Flash when out of sight
+Flashes the game's taskbar icon when the game is in the background.
 Flashes the taskbar icon when a keyword matches.
 Flight map
 Flight timer
@@ -1940,9 +1954,11 @@ How a dispellable debuff is shown on the frame.
 How amounts are written. Numbers the game hides in combat always use the game's own short format.
 How class icons on friend rows look.
 How close (in UI pixels) an edge must come before it snaps.
+How dark the AFK screen covers the game.
 How dark the cooldown swipe is.
 How dark the screen gets behind the movers.
 How each ID line is labelled.
+How early (milliseconds) a spell can be queued before the current cast or global cooldown ends. 0 leaves the game's own value; Phoenix restores your old value when set back to 0.
 How enemy forces are written.
 How faded an out-of-range enemy is.
 How faded app-only friends are on Blizzard's list while hidden.
@@ -2044,6 +2060,7 @@ Icons per row.
 If you are fighting when the countdown ends, it waits until you are out of combat.
 If your character shares a name with an addon or a system word, it stays visible inside file paths in reports. Addon folder names and client words are already on this list.
 Ignore my own lines
+Ignored rares and treasures
 Important aura border colour
 Important cast glow colour
 Important or purgeable buffs, right of the plate.
@@ -2207,6 +2224,7 @@ Length of a pull countdown started from the bar or /pui pull without a number.
 Lets the game mark the dispel type on private auras.
 Lets the tooltip and nameplate forces texts show how much each enemy is worth.
 Level up banner
+Level, class, item level, gold, Mythic+ rating and guild on the AFK screen.
 Like the default pet bar: right-click switches the ability's autocast on or off.
 Line after each pull
 Line cap in big pulls
@@ -2369,6 +2387,7 @@ Nameplates
 Names
 Names longer than the limit become their initials (Shadow Word: Pain -> SWP).
 Names of the NPC colour packs to add after your own rules (your own lines always win).
+Names that never alert (one per line, as shown in the alert).
 Names your oldest application on the panel and highlights its row.
 Neutral colour
 Never collect
@@ -2853,6 +2872,7 @@ Plays a sound when your threat on your target reaches this share and you are not
 Plays a sound with the announcement.
 Plays a warning when the +3, +2 or +1 time runs out.
 Plays an extra ready-check sound when the invite appears.
+Plays the alert sound (Theme & Media) for a rare or treasure.
 Plays this sound with the line (at most once every 0.3 s per row).
 Pointing at any bar that fades until mouse-over shows every such bar at once.
 Pop-up dialog
@@ -2881,6 +2901,7 @@ Prints a short line each time the layer key turns the layer on.
 Prints kill or wipe, time and the compare with your best after every boss pull (only you see it).
 Prints one line naming the profile after a specialization switch.
 Prints one line with a link that opens the viewer.
+Prints the rare or treasure name in chat.
 Prints the roles you signed up with, with icons, after a role check.
 Private aura countdown numbers
 Private aura dispel type
@@ -3028,6 +3049,7 @@ Raises the sound-effects volume during the cast so the bobber splash is easy to 
 Range check speed
 Range spell ID
 Rank numbers
+Rare alerts
 Rated battlegrounds: Damage at least
 Rated battlegrounds: Damage at most
 Rated battlegrounds: Friends or guild inside
@@ -3184,6 +3206,7 @@ Score in tooltips
 Score that gets the end colour; higher scores keep it.
 Scoreboard columns
 Scrapping
+Screen darkness
 Screenshot on achievement
 Scroll bars
 Scroll over stacked movers to pick the one underneath.
@@ -3463,6 +3486,7 @@ Shows whether your enemy forces are ahead of or behind an even pace for +1, +2 a
 Shows which roles the group still needs.
 Shows who pinged the minimap for a few seconds.
 Shows your /way waypoint at the top; click it to clear.
+Shows your character on the AFK screen.
 Shows your combo points, holy power, chi and similar under your target's plate. Needs the Resource Bars add-on loaded (it does not have to be switched on).
 Shows your damage in Spark.
 Shows your frame even when you are not in a group.
@@ -3519,6 +3543,7 @@ Size of the raid marker icon.
 Size of the raid tools bar.
 Size of the rated card.
 Size of the trinket and racial icons.
+Size of the waypoint arrow.
 Size of this settings window. Independent of your UI scale.
 Size of tooltips.
 Size of totem and pet plates compared with a normal plate.
@@ -3623,6 +3648,7 @@ Spell icons
 Spell name
 Spell name on the cast bar.
 Spell name size
+Spell queue window
 Spell ranks (Forever)
 Spell used to check range. Empty uses a ranged spell of your class.
 Spellbook and talents
@@ -3865,6 +3891,7 @@ The spell whose range is checked. 0 uses your interrupt.
 The stance bar stays faded until you point at it.
 The strip stops moving while you point at it.
 The vehicle exit button stays faded until you point at it.
+The waypoint clears itself when you are this many yards from it.
 Theme
 Theme accent or your class colour.
 There is no combat log in Midnight: Spark works out your hits from your own casts.
@@ -3942,6 +3969,7 @@ Trainer
 Training Grounds buttons
 Trait trees (Delves, Skyriding)
 Transmog
+Treasure alerts
 Trigger list
 Triggers
 Trims the icon edges.
@@ -3951,6 +3979,7 @@ Turn off Blizzard's combat notifications
 Turn off Blizzard's incoming combat text
 Turn off Blizzard's outgoing combat text
 Turn on the client's taint log until logout so blocked actions can be traced.
+Turn the model
 Turns /combatlog on in the content types ticked below and off elsewhere (only a log Flow started). Raids and Mythic+ are ticked to start with.
 Turns :name: codes such as :star: or :tank: into icons, with suggestions while you type.
 Turns auto item bar 1 on. It fills itself with the categories ticked for it.
@@ -4011,6 +4040,9 @@ Warn once on many new errors
 Warning level for the low durability warning.
 Warns once when any item drops to the threshold.
 Warrior colour
+Waypoint arrival distance
+Waypoint arrow
+Waypoint arrow size
 Waypoint line
 Waypoints (/way): when another addon does this
 WeakAuras options
@@ -4274,6 +4306,7 @@ XP / reputation bar
 Yellow below (seconds)
 You and each party member get your own frame that you can move anywhere in Studio, instead of one row. Sorting by role does not apply while this is on.
 Your character name is replaced by [player] as a whole word, and GUIDs keep only their kind, before anything is shared or uploaded.
+Your character turns slowly while you are away.
 Your damage
 Your damage: area
 Your damage: colour
