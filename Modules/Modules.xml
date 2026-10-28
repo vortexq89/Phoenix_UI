@@ -34,6 +34,7 @@
     <Script file="Skins\Gossip.lua"/>
     <Script file="Skins\Trade.lua"/>
     <Script file="Skins\Settings.lua"/>
+    <Script file="Skins\Housing.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>
     <Script file="ActionBars\Buttons.lua"/>
     <Script file="ActionBars\Bars.lua"/>

@@ -2382,6 +2382,13 @@ try("settings phase 4 skin", function()
     S:SkinSettings(); S.db.settings = false; S:Refresh(); S.db.settings = true; S:Refresh()
     env.SettingsPanel, env.EditModeManagerFrame = nil, nil
 end)
+try("housing phase 4 skin", function()
+    local S = ns.modules.Skins
+    local f = CreateFrame("Frame", "HousingDashboardFrame", UIParent)
+    env.HousingDashboardFrame = f
+    S:SkinHousing(); S.db.housing = false; S:Refresh(); S.db.housing = true; S:Refresh()
+    env.HousingDashboardFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
