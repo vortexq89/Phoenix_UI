@@ -10,3 +10,6 @@ Child addon `Phoenix_UI_ResourceBars`, module `ResourceBars`, off by default. On
 
 ## Not in this phase (reported)
 Swing timer (Forever) - needs a swing event source that is not verified on 1.60.1; thresholds with talent gates; spender/buff colouring; aura-based resources (soul fragments, maelstrom weapon, tip of the spear, icicles) that need hidden one-slot aura containers; warrior charges.
+
+## Step 6 (feat/bars)
+Cast bar on `PUI.CastBar` (`RB.castBar`, style from `rb.cast.icon|iconSide|spellName|timer|fadeOut|castColor|channelColor`, no kick marker); `rb.health.text`, `rb.power.text`, `rb.power.color`; `rb.matchHostWidth` beside `uf.player.resources` (attach / keep separate, owned by Unit Frames); `core.coexist.resourcebars`.

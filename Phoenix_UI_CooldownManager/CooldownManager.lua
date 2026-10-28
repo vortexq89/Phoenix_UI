@@ -7,11 +7,24 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- secret values never pass through Phoenix. A viewer Phoenix does not claim is
 -- left to Blizzard. Presets (Minimal / Standard / Everything) and a
 -- CDM-only share string (!PUI_CDM) cover Simple mode. Off by default.
+-- Step 6 (plan 5.5, 13.6, mockup 05):
+--   * restyle: icon zoom, border (textures kept in a weak side table, never
+--     as fields on Blizzard frames), cooldown numbers on/off and size;
+--   * layouts: right / left / centred rows; every layout key can be set per
+--     specialization (overrides);
+--   * "on your bars" dedupe: a cooldown already on a Phoenix action bar can
+--     be left out of the rows (alpha 0, never Hide/SetParent, G4);
+--   * "missing from my bars": tracked cooldowns not on any bar, listed after
+--     a talent or spec change and with /pui cdm missing;
+--   * tracked buffs feed the Player Aura Bars dedupe (TrackedBuffSpellIDs);
+--   * a display-only custom bar for the shared item list (PUI.ItemList; the
+--     clickable item bar belongs to Action Bars).
 local _, ns = ...
-local Schema, Layout, Slash = PUI.Schema, PUI.Layout, PUI.Slash
+local Schema, Layout, Slash, Secret = PUI.Schema, PUI.Layout, PUI.Slash, PUI.Secret
 local OWNER = "CooldownManager"
 
-local CDM = { active = false, hooked = {}, anchors = {} }
+local CDM = { active = false, hooked = {}, anchors = {}, skins = setmetatable({}, { __mode = "k" }),
+  hidden = setmetatable({}, { __mode = "k" }), custom = {} }
 ns.CDM = CDM
 PUI.CooldownManager = CDM
 
@@ -34,6 +47,11 @@ local BAR_HEIGHT = 20
 local cfg = {}
 CDM.cfg = cfg
 for v, d in pairs(VIEWERS) do cfg[v] = { enabled = true, size = d.size, perRow = d.perRow, spacing = 2, growth = "right" } end
+local look = { zoom = 0.08, border = 1, borderColor = { r = 0, g = 0, b = 0, a = 1 }, cdText = true, cdTextSize = 14,
+  hideOnBars = false, missingNotice = true }
+CDM.look = look
+local custom = { on = false, size = 32, perRow = 8, spacing = 2 }
+CDM.customCfg = custom
 
 local function anchor(v)
   local a = CDM.anchors[v]
@@ -45,23 +63,105 @@ local function anchor(v)
   return a
 end
 
--- Item frames of a viewer in Blizzard's order (layoutIndex is a plain number).
-function CDM.Items(viewer)
+-- Spell shown by a viewer item (plain data from the cooldown info; a secret
+-- value is treated as unknown and never compared).
+function CDM.SpellOf(f)
+  local id
+  local info = f.GetCooldownInfo and f:GetCooldownInfo()
+  if type(info) == "table" then id = info.overrideSpellID or info.spellID end
+  if id == nil and f.GetSpellID then id = f:GetSpellID() end
+  if Secret.IsSecret(id) or type(id) ~= "number" then return nil end
+  return id
+end
+
+-- True when a spell sits on a shown action slot (a live Phoenix button when
+-- Phoenix bars are on, any slot otherwise).
+function CDM.OnBars(spell)
+  local slots = C_ActionBar.FindSpellActionButtons(spell)
+  if not slots or #slots == 0 then return false end
+  local AB = PUI.ActionBars
+  if not (AB and AB.active) then return true end
+  for _, slot in ipairs(slots) do
+    local set = AB.Buttons.bySlot[slot]
+    if set then for b in pairs(set) do if b.live then return true end end end
+  end
+  return false
+end
+
+-- Item frames of a viewer in Blizzard's order (layoutIndex is a plain number),
+-- without the ones the "on your bars" dedupe leaves out.
+function CDM.Items(viewer, all)
   local items = viewer:GetItemFrames()
   if type(items) ~= "table" then return {} end
   local list = {}
-  for _, f in ipairs(items) do list[#list + 1] = f end
+  local dedupe = look.hideOnBars and not all and (viewer == _G.EssentialCooldownViewer or viewer == _G.UtilityCooldownViewer)
+  for _, f in ipairs(items) do
+    local spell = dedupe and CDM.SpellOf(f)
+    if spell and CDM.OnBars(spell) then
+      CDM.hidden[f] = true
+      f:SetAlpha(0)
+    else
+      if CDM.hidden[f] then CDM.hidden[f] = nil; f:SetAlpha(1) end
+      list[#list + 1] = f
+    end
+  end
   table.sort(list, function(a, b) return (a.layoutIndex or 0) < (b.layoutIndex or 0) end)
   return list
 end
 
+-- Restyle one item: zoom, border and cooldown numbers.
+function CDM.Skin(f, bars)
+  if bars then return end
+  local icon = f.Icon
+  if type(icon) == "table" and icon.SetTexCoord then
+    local z = look.zoom
+    icon:SetTexCoord(z, 1 - z, z, 1 - z)
+  end
+  local sk = CDM.skins[f]
+  if not sk then
+    sk = {}
+    for i = 1, 4 do sk[i] = f:CreateTexture(nil, "OVERLAY", nil, 7) end
+    CDM.skins[f] = sk
+  end
+  local px, c = look.border, look.borderColor
+  local w = math.max(px, 0.01)
+  sk[1]:ClearAllPoints(); sk[1]:SetPoint("TOPLEFT"); sk[1]:SetPoint("TOPRIGHT"); sk[1]:SetHeight(w)
+  sk[2]:ClearAllPoints(); sk[2]:SetPoint("BOTTOMLEFT"); sk[2]:SetPoint("BOTTOMRIGHT"); sk[2]:SetHeight(w)
+  sk[3]:ClearAllPoints(); sk[3]:SetPoint("TOPLEFT"); sk[3]:SetPoint("BOTTOMLEFT"); sk[3]:SetWidth(w)
+  sk[4]:ClearAllPoints(); sk[4]:SetPoint("TOPRIGHT"); sk[4]:SetPoint("BOTTOMRIGHT"); sk[4]:SetWidth(w)
+  for i = 1, 4 do sk[i]:SetColorTexture(c.r, c.g, c.b, c.a or 1); sk[i]:SetShown(px > 0) end
+  local cd = f.Cooldown
+  if type(cd) == "table" and cd.SetHideCountdownNumbers then
+    cd:SetHideCountdownNumbers(not look.cdText)
+    local fs = cd.GetCountdownFontString and cd:GetCountdownFontString()
+    if type(fs) == "table" and fs.GetFont then
+      local path, _, flags = fs:GetFont()
+      if path then fs:SetFont(path, look.cdTextSize, flags) end
+    end
+  end
+end
+
+-- Unskin: borders hidden, zoom reset (Blizzard redraws the rest on its pass).
+function CDM.Unskin()
+  for f, sk in pairs(CDM.skins) do
+    for i = 1, 4 do sk[i]:Hide() end
+    if type(f.Icon) == "table" and f.Icon.SetTexCoord then f.Icon:SetTexCoord(0, 1, 0, 1) end
+  end
+  for f in pairs(CDM.hidden) do f:SetAlpha(1); CDM.hidden[f] = nil end
+end
+
 -- Grid position of item i (1-based) for a viewer config.
-function CDM.Offset(c, i, bars)
+function CDM.Offset(c, i, bars, n)
   local w = c.size
   local h = bars and BAR_HEIGHT or c.size
   local col, row = (i - 1) % c.perRow, math.floor((i - 1) / c.perRow)
   local x = col * (w + c.spacing)
   if c.growth == "left" then x = -x end
+  if c.growth == "center" and n then
+    -- each row is centred on the anchor (the last row may be shorter)
+    local inRow = math.min(c.perRow, n - row * c.perRow)
+    x = x - (inRow * (w + c.spacing) - c.spacing) / 2
+  end
   return x, -(row * (h + c.spacing))
 end
 
@@ -70,16 +170,116 @@ function CDM.Place(v)
   local viewer = _G[VIEWERS[v].global]
   if not viewer then return end
   local c, bars, a = cfg[v], VIEWERS[v].bars, anchor(v)
-  local point = c.growth == "left" and "TOPRIGHT" or "TOPLEFT"
-  for i, f in ipairs(CDM.Items(viewer)) do
-    local x, y = CDM.Offset(c, i, bars)
+  local point = c.growth == "left" and "TOPRIGHT" or c.growth == "center" and "TOP" or "TOPLEFT"
+  local items = CDM.Items(viewer)
+  for i, f in ipairs(items) do
+    local x, y = CDM.Offset(c, i, bars, #items)
     f:ClearAllPoints()
-    f:SetPoint(point, a, point, x, y)
+    f:SetPoint(point, a, point, math.floor(x + 0.5), y)
     f:SetSize(c.size, bars and BAR_HEIGHT or c.size)
+    CDM.Skin(f, bars)
   end
-  local cols = math.min(c.perRow, math.max(1, #CDM.Items(viewer)))
+  local cols = math.min(c.perRow, math.max(1, #items))
   a:SetSize(cols * (c.size + c.spacing), bars and BAR_HEIGHT or c.size)
+  if v == "buffIcon" or v == "buffBar" then CDM.TrackedChanged() end
 end
+
+-- Spell IDs the tracked buff icons and bars show (Player Aura Bars dedupe).
+function CDM.TrackedBuffSpellIDs()
+  local out = {}
+  if not CDM.active then return out end
+  for _, v in ipairs({ "buffIcon", "buffBar" }) do
+    local viewer = _G[VIEWERS[v].global]
+    if viewer then
+      for _, f in ipairs(CDM.Items(viewer, true)) do
+        local id = CDM.SpellOf(f)
+        if id then out[#out + 1] = id end
+      end
+    end
+  end
+  table.sort(out)
+  return out
+end
+
+function CDM.TrackedChanged()
+  local sig = table.concat(CDM.TrackedBuffSpellIDs(), ",")
+  if sig == CDM.trackedSig then return end
+  CDM.trackedSig = sig
+  PUI.Kernel:Fire("CDM_TRACKED_CHANGED")
+end
+
+-- Tracked cooldowns (essential + utility) that are on no action bar.
+function CDM.MissingFromBars()
+  local out = {}
+  for _, v in ipairs({ "essential", "utility" }) do
+    local viewer = _G[VIEWERS[v].global]
+    if viewer then
+      for _, f in ipairs(CDM.Items(viewer, true)) do
+        local id = CDM.SpellOf(f)
+        if id and not CDM.OnBars(id) then out[#out + 1] = id end
+      end
+    end
+  end
+  return out
+end
+
+function CDM.ReportMissing(force)
+  local list = CDM.MissingFromBars()
+  if #list == 0 then
+    if force then Slash.Print("every tracked cooldown is on your bars") end
+    return list
+  end
+  local names = {}
+  for _, id in ipairs(list) do names[#names + 1] = C_Spell.GetSpellName(id) or tostring(id) end
+  Slash.Print("missing from your bars: " .. table.concat(names, ", ") .. " (drag them to a bar, or turn this notice off in Cooldown Manager)")
+  return list
+end
+
+-- Custom bar (display only): icons for the shared item list.
+function CDM.Custom()
+  local frame = CDM.customFrame
+  if not (CDM.active and custom.on) then
+    if frame then frame:Hide() end
+    return
+  end
+  if not frame then
+    frame = PUI:CreateFrame("Frame", "PhoenixUI_CDM_custom", UIParent, nil, OWNER)
+    CDM.customFrame = frame
+  end
+  local list = PUI.ItemList:Items()
+  for i, e in ipairs(list) do
+    local b = CDM.custom[i]
+    if not b then
+      b = PUI:CreateFrame("Frame", nil, frame, nil, OWNER)
+      b.icon = b:CreateTexture(nil, "ARTWORK")
+      b.icon:SetAllPoints()
+      b.cd = PUI:CreateFrame("Cooldown", nil, b, "CooldownFrameTemplate", OWNER)
+      b.cd:SetAllPoints()
+      b.count = b:CreateFontString(nil, "OVERLAY")
+      b.count:SetFontObject(PUI.Media:FontObject("number"))
+      b.count:SetPoint("BOTTOMRIGHT", -2, 2)
+      CDM.custom[i] = b
+      CDM.Skin(b, false)
+    end
+    b.Icon, b.Cooldown = b.icon, b.cd
+    local x, y = CDM.Offset(custom, i, false)
+    b:ClearAllPoints()
+    b:SetPoint("TOPLEFT", frame, "TOPLEFT", x, y)
+    b:SetSize(custom.size, custom.size)
+    b.icon:SetTexture(PUI.ItemList.Icon(e))
+    b.count:SetText(PUI.ItemList.Count(e))
+    PUI.ItemList.ApplyCooldown(b.cd, e)
+    CDM.Skin(b, false)
+    b:Show()
+  end
+  for i = #list + 1, #CDM.custom do CDM.custom[i]:Hide() end
+  local cols = math.min(custom.perRow, math.max(1, #list))
+  local rows = math.max(1, math.ceil(#list / custom.perRow))
+  frame:SetSize(cols * (custom.size + custom.spacing), rows * (custom.size + custom.spacing))
+  Layout:Place(frame, "cdm.custom")
+  frame:Show()
+end
+PUI.ItemList:OnChange("cdm.custom", function() CDM.Custom() end)
 
 local function hook(v)
   if CDM.hooked[v] then return end
@@ -97,6 +297,7 @@ function CDM.Refresh(v)
     Layout:Place(anchor(k), "cdm." .. k)
     if cfg[k].enabled then hook(k); CDM.Place(k) end
   end
+  if not v then CDM.Custom() end
 end
 
 -- Share string: "!PUI_CDM" + base64(compressed "key=value" lines of cdm.* keys).
@@ -104,7 +305,8 @@ CDM.PREFIX = "!PUI_CDM"
 function CDM.Export()
   local lines = {}
   for _, key in ipairs(Schema.keys) do
-    if key:find("^cdm%.") then lines[#lines + 1] = key .. "=" .. tostring(Schema:Get(key)) end
+    local def = Schema:Def(key)
+    if key:find("^cdm%.") and not Schema.TABLE_TYPES[def.type] then lines[#lines + 1] = key .. "=" .. tostring(Schema:Get(key)) end
   end
   return CDM.PREFIX .. C_EncodingUtil.EncodeBase64(C_EncodingUtil.CompressString(table.concat(lines, "\n")))
 end
@@ -133,22 +335,35 @@ Slash:Register("cdm", function(rest)
   local cmd, arg = (rest or ""):match("^(%S*)%s*(.*)$")
   if cmd == "export" then
     Slash.Print(CDM.Export())
+  elseif cmd == "missing" then
+    CDM.ReportMissing(true)
   elseif cmd == "import" then
     local n, why = CDM.Import(arg)
     Slash.Print(n and ("imported " .. n .. " cooldown manager settings") or ("not imported: " .. why))
   else
-    Slash.Print("usage: /pui cdm export | /pui cdm import <!PUI_CDM string>")
+    Slash.Print("usage: /pui cdm export | import <!PUI_CDM string> | missing")
   end
-end, "export | import <string>: share cooldown manager settings")
+end, "export | import <string> | missing: share settings, list tracked cooldowns missing from your bars")
 
 -- Lifecycle ---------------------------------------------------------------------
-local function onEnable()
+local function onEnable(mod)
   CDM.active = true
   CDM.Refresh()
+  local talents = function()
+    if not look.missingNotice then return end
+    C_Timer.After(1.5, function() if CDM.active and look.missingNotice then CDM.ReportMissing(false) end end)
+  end
+  mod:RegisterEvent("TRAIT_CONFIG_UPDATED", talents)
+  mod:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", talents)
+  mod:RegisterEvent("ACTIONBAR_SLOT_CHANGED", function() if look.hideOnBars then CDM.Refresh("essential"); CDM.Refresh("utility") end end)
+  mod:RegisterEvent("BAG_UPDATE_COOLDOWN", function() if custom.on then CDM.Custom() end end)
 end
 
 local function onDisable()
   CDM.active = false
+  CDM.Unskin()
+  if CDM.customFrame then CDM.customFrame:Hide() end
+  CDM.TrackedChanged()
   -- Blizzard lays its frames out again on its next pass; ask for one now.
   for _, v in ipairs(ORDER) do
     local viewer = _G[VIEWERS[v].global]
@@ -177,21 +392,70 @@ for _, v in ipairs(ORDER) do
   key(v .. ".enabled", { type = "toggle", default = true, label = d.label .. ": Phoenix layout",
     tooltip = "Phoenix positions the game's " .. d.label:lower() .. " in its own rows; off leaves them to the game.", mode = "simple" },
     function(value) cfg[v].enabled = value end, v)
+  schema["cdm." .. v .. ".enabled"].overridable = true
   key(v .. ".size", { type = "range", default = d.size, min = d.bars and 80 or 16, max = d.bars and 400 or 80, step = 1,
-    label = d.label .. (d.bars and ": width" or ": icon size"), tooltip = "Size of each " .. (d.bars and "bar" or "icon") .. ".", mode = "advanced" },
+    label = d.label .. (d.bars and ": width" or ": icon size"), tooltip = "Size of each " .. (d.bars and "bar" or "icon") .. ".", mode = d.bars and "advanced" or "simple", overridable = true },
     function(value) cfg[v].size = value end, v)
   key(v .. ".perRow", { type = "range", default = d.perRow, min = 1, max = 20, step = 1, label = d.label .. ": per row",
-    tooltip = "How many fit in one row before wrapping (overflow goes to the next row).", mode = "advanced" },
+    tooltip = "How many fit in one row before wrapping (overflow goes to the next row).", mode = "advanced", overridable = true },
     function(value) cfg[v].perRow = value end, v)
   key(v .. ".spacing", { type = "range", default = 2, min = 0, max = 20, step = 1, label = d.label .. ": spacing",
-    tooltip = "Gap between items.", mode = "advanced" }, function(value) cfg[v].spacing = value end, v)
-  key(v .. ".growth", { type = "select", default = "right", choices = { "right", "left" }, label = d.label .. ": growth",
-    tooltip = "Rows grow to the right or to the left of the anchor.", mode = "advanced" }, function(value) cfg[v].growth = value end, v)
+    tooltip = "Gap between items.", mode = "advanced", overridable = true }, function(value) cfg[v].spacing = value end, v)
+  key(v .. ".growth", { type = "select", default = "right", choices = { "right", "left", "center" },
+    choiceLabels = { right = "From the left edge", left = "From the right edge", center = "Centred" }, label = d.label .. ": growth",
+    tooltip = "Rows start at the anchor's left edge, its right edge, or are centred on it.", mode = "advanced", overridable = true },
+    function(value) cfg[v].growth = value end, v)
   Layout:RegisterElement("cdm." .. v, { label = d.label, owner = OWNER, size = { d.size, d.bars and BAR_HEIGHT or d.size },
     default = { point = d.pos[1], x = d.pos[2], y = d.pos[3] } })
 end
 
+local function lookKey(name, def, set)
+  def.owner = OWNER
+  def.apply = function(value) set(value); CDM.Refresh() end
+  schema["cdm." .. name] = def
+end
+lookKey("zoom", { type = "range", default = 0.08, min = 0, max = 0.2, step = 0.01, label = "Cooldown icon zoom",
+  tooltip = "Crops the icon edge so the artwork fills the square.", mode = "advanced" }, function(v) look.zoom = v end)
+lookKey("border", { type = "range", default = 1, min = 0, max = 4, step = 1, label = "Cooldown icon border",
+  tooltip = "Border thickness in pixels (0 hides it).", mode = "simple" }, function(v) look.border = v end)
+lookKey("borderColor", { type = "color", default = { r = 0, g = 0, b = 0, a = 1 }, label = "Cooldown icon border colour",
+  tooltip = "Colour of the icon border.", mode = "advanced" }, function(v) look.borderColor = v end)
+lookKey("cdText", { type = "toggle", default = true, label = "Cooldown numbers on icons",
+  tooltip = "Shows the time left as numbers on each cooldown icon (the game's own countdown).", mode = "simple" },
+  function(v) look.cdText = v end)
+lookKey("cdTextSize", { type = "range", default = 14, min = 8, max = 32, step = 1, label = "Cooldown number size",
+  tooltip = "Font size of the cooldown numbers on icons.", mode = "advanced" }, function(v) look.cdTextSize = v end)
+lookKey("hideOnBars", { type = "toggle", default = false, label = "Leave out cooldowns already on your bars",
+  tooltip = "An essential or utility cooldown that is on one of your shown action bars is left out of these rows, so it appears once.",
+  mode = "simple", overridable = true, searchTags = { "duplicate", "dedupe", "action bars" } }, function(v) look.hideOnBars = v end)
+lookKey("missingNotice", { type = "toggle", default = true, label = "Tell me what is missing from my bars",
+  tooltip = "After a talent or specialization change, lists tracked cooldowns that are on none of your action bars.",
+  mode = "advanced", searchTags = { "missing", "talents" } }, function(v) look.missingNotice = v end)
+local function customKey(name, def, set)
+  def.owner = OWNER
+  def.apply = function(value) set(value); CDM.Custom() end
+  schema["cdm.custom." .. name] = def
+end
+customKey("enabled", { type = "toggle", default = false, label = "Custom bar: item cooldowns",
+  tooltip = "Shows the items from the shared item list (potions, healthstones, on-use trinkets) with their cooldowns. Display only: the clickable item bar is part of Action Bars.",
+  mode = "simple", searchTags = { "potion", "trinket", "items" } }, function(v) custom.on = v end)
+customKey("size", { type = "range", default = 32, min = 16, max = 80, step = 1, label = "Custom bar: icon size",
+  tooltip = "Size of each custom bar icon.", mode = "advanced", overridable = true }, function(v) custom.size = v end)
+customKey("perRow", { type = "range", default = 8, min = 1, max = 20, step = 1, label = "Custom bar: per row",
+  tooltip = "Icons per row on the custom bar.", mode = "advanced" }, function(v) custom.perRow = v end)
+customKey("spacing", { type = "range", default = 2, min = 0, max = 20, step = 1, label = "Custom bar: spacing",
+  tooltip = "Gap between custom bar icons.", mode = "advanced" }, function(v) custom.spacing = v end)
+Layout:RegisterElement("cdm.custom", { label = "Custom cooldown bar", owner = OWNER, size = { 8 * 34, 32 },
+  default = { point = "CENTER", x = -260, y = -215 } })
+
+local Coexist = PUI.Coexist
+local ckey, cdef = Coexist:Define("cooldownmanager", { module = OWNER, job = "Cooldown manager",
+  addons = { "EllesmereUICooldownManager", "BetterCooldownManager", "CooldownManagerCentered" } })
+cdef.owner = OWNER
+schema[ckey] = cdef
+
 CDM.module = PUI:RegisterModule(OWNER, {
+  loadCondition = function() return Coexist:Allows("cooldownmanager") end,
   label = "Cooldown manager",
   tooltip = "Lays out the game's Cooldown Viewer icons and bars in Phoenix rows (the game still draws every cooldown).",
   enabledByDefault = false,
@@ -199,4 +463,4 @@ CDM.module = PUI:RegisterModule(OWNER, {
   onEnable = onEnable,
   onDisable = onDisable,
 })
-for k, def in pairs(schema) do if k ~= "cdm.preset" then def.apply(Schema:Get(k)) end end
+for k, def in pairs(schema) do if k ~= "cdm.preset" and k ~= ckey then def.apply(Schema:Get(k)) end end
