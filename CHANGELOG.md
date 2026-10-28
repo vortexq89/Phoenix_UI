@@ -4,6 +4,11 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### Teleports, paragon and focus key, branch feat/qol-a
+- Auto item bars: "Mythic+ teleports" category (retail; Hero's Path spells you know, optional current-season-only filter from C_ChallengeMode.GetMapTable) and "Hearthstones" category (hearthstone items, plus owned hearthstone toys on retail as secure toy buttons). Bar 5 has both ticked (bar 5 stays off by default).
+- Data Bars: paragon progress on the XP/reputation bar and the reputation block for factions past their maximum (a + marks a reward chest waiting); toggle, on by default.
+- Focus key: modifier (off/Shift/Ctrl/Alt) + mouse button click on Phoenix unit frames sets focus through the secure "focus" action; optional on party/raid frames; applied out of combat. Nameplates are game-owned protected frames and are not changed.
+
 ### Loot rolls, branch feat/loot-roll
 - New "Loot rolls" module (on by default, Social & Chat group): a compact movable list replacing the game's group loot roll frames: icon, item level, quality-coloured name, draining timer bar (one Ticker entry only while a roll is open), Need / Greed / Transmog / Pass buttons shown only when allowed (RollOnLoot), item tooltip; option to keep Blizzard's frames, width, height, grow upwards; live preview; /pui loottest.
 

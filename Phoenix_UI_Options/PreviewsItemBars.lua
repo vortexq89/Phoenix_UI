@@ -19,7 +19,7 @@ local function get(key, fallback)
 end
 
 local function sampleIcon(cat)
-  if cat == "brez" then return C_Spell.GetSpellTexture(D.SAMPLE.brez) end
+  if cat == "brez" or cat == "teleport" then return C_Spell.GetSpellTexture(D.SAMPLE[cat]) end
   return C_Item.GetItemIconByID(D.SAMPLE[cat])
 end
 

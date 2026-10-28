@@ -176,6 +176,7 @@ Also prints the rating change in your chat window after each rated match.
 Also shows a dot for each boss targeting this member.
 Also shows the addons listed in Blizzard's addon compartment as buttons in the bin.
 Also track your own cooldowns.
+Also use the focus key on Phoenix party and raid frames (leave off if click casting uses that key).
 Alt+click Phoenix UI in the minimap addon menu to show or clear the Cast History test strip.
 Alt+click in the addon menu
 Alternate power bar
@@ -339,6 +340,8 @@ Auto item bar 5 stays faded until you point at it.
 Auto item bar 5: where to show
 Auto item bars: battle res charges
 Auto item bars: custom items
+Auto item bars: hearthstone toys
+Auto item bars: this season's teleports only
 Auto item bars: what each bar shows
 Auto release
 Auto repair
@@ -1548,6 +1551,9 @@ Focus frame
 Focus height
 Focus hide lockout debuffs
 Focus highlight
+Focus key
+Focus key mouse button
+Focus key on party and raid frames
 Focus kick bar
 Focus letter
 Focus opacity when hidden
@@ -1628,6 +1634,7 @@ Font size of the blocks.
 Font size of the cooldown numbers on icons.
 Font size of the health text. 0 uses the font setting.
 Font size of the keybind text.
+For a reputation past its maximum, the bar and the reputation block show paragon progress toward the next reward chest (a + marks a chest waiting).
 For achievements
 For level ups
 For raid groups, shows how many of that raid's bosses you have already killed this week at that difficulty.
@@ -1909,6 +1916,7 @@ Hits you avoid (dodge, parry, absorb...): colour
 Hits you avoid (dodge, parry, absorb...): message
 Hits you avoid (dodge, parry, absorb...): sound
 Hold Ctrl and scroll over a window title to scale it.
+Hold this key and click a Phoenix unit frame to make that unit your focus.
 Hold this key to read a quest instead of auto accepting or turning it in.
 Hold: the layer is on only while the key is down. Toggle: press once for on, again for off.
 Holy power
@@ -2552,6 +2560,7 @@ Panel padding
 Panel position
 Panel scale
 Panel style behind every chat window except the voice transcription window.
+Paragon progress
 Party (5): arrangement
 Party (5): frame height
 Party (5): frame width
@@ -3804,6 +3813,8 @@ Texture for every Phoenix health, power, cast and resource bar.
 Texture of the tracked buff bars.
 The All tab also searches players you grouped with recently.
 The All tab also searches your guild.
+The Hearthstones category also shows the hearthstone toys you own (retail).
+The Mythic+ teleports category shows only the dungeons in the current Mythic+ season (otherwise every teleport you know).
 The PvP trinket shows the Horde or Alliance medal.
 The action page bar 1 shows while its paging modifier is held.
 The action page bar 10 shows while its paging modifier is held.
@@ -4113,6 +4124,7 @@ Which corner of the conquest frame the panel sits in.
 Which debuffs are shown.
 Which errors the viewer lists first.
 Which minimap corner the Phoenix buttons start from.
+Which mouse button sets focus together with the focus key.
 Which of your runs boss splits are compared with.
 Which scroll area shows it.
 Which session the viewer shows first.
