@@ -1990,6 +1990,23 @@ try("encounter ability rules", function()
     E.db.timeline.rules = ""
     local w, n = E:ShowSeenAbilities(); assert(w and n >= 2, "seen abilities not listed"); w:Hide()
 end)
+-- Game Menu skin (plan window 1): glyph map from the game's strings, rows dressed with hover in the accent
+try("game menu skin", function()
+    local S = ns.modules.Skins
+    _G.LOG_OUT, _G.MACROS = _G.LOG_OUT or "Log Out", _G.MACROS or "Macros"
+    S.menuIcons = nil
+    assert(S.MenuIcon(_G.LOG_OUT) == "user" and S.MenuIcon(_G.MACROS) == "terminal", "menu glyphs")
+    assert(S.MenuIcon(ns.L.LAUNCHER_TITLE) == "skins" and S.MenuIcon("Something else") == nil and S.MenuIcon("") == nil,
+        "phoenix row and unknown rows")
+    local b = CreateFrame("Button", nil, UIParent)
+    b.GetText = function() return _G.LOG_OUT end
+    S.SkinMenuButton(b); S.SkinMenuButton(b)
+    S.PaintMenuRow(b)
+    local menu = CreateFrame("Frame", nil, UIParent)
+    menu.buttonPool = { EnumerateActive = function() local done; return function() if not done then done = true; return b end end end }
+    S:SkinGameMenu(menu)
+    ns.Events:Fire("PUI_THEME_CHANGED") -- live accent repaint reaches the rows
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

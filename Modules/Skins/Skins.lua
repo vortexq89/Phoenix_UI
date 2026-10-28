@@ -214,6 +214,7 @@ function M:OnEnable()
         local mv = moveByAddon[name]
         if mv then for _, f in ipairs(mv.frames) do M:HookMovable(f) end end
     end)
+    if self.SetupGameMenu then self:SetupGameMenu() end -- GameMenu.lua
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
     if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then
