@@ -2302,6 +2302,13 @@ try("transmog phase 3 skin", function()
     S:SkinTransmog(); S.db.transmog = false; S:Refresh(); S.db.transmog = true; S:Refresh()
     env.TransmogFrame = nil
 end)
+try("mail phase 3 skin", function()
+    local S = ns.modules.Skins
+    local f = CreateFrame("Frame", "MailFrame", UIParent)
+    env.MailFrame = f
+    S:SkinMail(); S.db.mail = false; S:Refresh(); S.db.mail = true; S:Refresh()
+    env.MailFrame = nil
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
