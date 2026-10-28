@@ -2250,6 +2250,8 @@ try("professions skin", function()
     pf.CraftingPage = { RecipeList = { ScrollBox = { ForEachFrame = function(_, fn) fn(row) end } },
         SchematicForm = CreateFrame("Frame", nil, pf), CreateButton = CreateFrame("Button", nil, pf) }
     env.ProfessionsFrame = pf
+    local node = CreateFrame("Button", nil, pf)
+    pf.SpecPage = { TreeView = { EnumerateAllTalentButtons = function() local d; return function() if not d then d = true; return node end end end } }
     S:SkinProfessions(); S.db.professions = false; S:Refresh(); S.db.professions = true; S:Refresh()
     env.ProfessionsFrame = nil
 end)
@@ -2266,6 +2268,8 @@ try("guild skin", function()
     local cf = CreateFrame("Frame", "CommunitiesFrame", UIParent)
     cf.CommunitiesList = { ScrollBox = { ForEachFrame = function(_, fn) fn(row) end } }
     cf.Chat = CreateFrame("Frame", nil, cf)
+    row.Icon = row:CreateTexture()
+    S.AvatarRing(row, true); S.AvatarRing(row, false); S.AvatarRing({}, true)
     env.CommunitiesFrame = cf
     S:SkinGuild(); S.db.communities = false; S:Refresh(); S.db.communities = true; S:Refresh()
     env.CommunitiesFrame = nil
