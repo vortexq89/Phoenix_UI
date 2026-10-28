@@ -482,7 +482,7 @@ function UnitIsUnit(a, b) return maybe(a == b) end
 H.friendly = {}
 function UnitIsFriend(_, u) return maybe(H.friendly[u] == true) end
 C_QuestLog = { UnitIsRelatedToActiveQuest = function() return maybe(false) end }
-C_SpecializationInfo.GetSpecializationInfo = function() return 62, "Arcane", "", 0, H.role or "DAMAGER" end
+C_SpecializationInfo.GetSpecializationInfo = function() return H.specID or 62, "Arcane", "", 0, H.role or "DAMAGER" end
 C_SpecializationInfo.GetNumSpecializationsForClassID = function() return 3 end
 function UnitInRange() return maybe(true), maybe(true) end
 H.roles = {}
@@ -1133,6 +1133,57 @@ Enum.EditModeSystem = { ActionBar = 0 }
 H.inHouse = false
 C_Housing = rawget(_G, "C_Housing") or {}
 C_Housing.IsInsideHouse = function() return maybe(H.inHouse) end
+-- Deferred B: inspect, transmog, upgrade track, set pieces, achievement criteria.
+H.inspect = { can = {}, ilvl = {}, spec = {} }
+H.inspected = {}
+H.players = {}
+H.ttUnit = nil
+function NotifyInspect(u) H.inspected[#H.inspected + 1] = u end
+function CanInspect(u) return maybe(H.inspect.can[u] == true) end
+C_PaperDollInfo = rawget(_G, "C_PaperDollInfo") or {}
+C_PaperDollInfo.GetInspectItemLevel = function(u) return maybe(H.inspect.ilvl[u] or 0) end
+C_SpecializationInfo.GetInspectSpecialization = function(u) return maybe(H.inspect.spec[u] or 0) end
+H.specNames = { [71] = "Arms", [65] = "Holy" }
+function GetSpecializationInfoByID(id) return id, H.specNames[id] or ("Spec " .. tostring(id)) end
+local basePlayer = UnitIsPlayer
+function UnitIsPlayer(u) if H.players[u] then return maybe(true) end return basePlayer(u) end
+function Region:GetUnit() return "Tester", H.ttUnit or "player" end
+H.transmogHas = {}
+C_TransmogCollection.PlayerHasTransmogByItemInfo = function(r) return maybe(H.transmogHas[r] == true) end
+H.upgrade = {}
+C_Item.GetItemUpgradeInfo = function(link) return H.upgrade[link] end
+H.itemSet = {}
+local baseItemInfo = C_Item.GetItemInfo
+C_Item.GetItemInfo = function(id)
+  local t = { baseItemInfo(id) }
+  if H.itemSet[id] then t[16] = maybe(H.itemSet[id]) end
+  return unpack(t, 1, 16)
+end
+H.criteria = {}
+function GetAchievementNumCriteria(a) return #(H.criteria[a] or {}) end
+function GetAchievementCriteriaInfo(a, i)
+  local c = (H.criteria[a] or {})[i]
+  if not c then return nil end
+  return "Criteria " .. i, c.type or 0, false, 0, 0, "", c.flags or 0, c.asset or 0, "", c.id
+end
+CRITERIA_TYPE_ACHIEVEMENT = 8
+EVALUATION_TREE_FLAG_PROGRESS_BAR = 1
+bit = rawget(_G, "bit") or { band = function(a, b)
+  local r, p = 0, 1
+  while a > 0 and b > 0 do
+    if a % 2 == 1 and b % 2 == 1 then r = r + p end
+    a, b, p = math.floor(a / 2), math.floor(b / 2), p * 2
+  end
+  return r
+end }
+H.mailSenders = {}
+function GetLatestThreeSenders() return unpack(H.mailSenders) end
+H.professions = {}
+function GetProfessions() return H.professions[1], H.professions[2] end
+H.professionInfo = {}
+function GetProfessionInfo(p) local i = H.professionInfo[p]; if i then return i[1], "", i[2], i[3] end end
+H.bind = "Dornogal"
+function GetBindLocation() return H.bind end
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,
   AnchorUtil = true, RaiderIO = true, CustomAuraContainerTemplate = true }

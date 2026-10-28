@@ -205,12 +205,14 @@ function DB.PaintBar(b, list, c, sample)
 end
 
 local function onClick(bar, button)
-  if button ~= "LeftButton" or InCombatLockdown() then return end
+  if InCombatLockdown() then return end
   local x = select(1, GetCursorPosition()) / (bar:GetEffectiveScale() or 1) - (bar:GetLeft() or 0)
   local slots = DB.Solve(bar:GetWidth(), #bar.list)
   for j, slot in ipairs(slots) do
     if x >= slot.x and x < slot.x + slot.w then
       local blk = BLOCKS[bar.list[j].name]
+      if blk and blk.run then blk.run(bar.list[j].arg, bar, button); return end
+      if button ~= "LeftButton" then return end
       local fn = blk and blk.click and PUI.Minimap and PUI.Minimap.Resolve(blk.click)
       if type(fn) == "function" then if blk.clickArg then fn(blk.clickArg) else fn() end end
       return
@@ -224,7 +226,7 @@ local function bar(i)
   if b then return b end
   b = PUI:CreateFrame("Button", "PhoenixUI_DataBar" .. i, UIParent, nil, OWNER)
   Theme:Backdrop(b, "surface.1")
-  b:RegisterForClicks("LeftButtonUp")
+  b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   b:SetScript("OnClick", onClick)
   b:SetScript("OnEnter", function(self) if cfg[i].mouseover then self:SetAlpha(1) end end)
   b:SetScript("OnLeave", function(self) if cfg[i].mouseover then self:SetAlpha(0) end end)

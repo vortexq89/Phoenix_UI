@@ -257,3 +257,74 @@ Tests:Add("Options", "action bar, cooldown manager and resource bar previews fol
   Options:Open("ResourceBars")
   t:ok(Options.frame:IsShown(), "resource bars page renders")
 end)
+
+Tests:Add("Options", "batch A extras show in the action bar, cooldown manager and resource bar previews", function(t)
+  local AB, CDM, RB = PUI.ActionBars, PUI.CooldownManager, PUI.ResourceBars
+  if not (AB and AB.Extras and CDM and CDM.Extras and RB and RB.Extras) then return end
+  for _, k in ipairs({ "ab.micro.mode", "ab.cdColors", "cdm.glow.mode", "cdm.assist", "cdm.focusKick", "rb.cast.latency", "rb.power.thresholds", "rb.aura.enabled" }) do Tests.Keep(t, k) end
+  local card = CreateFrame("Frame")
+  local bag = Options.PreviewsExtras.Bag
+  Schema:Set("ab.micro.mode", "hide")
+  Schema:Set("ab.cdColors", true)
+  Options.Previews.ActionBars(card, "bar1")
+  t:ok(bag(card).abMicro:GetAlpha() < 0.2, "micro menu strip follows the mode")
+  t:ok(bag(card).abExtrasNote:GetText():find("hide", 1, true), "note names the mode")
+  Schema:Set("cdm.glow.mode", "proc"); Schema:Set("cdm.assist", true); Schema:Set("cdm.focusKick", true)
+  Options.Previews.CooldownManager(card)
+  t:eq(bag(card).cdmGlow:IsShown(), true, "glow sample")
+  t:eq(bag(card).cdmAssist:IsShown(), true, "assist icon sample")
+  t:eq(bag(card).cdmKick:IsShown(), true, "focus kick sample")
+  Schema:Set("cdm.glow.mode", "off")
+  Options.Previews.CooldownManager(card)
+  t:eq(bag(card).cdmGlow:IsShown(), false, "glow off")
+  Schema:Set("rb.cast.latency", true); Schema:Set("rb.aura.enabled", true); Schema:Set("rb.power.thresholds", true)
+  Options.Previews.ResourceBars(card)
+  t:eq(bag(card).rbAura:IsShown(), true, "aura stack sample")
+  t:ok(bag(card).rbNote:GetText():find("aura stacks", 1, true), "note explains the samples")
+  t:eq(Options.Previews.State(card).rb[2].barColor[1], RB.Extras.settings.midColor.r, "power sample in the middle colour")
+end)
+
+Tests:Add("Options", "a key can show on another module's page: queue pop time on Group Finder", function(t)
+  local Model = PUI.Options.Model
+  local def = PUI.Schema:Def("queue.lfgSeconds")
+  t:eq(def.owner, "Core", "still owned by Core")
+  t:eq(def.page, "GroupFinder", "shown on the Group Finder page")
+  local found, onCore = false, false
+  for _, k in ipairs(Model.Page("advanced", "GroupFinder").keys) do if k == "queue.lfgSeconds" then found = true end end
+  for _, p in ipairs(Model.Pages("advanced")) do
+    if p.name == "Core" then for _, k in ipairs(p.keys) do if k == "queue.lfgSeconds" then onCore = true end end end
+  end
+  t:ok(found, "listed on Group Finder")
+  t:ok(not onCore, "not on the Core page any more")
+  local hits = Model.Search("group finder queue")
+  local hit = false
+  for _, k in ipairs(hits) do if k == "queue.lfgSeconds" then hit = true end end
+  t:ok(hit, "search finds it under the page name")
+end)
+
+Tests:Add("Options", "batch B HUD extras show in the minimap, tooltip, data bar and group finder previews", function(t)
+  if not (PUI.Minimap and PUI.Minimap.Buttons and PUI.Tooltip and PUI.Tooltip.Extras) then return end
+  for _, k in ipairs({ "mm.buttons", "tt.lines.upgrade", "db.spec.on", "skins.queueTimer", "queue.lfgSeconds" }) do Tests.Keep(t, k) end
+  local card = CreateFrame("Frame")
+  local bag = Options.PreviewsExtras.Bag
+  Schema:Set("mm.buttons", "phoenix")
+  Options.Previews.Minimap(card)
+  t:ok(bag(card).mmBtn1:IsShown() and bag(card).mmBtn3:IsShown(), "Phoenix buttons drawn")
+  Schema:Set("mm.buttons", "blizzard")
+  Options.Previews.Minimap(card)
+  t:eq(bag(card).mmBtn1:IsShown(), false, "hidden for Blizzard's buttons")
+  Options.Previews.Tooltip(card)
+  t:eq(bag(card).ttExtra1:GetText(), "Item level 678  -  Arms", "inspect sample line")
+  Schema:Set("tt.lines.upgrade", false)
+  Options.Previews.Tooltip(card)
+  t:eq(bag(card).ttExtra3:GetText(), "Set pieces equipped: 2", "upgrade line drops out live")
+  Schema:Set("db.spec.on", true)
+  Options.Previews.DataBars(card)
+  t:ok(bag(card).dbExtrasNote:GetText():find("Per-spec blocks on", 1, true), "per-spec state shown")
+  Schema:Set("queue.lfgSeconds", 50)
+  Options.Previews.GroupFinder(card)
+  t:ok(bag(card).gfQueueText:GetText():find("30 of 50", 1, true), "queue timer sample follows queue.lfgSeconds")
+  Schema:Set("skins.queueTimer", false)
+  Options.Previews.GroupFinder(card)
+  t:eq(bag(card).gfQueue:IsShown(), false, "timer off live")
+end)

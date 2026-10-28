@@ -15,5 +15,7 @@ Elements.lua
 Indicators.lua
 RaidFrames.lua
 ClickCast.lua
+Members.lua
 Tests\RaidFrames_test.lua
 Tests\ClickCast_test.lua
+Tests\Members_test.lua

@@ -36,7 +36,7 @@ function Model.Pages(mode)
   for i = 1, #Schema.keys do
     local def = Schema.defs[Schema.keys[i]]
     if Model.Visible(def, mode) then
-      local owner = def.owner or "Core"
+      local owner = def.page or def.owner or "Core" -- def.page: shown on another module's page
       local page = byOwner[owner]
       if not page then
         page = { name = owner, label = Model.PAGE_LABEL[owner] or owner, keys = {} }
@@ -68,7 +68,7 @@ function Model.Page(mode, name)
 end
 
 local function haystack(def)
-  local parts = { def.key, def.label, def.tooltip, def.owner or "" }
+  local parts = { def.key, def.label, def.tooltip, def.owner or "", def.page or "" }
   if def.searchTags then for i = 1, #def.searchTags do parts[#parts + 1] = def.searchTags[i] end end
   return table.concat(parts, " "):lower()
 end
