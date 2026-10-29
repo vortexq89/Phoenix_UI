@@ -2,10 +2,11 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import math, random
 S=2
 FD='/workspace/pui_restore/Media/Fonts/'
+DF='/workspace/pui_restore/tools/design/fonts/'   # t149 default UI font: Barlow Semi Condensed (OFL)
 _f={}
 def F(n,w='Regular'):
     k=(n,w)
-    if k not in _f: _f[k]=ImageFont.truetype(FD+f'Inter-{w}.ttf',int(n*S))
+    if k not in _f: _f[k]=ImageFont.truetype(DF+f'BarlowSemiCondensed-{w}.ttf',int(round(n*1.1*S)))
     return _f[k]
 C=dict(base=(21,23,27),raised=(28,31,36),sunken=(16,18,21),hover=(36,39,45),border=(44,48,56),borderS=(36,39,46),
  t1=(235,236,238),t2=(173,176,182),t3=(122,126,134),acc=(255,112,32),acc2=(255,160,60),ok=(76,201,122),warn=(240,180,60),bad=(232,80,72),info=(90,160,255))
@@ -71,19 +72,18 @@ class Canvas:
     def save(s,p,label=None):
         im=s.im.resize((s.w,s.h),Image.LANCZOS)
         if label:
-            d=ImageDraw.Draw(im); d.text((12,s.h-20),label,font=ImageFont.truetype(FD+'Inter-Medium.ttf',12),fill=(150,150,150))
+            d=ImageDraw.Draw(im); d.text((12,s.h-20),label,font=ImageFont.truetype(DF+'BarlowSemiCondensed-Medium.ttf',13),fill=(150,150,150))
         im.save(p)
 
-# Phoenix chrome icons (tools/media/gen_chrome_icons.py), tinted, at any size
-import io, sys as _sys
+# Phoenix chrome icons v4 (tools/media/gen_chrome_color.py): full colour; the tint argument now picks the state
+import sys as _sys
 _sys.path.insert(0, '/workspace/pui_restore/tools/media')
-from gen_chrome_icons import P as CHROME, svg as _svg
-import cairosvg as _cs
+from gen_chrome_color import render as _render
 _ic = {}
-def chrome(c, x, y, name, col, size=20):
-    k = (name, col, size)
-    if k not in _ic:
-        hexc = '#%02x%02x%02x' % col
-        png = _cs.svg2png(bytestring=_svg(CHROME[name], hexc).encode(), output_width=size * S, output_height=size * S)
-        _ic[k] = Image.open(io.BytesIO(png)).convert('RGBA')
+def chrome(c, x, y, name, col=None, size=20, state=None):
+    state = state or ('hover' if col == C['acc'] else 'normal')
+    k = (name, size, state)
+    if k not in _ic: _ic[k] = _render(name, int(size * S), state)
     im = _ic[k]; c.im.paste(im, (int(x * S), int(y * S)), im); c.d = ImageDraw.Draw(c.im)
+def panel_icon(c, x, y, name, size=60):
+    chrome(c, x, y, name, None, size, 'normal')

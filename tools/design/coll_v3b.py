@@ -3,7 +3,7 @@ from PIL import Image as _I, ImageDraw as _D, ImageFilter as _F
 k = 1.3; FW, FH = 703, 606
 W_, H_ = int(FW * k) + 480, int(FH * k) + 170; c = Canvas(W_, H_); backdrop(c, W_, H_)
 X, Y = 70, 60; g = lambda v: v * k
-frame(c, X, Y, FW, FH, k, 'Mounts', portrait_seed=31, bottom_tabs=['Mounts', 'Pets', 'Toys', 'Heirlooms', 'Appearances', 'Campsites'])
+frame(c, X, Y, FW, FH, k, 'Mounts', panel='panel-collections', bottom_tabs=['Mounts', 'Pets', 'Toys', 'Heirlooms', 'Appearances', 'Campsites'])
 # MountCount (InsetFrameTemplate3 130x20) top-left, LeftInset 260x496, RightInset to the frame's right
 c.R(X + g(70), Y + g(30), g(130), g(20), fill=C['sunken'], r=3, outline=C['borderS']); c.T(X + g(78), Y + g(40), 'Total mounts', int(7 * k), fill=C['t2'], anchor='lm'); c.T(X + g(192), Y + g(40), '612', int(7.5 * k), 'SemiBold', C['acc'], 'rm')
 lx, ly, lw, lh = X + g(4), Y + g(60), g(260), g(FH - 60 - 34)
@@ -49,4 +49,4 @@ note(NX, Y + 120, 'Mount, pet and toy icons and models stay the game\'s', rx + r
 note(NX, Y + 170, 'Phoenix chrome icons: search, filter, favourite, settings', lx + lw - 40, ly + 20)
 note(NX, Y + 400, 'Extras: usage count and learned date, favourite marker', rx + rw - 60, by + g(53))
 note(NX, Y + 450, 'Not owned: dimmed icon and name (game data)', lx + g(100), ly + g(36) + 5 * g(50) + 20)
-c.save('/workspace/pui_restore/docs/screenshots/v3/collections_v3.png', "Phoenix UI v3 mockup (revised t148) · Collections › Mounts: Blizzard's layout, Phoenix theme · schematic render, not in-game · game icons are placeholders")
+c.save('/workspace/pui_restore/docs/screenshots/v3/collections_v3.png', "Phoenix UI v3 mockup (revised t149) · Collections › Mounts: Blizzard's layout, Phoenix theme · schematic render, not in-game · game icons are placeholders")

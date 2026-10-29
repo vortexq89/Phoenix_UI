@@ -1,13 +1,15 @@
 from kit import *
 # Blizzard ButtonFrameTemplate / PortraitFrameTemplate geometry, Phoenix-themed. k = render scale (game units -> px)
-def frame(c, X, Y, w, h, k, title, portrait_seed=None, bottom_tabs=None, active_tab=0):
+def frame(c, X, Y, w, h, k, title, portrait_seed=None, panel=None, bottom_tabs=None, active_tab=0):
     c.shadow(X, Y, w * k, h * k, 8, 24, 160)
     c.R(X, Y, w * k, h * k, fill=C['base'], r=6, outline=C['border'])
     c.R(X + 1, Y + 1, w * k - 2, 22 * k, fill=C['raised'], r=6); c.R(X + 1, Y + 14 * k, w * k - 2, 9 * k, fill=C['raised'])
     c.L(X, Y + 23 * k, X + w * k, Y + 23 * k, C['borderS'])
     c.T(X + w * k / 2, Y + 11.5 * k, title, int(8.5 * k), 'SemiBold', C['t1'], 'mm')
     chrome(c, X + w * k - 18 * k, Y + 4 * k, 'win-close', C['t2'], int(14 * k))
-    if portrait_seed is not None:   # the portrait stays the game's (the player, or the window's own art)
+    if panel:   # t149: every window shows its Phoenix panel icon in the top-left (portrait) corner
+        panel_icon(c, X - 8 * k, Y - 10 * k, panel, int(62 * k))
+    elif portrait_seed is not None:   # the portrait stays the game's (the player, or the window's own art)
         px, py, pr = X - 6 * k, Y - 8 * k, 30 * k
         c.d.ellipse([px * S, py * S, (px + 2 * pr) * S, (py + 2 * pr) * S], fill=C['sunken'], outline=C['acc'], width=int(1.5 * S))
         c.icon(int(px + 8 * k), int(py + 8 * k), int(44 * k), portrait_seed, r=int(22 * k))

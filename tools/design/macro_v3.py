@@ -2,8 +2,7 @@ from blz_frame import *
 k = 1.7; FW, FH = 338, 424
 W_, H_ = int(FW * k) + 540, int(FH * k) + 140; c = Canvas(W_, H_); backdrop(c, W_, H_)
 X, Y = 70, 60; g = lambda v: v * k
-frame(c, X, Y, FW, FH, k, 'Create Macros', portrait_seed=None)
-c.d.ellipse([(X - g(6)) * S, (Y - g(8)) * S, (X + g(54)) * S, (Y + g(52)) * S], fill=C['sunken'], outline=C['acc'], width=int(1.5 * S)); chrome(c, X + g(6), Y + g(4), 'macro-general', C['acc'], int(g(36)))
+frame(c, X, Y, FW, FH, k, 'Create Macros', panel='panel-macro')
 # PanelTopTabButtonTemplate tabs: General / Character (Phoenix chrome icons on the tabs)
 tx = X + g(60); ty = Y + g(28)
 for i, (t, ic) in enumerate([('General Macros', 'macro-general'), ('Bmr Specific Macros', 'macro-character')]):

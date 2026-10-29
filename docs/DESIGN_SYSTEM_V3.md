@@ -1,12 +1,16 @@
 # Phoenix UI — Design System v3 (draft for owner approval)
 
-Status: **proposal, revision 2 (t148)**. Nothing in this document is built yet, except the t146/t147 fixes listed at the end.
+Status: **proposal, revision 3 (t149)**. Nothing in this document is built yet, except the t146/t147 fixes listed at the end.
+
+**Revision 3 (owner, t149):** full-colour ember chrome icons with hover glow and a pressed light burst (§5a);
+a Phoenix panel icon in the top-left corner of every window (§5b); the UI font becomes Barlow Semi Condensed, the
+closest licence-safe match to the Expressway look of ElvUI and EllesmereUI (§3). Mockups below are redrawn with both.
 
 **Revision 2 direction (owner, t148):** every Blizzard window keeps **the game's own layout and structure** and is
 restyled in the Phoenix theme, with our extra features and settings added, the way ElvUI and EllesmereUI skin
 (no custom re-layouts of Blizzard windows). Phoenix's own icon set appears **only on UI chrome**: micro menu,
 macro window controls, settings GUI tabs and navigation, and window controls. Class, spec, ability, spell, item,
-mount, pet, toy and portrait icons are never replaced.
+mount, pet and toy icons are never replaced (the window portrait slot now holds the panel icon, §5b).
 Mockups (`docs/screenshots/v3/`, schematic renders, not in-game). Each Blizzard-window mockup is drawn on the real
 geometry from the Blizzard source (`BlizzardInterfaceCode`, read-only):
 - `character_v3.png`: CharacterFrame expanded (540×424; 8+8 slots 37 px at 4 px gaps; model; InsetRight stats pane 172 wide
@@ -62,39 +66,53 @@ behind all of this, not each screen on its own.
 
 ## 3. Type scale
 
-**One family for all Phoenix text: Inter** (SIL OFL 1.1, `Media/Fonts/Inter-*.ttf`, licence in
-`Media/Fonts/Licenses`). Only the brand wordmark stays Cinzel.
+**Revision 3 (t149): one family for all Phoenix text, Barlow Semi Condensed** (SIL OFL 1.1, Regular / Medium /
+SemiBold / Bold; licence ships beside the files). It replaces Inter, which the owner found pixelated in game. Only
+the brand wordmark stays Cinzel. ruRU uses **PT Sans Narrow** (OFL, full Cyrillic), because Barlow has none. CJK
+clients keep the game font.
 
-Chosen by rendering six OFL candidates at true pixel sizes 10–14 on the Phoenix surface
-(`docs/screenshots/v3/font_compare.png`):
+**What ElvUI and EllesmereUI actually ship** (read-only, EllesmereUI from `Interface/AddOns/EllesmereUI/media/fonts`
+on the PC and ElvUI from its public repo, `ElvUI/Game/Shared/Media/Fonts`):
 
-| font          | x-height / cap | width of a 12 px sample | at 10–12 px                                              |
-|---------------|----------------|-------------------------|----------------------------------------------------------|
-| **Inter**     | 0.75           | 234 px                  | clearest: open counters, distinct `I l 1`, `rn` ≠ `m`    |
-| Noto Sans     | 0.75           | 230 px                  | very close second; slightly softer stems at 10 px        |
-| Source Sans 3 | 0.74           | 203 px                  | the narrowest (fits the most text), but cramped at 10–11 |
-| Roboto (old)  | 0.75           | 216 px                  | good, but `I/l` look alike; it was mixed with Inter      |
-| Fira Sans     | 0.77           | 222 px                  | readable; its humanist shapes clash with the geometric UI |
-| Lato          | 0.71           | 213 px                  | the smallest x-height; blurs at 10 px                    |
+| font | who uses it | licence (font `name` table) | can Phoenix ship it? |
+|---|---|---|---|
+| Expressway (Typodermic) | EllesmereUI default; ElvUI unit frames | "(c) 2005 Typodermic. **Do not distribute.**" | **no** |
+| PT Sans Narrow Bold | ElvUI general font (`font = 'PT Sans Narrow'`, 12, OUTLINE) | SIL OFL 1.1 | yes |
+| Fira Sans Medium / Bold / Light | EllesmereUI option | SIL OFL 1.1 | yes |
+| Poppins, Ubuntu, Exo, Changa, Russo One, Barlow Condensed | EllesmereUI options | OFL / Ubuntu Font Licence | yes |
+| Gotham Narrow, Avant Garde, Arial Bold / Narrow, Future X | EllesmereUI options | commercial (Hoefler, ITC, Monotype) | no |
+| Homespun, ActionMan, ContinuumMedium, DieDieDie | ElvUI pixel and display faces | freeware, mixed terms | not as a default |
 
-Roles (`Core/Theme.lua` `fontRoles`, at 1:1 pixels at pixel-perfect scale; render
-`docs/screenshots/v3/type_scale.png`). No role goes below 12:
+EllesmereUI's own addon licence is "all rights reserved", so nothing is copied from it; only the font files'
+own licences matter.
 
-| role      | face           | size | use                                         |
-|-----------|----------------|------|---------------------------------------------|
-| `title`   | Inter Bold     | 20   | page / window title                         |
-| `heading` | Inter Bold     | 13   | card headers (uppercase)                    |
-| `body`    | Inter Medium   | 14   | labels, row text                            |
-| `desc`    | Inter Regular  | 12   | descriptions, hints                         |
-| `number`  | Inter SemiBold | 13   | values, timers                              |
-| `small`   | Inter Medium   | 12   | badges, captions, chips                     |
-| `unit`    | Inter SemiBold | 12   | unit frame names and health text            |
-| `combat`  | Inter Bold     | 16   | in-world numbers (outlined); combat text 20 |
+**Why Inter looked pixelated:** WoW rasterises with FreeType grayscale at the true pixel size. Inter's thin,
+wide strokes land between pixels at 10–13 px, so the stems fade and break under OUTLINE. The smooth look of
+ElvUI and EllesmereUI comes from **Expressway**: a condensed DIN-style face with sturdy, even stems and a tall
+x-height that hold one or two full pixels. The closest OFL equivalent is **Barlow Semi Condensed**, a DIN-style
+family of the same width, with sturdy stems, a large x-height and open counters. In the comparison
+(`docs/screenshots/v3/font_compare_t149.png`: native 10 / 12 / 14 / 16 px, no outline, OUTLINE and shadow, plus 12 px
+at 3x) it matches Expressway's weight and smoothness best. PT Sans Narrow is a close second but narrower and
+smaller at 10 px. Fira Sans is wider and rounder. Inter is the thinnest of the set.
 
-Skins: Blizzard's font objects (GameFont*, SystemFont*, tooltip, quest and GameNN fonts used by the skinned windows)
-take the same Inter faces, keeping their sizes and outlines (General › Text › "Use theme fonts on Blizzard UI",
-**on by default**, live; names above heads change after a relog). CJK clients keep the game font; ruRU uses Inter,
-which includes Cyrillic. The user's own UI font and unit font choices still override the roles.
+Roles (`Core/Theme.lua` `fontRoles`, 1:1 pixels at pixel-perfect scale). No role goes below 12. Barlow runs
+about 8% smaller than Inter at the same size, so each role is one step larger:
+
+| role      | face                     | size | flags   | use                                   |
+|-----------|--------------------------|------|---------|---------------------------------------|
+| `title`   | Barlow SC Bold           | 21   |         | page / window title                   |
+| `heading` | Barlow SC Bold           | 14   |         | card headers (uppercase)              |
+| `body`    | Barlow SC Medium         | 15   |         | labels, row text                      |
+| `desc`    | Barlow SC Regular        | 13   |         | descriptions, hints                   |
+| `number`  | Barlow SC SemiBold       | 14   |         | values, timers                        |
+| `small`   | Barlow SC Medium         | 13   |         | badges, captions, chips               |
+| `unit`    | Barlow SC SemiBold       | 13   | OUTLINE | unit frame names and health text      |
+| `combat`  | Barlow SC Bold           | 18   | OUTLINE | in-world numbers; combat text 22      |
+
+Skins: Blizzard's font objects (GameFont*, SystemFont*, tooltip, quest and GameNN) take the same faces at their
+own sizes and outlines (General › Text › "Use theme fonts on Blizzard UI", on by default). The user's own UI
+and unit font choices still override the roles. Applying this in game is step 0 of §13 (after approval); the
+build still ships Inter until then.
 
 Colour roles: `text.primary` (92% white), `text.secondary` (68%), `text.muted` (48%), `accent.text`.
 Minimum contrast: 4.5:1 for body text on its surface, and 3:1 for icons and borders that carry meaning.
@@ -140,12 +158,26 @@ it applies. Its focus ring is a 1 px `accent.primary` outline plus a 2 px gap.
 - **Empty / unknown slot**: the slot fill `bg.raised` plus a 1 px `border.subtle` border; the game's empty-slot
   art is drawn at 70%, additive, so it reads as an outline rather than a black square.
 
-## 5a. Chrome icon set
+## 5a. Chrome icon set (v4, full colour)
 
-An original set (`tools/media/gen_chrome_icons.py`, SVG sources in `tools/media/chrome/`, sheet
-`docs/screenshots/v3/chrome_icons.png`): 45 icons on a 24-unit grid with a 2-unit safe margin, a 1.75 stroke,
-round caps and joins, outline only, and one tint set by the theme per state (default `text.secondary`, hover
-`text.primary`, active `accent.primary`, disabled 40%). Drawn at 16 / 20 px in game.
+**Revision 3 (t149):** the icons are full colour, not flat outlines. Source: `tools/media/gen_chrome_color.py`,
+which reuses the v3 24-grid geometry from `gen_chrome_icons.py`. Sheet: `docs/screenshots/v3/chrome_icons.png`.
+256 px masters for every icon and state are exported to the project's `renders/icons_v4/` folder.
+
+- **Body:** a solid glyph with a vertical ember gradient: pale gold `#FFECAA` → ember `#FFB040` → flame `#F0601C`
+  → crimson `#961E12`. Strokes are full brightness; the enclosed areas are filled at 62% of that brightness, so
+  every shape has volume.
+- **Depth:** a dark ember rim (`#340A06`), a soft drop shadow down and to the right, and a light along the top of
+  the strokes.
+- **States** (the same art in every state, so it never flickers):
+  - `normal`
+  - `hover`: an ember outer glow and 112% brightness
+  - `pressed`: a **light burst** of 16 rays and a bright gold core behind the glyph, 128% brightness, 94% scale,
+    played as a 0.25 s flash on click
+  - `active` (selected tab or rail item): the hover look held, with no backing block (fixes t146 a)
+  - `disabled`: desaturated, at 60% opacity
+- **Sizes:** rendered at 4x and downsampled. Shipped as 64 px atlas cells and drawn at 16–24 px. Panel icons are
+  shipped at 128 px.
 
 | group | icons | used on |
 |---|---|---|
@@ -155,8 +187,20 @@ round caps and joins, outline only, and one tint set by the theme per state (def
 | Window controls (9) | close, move, settings, search, filter, lock, reset, favourite, expand | title bars, search boxes, filter dropdowns, list markers |
 
 Where a Blizzard chrome element has a glyph (sidebar tabs, filter dropdown, search magnifier, close X), the
-Phoenix one replaces that glyph. Where the element shows game content (the portrait tab, a mount icon, a
-macro's icon), nothing changes.
+Phoenix one replaces that glyph. Where the element shows game content (a mount icon, a macro's icon, a spell),
+nothing changes.
+
+## 5b. Panel icons (top-left corner of every window)
+
+Each window shows a Phoenix **panel icon** in its top-left corner, in the round portrait slot of Blizzard's
+`PortraitFrameTemplate` / `ButtonFrameTemplate`. Each one says what the window is for. The ember glyph sits on
+an obsidian medallion with a gold rim and an inner ring (sheet `docs/screenshots/v3/panel_icons.png`, headers
+mockup `docs/screenshots/v3/panels_v3.png`). There are 28: character, bags, mail, collections, macro, friends,
+guild, group finder, settings, achievements, spellbook, talents, quests, map, calendar, professions, journal
+(Adventure Guide), PvP, shop, help, game menu, bank, merchant, auction house, trade, loot and communities.
+It is drawn at 60 px in the portrait slot (40 px in the Phoenix settings header) and lights up on hover like
+the chrome icons. The player's portrait is still shown on unit frames. On the Character window it moves to a
+small inset, an option under Windows › Character.
 
 ## 6. When a preview is shown
 
@@ -285,6 +329,9 @@ Preview verdicts under §6 (today every module has one):
   Layout mode, Quality of Life, Automation, Bugs.
 
 ## 13. Delivery plan (after approval)
+
+0. Font switch to Barlow Semi Condensed (+ PT Sans Narrow for ruRU), with the roles in §3; colour chrome and panel
+   icon atlases in `Media/Icons/` from `gen_chrome_color.py`; panel icons wired into the skins.
 
 1. Tokens + type scale + spacing in `Core/Theme.lua`; component states in `UI/Widgets` (1 commit, live).
 2. Settings window v3 layout + preview rule (§6, §11).

@@ -3,7 +3,7 @@ from PIL import Image as _I, ImageDraw as _D, ImageFilter as _F
 k = 1.6; FW, FH = 540, 424
 W_, H_ = int(FW * k) + 520, int(FH * k) + 200; c = Canvas(W_, H_); backdrop(c, W_, H_)
 X, Y = 80, 70
-frame(c, X, Y, FW, FH, k, 'Bmr', portrait_seed=77, bottom_tabs=['Character', 'Reputation', 'Currency'])
+frame(c, X, Y, FW, FH, k, 'Bmr', panel='panel-character', bottom_tabs=['Character', 'Reputation', 'Currency'])
 g = lambda v: v * k
 # CharacterFrameInset (paper doll) and InsetRight (stats, 172 wide) - CharacterFrame.xml / PaperDollFrame.xml
 ix, iy, iw, ih = X + g(4), Y + g(60), g(FW - 172 - 12), g(FH - 64)
@@ -62,5 +62,5 @@ note(NX, Y + 30, "Blizzard's layout: 540x424, 8+8 slots, model, stats pane, 3 ta
 note(NX, Y + 150, 'Item and portrait icons are the game\'s own - never replaced', ix + iw - 20, iy + 40)
 note(NX, Y + 200, 'Phoenix icons only on chrome: sidebar tabs, close', rx + rw - 60, iy + g(20))
 note(NX, Y + 290, 'Extras: item level, missing-enchant dot (yellow), stat bars', ix + g(10), iy + g(125))
-note(NX, Y + 380, 'Theme: dark surfaces, 1 px borders, Inter, accent tabs', rx + rw / 2, sy - 40)
-c.save('/workspace/pui_restore/docs/screenshots/v3/character_v3.png', "Phoenix UI v3 mockup (revised t148) · Character window: Blizzard's layout, Phoenix theme · schematic render, not in-game · game icons are placeholders")
+note(NX, Y + 380, 'Theme: dark surfaces, 1 px borders, Barlow Semi Condensed, accent tabs', rx + rw / 2, sy - 40)
+c.save('/workspace/pui_restore/docs/screenshots/v3/character_v3.png', "Phoenix UI v3 mockup (revised t149) · Character window: Blizzard's layout, Phoenix theme · schematic render, not in-game · game icons are placeholders")
