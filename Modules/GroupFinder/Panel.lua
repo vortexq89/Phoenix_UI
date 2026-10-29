@@ -81,6 +81,13 @@ local function matchRow(parent, i)
     b.fill = b:CreateTexture(nil, "BACKGROUND")
     b.fill:SetAllPoints()
     b.fill:SetTexture(ns.Media.textures.WHITE)
+    -- theme fonts on the result rows, like the rest of the panel (follow font / theme changes live)
+    ns.Skin:Register(b, function(self)
+        ns.Skin:Text(self.name, "body", "text.primary", 12)
+        ns.Skin:Text(self.score, "number", "text.primary", 12)
+        if self.scoreRGB then self.score:SetTextColor(unpack(self.scoreRGB)) end -- the rating colour outlives a restyle
+        ns.Skin:Text(self.info, "small", "text.secondary", 11)
+    end)
     b:SetScript("OnEnter", function(self)
         W.Color(self.fill, "bg.hover", 1)
         if not self.record then return end
@@ -217,10 +224,12 @@ local function fillRow(row, r)
     row.name:SetText(a and a.shortName ~= "" and a.shortName or (a and a.fullName) or "")
     if r.pvpactivity and r.pvp > 0 then
         row.score:SetText(r.pvp)
+        row.scoreRGB = nil
         row.score:SetTextColor(Theme:Color("text.primary"))
     else
         row.score:SetText(r.score > 0 and r.score or "")
-        row.score:SetTextColor(M.ScoreColor(r.score))
+        row.scoreRGB = { M.ScoreColor(r.score) }
+        row.score:SetTextColor(unpack(row.scoreRGB))
     end
     local bits = {}
     if r.mythicplus and r.bestkey and r.bestkey > 0 then bits[#bits + 1] = L.LFG_BEST_KEY:format(r.bestkey) end
