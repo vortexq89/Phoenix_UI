@@ -40,7 +40,11 @@ local frameMethods = {
         local old = scripts[self][k]
         scripts[self][k] = old and function(...) old(...); fn(...) end or fn
     end,
-    RegisterEvent = function(self, ev) self.__events = self.__events or {}; self.__events[ev] = true end,
+    -- the client rejects names it does not know; Phoenix's own PUI_* messages must go through ns.Events:Listen
+    RegisterEvent = function(self, ev)
+        if tostring(ev):find("^PUI_") then error('Attempt to register unknown event "' .. ev .. '"', 2) end
+        self.__events = self.__events or {}; self.__events[ev] = true
+    end,
     RegisterUnitEvent = function(self, ev) self.__events = self.__events or {}; self.__events[ev] = true end,
     UnregisterEvent = function(self, ev) if self.__events then self.__events[ev] = nil end end,
     UnregisterAllEvents = function(self) self.__events = {} end,
@@ -7474,6 +7478,55 @@ try("combat text areas: power, icons, unlock", function()
     rawset(env, "C_CombatText", oldCT); rawset(env, "C_Spell", oldSpell)
     sc.enabled = false
     CT:EnableScroll()
+end)
+
+-- Live bugs 2026-10-29: each reproduced exactly as reported, then shown fixed
+try("live bugs: game menu sort, PUI_ event bus, keystones, spell history font, preview scale", function()
+    -- 1) GameMenu.lua:180: GetTop() returning nothing made tonumber() throw "value expected" on every Esc
+    local Skins = ns.modules.Skins
+    local function btn(i) local b = CreateFrame("Button"); b.layoutIndex = i; b.GetTop = function() end; return b end
+    local list = { btn(3), btn(1), btn(2) }
+    local menu = CreateFrame("Frame")
+    menu.buttonPool = { EnumerateActive = function() local i = 0; return function() i = i + 1; return list[i] end end }
+    local oldOn = Skins.db.gameMenu; Skins.db.gameMenu = true
+    local ok, err = pcall(Skins.SkinGameMenu, Skins, menu)
+    Skins.db.gameMenu = oldOn
+    assert(ok, "game menu sort still throws: " .. tostring(err))
+    -- 2) no PUI_* message may reach Frame:RegisterEvent; ns.Events:On routes them to the bus
+    local got, owner = nil, {}
+    ns.Events:On("PUI_HARNESS_PING", owner, function(_, _, v) got = v end)
+    ns.Events:Fire("PUI_HARNESS_PING", 7)
+    assert(got == 7, "a PUI_ message passed to Events:On did not arrive through the bus")
+    ok, err = pcall(ns.Events.Fire, ns.Events, "PUI_SETTING_CHANGED", "General", "theme.emblemFX", true)
+    assert(ok, "Emblem FX setting listener failed: " .. tostring(err))
+    -- 3) Keystones.lua:22: the keystone API returning nothing (no key owned) must read as 0
+    local oldMP = rawget(env, "C_MythicPlus")
+    rawset(env, "C_MythicPlus", { GetOwnedKeystoneLevel = function() end, GetOwnedKeystoneChallengeMapID = function() end })
+    ok, err = pcall(ns.modules.MythicPlus.Keystones.Own, ns.modules.MythicPlus.Keystones)
+    rawset(env, "C_MythicPlus", oldMP)
+    assert(ok, "Keystones:Own with no key throws: " .. tostring(err))
+    -- 4) SpellHistory.lua:27: SetText before a font is set ("Font not set")
+    local SH = ns.modules.SpellHistory
+    local f = CreateFrame("Frame"); f.tex = f:CreateTexture()
+    local realCFS = f.CreateFontString
+    f.CreateFontString = function(...)
+        local fs = realCFS(...); local font
+        fs.GetFont = function() return font end
+        local realSF = fs.SetFont
+        fs.SetFont = function(self, path, ...) font = path; if realSF then return realSF(self, path, ...) end end
+        fs.SetFontObject = function() font = "obj" end
+        local realST = fs.SetText
+        fs.SetText = function(self, t) assert(font, "FontString:SetText(): Font not set"); return realST(self, t) end
+        return fs
+    end
+    ok, err = pcall(SH.StyleIcon, SH, f)
+    assert(ok, "Spell History icon still sets text before its font: " .. tostring(err))
+    -- 5) CastBars preview: SetScale(0) — every preview scale is clamped above zero
+    for _, v in ipairs({ 0, -1, 0 / 0, math.huge }) do
+        local c = ns.Previews.ClampScale(v)
+        assert(type(c) == "number" and c > 0 and c == c, "preview scale " .. tostring(v) .. " not clamped")
+    end
+    print("  live bugs: game menu, PUI bus, keystones, spell history font, preview scale all hold")
 end)
 
 fire("PLAYER_LOGOUT")

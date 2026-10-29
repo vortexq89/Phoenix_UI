@@ -86,6 +86,6 @@ end
 
 ns.Events:On("PLAYER_REGEN_DISABLED", FX, function() FX:UpdateAll() end)
 ns.Events:On("PLAYER_REGEN_ENABLED", FX, function() FX:UpdateAll() end)
-ns.Events:On("PUI_SETTING_CHANGED", FX, function(_, _, key, path)
+ns.Events:Listen("PUI_SETTING_CHANGED", FX, function(_, _, key, path)
     if key == "General" and (path == "theme.emblemFX" or path == "theme.reduceMotion") then FX:UpdateAll() end
 end)

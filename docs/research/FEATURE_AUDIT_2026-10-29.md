@@ -274,3 +274,14 @@ runtime in game.
   bars and frames; its box draws the area's scroll path. "Move the areas" opens mover mode. MSBT-like behaviour added:
   sticky crits (default) pop in larger, ease down and hold still at the area's centre, stacked, then fade. Merging counts
   hits (×N) rather than summing amounts, because amounts can be secret.
+- **Live bugs, 22:15 (fixed, each reproduced by a harness test that fails on the old code).** GameMenu sort: `GetTop()` can
+  return nothing, so `tonumber()` threw "value expected"; it now gets one value (`tonumber((x)) or 0`). EmblemFX
+  registered the internal `PUI_SETTING_CHANGED` with `Frame:RegisterEvent`; it now uses `ns.Events:Listen`, and
+  `Events:On` routes any `PUI_*` name to the bus. The harness `RegisterEvent` now rejects `PUI_*` like the client
+  does; the audit found no other offender. Keystones (`GetOwnedKeystone*` returning nothing), the Spell History "Font
+  not set" (text is now set only after a font is applied) and the preview `SetScale(0)` (`ClampScale`) are covered.
+- **Bug upload.** The website ingest worked (a live test was accepted and read back). Nothing had been sent because
+  PhoenixUploader was never installed on the PC. It is now built, installed under Phoenix_UI\uploader, and run after
+  every SavedVariables write by the PhoenixBugWatch task. The first real run had all 9 reports accepted.
+  The in-game "Upload" button only opens the Bugs settings; sending is always done by the uploader outside the game.
+- Combat text: the default Crits area moved to y 90 (height 110) so it no longer overlaps Notifications.

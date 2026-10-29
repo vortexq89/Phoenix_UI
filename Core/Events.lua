@@ -59,6 +59,8 @@ end
 
 function E:On(event, owner, fn)
     assertAllowed(event)
+    -- Internal PUI_* messages are not game events; RegisterEvent would throw "unknown event". Route them to the bus.
+    if event:find("^PUI_") then return self:Listen(event, owner, fn) end
     local list = handlers[event]
     if not list then
         list = {}

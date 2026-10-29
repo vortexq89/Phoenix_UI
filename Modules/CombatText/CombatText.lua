@@ -32,7 +32,7 @@ local M = ns:NewModule("CombatText", {
                     duration = 2.4, scale = 0.85, iconSide = "LEFT", iconSize = 22, useColor = false, color = { r = 0.3, g = 0.6, b = 1 } },
                 notify = { show = true, x = 0, y = 230, width = 340, height = 110, dir = "UP", anim = "straight", align = "CENTER",
                     duration = 2.4, scale = 0.9, iconSide = "LEFT", iconSize = 22, useColor = false, color = { r = 1, g = 0.85, b = 0.4 } },
-                crits = { show = false, x = 0, y = 120, width = 320, height = 120, dir = "UP", anim = "static", align = "CENTER",
+                crits = { show = false, x = 0, y = 90, width = 320, height = 110, dir = "UP", anim = "static", align = "CENTER",
                     duration = 2.4, scale = 1.2, iconSide = "LEFT", iconSize = 22, useColor = false, color = { r = 1, g = 0.82, b = 0 } },
             },
             events = {

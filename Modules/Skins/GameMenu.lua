@@ -177,7 +177,7 @@ function M:SkinGameMenu(menu)
         for button in pool:EnumerateActive() do M.SkinMenuButton(button); buttons[#buttons + 1] = button end
     end
     table.sort(buttons, function(a, b)
-        local ta, tb = tonumber(a:GetTop()) or 0, tonumber(b:GetTop()) or 0
+        local ta, tb = tonumber((a:GetTop())) or 0, tonumber((b:GetTop())) or 0
         if ta ~= tb then return ta > tb end
         return (a.layoutIndex or 0) < (b.layoutIndex or 0)
     end)

@@ -24,10 +24,10 @@ function M:StyleIcon(f)
     if not f.cross then
         f.cross = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
         f.cross:SetPoint("CENTER")
-        f.cross:SetText("×")
         f.cross:Hide()
     end
     Skin:Text(f.cross, "combat", "state.danger", math.max(12, math.floor(f:GetHeight() * 0.8)))
+    if f.cross:GetFont() then f.cross:SetText("×") end
 end
 
 -- failed: draw the icon as an interrupted / failed cast
