@@ -3,6 +3,12 @@
 ## 2.0.0-beta1
 
 ### New
+- **Drag the live preview** to size and place a module: grips in the preview's corner resize (width / height, or
+  size / scale) and move (X / Y); highlighted parts also take edge drags (right = width, bottom = height, corner =
+  both) and body drags. Values go through the same rows as the sliders: live, clamped, snapped, multi-select aware.
+  Works on every module page whose settings have a size (20 of 30 previews; the rest have no size settings).
+- **Settings navigation**: compact grouped list with section icons and page counts, hairline section headings, and
+  a segmented tab strip with an icon per tab.
 - **Share strings v2**: export the whole profile or picked modules with a title; the string carries author, client,
   version, date and a checksum, plus a short code (PX-XXXX-XXXX) that names it on vq8s.com/phoenix/profiles. Import shows
   each module with its change count and the first changed settings (old > new), then Merge or Replace the picked modules,

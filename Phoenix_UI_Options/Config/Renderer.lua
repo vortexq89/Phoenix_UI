@@ -104,6 +104,7 @@ function Config.IsMixed(page, m, item)
 end
 
 Config.SetRowValue = setValue -- the path every control takes (the smoke harness drives it directly)
+Config.GetRowValue = getValue
 
 ---------------------------------------------------------------- reset to default
 -- The default of a row comes from the module's defaults at the same path (scope aware). Rows backed by
@@ -996,9 +997,15 @@ local function buildPreview(page, m, item)
     card.pane = ns.Previews:Create(item.kind, card, m, page)
     -- a click on a part of the preview jumps to that part's setting and flashes it
     card.pane.onHot = function(key, hot)
+        -- a press that became a drag (moving the part) is not also a click
+        if hot and hot.suppress then hot.suppress = nil; return end
         if page.FocusKey then page:FocusKey(key) end
         quickEdit(page, m, key, hot)
     end
+    -- drag the preview to size and place the element (Config/PreviewDrag.lua)
+    ns.PreviewDrag:Attach(card.pane, page, m)
+    card.pane.attachHot = function(hot) ns.PreviewDrag:AttachHot(hot, page, m) end
+    for _, hot in ipairs(card.pane.hots or {}) do card.pane.attachHot(hot) end
     card.tag = W.Text(card, "small", "accent.text", "RIGHT")
     card.shade = W.Texture(card, "BACKGROUND", -1, Media.textures.FADE_V)
     card.shade:SetPoint("TOPLEFT", card, "BOTTOMLEFT", 0, 0)

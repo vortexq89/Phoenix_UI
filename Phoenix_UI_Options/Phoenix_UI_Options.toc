@@ -38,6 +38,7 @@ Previews\GroupFinder.lua
 Previews\Tools.lua
 Config\Window.lua
 Config\Groups.lua
+Config\PreviewDrag.lua
 Config\Renderer.lua
 Config\Search.lua
 Config\Home.lua

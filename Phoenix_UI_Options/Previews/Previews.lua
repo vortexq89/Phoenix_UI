@@ -134,7 +134,7 @@ function P:Create(kind, parent, m, page)
         if not (l0 and r0 and t0 and b0) then return end
         local l, r, t, b
         local function grow(obj)
-            if obj == stage.floor or not obj:IsShown() then return end
+            if obj == stage.floor or obj.puiGrip or not obj:IsShown() then return end
             local ol, or_, ot, ob = obj:GetLeft(), obj:GetRight(), obj:GetTop(), obj:GetBottom()
             if not (ol and or_ and ot and ob) or or_ - ol <= 0 then return end
             local s = (obj.GetEffectiveScale and obj:GetEffectiveScale() or stage:GetEffectiveScale()) / stage:GetEffectiveScale()
@@ -262,6 +262,7 @@ function P.Hot(stage, part, key, tip)
         part.puiHot = hot
         stage.hots = stage.hots or {}
         stage.hots[#stage.hots + 1] = hot
+        if stage.attachHot then stage.attachHot(hot) end
     end
     hot.key, hot.tip = key, tip
     hot:ClearAllPoints()

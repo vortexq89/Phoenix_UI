@@ -3806,6 +3806,68 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- drag the live preview: every module page with a preview gets resize / move grips that drive its own range rows
+try("preview drag", function()
+    local C, D = ns.Config, ns.PreviewDrag
+    local ticks, cx, cy, down = {}, 0, 0, true
+    local oldT, oldC, oldB = rawget(env, "C_Timer"), rawget(env, "GetCursorPosition"), rawget(env, "IsMouseButtonDown")
+    rawset(env, "C_Timer", setmetatable({ NewTicker = function(_, fn) ticks[#ticks + 1] = fn; return { Cancel = function() end } end },
+        { __index = oldT }))
+    rawset(env, "GetCursorPosition", function() return cx, cy end)
+    rawset(env, "IsMouseButtonDown", function() return down end)
+    local ok, err = pcall(function()
+        local withPreview, sized, none = 0, 0, {}
+        for key in pairs(ns.options) do
+            local m = ns.modules[key]
+            local page = m and C:Show(key)
+            local stage = page and page.pinned and page.pinned.pane
+            if stage then
+                withPreview = withPreview + 1
+                assert(stage.puiGrips and stage.puiGrips.size and stage.puiGrips.move, key .. ": preview has no drag grips")
+                assert(not stage.puiGrips.size:GetScript("OnUpdate"), key .. ": grip uses OnUpdate")
+                local pick = D.Pick(page, m)
+                if pick and (pick.w or pick.h or pick.s) then
+                    sized = sized + 1
+                    local it = pick.w or pick.s or pick.h
+                    local before = tonumber(C.GetRowValue(page, m, it))
+                    cx, cy, down, ticks = 0, 0, true, {}
+                    local drag = D:Begin(page, m, stage.puiGrips.size, "size")
+                    assert(drag and #ticks == 1, key .. ": drag did not start a ticker")
+                    cx, cy = 10000, -10000            -- far past the limits: must clamp to max
+                    ticks[1]()
+                    local after = tonumber(C.GetRowValue(page, m, it))
+                    assert(after == it.max, key .. ": " .. it.key .. " did not clamp to its max (" .. tostring(after) .. ")")
+                    cx, cy = -10000, 10000
+                    ticks[1]()
+                    assert(tonumber(C.GetRowValue(page, m, it)) == it.min, key .. ": " .. it.key .. " did not clamp to its min")
+                    down = false; ticks[1]()          -- release stops the drag
+                    assert(not D:Active(), key .. ": drag did not stop on release")
+                    C.SetRowValue(page, m, it, before)
+                else
+                    none[#none + 1] = key
+                end
+            end
+        end
+        local ab = C:Show("ActionBars").pinned.pane
+        ab:Redraw()
+        assert(ab.hots and ab.hots[1] and ab.hots[1].puiEdges, "preview parts have no edge grips")
+        assert(ab.hots[1]:GetScript("OnDragStart"), "preview parts cannot be dragged to move")
+        assert(withPreview >= 20, "too few preview pages: " .. withPreview)
+        assert(sized >= 12, "too few previews can be resized by dragging: " .. sized)
+        -- Step: snapping, height grows downward, move offsets
+        local pick = { w = { key = "a.width", min = 10, max = 100, step = 5 }, h = { key = "a.height", min = 1, max = 50, step = 1 },
+            x = { key = "a.x", min = -50, max = 50, step = 1 }, y = { key = "a.y", min = -50, max = 50, step = 1 } }
+        local v = D.Step(pick, { w = 40, h = 10, x = 0, y = 0 }, "size", 12, -7)
+        assert(v.w == 50 and v.h == 17, "size step wrong: " .. tostring(v.w) .. "/" .. tostring(v.h))
+        v = D.Step(pick, { w = 40, h = 10, x = 0, y = 0 }, "move", 3, -4)
+        assert(v.x == 3 and v.y == -4 and v.w == nil, "move step wrong")
+        local sc = D.Step({ s = { key = "b.scale", min = 0.5, max = 2, step = 0.05 } }, { s = 1 }, "size", 100, -100)
+        assert(math.abs(sc.s - 1.5) < 1e-9, "scale step wrong: " .. tostring(sc.s))
+        print(("    preview drag: %d previews, %d resizable, no size rows: %s"):format(withPreview, sized, table.concat(none, ",")))
+    end)
+    rawset(env, "C_Timer", oldT); rawset(env, "GetCursorPosition", oldC); rawset(env, "IsMouseButtonDown", oldB)
+    assert(ok, err)
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
