@@ -2738,6 +2738,35 @@ try("phoenix vault window", function()
     shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix collections window", function()
+    local frameName = "CollectionsJournal"
+    local names = { "CollectionsJournal", "C_MountJournal", "PanelTemplates_GetSelectedTab", "C_Spell" }
+    local S = ns.modules.Skins
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown = true
+    env[frameName] = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    local tabN, summoned = 1, nil
+    env.PanelTemplates_GetSelectedTab = function() return tabN end
+    env.C_MountJournal = { GetNumDisplayedMounts = function() return 2 end,
+        GetDisplayedMountInfo = function(i) return "M" .. i, 10 + i, 1, false, true, 0, i == 1, false, nil, false, true, 50 + i end,
+        SetSearch = function() end, SummonByID = function(id) summoned = id end, SetIsFavorite = function() end,
+        SetCollectedFilterSetting = function() end }
+    env.C_Spell = { GetSpellLink = function() return "l" end }
+    assert(S.MountRecord(1).favorite and S.MountRecord(2).mountID == 52, "mount record")
+    S.db.ownCollections = true; S:SyncCollections()
+    local r = S.CollectionsReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env[frameName]), "ownCollections: window with Blizzard's tucked")
+    S.db.ownCollections = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env[frameName]), "ownCollections: switch off live")
+    S.db.ownCollections = true; S:Refresh()
+    assert(r.win:IsShown(), "ownCollections: on again")
+    r.win:GetScript("OnShow")()
+    tabN = 3; S:SyncCollections()
+    assert(not r.win:IsShown(), "other tabs: Blizzard's collections")
+    tabN = 1; shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
