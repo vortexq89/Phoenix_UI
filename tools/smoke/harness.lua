@@ -2688,6 +2688,30 @@ try("phoenix achievements window", function()
     shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix calendar window", function()
+    local frameName = "CalendarFrame"
+    local names = { "CalendarFrame", "C_Calendar", "C_DateAndTime" }
+    local S = ns.modules.Skins
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown = true
+    env[frameName] = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.C_Calendar = { GetMonthInfo = function() return { month = 10, year = 2026, numDays = 31, firstWeekday = 5 } end,
+        GetNumDayEvents = function(_, d) return d == 29 and 1 or 0 end, SetMonth = function() end,
+        GetDayEvent = function() return { title = "Raid", startTime = { hour = 20, minute = 0 } } end }
+    env.C_DateAndTime = { GetCurrentCalendarTime = function() return { month = 10, year = 2026, monthDay = 29 } end }
+    assert(S.CalendarCell(5, 1) == 5, "first day lands on its weekday")
+    S.db.ownCalendar = true; S:SyncCalendar()
+    local r = S.CalendarReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env[frameName]), "ownCalendar: window with Blizzard's tucked")
+    S.db.ownCalendar = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env[frameName]), "ownCalendar: switch off live")
+    S.db.ownCalendar = true; S:Refresh()
+    assert(r.win:IsShown(), "ownCalendar: on again")
+    r.next.onClick(); r.prev.onClick()
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
