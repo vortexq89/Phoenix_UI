@@ -38,6 +38,8 @@
     <Script file="Skins\JournalWindow.lua"/>
     <Script file="Skins\CharacterWindow.lua"/>
     <Script file="Skins\GuildWindow.lua"/>
+    <Script file="Skins\ProfessionsWindow.lua"/>
+    <Script file="Skins\QuestLogWindow.lua"/>
     <Script file="Skins\Merchant.lua"/>
     <Script file="Skins\Vault.lua"/>
     <Script file="Skins\Calendar.lua"/>

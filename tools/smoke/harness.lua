@@ -3055,6 +3055,89 @@ try("action bar multi-select everywhere", function()
     C:Show("home")
 end)
 
+try("phoenix titles, sets, recipes and quest log", function()
+    local S = ns.modules.Skins
+    local names = { "GetNumTitles", "IsTitleKnown", "GetTitleName", "GetCurrentTitle", "SetCurrentTitle", "C_EquipmentSet",
+        "ProfessionsFrame", "C_TradeSkillUI", "QuestMapFrame", "C_QuestLog", "CollapseQuestHeader" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    env.GetNumTitles = function() return 3 end
+    env.IsTitleKnown = function(i) return i ~= 2 end
+    env.GetTitleName = function(i) return " Title" .. i .. " " end
+    env.GetCurrentTitle = function() return 3 end
+    local titles = S.CharacterTitles()
+    assert(#titles == 3 and titles[3].current and titles[2].name == "Title1", "known titles, trimmed, current marked")
+    env.C_EquipmentSet = { GetEquipmentSetIDs = function() return { 4 } end,
+        GetEquipmentSetInfo = function() return "PvP", 1, 4, true, 16, 15, 0, 1, 0 end }
+    local sets = S.CharacterSets()
+    assert(#sets == 1 and sets[1].equipped and sets[1].lost == 1, "equipment sets")
+    -- recipe list overlay over Blizzard's recipe list
+    local cp = CreateFrame("Frame", nil, env.UIParent)
+    cp.RecipeList = CreateFrame("Frame", nil, cp)
+    cp.RecipeList.IsVisible = function() return true end
+    local picked
+    cp.RecipeList.SelectRecipe = function(_, info) picked = info.recipeID end
+    env.ProfessionsFrame = CreateFrame("Frame", nil, env.UIParent)
+    env.ProfessionsFrame.CraftingPage = cp
+    local fav
+    env.C_TradeSkillUI = { GetFilteredRecipeIDs = function() return { 11, 12, 13 } end,
+        GetRecipeInfo = function(id) return { recipeID = id, name = "R" .. id, categoryID = id == 13 and 2 or 1, learned = id ~= 12,
+            numAvailable = id == 11 and 3 or 0, relativeDifficulty = 1 } end,
+        GetCategoryInfo = function(c) return { name = "Cat" .. c } end, SetRecipeFavorite = function(id, v) fav = { id, v } end,
+        GetRecipeLink = function() return "link" end }
+    S.RecipeState("reset")
+    local rows = S.RecipeRows()
+    assert(#rows == 5 and rows[1].header and rows[2].count == 3, "recipes under category headers")
+    S.RecipeState("learned", true)
+    assert(#S.RecipeRows() == 4, "learned only")
+    S.RecipeState("close", 1)
+    assert(#S.RecipeRows() == 3, "collapsed header")
+    S.RecipeState("reset")
+    S.db.ownProfessions = true
+    local o = S.ProfessionsOverlay
+    o:Hook(); o:Sync()
+    assert(o.panel and o.panel:IsShown() and ns.Skin:IsTucked(cp.RecipeList), "ownProfessions: our list over Blizzard's")
+    o:Layout()
+    S.db.ownProfessions = false; S:Refresh()
+    assert(not o.panel:IsShown() and not ns.Skin:IsTucked(cp.RecipeList), "ownProfessions: switch off live")
+    S.db.ownProfessions = true; S:Refresh()
+    assert(picked == nil and fav == nil, "nothing selected without a click")
+    -- quest log overlay
+    local qm = CreateFrame("Frame", nil, env.UIParent)
+    qm.QuestsFrame = CreateFrame("Frame", nil, qm)
+    qm.QuestsFrame.IsVisible = function() return true end
+    env.QuestMapFrame = qm
+    local watched = {}
+    env.C_QuestLog = setmetatable({ GetNumQuestLogEntries = function() return 3 end,
+        GetInfo = function(i)
+            if i == 1 then return { isHeader = true, title = "Zone" } end
+            return { questID = 100 + i, title = "Q" .. i, level = 80, frequency = i == 3 and 1 or 0 }
+        end,
+        GetQuestObjectives = function(id) return { { text = id == 102 and "Kill 5" or "Find it", finished = false } } end,
+        IsComplete = function(id) return id == 103 end, GetQuestWatchType = function(id) return watched[id] end,
+        AddQuestWatch = function(id) watched[id] = 0 end, RemoveQuestWatch = function(id) watched[id] = nil end },
+        { __index = saved.C_QuestLog })
+    S.QuestLogSearch("")
+    local q = S.QuestRows()
+    assert(#q == 3 and q[3].complete and q[3].daily, "quests under their zone")
+    S.QuestLogSearch("kill")
+    q = S.QuestRows()
+    assert(#q == 2 and q[2].id == 102, "search over objectives keeps the header")
+    S.QuestLogSearch("nothing")
+    assert(#S.QuestRows() == 0, "empty headers dropped while searching")
+    S.QuestLogSearch("")
+    S.db.ownQuestLog = true
+    local ql = S.QuestLogOverlay
+    ql:Hook(); ql:Sync()
+    assert(ql.panel and ql.panel:IsShown() and ns.Skin:IsTucked(qm.QuestsFrame), "ownQuestLog: our list in the map")
+    ql:Layout()
+    S.db.ownQuestLog = false; S:Refresh()
+    assert(not ql.panel:IsShown() and not ns.Skin:IsTucked(qm.QuestsFrame), "ownQuestLog: switch off live")
+    S.db.ownQuestLog = true
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+    S:Refresh()
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
@@ -3726,11 +3809,11 @@ try("action bars engine", function()
     for _, it in ipairs(mv and mv:GetEntries() or {}) do if it.key == "ab.bar2" then e = it end end
     if M:IsPhoenix() then assert(e and e.store, "bar 2 is not in Layout mode") end
     if e and e.store then
-        local was = M.db.bars.bar2.y
         e.store.set({ point = "BOTTOM", x = 10, y = 333 })
         assert(M.db.bars.bar2.y == 333 and M.db.bars.bar2.x == 10, "a moved bar did not save its offset")
         e.store.reset()
-        assert(M.db.bars.bar2.y == was and M.db.bars.bar2.x == 0, "resetting a bar did not restore the default")
+        local d2 = M.DEFAULTS.bars.bar2
+        assert(M.db.bars.bar2.y == d2.y and M.db.bars.bar2.x == d2.x, "resetting a bar did not restore the default")
     end
     -- cooldown numbers follow the icon size when scaling is on
     local C = ns.modules.CooldownText
