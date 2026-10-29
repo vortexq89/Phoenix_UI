@@ -4,10 +4,10 @@ local L, W, Skin = ns.L, ns.Widgets, ns.Skin
 --[[ The Phoenix bank window: our own window for the character bank and the Warband bank, drawn from the bank
     API (C_Bank tab data, C_Container slots) in the Phoenix look: bank-type rail, tab strip with the tabs' own
     icons, a slot grid, search, sort, deposit reagents and the Warband gold. Tab settings (the cog: name and
-    which items auto-deposit there, saved with the bank's own update call; the tab icon is kept) and gold
+    which items auto-deposit there and the tab icon from the Phoenix icon picker, saved with the bank's own update call) and gold
     deposit / withdraw where the bank type allows it (the game's own checks and calls, on your click).
     Bags > "Phoenix bank window" off brings back Blizzard's bank (reskinned), live; the arrow button opens
-    Blizzard's bank for this visit only (buying tabs, the tab icon picker).
+    Blizzard's bank for this visit only (buying tabs).
 
     Safety: Blizzard's BankFrame stays open the whole visit (so Escape, right-click deposits from the bags and
     every "is the bank open" check behave as usual); Skin:Tuck only makes it see-through and parks its child
@@ -254,6 +254,16 @@ function M:BuildBankExtras()
     s.save:SetHeight(22)
     s.save:SetPoint("BOTTOMLEFT", 12, 10)
     s.save.onClick = function() M:SaveBankTab() end
+    s.iconBtn = CreateFrame("Button", nil, s)
+    s.iconBtn:SetSize(22, 22)
+    s.iconBtn:SetPoint("LEFT", s.save, "RIGHT", 8, 0)
+    s.iconBtn.tex = s.iconBtn:CreateTexture(nil, "ARTWORK")
+    s.iconBtn.tex:SetAllPoints()
+    Skin:Border(s.iconBtn, "border.strong")
+    s.iconBtn:SetScript("OnClick", function()
+        local t = tabData()
+        W:IconPicker():Open(s.icon or (t and t.icon), function(icon) s.icon = icon; s.iconBtn.tex:SetTexture(icon) end)
+    end)
     Skin:Register(s, function(self) Skin:Panel(self, "base", { border = "border.strong" }) end)
     -- gold transfer (bank types that allow it)
     win.gold = W:Input(win, 90, L.BAGS_BANK_GOLD)
@@ -274,6 +284,8 @@ function M:LayoutBankSettings()
     local s = win.settings
     if not t then s:Hide(); return end
     s.name:SetValue(t.name or "")
+    s.icon = nil
+    s.iconBtn.tex:SetTexture(t.icon)
     for _, c in ipairs(s.checks) do c.on = M.BankFlagOn(t.depositFlags, c.value); M.PaintBankCheck(c) end
 end
 
@@ -285,7 +297,9 @@ function M:SaveBankTab()
         if c.on then flags = bit.bor(flags, c.value) elseif M.BankFlagOn(flags, c.value) then flags = flags - c.value end
     end
     local name = win.settings.name:GetText()
-    C_Bank.UpdateBankTabSettings(bankType, tabID, (name ~= nil and name ~= "") and name or t.name, t.icon, flags)
+    C_Bank.UpdateBankTabSettings(bankType, tabID, (name ~= nil and name ~= "") and name or t.name, win.settings.icon or t.icon,
+        flags)
+    win.settings.icon = nil
     win.settings:Hide()
 end
 

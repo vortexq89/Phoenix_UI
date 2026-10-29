@@ -341,11 +341,29 @@ function M.BuildSetTools(x)
     r.newSet.onChange = function(box, name)
         name = tostring(name or "")
         if name == "" or not ready() then return end
-        E.CreateEquipmentSet(name, 134400) -- the question-mark icon; Blizzard's manager changes it
+        E.CreateEquipmentSet(name, r.newIcon or 134400) -- the picked icon, else the question mark
         box:SetValue("")
         r:Layout()
     end
-    r.setTools = { r.equip, r.saveSet, r.deleteSet, r.newSet }
+    -- the icon of the picked set (or of the next new one): the shared Phoenix icon picker
+    r.setIcon = W:Button(r.body, L.ICON_PICK, "secondary", "grid", 80)
+    r.setIcon:SetHeight(24); r.setIcon:SetPoint("RIGHT", r.newSet, "LEFT", -6, 0)
+    r.setIcon.onClick = function()
+        if not ready() then return end
+        local current
+        if r.pickSet then current = select(2, E.GetEquipmentSetInfo(r.pickSet)) else current = r.newIcon end
+        W:IconPicker():Open(current, function(icon)
+            if InCombatLockdown() then return end
+            if r.pickSet then
+                local name = E.GetEquipmentSetInfo(r.pickSet)
+                E.ModifyEquipmentSet(r.pickSet, name, icon)
+            else
+                r.newIcon = icon
+            end
+            r:Layout()
+        end)
+    end
+    r.setTools = { r.equip, r.saveSet, r.deleteSet, r.newSet, r.setIcon }
 end
 
 -- Which tab Blizzard's panel opened on (U opens reputation, the currency key opens currency).
