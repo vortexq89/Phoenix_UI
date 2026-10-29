@@ -27,7 +27,7 @@ local M = ns:NewModule("Tooltip", {
         idKinds = { spell = true, item = true, unit = true, aura = true, currency = true, quest = true,
             achievement = true, mount = true },
         itemCount = true,
-        vendorPrice = true, collected = true, keystone = true,     -- S17 item extras
+        vendorPrice = true, collected = true, keystone = true, gathering = true,     -- S17 item extras
     },
 })
 

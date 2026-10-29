@@ -347,7 +347,59 @@ function M:UnitExtras(tt, unit, isPlayer, data)
     if not isPlayer then self:AddID(tt, "unit", data, unit) end
 end
 
+---------------------------------------------------------------- gathering skill (herbs, ore, skins, fishing)
+-- Skill lines of the gathering professions (game IDs): Herbalism, Mining, Skinning, Fishing.
+local GATHER = { [182] = true, [186] = true, [393] = true, [356] = true }
+
+-- Your gathering professions: { { name, rank, max }, … }.
+function M.GatherSkills()
+    local out = {}
+    if type(GetProfessions) ~= "function" then return out end
+    local list = { GetProfessions() }
+    for i = 1, 6 do
+        local index = list[i]
+        if index then
+            local name, _, rank, max, _, _, line = GetProfessionInfo(index)
+            if GATHER[line] and plain(name) and type(name) == "string" then
+                out[#out + 1] = { name = name, rank = rank, max = max }
+            end
+        end
+    end
+    return out
+end
+
+-- The line to add under a node's "Requires <skill> <n>" line: your rank, coloured by whether you can gather
+-- it. nil when the text names none of your gathering skills.
+function M.GatherLine(text, skills)
+    if type(text) ~= "string" or not plain(text) then return nil end
+    for _, sk in ipairs(skills) do
+        if text:find(sk.name, 1, true) then
+            local need = tonumber(text:match("(%d+)"))
+            local ok = not need or (type(sk.rank) == "number" and sk.rank >= need)
+            return L.TOOLTIP_GATHER:format(sk.name, sk.rank or 0, sk.max or 0), ok
+        end
+    end
+    return nil
+end
+
+local function onGatherShow(tt)
+    if not (M:IsEnabled() and M.db.gathering) or tt:GetUnit() then return end
+    local skills = M.GatherSkills()
+    if #skills == 0 then return end
+    for i = 2, math.min(tt:NumLines() or 0, 6) do
+        local fs = lineFS(tt, i)
+        local line, ok = M.GatherLine(fs and fs:GetText(), skills)
+        if line then
+            tt:AddLine(line, Theme:Color(ok and "state.success" or "state.danger"))
+            tt:Show()
+            return line
+        end
+    end
+end
+M.OnGatherShow = onGatherShow
+
 function M:EnableExtras()
     ensureHealth()
+    GameTooltip:HookScript("OnShow", function(tt) pcall(onGatherShow, tt) end)
     ns.Events:On("INSPECT_READY", self, function(_, guid) M:OnInspectReady(guid) end)
 end

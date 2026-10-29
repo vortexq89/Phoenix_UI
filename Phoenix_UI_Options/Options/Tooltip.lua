@@ -76,6 +76,8 @@ ns:RegisterOptions("Tooltip", {
       keywords = "bags bank warband count" },
     { type = "toggle", key = "vendorPrice", label = "TOOLTIP_VENDOR", desc = "TOOLTIP_VENDOR_DESC",
       keywords = "vendor sell price gold money" },
+    { type = "toggle", key = "gathering", label = "TOOLTIP_GATHER_SHOW", desc = "TOOLTIP_GATHER_DESC",
+      keywords = "herb ore mining herbalism skinning fishing node skill" },
     { type = "toggle", key = "collected", label = "TOOLTIP_COLLECT", desc = "TOOLTIP_COLLECT_DESC",
       keywords = "collected known transmog appearance toy mount pet" },
     { type = "toggle", key = "keystone", label = "TOOLTIP_KEYSTONE", desc = "TOOLTIP_KEYSTONE_DESC", feature = "mythicplus",
