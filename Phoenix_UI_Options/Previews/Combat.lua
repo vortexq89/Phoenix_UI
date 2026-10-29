@@ -113,6 +113,25 @@ P:Register("damagemeter", {
         frame:SetSize(300, 5 * 20 + 8)
         frame:SetPoint("CENTER")
         local rows = {}
+        -- WoW Forever: the threat meter beside the meter, drawn from the same rows as the real window
+        local threat
+        if ns:Supports("threatMeter") then
+            frame:ClearAllPoints()
+            frame:SetPoint("RIGHT", stage, "CENTER", -6, 0)
+            threat = CreateFrame("Frame", nil, stage)
+            threat:SetPoint("LEFT", stage, "CENTER", 6, 0)
+            threat.title = P.Text(threat)
+            threat.title:SetPoint("TOPLEFT", 6, -5)
+            threat.rows = {}
+            for i = 1, 5 do
+                local bar = P.Bar(threat, 1, 100, 16)
+                bar.name = P.Text(bar)
+                bar.name:SetPoint("LEFT", 4, 0)
+                bar.value = P.Text(bar)
+                bar.value:SetPoint("RIGHT", -4, 0)
+                threat.rows[i] = bar
+            end
+        end
         for i, s in ipairs(METER) do
             local bar = P.Bar(frame, s[2], 284, 18)
             bar:SetPoint("TOPLEFT", 8, -4 - (i - 1) * 20)
@@ -150,6 +169,29 @@ P:Register("damagemeter", {
                 bar:SetStatusBarColor(r, g, b)
                 bar.name:SetText(i .. ". " .. L[METER[i][1]])
                 bar.value:SetText(METER[i][4])
+            end
+            if threat then
+                local t = m.db.threat
+                threat:SetShown(t.enabled)
+                local n = math.min(5, t.rows)
+                threat:SetSize(t.width, 22 + n * 18)
+                Skin:Panel(threat, "base", { border = "border.subtle" })
+                threat.title:SetText(L.DM_THREAT)
+                local order = { 4, 1, 2, 3, 5 } -- the tank first
+                for i, bar in ipairs(threat.rows) do
+                    local s = METER[order[i]]
+                    bar:SetShown(i <= n)
+                    bar:SetWidth(t.width - 8)
+                    bar:ClearAllPoints()
+                    bar:SetPoint("TOPLEFT", 4, -20 - (i - 1) * 18)
+                    bar:SetStatusBarTexture(ns.Theme:Bar())
+                    local pct = i == 1 and 100 or math.floor(s[2] * 92)
+                    bar:SetMinMaxValues(0, 100)
+                    bar:SetValue(pct)
+                    bar:SetStatusBarColor(ns.Util.ClassColor(s[3]))
+                    bar.name:SetText(i == 1 and L.DM_THREAT_TANK:format(L[s[1]]) or L[s[1]])
+                    bar.value:SetText(pct .. "%")
+                end
             end
         end
     end,
