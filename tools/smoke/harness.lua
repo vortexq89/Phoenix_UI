@@ -3189,6 +3189,28 @@ try("open items: imbues, reward mark, gathering, uprank, threat", function()
     if DM.UpdateThreat then DM:UpdateThreat() end
 end)
 
+try("audit: live switches and idle timers", function()
+    local S, TT, DT = ns.modules.Skins, ns.modules.Tooltip, ns.modules.DataTexts
+    -- title / close / tabs restyle every dressed window live
+    local f = CreateFrame("Frame", nil, env.UIParent)
+    S.SkinWindow(f)
+    assert(S.IsWindowOn(f), "window dressed")
+    S.db.titleStyle = "minimal"
+    S:OnSettingChanged("titleStyle")
+    assert(S.IsWindowOn(f), "redressed with the new title style")
+    S.db.titleStyle = "phoenix"
+    S:OnSettingChanged("titleStyle")
+    S.UnskinWindow(f)
+    -- tooltip fonts off and on, live
+    TT.db.fonts = false; TT:Refresh()
+    TT.db.fonts = true; TT:Refresh()
+    -- the data text fader only runs with "Mouseover only" on
+    if DT.SyncFader then
+        DT.db.mouseover = false
+        assert(DT:SyncFader() == false, "fader idle when off")
+    end
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
