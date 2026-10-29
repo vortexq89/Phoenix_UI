@@ -106,6 +106,8 @@ ns.RegisterLocale("enUS", {
     SKINS_TRANSMOG_DESC = "The transmog window: slots, outfit bar and Apply in the Phoenix look.",
     SKINS_HOUSING = "Housing dashboard",
     SKINS_HOUSING_DESC = "The housing dashboard: catalogue, plots and neighbourhood in the Phoenix look.",
+    SKINS_PVP_MATCH = "PvP scoreboard",
+    SKINS_PVP_MATCH_DESC = "The battleground and arena scoreboard and match results: a dense table with team-coloured rows, your row in the accent and Phoenix buttons.",
     SKINS_CHIP_ALL = "All",
     SKINS_CHIP_COLLECTED = "Collected",
     SKINS_CHIP_MISSING = "Not collected",

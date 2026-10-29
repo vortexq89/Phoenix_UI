@@ -33,6 +33,7 @@
     <Script file="Skins\Inspect.lua"/>
     <Script file="Skins\Gossip.lua"/>
     <Script file="Skins\Trade.lua"/>
+    <Script file="Skins\PvPMatch.lua"/>
     <Script file="Skins\Settings.lua"/>
     <Script file="Skins\Housing.lua"/>
     <Script file="ActionBars\ActionBars.lua"/>

@@ -16,7 +16,7 @@ local M = ns:NewModule("Skins", {
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
-        trade = true, dressUp = true, transmog = true, housing = true, pgf = true, alerts = false,
+        trade = true, dressUp = true, transmog = true, housing = true, pvpMatch = true, pgf = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
         moveWindows = false, movedWindows = {}, mailAlts = true, premadeSearches = {},
@@ -57,6 +57,7 @@ M.WINDOWS = {
     { key = "keystone", frames = { "ChallengesKeystoneFrame" }, addon = "Blizzard_ChallengesUI", feature = "mythicplus" },
     { key = "trade", frames = { "TradeFrame" } },
     { key = "housing", frames = { "HousingDashboardFrame" } },
+    { key = "pvpMatch", frames = { "PVPMatchScoreboard", "PVPMatchResults" }, dialog = true },
     { key = "dressUp", frames = { "DressUpFrame" } },
     -- other addons' windows (skinned only when that addon is loaded)
     { key = "pgf", frames = { "PremadeGroupsFilterDialog" }, addon = "PremadeGroupsFilter", dialog = true },
@@ -125,14 +126,35 @@ local function paintTab(tab)
 end
 M.PaintTab = paintTab
 
+local function skinTab(tab)
+    if not skinnedTabs[tab] then
+        skinnedTabs[tab] = true
+        for _, key in ipairs(TAB_ART) do Skin:HideRegion(tab[key]) end
+        Skin:Register(tab, paintTab)
+    else
+        paintTab(tab)
+    end
+end
+
+local function unskinTab(tab)
+    if not skinnedTabs[tab] then return end
+    skinnedTabs[tab] = nil
+    for _, key in ipairs(TAB_ART) do Skin:Restore(tab[key]) end
+    local fs = tab.Text or (tab.GetFontString and tab:GetFontString())
+    if fs then Skin:Restore(fs) end
+    Skin:Restore(tab)
+end
+
 local function skinTabs(frame)
-    for _, tab in ipairs(tabsOf(frame)) do
-        if not skinnedTabs[tab] then
-            skinnedTabs[tab] = true
-            for _, key in ipairs(TAB_ART) do Skin:HideRegion(tab[key]) end
-            Skin:Register(tab, paintTab)
-        else
-            paintTab(tab)
+    for _, tab in ipairs(tabsOf(frame)) do skinTab(tab) end
+end
+
+-- Tab buttons a window keeps under other names (not frame.Tabs / <Name>TabN): the same Phoenix tabs, live both
+-- ways, and only while Skins > Tabs is on.
+function M.SkinTabList(tabs, on)
+    for _, tab in ipairs(tabs) do
+        if type(tab) == "table" and tab.GetObjectType then
+            if on and M.db.tabs then skinTab(tab) else unskinTab(tab) end
         end
     end
 end
@@ -203,15 +225,7 @@ local function unwindow(frame)
     end
     local title = titleOf(frame)
     if title then Skin:Restore(title) end
-    for _, tab in ipairs(tabsOf(frame)) do
-        if skinnedTabs[tab] then
-            skinnedTabs[tab] = nil
-            for _, key in ipairs(TAB_ART) do Skin:Restore(tab[key]) end
-            local fs = tab.Text or (tab.GetFontString and tab:GetFontString())
-            if fs then Skin:Restore(fs) end
-            Skin:Restore(tab)
-        end
-    end
+    for _, tab in ipairs(tabsOf(frame)) do unskinTab(tab) end
     Skin:Restore(frame)
 end
 M.UnskinWindow = unwindow
@@ -221,7 +235,7 @@ function M.IsWindowOn(frame) return winOn[frame] and true or false end
 M.LIVE = { gameMenu = true, character = true, popups = true, readyCheck = true, groupFinder = true, spellbook = true,
     loot = true, auction = true, professions = true, friends = true, communities = true, journal = true,
     achievements = true, collections = true, mail = true, merchant = true, vault = true, calendar = true, dressUp = true,
-    settings = true, gossip = true, trade = true, inspect = true, housing = true }
+    settings = true, gossip = true, trade = true, inspect = true, housing = true, pvpMatch = true }
 function M:ApplyLive()
     for _, entry in ipairs(self.WINDOWS) do
         if self.LIVE[entry.key] then

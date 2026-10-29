@@ -30,7 +30,7 @@ end
 local function paintRow(row)
     local d = rows[row]
     if not d then return end
-    local sel = M.RowSelected(row)
+    local sel = d.selected or M.RowSelected(row)
     W.Color(d.stripe, (d.hover or sel) and "accent.primary" or "bg.raised", (d.hover or sel) and 0.14 or d.alpha)
     Skin:SetBorderColor(d, sel and "accent.primary" or "border.subtle")
     d.edge:SetShown(sel or d.bar or false)
@@ -38,7 +38,8 @@ local function paintRow(row)
 end
 M.PaintKitRow = paintRow
 
--- opts: alpha (stripe strength), bar = true (always show the left bar), barColor = { r, g, b } (e.g. quality)
+-- opts: alpha (stripe strength), bar = true (always show the left bar), barColor = { r, g, b } (e.g. quality),
+-- selected = true (outline the row in the accent when the list has no selection art of its own, e.g. "you")
 function M.KitRow(row, on, opts)
     if type(row) ~= "table" or not row.CreateTexture then return end
     local d = rows[row]
@@ -61,7 +62,7 @@ function M.KitRow(row, on, opts)
             row:HookScript("OnLeave", function(self) if rows[self] then rows[self].hover = false; paintRow(self) end end)
         end
     end
-    d.alpha, d.bar, d.barColor = opts.alpha or 0.5, opts.bar, opts.barColor
+    d.alpha, d.bar, d.barColor, d.selected = opts.alpha or 0.5, opts.bar, opts.barColor, opts.selected
     d:Show(); d.stripe:Show()
     paintRow(row)
 end

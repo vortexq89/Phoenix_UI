@@ -2390,6 +2390,25 @@ try("housing phase 4 skin", function()
     S:SkinHousing(); S.db.housing = false; S:Refresh(); S.db.housing = true; S:Refresh()
     env.HousingDashboardFrame = nil
 end)
+try("pvp scoreboard phase 4 skin", function()
+    local S = ns.modules.Skins
+    local sb = CreateFrame("Frame", "PVPMatchScoreboard", UIParent)
+    env.PVPMatchScoreboard = sb
+    sb.Content = CreateFrame("Frame", nil, sb)
+    sb.Content.Background = sb.Content:CreateTexture()
+    sb.Content.ScrollCategories = CreateFrame("Frame", nil, sb.Content)
+    CreateFrame("Button", nil, sb.Content.ScrollCategories)
+    sb.Content.TabContainer = CreateFrame("Frame", nil, sb.Content)
+    sb.Content.TabContainer.TabGroup = CreateFrame("Frame", nil, sb.Content.TabContainer)
+    sb.Content.TabContainer.TabGroup.Tab1 = CreateFrame("Button", nil, sb.Content.TabContainer.TabGroup)
+    local res = CreateFrame("Frame", "PVPMatchResults", UIParent)
+    env.PVPMatchResults = res
+    res.buttonContainer = CreateFrame("Frame", nil, res)
+    res.buttonContainer.leaveButton = CreateFrame("Button", nil, res.buttonContainer)
+    S:SetupPvPMatch(); S.db.pvpMatch = false; S:Refresh(); S.db.pvpMatch = true; S:Refresh()
+    for _, f in ipairs({ sb, res }) do assert(not f:GetScript("OnUpdate"), "pvp skin added an OnUpdate") end
+    env.PVPMatchScoreboard, env.PVPMatchResults = nil, nil
+end)
 try("safe scale never hands SetScale a bad value", function()
     local U = ns.Util
     for _, v in ipairs({ 0, -1, 0 / 0, math.huge, "1", false }) do assert(U.SafeScale(v) == 1, tostring(v)) end
