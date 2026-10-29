@@ -23,7 +23,7 @@ Status: **has** = Phoenix does it, **partial** = some of it, **missing** = not t
 | Stays in view while scrolling | The header stays fixed | The preview pins and sticks once the page header scrolls away | has |
 | Real size, real content | The real bar's buttons and icons | Real spells and units at true size, scaled only to fit, with a 1:1 / % label (t119) | has |
 | Per element / per tab | Follows the selected bar | Follows the selected chip; state chips (cooldown, low health…) | has |
-| Click a preview part to jump to its setting | Hit overlays on preview elements open the setting | Not there | **missing** |
+| Click a preview part to jump to its setting | Hit overlays on preview elements open the setting | Click opens a quick-edit popover at that part (VISUAL_DEFECTS #5); 30 previews drag, 20 resize (`Config/PreviewDrag.lua`) | has (2026-10-29) |
 | Dismissable hint | One-line hint, can be dismissed | Hint text, fold/eye button | has |
 
 ## 3. Editing several elements at once (bars, unit frames, nameplates, cast bars)
@@ -46,15 +46,14 @@ Status: **has** = Phoenix does it, **partial** = some of it, **missing** = not t
 | Presets | Community presets, imported in one click, shown on the site | Built-in presets page | partial (no community gallery, no screen preview) |
 | Profiles | One profile across modules | Profiles page: per character, copy, delete | has |
 | Import / export | Profile strings | Profile import/export strings | has |
-| First-install wizard | Yes (FirstInstall) | No guided first run; there is a migration notice | **missing** |
+| First-install wizard | Yes (FirstInstall) | First-run installer (`Phoenix_UI_Options/Config/Installer.lua`) | has (2026-10-29) |
 | Unlock / move | One key makes everything drag-and-drop, snaps to frames, screen and pixel grid | Layout mode: boxes only for shown frames, grid, snapping, arrow-key nudge, per-frame reset, Settings button (t119) | has |
-| Edit a frame's settings in place while moving | Cog popups on the element | Settings button jumps to the page, not a popup | partial |
+| Edit a frame's settings in place while moving | Cog popups on the element | Cog popup with anchor and X/Y (VISUAL_DEFECTS stage 2); other settings still jump to the page | partial |
 | Quick keybind mode | Built-in | Blizzard's own | missing |
 
-## Next gaps, most valuable first
-1. Click a preview element to jump to its setting.
-2. A first-run setup wizard: role, resolution, preset.
-3. Split Bags and DataTexts into tabs (Layout / Look / Text / Behaviour).
-4. An in-place settings popup on a mover box.
-5. A preset gallery with a full-screen preview.
-6. A flash on every row that receives an apply-to-all edit.
+## Next gaps, most valuable first (updated 2026-10-29)
+Done since t123u: click a preview to edit it, first-run installer, tabs on Bags and DataTexts, mover cog popup (position only).
+1. A preset gallery with a full-screen preview.
+2. Full in-place settings (not only position) in the mover popup.
+3. A flash on every row that receives an apply-to-all edit.
+4. Quick keybind mode (being built, see `FEATURE_AUDIT_2026-10-29.md`).

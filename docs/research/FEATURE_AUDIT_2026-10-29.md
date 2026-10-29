@@ -213,3 +213,18 @@ in several places. The biggest drop comes from the "in game" column: nothing in 
 ## Unverified in this audit
 Resource threshold depth; Bags custom category rules; Plater-style per-NPC lists; conditional overrides; anything at
 runtime in game.
+
+## Addendum (2026-10-29, after the audit)
+- **Harness metric correction.** "Harness mentions" counted lines naming the module, but tests reach modules through a local
+  alias (`local M = ns.modules.GroupFrames`), so the column undercounts. Dedicated tests before this round: GroupFrames 4,
+  Auras 3, CooldownText 2 (inside other tests), CombatText 1, SpellHistory 0. Added: "group frame sorting and party flags",
+  "aura duration edges", "cooldown text sizes, aura hiding and claims", "combat text events: secret types skipped, merges,
+  areas off" (both clients).
+- **Rule finding: there is no Ticker registry on this branch.** The rule "no OnUpdate outside the Ticker registry" refers to the
+  v2 Kernel. On `restore/v1-ui` about 18 frames set a scoped `OnUpdate` that only runs while something is active
+  (`UI/Anim.lua`, `UI/Glow.lua`, `Modules/CombatText/Scroll.lua:82`, `Modules/AFK/AFK.lua:78`, `Modules/PvP/PvP.lua:36,149`,
+  `Modules/Quests/Arrow.lua:126`, `Pins.lua:252`, `Modules/Tracker/Viewers.lua:463`, `Modules/Minimap/Minimap.lua:288`,
+  `Modules/UnitFrames/Blizzard.lua:203`, `Resources.lua:335`, `Modules/Quality/Quality.lua:128`,
+  `Modules/Encounters/Warnings.lua:175`, `Modules/Movers/Movers.lua:411`, `UI/Widgets/Chips.lua:259`, `Slider.lua:85`).
+  New code uses `C_Timer` tickers. Whether to build a shared ticker and move these onto it is an owner decision.
+- Corrected FEATURE_COVERAGE.md (rows, statuses, summary 106 / 7 partial / 4 missing) and ELLESMERE_GAP_AUDIT.md.

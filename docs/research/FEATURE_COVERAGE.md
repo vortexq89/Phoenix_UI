@@ -6,14 +6,17 @@ Rule (user, t125u): when EllesmereUI has the feature, its version is the referen
 
 Installed only in one place: game folder only - BetterWardrobe, MountsJournal, MythicDungeonTools, RaiderIO (+DBs), RareScanner, SpecBisTooltip, Tust_EUI; `I:\` only - Questie (+DB, Trace), TrufiGCD, WoW-API (reference, not an addon). Libraries: see `addons/_SharedLibraries.md`.
 
+> **Corrected 2026-10-29 (feature audit, `FEATURE_AUDIT_2026-10-29.md`).** This file was first written against an older multi-addon layout (`Phoenix_UI_HUD`, `Phoenix_UI_Sentinel`, `Core/Kernel.lua` ...) that is not on `restore/v1-ui`. Rows whose paths or status were wrong now point at this branch. Setting keys written like `vault.*`, `tt.*`, `mm.*`, `gf.*` are names from that layout; the real keys are in `Phoenix_UI_Options/Options/<Module>.lua`. Status changes: click casting, kick tracker, raid markers -> missing; damage meter windows, conditional overrides, BossBlock, gold ledger, HUD movers, Tust extras, cursor/QoL -> partial.
+
 ## Summary
 
 | Class | Features |
 |---|---|
-| Phoenix has | 117 |
-| missing | 1 |
+| Phoenix has | 106 |
+| partial | 7 |
+| missing | 4 |
 | duplicate (skip) | 1 |
-| out of scope | 9 |
+| out of scope | 10 |
 
 ## Prioritized build list
 
@@ -37,24 +40,24 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 |---|---|---|---|
 | Auctionator | Shopping lists and search | out of scope | Not planned. Make sure our AH skin coexists with Auctionator's tabs (P3 test). |
 | Auctionator | Selling and cancelling | Phoenix has | Automation > Auction undercut (price just under the lowest offer, cancel helper one click at a time). |
-| Auctionator | Price tooltips | out of scope | Phoenix shows vendor price and upgrade info in tooltips (`Phoenix_UI_HUD/TooltipExtras.lua`) but no auction price. |
+| Auctionator | Price tooltips | out of scope | Phoenix shows vendor price and upgrade info in tooltips (`Modules/Tooltip/Tooltip.lua`, Tooltip > vendorPrice) but no auction price. |
 | AutoQueue | Auto role check | Phoenix has | Phoenix `Phoenix_UI_GroupFinder/QueueHelper.lua` handles role checks, sign-up and the Enter-to-sign-up button (`gf.*` keys). |
 | AutoQueue | Auto sign-up for premades | Phoenix has | Covered by QueueHelper (sign-up, Enter button). PremadeGroupsFilter also covers this. |
 | BetterWardrobe | Saved outfits and situations | out of scope | Not planned. |
 | BetterWardrobe | Collection list and filters | Phoenix has | Skins > Transmog set list (pieces owned, closest first, search). |
-| BigWigs | Midnight timers from the encounter timeline | Phoenix has | Phoenix `Phoenix_UI_Pulse/Pulse.lua` draws bars from `C_EncounterTimeline` (sorted event list, engine duration objects, highlight events) and soft-yields when BigWigs/DBM |
+| BigWigs | Midnight timers from the encounter timeline | Phoenix has | `Modules/Encounters/Bars.lua` and `Encounters.lua` draw bars from the game's encounter timeline; BigWigs bridge in `Modules/Encounters/BigWigs.lua`. |
 | BigWigs | Messages, sounds, countdown voice | Phoenix has | Encounters > Ability rules (spellID=hide / emph / sound) on the Phoenix timeline bars. |
 | BigWigs | Pull, break and battle-res tools | Phoenix has | Phoenix `Phoenix_UI_RaidTools` (`rt.pullSeconds`, `rt.breakMinutes`, `rt.mplusCountdown`, `/pui cd`), battle res on item bar and in Ascent (`ascent.brLust`), `Skins/Queue |
-| BigWigs | BossBlock (noise control) | Phoenix has | Phoenix `Phoenix_UI_Flow/Quiet.lua` (`flow.quiet.instances`, `flow.quiet.where`), `flow.hideBanners`, `flow.hideErrors`; CVar ledger restores old values. |
+| BigWigs | BossBlock (noise control) | partial | Banner hiding in `Modules/Quality/Quality.lua` (hideZoneText, hideBossBanner). No per-instance quiet list or CVar ledger on this branch. |
 | BigWigs | Nameplate icons and InfoBox/AltPower | out of scope | Phoenix Nameplates has cast/aura lanes and M+ indicators; no boss-module nameplate timers. |
 | BigWigs | Statistics | Phoenix has | Phoenix `rt.stats.*` (encounter stats with wipe trend, `rt.stats.yieldToBossMods`). |
-| BugSack | Early error capture | Phoenix has | Phoenix has Sentinel (`Phoenix_UI_Sentinel/Capture.lua`, `Taint.lua`, `Ring.lua`, `Store.lua`) and a BugGrabber bridge in `Core/SentinelHook.lua`; the toc lists BugGrabbe |
-| BugSack | Bug viewer (BugSack) | Phoenix has | Phoenix has `Phoenix_UI_Sentinel/Viewer.lua`, `Toast.lua`, `Share.lua`, `Export.lua` and `Core/BugDisplay.lua`, plus the companion Uploader. Sentinel goes further (upload |
-| EllesmereUI | Lite framework instead of Ace3 | Phoenix has | Phoenix has its own kernel (`Core/Kernel.lua`, `Core/DB.lua`, `Core/Schema.lua`) and client gate (`Core/ClientGate.lua`). |
-| EllesmereUI | Unlock Mode (movers with anchors and snapping) | Phoenix has | Phoenix Studio layout editor (`Phoenix_UI_Options/Studio.lua`, `Core/Layout.lua`, `Core/Movers.lua`, `studio.*` 29 keys). Verified: attached movers with connector lines ( |
-| EllesmereUI | Spec overrides and conditional overrides | Phoenix has | Phoenix `Core/SpecProfiles.lua` (profile per spec) and `Core/Overrides.lua` + `Phoenix_UI_Options/OverridesUI.lua`. Verified: `Core/Overrides.lua` resolves condition > sp |
+| BugSack | Early error capture | Phoenix has | `Core/Errors.lua` captures errors early with privacy scrubbing. |
+| BugSack | Bug viewer (BugSack) | Phoenix has | `Modules/Bugs/Viewer.lua` (viewer) and `Modules/Bugs/Bugs.lua`. |
+| EllesmereUI | Lite framework instead of Ace3 | Phoenix has | Own module system and saved data: `Core/Modules.lua`, `Core/DB.lua`, `Core/Flavor.lua`. |
+| EllesmereUI | Unlock Mode (movers with anchors and snapping) | Phoenix has | `Modules/Movers/Movers.lua`: layout mode with grid, snap to frames, arrow nudge and a cog popup (anchor, X/Y). |
+| EllesmereUI | Spec overrides and conditional overrides | partial | Spec profiles in `Core/DB.lua:181` (`specProfiles`). Conditional overrides: not found on this branch. |
 | EllesmereUI | Macro Factory | Phoenix has | Automation > Smart macros (PUI Heal / Kick / Mount, mount rules 2026-10-29). |
-| EllesmereUI | Global options search | Phoenix has | Phoenix `Core/Search.lua` and Oracle command palette (Ctrl+K). |
+| EllesmereUI | Global options search | Phoenix has | `Phoenix_UI_Options/Config/Search.lua` (search every page, jump to and flash the row). No Ctrl+K command palette. |
 | EllesmereUI | First-install module picker, migrations, patch notes, video guides, uninstall | Phoenix has | "What's new" popup after an update (Core/Init.lua). Module picker, video guides, uninstall: not planned. |
 | EllesmereUI | Shared engines | Phoenix has | Spell cost preview: `Modules/UnitFrames/Update.lua` `Live:SpellCost` (cost of the spell being cast, secret-safe). Five-second-rule spark (Forever): not built. |
 | EllesmereUI | Party mode and profile sync | Phoenix has | Phoenix profiles are account-wide with per-character choice (`Core/Profiles.lua`). |
@@ -68,12 +71,12 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_AuraBuffReminders | Ready-check mana warning; Beacon M+ reminders | Phoenix has | Tracker/Reminders.lua ready-check low mana |
 | EllesmereUI_Bags | Three views and categories | Phoenix has | Phoenix Vault (`vault.view`, `vault.rules`, `vault.sections`, `vault.listColumns`, `vault.compactSize`, custom rules). |
 | EllesmereUI_Bags | Quick actions | Phoenix has | Built 2026-10-29: `Modules/Bags/Process.lua` (Process chip / bag-window button; secure spell-on-item cells; retail). |
-| EllesmereUI_Bags | Junk marker, sell junk, reagent window, gold ledger | Phoenix has | Phoenix `vault.junkList`, `vault.autoSell`, `vault.goldHistory`, Bank.lua. |
+| EllesmereUI_Bags | Junk marker, sell junk, reagent window, gold ledger | partial | Junk dim and sell, reagents, bank skin in `Modules/Bags/`. No gold ledger found. |
 | EllesmereUI_BlizzardSkin | Window engine and packs | Phoenix has | Phoenix `Phoenix_UI_Skins` (`skins.*`, 119 keys; applied and removed live). |
 | EllesmereUI_BlizzardSkin | Character sheet rework | Phoenix has | Built 2026-10-29: `Modules/ItemLevel/StatDR.lua` (Item Level > Diminishing returns in stat tooltips): DR cost and the next 100 rating, from the game's own rating functions. |
 | EllesmereUI_BlizzardSkin | Skyriding vigor skin | Phoenix has | ActionBars skyriding/vigor handling |
 | EllesmereUI_BlizzardSkin | Mail alt list, merchant bulk buy | Phoenix has | Skins > Mail alts; Automation > Bulk buy (Alt+click at a vendor). |
-| EllesmereUI_BlizzardSkin | Tooltip skin, anchor and visibility | Phoenix has | Phoenix `Phoenix_UI_HUD/Tooltip.lua` (`tt.anchor`, `tt.combat`, `tt.offsetX`...). |
+| EllesmereUI_BlizzardSkin | Tooltip skin, anchor and visibility | Phoenix has | `Modules/Tooltip/Tooltip.lua` (anchor, cursor offsets, hide in combat, skin). |
 | EllesmereUI_BlizzardSkin | Public skin API | Phoenix has | Phoenix `Core/API.lua` + `Skins.lua` registration. |
 | EllesmereUI_Chat | Sidebar and fade | Phoenix has | Phoenix `chat.channelBar`, `chat.idleFade`, `chat.fadeAlpha`. |
 | EllesmereUI_Chat | Session history, URL copy, copy chat | Phoenix has | Phoenix `chat.history`, `chat.persistHistory`, `chat.urls`, `chat.lineCopy`. |
@@ -83,17 +86,17 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_CooldownManager | Bar glows from auras | Phoenix has | Cooldown Manager > Aura glows (presence only). |
 | EllesmereUI_CooldownManager | Focus kick, rotation helper icon, key-press mirror, trinkets, potions | Phoenix has | Phoenix `cdm.focusKick`, `cdm.assist`, `ab.assist`; trinkets on item bars. |
 | EllesmereUI_CooldownManager | Sync generic entries across specs | Phoenix has | Custom bar lists (`cdm.custom1..3`) are profile-wide, so items and trinket entries already apply to every spec (unknown spells are skipped). |
-| EllesmereUI_DamageMeters | Meter windows on C_DamageMeter | Phoenix has | Phoenix Embers (up to four windows `embers.w1..w4`, breakdown, death recap, best-pull compare, report). |
+| EllesmereUI_DamageMeters | Meter windows on C_DamageMeter | partial | `Modules/DamageMeter/DamageMeter.lua` skins Blizzard's built-in meter (optional Details! look) plus a threat meter (`Threat.lua`). No own windows yet. |
 | EllesmereUI_DamageMeters | Threat meter type (Forever) | Phoenix has | Built 2026-10-29: `Modules/DamageMeter/Threat.lua` (Damage Meter > Threat meter), event-driven, movable. |
-| EllesmereUI_DataBars | Block bars | Phoenix has | Phoenix `Phoenix_UI_HUD/DataBars.lua` (`db.*`), HUD extras. |
+| EllesmereUI_DataBars | Block bars | Phoenix has | `Modules/DataTexts/Bar.lua` (XP, reputation, honor, quest-XP bars). |
 | EllesmereUI_ForeverEssentials | Map tools | Phoenix has | Zone levels (Minimap > Zone levels, both clients) and map reveal (Minimap > Reveal unexplored areas, Forever; overlays generated from the client's WorldMapOverlay DB2 by tools/mapreveal/build.py). |
 | EllesmereUI_ForeverEssentials | Auto uprank | Phoenix has | Built 2026-10-29: `Modules/ActionBars/Uprank.lua` (Action Bars > Extra > Auto uprank), out of combat, cursor-safe. |
 | EllesmereUI_ForeverEssentials | Gathering skill, quest reward value, simplified stats, flight timer, fishing, pet summon, threat meter, loot feed, junk window | Phoenix has | Built 2026-10-29: quest reward value marker (Quests > Mark the most valuable reward), gathering skill in tooltip (Tooltip), threat meter (above), flight timer (Quality of Life > Travel, both clients, learned times), pet summon (Automation > Companion pet, both clients), loot feed (Quality of Life > Loot feed, both clients), simplified stats (Phoenix Character window on Forever), fishing helper and junk window (Automation, both clients). |
 | EllesmereUI_Friends | Friends list restyle | Phoenix has | Phoenix `Phoenix_UI_Friends` (search across friends/guild/recent, sort, app-only filter, notes, invite accept). |
 | EllesmereUI_GroupFinder | Search tweaks and applications bar | Phoenix has | Phoenix GroupFinder is complete. |
-| EllesmereUI_Minimap | Button flyout and indicators | Phoenix has | Phoenix `Phoenix_UI_HUD/ButtonBin.lua` (`mm.bin.*`), `mm.extra.indicators`, `mm.extra.friends`. |
+| EllesmereUI_Minimap | Button flyout and indicators | Phoenix has | `Modules/Minimap/Minimap.lua` (button bin, mail, difficulty, crafting order icons). |
 | EllesmereUI_Minimap | Calendar tooltip with lockouts | Phoenix has | GroupFinder lockouts list |
-| EllesmereUI_MythicTimer | Kick tracker | Phoenix has | Phoenix `Phoenix_UI_RaidFrames/PartyCD.lua` (`pcd.cat.interrupt`), "kicked by" on nameplates, `ascent.kicks`. |
+| EllesmereUI_MythicTimer | Kick tracker | missing | No party cooldown or interrupt tracker on this branch. |
 | EllesmereUI_MythicTimer | Targeted spell bars | Phoenix has | Cast Bars > Target > Casts on me. |
 | EllesmereUI_MythicTimer | Run summary and history | Phoenix has | Phoenix `ascent.summary`, `ascent.records`. |
 | EllesmereUI_Nameplates | Engine aura containers on plates | Phoenix has | Phoenix `np.auras`, aura lanes. |
@@ -106,12 +109,12 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_QoL | Shifter (move Blizzard panels) | Phoenix has | Skins > Move Blizzard windows (Shift+drag saves, Ctrl+drag this session, reset). |
 | EllesmereUI_QoL | Teleport prompt | Phoenix has | Built 2026-10-29: `Modules/GroupFinder/Teleport.lua` (Group Finder > Teleport prompt); teleport found from your flyouts by the dungeon's name, no data shipped. |
 | EllesmereUI_QoL | Bloodlust/Sated tracker, battle res icon | Phoenix has | Phoenix `ascent.brLust`, item bar battle res (PR #66). |
-| EllesmereUI_QoL | Cursor ring, alerts, auto logging, self combat text, waypoint | Phoenix has | Phoenix `cursor.*`, Spark, `flow.combatLog`, `Core/Waypoint.lua` (`way.*`). |
+| EllesmereUI_QoL | Cursor ring, alerts, auto logging, self combat text, waypoint | partial | Cursor ring in `Modules/Quality/Quality.lua`; waypoint arrow and /way in `Modules/Quests/Arrow.lua`; combat logging toggle not found. |
 | EllesmereUI_QuestTracker | Skin via hooks only | Phoenix has | Phoenix `Phoenix_UI_QuestTracker` (`qt.*`: sort, filter, autoTrackZone, autoQuest, itemButtons, mplusBlock). |
 | EllesmereUI_QuestTracker | Quest item hotkey | Phoenix has | Action Bars > Quest item key. |
 | EllesmereUI_Quickdraw | Hold-to-open secure palette | Phoenix has | Action Bars > Quick ring (secure, up to 12 entries). |
 | EllesmereUI_RaidFrames | Buff and debuff managers | Phoenix has | Phoenix `rf.buffs`, `rf.debuffs`, `rf.corners`, `rf.privateAuras`, `rf.dispel*`, Indicators.lua. |
-| EllesmereUI_RaidFrames | Click casting | Phoenix has | Phoenix `Phoenix_UI_RaidFrames/ClickCast.lua` (`cc.bindings`, `cc.hovercast`). |
+| EllesmereUI_RaidFrames | Click casting | missing | Not built: `Modules/GroupFrames/Headers.lua` only registers frames in `ClickCastFrames` for Clique. |
 | EllesmereUI_RaidFrames | Pet frames, party targets, portraits | Phoenix has | Phoenix `rf.pets`, `rf.partyTargets` (Extra.lua). |
 | EllesmereUI_RaidFrames | Forever missing buffs | Phoenix has | Phoenix Reminders (`rm.raid`, `rm.class`). |
 | EllesmereUI_ResourceBars | Thresholds and colour bands per spec | Phoenix has | Phoenix `Phoenix_UI_ResourceBars` (`rb.*`), CooldownManager thresholds. Colour-by-threshold through curves: unverified. `C_CurveUtil` is used in `Phoenix_UI_ResourceBars/ |
@@ -123,8 +126,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_UnitFrames | Player aura bars | Phoenix has | Phoenix `uf.auraBars.*` (+ `dedupeCDM`). |
 | EllesmereUI_UnitFrames | Forever weapon imbues | Phoenix has | Built 2026-10-29: `Modules/UnitFrames/Imbues.lua` (Unit Frames > Resources > Weapon imbues), both flavours. |
 | EllesmereUI_WindTools | Extra Item Bar (loaded) | Phoenix has | Phoenix auto item bars (PR #66, `ab.ibar1..ibar5`, `ab.ibars`, `Data/ItemBarData.lua`, battle res button, M+ teleports on bar 5). |
-| EllesmereUI_WindTools | Quick Focus (loaded) | Phoenix has | Phoenix `Core/FocusKey.lua` (`focuskey.modifier`, `focuskey.button`, `focuskey.groupFrames`, PR #70). |
-| EllesmereUI_WindTools | Raid Markers bar (loaded) | Phoenix has | Phoenix `rt.markers`, `rt.worldMarkers`, `rt.readyButton`, `rt.pullButton`. |
+| EllesmereUI_WindTools | Quick Focus (loaded) | Phoenix has | Unit Frames > quickFocus (`Modules/UnitFrames/UnitFrames.lua`). |
+| EllesmereUI_WindTools | Raid Markers bar (loaded) | missing | No raid or world marker bar on this branch. |
 | EllesmereUI_WindTools | Chat Bar (loaded) | Phoenix has | Phoenix `chat.channelBar`, `chat.channelBarSide`. |
 | EllesmereUI_WindTools | Friendly Nameplate Outline (loaded) | Phoenix has | Nameplates > Friendly > name text outline (`np.styles.friendly.name.outline`, OUTLINE by default). |
 | EllesmereUI_WindTools | Disconnected modules (present on disk, not loaded) | Phoenix has | Already Known tint: built (Automation). Mute list: built (General). Smart tab: declined (writing the chat edit box's chat type taints it and breaks secure slash commands typed in chat). Extended merchant pages: declined (re-anchors Blizzard merchant slots). Event tracker: built (Data Texts > Events: the game's event POIs on your continent with time left, today's holidays). |
@@ -135,7 +138,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | MikScrollingBattleText | Profiles and transfer | Phoenix has | Phoenix `Core/Profiles.lua`, share strings in several modules. |
 | MountsJournal | Rule-based summon | Phoenix has | Built 2026-10-29: PUI Mount rules (flyer / ground / swimmer names; [swimming] / [flyable] in the macro). |
 | MountsJournal | Journal UI upgrades | out of scope | Phoenix: collections skin only. |
-| MoveAny | Move/scale any HUD element | Phoenix has | Phoenix `Core/Movers.lua`: ~130 Blizzard HUD elements appear as movers in Studio when "Blizzard elements" is on (off at first install). Phoenix never reparents or replace |
+| MoveAny | Move/scale any HUD element | partial | `Modules/Movers/Movers.lua` moves Phoenix frames; Blizzard HUD elements stay with Edit Mode. |
 | MoveAny | Move Blizzard windows (moveframes.lua) | duplicate (skip) | same as EllesmereUI Shifter (#68) |
 | MythicDungeonTools | Route planning on a map | out of scope | Do not build a planner (huge, MDT is the standard). Instead read MDT's public API if present (`MythicDungeonToolsAPI:GetEnemyForces(npcId)` documented in `Modules/API.lua |
 | MythicDungeonTools | Share and live sessions | Phoenix has | Phoenix share strings exist for settings and layouts; no route sharing. |
@@ -145,8 +148,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | PremadeGroupsFilter | Skin plugin (EllesmereUI) | Phoenix has | Skins > Premade Groups Filter. |
 | Questie | Map and minimap pins from a quest database | out of scope | Not planned (data licence). For Forever players recommend Questie; make sure our QuestTracker yields (`qt.hideBlizzard` vs Questie tracker). |
 | Questie | Tracker, tooltips, announce | Phoenix has | Built 2026-10-29: `Modules/Quests/Progress.lua` (objective / complete sounds, optional party announce); quest tooltips: Quests > Tooltip. |
-| Questie | Session recorder (QuestieTrace) | Phoenix has | Phoenix Sentinel `Recorder.lua` and the privacy scrubber `Privacy.lua` are the analogue. |
-| Questie | Unit tests in Lua | Phoenix has | Phoenix offline harness (`.tools/harness`) with 495 tests. |
+| Questie | Session recorder (QuestieTrace) | out of scope | No session recorder on this branch; `Core/Errors.lua` scrubs private data from errors. |
+| Questie | Unit tests in Lua | Phoenix has | Offline harness `tools/smoke/harness.lua` (235 named tests at 2026-10-29), run for both clients by `tools/check_flavors.py`. |
 | RaiderIO | Score and progress in tooltips | out of scope | Keep the "use Raider.IO when installed" integration; never ship their data. |
 | RaiderIO | Copy URL / search | Phoenix has | Chat > Armory link in menus. |
 | RaiderIO | Combat logging helper | Phoenix has | Phoenix `flow.combatLog`, `flow.combatLogWhere`. |
@@ -157,9 +160,9 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | TrufiGCD | Ability queue | Phoenix has | Phoenix `Phoenix_UI_CastHistory` (`ch.*`: unit, direction, speed, blockSpells/blockItems, showCancelled, showInterrupted, empowerHeld, masque, where). Phoenix also covers |
 | Tust_EUI | Chat replacement | Phoenix has | Phoenix `Phoenix_UI_Chat` (skin, history, whisper windows, channel bar, emoji, keyword alerts). |
 | Tust_EUI | Data Bars multi-bar engine | Phoenix has | Phoenix DataBars (`db.*`), `rt.*`, friends in minimap (`mm.extra.friends`). |
-| Tust_EUI | Enhanced XP bar, LFG region/rating, nameplate rules, tooltips, bag upgrade markers, stat priorities, minimap group info | Phoenix has | Phoenix: `gf.regionBadge`, `gf.rioScore`, `np.rules`, `tt.lines.*`, `wisdom.bags` (upgrade star in bags). Stat priority display: Wisdom weights (not a "stat priority" tex |
-| idTip | IDs on every tooltip kind | Phoenix has | Phoenix `Phoenix_UI_HUD/TooltipIDs.lua` with 30+ keys (`tt.ids.*`: spell, item, npc, quest, currency, achievement, criteria, talent, traitNode/Entry/Definition, mount, sp |
-| sArena_Reloaded | Arena frames with layouts | Phoenix has | Phoenix `Phoenix_UI_Arena` (`arena.*`: 72 keys; preset, castBar, specIcon, pets, racial, trinket, dampening, shadowsight, matchTimer, card). |
-| sArena_Reloaded | DR tracking in Midnight | Phoenix has | Phoenix `Phoenix_UI_Arena/DR.lua` turns on the game's own enemy DR tracking (CVar `spellDiminishPVPEnemiesEnabled`, via the ledger) and draws that data (`arena.drTray`, ` |
+| Tust_EUI | Enhanced XP bar, LFG region/rating, nameplate rules, tooltips, bag upgrade markers, stat priorities, minimap group info | partial | Quest-XP on the XP bar (`Modules/DataTexts/Bar.lua`), upgrade arrows in bags (`Modules/Bags`). LFG region/rating badges and nameplate rules not found. |
+| idTip | IDs on every tooltip kind | Phoenix has | Tooltip > ids and idKinds (`Phoenix_UI_Options/Options/Tooltip.lua:93`, `Modules/Tooltip/Tooltip.lua`). |
+| sArena_Reloaded | Arena frames with layouts | Phoenix has | Arena units in `Modules/UnitFrames/Arena.lua` (trinket, spec, racial, DR) and PvP extras in `Modules/PvP/PvP.lua` (shadowsight, safe queue). |
+| sArena_Reloaded | DR tracking in Midnight | Phoenix has | `Modules/UnitFrames/Arena.lua` turns on the game's enemy DR tracking (`spellDiminishPVPEnemiesEnabled`) and re-parents its DR trays into Phoenix arena frames. |
 | sArena_Reloaded | Trinkets, racials, dispels, interrupts | Phoenix has | Phoenix `arena.racial`, `arena.dispelTracker`, trinket in `State.lua`. |
 | sArena_Reloaded | Midnight absorbs and auras | Phoenix has | Phoenix `arena.auraOrder`, `arena.auraGlow`, `arena.classAura`. |

@@ -7090,6 +7090,112 @@ try("arena II depth and Forever gating (S18)", function()
     assert(ns.FEATURES.specBars and ns.FEATURES.specBars.retail and not ns.FEATURES.specBars.forever, "specBars feature")
 end)
 
+-- coverage (audit 2026-10-29): group frame sorting words, aura edge formats, cooldown text, combat text events
+try("group frame sorting and party flags", function()
+    local M = ns.modules.GroupFrames
+    local p = M:Profile("raid")
+    local keep = { p.sortBy, p.sortDir, p.perColumn }
+    p.sortBy, p.sortDir = "class", "DESC"
+    local a = M.HeaderAttributes(p, "raid", nil, 8)
+    assert(a.groupBy == "CLASS" and a.groupingOrder == M.CLASS_ORDER and a.sortDir == "DESC", "class sort")
+    p.sortBy = "name"
+    a = M.HeaderAttributes(p, "raid", nil, 2)
+    assert(a.sortMethod == "NAME" and a.groupBy == nil and a.groupFilter == "1,2", "name sort, two groups")
+    p.perColumn = 99
+    a = M.HeaderAttributes(p, "raid")
+    assert(a.unitsPerColumn == 40 and a.maxColumns == 1, "per column clamps to 40")
+    p.perColumn = 0
+    assert(M.HeaderAttributes(p, "raid").unitsPerColumn == 1, "per column at least 1")
+    assert(M.GroupFilter(0) == "1" and M.GroupFilter(12) == "1,2,3,4,5,6,7,8", "group filter clamps")
+    p.sortBy, p.sortDir, p.perColumn = keep[1], keep[2], keep[3]
+    local party = M:Profile("party")
+    local sp, ss = party.showPlayer, party.showSolo
+    party.showPlayer, party.showSolo = false, true
+    a = M.HeaderAttributes(party, "party")
+    assert(not a.showPlayer and not a.showSolo, "solo needs the player shown")
+    party.showPlayer = true
+    assert(M.HeaderAttributes(party, "party").showSolo, "solo with the player")
+    party.showPlayer, party.showSolo = sp, ss
+    for word, f in pairs(M.BUFF_FILTERS) do assert(f:find("^HELPFUL"), "buff filter " .. word) end
+    for word, f in pairs(M.DEBUFF_FILTERS) do assert(f:find("^HARMFUL"), "debuff filter " .. word) end
+    assert(M.DispelFilter(true) == "HARMFUL|RAID", "dispel: mine")
+end)
+try("aura duration edges", function()
+    local M = ns.modules.Auras
+    assert(M.FormatDuration("short", 0, 90000) == "2d", "days round up")
+    assert(M.FormatDuration("short", 0, -1) == "" and M.FormatDuration("clock", 0, "x") == "", "bad input is empty")
+    assert(M.FormatDuration("seconds", 10, 3.21) == "3.2", "tenths below the precise threshold")
+    local b = M.Breakpoints("clock", 0)
+    assert(#b == 3 and b[2].threshold == 60 and b[3].threshold == 3600, "clock breakpoints")
+    assert(#M.Breakpoints("seconds", 0) == 1 and #M.Breakpoints("seconds", 3) == 2, "seconds breakpoints")
+    local h = { size = 20, perRow = 1, rows = 1, hSpacing = 0, vSpacing = 0, growth = "LEFT", wrap = "DOWN" }
+    assert(#M.Slots(h, 5) == 1 and M.Slots(h, 0)[1] == nil, "single slot")
+end)
+try("cooldown text sizes, aura hiding and claims", function()
+    local M = ns.modules.CooldownText
+    local db = M.db
+    local keep = { db.size, db.scale, db.hideAuras }
+    db.size, db.scale = 16, true
+    assert(M:SizeFor(M.REFERENCE) == 16 and M:SizeFor(72) == 32 and M:SizeFor(200) == 32 and M:SizeFor(9) == 8, "scaled and clamped")
+    assert(M:SizeFor(nil) == 16 and M:SizeFor(0) == 16, "no width keeps the size")
+    db.scale = false; assert(M:SizeFor(72) == 16, "scaling off")
+    local fs = env.CreateFrame("Frame"):CreateFontString()
+    local hiddenNow = false
+    local cd = { IsForbidden = function() return false end, GetCountdownFontString = function() return fs end,
+        GetUseAuraDisplayTime = function() return true end, GetHideCountdownNumbers = function() return hiddenNow end,
+        SetHideCountdownNumbers = function(_, v) hiddenNow = v end, GetWidth = function() return 36 end,
+        GetParent = function() return nil end, SetCountdownMillisecondsThreshold = function() end,
+        SetMinimumCountdownDuration = function() end }
+    db.hideAuras = true; M.Style(cd)
+    assert(hiddenNow == true, "aura numbers hidden")
+    db.hideAuras = false; M.Style(cd)
+    assert(hiddenNow == false, "aura numbers restored")
+    db.hideAuras = true; M.Style(cd); M:Claim(cd, true)
+    assert(hiddenNow == false, "a claim hands numbers back")
+    M.Style(cd); assert(hiddenNow == false, "claimed cooldowns are left alone")
+    M:Claim(cd, false)
+    db.size, db.scale, db.hideAuras = keep[1], keep[2], keep[3]
+    M.Style(cd)
+end)
+try("combat text events: secret types skipped, merges, areas off", function()
+    local CT = ns.modules.CombatText
+    local sc = CT.db.scroll
+    local keep = { sc.enabled, sc.merge, sc.areas.incoming.show, sc.areas.target.show }
+    local oldCT, oldIs, oldStyle = rawget(env, "C_CombatText"), ns.Secret.IsSecret, CT.StyleLine
+    local SECRET = {}
+    rawset(env, "C_CombatText", { GetCurrentEventInfo = function() return SECRET, SECRET end })
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    local lines = 0
+    CT.StyleLine = function(self, f, crit) lines = lines + 1; return oldStyle(self, f, crit) end
+    sc.enabled, sc.merge, sc.areas.incoming.show, sc.areas.target.show = true, true, true, true
+    CT:EnableScroll()
+    lines = 0 -- EnableScroll restyles lines other tests left in flight
+    fire("COMBAT_TEXT_UPDATE", SECRET)
+    assert(lines == 0, "a secret message type is skipped")
+    fire("COMBAT_TEXT_UPDATE", "DAMAGE"); fire("COMBAT_TEXT_UPDATE", "DAMAGE")
+    assert(lines == 1, "repeats merge into one line (" .. lines .. ")")
+    fire("COMBAT_TEXT_UPDATE", "DODGE")
+    assert(lines == 2, "avoidance word")
+    fire("COMBAT_TEXT_UPDATE", "NOT_A_KIND")
+    assert(lines == 2, "unknown kinds are ignored")
+    fire("UNIT_COMBAT", "target", SECRET, "", SECRET)
+    fire("UNIT_COMBAT", "player", "WOUND", "", SECRET)
+    assert(lines == 2, "secret actions and other units are skipped")
+    fire("UNIT_COMBAT", "target", "WOUND", SECRET, SECRET)
+    assert(lines == 3, "target wound with secret flags")
+    sc.areas.incoming.show = false
+    fire("COMBAT_TEXT_UPDATE", "HEAL")
+    assert(lines == 3, "a hidden area adds nothing")
+    sc.enabled = false; CT:EnableScroll() -- restyles lines still in flight
+    local before = lines
+    fire("COMBAT_TEXT_UPDATE", "SPELL_DAMAGE")
+    assert(lines == before, "disabled scroll adds nothing")
+    CT.StyleLine, ns.Secret.IsSecret = oldStyle, oldIs
+    rawset(env, "C_CombatText", oldCT)
+    sc.enabled, sc.merge, sc.areas.incoming.show, sc.areas.target.show = keep[1], keep[2], keep[3], keep[4]
+    CT:EnableScroll()
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels
