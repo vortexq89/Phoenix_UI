@@ -208,7 +208,9 @@ end
 function M.TargetAlpha(vis, s)
     local a = vis.alpha
     if s.reveal or s.hover then return a end
-    if vis.mouseover then return 0 end
+    -- linked bars are one mouseover group: hidden until any bar of the group is hovered (with fade on they
+    -- fade instead of hiding)
+    if vis.mouseover or (vis.linked and not vis.fade) then return 0 end
     if vis.fade and not s.combat then return a * vis.oocAlpha end
     return a
 end
