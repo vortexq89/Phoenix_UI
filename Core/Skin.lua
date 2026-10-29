@@ -487,3 +487,39 @@ end
 function Sk:IsSkinned(obj)
     return originals[obj] ~= nil or state[obj] ~= nil
 end
+
+---------------------------------------------------------------- replacement windows
+-- Puts a Blizzard window out of sight while a Phoenix replacement stands in for it: the window keeps its open
+-- state (so Escape, its events and Blizzard's checks like "is the bank open" still work), it only goes see-through,
+-- stops taking the mouse, and its child frames wait on a hidden holder of ours. Untuck puts every child back
+-- on the window. Never used on a protected window, and never in combat (returns false then).
+local tucked = setmetatable({}, { __mode = "k" })
+local tuckHolder
+function Sk:Tuck(frame)
+    if type(frame) ~= "table" or not frame.GetChildren or tucked[frame] then return tucked[frame] ~= nil end
+    if InCombatLockdown() or (frame.IsProtected and frame:IsProtected()) then return false end
+    if not tuckHolder then tuckHolder = CreateFrame("Frame"); tuckHolder:Hide() end
+    local rec = { mouse = frame.IsMouseEnabled and frame:IsMouseEnabled(), children = {} }
+    for _, child in ipairs({ frame:GetChildren() }) do
+        if type(child) == "table" and child.SetParent and not (child.IsProtected and child:IsProtected()) then
+            rec.children[#rec.children + 1] = { child, child:GetFrameLevel() }
+            child:SetParent(tuckHolder)
+        end
+    end
+    frame:SetAlpha(0)
+    if frame.EnableMouse then frame:EnableMouse(false) end
+    tucked[frame] = rec
+    return true
+end
+
+function Sk:Untuck(frame)
+    local rec = tucked[frame]
+    if not rec or InCombatLockdown() then return false end
+    tucked[frame] = nil
+    for _, c in ipairs(rec.children) do c[1]:SetParent(frame); c[1]:SetFrameLevel(c[2]) end
+    frame:SetAlpha(1)
+    if frame.EnableMouse then frame:EnableMouse(rec.mouse and true or false) end
+    return true
+end
+
+function Sk:IsTucked(frame) return tucked[frame] ~= nil end

@@ -196,6 +196,9 @@ local function updateButton(b, rec)
     if il and il.PaintButton then il.PaintButton(b, ItemLocation:CreateFromBagAndSlot(rec.bag, rec.slot)) end
 end
 
+M.UpdateItemButton = updateButton
+
+
 local function freeCount()
     local free = 0
     for _, bag in ipairs(bagList()) do free = free + (C_Container.GetContainerNumFreeSlots(bag) or 0) end
@@ -286,6 +289,8 @@ local function iconButton(parent, icon, tip, onClick)
     b:SetScript("OnClick", onClick)
     return b
 end
+
+M.IconButton = iconButton
 
 local function build()
     win = CreateFrame("Frame", "PhoenixUI_Bags", UIParent)

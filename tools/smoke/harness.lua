@@ -2494,6 +2494,36 @@ try("bags view switches live", function()
     B.db.view = old; B:Refresh()
     env.ContainerFrameContainer = had
 end)
+try("phoenix bank window", function()
+    local B = ns.modules.Bags
+    local saved = { env.C_Container, env.C_Bank, env.BankFrame, env.C_CurrencyInfo, rawget(env.Enum, "BankType") }
+    rawset(env.Enum, "BankType", { Character = 0, Account = 2 })
+    local shown = true
+    local bf = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.BankFrame = bf
+    env.C_Bank = { FetchPurchasedBankTabData = function(kind) return { { ID = 6 + kind, name = "T", icon = 1 } } end,
+        FetchDepositedMoney = function() return 5 end, CloseBankFrame = function() shown = false end,
+        AutoDepositItemsIntoBank = function() end }
+    env.C_Container = { GetContainerNumSlots = function(bag) return (bag == 6 or bag == 8) and 3 or 0 end,
+        GetContainerItemInfo = function(_, slot) return slot == 1 and { itemID = 1, quality = 2, iconFileID = 1, stackCount = 1 } or nil end,
+        GetContainerItemQuestInfo = function() return {} end, SortBankBags = function() end, SortAccountBankBags = function() end }
+    env.C_CurrencyInfo = { GetCoinTextureString = function() return "1g" end }
+    assert(#B.BankTabs(0) == 1 and B.BankTabs(0)[1].ID == 6, "bank tabs read")
+    B.db.bankWindow = true; B:SyncBank()
+    local win = B:GetBankWindow()
+    assert(win and win:IsShown(), "bank window not shown while the bank is open")
+    assert(ns.Skin:IsTucked(bf), "Blizzard's bank not tucked")
+    B:LayoutBank()
+    win.rail[2]:GetScript("OnClick")(win.rail[2])
+    B.db.bankWindow = false; B:Refresh()
+    assert(not win:IsShown() and not ns.Skin:IsTucked(bf), "switch off did not bring Blizzard's bank back live")
+    B.db.bankWindow = true; B:Refresh()
+    assert(win:IsShown(), "switch on again")
+    shown = false; B:SyncBank()
+    assert(not win:IsShown() and not ns.Skin:IsTucked(bf), "closing the bank")
+    env.C_Container, env.C_Bank, env.BankFrame, env.C_CurrencyInfo = saved[1], saved[2], saved[3], saved[4]
+    rawset(env.Enum, "BankType", saved[5])
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

@@ -114,6 +114,8 @@ ns:RegisterOptions("Bags", {
     mirror("ItemLevel", "bags", { label = "BAGS_ILVL", desc = "BAGS_ILVL_DESC", keywords = "item level ilvl" }),
     { type = "tab", label = "TAB_BEHAVIOUR" },
     { type = "header", label = "BAGS_BEHAVIOUR", icon = "automation" },
+    { type = "toggle", key = "bankWindow", label = "BAGS_BANK_WINDOW", desc = "BAGS_BANK_WINDOW_DESC",
+      keywords = "bank warband own window" },
     { type = "toggle", key = "bankSkin", label = "BAGS_BANK", desc = "BAGS_BANK_DESC",
       keywords = "bank warband account reagent tabs" },
     { type = "toggle", key = "openAuction", label = "BAGS_OPEN_AUCTION", desc = "BAGS_OPEN_AUCTION_DESC" },

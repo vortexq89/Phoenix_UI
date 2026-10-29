@@ -26,7 +26,7 @@ local M = ns:NewModule("Bags", {
         slotBorder = Style.Border({ style = "solid" }),
         count = Style.Text(12, { outline = "OUTLINE", anchor = "BOTTOMRIGHT", x = -2, y = 2 }),
         junk = true, junkDim = false, newGlow = "phoenix", bind = true, cooldowns = true,
-        bankSkin = true, openAuction = false, openTrade = false, process = true,
+        bankSkin = true, bankWindow = true, openAuction = false, openTrade = false, process = true,
     },
 })
 
@@ -272,6 +272,7 @@ function M:Refresh()
     if self.RefreshWindow then self:RefreshWindow() end
     if self.DressAllChrome then self:DressAllChrome() end
     if self.PaintBankTabs and BankPanel then self.PaintBankTabs(BankPanel) end
+    if self.SyncBank then self:StyleBank(); self:SyncBank() end
 end
 
 local hooked
@@ -286,6 +287,7 @@ function M:OnEnable()
     if self.EnableWindow then self:EnableWindow() end
     if self.SetupChrome then self:SetupChrome() end -- Chrome.lua
     if self.SetupProcess then self:SetupProcess() end -- Process.lua
+    if self.SetupBank then self:SetupBank() end -- Bank.lua
     if hooked then self:Refresh(); return end
     hooked = true
     eachBag(function(frame) hooksecurefunc(frame, "UpdateItems", onUpdateItems) end)
