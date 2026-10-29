@@ -25,8 +25,41 @@ local armed -- equipment set ID waiting for the confirming second Delete click
 
 local function pct(v) return ("%.2f%%"):format(tonumber(v) or 0) end
 
+-- WoW Forever's simplified stats: the five attributes, then the numbers a level-60 character plays by (attack
+-- power, spell power, hit, crits, avoidance); retail's haste / mastery / versatility rows mean nothing there.
+-- Each API is looked up and skipped when the client lacks it.
+function M.ForeverStats()
+    local out = {}
+    local function add(label, value) if label and value ~= nil then out[#out + 1] = { label = tostring(label), value = value } end end
+    local function call(name, ...)
+        local fn = _G[name]
+        if type(fn) ~= "function" then return nil end
+        local ok, a, b, c = pcall(fn, ...)
+        if ok then return a, b, c end
+    end
+    add(HEALTH, UnitHealthMax("player"))
+    for i = 1, 5 do add(_G["SPELL_STAT" .. i .. "_NAME"], (UnitStat("player", i))) end
+    add(STAT_ARMOR, (UnitArmor("player")))
+    local base, plus, minus = call("UnitAttackPower", "player")
+    if tonumber(base) then add(_G.STAT_ATTACK_POWER or _G.ATTACK_POWER, base + (tonumber(plus) or 0) + (tonumber(minus) or 0)) end
+    local sp = call("GetSpellBonusDamage", 2)
+    if tonumber(sp) then add(_G.STAT_SPELLDAMAGE or _G.STAT_SPELLPOWER, sp) end
+    local heal = call("GetSpellBonusHealing")
+    if tonumber(heal) then add(_G.STAT_SPELLHEALING, heal) end
+    local hit = call("GetHitModifier")
+    if tonumber(hit) then add(_G.STAT_HIT_CHANCE, pct(hit)) end
+    add(_G.MELEE_CRIT_CHANCE or STAT_CRITICAL_STRIKE, pct(call("GetCritChance")))
+    local sc = call("GetSpellCritChance", 2)
+    if tonumber(sc) then add(_G.SPELL_CRIT_CHANCE, pct(sc)) end
+    add(_G.STAT_DODGE, tonumber((call("GetDodgeChance"))) and pct(call("GetDodgeChance")) or nil)
+    add(_G.STAT_PARRY, tonumber((call("GetParryChance"))) and pct(call("GetParryChance")) or nil)
+    add(_G.STAT_BLOCK, tonumber((call("GetBlockChance"))) and pct(call("GetBlockChance")) or nil)
+    return out
+end
+
 -- The stat rows: { label, value } with values as the game reports them.
 function M.CharacterStats()
+    if ns.flavor == "forever" then return M.ForeverStats() end
     local out = {}
     local function add(label, value) out[#out + 1] = { label = tostring(label or ""), value = value } end
     local _, equipped = GetAverageItemLevel()
