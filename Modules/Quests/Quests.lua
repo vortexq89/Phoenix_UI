@@ -22,6 +22,7 @@ local M = ns:NewModule("Quests", {
         -- automation
         autoAccept = false, autoTurnIn = false, reward = "off",
         tooltip = true, contribute = false,
+        progressSound = true, progressAnnounce = "off", -- Progress.lua
         -- NPC locations (NPCs.lua): giver spot in quest tooltips, townsfolk / rare pins, map search, /way
         npcLocation = true, townsfolk = false, rares = false, mapSearch = true, waySlash = true,
     },
@@ -337,6 +338,7 @@ function M:OnEnable()
     self:EnableMapSearch()
     self:RegisterWay()
     local function invalidate() self.ctxDirty = true; self:RefreshPins() end
+    if self.SetupProgress then self:SetupProgress() end -- Progress.lua
     ns.Events:On("QUEST_TURNED_IN", self, invalidate)
     ns.Events:On("QUEST_ACCEPTED", self, invalidate)
     ns.Events:On("QUEST_REMOVED", self, invalidate)

@@ -120,6 +120,7 @@
     <Script file="Quests\NPCs.lua"/>
     <Script file="Quests\Collector.lua"/>
     <Script file="Quests\Auto.lua"/>
+    <Script file="Quests\Progress.lua"/>
     <Script file="GroupFinder\Expression.lua"/>
     <Script file="GroupFinder\GroupFinder.lua"/>
     <Script file="GroupFinder\Filter.lua"/>

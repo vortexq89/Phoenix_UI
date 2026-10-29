@@ -2452,6 +2452,15 @@ retailTry("bag process items picks the known spell per item", function()
     local w = B:ToggleProcess()
     if w then assert(not w:GetScript("OnUpdate"), "no OnUpdate"); B:RefreshProcess(); B:ToggleProcess() end
 end)
+try("quest progress changes", function()
+    local Q = ns.modules.Quests
+    local old = { complete = false, objectives = { { done = false, n = 4, text = "4/8 Boars" }, { done = false, n = 0, text = "0/1 Key" } } }
+    local new = { complete = true, objectives = { { done = false, n = 5, text = "5/8 Boars" }, { done = true, n = 1, text = "1/1 Key" } } }
+    local c = Q.QuestChanges(old, new)
+    assert(#c == 3 and c[1].kind == "step" and c[2].kind == "done" and c[3].kind == "complete", "changes")
+    assert(#Q.QuestChanges(new, new) == 0 and #Q.QuestChanges(nil, new) == 0, "no change")
+    Q.LookQuestProgress(); Q.LookQuestProgress()
+end)
 try("safe scale never hands SetScale a bad value", function()
     local U = ns.Util
     for _, v in ipairs({ 0, -1, 0 / 0, math.huge, "1", false }) do assert(U.SafeScale(v) == 1, tostring(v)) end

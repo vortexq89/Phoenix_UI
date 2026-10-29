@@ -415,6 +415,9 @@
   "IG_MAINMENU_OPTION_CHECKBOX_ON": {
    "id": 856
   },
+  "IG_QUEST_LIST_COMPLETE": {
+   "id": 878
+  },
   "RAID_WARNING": {
    "id": 8959
   },
@@ -423,6 +426,9 @@
   },
   "UI_BNET_TOAST": {
    "id": 18019
+  },
+  "UI_QUEST_ROLLING_FORWARD_01": {
+   "id": 43936
   },
   "U_CHAT_SCROLL_BUTTON": {
    "id": 1115
