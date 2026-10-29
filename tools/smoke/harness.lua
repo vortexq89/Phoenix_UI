@@ -3869,6 +3869,20 @@ try("preview drag", function()
     rawset(env, "C_Timer", oldT); rawset(env, "GetCursorPosition", oldC); rawset(env, "IsMouseButtonDown", oldB)
     assert(ok, err)
 end)
+-- minimap shape applies live; GetMinimapShape follows it (button addons read it)
+try("minimap shape live", function()
+    local m = ns.modules.Minimap
+    assert(m:IsEnabled(), "minimap module is off in the harness")
+    local masks = {}
+    local map = env.Minimap
+    local old = map.SetMaskTexture
+    rawset(map, "SetMaskTexture", function(_, t) masks[#masks + 1] = t end)
+    ns.DB:Set(m, "shape", "ROUND")
+    assert(env.GetMinimapShape() == "ROUND" and masks[#masks] == m.ROUND_MASK, "Round did not apply live")
+    ns.DB:Set(m, "shape", "SQUARE")
+    assert(env.GetMinimapShape() == "SQUARE" and masks[#masks] ~= m.ROUND_MASK, "Square did not apply live")
+    rawset(map, "SetMaskTexture", old)
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

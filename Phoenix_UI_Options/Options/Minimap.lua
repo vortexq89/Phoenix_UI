@@ -31,7 +31,7 @@ ns:RegisterOptions("Minimap", {
     { type = "preview", kind = "minimap" },
     { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "MINIMAP_SHAPE", icon = "minimap" },
-    { type = "select", key = "shape", label = "MINIMAP_SHAPE_PICK", desc = "MINIMAP_SHAPE_PICK_DESC", reload = true,
+    { type = "select", key = "shape", label = "MINIMAP_SHAPE_PICK", desc = "MINIMAP_SHAPE_PICK_DESC",
       keywords = "square round circle rectangle", values = {
         { value = "ROUND", label = "MINIMAP_SHAPE_ROUND" }, { value = "SQUARE", label = "MINIMAP_SHAPE_SQUARE" },
         { value = "RECTANGLE", label = "MINIMAP_SHAPE_RECTANGLE" },

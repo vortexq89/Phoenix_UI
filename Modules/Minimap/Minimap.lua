@@ -157,18 +157,24 @@ local function hybridMask()
     if mask and HybridMinimap and HybridMinimap.CircleMask then HybridMinimap.CircleMask:SetTexture(mask) end
 end
 
+-- The game's own round mask, put back when the shape is switched to Round without a reload.
+M.ROUND_MASK = ns.flavor == "forever" and "Textures\\MinimapMask" or "Interface\\Masks\\CircleMaskScalable"
+
 local function applyShape(self)
-    local mask = M.MaskFor(self:Shape(), self.db.rectHeight)
-    if mask then
-        Minimap:SetMaskTexture(mask)
-        -- Community convention read by LibDBIcon and other minimap-button addons to lay buttons out
-        -- along a square edge. The one global Phoenix defines besides its SavedVariables.
-        function GetMinimapShape() return "SQUARE" end
-        if HybridMinimap then hybridMask() end
-        Skin:HideRegion(MinimapCompassTexture)
+    local shape = self:Shape()
+    local mask = M.MaskFor(shape, self.db.rectHeight)
+    Minimap:SetMaskTexture(mask or M.ROUND_MASK)
+    -- Community convention read by LibDBIcon and other minimap-button addons to lay buttons out
+    -- along the edge. The one global Phoenix defines besides its SavedVariables; it follows the live shape.
+    function GetMinimapShape() return M:Shape() == "ROUND" and "ROUND" or "SQUARE" end
+    if HybridMinimap then hybridMask() end
+    if HybridMinimap and HybridMinimap.CircleMask and not mask then HybridMinimap.CircleMask:SetTexture(M.ROUND_MASK) end
+    if MinimapCompassTexture then
+        if mask then Skin:HideRegion(MinimapCompassTexture) else MinimapCompassTexture:SetAlpha(1) end
     end
     Skin:Register(band(), styleBorder)
 end
+M.ApplyShape = applyShape
 
 ---------------------------------------------------------------- texts
 local coords, ticker
@@ -461,6 +467,7 @@ end
 
 function M:Refresh()
     Minimap:EnableMouseWheel(self.db.wheelZoom)
+    applyShape(self) -- shape and band height apply live
     styleBorder()
     setupCoords(self)
     styleZone()
