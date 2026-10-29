@@ -3710,6 +3710,24 @@ try("forever extras: stats, fishing, junk", function()
     A:ShowJunk()
 end)
 
+try("reload rows: live skin switches and the reload button", function()
+    local DM, TT, UF, C = ns.modules.DamageMeter, ns.modules.Tooltip, ns.modules.UnitFrames, ns.Config
+    DM.db.skin = false; DM:Refresh()
+    DM.db.skin = true; DM:Refresh()
+    TT.db.healthBar = false; TT:Refresh()
+    TT.db.healthBar = true; TT:Refresh()
+    UF.db.texture = false; UF.db.fonts = false; UF:Refresh()
+    UF.db.texture = true; UF.db.fonts = true; UF:Refresh()
+    -- a reload row's badge turns into a "Reload needed" button once changed
+    local page = C:Show("ActionBars")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.reload and r.ArmReload then row = r; break end end
+    assert(row, "a reload row with a badge")
+    row:ArmReload()
+    assert(row.reloadArmed, "badge armed as a reload button")
+    C:Show("home")
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

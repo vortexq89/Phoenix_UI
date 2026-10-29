@@ -2848,6 +2848,8 @@ ns.RegisterLocale("enUS", {
     QLOGW_DAILY = "Daily",
     QLOGW_OWN = "Phoenix quest log",
     QLOGW_OWN_DESC = "Phoenix's own quest list beside the map: zones, levels, objectives, search and tracking (right-click). Details, abandon and share stay Blizzard's. Off: Blizzard's list. Applies live.",
+    RELOAD_NEEDED = "Reload needed",
+    RELOAD_NEEDED_TIP = "This switch hands whole Blizzard frames over, which the game only allows at load. Click to reload the interface now.",
     AUTO_FISHING = "Fishing",
     AUTO_FISHING_ON = "Fishing helper",
     AUTO_FISHING_DESC = "While you fish, the effects volume goes to full and auto loot is on, so the splash is easy to hear; both go back when the cast ends. Nothing casts for you. Applies live.",
