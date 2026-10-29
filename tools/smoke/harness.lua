@@ -2524,6 +2524,54 @@ try("phoenix bank window", function()
     env.C_Container, env.C_Bank, env.BankFrame, env.C_CurrencyInfo = saved[1], saved[2], saved[3], saved[4]
     rawset(env.Enum, "BankType", saved[5])
 end)
+try("phoenix mail window", function()
+    local S = ns.modules.Skins
+    local names = { "MailFrame", "GetInboxNumItems", "GetInboxHeaderInfo", "GetInboxItem", "GetInboxText", "TakeInboxItem",
+        "TakeInboxMoney", "GetSendMailItem", "GetSendMailPrice", "ClickSendMailItemButton", "SetSendMailMoney", "SendMail",
+        "InboxItemCanDelete", "C_CurrencyInfo", "CloseMail" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown, took, sent = true, {}, nil
+    env.MailFrame = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    local mails = { { "A", "hi", 50, 0, 3, 1 }, { "B", "cod", 0, 900, 2, 1 } }
+    env.GetInboxNumItems = function() return #mails, #mails end
+    env.GetInboxHeaderInfo = function(i) local m = mails[i]; if m then return 1, 1, m[1], m[2], m[3], m[4], m[5], m[6], false end end
+    env.GetInboxItem = function(i, a) if a == 1 and mails[i] and mails[i][6] > 0 then return "Ore", 1, 1, 5, 1, true end end
+    env.GetInboxText = function() return "body" end
+    env.TakeInboxItem = function(i, a) took[#took + 1] = "item" .. i .. ":" .. a; mails[i][6] = 0 end
+    env.TakeInboxMoney = function(i) took[#took + 1] = "money" .. i; mails[i][3] = 0 end
+    env.GetSendMailItem = function() return nil end
+    env.GetSendMailPrice = function() return 30 end
+    env.ClickSendMailItemButton = function() end
+    env.SetSendMailMoney = function(c) sent = { money = c } end
+    env.SendMail = function(to, sub, body) sent.to, sent.sub, sent.body = to, sub, body end
+    env.InboxItemCanDelete = function() return true end
+    env.CloseMail = function() shown = false end
+    env.C_CurrencyInfo = { GetCoinTextureString = function(v) return tostring(v) end }
+    assert(S.MailCopper("2", "3", "4") == 20304 and S.MailCopper("x") == 0, "copper")
+    local nxt = S.MailNextTake(2, S.MailHeader, function(i, a) return env.GetInboxItem(i, a) ~= nil end)
+    assert(nxt and nxt.index == 1 and nxt.kind == "money", "open all takes gold first and skips COD")
+    S.db.ownMail = true; S:SyncMail()
+    local win = S:GetMailWindow()
+    assert(win and win:IsShown() and ns.Skin:IsTucked(env.MailFrame), "mail window with Blizzard's tucked")
+    win.rows[2]:GetScript("OnClick")(win.rows[2])
+    S:MailTake(2, 1)
+    assert(#took == 0, "COD paid on the first click")
+    S:MailTake(2, 1)
+    assert(took[1] == "item2:1", "COD second click takes the item")
+    win.tabBtns.send.onClick()
+    win.send.to.GetText = function() return "Bob" end
+    win.send.gold.GetText = function() return "3" end
+    S:MailSend()
+    assert(sent and sent.to == "Bob" and sent.money == 30000, "send")
+    S.db.ownMail = false; S:Refresh()
+    assert(not win:IsShown() and not ns.Skin:IsTucked(env.MailFrame), "switch off brings Blizzard's mailbox back live")
+    S.db.ownMail = true; S:Refresh()
+    assert(win:IsShown(), "switch on again")
+    shown = false; S:SyncMail()
+    assert(not win:IsShown(), "closing the mailbox")
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

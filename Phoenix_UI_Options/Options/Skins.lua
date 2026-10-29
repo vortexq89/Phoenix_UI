@@ -26,6 +26,7 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "professions", label = "SKINS_PROFESSIONS", keywords = "crafting tradeskill" },
     { type = "toggle", key = "auction", label = "SKINS_AUCTION", keywords = "auction house ah" },
     { type = "toggle", key = "mail", label = "SKINS_MAIL", keywords = "mailbox" },
+    { type = "toggle", key = "ownMail", label = "MAILW_OWN", desc = "MAILW_OWN_DESC", keywords = "mail inbox own window" },
     { type = "toggle", key = "mailAlts", label = "SKINS_MAIL_ALTS", desc = "SKINS_MAIL_ALTS_DESC",
       keywords = "mail alts characters recipient" },
     { type = "toggle", key = "merchant", label = "SKINS_MERCHANT", keywords = "vendor shop" },

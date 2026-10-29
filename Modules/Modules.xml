@@ -27,6 +27,7 @@
     <Script file="Skins\Collections.lua"/>
     <Script file="Skins\Transmog.lua"/>
     <Script file="Skins\Mail.lua"/>
+    <Script file="Skins\MailWindow.lua"/>
     <Script file="Skins\Merchant.lua"/>
     <Script file="Skins\Vault.lua"/>
     <Script file="Skins\Calendar.lua"/>
