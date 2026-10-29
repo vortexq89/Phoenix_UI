@@ -3737,6 +3737,19 @@ try("calendar: edit your own event", function()
     assert(select(3, S.CalendarFormFrom(nil, types)) == 20, "defaults without an event")
 end)
 
+try("traveler's log rows", function()
+    local S = ns.modules.Skins
+    local saved = rawget(env, "C_PerksActivities")
+    env.C_PerksActivities = { GetPerksActivitiesInfo = function() return { activities = {
+        { ID = 1, activityName = "B", completed = true, thresholdContributionAmount = 50 },
+        { ID = 2, activityName = "A", tracked = true, thresholdContributionAmount = 100,
+          requirementsList = { { requirementText = "0/5" } } },
+        { ID = 3, activityName = "C" } } } end }
+    local log = S.TravelersLog()
+    assert(#log == 3 and log[1].id == 2 and log[1].req == "0/5" and log[3].done, "tracked first, done last")
+    rawset(env, "C_PerksActivities", saved)
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

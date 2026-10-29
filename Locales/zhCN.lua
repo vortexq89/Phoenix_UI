@@ -2822,6 +2822,7 @@ local T = {
     QLOGW_DAILY = "日常",
     QLOGW_OWN = "Phoenix 任务日志",
     QLOGW_OWN_DESC = "地图旁 Phoenix 自己的任务列表：区域、等级、目标、搜索和追踪（右键）。详情、放弃和共享仍用暴雪界面。关闭：使用暴雪列表。立即生效。",
+    EJW_LOG = "旅行者日志",
     CALW_EDIT = "编辑",
     CALW_SAVE = "保存活动",
     RELOAD_NEEDED = "需要重载",

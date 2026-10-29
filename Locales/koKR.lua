@@ -2822,6 +2822,7 @@ local T = {
     QLOGW_DAILY = "일일",
     QLOGW_OWN = "Phoenix 퀘스트 목록",
     QLOGW_OWN_DESC = "지도 옆 Phoenix 전용 퀘스트 목록: 지역, 레벨, 목표, 검색, 추적(오른쪽 클릭). 세부 정보, 포기, 공유는 블리자드 창을 사용합니다. 끄면 블리자드 목록을 사용합니다. 즉시 적용됩니다.",
+    EJW_LOG = "여행자 일지",
     CALW_EDIT = "편집",
     CALW_SAVE = "일정 저장",
     RELOAD_NEEDED = "다시 불러오기 필요",

@@ -6,10 +6,11 @@ local M = ns:GetModule("Skins")
     Dungeons / Raids tabs and the expansion (tier) stepper, the tier's instances as Phoenix rows, the picked
     instance's bosses, and the picked boss's description with its loot (the items' own icons, tooltips,
     shift-click links) or its ability tree (Abilities: sections with the game's own icons, click a section to
-    open its children). Journeys tab: the renown factions with level and progress. The Traveler's Log and
-    suggested content stay in Blizzard's guide (the arrow button, this visit). The journal's own selection calls are used, so Blizzard's
-    guide opens where you left off. Skins > "Phoenix Adventure Guide window" off: Blizzard's guide,
-    reskinned, live. ]]
+    open its children). Journeys tab: the renown factions with level and progress. Traveler's Log tab (retail):
+    this month's activities with their requirement and points, completed ones dimmed, click to track or untrack
+    (the game's own track calls). Suggested content stays in Blizzard's guide (the arrow button, this visit).
+    The journal's own selection calls are used, so Blizzard's guide opens where you left off.
+    Skins > "Phoenix Adventure Guide window" off: Blizzard's guide, reskinned, live. ]]
 
 local COL_W, ROWS, ROW_H, LOOT = 220, 11, 34, 16
 local r, instances, bosses
@@ -117,6 +118,42 @@ local function layoutJourneys()
     end)
 end
 
+-- This month's Traveler's Log: { id, name, req, points, done, tracked }, open ones first.
+function M.TravelersLog()
+    local api = _G.C_PerksActivities
+    local info = api and api.GetPerksActivitiesInfo and api.GetPerksActivitiesInfo()
+    local out = {}
+    if type(info) ~= "table" or type(info.activities) ~= "table" then return out end
+    for _, a in ipairs(info.activities) do
+        local req = type(a.requirementsList) == "table" and a.requirementsList[1]
+        out[#out + 1] = { id = a.ID, name = tostring(a.activityName or ""), done = a.completed and true or false,
+            tracked = a.tracked and true or false, points = tonumber(a.thresholdContributionAmount) or 0,
+            req = req and tostring(req.requirementText or "") or "" }
+    end
+    table.sort(out, function(x, y)
+        if x.done ~= y.done then return not x.done end
+        if x.tracked ~= y.tracked then return x.tracked end
+        return x.name < y.name
+    end)
+    return out
+end
+
+local function layoutLog()
+    journeys.Set(M.TravelersLog(), function(b, a)
+        b.title:SetText(a.name)
+        b.sub:SetText(a.req)
+        b.right:SetText(a.points > 0 and ("+" .. a.points) or "")
+        b.title:SetAlpha(a.done and 0.5 or 1)
+        if a.tracked then journeys.Mark(b, "accent.primary", 0.25); journeys.Bar(b, "accent.primary") end
+    end)
+end
+
+local function toggleTrack(a)
+    local api = _G.C_PerksActivities
+    if not (api and a and a.id) or a.done then return end
+    if a.tracked then api.RemoveTrackedPerksActivity(a.id) else api.AddTrackedPerksActivity(a.id) end
+end
+
 local function layoutAbilities(rootID)
     abilities.Set(M.JournalSections(rootID, openSections), function(b, sec)
         b.icon:SetTexture(sec.icon)
@@ -130,9 +167,11 @@ end
 
 local function layout()
     r.tabs.Paint(view)
-    local isJourney = view == "journeys"
+    local isJourney = view == "journeys" or view == "log"
     for _, el in ipairs({ instances, bosses, r.detail, r.prev, r.next, r.tier }) do el:SetShown(not isJourney) end
     journeys:SetShown(isJourney)
+    journeys.onClick = view == "log" and function(a) toggleTrack(a); r:Layout() end or nil
+    if view == "log" then layoutLog(); return end
     if isJourney then layoutJourneys(); return end
     raid = view == "raid"
     local tier = tonumber(EJ_GetCurrentTier and EJ_GetCurrentTier()) or 1
@@ -192,8 +231,10 @@ end
 local function build(rr)
     r = rr
     r.loot = {}
-    r.tabs = M.ReplaceTabs(r.body, { { key = "dungeon", label = L.EJW_DUNGEONS }, { key = "raid", label = L.EJW_RAIDS },
-        { key = "journeys", label = L.EJW_JOURNEYS } }, 100,
+    local tabs = { { key = "dungeon", label = L.EJW_DUNGEONS }, { key = "raid", label = L.EJW_RAIDS },
+        { key = "journeys", label = L.EJW_JOURNEYS } }
+    if _G.C_PerksActivities then tabs[#tabs + 1] = { key = "log", label = L.EJW_LOG } end
+    r.tabs = M.ReplaceTabs(r.body, tabs, 100,
         function(key) view = key; instanceID, encounterID = nil, nil; r:Layout() end)
     r.prev = W:IconButton(r.body, "reset", 22, PREV or "<")
     r.prev:SetPoint("TOPLEFT", 330, 0)
@@ -244,7 +285,12 @@ M.JournalReplacement = ej
 
 function M:SetupJournalWindow()
     if not M.ReplacementHook(ej) then return end
-    for _, event in ipairs({ "EJ_LOOT_DATA_RECIEVED", "EJ_DIFFICULTY_UPDATE" }) do
+    local events = { "EJ_LOOT_DATA_RECIEVED", "EJ_DIFFICULTY_UPDATE" }
+    if _G.C_PerksActivities then
+        events[#events + 1] = "PERKS_ACTIVITIES_TRACKED_UPDATED"
+        events[#events + 1] = "PERKS_ACTIVITY_COMPLETED"
+    end
+    for _, event in ipairs(events) do
         ns.Events:On(event, ej, function() ej:Soon() end)
     end
     ej:Sync()

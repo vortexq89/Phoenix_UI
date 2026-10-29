@@ -2822,6 +2822,7 @@ local T = {
     QLOGW_DAILY = "Diaria",
     QLOGW_OWN = "Registro de misiones de Phoenix",
     QLOGW_OWN_DESC = "La lista de misiones propia de Phoenix junto al mapa: zonas, niveles, objetivos, búsqueda y seguimiento (clic derecho). Detalles, abandonar y compartir siguen siendo de Blizzard. Desactivado: la lista de Blizzard. Se aplica al momento.",
+    EJW_LOG = "Diario del viajero",
     CALW_EDIT = "Editar",
     CALW_SAVE = "Guardar evento",
     RELOAD_NEEDED = "Recarga necesaria",
