@@ -4,11 +4,11 @@ local M = ns.modules.Automation
 --[[ Fishing helper (EllesmereUI Forever Essentials reference; both clients). While you fish, the bobber's
     splash is easy to hear: Phoenix lifts the effects volume and lowers music and ambience for the cast, and
     turns auto loot on, then puts all four back the moment the channel ends (or after a /reload, from the saved
-    copy). Only CVars are touched; nothing casts for you. The cast is recognised by its spell name (Fishing,
-    in the client's language) from the game's own spell IDs, so no data is shipped. ]]
+    copy). Only CVars are touched; nothing casts for you. The cast is recognised by name: a channel whose spell is
+    called like your Fishing profession (GetProfessions' fishing slot, in the client's language). No IDs or data
+    are shipped. ]]
 
 local OWNER = {}
-local FISHING = { 7620, 131474 } -- spellIDs: Fishing (WoW Forever / classic rank 1, retail)
 local CVARS = { "Sound_SFXVolume", "Sound_MusicVolume", "Sound_AmbienceVolume", "autoLootDefault" }
 
 -- The CVar values for a cast from your settings (pure).
@@ -17,18 +17,20 @@ function M.FishingCVars(boost)
              autoLootDefault = "1" }
 end
 
-local names
-local function isFishing(spellID)
+-- Your Fishing profession's name (the cast carries the same name), or nil without it.
+local function fishingName()
+    if type(GetProfessions) ~= "function" then return nil end
+    local fishing = select(4, GetProfessions())
+    if not fishing then return nil end
+    local name = GetProfessionInfo(fishing)
+    return type(name) == "string" and name ~= "" and name or nil
+end
+
+local function isFishing(spellID, nameOf, profession)
     if type(spellID) ~= "number" or ns.Secret.IsSecret(spellID) then return false end
-    if not names then
-        names = {}
-        for _, id in ipairs(FISHING) do
-            local n = C_Spell.GetSpellName(id)
-            if type(n) == "string" then names[n] = true end
-        end
-    end
-    local n = C_Spell.GetSpellName(spellID)
-    return type(n) == "string" and names[n] == true
+    local want = profession or fishingName()
+    local n = (nameOf or C_Spell.GetSpellName)(spellID)
+    return want ~= nil and type(n) == "string" and n == want
 end
 M.IsFishingSpell = isFishing
 

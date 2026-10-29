@@ -3169,7 +3169,7 @@ try("phoenix character window", function()
         GetCurrencyListInfo = function() return { name = "Coin", quantity = 5, maxQuantity = 10, iconFileID = 1 } end },
         { __index = env.C_CurrencyInfo })
     local stats = S.CharacterStats()
-    assert(stats[1].value == "636.4" and stats[3].value == 4000, "stats: item level and the spec's primary stat")
+    assert(stats[1].value == "636.4" and stats[3].value == (ns.flavor == "forever" and 1000 or 4000), "stats: item level and the spec's primary stat")
     local rep = S.CharacterReputation()
     assert(#rep == 2 and rep[2].progress == 0.5 and rep[2].count == "3000 / 6000", "reputation progress")
     assert(S.CharacterCurrency()[1].max == 10, "currency")
@@ -3684,6 +3684,8 @@ try("forever extras: stats, fishing, junk", function()
     local cv = A.FishingCVars(true)
     assert(cv.Sound_SFXVolume == "1" and cv.Sound_MusicVolume == "0" and cv.autoLootDefault == "1", "fishing cvars")
     assert(A.FishingCVars(false).Sound_MusicVolume == nil, "music kept when not quiet")
+    assert(A.IsFishingSpell(5, function() return "Fishing" end, "Fishing"), "the fishing channel by name")
+    assert(not A.IsFishingSpell(5, function() return "Frostbolt" end, "Fishing"), "other channels ignored")
     -- start / restore round trip
     local store = { Sound_SFXVolume = "0.3", Sound_MusicVolume = "0.5", Sound_AmbienceVolume = "0.4", autoLootDefault = "0" }
     local CV = env.C_CVar

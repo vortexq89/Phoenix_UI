@@ -37,6 +37,8 @@ function M.ForeverStats()
         local ok, a, b, c = pcall(fn, ...)
         if ok then return a, b, c end
     end
+    local _, equipped = GetAverageItemLevel()
+    add(STAT_AVERAGE_ITEM_LEVEL, ("%.1f"):format(tonumber(equipped) or 0))
     add(HEALTH, UnitHealthMax("player"))
     for i = 1, 5 do add(_G["SPELL_STAT" .. i .. "_NAME"], (UnitStat("player", i))) end
     add(STAT_ARMOR, (UnitArmor("player")))
