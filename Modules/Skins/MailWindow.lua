@@ -21,15 +21,15 @@ local visitBlizzard, openingAll
 local function on() return M:IsEnabled() and M.db.ownMail and true or false end
 M.MailWindowOn = on
 
-local function count() return GetInboxNumItems and (GetInboxNumItems()) or 0 end
+local function count() return GetInboxNumItems and tonumber((GetInboxNumItems())) or 0 end
 
 -- One letter as plain values (no secret values in the mail API).
 function M.MailHeader(i)
     if not GetInboxHeaderInfo then return nil end
     local _, _, sender, subject, money, cod, days, items, wasRead = GetInboxHeaderInfo(i)
     if subject == nil and sender == nil then return nil end
-    return { sender = sender or UNKNOWN or "?", subject = subject or "", money = money or 0, cod = cod or 0,
-        days = days or 0, items = items or 0, read = wasRead and true or false }
+    return { sender = tostring(sender or UNKNOWN or "?"), subject = tostring(subject or ""), money = tonumber(money) or 0,
+        cod = tonumber(cod) or 0, days = tonumber(days) or 0, items = tonumber(items) or 0, read = wasRead == true }
 end
 
 -- The next thing Open all should take: { index, kind = "money" | "item", slot } or nil. COD letters are skipped.
@@ -56,7 +56,10 @@ local function bagsFull()
     return free == 0
 end
 
-local function money(v) return C_CurrencyInfo.GetCoinTextureString(v or 0) end
+local function money(v)
+    local s = C_CurrencyInfo.GetCoinTextureString(tonumber(v) or 0)
+    return type(s) == "string" and s or tostring(tonumber(v) or 0)
+end
 
 ---------------------------------------------------------------- inbox
 local function paintRow(r, h, index)
@@ -120,7 +123,8 @@ local function layoutRead()
     if not h then return end
     r.from:SetText(L.MAILW_FROM:format(h.sender))
     r.subject:SetText(h.subject)
-    r.body:SetText(GetInboxText and (GetInboxText(selected)) or "")
+    local text = GetInboxText and GetInboxText(selected)
+    r.body:SetText(type(text) == "string" and text or "")
     local n = 0
     for a = 1, (tonumber(ATTACHMENTS_MAX_RECEIVE) or 16) do
         local name, _, texture, stack = GetInboxItem(selected, a)
@@ -129,7 +133,7 @@ local function layoutRead()
             local b = attachmentButton(n)
             b.slot = a
             b.icon:SetTexture(texture)
-            b.count:SetText((stack or 0) > 1 and stack or "")
+            b.count:SetText((tonumber(stack) or 0) > 1 and stack or "")
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", r.body, "BOTTOMLEFT", ((n - 1) % 8) * 36, -8 - math.floor((n - 1) / 8) * 36)
             Skin:SetBorderColor(b, codArmed == selected .. ":" .. a and "state.danger" or "border.subtle")
@@ -202,7 +206,7 @@ function M:LayoutSend()
         local name, _, texture, stack = GetSendMailItem(i)
         b.icon:SetTexture(texture)
         b.icon:SetShown(name ~= nil or texture ~= nil)
-        b.count:SetText((stack or 0) > 1 and stack or "")
+        b.count:SetText((tonumber(stack) or 0) > 1 and stack or "")
     end
     s.postage:SetText(L.MAILW_POSTAGE:format(money(GetSendMailPrice and GetSendMailPrice() or 0)))
 end

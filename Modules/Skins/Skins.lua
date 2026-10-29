@@ -16,7 +16,7 @@ local M = ns:NewModule("Skins", {
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
-        trade = true, dressUp = true, transmog = true, housing = true, pvpMatch = true, pgf = true, alerts = false,
+        trade = true, dressUp = true, transmog = true, housing = true, pvpMatch = true, ownMail = true, pgf = true, alerts = false,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
         moveWindows = false, movedWindows = {}, mailAlts = true, premadeSearches = {},
