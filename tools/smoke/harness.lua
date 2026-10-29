@@ -2434,6 +2434,19 @@ retailTry("teleport prompt finds the dungeon's teleport by its description", fun
     assert(not p:GetScript("OnUpdate"), "no OnUpdate")
     G:HideTeleport()
 end)
+retailTry("bag process items picks the known spell per item", function()
+    local B = ns.modules.Bags
+    local have = { [13262] = true, [51005] = true }
+    local mill = env.ITEM_MILLABLE or "Millable"
+    assert(B.ProcessSpellFor({ [mill] = true }, 7, 1, "", have) == (env.ITEM_MILLABLE and 51005 or nil), "mill")
+    assert(B.ProcessSpellFor({}, env.Enum.ItemClass.Armor, 3, "INVTYPE_HEAD", have) == 13262, "disenchant")
+    assert(B.ProcessSpellFor({}, env.Enum.ItemClass.Armor, 5, "INVTYPE_HEAD", have) == nil, "legendary kept")
+    assert(B.ProcessSpellFor({}, env.Enum.ItemClass.Armor, 3, "INVTYPE_HEAD", {}) == nil, "unknown spell")
+    assert(type(B:ProcessableItems()) == "table" and type(B:CanProcess()) == "boolean", "scan")
+    B.db.process = true
+    local w = B:ToggleProcess()
+    if w then assert(not w:GetScript("OnUpdate"), "no OnUpdate"); B:RefreshProcess(); B:ToggleProcess() end
+end)
 try("safe scale never hands SetScale a bad value", function()
     local U = ns.Util
     for _, v in ipairs({ 0, -1, 0 / 0, math.huge, "1", false }) do assert(U.SafeScale(v) == 1, tostring(v)) end

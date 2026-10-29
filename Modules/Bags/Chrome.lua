@@ -269,6 +269,20 @@ function M:RefreshChips()
             prev = c
         end
     end
+    if not chipRow.process then
+        -- not a filter: opens the Process items window (Process.lua) for the spells you know
+        local c = CreateFrame("Button", nil, chipRow)
+        c.key = "process"
+        c.label = W.Text(c, "small", "text.secondary", "CENTER")
+        c.label:SetPoint("CENTER")
+        c.label:SetText(L.BAGS_PROCESS)
+        c:SetSize(math.max(34, (c.label:GetStringWidth() or 30) + 12), 18)
+        c:SetPoint("LEFT", chipRow.chips[#chipRow.chips], "RIGHT", 3, 0)
+        c:SetScript("OnClick", function() M:ToggleProcess() end)
+        chipRow.process = c
+        chipRow.chips[#chipRow.chips + 1] = c
+    end
+    chipRow.process:SetShown(self.CanProcess and self:CanProcess() or false)
     chipRow:Show()
     paintChips()
 end

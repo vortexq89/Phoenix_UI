@@ -118,5 +118,7 @@ ns:RegisterOptions("Bags", {
       keywords = "bank warband account reagent tabs" },
     { type = "toggle", key = "openAuction", label = "BAGS_OPEN_AUCTION", desc = "BAGS_OPEN_AUCTION_DESC" },
     { type = "toggle", key = "openTrade", label = "BAGS_OPEN_TRADE", desc = "BAGS_OPEN_TRADE_DESC" },
+    { type = "toggle", key = "process", label = "BAGS_PROCESS_OPT", desc = "BAGS_PROCESS_OPT_DESC", feature = "bagProcess",
+      keywords = "disenchant mill milling prospect prospecting lockpick process quick actions" },
     mirror("Automation", "sellJunk", { label = "BAGS_SELL_JUNK", desc = "BAGS_SELL_JUNK_DESC", keywords = "vendor grey auto sell" }),
 })

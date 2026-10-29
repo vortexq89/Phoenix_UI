@@ -61,6 +61,8 @@ ns.FEATURES = {
     -- retail spells): Forever's level-60 Azeroth has no arenas and none of those talents.
     arena = { retail = true },
     specBars = { retail = true },
+    -- Bag "Process items": milling and prospecting are not in Forever's level-60 Azeroth (spell IDs are retail's).
+    bagProcess = { retail = true },
     -- Boss timeline and warnings: Blizzard_EncounterTimeline / _EncounterWarnings load on "standard" only.
     encounterTimeline = available(C_EncounterTimeline),
     encounterWarnings = available(C_EncounterWarnings),

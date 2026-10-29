@@ -495,6 +495,9 @@
   "1295329": {
    "name": "Tidesworn Augment Rune"
   },
+  "13262": {
+   "name": "Disenchant"
+  },
   "1459": {
    "name": "Arcane Intellect"
   },
@@ -509,6 +512,9 @@
   },
   "1766": {
    "name": "Kick"
+  },
+  "1804": {
+   "name": "Pick Lock"
   },
   "183752": {
    "name": "Disrupt"
@@ -561,6 +567,9 @@
   "28730": {
    "name": "Arcane Torrent"
   },
+  "31252": {
+   "name": "Prospecting"
+  },
   "351338": {
    "name": "Quell"
   },
@@ -605,6 +614,9 @@
   },
   "47540": {
    "name": "Penance"
+  },
+  "51005": {
+   "name": "Milling"
   },
   "5143": {
    "name": "Arcane Missiles"

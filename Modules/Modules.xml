@@ -74,6 +74,7 @@
     <Script file="Bags\Bags.lua"/>
     <Script file="Bags\Window.lua"/>
     <Script file="Bags\Chrome.lua"/>
+    <Script file="Bags\Process.lua"/>
     <Script file="Sim\Export.lua"/>
     <Script file="Sim\Sim.lua"/>
     <Script file="Minimap\Minimap.lua"/>

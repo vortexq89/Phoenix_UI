@@ -26,7 +26,7 @@ local M = ns:NewModule("Bags", {
         slotBorder = Style.Border({ style = "solid" }),
         count = Style.Text(12, { outline = "OUTLINE", anchor = "BOTTOMRIGHT", x = -2, y = 2 }),
         junk = true, junkDim = false, newGlow = "phoenix", bind = true, cooldowns = true,
-        bankSkin = true, openAuction = false, openTrade = false,
+        bankSkin = true, openAuction = false, openTrade = false, process = true,
     },
 })
 
@@ -285,6 +285,7 @@ function M:OnEnable()
     ns.Events:On("TRADE_SHOW", self, function() if M.db.openTrade then OpenAllBags() end end)
     if self.EnableWindow then self:EnableWindow() end
     if self.SetupChrome then self:SetupChrome() end -- Chrome.lua
+    if self.SetupProcess then self:SetupProcess() end -- Process.lua
     if hooked then self:Refresh(); return end
     hooked = true
     eachBag(function(frame) hooksecurefunc(frame, "UpdateItems", onUpdateItems) end)
