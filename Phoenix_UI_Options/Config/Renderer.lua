@@ -21,6 +21,7 @@ local U = ns.Util
     Layout: cards in one or two columns; inside a card, rows without a description pair up two per line
     (label above control) once the card is wide enough, and rows with one keep a full line. ]]
 local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT = 24, 16, 36, 52, 760
+Config.CARD_GAP_MAX = CARD_GAP + 8 -- the page-spacing smoke test: more than this between two cards is an empty band
 local CELL_H, TOGGLE_CELL_H, PAIR_AT, HEADER_H = 60, 38, 400, 96
 local POPOVER_W = 400
 -- rows that can share a line: no description, a control that fits half a card

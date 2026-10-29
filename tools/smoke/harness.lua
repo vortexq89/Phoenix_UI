@@ -3883,6 +3883,69 @@ try("minimap shape live", function()
     assert(env.GetMinimapShape() == "SQUARE" and masks[#masks] ~= m.ROUND_MASK, "Square did not apply live")
     rawset(map, "SetMaskTexture", old)
 end)
+-- spacing: on every page and tab the visible cards never overlap and leave no empty band between them, and the
+-- rows inside a card never overlap (tools/smoke/geometry.lua)
+try("page spacing", function()
+    local C, UI = ns.Config, env.UIParent
+    local oldRoot = Geo.root
+    Geo.root = UI
+    Geo.rootW, Geo.rootH = 1920, 1080
+    rawset(UI, "__w", 1920); rawset(UI, "__h", 1080)
+    local f = C:Build()
+    C.FitToScreen(f)
+    local problems, gaps = {}, {}
+    local function check(key, label)
+        local page = C.pages[key]
+        if not page or not page.cards then return end
+        local list = {}
+        -- cards hang off the scroll child (which has no anchors of its own): measure relative to it
+        local child
+        for _, c in ipairs(page.cards) do local pt = Geo.points[c]; if pt and pt[1] and type(pt[1].rel) == "table" then child = pt[1].rel; break end end
+        Geo.root = child or UI
+        for _, c in ipairs(page.cards) do
+            if c:IsShown() then
+                local l, b, w, h = Geo.Rect(c)
+                if l and h and h > 0 then list[#list + 1] = { c = c, top = b + h, bottom = b, l = l, w = w } end
+            end
+        end
+        table.sort(list, function(a, b) return a.top > b.top end)
+        for i = 2, #list do
+            local up, dn = list[i - 1], list[i]
+            local sameCol = dn.l < up.l + up.w - 1 and up.l < dn.l + dn.w - 1
+            if sameCol then
+                local gap = (up.bottom - dn.top) / (f:GetScale() or 1) -- in page units, whatever the window scale
+                gaps[#gaps + 1] = gap
+                if gap < -0.5 then problems[#problems + 1] = ("%s: cards overlap by %.0f px"):format(label, -gap) end
+                if gap > C.CARD_GAP_MAX then problems[#problems + 1] = ("%s: %.0f px empty gap between cards"):format(label, gap) end
+            end
+        end
+        for _, card in ipairs(page.cards) do
+            local rows = {}
+            for _, r in ipairs(card.rows or {}) do if r:IsShown() and Geo.Rect(r) then rows[#rows + 1] = r end end
+            for i = 1, #rows do for j = i + 1, #rows do
+                if Geo.Overlap(rows[i], rows[j], 1) then
+                    problems[#problems + 1] = ("%s: rows %s and %s overlap"):format(label, tostring(rows[i].item.key or rows[i].item.label),
+                        tostring(rows[j].item.key or rows[j].item.label))
+                end
+            end end
+        end
+    end
+    for _, g in ipairs(C:Groups()) do
+        for _, key in ipairs(g.entries or {}) do
+            local page = key ~= "home" and C:Show(key) -- Home lays out its own grid with group headings between
+            if page then
+                check(key, key)
+                for n = 2, #(page.tabList or {}) do
+                    page.tabs:SetValue(n); page.tabs.onChange(page.tabs, n)
+                    check(key, key .. " tab " .. n)
+                end
+            end
+        end
+    end
+    Geo.root = oldRoot
+    assert(#gaps > 20, "spacing check measured too few cards: " .. #gaps)
+    assert(#problems == 0, table.concat(problems, "; "))
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
