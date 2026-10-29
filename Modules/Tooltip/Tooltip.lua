@@ -308,14 +308,29 @@ function M:OnEnable()
             skin(tt)
         end
     end
-    if self.db.healthBar and GameTooltip.StatusBar then
-        Skin:Register(GameTooltip.StatusBar, function(bar)
-            Skin:StatusBar(bar, { border = true })
-            M:StyleHealthBar(bar)
-        end)
-    end
+    self:SyncHealthBar()
     styleFonts()
     self:ApplyScale()
+end
+
+-- The unit tooltip's health bar in the Phoenix look; switching it off hands Blizzard's bar back, live.
+function M:SyncHealthBar()
+    local bar = GameTooltip.StatusBar
+    if not bar then return end
+    if self:IsEnabled() and self.db.healthBar then
+        if not self.hbOn then
+            self.hbOn = true
+            self.hbHeight = self.hbHeight or bar:GetHeight()
+            Skin:Register(bar, function(b)
+                Skin:StatusBar(b, { border = true })
+                M:StyleHealthBar(b)
+            end)
+        end
+    elseif self.hbOn then
+        self.hbOn = nil
+        Skin:Restore(bar)
+        if self.hbHeight then bar:SetHeight(self.hbHeight) end
+    end
 end
 
 function M:ApplyScale()
@@ -329,7 +344,8 @@ function M:Refresh()
     self:ApplyScale()
     self:PlaceMover()
     for tt in pairs(skinned) do self:StyleFrame(tt); border(tt) end
-    if self.db.healthBar and GameTooltip.StatusBar and Skin:IsSkinned(GameTooltip.StatusBar) then
+    self:SyncHealthBar()
+    if self.hbOn then
         self:StyleHealthBar(GameTooltip.StatusBar)
     end
     styleFonts()

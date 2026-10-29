@@ -25,7 +25,7 @@ ns:RegisterOptions("Tooltip", {
     { type = "toggle", gate = true, key = "skin", label = "TOOLTIP_SKIN", desc = "TOOLTIP_SKIN_DESC", reload = true },
     Opt.With(Opt.Background("backdrop", nil, "bg.raised"), { disabled = unskinned }),
     Opt.With(Opt.Border("border", nil, "border.strong"), { disabled = unskinned }),
-    { type = "toggle", key = "healthBar", label = "TOOLTIP_HEALTHBAR", desc = "TOOLTIP_HEALTHBAR_DESC", reload = true,
+    { type = "toggle", key = "healthBar", label = "TOOLTIP_HEALTHBAR", desc = "TOOLTIP_HEALTHBAR_DESC",
       cog = {
           { type = "texture", key = "barTexture", label = "BAR_TEXTURE", allowDefault = true },
           { type = "range", key = "barHeight", label = "TOOLTIP_BAR_HEIGHT", min = 2, max = 12, step = 1 },
