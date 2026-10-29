@@ -401,6 +401,9 @@ function buildRow(card, page, m, item)
     row.flash:SetAlpha(0)
     row.flash:Hide()
     row.label = W.Text(row, "body", "text.primary")
+    -- one line, cut with "..." at the text column (the full label is in the row tooltip): a wrapped label
+    -- ran into the control or the row below
+    row.label:SetWordWrap(false)
     row.label:SetText(text(item.label))
     if item.icon and item.type == "toggle" then row.icon = W.Icon(row, item.icon, 14, "accent.primary") end
     row.control = makeControl(row, page, m, item)
@@ -507,7 +510,7 @@ function buildRow(card, page, m, item)
     end
 
     function row:Arrange(mode, width)
-        self.mode = mode
+        self.mode, self.textW = mode, nil
         local c = self.control
         local icons = sideIcons(self)
         for _, b in ipairs(icons) do b:ClearAllPoints() end
@@ -525,7 +528,10 @@ function buildRow(card, page, m, item)
         if self.icon then self.icon:SetPoint("RIGHT", self.label, "LEFT", -8, 0) end
         if self.badge then
             self.badge:ClearAllPoints()
-            self.badge:SetPoint("LEFT", self.label, "LEFT", math.min(self.label:GetUnboundedStringWidth(), 140) + 8, 0)
+            -- after the label text, but never past the text column into the control
+            local room = math.max(0, (self.textW or 140) - (self.badge:GetWidth() or 0) - 8)
+            if self.textW then self.label:SetWidth(math.max(40, room)) end
+            self.badge:SetPoint("LEFT", self.label, "LEFT", math.min(self.label:GetUnboundedStringWidth(), 140, room) + 8, 0)
             self.badge:Show()
         end
     end
@@ -837,6 +843,7 @@ local function buildScope(page, m, item)
             if scope.mode ~= "all" then scope.mode = next(scope.multi) and "multi" or "this" end
             summary()
             page:Refresh()
+            relayout()
             return
         end
         scope.unit = v
