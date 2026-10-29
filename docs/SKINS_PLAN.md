@@ -55,8 +55,9 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
 - Phoenix replacement windows (our own frames fed by the API; Blizzard's window kept open but tucked with
   Skin:Tuck, so Escape and "is it open" checks still work; each has a switch back to the reskinned Blizzard
   window, live, and an arrow button for Blizzard's window this visit): bags (default view now Phoenix, live
-  switch), bank (`Bags/Bank.lua`), mail (`Skins/MailWindow.lua`). Next, in order: merchant, friends,
-  achievements, calendar, Great Vault, collections, Adventure Guide. Protected windows keep the deep reskin.
+  switch), bank (`Bags/Bank.lua`), mail (`Skins/MailWindow.lua`), merchant, friends, achievements, calendar,
+  Great Vault, collections (mounts), Adventure Guide (`Skins/*Window.lua` on the shared `Skins/Replace.lua`).
+  Protected windows keep the deep reskin.
 - 25 PvP: the scoreboard and match results (`PvPMatch.lua`, new switch, live): score table on a sunken card, column
   headers as cells (last sorted in the accent), player rows with a team-coloured bar read back from Blizzard's own row
   art, your row outlined once the match is over, Leave / Requeue as Phoenix buttons. The queue side (honor/conquest
