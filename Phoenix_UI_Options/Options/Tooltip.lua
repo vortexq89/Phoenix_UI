@@ -33,7 +33,7 @@ ns:RegisterOptions("Tooltip", {
     { type = "toggle", key = "classBorder", label = "TOOLTIP_CLASS_BORDER", desc = "TOOLTIP_CLASS_BORDER_DESC" },
     { type = "toggle", key = "qualityBorder", label = "TOOLTIP_QUALITY_BORDER", desc = "TOOLTIP_QUALITY_BORDER_DESC" },
     { type = "header", label = "TOOLTIP_TEXT", icon = "fonts" },
-    { type = "toggle", key = "fonts", label = "TOOLTIP_FONTS", desc = "TOOLTIP_FONTS_DESC", reload = true },
+    { type = "toggle", key = "fonts", label = "TOOLTIP_FONTS", desc = "TOOLTIP_FONTS_DESC" },
     Opt.Text("header", "TOOLTIP_HEADER_FONT", { max = 24, row = { disabled = noFonts } }),
     Opt.Text("body", "TOOLTIP_BODY_FONT", { max = 20, row = { disabled = noFonts } }),
     { type = "tab", label = "TAB_CONTENT" },

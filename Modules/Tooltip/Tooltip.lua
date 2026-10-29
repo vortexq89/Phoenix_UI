@@ -73,8 +73,19 @@ end
 
 -- Tooltip lines use these shared font objects; restyling them reaches every tooltip line.
 local FONT_OBJECTS = { header = { "GameTooltipHeaderText" }, body = { "GameTooltipText", "GameTooltipTextSmall" } }
+local fontsStyled
 local function styleFonts()
-    if not M.db.fonts then return end
+    if not (M:IsEnabled() and M.db.fonts) then
+        -- live off: the shared tooltip fonts go back to Blizzard's
+        if fontsStyled then
+            fontsStyled = nil
+            for _, list in pairs(FONT_OBJECTS) do
+                for _, name in ipairs(list) do if _G[name] then Skin:Restore(_G[name]) end end
+            end
+        end
+        return
+    end
+    fontsStyled = true
     local header = _G[FONT_OBJECTS.header[1]]
     local body = {}
     for _, name in ipairs(FONT_OBJECTS.body) do body[#body + 1] = _G[name] end
