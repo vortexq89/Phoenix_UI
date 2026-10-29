@@ -99,7 +99,8 @@ end
 
 ---------------------------------------------------------------- reward value marker
 -- A small coin on the quest reward worth the most at a vendor (shown whenever there is a choice; works without
--- auto turn-in). The reward buttons and their item icons stay Blizzard's; the coin is our own texture on top.
+-- auto turn-in). The reward buttons and their item icons stay Blizzard's; the coin is Phoenix's own glyph on top,
+-- in the accent colour.
 local mark
 local function rewardButton(i)
     local rf = QuestInfoRewardsFrame
@@ -120,11 +121,8 @@ function M:MarkReward()
     if not mark then
         mark = CreateFrame("Frame")
         mark:SetSize(18, 18)
-        mark.tex = mark:CreateTexture(nil, "OVERLAY")
+        mark.tex = ns.Widgets.Icon(mark, "gold", 18, "accent.primary", "OVERLAY")
         mark.tex:SetAllPoints()
-        local atlas = C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("bags-junkcoin")
-        if atlas then mark.tex:SetAtlas("bags-junkcoin") else
-            mark.tex:SetTexture("Interface\\MoneyFrame\\UI-GoldIcon") end
     end
     mark:SetParent(b)
     mark:SetFrameLevel(b:GetFrameLevel() + 5)
