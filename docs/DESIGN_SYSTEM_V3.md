@@ -1,6 +1,9 @@
 # Phoenix UI — Design System v3 (draft for owner approval)
 
-Status: **proposal, revision 3 (t149)**. Nothing in this document is built yet, except the t146/t147 fixes listed at the end.
+Status: **proposal, revision 4 (t150)**. Nothing in this document is built yet, except the t146/t147 fixes listed at the end.
+
+**Revision 4 (owner, t150):** Expressway as the default font, by reference only, with Barlow Semi Condensed as the
+fallback (§3a); the settings GUI redesigned as v4 "Flow" (§11), with three concepts compared.
 
 **Revision 3 (owner, t149):** full-colour ember chrome icons with hover glow and a pressed light burst (§5a);
 a Phoenix panel icon in the top-left corner of every window (§5b); the UI font becomes Barlow Semi Condensed, the
@@ -113,6 +116,41 @@ Skins: Blizzard's font objects (GameFont*, SystemFont*, tooltip, quest and GameN
 own sizes and outlines (General › Text › "Use theme fonts on Blizzard UI", on by default). The user's own UI
 and unit font choices still override the roles. Applying this in game is step 0 of §13 (after approval); the
 build still ships Inter until then.
+
+### 3a. Default font: Expressway by reference, Barlow Semi Condensed otherwise (t150)
+
+The owner prefers **Expressway**. Its licence ("Do not distribute") means Phoenix never ships, copies or embeds the
+file. Phoenix only **points at a copy the user already has** through another installed addon. If no copy is found,
+the default is Barlow Semi Condensed, which Phoenix ships.
+
+Resolution (`Core/Media.lua`, `ResolveDefaultFont()`), run at `PLAYER_LOGIN` and again on LibSharedMedia's
+`LibSharedMedia_Registered` callback for the font type:
+
+1. **LibSharedMedia:** `LSM:IsValid("font", "Expressway")`, then `LSM:Fetch("font", "Expressway")`. This covers any
+   addon that registers it (EllesmereUI registers "Expressway", "Expressway Bold" and "Expressway CAPS").
+2. **Known paths**, tried only if their addon is installed (`C_AddOns.GetAddOnInfo` / `C_AddOns.IsAddOnLoaded`):
+   - `Interface\AddOns\EllesmereUI\media\fonts\Expressway.TTF` (Bold: `Expressway Bold.ttf`)
+   - `Interface\AddOns\ElvUI\Game\Shared\Media\Fonts\Expressway.ttf` (current ElvUI layout)
+   - `Interface\AddOns\ElvUI\Media\Fonts\Expressway.ttf` (older ElvUI layout)
+3. **Probe:** each candidate is checked on a hidden FontString with `fs:SetFont(path, 12, "")`. It is accepted only
+   when that returns true and `fs:GetFont()` gives the path back. Nothing is read or copied.
+4. **Fallback:** if no candidate passes, Barlow Semi Condensed (`Media/Fonts/BarlowSemiCondensed-*.ttf`), with
+   PT Sans Narrow for ruRU. CJK clients always keep the game font.
+
+Rules:
+- **Weights:** if only the regular Expressway is found, it is used for every role. Bold roles take
+  `Expressway Bold` when it exists; otherwise they use the regular file. WoW cannot synthesise bold, so the role
+  sizes from §3 apply unchanged.
+- **Saving:** the profile stores the choice as a key, "Default (Expressway if installed)", not a file path. If the
+  other addon is removed, Phoenix falls back to Barlow at the next login with no error and no missing-font boxes.
+  The fallback is also checked once on `ADDON_LOADED` so a late loader can still switch it live.
+- **Settings:** General › Text shows the resolved font and where it came from, for example "Expressway (from
+  EllesmereUI)" or "Barlow Semi Condensed (Expressway not found)". The user can pin either one, or any LSM font.
+- **Media picker:** an Expressway found this way is listed with an "external" badge. Phoenix never registers it
+  with LSM itself, so it is never re-published.
+- **Licence note** in `CREDITS.md`: Phoenix does not include Expressway. It only uses a copy supplied by another
+  installed addon.
+- **Harness test:** stub LSM with and without "Expressway" and stub `SetFont` to fail, then assert each fallback step.
 
 Colour roles: `text.primary` (92% white), `text.secondary` (68%), `text.muted` (48%), `accent.text`.
 Minimum contrast: 4.5:1 for body text on its surface, and 3:1 for icons and borders that carry meaning.
@@ -305,12 +343,56 @@ Phoenix:RegisterDesign("Character", "phoenix", {        -- id unique per system
 The **Systems** page is a grid of system cards (on/off, design picker, "Configure"). Each system's page starts
 with a **Design** row (thumbnail strip).
 
-## 11. Settings window layout (v3)
+## 11. Settings window layout (v4, t150)
 
-`rail 64 | sub-nav 200 (only when needed) | content (fluid) `, with the preview inside the content (§6), not in
-a fixed right column. The header has the page title (`display`) and a description, with Reset and the module
-toggle on the right. Tabs sit below the header and never truncate. The footer holds save status, the scale
-slider and Reload (only when one is needed).
+The owner's problem with v3: tabs, then sections, then cards left large empty areas, an empty second column and
+squeezed labels. v4 removes the second column and packs every page. Three concepts were drawn on the **same real
+page** (Action Bars › Bars, with its 109 real options from the harness dump), mockups in `renders/t150/`:
+
+| concept | idea | strengths | weaknesses |
+|---|---|---|---|
+| **A "Flow"** (recommended) | one left rail grouped by category; the open module expands **inline** to its sub-pages (Bars · Buttons · Text · Extra bars); a header that stays put on scroll (module icon tile, breadcrumb, title and summary, Enabled switch, Move on screen, Reset page); scope chips (Bar 1–8, Pet, Stance) and a Live preview switch; a slim preview strip; **3-column packed** setting groups | no empty column; the Bars page shows 47 settings without scrolling (v3 showed about 14); every control sits right next to its label | the 3 columns need a window at least 1280 wide (it drops to 2 columns below that) |
+| B "Inspector" | rail + one scroll column of 2-up groups + a fixed right panel: screen bar picker, live preview, at-a-glance summary and changed-from-default count | best for spatial modules (bars, frames); you always see what you're editing | the fixed panel takes 330 px on every page, which is wasted on text-only modules |
+| C "Deck" | an icon-only rail; all of a module's sub-pages on one page as collapsible bands; collapsed bands show **summary chips** (for example "Bottom · x 0 · y 48") | the densest overview; good for experts | the icon-only rail is harder to learn, and a long single page means a lot of scrolling |
+
+**Recommendation: A "Flow"**, with two ideas taken from the others: C's summary chips on collapsed groups, and
+B's "changed from default" count in the header. The rules:
+
+- **Window:** 1400 × 860 by default, resizable down to 1100 × 700. The group columns are 3 at 1280 px or wider,
+  2 at 900 px or wider, otherwise 1.
+- **Rail (236 px):** Phoenix header, search (Ctrl K, all 1,875 settings), Home, then categories (Interface, Combat,
+  Social, Utility, System).
+  - Each module row has its chrome icon, label, and a status dot: green on, grey off.
+  - The open module shows its sub-pages indented under it. Categories that don't hold the open module collapse to
+    one line listing their modules.
+- **Sticky header:** module icon tile 52 px, breadcrumb, title (21 px Bold) and a one-line summary.
+  - Right side: Enabled switch (the module on/off of §10 plugins), Move on screen (Movers), Reset page.
+  - Second line: scope chips for multi-instance modules; shift-click edits several scopes at once.
+  - Live preview switch, shown only where §6 allows a preview.
+- **Preview strip:** at most 92 px tall, full width, and only on modules §6 marks with a preview (bars, frames,
+  cast bars, combat text, auras). Never on text-only pages. It can be hidden; the switch is remembered.
+- **Groups:** one card per section header in the module's schema, with:
+  - an accent bar and an uppercase title with a count badge
+  - a collapse chevron; collapsed cards show summary chips of the current values
+  - rows 28 px tall with zebra striping; the label on the left and the control on the right, in fixed control
+    widths (switch 30, slider 120 plus a 38 px value box, dropdown up to 150, input up to 170)
+  - packed by a **masonry** layout: each card goes into the shortest column, so there are no gaps
+  Long descriptions become tooltips, and a "reload needed" note becomes a small badge, never inline text that
+  crushes the label (fixes t146 b).
+- **Footer:** "Changes save and apply instantly", the profile name, undo (Ctrl Z).
+- **Home:** a hero card (panel icon, greeting, modules-on count, profile, health) with quick actions (Move
+  frames, Install wizard, Profiles, Report a bug). Below it, packed category cards list every module with its
+  settings count and an on/off switch, plus Health checks and Recently changed cards.
+
+Mockups:
+- `settings_v4_A_flow_actionbars.png`
+- `settings_v4_B_inspector.png`
+- `settings_v4_C_deck.png`
+- `settings_v4_A_unitframes.png` (Unit Frames › Frames, scopes Player … Arena)
+- `settings_v4_A_home.png`
+
+All are drawn by `tools/design/settings_v4.py` from the real option dump and committed under
+`docs/screenshots/v4/`.
 
 ## 12. Feature catalogue
 
@@ -330,7 +412,7 @@ Preview verdicts under §6 (today every module has one):
 
 ## 13. Delivery plan (after approval)
 
-0. Font switch to Barlow Semi Condensed (+ PT Sans Narrow for ruRU), with the roles in §3; colour chrome and panel
+0. Font: Expressway by reference with the Barlow Semi Condensed fallback (§3a; + PT Sans Narrow for ruRU), with the roles in §3; colour chrome and panel
    icon atlases in `Media/Icons/` from `gen_chrome_color.py`; panel icons wired into the skins.
 
 1. Tokens + type scale + spacing in `Core/Theme.lua`; component states in `UI/Widgets` (1 commit, live).
