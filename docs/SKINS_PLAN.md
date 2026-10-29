@@ -56,7 +56,10 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   Skin:Tuck, so Escape and "is it open" checks still work; each has a switch back to the reskinned Blizzard
   window, live, and an arrow button for Blizzard's window this visit): bags (default view now Phoenix, live
   switch), bank (`Bags/Bank.lua`), mail (`Skins/MailWindow.lua`), merchant, friends, achievements, calendar,
-  Great Vault, collections (mounts), Adventure Guide (`Skins/*Window.lua` on the shared `Skins/Replace.lua`).
+  Great Vault, collections (mounts, pets, toys, heirlooms, appearances), Adventure Guide (boss abilities, journeys)
+  (`Skins/*Window.lua` on the shared `Skins/Replace.lua`). Also own: achievements guild / statistics / summary, calendar
+  create event + invite answers, friends Who / ignore / remove, bank tab settings + gold transfer. Still Blizzard's:
+  buying bank tabs, the tab icon picker, editing existing calendar events, Raid / Quick Join, Traveler's Log, vault reward pick.
   Protected windows keep the deep reskin.
 - 25 PvP: the scoreboard and match results (`PvPMatch.lua`, new switch, live): score table on a sunken card, column
   headers as cells (last sorted in the accent), player rows with a team-coloured bar read back from Blizzard's own row

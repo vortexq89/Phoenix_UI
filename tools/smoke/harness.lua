@@ -2620,7 +2620,7 @@ end)
 try("phoenix friends window", function()
     local S = ns.modules.Skins
     local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab",
-        "FriendsFrame_InviteOrRequestToJoin", "BNInviteFriend", "ChatFrameUtil" }
+        "FriendsFrame_InviteOrRequestToJoin", "BNInviteFriend", "ChatFrameUtil", "BNRemoveFriend" }
     local saved = {}
     for _, n in ipairs(names) do saved[n] = rawget(env, n) end
     local shown, invited, tabN = true, nil, 1
@@ -2651,9 +2651,37 @@ try("phoenix friends window", function()
     assert(invited == 77, "older BNInviteFriend fallback by game account")
     r.whisper.onClick()
     assert(told == "Acc2", "Battle.net whisper through SendBNetTell")
-    tabN = 2; S:SyncFriends()
-    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.FriendsFrame), "other tabs show Blizzard's window")
-    tabN = 1; S.db.ownFriends = false; S:Refresh()
+    -- remove: second click only; Battle.net friends by account ID
+    local removed
+    env.BNRemoveFriend = function(id) removed = id end
+    list[1].bnetAccountID = 9
+    S.RemoveFriendRecord(list[1])
+    assert(removed == 9, "Battle.net removal by account ID")
+    removed = nil
+    r.rows[1]:GetScript("OnClick")(r.rows[1])
+    r.remove.onClick()
+    assert(removed == nil, "remove on the first click")
+    -- who and ignore tabs
+    local whoSent, ignored, unignored
+    env.C_FriendList.GetNumWhoResults = function() return 1, 1 end
+    env.C_FriendList.GetWhoInfo = function() return { fullName = "Who-Realm", level = 80, classStr = "Mage", area = "Z" } end
+    env.C_FriendList.SetWhoToUi = function() end
+    env.C_FriendList.SendWho = function(t) whoSent = t end
+    env.C_FriendList.GetNumIgnores = function() return 1 end
+    env.C_FriendList.GetIgnoreName = function() return "Bad" end
+    env.C_FriendList.AddIgnore = function(n) ignored = n end
+    env.C_FriendList.DelIgnoreByIndex = function(i) unignored = i end
+    r.tabs.buttons.who.onClick()
+    r.add.onChange(r.add, "mage")
+    assert(whoSent == "mage" and #S.WhoList() == 1, "who search")
+    r.tabs.buttons.ignore.onClick()
+    r.add.onChange(r.add, "Troll")
+    assert(ignored == "Troll", "add ignore")
+    r.rows[1]:GetScript("OnClick")(r.rows[1])
+    r.remove.onClick(); r.remove.onClick()
+    assert(unignored == 1, "remove ignore on the second click")
+    r.tabs.buttons.friends.onClick()
+    S.db.ownFriends = false; S:Refresh()
     assert(not r.win:IsShown(), "switch off live")
     S.db.ownFriends = true; shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
@@ -2740,7 +2768,8 @@ try("phoenix vault window", function()
 end)
 try("phoenix collections window", function()
     local frameName = "CollectionsJournal"
-    local names = { "CollectionsJournal", "C_MountJournal", "PanelTemplates_GetSelectedTab", "C_Spell" }
+    local names = { "CollectionsJournal", "C_MountJournal", "PanelTemplates_GetSelectedTab", "C_Spell", "C_PetJournal", "C_ToyBox",
+        "PlayerHasToy", "C_Heirloom", "C_TransmogCollection" }
     local S = ns.modules.Skins
     local saved = {}
     for _, n in ipairs(names) do saved[n] = rawget(env, n) end
@@ -2752,7 +2781,19 @@ try("phoenix collections window", function()
         GetDisplayedMountInfo = function(i) return "M" .. i, 10 + i, 1, false, true, 0, i == 1, false, nil, false, true, 50 + i end,
         SetSearch = function() end, SummonByID = function(id) summoned = id end, SetIsFavorite = function() end,
         SetCollectedFilterSetting = function() end, GetCollectedFilterSetting = function() return true end }
-    env.C_Spell = { GetSpellLink = function() return "l" end }
+    env.C_Spell = setmetatable({ GetSpellLink = function() return "l" end }, { __index = saved.C_Spell })
+    env.C_PetJournal = { GetNumPets = function() return 1, 1 end, SetSearchFilter = function() end, SetFilterChecked = function() end,
+        GetPetInfoByIndex = function() return "P1", 1, true, nil, 5, false, false, "Cat", 1 end }
+    env.C_ToyBox = { GetNumFilteredToys = function() return 1 end, GetToyFromIndex = function() return 77 end,
+        GetToyInfo = function() return 77, "Toy", 1, false end, SetFilterString = function() end,
+        SetCollectedShown = function() end, SetUncollectedShown = function() end }
+    env.PlayerHasToy = function() return true end
+    env.C_Heirloom = { GetNumDisplayedHeirlooms = function() return 1 end, GetHeirloomItemIDFromDisplayedIndex = function() return 88 end,
+        GetHeirloomInfo = function() return "Heir", "", false, 1, 2 end, PlayerHasHeirloom = function() return true end,
+        GetHeirloomMaxUpgradeLevel = function() return 6 end, SetSearch = function() end }
+    env.C_TransmogCollection = { GetCategoryInfo = function(c) if c == 1 then return "Head" end end,
+        GetCategoryCollectedCount = function() return 3 end, GetCategoryTotal = function() return 10 end,
+        GetCategoryAppearances = function() return { { visualID = 5, isCollected = true } } end }
     assert(S.MountRecord(1).favorite and S.MountRecord(2).mountID == 52, "mount record")
     S.db.ownCollections = true; S:SyncCollections()
     local r = S.CollectionsReplacement
@@ -2762,9 +2803,12 @@ try("phoenix collections window", function()
     S.db.ownCollections = true; S:Refresh()
     assert(r.win:IsShown(), "ownCollections: on again")
     r.win:GetScript("OnShow")()
-    tabN = 3; S:SyncCollections()
-    assert(not r.win:IsShown(), "other tabs: Blizzard's collections")
-    tabN = 1; shown = false; r:Closed()
+    for _, m in ipairs({ "pets", "toys", "heirlooms", "appearances", "mounts" }) do
+        r.tabs.buttons[m].onClick()
+        assert(S.CollectionsMode() == m and r.win:IsShown(), "collections tab " .. m)
+    end
+    assert(#S.AppearanceCategories() == 1, "appearance categories")
+    shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
 try("phoenix adventure guide window", function()
@@ -2800,6 +2844,36 @@ try("phoenix adventure guide window", function()
     shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix window extras", function()
+    local S, B = ns.modules.Skins, ns.modules.Bags
+    local names = { "GetStatistic", "GetAchievementInfo", "GetLatestCompletedAchievements", "GetCategoryList", "GetCategoryInfo",
+        "GetCategoryNumAchievements", "C_EncounterJournal", "C_MajorFactions", "C_Calendar" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    env.GetAchievementInfo = function(a) return a == 7 and 7 or 70, "Ach", 10, true, 1, 2, 26, "d", 0, 1 end
+    env.GetStatistic = function() return "42" end
+    env.GetLatestCompletedAchievements = function() return 7 end
+    env.GetCategoryList = function() return { 92 } end
+    env.GetCategoryInfo = function() return "General", -1 end
+    env.GetCategoryNumAchievements = function() return 4, 2 end
+    assert(S.StatisticRecord(92, 1).value == "42", "statistic value")
+    local sum = S.AchievementSummary()
+    assert(#sum == 2 and sum[1].completed and sum[2].count == "2 / 4", "achievement summary")
+    local sec = { [1] = { title = "A", firstChildSectionID = 2, siblingSectionID = 3 }, [2] = { title = "A1" }, [3] = { title = "B" } }
+    env.C_EncounterJournal = { GetSectionInfo = function(id) return sec[id] end }
+    assert(#S.JournalSections(1, {}) == 2 and #S.JournalSections(1, { [1] = true }) == 3, "ability tree")
+    env.C_MajorFactions = { GetMajorFactionIDs = function() return { 1 } end, GetMajorFactionData = function()
+        return { name = "F", renownLevel = 3, renownReputationEarned = 1, renownLevelThreshold = 4 } end }
+    assert(S.JournalJourneys()[1].progress == 0.25, "journeys")
+    local said = {}
+    env.C_Calendar = setmetatable({}, { __index = function(_, k) return function() said[#said + 1] = k end end })
+    S.CalendarSendAnswer()
+    assert(#said == 0, "no answer without a pending invite")
+    assert(#S.CalendarTypes() == 5, "event types")
+    assert(B.BankFlagOn(5, 4) and not B.BankFlagOn(5, 2), "bank flags")
+    for _, n in ipairs(names) do env[n] = saved[n] or false end
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
