@@ -18,7 +18,8 @@ ns.Config = Config
 Config.loaded = true
 Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
-local TOP_H, RAIL_W, LIST_W, FOOTER_H = 52, 64, 212, 34
+local TOP_H, RAIL_W, LIST_W, FOOTER_H = 52, 64, 204, 34
+local NAV_ROW, NAV_HEAD, NAV_GROUP = 28, 22, 40
 local DOCK_MIN, DOCK_MAX, DOCK_AT = 380, 460, 1100
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
 local DEFAULT_W, DEFAULT_H = 1180, 740
@@ -291,17 +292,17 @@ end
 local function navRow(parent, key)
     local label, icon = Config:EntryInfo(key)
     local r = CreateFrame("Button", nil, parent)
-    r:SetHeight(32)
+    r:SetHeight(NAV_ROW)
     r.key = key
     r.bg = W.Texture(r, "BACKGROUND")
-    r.bg:SetPoint("TOPLEFT", 8, 0); r.bg:SetPoint("BOTTOMRIGHT", -8, 0)
+    r.bg:SetPoint("TOPLEFT", 6, -1); r.bg:SetPoint("BOTTOMRIGHT", -6, 1)
     r.bar = W.Texture(r, "ARTWORK")
     r.bar:SetPoint("TOPLEFT", r.bg, "TOPLEFT"); r.bar:SetPoint("BOTTOMLEFT", r.bg, "BOTTOMLEFT")
     r.bar:SetWidth(2)
-    r.icon = W.Icon(r, icon, 14)
-    r.icon:SetPoint("LEFT", 18, 0)
+    r.icon = W.Icon(r, icon, 16)
+    r.icon:SetPoint("LEFT", 14, 0)
     r.label = W.Text(r, "body", "text.secondary")
-    r.label:SetPoint("LEFT", r.icon, "RIGHT", 9, 0)
+    r.label:SetPoint("LEFT", r.icon, "RIGHT", 8, 0)
     r.label:SetPoint("RIGHT", -28, 0)
     r.label:SetText(label)
     r.label:SetWordWrap(false)
@@ -363,10 +364,36 @@ local function navRow(parent, key)
     return r
 end
 
+-- Section heading: small caps label with a hairline running to the edge, so groups read as blocks.
 local function heading(parent)
-    local fs = W.Text(parent, "heading", "text.muted")
-    Skin:Register(fs, function(t) Skin:Text(t, "heading", "text.muted") end)
+    local fs = W.Text(parent, "small", "text.muted")
+    fs.line = W.Texture(parent, "ARTWORK")
+    fs.line:SetHeight(1)
+    fs.line:SetPoint("LEFT", fs, "RIGHT", 8, 0)
+    fs.line:SetPoint("RIGHT", parent, "RIGHT", -12, 0)
+    Skin:Register(fs, function(t) Skin:Text(t, "small", "text.muted"); W.Color(t.line, "border.subtle") end)
     return fs
+end
+
+-- The open group's title over the list: its icon, name and how many pages it holds.
+local function groupTitle(sb)
+    local t = CreateFrame("Frame", nil, sb)
+    t:SetPoint("TOPLEFT", 0, 0); t:SetPoint("TOPRIGHT", 0, 0); t:SetHeight(NAV_GROUP)
+    t.icon = W.Icon(t, "home", 16)
+    t.icon:SetPoint("LEFT", 14, 0)
+    t.label = W.Text(t, "heading", "text.primary")
+    t.label:SetPoint("LEFT", t.icon, "RIGHT", 8, 0)
+    t.count = W.Text(t, "small", "text.muted", "RIGHT")
+    t.count:SetPoint("RIGHT", -14, 0)
+    t.line = W.Texture(t, "ARTWORK")
+    t.line:SetPoint("BOTTOMLEFT", 10, 0); t.line:SetPoint("BOTTOMRIGHT", -10, 0); t.line:SetHeight(1)
+    Skin:Register(t, function(self)
+        W.Color(self.icon, "accent.primary")
+        Skin:Text(self.label, "heading", "text.primary")
+        Skin:Text(self.count, "small", "text.muted")
+        W.Color(self.line, "border.subtle")
+    end)
+    return t
 end
 
 local function buildList(f)
@@ -383,8 +410,9 @@ local function buildList(f)
         Skin:SetPanelColor(self, "bg.sunken")
         W.Color(self.edge, "border.subtle")
     end)
+    sb.title = groupTitle(sb)
     local scroll = W:Scroll(sb)
-    scroll:SetPoint("TOPLEFT", 0, -12)
+    scroll:SetPoint("TOPLEFT", 0, -(NAV_GROUP + 4))
     scroll:SetPoint("BOTTOMRIGHT", -8, 10)
     sb.scroll = scroll
     sb.headings = {}
@@ -405,7 +433,7 @@ function Config:LayoutSidebar()
     local sb = self.frame.sidebar
     local c = sb.scroll.child
     for _, row in pairs(self.navRows) do row:Hide() end
-    for _, fs in ipairs(sb.headings) do fs:Hide() end
+    for _, fs in ipairs(sb.headings) do fs:Hide(); fs.line:Hide() end
     local g
     for _, group in ipairs(self:Groups()) do if group.key == self.group then g = group end end
     local y, n = 0, 0
@@ -414,15 +442,21 @@ function Config:LayoutSidebar()
         local fs = sb.headings[n] or heading(c)
         sb.headings[n] = fs
         fs:ClearAllPoints()
-        fs:SetPoint("TOPLEFT", c, "TOPLEFT", 18, -(y + 8))
+        fs:SetPoint("TOPLEFT", c, "TOPLEFT", 14, -(y + 6))
         fs:SetText((L[textKey] or textKey):upper())
-        fs:Show()
-        y = y + 28
+        fs:Show(); fs.line:Show()
+        y = y + NAV_HEAD
     end
     if g then
+        local pages = 0
+        for _, section in ipairs(g.sections) do pages = pages + #section.entries end
+        ns.Icons:Apply(sb.title.icon, g.icon)
+        sb.title.label:SetText(L[g.label] or g.label)
+        sb.title.count:SetText(tostring(pages))
+        local single = #g.sections == 1
         for i, section in ipairs(g.sections) do
-            if i > 1 then y = y + 8 end
-            head(section.heading or g.label)
+            if i > 1 then y = y + 6 end
+            if single and not section.heading then y = y + 4 else head(section.heading or g.label) end
             for _, key in ipairs(section.entries) do
                 local row = self.navRows[key]
                 if row then
@@ -432,7 +466,7 @@ function Config:LayoutSidebar()
                     row:SetPoint("TOPRIGHT", c, "TOPRIGHT", 0, -y)
                     row:Show()
                     row:Paint()
-                    y = y + 32
+                    y = y + NAV_ROW
                 end
             end
         end

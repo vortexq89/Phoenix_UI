@@ -94,43 +94,56 @@ function W:Segmented(parent, items, multi, segWidth)
 end
 
 ---------------------------------------------------------------- tabs
--- Underlined tab strip for sub-modules. items: { {value=, label=}, ... }
+-- Segmented tab strip for sub-modules: one compact rail, each tab an icon (from our set) and a label, the open tab
+-- filled with the accent tint and underlined. items: { {value=, label=, icon=}, ... }
+local TAB_H, TAB_PAD, TAB_GAP = 30, 12, 2
 function W:Tabs(parent, items)
     local t = CreateFrame("Frame", nil, parent)
-    t:SetHeight(34)
+    t:SetHeight(TAB_H + 4)
     t.tabs = {}
+    t.bg = W.Texture(t, "BACKGROUND")
+    t.bg:SetPoint("TOPLEFT"); t.bg:SetPoint("BOTTOMLEFT")
     t.line = W.Texture(t, "BORDER")
     t.line:SetPoint("BOTTOMLEFT"); t.line:SetPoint("BOTTOMRIGHT")
     t.line:SetHeight(1)
-    t.bar = W.Texture(t, "ARTWORK", 2)
-    t.bar:SetHeight(2)
 
     local function paint(self)
         W.Color(self.line, "border.subtle")
+        W.Color(self.bg, "bg.sunken", 0.9)
         for _, b in ipairs(self.tabs) do
             local on = b.value == self.value
-            Skin:Text(b.label, "heading", on and "text.primary" or (b.hover and "text.secondary" or "text.muted"))
+            W.Color(b.fill, on and "accent.soft" or "bg.hover", on and 1 or (b.hover and 0.8 or 0))
+            b.bar:SetShown(on)
             if on then
-                self.bar:ClearAllPoints()
-                self.bar:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 8, 0)
-                self.bar:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -8, 0)
-                self.bar:SetVertexColor(1, 1, 1, 1)
-                Skin:Gradient(self.bar, "HORIZONTAL", "accent.primary", "accent.secondary")
+                b.bar:SetVertexColor(1, 1, 1, 1)
+                Skin:Gradient(b.bar, "HORIZONTAL", "accent.primary", "accent.secondary")
             end
+            if b.icon then W.Color(b.icon, on and "accent.primary" or (b.hover and "text.primary" or "text.muted")) end
+            Skin:Text(b.label, "body", on and "text.primary" or (b.hover and "text.primary" or "text.secondary"))
         end
     end
 
-    local x = 0
+    local x = 2
     for i, item in ipairs(items) do
         local b = CreateFrame("Button", nil, t)
-        b:SetHeight(34)
+        b:SetHeight(TAB_H)
         b.value = item.value
-        b.label = W.Text(b, "heading", "text.muted", "CENTER")
-        b.label:SetPoint("CENTER", 0, 1)
-        b.label:SetText(item.label:upper())
-        b:SetWidth(b.label:GetStringWidth() + 28)
-        b:SetPoint("BOTTOMLEFT", x, 0)
-        x = x + b:GetWidth()
+        b.fill = W.Texture(b, "BACKGROUND", 1)
+        b.fill:SetAllPoints()
+        b.bar = W.Texture(b, "ARTWORK", 2)
+        b.bar:SetPoint("BOTTOMLEFT"); b.bar:SetPoint("BOTTOMRIGHT"); b.bar:SetHeight(2)
+        local left = TAB_PAD
+        if item.icon then
+            b.icon = W.Icon(b, item.icon, 14)
+            b.icon:SetPoint("LEFT", TAB_PAD, 0)
+            left = TAB_PAD + 20
+        end
+        b.label = W.Text(b, "body", "text.secondary", "LEFT")
+        b.label:SetPoint("LEFT", left, 0)
+        b.label:SetText(item.label)
+        b:SetWidth(math.floor(b.label:GetStringWidth() + left + TAB_PAD + 0.5))
+        b:SetPoint("BOTTOMLEFT", x, 1)
+        x = x + b:GetWidth() + TAB_GAP
         b:SetScript("OnEnter", function(btn) btn.hover = true; paint(t) end)
         b:SetScript("OnLeave", function(btn) btn.hover = false; paint(t) end)
         b:SetScript("OnClick", function(btn)
@@ -142,6 +155,7 @@ function W:Tabs(parent, items)
         end)
         t.tabs[i] = b
     end
+    t.bg:SetWidth(x)
     t.value = items[1] and items[1].value
     function t:SetValue(v) self.value = v; paint(self) end
     function t:GetValue() return self.value end

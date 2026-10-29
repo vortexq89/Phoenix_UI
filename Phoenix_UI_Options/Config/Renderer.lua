@@ -1158,6 +1158,12 @@ local function layoutRows(c, width)
 end
 
 -- m: a module or a module-like table { key, label, desc, icon, locked = true, db = {}, singleColumn = bool }.
+-- A tab shows its first section's icon.
+local function tabIcon(page, tab, item)
+    local tl = item.type == "header" and tab and page.tabList[tab]
+    if tl and not tl.icon then tl.icon = item.icon end
+end
+
 function Config.BuildSchemaPage(parent, m, schema)
     local key = m.key
     local page = CreateFrame("Frame", nil, parent)
@@ -1176,13 +1182,14 @@ function Config.BuildSchemaPage(parent, m, schema)
         local t = item.type
         if t == "tab" then
             tab = #page.tabList + 1
-            page.tabList[tab] = { value = tab, label = text(item.label) }
+            page.tabList[tab] = { value = tab, label = text(item.label), icon = item.icon }
             card = nil
         elseif t == "scope" then
             page.tops[#page.tops + 1] = buildScope(page, m, item)
         elseif t == "preview" then
             buildPreview(page, m, item)
         else
+            tabIcon(page, tab, item)
             if t == "header" or not card then
                 card = W:Card(child, t == "header" and text(item.label) or nil, t == "header" and item.icon or nil)
                 card.rows = {}
