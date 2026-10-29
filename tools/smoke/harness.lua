@@ -7453,11 +7453,23 @@ try("combat text areas: power, icons, unlock", function()
     info = { "Healer", 900 }
     fire("COMBAT_TEXT_UPDATE", "HEAL")
     assert(got[#got].key == "heals", "heals taken have their own area")
-    -- unlock shows draggable areas and writes x / y on drag stop; combat locks again
-    assert(CT:UnlockAreas(true), "unlock out of combat")
-    assert(CT.unlocked, "unlocked")
-    CT:UnlockAreas(false)
-    assert(not CT.unlocked, "locked again")
+    -- every area is a Phoenix mover with a per-profile store and a path drawn in its box
+    local MV = ns.modules.Movers
+    for _, k in ipairs(CT.AREAS) do
+        local e = MV:GetEntry("fct." .. k)
+        assert(e and e.store, "area " .. k .. " registered as a mover")
+        e.store.set({ point = "TOPLEFT", x = 10, y = -20 })
+        assert(sc.areas[k].point == "TOPLEFT" and sc.areas[k].x == 10, "mover position saved in the profile")
+        e.store.reset()
+        assert(sc.areas[k].point == "CENTER", "mover reset")
+    end
+    local o = CreateFrame("Frame")
+    MV:GetEntry("fct.incoming").store.decorate(o, 260, 240)
+    assert(o.pathDots and #o.pathDots > 0, "the box shows the scroll path")
+    -- sticky crits hold their place
+    sc.crit = "sticky"
+    fire("UNIT_COMBAT", "target", "WOUND", "CRITICAL", SECRET)
+    assert(got[#got].key == "target", "sticky crit drawn")
     CT.StyleLine, ns.Secret.IsSecret = oldStyle, oldIs
     rawset(env, "C_CombatText", oldCT); rawset(env, "C_Spell", oldSpell)
     sc.enabled = false

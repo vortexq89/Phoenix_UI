@@ -269,3 +269,8 @@ runtime in game.
   never measured (icons are anchored to the text, no GetStringWidth). "Move the areas" unlocks labelled boxes on screen that
   drag and write x / y; the preview is a scaled copy of the screen where the picked area drags one to one. Harness
   "combat text areas: power, icons, unlock".
+- **Combat text areas are Phoenix movers (t144u).** Every area registers with Movers ("Combat Text – <area>") with a
+  per-profile point / x / y store, so it gets the same drag, grid and edge snap, arrow-key nudge and popup as action
+  bars and frames; its box draws the area's scroll path. "Move the areas" opens mover mode. MSBT-like behaviour added:
+  sticky crits (default) pop in larger, ease down and hold still at the area's centre, stacked, then fade. Merging counts
+  hits (×N) rather than summing amounts, because amounts can be secret.

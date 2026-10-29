@@ -82,8 +82,9 @@ end
 
 local function placeArea(key)
     local f, a = frames[key], areaDB(key)
+    local pt = a.point or "CENTER"
     f:ClearAllPoints()
-    f:SetPoint("CENTER", UIParent, "CENTER", a.x, a.y)
+    f:SetPoint(pt, UIParent, pt, a.x, a.y)
     f:SetSize(a.width, a.height)
 end
 
@@ -114,7 +115,7 @@ function M:StyleLine(fs, crit, areaKey, scale)
     Skin:TextSpec(fs, spec, "combat")
     local a = areaKey and db.areas[areaKey]
     local mult = (a and a.scale or 1) * (scale or 1)
-    if crit and db.crit == "grow" then mult = mult * (db.critScale or 1.5) end
+    if crit and (db.crit == "grow" or db.crit == "sticky") then mult = mult * (db.critScale or 1.5) end
     if mult ~= 1 then
         local path, _, flags = fs:GetFont()
         fs:SetFont(path, math.max(6, math.floor(spec.size * mult + 0.5)), flags)
@@ -134,7 +135,16 @@ local function move(self, dt)
             table.remove(self.active, i)
             self.free[#self.free + 1] = line.fs
         else
-            local x, y = M.Path(a.anim, line.t / dur, a.height, a.width, line.side, line.slot, line.h)
+            local x, y
+            if line.sticky then
+                -- sticky crit: pops in larger, eases to size and holds still at the area's centre, stacked
+                x, y = 0, a.height / 2 - line.h / 2 + (line.slot % 3) * line.h * (a.dir == "DOWN" and 1 or -1)
+                local pop = line.t < 0.18 and (1 + 0.7 * (1 - line.t / 0.18)) or 1
+                line.fs:SetScale(pop)
+                x, y = x / pop, y / pop
+            else
+                x, y = M.Path(a.anim, line.t / dur, a.height, a.width, line.side, line.slot, line.h)
+            end
             if a.align == "LEFT" then x = math.abs(x) elseif a.align == "RIGHT" then x = -math.abs(x) end
             local side = a.align == "LEFT" and "LEFT" or (a.align == "RIGHT" and "RIGHT" or "")
             local inset = (side == "LEFT" and (a.iconSize or 20) + 6) or (side == "RIGHT" and -((a.iconSize or 20) + 6)) or 0
@@ -145,7 +155,7 @@ local function move(self, dt)
             line.fs:SetAlpha(alpha); line.fs.icon:SetAlpha(alpha)
         end
     end
-    if #self.active == 0 then self:SetScript("OnUpdate", nil); if not self.unlocked then self:Hide() end end
+    if #self.active == 0 then self:SetScript("OnUpdate", nil); self:Hide() end
 end
 
 local function area(key)
@@ -226,11 +236,13 @@ local function add(key, color, prefix, amount, crit, mergeKey, scale, sound, ico
     placeIcon(fs, a, icon)
     local snd = crit and db.critSound ~= "" and db.critSound or sound
     if snd and snd ~= "" and not M.testing then Media:PlaySound(snd) end
-    local slot = a.anim == "static" and freeSlot(f) or 0
+    local sticky = crit and db.crit == "sticky"
+    local slot = (a.anim == "static" or sticky) and freeSlot(f) or 0
+    fs:SetScale(1)
     f.flip = not f.flip
     local _, h = fs:GetFont()
     f.active[#f.active + 1] = { fs = fs, t = 0, side = f.flip and -1 or 1, slot = slot, h = (h or 18) + 4,
-        key = mergeKey, n = 1, born = now, suffix = suffix }
+        key = mergeKey, n = 1, born = now, suffix = suffix, sticky = sticky }
     f:SetScript("OnUpdate", move)
     f:Show()
 end
@@ -294,6 +306,7 @@ end
 local owner = {}
 function M:EnableScroll()
     local db = self.db.scroll
+    if not self.moversDone then self.moversDone = true; self:RegisterAreaMovers() end
     ns.Events:OffAll(owner)
     for _, key in ipairs(AREAS) do
         if frames[key] then
@@ -339,56 +352,52 @@ function M:TestScroll()
     return true
 end
 
----------------------------------------------------------------- unlock: drag the areas on screen
--- Shows every area that is on as a labelled box; dragging one writes its x / y (offset from the screen centre),
--- the same values as the sliders, so the page and the preview follow. Out of combat only (plain frames, but a
--- drag mid-fight is never wanted); locking again, or entering combat, hides the boxes.
-function M:UnlockAreas(on)
-    local db = self.db.scroll
-    if on and InCombatLockdown() then return false end
-    for _, key in ipairs(AREAS) do
-        local a = db.areas[key]
-        local f = (on and db.enabled and a.show) and area(key) or frames[key]
-        if f then
-            if on and db.enabled and a.show then
-                placeArea(key)
-                if not f.handle then
-                    f.handle = CreateFrame("Frame", nil, f)
-                    f.handle:SetAllPoints()
-                    Skin:Register(f.handle, function(h) Skin:Panel(h, "base", { border = "accent.primary" }); h:SetAlpha(0.55) end)
-                    f.handle.label = f.handle:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-                    f.handle.label:SetPoint("CENTER")
-                    f.handle.label:SetText(ns.L["FCT_AREA_" .. key:upper()])
-                    f:SetMovable(true); f:RegisterForDrag("LeftButton")
-                    f:SetScript("OnDragStart", function(self) if not InCombatLockdown() then self:StartMoving() end end)
-                    f:SetScript("OnDragStop", function(self)
-                        self:StopMovingOrSizing()
-                        local x, y = self:GetCenter()
-                        local cx, cy = UIParent:GetCenter()
-                        local s = areaDB(self.key)
-                        s.x, s.y = math.floor(x - cx + 0.5), math.floor(y - cy + 0.5)
-                        placeArea(self.key)
-                        ns.Events:Fire("PUI_SETTING_CHANGED", "CombatText", "scroll.areas." .. self.key .. ".x", s.x)
-                    end)
+---------------------------------------------------------------- Phoenix movers: every area is a mover
+-- Each area joins Movers with its own store (point / x / y in the profile, so positions are per profile), the
+-- same drag, grid and edge snap, arrow-key nudge and popup as action bars and frames. Its box draws the area's
+-- scroll path (dots along CombatText.Path), so you see where lines will travel while placing it.
+local function store(key)
+    return {
+        active = function() local db = M.db.scroll; return M:IsEnabled() and db.enabled and db.areas[key].show end,
+        get = function() local a = areaDB(key); return { point = a.point or "CENTER", x = a.x, y = a.y } end,
+        set = function(v)
+            local a = areaDB(key)
+            a.point, a.x, a.y = v.point or a.point or "CENTER", v.x or a.x, v.y or a.y
+        end,
+        apply = function() placeArea(key) end,
+        reset = function()
+            local d, a = M.defaults.scroll.areas[key], areaDB(key)
+            a.point, a.x, a.y = d.point or "CENTER", d.x, d.y
+            placeArea(key)
+        end,
+        decorate = function(o, w, h)
+            local a = areaDB(key)
+            o.pathDots = o.pathDots or {}
+            local n = 14
+            for i = 1, n do
+                local dot = o.pathDots[i]
+                if not dot then
+                    dot = o:CreateTexture(nil, "ARTWORK")
+                    dot:SetColorTexture(1, 1, 1, 1)
+                    o.pathDots[i] = dot
                 end
-                f.unlocked = true
-                f:EnableMouse(true)
-                f.handle:Show()
-                f:Show()
-            else
-                f.unlocked = nil
-                f:EnableMouse(false)
-                if f.handle then f.handle:Hide() end
-                if #f.active == 0 then f:Hide() end
+                local t = (i - 1) / (n - 1)
+                local x, y = M.Path(a.anim, t, h, w, i % 2 == 0 and 1 or -1, i - 1, 18)
+                dot:SetSize(4, 4)
+                dot:ClearAllPoints()
+                if a.dir == "DOWN" then dot:SetPoint("TOP", o, "TOP", x, -y) else dot:SetPoint("BOTTOM", o, "BOTTOM", x, y) end
+                dot:SetVertexColor(1, 0.55, 0.2, 0.35 + 0.6 * (1 - t))
+                dot:Show()
             end
-        end
-    end
-    self.unlocked = on and true or nil
-    if on then
-        ns.Events:On("PLAYER_REGEN_DISABLED", self.unlockOwner, function() self:UnlockAreas(false) end)
-    else
-        ns.Events:OffAll(self.unlockOwner)
-    end
-    return true
+        end,
+    }
 end
-M.unlockOwner = {}
+
+function M:RegisterAreaMovers()
+    local movers = ns:GetModule("Movers")
+    if not movers then return end
+    for _, key in ipairs(AREAS) do
+        local f = area(key)
+        movers:Register("fct." .. key, f, ns.L.COMBATTEXT .. " – " .. ns.L["FCT_AREA_" .. key:upper()], store(key))
+    end
+end

@@ -263,6 +263,9 @@ local function syncOverlay(o)
     local s = saved(o.entry)
     o.state:SetShown(M.db.coords and roomy)
     o.state:SetText(s and s.point and ("%s  %d, %d"):format(s.point, s.x, s.y) or L.MOVERS_DEFAULT_POS)
+    -- a registered frame may draw extra guides inside its box (combat text areas draw their scroll path)
+    local st = o.entry.store
+    if st and st.decorate then ns.SafeCall(st.decorate, o, w, h) end
 end
 
 -- Puts a registered frame's box back over the frame (another module moved the frame itself, e.g. the other

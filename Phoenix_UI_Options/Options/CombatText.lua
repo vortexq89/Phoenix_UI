@@ -23,9 +23,12 @@ for _, a in ipairs(AREAS) do CRIT_AREA[#CRIT_AREA + 1] = a end
 local ANIM = { { value = "straight", label = "FCT_ANIM_STRAIGHT" }, { value = "parabola", label = "FCT_ANIM_PARABOLA" },
     { value = "angled", label = "FCT_ANIM_ANGLED" }, { value = "static", label = "FCT_ANIM_STATIC" } }
 local ICON = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "RIGHT", label = "ANCHOR_RIGHT" }, { value = "OFF", label = "OFF" } }
-local function unlock(m)
-    if m.unlocked then m:UnlockAreas(false) return end
-    if m:UnlockAreas(true) then ns.Config.frame:Hide() end
+-- the areas are Phoenix movers: unlocking shows every area's box (with its scroll path) next to the other frames
+local function unlock()
+    local movers = ns:GetModule("Movers")
+    if not movers then return end
+    ns.Config.frame:Hide()
+    movers:SetUnlocked(true)
 end
 local ALIGN = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "CENTER", label = "ANCHOR_CENTER" },
     { value = "RIGHT", label = "ANCHOR_RIGHT" } }
@@ -41,7 +44,8 @@ local function event(key, t)
         } }, { disabled = noScroll })
 end
 local DIRS = { { value = "UP", label = "GROW_UP" }, { value = "DOWN", label = "GROW_DOWN" } }
-local CRIT = { { value = "grow", label = "FCT_CRIT_GROW" }, { value = "flash", label = "FCT_CRIT_FLASH" },
+local CRIT = { { value = "sticky", label = "FCT_CRIT_STICKY" },
+    { value = "grow", label = "FCT_CRIT_GROW" }, { value = "flash", label = "FCT_CRIT_FLASH" },
     { value = "none", label = "FCT_CRIT_NONE" } }
 local modeGet, modeSet = CVar("floatingCombatTextFloatMode_v2", "number")
 
