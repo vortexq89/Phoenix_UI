@@ -27,6 +27,8 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "auction", label = "SKINS_AUCTION", keywords = "auction house ah" },
     { type = "toggle", key = "mail", label = "SKINS_MAIL", keywords = "mailbox" },
     { type = "toggle", key = "ownMail", label = "MAILW_OWN", desc = "MAILW_OWN_DESC", keywords = "mail inbox own window" },
+    { type = "toggle", key = "ownMerchant", label = "MERCHW_OWN", desc = "MERCHW_OWN_DESC", keywords = "vendor merchant own window" },
+    { type = "toggle", key = "ownFriends", label = "FRIENDW_OWN", desc = "FRIENDW_OWN_DESC", keywords = "friends social own window" },
     { type = "toggle", key = "mailAlts", label = "SKINS_MAIL_ALTS", desc = "SKINS_MAIL_ALTS_DESC",
       keywords = "mail alts characters recipient" },
     { type = "toggle", key = "merchant", label = "SKINS_MERCHANT", keywords = "vendor shop" },

@@ -2572,6 +2572,51 @@ try("phoenix mail window", function()
     assert(not win:IsShown(), "closing the mailbox")
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix merchant window", function()
+    local S = ns.modules.Skins
+    local names = { "MerchantFrame", "C_MerchantFrame", "GetMerchantNumItems", "GetMerchantItemCostInfo", "GetMerchantItemCostItem",
+        "BuyMerchantItem", "GetMerchantItemMaxStack", "GetNumBuybackItems", "GetBuybackItemInfo", "CanMerchantRepair",
+        "GetRepairAllCost", "CanGuildBankRepair", "C_CurrencyInfo", "BuybackItem", "CloseMerchant" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown, bought = true, {}
+    env.MerchantFrame = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.C_MerchantFrame = { GetItemInfo = function(i)
+        return { name = "It" .. i, texture = 1, price = i == 1 and 100 or 0, stackCount = 1, numAvailable = -1,
+            isUsable = true, hasExtendedCost = i == 2 } end, GetNumJunkItems = function() return 1 end, SellAllJunkItems = function() end }
+    env.GetMerchantNumItems = function() return 15 end
+    env.GetMerchantItemCostInfo = function() return 1 end
+    env.GetMerchantItemCostItem = function() return 5, 30, "x" end
+    env.BuyMerchantItem = function(i, q) bought[#bought + 1] = i .. "x" .. q end
+    env.GetMerchantItemMaxStack = function() return 20 end
+    env.GetNumBuybackItems = function() return 1 end
+    env.GetBuybackItemInfo = function() return "Old", 1, 10, 1 end
+    env.CanMerchantRepair = function() return true end
+    env.GetRepairAllCost = function() return 500, true end
+    env.CanGuildBankRepair = function() return false end
+    env.C_CurrencyInfo = { GetCoinTextureString = function(v) return tostring(v) end }
+    env.CloseMerchant = function() shown = false end
+    local it = S.MerchantItem(2)
+    assert(it and it.extended and S.MerchantCost(2, it):find("30", 1, true), "currency cost text")
+    S.db.ownMerchant = true; S:SyncMerchant()
+    local r = S.MerchantReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.MerchantFrame), "merchant window with Blizzard's tucked")
+    S:MerchantBuy(1, false); S:MerchantBuy(1, true)
+    assert(bought[1] == "1x1" and bought[2] == "1x20", "buy one / a stack")
+    S:MerchantBuy(2, false)
+    assert(#bought == 2, "currency item bought on the first click")
+    S:MerchantBuy(2, false)
+    assert(bought[3] == "2x1", "second click buys the currency item")
+    r.next.onClick(); r.tabs.buyback.onClick(); r.tabs.buy.onClick()
+    S.db.ownMerchant = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.MerchantFrame), "switch off live")
+    S.db.ownMerchant = true; S:Refresh()
+    assert(r.win:IsShown(), "switch on again")
+    r.win.blizz.onClick()
+    assert(not r.win:IsShown(), "arrow shows Blizzard's merchant for this visit")
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
