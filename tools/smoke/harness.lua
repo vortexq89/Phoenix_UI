@@ -3750,6 +3750,20 @@ try("traveler's log rows", function()
     rawset(env, "C_PerksActivities", saved)
 end)
 
+try("icon picker", function()
+    local W = ns.Widgets
+    W.ResetIconList()
+    local list = W.IconList(function(t) t[#t + 1] = 11; t[#t + 1] = 12 end, function(t) t[#t + 1] = 13 end)
+    assert(#list == 3, "macro and item icons")
+    local got
+    local p = W:IconPicker()
+    p:Open(12, function(v) got = v end)
+    assert(p.list[1] == 12 and #p.list == 3, "current icon first, no duplicate")
+    p.cells[2]:GetScript("OnClick")(p.cells[2])
+    assert(got == 11, "a click picks the icon")
+    W.ResetIconList()
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

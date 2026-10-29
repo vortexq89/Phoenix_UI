@@ -67,8 +67,10 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   (stats, reputation, currency, titles, equipment sets), Guild roster. Partial overlays (`M.Overlay`, our panel over
   one part of a Blizzard window): Professions recipe list (Craft and the details page stay Blizzard's), quest log
   list inside the map (details stay Blizzard's). Group Finder premade apply stays Blizzard's: calling ApplyToGroup or
-  touching the secure SearchPanel taints Blizzard's own sign-up (see GROUP_FINDER.md). Still Blizzard's:
-  buying bank tabs, the tab icon picker, editing existing calendar events, Raid / Quick Join, Traveler's Log, vault reward pick.
+  touching the secure SearchPanel taints Blizzard's own sign-up (see GROUP_FINDER.md). Also own since 2026-10-29: editing your own
+  calendar events, the Traveler's Log (Adventure Guide tab), a shared icon picker (equipment sets, bank tabs).
+  Still Blizzard's (secure or confirm-popup paths an addon must not drive): buying bank tabs, Raid / Quick Join
+  requests, the Great Vault reward pick.
   Protected windows keep the deep reskin.
 - 25 PvP: the scoreboard and match results (`PvPMatch.lua`, new switch, live): score table on a sunken card, column
   headers as cells (last sorted in the accent), player rows with a team-coloured bar read back from Blizzard's own row

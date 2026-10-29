@@ -2848,6 +2848,7 @@ ns.RegisterLocale("enUS", {
     QLOGW_DAILY = "Daily",
     QLOGW_OWN = "Phoenix quest log",
     QLOGW_OWN_DESC = "Phoenix's own quest list beside the map: zones, levels, objectives, search and tracking (right-click). Details, abandon and share stay Blizzard's. Off: Blizzard's list. Applies live.",
+    ICON_PICK = "Icon",
     EJW_LOG = "Traveler's Log",
     CALW_EDIT = "Edit",
     CALW_SAVE = "Save event",

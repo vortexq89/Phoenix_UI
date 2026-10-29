@@ -2822,6 +2822,7 @@ local T = {
     QLOGW_DAILY = "Journalière",
     QLOGW_OWN = "Journal de quêtes Phoenix",
     QLOGW_OWN_DESC = "La liste de quêtes de Phoenix à côté de la carte : zones, niveaux, objectifs, recherche et suivi (clic droit). Détails, abandon et partage restent ceux de Blizzard. Désactivé : la liste de Blizzard. S'applique tout de suite.",
+    ICON_PICK = "Icône",
     EJW_LOG = "Journal du voyageur",
     CALW_EDIT = "Modifier",
     CALW_SAVE = "Enregistrer l'évènement",

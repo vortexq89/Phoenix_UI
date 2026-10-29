@@ -2822,6 +2822,7 @@ local T = {
     QLOGW_DAILY = "Täglich",
     QLOGW_OWN = "Phoenix-Questlog",
     QLOGW_OWN_DESC = "Phoenix' eigene Questliste neben der Karte: Zonen, Stufen, Ziele, Suche und Verfolgen (Rechtsklick). Details, Abbrechen und Teilen bleiben bei Blizzard. Aus: Blizzards Liste. Wirkt sofort.",
+    ICON_PICK = "Symbol",
     EJW_LOG = "Reisetagebuch",
     CALW_EDIT = "Bearbeiten",
     CALW_SAVE = "Termin speichern",
