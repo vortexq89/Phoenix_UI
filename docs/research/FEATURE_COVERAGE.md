@@ -10,8 +10,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 110 |
-| missing - EllesmereUI reference | 7 |
+| Phoenix has | 114 |
+| missing - EllesmereUI reference | 3 |
 | missing | 1 |
 | duplicate (skip) | 1 |
 | out of scope | 9 |
@@ -85,11 +85,11 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_CooldownManager | Focus kick, rotation helper icon, key-press mirror, trinkets, potions | Phoenix has | Phoenix `cdm.focusKick`, `cdm.assist`, `ab.assist`; trinkets on item bars. |
 | EllesmereUI_CooldownManager | Sync generic entries across specs | Phoenix has | Custom bar lists (`cdm.custom1..3`) are profile-wide, so items and trinket entries already apply to every spec (unknown spells are skipped). |
 | EllesmereUI_DamageMeters | Meter windows on C_DamageMeter | Phoenix has | Phoenix Embers (up to four windows `embers.w1..w4`, breakdown, death recap, best-pull compare, report). |
-| EllesmereUI_DamageMeters | Threat meter type (Forever) | missing - EllesmereUI reference | P3 (Forever). |
+| EllesmereUI_DamageMeters | Threat meter type (Forever) | Phoenix has | Built 2026-10-29: `Modules/DamageMeter/Threat.lua` (Damage Meter > Threat meter), event-driven, movable. |
 | EllesmereUI_DataBars | Block bars | Phoenix has | Phoenix `Phoenix_UI_HUD/DataBars.lua` (`db.*`), HUD extras. |
 | EllesmereUI_ForeverEssentials | Map tools | missing - EllesmereUI reference | P2 (Forever): zone levels and map reveal are the most used. Data must be ours (from client map art IDs, which are game data). |
-| EllesmereUI_ForeverEssentials | Auto uprank | missing - EllesmereUI reference | P2 (Forever) if missing. |
-| EllesmereUI_ForeverEssentials | Gathering skill, quest reward value, simplified stats, flight timer, fishing, pet summon, threat meter, loot feed, junk window | missing - EllesmereUI reference | P3 (Forever): quest reward value marker, gathering skill in tooltip. |
+| EllesmereUI_ForeverEssentials | Auto uprank | Phoenix has | Built 2026-10-29: `Modules/ActionBars/Uprank.lua` (Action Bars > Extra > Auto uprank), out of combat, cursor-safe. |
+| EllesmereUI_ForeverEssentials | Gathering skill, quest reward value, simplified stats, flight timer, fishing, pet summon, threat meter, loot feed, junk window | missing - EllesmereUI reference | Built 2026-10-29: quest reward value marker (Quests > Mark the most valuable reward), gathering skill in tooltip (Tooltip), threat meter (above). Open: simplified stats, flight timer, fishing, pet summon, loot feed, junk window (P3). |
 | EllesmereUI_Friends | Friends list restyle | Phoenix has | Phoenix `Phoenix_UI_Friends` (search across friends/guild/recent, sort, app-only filter, notes, invite accept). |
 | EllesmereUI_GroupFinder | Search tweaks and applications bar | Phoenix has | Phoenix GroupFinder is complete. |
 | EllesmereUI_Minimap | Button flyout and indicators | Phoenix has | Phoenix `Phoenix_UI_HUD/ButtonBin.lua` (`mm.bin.*`), `mm.extra.indicators`, `mm.extra.friends`. |
@@ -122,12 +122,12 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_ResourceBars | Forever: swing timer, druid mana in forms, call totem bar | Phoenix has | Swing timer (Cast Bars), druid mana while shapeshifted (resource block), totem bar (Unit Frames). |
 | EllesmereUI_UnitFrames | Frames with stock styles | Phoenix has | Phoenix `Phoenix_UI_UnitFrames` (358 `uf.*` keys, styles, tags, text slots, Blizzard or Phoenix per frame). |
 | EllesmereUI_UnitFrames | Player aura bars | Phoenix has | Phoenix `uf.auraBars.*` (+ `dedupeCDM`). |
-| EllesmereUI_UnitFrames | Forever weapon imbues | missing - EllesmereUI reference | P3 (Forever): imbue timer icon near the player frame. |
+| EllesmereUI_UnitFrames | Forever weapon imbues | Phoenix has | Built 2026-10-29: `Modules/UnitFrames/Imbues.lua` (Unit Frames > Resources > Weapon imbues), both flavours. |
 | EllesmereUI_WindTools | Extra Item Bar (loaded) | Phoenix has | Phoenix auto item bars (PR #66, `ab.ibar1..ibar5`, `ab.ibars`, `Data/ItemBarData.lua`, battle res button, M+ teleports on bar 5). |
 | EllesmereUI_WindTools | Quick Focus (loaded) | Phoenix has | Phoenix `Core/FocusKey.lua` (`focuskey.modifier`, `focuskey.button`, `focuskey.groupFrames`, PR #70). |
 | EllesmereUI_WindTools | Raid Markers bar (loaded) | Phoenix has | Phoenix `rt.markers`, `rt.worldMarkers`, `rt.readyButton`, `rt.pullButton`. |
 | EllesmereUI_WindTools | Chat Bar (loaded) | Phoenix has | Phoenix `chat.channelBar`, `chat.channelBarSide`. |
-| EllesmereUI_WindTools | Friendly Nameplate Outline (loaded) | missing - EllesmereUI reference | P3. |
+| EllesmereUI_WindTools | Friendly Nameplate Outline (loaded) | Phoenix has | Nameplates > Friendly > name text outline (`np.styles.friendly.name.outline`, OUTLINE by default). |
 | EllesmereUI_WindTools | Disconnected modules (present on disk, not loaded) | missing - EllesmereUI reference | Already Known tint: built (Automation). Mute list: built (General). Smart tab: declined (writing the chat edit box's chat type taints it and breaks secure slash commands typed in chat). Extended merchant pages: declined (re-anchors Blizzard merchant slots). Event tracker: open. |
 | LittleWigs | Dungeon boss modules | missing | Ship the per-dungeon NPC packs (dangerous casts, priority mobs) as data: highest value for M+ players. Keep them original (ours from in-game testing or public spell data) |
 | MikScrollingBattleText | Scroll areas and animation styles | Phoenix has | Phoenix `Phoenix_UI_Spark` (`spark.area`, four scroll areas, live preview). Spark moves lines with C-side AnimationGroups so no Lua runs per frame. |

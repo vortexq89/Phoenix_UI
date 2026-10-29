@@ -3138,6 +3138,57 @@ try("phoenix titles, sets, recipes and quest log", function()
     S:Refresh()
 end)
 
+try("open items: imbues, reward mark, gathering, uprank, threat", function()
+    local UF, Q, TT, AB, DM = ns.modules.UnitFrames, ns.modules.Quests, ns.modules.Tooltip, ns.modules.ActionBars,
+        ns.modules.DamageMeter
+    local l = UF.ImbueList(true, 90000, 5, 1, false)
+    assert(#l == 1 and l[1].slot == 16 and l[1].charges == 5, "main hand imbue")
+    assert(#UF.ImbueList(true, 1, 0, 1, true, 2, 0) == 2, "both weapons")
+    if UF.UpdateImbues then UF:UpdateImbues() end
+    -- reward value marker: the dearest choice
+    local saved = {}
+    for _, n in ipairs({ "GetNumQuestChoices", "GetQuestItemLink", "GetQuestItemInfo", "QuestInfoRewardsFrame" }) do
+        saved[n] = rawget(env, n)
+    end
+    local prices = { 50, 400, 120 }
+    env.GetNumQuestChoices = function() return 3 end
+    env.GetQuestItemLink = function(_, i) return "item:" .. i end
+    env.GetQuestItemInfo = function() return "x", 1, 1 end
+    local CI = env.C_Item
+    local oldInfo = CI.GetItemInfo
+    CI.GetItemInfo = function(link) local i = tonumber(link:match("%d+")); return "x", link, 1, 1, 1, "", "", 1, "", 1, prices[i] end
+    assert(Q.BestVendorReward(3) == 2, "dearest reward")
+    local buttons = {}
+    for i = 1, 3 do buttons[i] = CreateFrame("Button", nil, env.UIParent) end
+    env.QuestInfoRewardsFrame = { RewardButtons = buttons }
+    Q.db.rewardMark = true
+    assert(Q:MarkReward() == buttons[2], "coin on the dearest reward")
+    Q.db.rewardMark = false
+    assert(Q:MarkReward() == nil, "marker off live")
+    Q.db.rewardMark = true
+    CI.GetItemInfo = oldInfo
+    for n, v in pairs(saved) do rawset(env, n, v) end
+    -- gathering skill line
+    local skills = { { name = "Mining", rank = 120, max = 150 } }
+    local line, ok = TT.GatherLine("Requires Mining 125", skills)
+    assert(line and ok == false, "short of the node's skill")
+    line, ok = TT.GatherLine("Requires Mining 100", skills)
+    assert(line and ok, "can gather")
+    assert(TT.GatherLine("Requires Herbalism 1", skills) == nil, "not your skill")
+    -- uprank: slots with an older rank of the same spell
+    local names = { [10] = "Fireball", [11] = "Fireball", [20] = "Frostbolt" }
+    local bars = { [1] = { "spell", 10 }, [2] = { "spell", 20 }, [3] = { "item", 10 }, [4] = { "spell", 11 } }
+    local slots = AB.UprankSlots(11, function(id) return names[id] end,
+        function(slot) local a = bars[slot]; if a then return a[1], a[2] end end, 10)
+    assert(#slots == 1 and slots[1] == 1, "only the old rank's slot")
+    -- threat rows: sorted, secret skipped
+    local data = { player = { false, 1, 60 }, party1 = { true, 3, 100 }, party2 = { false, 0, 20 } }
+    local rows = DM.ThreatRows({ "player", "party1", "party2" }, function(u) local d = data[u]; return d[1], d[2], d[3] end,
+        function(u) return u end, function() return "WARRIOR" end)
+    assert(#rows == 3 and rows[1].name == "party1" and rows[1].tank and rows[3].pct == 20, "threat sorted")
+    if DM.UpdateThreat then DM:UpdateThreat() end
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

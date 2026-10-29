@@ -54,6 +54,7 @@
     <Script file="ActionBars\Bars.lua"/>
     <Script file="ActionBars\Extras.lua"/>
     <Script file="ActionBars\Ring.lua"/>
+    <Script file="ActionBars\Uprank.lua"/>
     <Script file="UnitFrames\UnitFrames.lua"/>
     <Script file="UnitFrames\Blizzard.lua"/>
     <Script file="UnitFrames\Build.lua"/>
@@ -61,6 +62,7 @@
     <Script file="UnitFrames\Spawn.lua"/>
     <Script file="UnitFrames\Arena.lua"/>
     <Script file="UnitFrames\Resources.lua"/>
+    <Script file="UnitFrames\Imbues.lua"/>
     <Script file="GroupFrames\GroupFrames.lua"/>
     <Script file="GroupFrames\Blizzard.lua"/>
     <Script file="GroupFrames\Headers.lua"/>
@@ -110,6 +112,7 @@
     <Script file="CombatText\CombatText.lua"/>
     <Script file="CombatText\Scroll.lua"/>
     <Script file="DamageMeter\DamageMeter.lua"/>
+    <Script file="DamageMeter\Threat.lua"/>
     <Script file="SpellHistory\SpellHistory.lua"/>
     <Script file="PvP\PvP.lua"/>
     <!-- social -->
