@@ -17,8 +17,8 @@ local M = ns:NewModule("Bags", {
     label = "BAGS", desc = "BAGS_DESC", icon = "items", category = "interface", order = 72, reloadOnToggle = true,
     defaults = {
         enabled = true, skin = true, quality = true, upgrade = true, simArrow = true,
-        -- window: "blizzard" (Blizzard's windows, restyled), "combined" or "categories" (the Phoenix window)
-        view = "blizzard", columns = 12, slotSize = 36, spacing = 3, scale = 1, reagents = true,
+        -- window: "categories" or "combined" (the Phoenix window, default) or "blizzard" (Blizzard's windows, restyled)
+        view = "categories", columns = 12, slotSize = 36, spacing = 3, scale = 1, reagents = true,
         categories = "new,equipment,consumables,reagents,quest,junk,other", hiddenCats = "", catSort = "quality",
         emptySlots = true, search = true, sortButton = true, footer = true, currencies = true, freeCount = true,
         bagBar = false,                                    -- S17: the equipped bags beside the title

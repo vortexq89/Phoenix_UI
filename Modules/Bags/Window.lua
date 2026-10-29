@@ -428,7 +428,7 @@ local function soonLayout()
     C_Timer.After(0.05, function() pending = nil; M:Layout() end)
 end
 
-local tuckParent
+local tuckParent, homeParent
 function M:UsesWindow() return self.db.view == "combined" or self.db.view == "categories" end
 
 local hooked
@@ -439,6 +439,9 @@ function M:EnableWindow()
     if ContainerFrameContainer and not tuckParent then
         tuckParent = CreateFrame("Frame")
         tuckParent:Hide()
+    end
+    if ContainerFrameContainer and ContainerFrameContainer:GetParent() ~= tuckParent then
+        homeParent = ContainerFrameContainer:GetParent()
         ContainerFrameContainer:SetParent(tuckParent)
     end
     if not hooked then
@@ -458,7 +461,19 @@ function M:EnableWindow()
     sync()
 end
 
+-- Back to Blizzard's bag windows, live: the holder returns to its parent, our window hides and stops listening.
+function M:DisableWindow()
+    if ContainerFrameContainer and tuckParent and ContainerFrameContainer:GetParent() == tuckParent then
+        ContainerFrameContainer:SetParent(homeParent or UIParent)
+    end
+    if not win then return end
+    ns.Events:OffAll(win)
+    win:Hide()
+end
+
 function M:RefreshWindow()
+    if not self:UsesWindow() or not self:IsEnabled() then self:DisableWindow(); return end
+    if not win or (ContainerFrameContainer and ContainerFrameContainer:GetParent() ~= tuckParent) then self:EnableWindow() end
     if not win then return end
     self:StyleWindow()
     self:Layout()

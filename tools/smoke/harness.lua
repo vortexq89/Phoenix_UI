@@ -2475,6 +2475,25 @@ try("shop launcher only", function()
     end
     assert(found, "shop tile missing")
 end)
+try("bags view switches live", function()
+    local B = ns.modules.Bags
+    local holder = env.ContainerFrameContainer or CreateFrame("Frame", nil, UIParent)
+    local had = env.ContainerFrameContainer
+    local parent = env.UIParent
+    holder = setmetatable({ SetParent = function(_, p) parent = p end, GetParent = function() return parent end },
+        { __index = holder })
+    env.ContainerFrameContainer = holder
+    local old = B.db.view
+    B.db.view = "blizzard"; B:Refresh()
+    local home = holder:GetParent()
+    B.db.view = "categories"; B:Refresh()
+    assert(holder:GetParent() ~= home, "Blizzard bags not tucked in the Phoenix view")
+    B.db.view = "blizzard"; B:Refresh()
+    assert(holder:GetParent() == home, "Blizzard bags not back after switching live")
+    assert(not B:GetWindow() or not B:GetWindow():IsShown(), "Phoenix bag window still shown")
+    B.db.view = old; B:Refresh()
+    env.ContainerFrameContainer = had
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

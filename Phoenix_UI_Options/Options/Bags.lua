@@ -65,7 +65,7 @@ ns:RegisterOptions("Bags", {
     { type = "preview", kind = "bags" },
     { type = "tab", label = "TRACKER_TAB_LAYOUT" },
     { type = "header", label = "BAGS_LAYOUT", icon = "items" },
-    { type = "select", key = "view", label = "BAGS_VIEW", desc = "BAGS_VIEW_DESC", values = VIEWS, reload = true,
+    { type = "select", key = "view", label = "BAGS_VIEW", desc = "BAGS_VIEW_DESC", values = VIEWS,
       keywords = "combined categories one bag window baganator" },
     { type = "range", key = "columns", label = "BAGS_COLUMNS", min = 6, max = 24, step = 1, disabled = phoenixOff },
     { type = "range", key = "slotSize", label = "BAGS_SLOT_SIZE", min = 24, max = 56, step = 1, disabled = phoenixOff },
