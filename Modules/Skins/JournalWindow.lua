@@ -5,14 +5,55 @@ local M = ns:GetModule("Skins")
 --[[ The Phoenix Adventure Guide window: our own dungeon and raid browser fed by the encounter journal API.
     Dungeons / Raids tabs and the expansion (tier) stepper, the tier's instances as Phoenix rows, the picked
     instance's bosses, and the picked boss's description with its loot (the items' own icons, tooltips,
-    shift-click links). Journeys, the Traveler's Log, suggested content and the boss ability tree stay in
-    Blizzard's guide (the arrow button, this visit). The journal's own selection calls are used, so Blizzard's
+    shift-click links) or its ability tree (Abilities: sections with the game's own icons, click a section to
+    open its children). Journeys tab: the renown factions with level and progress. The Traveler's Log and
+    suggested content stay in Blizzard's guide (the arrow button, this visit). The journal's own selection calls are used, so Blizzard's
     guide opens where you left off. Skins > "Phoenix Adventure Guide window" off: Blizzard's guide,
     reskinned, live. ]]
 
 local COL_W, ROWS, ROW_H, LOOT = 220, 11, 34, 16
 local r, instances, bosses
 local raid, instanceID, encounterID = false, nil, nil
+local view, detailTab, openSections = "dungeon", "overview", {}
+local abilities, journeys
+
+-- The boss's ability tree flattened for display: every section at depth 0, children of open ones below.
+function M.JournalSections(rootID, open)
+    local out = {}
+    local function walk(id, depth, guard)
+        while id and id > 0 and guard < 400 do
+            guard = guard + 1
+            local info = C_EncounterJournal.GetSectionInfo(id)
+            if type(info) ~= "table" then return guard end
+            if not info.filteredByDifficulty then
+                local hasKids = (tonumber(info.firstChildSectionID) or 0) > 0
+                out[#out + 1] = { id = id, depth = depth, title = tostring(info.title or ""), desc = info.description,
+                    icon = info.abilityIcon, kids = hasKids }
+                if hasKids and open[id] then guard = walk(info.firstChildSectionID, depth + 1, guard) end
+            end
+            id = tonumber(info.siblingSectionID)
+        end
+        return guard
+    end
+    walk(tonumber(rootID), 0, 0)
+    return out
+end
+
+-- Renown factions (journeys) as rows: name, level, progress inside the level.
+function M.JournalJourneys()
+    local out = {}
+    local ids = C_MajorFactions and C_MajorFactions.GetMajorFactionIDs and C_MajorFactions.GetMajorFactionIDs() or {}
+    for _, id in ipairs(type(ids) == "table" and ids or {}) do
+        local d = C_MajorFactions.GetMajorFactionData(id)
+        if type(d) == "table" and d.name then
+            local earned, need = tonumber(d.renownReputationEarned) or 0, tonumber(d.renownLevelThreshold) or 0
+            out[#out + 1] = { id = id, name = tostring(d.name), level = tonumber(d.renownLevel) or 0,
+                unlocked = d.isUnlocked ~= false, progress = need > 0 and earned / need or 0,
+                count = ("%d / %d"):format(earned, need) }
+        end
+    end
+    return out
+end
 
 function M.JournalInstances(isRaid)
     local out = {}
@@ -66,8 +107,34 @@ local function lootButton(i)
     return b
 end
 
+local function layoutJourneys()
+    journeys.Set(M.JournalJourneys(), function(b, j)
+        b.title:SetText(j.name)
+        b.sub:SetText(L.EJW_RENOWN:format(j.level))
+        b.right:SetText(j.count)
+        if not j.unlocked then b.title:SetAlpha(0.5) else b.title:SetAlpha(1) end
+        journeys.Progress(b, j.progress)
+    end)
+end
+
+local function layoutAbilities(rootID)
+    abilities.Set(M.JournalSections(rootID, openSections), function(b, sec)
+        b.icon:SetTexture(sec.icon)
+        b.title:SetText(("%s%s%s"):format(("  "):rep(sec.depth), sec.kids and (openSections[sec.id] and "- " or "+ ") or "",
+            sec.title))
+        b.sub:SetText("")
+        b.right:SetText("")
+        if sec.depth == 0 then abilities.Bar(b, "accent.primary") end
+    end)
+end
+
 local function layout()
-    r.tabs.Paint(raid and "raid" or "dungeon")
+    r.tabs.Paint(view)
+    local isJourney = view == "journeys"
+    for _, el in ipairs({ instances, bosses, r.detail, r.prev, r.next, r.tier }) do el:SetShown(not isJourney) end
+    journeys:SetShown(isJourney)
+    if isJourney then layoutJourneys(); return end
+    raid = view == "raid"
     local tier = tonumber(EJ_GetCurrentTier and EJ_GetCurrentTier()) or 1
     r.tier:SetText(tostring((EJ_GetTierInfo(tier)) or ""))
     local list = M.JournalInstances(raid)
@@ -91,11 +158,15 @@ local function layout()
         if bo.id == encounterID then bosses.Mark(b, "accent.primary", 0.25); bosses.Bar(b, "accent.primary") end
     end)
     for _, b in ipairs(r.loot) do b:Hide() end
+    r.detailTabs.Paint(detailTab)
+    abilities:SetShown(detailTab == "abilities" and encounterID ~= nil)
+    r.desc:SetShown(detailTab == "overview")
     if encounterID then
         EJ_SelectEncounter(encounterID)
-        local name, desc = EJ_GetEncounterInfo(encounterID)
+        local name, desc, _, rootID = EJ_GetEncounterInfo(encounterID)
         r.name:SetText(tostring(name or ""))
         r.desc:SetText(tostring(desc or ""))
+        if detailTab == "abilities" then layoutAbilities(rootID); return end
         for i, item in ipairs(loot()) do
             local b = lootButton(i)
             b.link = item.link
@@ -121,10 +192,11 @@ end
 local function build(rr)
     r = rr
     r.loot = {}
-    r.tabs = M.ReplaceTabs(r.body, { { key = "dungeon", label = L.EJW_DUNGEONS }, { key = "raid", label = L.EJW_RAIDS } }, 100,
-        function(key) raid = key == "raid"; instanceID, encounterID = nil, nil; r:Layout() end)
+    r.tabs = M.ReplaceTabs(r.body, { { key = "dungeon", label = L.EJW_DUNGEONS }, { key = "raid", label = L.EJW_RAIDS },
+        { key = "journeys", label = L.EJW_JOURNEYS } }, 100,
+        function(key) view = key; instanceID, encounterID = nil, nil; r:Layout() end)
     r.prev = W:IconButton(r.body, "reset", 22, PREV or "<")
-    r.prev:SetPoint("TOPLEFT", 220, 0)
+    r.prev:SetPoint("TOPLEFT", 330, 0)
     r.prev.onClick = function() step(-1) end
     r.tier = W.Text(r.body, "body", "accent.primary")
     r.tier:SetPoint("LEFT", r.prev, "RIGHT", 8, 0)
@@ -136,7 +208,7 @@ local function build(rr)
     instances.onClick = function(inst) instanceID, encounterID = inst.id, nil; bosses.offset = 0; r:Layout() end
     bosses = M.ReplaceList(r.body, ROWS, ROW_H, COL_W)
     bosses:SetPoint("TOPLEFT", COL_W + 10, -32)
-    bosses.onClick = function(bo) encounterID = bo.id; r:Layout() end
+    bosses.onClick = function(bo) encounterID, openSections = bo.id, {}; r:Layout() end
     r.detail = CreateFrame("Frame", nil, r.body)
     r.detail:SetPoint("TOPLEFT", 2 * COL_W + 20, -32)
     r.detail:SetPoint("BOTTOMRIGHT")
@@ -144,6 +216,25 @@ local function build(rr)
     r.desc = W.Text(r.detail, "small", "text.secondary"); r.desc:SetPoint("TOPLEFT", r.name, "BOTTOMLEFT", 0, -8)
     r.desc:SetPoint("RIGHT", -10, 0); r.desc:SetJustifyH("LEFT"); r.desc:SetJustifyV("TOP"); r.desc:SetHeight(150)
     Skin:Panel(r.detail, "sunken", { border = "border.subtle" })
+    r.detailTabs = M.ReplaceTabs(r.detail, { { key = "overview", label = L.EJW_OVERVIEW }, { key = "abilities", label = L.EJW_ABILITIES } },
+        90, function(key) detailTab = key; r:Layout() end)
+    r.detailTabs.buttons.overview:ClearAllPoints()
+    r.detailTabs.buttons.overview:SetPoint("BOTTOMLEFT", r.detail, "BOTTOMLEFT", 8, 8)
+    abilities = M.ReplaceList(r.detail, 9, 30, COL_W + 100, 22)
+    abilities:SetPoint("TOPLEFT", r.name, "BOTTOMLEFT", -4, -8)
+    abilities.onClick = function(sec)
+        if sec.kids then openSections[sec.id] = not openSections[sec.id] or nil; r:Layout() end
+    end
+    abilities.onEnter = function(sec, b)
+        if not sec.desc then return end
+        GameTooltip:SetOwner(b, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(sec.title, 1, 1, 1)
+        GameTooltip:AddLine(tostring(sec.desc), nil, nil, nil, true)
+        GameTooltip:Show()
+    end
+    journeys = M.ReplaceList(r.body, ROWS, ROW_H, 3 * COL_W + 100)
+    journeys:SetPoint("TOPLEFT", 0, -32)
+    journeys:Hide()
 end
 
 local ej = M.Replacement({ key = "ownJournal", frame = "EncounterJournal", title = L.EJW_TITLE,
