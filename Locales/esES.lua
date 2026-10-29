@@ -107,6 +107,7 @@ local T = {
     SKINS_TRANSMOG_DESC = "La ventana de transfiguración: ranuras, barra de atuendos y Aplicar con el estilo Phoenix.",
     SKINS_HOUSING = "Panel de vivienda",
     SKINS_HOUSING_DESC = "El panel de vivienda: catálogo, parcelas y vecindario con el estilo Phoenix.",
+    SKINS_TAB_WINDOWS = "Ventanas de Blizzard",
     SKINS_PVP_MATCH = "Marcador JcJ",
     SKINS_PVP_MATCH_DESC = "Marcador y resultados de campos de batalla y arenas: tabla compacta con filas del color del equipo, tu fila en el acento y botones Phoenix.",
     ITEMLEVEL_STAT_DR = "Rendimientos decrecientes en las descripciones",

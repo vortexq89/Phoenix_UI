@@ -107,6 +107,7 @@ local T = {
     SKINS_TRANSMOG_DESC = "塑形視窗：欄位、外觀方案列和套用按鈕使用 Phoenix 外觀。",
     SKINS_HOUSING = "住宅面板",
     SKINS_HOUSING_DESC = "住宅面板：目錄、地塊和社區使用 Phoenix 外觀。",
+    SKINS_TAB_WINDOWS = "暴雪視窗",
     SKINS_PVP_MATCH = "PvP 記分板",
     SKINS_PVP_MATCH_DESC = "戰場和競技場記分板與比賽結果：緊湊表格、隊伍顏色行、你的行使用強調色、Phoenix 按鈕。",
     ITEMLEVEL_STAT_DR = "屬性提示中的收益遞減",

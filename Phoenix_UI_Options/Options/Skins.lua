@@ -7,6 +7,7 @@ local CLOSE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = 
 
 ns:RegisterOptions("Skins", {
     { type = "preview", kind = "skins" },
+    { type = "tab", label = "SKINS_TAB_WINDOWS" },
     { type = "header", label = "SKINS_DIALOGS", icon = "skins" },
     { type = "toggle", key = "gameMenu", label = "SKINS_GAMEMENU", desc = "SKINS_GAMEMENU_DESC", keywords = "escape menu" },
     { type = "toggle", key = "microMenu", label = "SKINS_MICRO", desc = "SKINS_MICRO_DESC",
@@ -48,11 +49,7 @@ ns:RegisterOptions("Skins", {
       keywords = "transmog sets wardrobe collection appearance", func = function(m) m:ShowSets() end },
     { type = "toggle", key = "pgf", label = "SKINS_PGF", desc = "SKINS_PGF_DESC", reload = true,
       keywords = "premade groups filter pgf addon" },
-    { type = "header", label = "SKINS_MOVE", icon = "movers" },
-    { type = "toggle", key = "moveWindows", label = "SKINS_MOVE_WINDOWS", desc = "SKINS_MOVE_WINDOWS_DESC",
-      keywords = "move drag reposition blizzard windows shifter" },
-    { type = "button", label = "SKINS_MOVE_RESET", desc = "SKINS_MOVE_RESET_DESC", button = "SKINS_MOVE_RESET_BUTTON", icon = "reset",
-      func = function(m) m:ResetWindows() end },
+    { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "SKINS_STYLE", icon = "border" },
     Opt.Background("backdrop", "SKINS_BACKGROUND", "bg.base"),
     Opt.Border("border", "SKINS_BORDER", "border.strong"),
@@ -60,4 +57,10 @@ ns:RegisterOptions("Skins", {
     { type = "select", key = "closeStyle", label = "SKINS_CLOSE", desc = "SKINS_CLOSE_DESC", values = CLOSE, reload = true },
     { type = "toggle", key = "tabs", label = "SKINS_TABS", desc = "SKINS_TABS_DESC", reload = true, keywords = "tab buttons" },
     { type = "description", text = "SKINS_NOTE" },
+    { type = "tab", label = "TAB_BEHAVIOUR" },
+    { type = "header", label = "SKINS_MOVE", icon = "movers" },
+    { type = "toggle", key = "moveWindows", label = "SKINS_MOVE_WINDOWS", desc = "SKINS_MOVE_WINDOWS_DESC",
+      keywords = "move drag reposition blizzard windows shifter" },
+    { type = "button", label = "SKINS_MOVE_RESET", desc = "SKINS_MOVE_RESET_DESC", button = "SKINS_MOVE_RESET_BUTTON", icon = "reset",
+      func = function(m) m:ResetWindows() end },
 })

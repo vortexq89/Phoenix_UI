@@ -107,6 +107,7 @@ local T = {
     SKINS_TRANSMOG_DESC = "La finestra di trasmogrificazione: slot, barra completi e Applica in stile Phoenix.",
     SKINS_HOUSING = "Pannello abitazione",
     SKINS_HOUSING_DESC = "Il pannello abitazione: catalogo, lotti e vicinato in stile Phoenix.",
+    SKINS_TAB_WINDOWS = "Finestre Blizzard",
     SKINS_PVP_MATCH = "Tabellone PvP",
     SKINS_PVP_MATCH_DESC = "Tabellone e risultati di campi di battaglia e arene: tabella compatta con righe nel colore della squadra, la tua riga nell'accento e pulsanti Phoenix.",
     ITEMLEVEL_STAT_DR = "Rendimenti decrescenti nei suggerimenti",

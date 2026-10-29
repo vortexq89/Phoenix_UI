@@ -13,7 +13,7 @@ Status: **has** = Phoenix does it, **partial** = some of it, **missing** = not t
 | Sub-pages per module | Named pages inside a module (e.g. Action Bars: Bar Display, XP Bar, Menu/Bags/Rep, Animations) | Tabs inside a module page (Action Bars: Bars, Buttons, Text, Extra) | has (tabs instead of pages) |
 | Same tab pattern across modules | Pages differ by module, each grouped by job | Main/Layout first, then Look, then Text, then Extras or Behaviour; Unit Frames and Nameplates add Health, Power, Indicators and Auras | has |
 | No single-item tabs, no setting on two tabs | — | Harness check "tab consistency" (changed): every tab has at least 2 rows and no visible setting is on two tabs. It passes for all modules | has (changed) |
-| Big modules without tabs | — | Bags (55 settings), DataTexts (76), General, Skins, Chat sub-areas: long single pages split only by headers | partial |
+| Big modules without tabs | — | Every long page now has tabs (Bags, DataTexts, Chat, and since 2026-10-29 General: Appearance, Text, Colours, Behaviour; Skins: Blizzard windows, Appearance, Behaviour) | has |
 | Search across everything | Global search | Search across every page, jumps to and flashes the row | has |
 
 ## 2. Preview

@@ -107,6 +107,7 @@ local T = {
     SKINS_TRANSMOG_DESC = "A janela de transmogrificação: espaços, barra de visuais e Aplicar no estilo Phoenix.",
     SKINS_HOUSING = "Painel de moradia",
     SKINS_HOUSING_DESC = "O painel de moradia: catálogo, terrenos e vizinhança no estilo Phoenix.",
+    SKINS_TAB_WINDOWS = "Janelas da Blizzard",
     SKINS_PVP_MATCH = "Placar JxJ",
     SKINS_PVP_MATCH_DESC = "Placar e resultados de campos de batalha e arenas: tabela compacta com linhas na cor da equipe, sua linha no destaque e botões Phoenix.",
     ITEMLEVEL_STAT_DR = "Retornos decrescentes nas dicas de atributos",

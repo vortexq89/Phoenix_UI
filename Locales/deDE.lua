@@ -107,6 +107,7 @@ local T = {
     SKINS_TRANSMOG_DESC = "Das Transmog-Fenster: Plätze, Outfit-Leiste und Anwenden im Phoenix-Stil.",
     SKINS_HOUSING = "Wohnungs-Übersicht",
     SKINS_HOUSING_DESC = "Die Wohnungs-Übersicht: Katalog, Grundstücke und Nachbarschaft im Phoenix-Stil.",
+    SKINS_TAB_WINDOWS = "Blizzard-Fenster",
     SKINS_PVP_MATCH = "PvP-Punktetafel",
     SKINS_PVP_MATCH_DESC = "Punktetafel und Match-Ergebnis in Schlachtfeld und Arena: dichte Tabelle mit Teamfarben, deine Zeile im Akzent und Phoenix-Knöpfe.",
     ITEMLEVEL_STAT_DR = "Abnehmender Ertrag in Wert-Tooltips",

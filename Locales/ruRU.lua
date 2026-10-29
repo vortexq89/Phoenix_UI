@@ -107,6 +107,7 @@ local T = {
     SKINS_TRANSMOG_DESC = "Окно трансмогрификации: ячейки, панель комплектов и «Применить» в стиле Phoenix.",
     SKINS_HOUSING = "Панель жилья",
     SKINS_HOUSING_DESC = "Панель жилья: каталог, участки и соседство в стиле Phoenix.",
+    SKINS_TAB_WINDOWS = "Окна Blizzard",
     SKINS_PVP_MATCH = "Таблица PvP",
     SKINS_PVP_MATCH_DESC = "Таблица счёта и итоги полей боя и арен: плотная таблица с цветами команд, ваша строка в акцентном цвете и кнопки Phoenix.",
     ITEMLEVEL_STAT_DR = "Снижение эффективности в подсказках",

@@ -107,6 +107,7 @@ local T = {
     SKINS_TRANSMOG_DESC = "La fenêtre de transmogrification : emplacements, barre de tenues et Appliquer au style Phoenix.",
     SKINS_HOUSING = "Tableau du logis",
     SKINS_HOUSING_DESC = "Le tableau du logis : catalogue, parcelles et voisinage au style Phoenix.",
+    SKINS_TAB_WINDOWS = "Fenêtres Blizzard",
     SKINS_PVP_MATCH = "Tableau des scores JcJ",
     SKINS_PVP_MATCH_DESC = "Tableau des scores et résultats des champs de bataille et arènes : tableau dense aux couleurs des équipes, votre ligne en accent et boutons Phoenix.",
     ITEMLEVEL_STAT_DR = "Rendements décroissants dans les infobulles",

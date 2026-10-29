@@ -3,6 +3,8 @@
 ## 2.0.0-beta1
 
 ### New
+- **Tabs on General and Skins**: General is split into Appearance (theme, scale, borders), Text, Colours and
+  Behaviour (launcher, sound, accessibility); Skins into Blizzard windows, Appearance and Behaviour (moving windows).
 - **PvP scoreboard skin**: the battleground / arena scoreboard and match results in the Phoenix look (dense table,
   team-coloured rows, your row in the accent, Phoenix Leave / Requeue); Skins > PvP scoreboard, live.
 - **Diminishing returns in stat tooltips**: crit, haste, mastery, versatility, leech, avoidance and speed tooltips on
