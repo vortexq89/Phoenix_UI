@@ -66,7 +66,8 @@ end
 -- styled once and kept themed through Skin:Register (re-run on theme and setting changes).
 local function paintBar(bar) M:StyleBar(bar, bar.Name, bar.Value) end
 
-local function styleEntry(entry)
+local styleEntry
+function styleEntry(entry)
     if entries[entry] or not (M:IsEnabled() and M.db.skin) or not entry.StatusBar then return end
     entries[entry] = true
     local bar = entry.StatusBar
@@ -83,25 +84,59 @@ local function paintWindow(window)
     if window.SessionTimer then Skin:TextSpec(window.SessionTimer, M.db.value, "number", "text.secondary") end
 end
 
+local hooked = setmetatable({}, { __mode = "k" })
 local function styleWindow(window)
-    if windows[window] or not (M:IsEnabled() and M.db.skin) then return end
-    windows[window] = true
+    if not (M:IsEnabled() and M.db.skin) then return end
+    local header = windows[window]
+    if header and header:IsShown() then return end
     Skin:HideRegion(window.Header)
     local container = window.MinimizeContainer
     if container then Skin:HideRegion(container.Background) end
-    local header = CreateFrame("Frame", nil, window)
-    header:SetPoint("TOPLEFT"); header:SetPoint("TOPRIGHT")
-    header:SetHeight(28)
-    header:SetFrameLevel(window:GetFrameLevel())
-    header.line = header:CreateTexture(nil, "ARTWORK")
-    header.line:SetTexture(Media.textures.WHITE)
-    header.line:SetPoint("BOTTOMLEFT"); header.line:SetPoint("BOTTOMRIGHT")
-    header.line:SetHeight(1)
-    windows[window] = header
+    if not header then
+        header = CreateFrame("Frame", nil, window)
+        header:SetPoint("TOPLEFT"); header:SetPoint("TOPRIGHT")
+        header:SetHeight(28)
+        header:SetFrameLevel(window:GetFrameLevel())
+        header.line = header:CreateTexture(nil, "ARTWORK")
+        header.line:SetTexture(Media.textures.WHITE)
+        header.line:SetPoint("BOTTOMLEFT"); header.line:SetPoint("BOTTOMRIGHT")
+        header.line:SetHeight(1)
+        windows[window] = header
+    end
+    header:Show()
     Skin:Register(window, paintWindow)
-    hooksecurefunc(window, "InitEntry", function(_, entry) styleEntry(entry) end)
+    if not hooked[window] then
+        hooked[window] = true
+        hooksecurefunc(window, "InitEntry", function(_, entry) styleEntry(entry) end)
+    end
     local player = container and container.LocalPlayerEntry
     if player then styleEntry(player) end
+end
+
+-- Live switch off: Blizzard's own art, fonts and bar back on every window and entry (on again redoes them).
+local function unstyleEntry(entry)
+    entries[entry] = nil
+    local bar = entry.StatusBar
+    if not bar then return end
+    for _, region in ipairs(bar.BackgroundRegions or {}) do Skin:Restore(region) end
+    if entry.Icon and entry.Icon.Icon then Skin:Restore(entry.Icon.Icon) end
+    if shades[bar] then shades[bar]:Hide() end
+    bar:SetReverseFill(false)
+    if bar.Name then Skin:Restore(bar.Name) end
+    if bar.Value then Skin:Restore(bar.Value) end
+    Skin:Restore(bar)
+end
+
+function M:Unskin()
+    for entry in pairs(entries) do ns.SafeCall(unstyleEntry, entry) end
+    for window, header in pairs(windows) do
+        header:Hide()
+        Skin:Restore(window.Header)
+        local container = window.MinimizeContainer
+        if container then Skin:Restore(container.Background) end
+        if window.SessionTimer then Skin:Restore(window.SessionTimer) end
+        Skin:Restore(window)
+    end
 end
 
 ---------------------------------------------------------------- Details! (optional)
@@ -142,7 +177,8 @@ end
 -- Settings changes restyle every skinned window and entry (Skin:Register keeps the painters).
 function M:Refresh()
     if self.UpdateThreat then ns.SafeCall(self.UpdateThreat, self) end
-    if not self.db.skin then return end
+    if not self.db.skin then return self:Unskin() end
+    if DamageMeter and DamageMeter.ForEachSessionWindow then DamageMeter:ForEachSessionWindow(styleWindow) end
     for window in pairs(windows) do ns.SafeCall(paintWindow, window) end
     for entry in pairs(entries) do if entry.StatusBar then ns.SafeCall(paintBar, entry.StatusBar) end end
 end

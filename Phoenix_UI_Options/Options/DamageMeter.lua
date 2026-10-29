@@ -16,7 +16,7 @@ ns:RegisterOptions("DamageMeter", {
     { type = "header", label = "BLIZZARD_FEATURES", icon = "general" },
     { type = "toggle", label = "DM_ENABLE", desc = "DM_ENABLE_DESC", get = dmGet, set = dmSet, combat = true, keywords = "dps meter" },
     { type = "header", label = "DM_STYLE", icon = "theme" },
-    { type = "toggle", key = "skin", label = "DM_SKIN", desc = "DM_SKIN_DESC", reload = true },
+    { type = "toggle", key = "skin", label = "DM_SKIN", desc = "DM_SKIN_DESC" },
     { type = "header", label = "DM_BARS", icon = "damagemeter" },
     skinned({ type = "texture", key = "bar.texture", label = "DM_BAR_TEXTURE", desc = "DM_BAR_TEXTURE_DESC", allowDefault = true,
       keywords = "bar texture statusbar" }),
