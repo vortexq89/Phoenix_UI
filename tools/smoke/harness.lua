@@ -2420,6 +2420,20 @@ try("stat diminishing returns lines", function()
     local lines = IL.StatDRLines(env.CR_CRIT_MELEE or 9)
     assert(lines == nil or type(lines[1]) == "string", "dr lines")
 end)
+retailTry("teleport prompt finds the dungeon's teleport by its description", function()
+    local G = ns.modules.GroupFinder
+    local spells = { { id = 1, name = "Path of A", desc = "Teleport to the entrance to The Stonevault." },
+        { id = 2, name = "Path of B", desc = "Teleport to the entrance to Ara-Kara, City of Echoes." } }
+    assert(G.TeleportFor("Ara-Kara, City of Echoes", spells).id == 2, "match")
+    assert(G.TeleportFor("the stonevault", spells).id == 1, "case")
+    assert(G.TeleportFor("Priory", spells) == nil and G.TeleportFor(nil, spells) == nil and G.TeleportFor("ab", spells) == nil)
+    assert(type(G.KnownFlyoutSpells()) == "table", "flyouts")
+    G:OnJoinedGroup(1)
+    local p = G:ShowTeleport("The Stonevault", spells[1])
+    assert(p and p.spellID == 1 and p.button, "secure spell button")
+    assert(not p:GetScript("OnUpdate"), "no OnUpdate")
+    G:HideTeleport()
+end)
 try("safe scale never hands SetScale a bad value", function()
     local U = ns.Util
     for _, v in ipairs({ 0, -1, 0 / 0, math.huge, "1", false }) do assert(U.SafeScale(v) == 1, tostring(v)) end

@@ -36,7 +36,7 @@ local M = ns:NewModule("GroupFinder", {
         nonMatch = "dim", dimAlpha = 0.3, highlight = true, highlightColor = false, sort = "fit", sortDesc = true,
         matchList = true, matchCount = true,
         -- helpers
-        quickSignUp = true, enterSignUp = false, roleCheckKey = "off",
+        quickSignUp = true, enterSignUp = false, roleCheckKey = "off", teleport = true,
         entryScore = true, classBars = true, tooltip = true, lockout = true, skinEntries = true,
         applicantBest = true, applicantSpec = true, applicantMinScore = 0,
         preset = "none",
@@ -235,6 +235,7 @@ function M:OnEnable()
     self:EnableList()
     self:EnablePanel()
     self:EnableHelpers()
+    self:SetupTeleport() -- Teleport.lua
 end
 
 function M:OnDisable()

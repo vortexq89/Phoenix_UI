@@ -100,6 +100,8 @@ ns:RegisterOptions("GroupFinder", {
     { type = "toggle", key = "enterSignUp", label = "LFG_ENTER", desc = "LFG_ENTER_DESC", combat = true, keywords = "enter key sign up" },
     { type = "select", key = "roleCheckKey", label = "LFG_ROLECHECK", desc = "LFG_ROLECHECK_DESC", values = KEYS, combat = true,
       keywords = "role check accept key" },
+    { type = "toggle", key = "teleport", label = "LFG_TELEPORT_OPT", desc = "LFG_TELEPORT_OPT_DESC",
+      keywords = "teleport dungeon path hero mythic plus portal prompt" },
     { type = "header", label = "LFG_LIST", icon = "friends" },
     { type = "toggle", key = "entryScore", label = "LFG_ENTRY_SCORE", desc = "LFG_ENTRY_SCORE_DESC", keywords = "leader score best key" },
     { type = "toggle", key = "classBars", label = "LFG_CLASS_BARS", desc = "LFG_CLASS_BARS_DESC", keywords = "class colour icons roles" },

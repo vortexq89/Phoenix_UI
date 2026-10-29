@@ -125,6 +125,7 @@
     <Script file="GroupFinder\List.lua"/>
     <Script file="GroupFinder\Panel.lua"/>
     <Script file="GroupFinder\Helpers.lua"/>
+    <Script file="GroupFinder\Teleport.lua"/>
     <Script file="MythicPlus\MythicPlus.lua"/>
     <Script file="MythicPlus\Timer.lua"/>
     <Script file="MythicPlus\Keystones.lua"/>
