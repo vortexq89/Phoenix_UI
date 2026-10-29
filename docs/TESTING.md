@@ -54,7 +54,7 @@ the step number.
 - [ ] **2.2 Home.** **Expect:** module stats, the **This week** card (section 7.4), filter chips (All, Frames, Bars,
   Combat, Interface, Content, Phoenix, Off) and module tiles, each with its switch and a depth bar ("44 / 150").
   Clicking a tile opens that module. On a wide window the right side shows Health checks, Quick actions and What's
-  new; make the window narrower than 1100 px and they move under the stats.
+  new beside the stats (the window has one fixed size, 1180×740).
 - [ ] **2.3 Search.** Type `font` in the search box.
   **Expect:** results from several modules. Clicking one jumps to the setting and highlights it. A nonsense word
   shows `Nothing matches that search.`
@@ -83,10 +83,10 @@ the step number.
   choice) and "Right-click the row to reset it."; rows marked Reload or Out of combat say so. No row is silent.
 - [ ] **2.11 Slash help.** Type `/pui help`, then `/pui nonsense`.
   **Expect:** the full command list in chat; the nonsense command says it is unknown and points to `/pui help`.
-- [ ] **2.12 Preview dock.** Open Nameplates on a window at least 1100 px wide (the default 1280×800 is).
+- [ ] **2.12 Preview dock.** Open Nameplates (the window is a fixed 1180×740, no resize grip).
   **Expect:** the live preview sits on the right, scaled to fit, with sample-state chips (pick several) and
-  **Show in world**; scrolling the page does not move it. Drag the window narrower than 1100 px: the preview moves
-  into the page above the cards and stays pinned while you scroll.
+  **Show in world**; scrolling the page does not move it. Every page has a preview, including Automation,
+  Movers and Bugs. Change the window scale in the footer: borders stay one screen pixel and text stays sharp.
 - [ ] **2.13 Section switches.** Nameplates → Colours → Threat: switch the card's header toggle off.
   **Expect:** the card's rows grey out and cannot be changed; switch it on and they come back. Hovering the header
   switch shows its name and description.

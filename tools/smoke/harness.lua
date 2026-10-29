@@ -2970,6 +2970,50 @@ try("phoenix guild window", function()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
 
+try("settings quality pass", function()
+    -- one tab vocabulary and order: Layout first, Appearance before Text, Behaviour last; no "Look" tabs
+    local problems = {}
+    for key, schema in pairs(ns.options) do
+        local tabs = {}
+        for _, item in ipairs(type(schema) == "table" and schema or {}) do
+            if item.type == "tab" then tabs[#tabs + 1] = item.label end
+        end
+        local at = {}
+        for i, label in ipairs(tabs) do at[label] = i end
+        if at.TAB_BEHAVIOUR and at.TAB_BEHAVIOUR ~= #tabs then problems[#problems + 1] = key .. ": Behaviour not last" end
+        if at.TRACKER_TAB_LAYOUT and at.TRACKER_TAB_LAYOUT ~= 1 then problems[#problems + 1] = key .. ": Layout not first" end
+        if at.TAB_APPEARANCE and at.TAB_TEXT and at.TAB_APPEARANCE > at.TAB_TEXT then problems[#problems + 1] = key .. ": Text before Appearance" end
+        if at.UF_TAB_INDICATORS and (at.NP_AURAS or at.UF_AURAS) and at.UF_TAB_INDICATORS > (at.NP_AURAS or at.UF_AURAS) then
+            problems[#problems + 1] = key .. ": Auras before Indicators"
+        end
+        for _, label in ipairs(tabs) do if tostring(label):find("_LOOK$") then problems[#problems + 1] = key .. ": " .. label end end
+    end
+    assert(#problems == 0, table.concat(problems, "; "))
+    -- fixed, readable window: not resizable, always the default size, scale changes re-measure borders
+    local C = ns.Config
+    local f = C:Build()
+    assert(not f:IsResizable(), "the settings window has a fixed size")
+    local w, h = f:GetSize()
+    assert(w == 1180 and h == 740, "fixed window size " .. tostring(w) .. "x" .. tostring(h))
+    assert(type(ns.Skin.Reapply) == "function" and type(C.SnapPosition) == "function", "pixel helpers")
+    ns.Skin:Reapply(); ns.Skin:Reapply()
+    -- row labels stay on one line
+    local page = C:Show("ActionBars")
+    local row = page and page.rows and page.rows[3]
+    assert(row and rawget(row.label, "__wrap") == false, "row labels do not wrap")
+    C:Show("home")
+    -- every module page has a preview fed by its settings
+    for kind, mod in pairs({ automation = "Automation", movers = "Movers", bugs = "Bugs" }) do
+        local m = ns.modules[mod]
+        local stage = ns.Previews:Create(kind, CreateFrame("Frame", nil, env.UIParent), m, {})
+        stage:Redraw()
+        stage:Fit(300)
+    end
+    local mv = ns.modules.Movers
+    local snap = mv.db.snap
+    ns.DB:Set(mv, "snap", not snap); ns.DB:Set(mv, "snap", snap)
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
@@ -3604,6 +3648,10 @@ try("action bars drivers", function()
     v.mouseover = true
     assert(M.TargetAlpha(v, { combat = true }) == 0 and M.TargetAlpha(v, { hover = true }) == 1, "mouseover")
     assert(M.TargetAlpha(v, { reveal = true }) == 1, "dragging a spell reveals the bars")
+    local linked = { alpha = 1, linked = true }
+    assert(M.TargetAlpha(linked, {}) == 0 and M.TargetAlpha(linked, { hover = true }) == 1, "linked bars: one mouseover group")
+    linked.fade, linked.oocAlpha = true, 0.5
+    assert(M.TargetAlpha(linked, {}) == 0.5, "linked bars with fade fade instead of hiding")
     assert(M.ShortKey("SHIFT-BUTTON4") == "S-M4" and M.ShortKey("CTRL-ALT-NUMPAD5") == "C-A-N5", "short keys")
     assert(M.ShortKey("MOUSEWHEELUP") == "WU" and M.ShortKey("Q") == "Q" and M.ShortKey("") == nil, "short keys 2")
     local ids = M.ParseItems("5512, 5512 ;abc 171267\n0")
