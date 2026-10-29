@@ -2658,6 +2658,36 @@ try("phoenix friends window", function()
     S.db.ownFriends = true; shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix achievements window", function()
+    local frameName = "AchievementFrame"
+    local names = { "AchievementFrame", "GetCategoryList", "GetCategoryInfo", "GetCategoryNumAchievements", "GetAchievementInfo", "GetAchievementNumCriteria", "GetAchievementCriteriaInfo", "GetTotalAchievementPoints", "GetAchievementLink" }
+    local S = ns.modules.Skins
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown = true
+    env[frameName] = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.GetCategoryList = function() return { 1, 2, 3 } end
+    env.GetCategoryInfo = function(id) return "C" .. id, id == 3 and 1 or -1 end
+    env.GetCategoryNumAchievements = function() return 2 end
+    env.GetAchievementInfo = function(_, i) return 100 + i, "Ach" .. i, 10, i == 1, 1, 2, 26, "d", 0, 1 end
+    env.GetAchievementNumCriteria = function() return 1 end
+    env.GetAchievementCriteriaInfo = function() return "c", 0, false, 3, 10 end
+    env.GetTotalAchievementPoints = function() return 1234 end
+    env.GetAchievementLink = function() return "link" end
+    local rail = S.AchievementRail(S.AchievementCategories(), 1)
+    assert(#rail == 3 and rail[2].child and rail[2].id == 3, "sub-categories under the open one")
+    local rec = S.AchievementRecord(1, 2)
+    assert(rec and not rec.completed and math.abs(rec.progress - 0.3) < 0.01, "achievement progress")
+    S.db.ownAchievements = true; S:SyncAchievements()
+    local r = S.AchievementsReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env[frameName]), "ownAchievements: window with Blizzard's tucked")
+    S.db.ownAchievements = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env[frameName]), "ownAchievements: switch off live")
+    S.db.ownAchievements = true; S:Refresh()
+    assert(r.win:IsShown(), "ownAchievements: on again")
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
