@@ -3728,6 +3728,15 @@ try("reload rows: live skin switches and the reload button", function()
     C:Show("home")
 end)
 
+try("calendar: edit your own event", function()
+    local S = ns.modules.Skins
+    local types = { { value = 1 }, { value = 3 } }
+    local title, desc, hour, minute, ti = S.CalendarFormFrom({ title = "Raid", description = "MC", eventType = 3,
+        time = { hour = 19, minute = 30 } }, types)
+    assert(title == "Raid" and desc == "MC" and hour == 19 and minute == 30 and ti == 2, "form from the open event")
+    assert(select(3, S.CalendarFormFrom(nil, types)) == 20, "defaults without an event")
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

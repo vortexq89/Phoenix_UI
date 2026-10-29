@@ -7,7 +7,9 @@ local M = ns:GetModule("Skins")
     day's events as Phoenix rows (time and title). Invites you have not answered show Accept / Tentative /
     Decline (the event is opened with the calendar's own call, answered, closed). New event: title, time,
     type, description and invites, created with the calendar's own create / set / add calls on your click.
-    Editing an existing event and guild / community sign-ups stay in Blizzard's calendar (the arrow button).
+    Edit (your own events): the event is opened with the calendar's own call, the form is filled from it, and Save
+    sends the set calls and UpdateEvent on your click. Guild / community sign-ups stay in Blizzard's calendar (the
+    arrow button).
     Skins > "Phoenix calendar window" off: Blizzard's calendar, reskinned, live. ]]
 
 local CELL, GAP, LIST_W = 52, 4, 270
@@ -29,21 +31,14 @@ local function events(day)
             local S = Enum.CalendarStatus or {}
             out[#out + 1] = { index = i, title = tostring(e.title or ""),
                 time = ("%02d:%02d"):format(tonumber(t.hour) or 0, tonumber(t.minute) or 0),
-                icon = e.iconTexture, invited = S.Invited ~= nil and e.inviteStatus == S.Invited }
+                icon = e.iconTexture, invited = S.Invited ~= nil and e.inviteStatus == S.Invited,
+                own = e.calendarType == "PLAYER" and (e.modStatus == "CREATOR" or e.modStatus == "MODERATOR") }
         end
     end
     return out
 end
 
-local function layout()
-    local info = C_Calendar.GetMonthInfo(0)
-    if type(info) ~= "table" then return end
-    local now = C_DateAndTime.GetCurrentCalendarTime() or {}
-    local thisMonth = tonumber(now.month) == tonumber(info.month) and tonumber(now.year) == tonumber(info.year)
-    local days = tonumber(info.numDays) or 30
-    if not pickDay or pickDay > days then pickDay = thisMonth and tonumber(now.monthDay) or 1 end
-    r.month:SetText(("%s %d"):format(tostring(CALENDAR_FULLDATE_MONTH_NAMES and CALENDAR_FULLDATE_MONTH_NAMES[info.month] or info.month),
-        tonumber(info.year) or 0))
+local function drawGrid(info, now, thisMonth, days)
     for i, c in ipairs(cells) do
         local d = i - (tonumber(info.firstWeekday) or 1) + 1
         if d >= 1 and d <= days then
@@ -60,11 +55,27 @@ local function layout()
             c:Hide()
         end
     end
+end
+
+local function layout()
+    local info = C_Calendar.GetMonthInfo(0)
+    if type(info) ~= "table" then return end
+    local now = C_DateAndTime.GetCurrentCalendarTime() or {}
+    local thisMonth = tonumber(now.month) == tonumber(info.month) and tonumber(now.year) == tonumber(info.year)
+    local days = tonumber(info.numDays) or 30
+    if not pickDay or pickDay > days then pickDay = thisMonth and tonumber(now.monthDay) or 1 end
+    r.month:SetText(("%s %d"):format(tostring(CALENDAR_FULLDATE_MONTH_NAMES and CALENDAR_FULLDATE_MONTH_NAMES[info.month] or info.month),
+        tonumber(info.year) or 0))
+    drawGrid(info, now, thisMonth, days)
     r.dayTitle:SetText(L.CALW_DAY:format(pickDay))
-    r.create:SetShown(panel == "create")
+    local form = panel == "create" or panel == "edit"
+    r.create:SetShown(form)
     list:SetShown(panel == "day")
     r.newBtn:SetShown(panel == "day")
-    if panel == "create" then
+    r.edit:Hide()
+    if form then
+        r.go:SetText(panel == "edit" and L.CALW_SAVE or L.CALW_CREATE)
+        r.invite:SetShown(panel == "create")
         r.none:Hide()
         for _, b in ipairs(r.answers) do b:Hide() end
         r.inviteList:SetText(table.concat(invites, ", "))
@@ -83,6 +94,7 @@ local function layout()
         list.Bar(b, e.invited and "state.warning" or "accent.primary")
     end)
     for _, b in ipairs(r.answers) do b:SetShown(pick ~= nil and pick.invited) end
+    r.edit:SetShown(pick ~= nil and pick.own == true)
 end
 
 function M.CalendarTypes()
@@ -99,10 +111,39 @@ function M:CalendarAnswer(answer)
     C_Calendar.OpenEvent(0, pickDay, pickEvent)
 end
 
+-- Edit one of your own events: open it with the calendar's own call; the form fills when it is open.
+function M:CalendarEdit()
+    if not (pickDay and pickEvent) then return end
+    pending = { edit = true }
+    C_Calendar.OpenEvent(0, pickDay, pickEvent)
+end
+
+-- The open event into the form (pure on the info table): title, description, hour, minute, type index.
+function M.CalendarFormFrom(info, types)
+    info = type(info) == "table" and info or {}
+    local t = type(info.time) == "table" and info.time or {}
+    local typeIndex = 1
+    for i, ty in ipairs(types or {}) do if ty.value == info.eventType then typeIndex = i end end
+    return tostring(info.title or ""), tostring(info.description or ""), tonumber(t.hour) or 20, tonumber(t.minute) or 0,
+        typeIndex
+end
+
+local function fillEdit()
+    local title, desc, hour, minute, typeIndex = M.CalendarFormFrom(C_Calendar.GetEventInfo(), M.CalendarTypes())
+    r.title:SetValue(title)
+    r.desc.edit:SetText(desc)
+    r.hour:SetValue(("%d"):format(hour))
+    r.minute:SetValue(("%02d"):format(minute))
+    r.typeIndex = typeIndex
+    panel = "edit"
+    r:Layout()
+end
+
 local function sendAnswer()
     local p = pending
     pending = nil
     if not p then return end
+    if p.edit then return fillEdit() end
     if p.answer == "accept" then C_Calendar.EventAvailable()
     elseif p.answer == "tentative" then C_Calendar.EventTentative()
     else C_Calendar.EventDecline() end
@@ -114,6 +155,7 @@ M.CalendarSendAnswer = sendAnswer
 function M:CalendarCreate()
     local title = r.title:GetText() or ""
     if title == "" then r.title:SetFocus(); return end
+    if panel == "edit" then return M:CalendarSave(title) end
     local info = C_Calendar.GetMonthInfo(0) or {}
     local hour = math.max(0, math.min(23, tonumber(r.hour:GetText()) or 20))
     local minute = math.max(0, math.min(59, tonumber(r.minute:GetText()) or 0))
@@ -127,6 +169,21 @@ function M:CalendarCreate()
     for _, name in ipairs(invites) do C_Calendar.EventInvite(name) end
     C_Calendar.AddEvent()
     invites = {}
+    panel = "day"
+    r:Layout()
+end
+
+-- Save the edited event: the calendar's own set calls on the open event, then UpdateEvent (your click).
+function M:CalendarSave(title)
+    local hour = math.max(0, math.min(23, tonumber(r.hour:GetText()) or 20))
+    local minute = math.max(0, math.min(59, tonumber(r.minute:GetText()) or 0))
+    C_Calendar.EventSetTitle(title)
+    C_Calendar.EventSetDescription(r.desc.edit:GetText() or "")
+    C_Calendar.EventSetTime(hour, minute)
+    local t = M.CalendarTypes()[r.typeIndex]
+    if t and t.value ~= nil then C_Calendar.EventSetType(t.value) end
+    C_Calendar.UpdateEvent()
+    C_Calendar.CloseEvent()
     panel = "day"
     r:Layout()
 end
@@ -178,7 +235,11 @@ local function build(rr)
     r.newBtn = W:Button(r.body, L.CALW_NEW, "secondary", "add", 140)
     r.newBtn:SetHeight(22)
     r.newBtn:SetPoint("BOTTOMLEFT", x, 0)
-    r.newBtn.onClick = function() panel = "create"; r:Layout() end
+    r.newBtn.onClick = function() panel = "create"; r.title:SetValue(""); r.desc.edit:SetText(""); r:Layout() end
+    r.edit = W:Button(r.body, L.CALW_EDIT, "secondary", "rename", 100)
+    r.edit:SetHeight(22)
+    r.edit:SetPoint("LEFT", r.newBtn, "RIGHT", 6, 0)
+    r.edit.onClick = function() M:CalendarEdit() end
     -- new event form
     local f = CreateFrame("Frame", nil, r.body)
     f:SetPoint("TOPLEFT", x, -26)
@@ -202,7 +263,10 @@ local function build(rr)
     r.go = W:Button(f, L.CALW_CREATE, "primary", "add", 120); r.go:SetPoint("BOTTOMLEFT", 0, 0)
     r.go.onClick = function() M:CalendarCreate() end
     r.cancel = W:Button(f, CANCEL or "Cancel", "secondary", nil, 90); r.cancel:SetPoint("LEFT", r.go, "RIGHT", 6, 0)
-    r.cancel.onClick = function() invites = {}; panel = "day"; r:Layout() end
+    r.cancel.onClick = function()
+        if panel == "edit" then C_Calendar.CloseEvent() end
+        invites = {}; panel = "day"; r:Layout()
+    end
 end
 
 local cal = M.Replacement({ key = "ownCalendar", frame = "CalendarFrame", title = L.CALW_TITLE,
