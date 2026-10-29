@@ -458,6 +458,12 @@
   account folder names; text-like string locals (chat lines and the like) are reduced to their length.
 
 ### Fixed
+- Minimap: the shape (Round / Square / Rectangle) applies live; Round puts the game's mask and compass back, and
+  `GetMinimapShape()` now follows the shape (it always said SQUARE, so button addons laid out a round map wrong).
+- Preview drag grips show on all 30 previews; where nothing can be sized they are dimmed and say why.
+- Theme: nameplate health background, texture swatches, mail attachment counts and Group Finder result rows use
+  theme tokens and fonts instead of fixed greys and Blizzard fonts.
+- Dev self-test also drags each preview one step and back, walks the installer and round-trips a share string.
 - Phoenix_UI warns once if the `Phoenix_UI_Options` folder is from a different version (one folder updated, the other
   not); Phoenix → Diagnostics shows the same.
 - Less background work: Spell History's fade timer, the data bar and the minimap coordinates stop polling while
