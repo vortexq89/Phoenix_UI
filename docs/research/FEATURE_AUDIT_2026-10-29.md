@@ -228,3 +228,8 @@ runtime in game.
   `Modules/Encounters/Warnings.lua:175`, `Modules/Movers/Movers.lua:411`, `UI/Widgets/Chips.lua:259`, `Slider.lua:85`).
   New code uses `C_Timer` tickers. Whether to build a shared ticker and move these onto it is an owner decision.
 - Corrected FEATURE_COVERAGE.md (rows, statuses, summary 106 / 7 partial / 4 missing) and ELLESMERE_GAP_AUDIT.md.
+- **Click casting correction.** Group frames already had click casting through the game's own Click Casting:
+  Phoenix buttons are SecureUnitButtons and Unit Frames has an "Open Click Casting" row (`Phoenix_UI_Options/Options/UnitFrames.lua:184-187`).
+  The gap was a Phoenix-side binding list. That is now built: `Modules/GroupFrames/ClickCast.lua`, Group Frames > Click casting
+  (6 bindings: modifier, mouse button 1-5, spell / macro / target / focus / assist / menu). It is off by default, writes nothing
+  while Clique is loaded, and is written only out of combat (combat changes wait for combat end). Harness test "group frames click casting".

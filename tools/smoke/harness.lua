@@ -7196,6 +7196,56 @@ try("combat text events: secret types skipped, merges, areas off", function()
     CT:EnableScroll()
 end)
 
+try("group frames click casting", function()
+    local M = ns.modules.GroupFrames
+    local A = M.ClickBindingAttributes
+    local a = A({ mod = "", button = 1, action = "spell", text = "  Flash Heal " })
+    assert(a.type1 == "spell" and a.spell1 == "Flash Heal" and a["*type1"] == nil, "plain left click spell, trimmed")
+    a = A({ mod = "shift", button = 2, action = "macro", text = "/cast [@unit] Renew" })
+    assert(a["shift-type2"] == "macro" and a["shift-macrotext2"] == "/cast [@mouseover] Renew", "macro uses the clicked unit")
+    assert(A({ mod = "alt", button = 3, action = "assist" })["alt-type3"] == "assist", "assist")
+    assert(A({ mod = "", button = 1, action = "none" }) == nil and A({ mod = "", button = 1, action = "spell", text = " " }) == nil
+        and A({ mod = "meta", button = 1, action = "target" }) == nil and A({ mod = "", button = 9, action = "target" }) == nil
+        and A(nil) == nil, "invalid bindings write nothing")
+    local cc = M.db.clickCast
+    local keep = { cc.enabled, cc.bindings[1].action, cc.bindings[1].text, cc.bindings[2].action }
+    local attrs = {}
+    local b = { SetAttribute = function(_, k, v) attrs[k] = v end }
+    cc.enabled = false
+    assert(next(M:ClickAttributeSet()) == nil, "off writes nothing")
+    cc.enabled = true
+    cc.bindings[1].action, cc.bindings[1].text = "spell", "Flash Heal"
+    cc.bindings[2].action = "focus"
+    M:ApplyClickCast(b)
+    assert(attrs.type1 == "spell" and attrs.spell1 == "Flash Heal" and attrs.type2 == "focus", "bindings written")
+    -- changing a click from a spell to a macro drops the old spell
+    cc.bindings[1].action, cc.bindings[1].text = "macro", "/cast [@unit] Renew"
+    M:ApplyClickCast(b)
+    assert(attrs.type1 == "macro" and attrs.spell1 == nil and attrs.macrotext1 == "/cast [@mouseover] Renew", "rewritten")
+    -- Clique loaded: Phoenix clears what it wrote and writes nothing
+    local loaded = env.C_AddOns.IsAddOnLoaded
+    env.C_AddOns.IsAddOnLoaded = function(n) return n == "Clique" or loaded(n) end
+    M:ApplyClickCast(b)
+    assert(attrs.type1 == nil and attrs.type2 == nil and M:ClickCastWritten(b) == nil, "Clique owns the clicks")
+    env.C_AddOns.IsAddOnLoaded = loaded
+    -- in combat nothing is written; it is queued for combat end
+    local inCombat = rawget(env, "InCombatLockdown")
+    rawset(env, "InCombatLockdown", function() return true end)
+    assert(M:ApplyClickCast(b) == false and attrs.type1 == nil, "no writes in combat")
+    M:ApplyAllClickCast()
+    rawset(env, "InCombatLockdown", inCombat)
+    fire("PLAYER_REGEN_ENABLED")
+    cc.enabled, cc.bindings[1].action, cc.bindings[1].text, cc.bindings[2].action = keep[1], keep[2], keep[3], keep[4]
+    M:ApplyClickCast(b)
+    assert(attrs.type1 == nil and attrs.type2 == nil, "turning it off clears every Phoenix binding")
+    -- the options page has the tab, the toggle and six bindings
+    local n = 0
+    for _, r in ipairs(ns.options.GroupFrames) do
+        if type(r.key) == "string" and r.key:find("^clickCast%.bindings%.%d%.action$") then n = n + 1 end
+    end
+    assert(n == M.CLICK_SLOTS, "binding rows: " .. n)
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

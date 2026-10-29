@@ -61,6 +61,15 @@ local BUFF_FILTER = { { value = "mine", label = "GF_FILTER_HOTS" }, { value = "r
 local DEBUFF_FILTER = { { value = "all", label = "UF_FILTER_ALL" }, { value = "raid", label = "GF_FILTER_MY_DISPELS" },
     { value = "dispellable", label = "GF_FILTER_DISPELLABLE" }, { value = "cc", label = "GF_FILTER_CC" } }
 
+local CC_ACTION = { { value = "none", label = "UF_CLICK_NONE" }, { value = "spell", label = "UF_CLICK_SPELL" },
+    { value = "macro", label = "UF_CLICK_MACRO" }, { value = "target", label = "UF_CLICK_TARGET" },
+    { value = "focus", label = "UF_CLICK_FOCUS" }, { value = "assist", label = "GF_CC_ASSIST" },
+    { value = "togglemenu", label = "UF_CLICK_MENU" } }
+local CC_MOD = { { value = "", label = "GF_CC_MOD_NONE" }, { value = "shift", label = "UF_KEY_SHIFT" },
+    { value = "ctrl", label = "UF_KEY_CTRL" }, { value = "alt", label = "UF_KEY_ALT" } }
+local CC_BUTTON = { { value = 1, label = "UF_CLICK_LEFT" }, { value = 2, label = "UF_CLICK_RIGHT" },
+    { value = 3, label = "UF_CLICK_MIDDLE" }, { value = 4, label = "GF_CC_BUTTON_4" }, { value = 5, label = "GF_CC_BUTTON_5" } }
+local function ccOff(m) return not m.db.clickCast.enabled end
 local function toggleTest(m)
     if not m:IsEnabled() then return end
     if not m:ShowTest(not m.testShown) then ns.Config:SetStatus(ns.L.UF_TEST_COMBAT, "state.warning", "warning") end
@@ -258,6 +267,42 @@ ns:RegisterOptions("GroupFrames", {
     px({ type = "range", key = P .. "dispel.alpha", label = "GF_DISPEL_ALPHA", min = 0.1, max = 1, step = 0.05, percent = true,
       disabled = dispelOff }),
     ------------------------------------------------------------ auras
+    ------------------------------------------------------------ click casting (ClickCast.lua)
+    { type = "tab", label = "GF_TAB_CLICK" },
+    { type = "header", label = "GF_TAB_CLICK", icon = "keyboard" },
+    px({ type = "toggle", key = "clickCast.enabled", label = "GF_CC_ENABLE", desc = "GF_CC_ENABLE_DESC", combat = true,
+      keywords = "click casting clique bindings healer mouseover" }),
+    { type = "description", text = "GF_CC_CLIQUE", hidden = function() return not ns.modules.GroupFrames.CliqueLoaded() end },
+    px({ type = "select", key = "clickCast.bindings.1.action", label = "GF_CC_SLOT_1", values = CC_ACTION, combat = true, disabled = ccOff,
+      keywords = "click cast binding spell heal mouse modifier",
+      cog = { { type = "select", key = "clickCast.bindings.1.mod", label = "GF_CC_MOD", values = CC_MOD },
+              { type = "select", key = "clickCast.bindings.1.button", label = "GF_CC_BUTTON", values = CC_BUTTON },
+              { type = "input", key = "clickCast.bindings.1.text", label = "UF_CLICK_TEXT", desc = "GF_CC_TEXT_DESC" } } }),
+    px({ type = "select", key = "clickCast.bindings.2.action", label = "GF_CC_SLOT_2", values = CC_ACTION, combat = true, disabled = ccOff,
+      keywords = "click cast binding spell heal mouse modifier",
+      cog = { { type = "select", key = "clickCast.bindings.2.mod", label = "GF_CC_MOD", values = CC_MOD },
+              { type = "select", key = "clickCast.bindings.2.button", label = "GF_CC_BUTTON", values = CC_BUTTON },
+              { type = "input", key = "clickCast.bindings.2.text", label = "UF_CLICK_TEXT", desc = "GF_CC_TEXT_DESC" } } }),
+    px({ type = "select", key = "clickCast.bindings.3.action", label = "GF_CC_SLOT_3", values = CC_ACTION, combat = true, disabled = ccOff,
+      keywords = "click cast binding spell heal mouse modifier",
+      cog = { { type = "select", key = "clickCast.bindings.3.mod", label = "GF_CC_MOD", values = CC_MOD },
+              { type = "select", key = "clickCast.bindings.3.button", label = "GF_CC_BUTTON", values = CC_BUTTON },
+              { type = "input", key = "clickCast.bindings.3.text", label = "UF_CLICK_TEXT", desc = "GF_CC_TEXT_DESC" } } }),
+    px({ type = "select", key = "clickCast.bindings.4.action", label = "GF_CC_SLOT_4", values = CC_ACTION, combat = true, disabled = ccOff,
+      keywords = "click cast binding spell heal mouse modifier",
+      cog = { { type = "select", key = "clickCast.bindings.4.mod", label = "GF_CC_MOD", values = CC_MOD },
+              { type = "select", key = "clickCast.bindings.4.button", label = "GF_CC_BUTTON", values = CC_BUTTON },
+              { type = "input", key = "clickCast.bindings.4.text", label = "UF_CLICK_TEXT", desc = "GF_CC_TEXT_DESC" } } }),
+    px({ type = "select", key = "clickCast.bindings.5.action", label = "GF_CC_SLOT_5", values = CC_ACTION, combat = true, disabled = ccOff,
+      keywords = "click cast binding spell heal mouse modifier",
+      cog = { { type = "select", key = "clickCast.bindings.5.mod", label = "GF_CC_MOD", values = CC_MOD },
+              { type = "select", key = "clickCast.bindings.5.button", label = "GF_CC_BUTTON", values = CC_BUTTON },
+              { type = "input", key = "clickCast.bindings.5.text", label = "UF_CLICK_TEXT", desc = "GF_CC_TEXT_DESC" } } }),
+    px({ type = "select", key = "clickCast.bindings.6.action", label = "GF_CC_SLOT_6", values = CC_ACTION, combat = true, disabled = ccOff,
+      keywords = "click cast binding spell heal mouse modifier",
+      cog = { { type = "select", key = "clickCast.bindings.6.mod", label = "GF_CC_MOD", values = CC_MOD },
+              { type = "select", key = "clickCast.bindings.6.button", label = "GF_CC_BUTTON", values = CC_BUTTON },
+              { type = "input", key = "clickCast.bindings.6.text", label = "UF_CLICK_TEXT", desc = "GF_CC_TEXT_DESC" } } }),
     { type = "tab", label = "UF_AURAS" },
     { type = "header", label = "GF_BUFFS", icon = "auras" },
     px({ type = "select", key = P .. "groupAuras.buffs.mode", label = "GF_BUFFS_MODE", values = BUFF_MODE,

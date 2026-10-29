@@ -69,6 +69,18 @@ local DEFAULTS = {
               growth = "DOWN", scale = 1 },
     pets = { enabled = false, width = 80, height = 22, point = "TOPLEFT", x = 24, y = -600, spacing = 2, growth = "RIGHT",
              scale = 1 },
+    -- Phoenix click casting (ClickCast.lua): off by default; Blizzard's Click Casting and Clique keep working
+    clickCast = {
+        enabled = false,
+        bindings = {
+            { mod = "", button = 1, action = "none", text = "" },
+            { mod = "", button = 2, action = "none", text = "" },
+            { mod = "", button = 3, action = "none", text = "" },
+            { mod = "shift", button = 1, action = "none", text = "" },
+            { mod = "shift", button = 2, action = "none", text = "" },
+            { mod = "shift", button = 3, action = "none", text = "" },
+        },
+    },
     hideManager = false,          -- Blizzard's raid manager (ready check, markers) stays unless asked
     testSize = 20,
     -- the 2.0 keys (Blizzard mode, Blizzard.lua)
@@ -265,7 +277,7 @@ end
 function M:OnDisable() self:ShowTest(false) end
 
 function M:Refresh()
-    if self:IsPhoenix() then self:RefreshPhoenix() else self:RefreshBlizzard() end
+    if self:IsPhoenix() then self:RefreshPhoenix(); self:ApplyAllClickCast() else self:RefreshBlizzard() end
     if self.testShown then self:ShowTest(true) end
 end
 

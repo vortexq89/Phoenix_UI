@@ -81,6 +81,9 @@ function M:InitButton(header, b)
     if not InCombatLockdown() then
         b:RegisterForClicks("AnyUp")
         b:EnableMouse(true)
+        self:ApplyClickCast(b) -- ClickCast.lua
+    else
+        self:ApplyAllClickCast() -- runs once combat ends
     end
     -- Clique and other click-casting addons read this shared table
     local clickCast = rawget(_G, "ClickCastFrames")
