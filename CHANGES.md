@@ -3,6 +3,14 @@
 ## 2.0.0-beta1
 
 ### New
+- **PvP scoreboard skin**: the battleground / arena scoreboard and match results in the Phoenix look (dense table,
+  team-coloured rows, your row in the accent, Phoenix Leave / Requeue); Skins > PvP scoreboard, live.
+- **Diminishing returns in stat tooltips**: crit, haste, mastery, versatility, leech, avoidance and speed tooltips on
+  the character sheet show what diminishing returns cost and what the next 100 rating adds (Item Level page).
+- **Teleport prompt**: joining a premade group for a dungeon whose teleport you know offers it in a small popup with
+  a secure spell button (Group Finder page).
+- Fixed: a saved scale of 0, a negative number or NaN can no longer reach `SetScale` (data texts, movers, bags,
+  extra buttons, minimap button bin); a quick ring item entry without an item ID no longer errors.
 - **Unit Frames II, arena and resource bars** (plan v2 stage S18).
   - *Arena frames* (retail, off by default): 9 layout presets (Phoenix, mirrored, compact, tall, wide, slim, class
     portrait, gladiator, cropped icons) that set size, power height, portrait, mirroring and icon crop; 2–5 Test

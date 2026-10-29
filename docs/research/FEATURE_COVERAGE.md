@@ -10,8 +10,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 83 |
-| missing - EllesmereUI reference | 25 |
+| Phoenix has | 88 |
+| missing - EllesmereUI reference | 20 |
 | missing | 10 |
 | duplicate (skip) | 1 |
 | out of scope | 9 |
@@ -57,7 +57,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI | Macro Factory | missing - EllesmereUI reference | P3: "Smart macros" card (healthstone/potion, focus interrupt, mouseover) written out of combat with a preview. Original. |
 | EllesmereUI | Global options search | Phoenix has | Phoenix `Core/Search.lua` and Oracle command palette (Ctrl+K). |
 | EllesmereUI | First-install module picker, migrations, patch notes, video guides, uninstall | missing - EllesmereUI reference | P2: "What's new" popup after an update, generated from CHANGELOG.md at build time, dismissable, with links to the changed settings (Oracle can jump to them). |
-| EllesmereUI | Shared engines | missing - EllesmereUI reference | P3: spell cost preview on the power bar (shade the cost of the spell being cast). P3 (Forever): five-second-rule mana spark. |
+| EllesmereUI | Shared engines | Phoenix has | Spell cost preview: `Modules/UnitFrames/Update.lua` `Live:SpellCost` (cost of the spell being cast, secret-safe). Five-second-rule spark (Forever): not built. |
 | EllesmereUI | Party mode and profile sync | Phoenix has | Phoenix profiles are account-wide with per-character choice (`Core/Profiles.lua`). |
 | EllesmereUI_ActionBars | Own secure bars and buttons | Phoenix has | Phoenix `Phoenix_UI_ActionBars` (ab.bar1..bar10, stance, pet, vehicle, extra, items, `ab.editModeCapture`). |
 | EllesmereUI_ActionBars | Paging and visibility conditions | Phoenix has | Phoenix where-to-show rules per bar (combat, vehicle, pet battle, mounted, skyriding, content, group, spec), fade, `ab.mouseoverLinked`. |
@@ -71,7 +71,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_Bags | Quick actions | missing - EllesmereUI reference | P3: "Process" mode in Vault (secure spell-on-item buttons prepared out of combat). |
 | EllesmereUI_Bags | Junk marker, sell junk, reagent window, gold ledger | Phoenix has | Phoenix `vault.junkList`, `vault.autoSell`, `vault.goldHistory`, Bank.lua. |
 | EllesmereUI_BlizzardSkin | Window engine and packs | Phoenix has | Phoenix `Phoenix_UI_Skins` (`skins.*`, 119 keys; applied and removed live). |
-| EllesmereUI_BlizzardSkin | Character sheet rework | missing - EllesmereUI reference | P3: show stat diminishing returns in the character stat tooltips. |
+| EllesmereUI_BlizzardSkin | Character sheet rework | Phoenix has | Built 2026-10-29: `Modules/ItemLevel/StatDR.lua` (Item Level > Diminishing returns in stat tooltips): DR cost and the next 100 rating, from the game's own rating functions. |
 | EllesmereUI_BlizzardSkin | Skyriding vigor skin | Phoenix has | ActionBars skyriding/vigor handling |
 | EllesmereUI_BlizzardSkin | Mail alt list, merchant bulk buy | missing - EllesmereUI reference | P2: mail alt list (we already store alts in Vault). P3: bulk buy dialog. |
 | EllesmereUI_BlizzardSkin | Tooltip skin, anchor and visibility | Phoenix has | Phoenix `Phoenix_UI_HUD/Tooltip.lua` (`tt.anchor`, `tt.combat`, `tt.offsetX`...). |
@@ -83,7 +83,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_CooldownManager | Per-spell talent and stance conditions | missing - EllesmereUI reference | P2: "Show only with talent" condition per CDM icon/bar entry (check with `C_Traits` node rank on `TRAIT_CONFIG_UPDATED`). |
 | EllesmereUI_CooldownManager | Bar glows from auras | missing - EllesmereUI reference | P3: "Glow this button while aura X" rule (secret-safe: use aura instance presence only). |
 | EllesmereUI_CooldownManager | Focus kick, rotation helper icon, key-press mirror, trinkets, potions | Phoenix has | Phoenix `cdm.focusKick`, `cdm.assist`, `ab.assist`; trinkets on item bars. |
-| EllesmereUI_CooldownManager | Sync generic entries across specs | missing - EllesmereUI reference | Phoenix: unverified. |
+| EllesmereUI_CooldownManager | Sync generic entries across specs | Phoenix has | Custom bar lists (`cdm.custom1..3`) are profile-wide, so items and trinket entries already apply to every spec (unknown spells are skipped). |
 | EllesmereUI_DamageMeters | Meter windows on C_DamageMeter | Phoenix has | Phoenix Embers (up to four windows `embers.w1..w4`, breakdown, death recap, best-pull compare, report). |
 | EllesmereUI_DamageMeters | Threat meter type (Forever) | missing - EllesmereUI reference | P3 (Forever). |
 | EllesmereUI_DataBars | Block bars | Phoenix has | Phoenix `Phoenix_UI_HUD/DataBars.lua` (`db.*`), HUD extras. |
@@ -105,7 +105,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_QoL | Movement cooldown alert | missing - EllesmereUI reference | P3: can be a CDM preset ("Mobility" row) rather than a new feature. |
 | EllesmereUI_QoL | Keystones via LibKeystone | Phoenix has | Modules/MythicPlus/Keystones.lua speaks LibKS (R / level,mapID,rating) |
 | EllesmereUI_QoL | Shifter (move Blizzard panels) | missing - EllesmereUI reference | P2 (same item as MoveAny). |
-| EllesmereUI_QoL | Teleport prompt | missing - EllesmereUI reference | P3: prompt on `LFG_LIST_JOINED_GROUP` with a secure button. |
+| EllesmereUI_QoL | Teleport prompt | Phoenix has | Built 2026-10-29: `Modules/GroupFinder/Teleport.lua` (Group Finder > Teleport prompt); teleport found from your flyouts by the dungeon's name, no data shipped. |
 | EllesmereUI_QoL | Bloodlust/Sated tracker, battle res icon | Phoenix has | Phoenix `ascent.brLust`, item bar battle res (PR #66). |
 | EllesmereUI_QoL | Cursor ring, alerts, auto logging, self combat text, waypoint | Phoenix has | Phoenix `cursor.*`, Spark, `flow.combatLog`, `Core/Waypoint.lua` (`way.*`). |
 | EllesmereUI_QuestTracker | Skin via hooks only | Phoenix has | Phoenix `Phoenix_UI_QuestTracker` (`qt.*`: sort, filter, autoTrackZone, autoQuest, itemButtons, mplusBlock). |
@@ -119,7 +119,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_ResourceBars | Tank active mitigation bars | Phoenix has | Resources.lua: Ironfur / Ignore Pain bars |
 | EllesmereUI_ResourceBars | Spec-specific engine drivers | Phoenix has | Resources.lua: Ebon Might |
 | EllesmereUI_ResourceBars | GCD bar, cast bar with latency and channel ticks, totem bar | Phoenix has | Phoenix `rb.gcd`, `rb.cast`, `rb.totem`. |
-| EllesmereUI_ResourceBars | Forever: swing timer, druid mana in forms, call totem bar | missing - EllesmereUI reference | P3 (Forever): mana bar while shapeshifted. |
+| EllesmereUI_ResourceBars | Forever: swing timer, druid mana in forms, call totem bar | Phoenix has | Swing timer (Cast Bars), druid mana while shapeshifted (resource block), totem bar (Unit Frames). |
 | EllesmereUI_UnitFrames | Frames with stock styles | Phoenix has | Phoenix `Phoenix_UI_UnitFrames` (358 `uf.*` keys, styles, tags, text slots, Blizzard or Phoenix per frame). |
 | EllesmereUI_UnitFrames | Player aura bars | Phoenix has | Phoenix `uf.auraBars.*` (+ `dedupeCDM`). |
 | EllesmereUI_UnitFrames | Forever weapon imbues | missing - EllesmereUI reference | P3 (Forever): imbue timer icon near the player frame. |

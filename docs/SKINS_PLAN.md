@@ -52,6 +52,10 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   nothing in Edit Mode is moved or saved by us), 27 Gossip/quest (`Gossip.lua`), trade (`Trade.lua`),
   inspect (`Inspect.lua`). 23 Shop: launcher only, the micro menu's Shop tile; `StoreFrame` is never touched
   (harness checks this). Settings, gossip, trade and inspect now switch live.
+- 25 PvP: the scoreboard and match results (`PvPMatch.lua`, new switch, live): score table on a sunken card, column
+  headers as cells (last sorted in the accent), player rows with a team-coloured bar read back from Blizzard's own row
+  art, your row outlined once the match is over, Leave / Requeue as Phoenix buttons. The queue side (honor/conquest
+  cards, rating badges) was done in phase 2 with the Group Finder skin. Every window in the plan now has a skin.
 - Dev self-test: every list path a window skin looks for inside a loaded window and does not find is reported
   as `skin-missing` (Core/DevDiag.lua), so the overnight loop shows lists that stay unstyled.
 
