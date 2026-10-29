@@ -238,3 +238,7 @@ runtime in game.
   talent reductions not counted), the game's Cooldown swipe, no timer of ours. Source: UNIT_SPELLCAST_SUCCEEDED for player and party1-4.
   **Limit:** when the game makes a party member's spell ID secret (keys, raids), that cast is skipped and the icon stays ready.
   Whether 12.x hides party spell IDs in keys has not been checked in game. Party defensive/major cooldowns are not tracked yet.
+- **Raid marker bar built** (`Modules/GroupFrames/Markers.lua`, Group Frames > Markers, off by default, both clients):
+  target markers (SetRaidTarget), world markers through the game's secure `worldmarker` action (mapping checked against
+  Blizzard's `WORLD_RAID_MARKER_ORDER` in Blizzard_CompactRaidFrameManager.lua), clear buttons, ready check, 10 s pull.
+  Visibility by state driver (group / raid / always), layout out of combat only, movable in Layout mode.

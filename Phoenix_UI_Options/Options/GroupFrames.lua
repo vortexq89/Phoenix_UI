@@ -70,6 +70,10 @@ local CC_MOD = { { value = "", label = "GF_CC_MOD_NONE" }, { value = "shift", la
 local CC_BUTTON = { { value = 1, label = "UF_CLICK_LEFT" }, { value = 2, label = "UF_CLICK_RIGHT" },
     { value = 3, label = "UF_CLICK_MIDDLE" }, { value = 4, label = "GF_CC_BUTTON_4" }, { value = 5, label = "GF_CC_BUTTON_5" } }
 local function ccOff(m) return not m.db.clickCast.enabled end
+local function mkOff(m) return not m.db.markers.show end
+local function mk(row) return Opt.With(row, { disabled = mkOff }) end
+local MK_WHERE = { { value = "group", label = "GF_MARK_IN_GROUP" }, { value = "raid", label = "GF_MARK_IN_RAID" },
+    { value = "always", label = "MPLUS_KICKS_ALWAYS" } }
 local function toggleTest(m)
     if not m:IsEnabled() then return end
     if not m:ShowTest(not m.testShown) then ns.Config:SetStatus(ns.L.UF_TEST_COMBAT, "state.warning", "warning") end
@@ -303,6 +307,18 @@ ns:RegisterOptions("GroupFrames", {
       cog = { { type = "select", key = "clickCast.bindings.6.mod", label = "GF_CC_MOD", values = CC_MOD },
               { type = "select", key = "clickCast.bindings.6.button", label = "GF_CC_BUTTON", values = CC_BUTTON },
               { type = "input", key = "clickCast.bindings.6.text", label = "UF_CLICK_TEXT", desc = "GF_CC_TEXT_DESC" } } }),
+    ------------------------------------------------------------ raid marker bar (Markers.lua)
+    { type = "tab", label = "GF_TAB_MARKERS" },
+    { type = "header", label = "GF_MARKERS", icon = "groupframes" },
+    { type = "toggle", key = "markers.show", label = "GF_MARK_SHOW", desc = "GF_MARK_SHOW_DESC", combat = true,
+      keywords = "raid markers world markers flare skull ready check pull bar" },
+    mk({ type = "select", key = "markers.where", label = "GF_MARK_WHERE", values = MK_WHERE, combat = true }),
+    mk({ type = "toggle", key = "markers.target", label = "GF_MARK_TARGETS", combat = true }),
+    mk({ type = "toggle", key = "markers.world", label = "GF_MARK_WORLD", desc = "GF_MARK_WORLD_DESC", combat = true }),
+    mk({ type = "toggle", key = "markers.extras", label = "GF_MARK_EXTRAS", combat = true }),
+    mk({ type = "toggle", key = "markers.vertical", label = "GF_MARK_VERTICAL", combat = true }),
+    mk({ type = "range", key = "markers.size", label = "ICON_SIZE", min = 16, max = 40, step = 1, combat = true }),
+    mk({ type = "range", key = "markers.spacing", label = "ICON_SPACING", min = 0, max = 10, step = 1, combat = true }),
     { type = "tab", label = "UF_AURAS" },
     { type = "header", label = "GF_BUFFS", icon = "auras" },
     px({ type = "select", key = P .. "groupAuras.buffs.mode", label = "GF_BUFFS_MODE", values = BUFF_MODE,

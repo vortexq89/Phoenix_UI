@@ -7277,6 +7277,35 @@ try("interrupt tracker", function()
     assert(not M.kicksHolder:IsShown(), "hidden when off")
 end)
 
+try("raid marker bar", function()
+    local M = ns.modules.GroupFrames
+    -- raid icon -> world marker, as Blizzard's raid manager maps them; every world marker used once
+    local seen = {}
+    for i = 1, 8 do local w = M.WORLD_OF[i]; assert(w and not seen[w], "world marker " .. i); seen[w] = true end
+    assert(M.WORLD_OF[8] == 8 and M.WORLD_OF[6] == 1 and M.WORLD_OF[1] == 5, "skull, square, star")
+    local a = M.WorldMarkerAttributes(6)
+    assert(a.type1 == "worldmarker" and a.action1 == "set" and a.marker1 == 1 and a.action2 == "clear" and a.marker2 == 1, "square")
+    local c = M.WorldMarkerAttributes(nil)
+    assert(c.action1 == "clear" and c.marker1 == nil, "clear all")
+    assert(M.WorldMarkerAttributes(9) == nil, "no ninth marker")
+    assert(M.MarkerVisibility(false, "always") == "hide" and M.MarkerVisibility(true, "always") == "show"
+        and M.MarkerVisibility(true, "group"):find("%[group%]") and M.MarkerVisibility(true, "raid"):find("group:raid"), "visibility")
+    local mk = M.db.markers
+    local keep = { mk.show, mk.vertical, mk.extras }
+    mk.show = true
+    M:EnableMarkers()
+    local bar = M.markerBar
+    assert(bar, "bar built")
+    local w, h = bar:GetSize()
+    mk.vertical = true; M:UpdateMarkers()
+    mk.extras = false; M:UpdateMarkers()
+    mk.show, mk.vertical, mk.extras = keep[1], keep[2], keep[3]
+    M:UpdateMarkers()
+    local n = 0
+    for _, r in ipairs(ns.options.GroupFrames) do if type(r.key) == "string" and r.key:find("^markers%.") then n = n + 1 end end
+    assert(n >= 7, "marker rows: " .. n)
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

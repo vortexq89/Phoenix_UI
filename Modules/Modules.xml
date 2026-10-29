@@ -72,6 +72,7 @@
     <Script file="GroupFrames\Headers.lua"/>
     <Script file="GroupFrames\Update.lua"/>
     <Script file="GroupFrames\ClickCast.lua"/>
+    <Script file="GroupFrames\Markers.lua"/>
     <Script file="CastBars\CastBars.lua"/>
     <Script file="CastBars\Bar.lua"/>
     <Script file="CastBars\Update.lua"/>

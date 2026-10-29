@@ -69,6 +69,9 @@ local DEFAULTS = {
               growth = "DOWN", scale = 1 },
     pets = { enabled = false, width = 80, height = 22, point = "TOPLEFT", x = 24, y = -600, spacing = 2, growth = "RIGHT",
              scale = 1 },
+    -- raid marker bar (Markers.lua): off by default
+    markers = { show = false, where = "group", target = true, world = true, extras = true, vertical = false,
+                size = 22, spacing = 3, point = "TOP", x = 0, y = -14 },
     -- Phoenix click casting (ClickCast.lua): off by default; Blizzard's Click Casting and Clique keep working
     clickCast = {
         enabled = false,
@@ -270,6 +273,7 @@ function M:OnEnable()
     else
         self:EnableBlizzard() -- Blizzard.lua
     end
+    self:EnableMarkers() -- Markers.lua
     ns.Events:Listen("PUI_THEME_CHANGED", self, function() M:Refresh() end)
     ns.Events:On("PLAYER_REGEN_DISABLED", self, function() if M.testShown then M:ShowTest(false) end end)
 end
@@ -278,6 +282,7 @@ function M:OnDisable() self:ShowTest(false) end
 
 function M:Refresh()
     if self:IsPhoenix() then self:RefreshPhoenix(); self:ApplyAllClickCast() else self:RefreshBlizzard() end
+    self:EnableMarkers()
     if self.testShown then self:ShowTest(true) end
 end
 
