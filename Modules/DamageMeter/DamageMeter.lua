@@ -18,6 +18,8 @@ local M = ns:NewModule("DamageMeter", {
         border = Style.Border({ style = "solid", color = false }),
         name = Style.Text(12),
         value = Style.Text(12),
+        -- threat meter (Threat.lua, WoW Forever)
+        threat = { enabled = true, combatOnly = true, rows = 5, width = 200, point = "RIGHT", x = -260, y = -120 },
     },
 })
 
@@ -131,6 +133,7 @@ function M:ApplyDetails()
 end
 
 function M:OnEnable()
+    self:SetupThreat() -- Threat.lua (Forever)
     if not DamageMeter then return end
     hooksecurefunc(DamageMeter, "SetupSessionWindow", function() DamageMeter:ForEachSessionWindow(styleWindow) end)
     DamageMeter:ForEachSessionWindow(styleWindow)
@@ -138,6 +141,7 @@ end
 
 -- Settings changes restyle every skinned window and entry (Skin:Register keeps the painters).
 function M:Refresh()
+    if self.UpdateThreat then ns.SafeCall(self.UpdateThreat, self) end
     if not self.db.skin then return end
     for window in pairs(windows) do ns.SafeCall(paintWindow, window) end
     for entry in pairs(entries) do if entry.StatusBar then ns.SafeCall(paintBar, entry.StatusBar) end end

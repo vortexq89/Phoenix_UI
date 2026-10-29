@@ -3,6 +3,7 @@ local L, Opt = ns.L, ns.Opt
 
 local dmGet, dmSet = ns.Combat.CVarAccessors("damageMeterEnabled")
 local function unskinned(m) return not m.db.skin end
+local function noThreat(m) return not m.db.threat.enabled end
 local function noBg(m) return unskinned(m) or not m.db.bg.show end
 local function skinned(row) return Opt.With(row, { disabled = row.disabled or unskinned }) end
 
@@ -29,6 +30,14 @@ ns:RegisterOptions("DamageMeter", {
     skinned({ type = "toggle", gate = true, key = "bg.show", label = "DM_BG", desc = "DM_BG_DESC", keywords = "background window" }),
     Opt.With(Opt.Background("bg", "DM_BG_OPACITY", "bg.base"), { disabled = noBg }),
     skinned(Opt.Border("border", "DM_BORDER", "border.subtle")),
+    { type = "header", label = "DM_THREAT", icon = "damagemeter", feature = "threatMeter" },
+    { type = "toggle", key = "threat.enabled", label = "DM_THREAT_SHOW", desc = "DM_THREAT_DESC", feature = "threatMeter",
+      keywords = "threat aggro tank pull meter" },
+    { type = "toggle", key = "threat.combatOnly", label = "DM_THREAT_COMBAT", feature = "threatMeter", disabled = noThreat },
+    { type = "range", key = "threat.rows", label = "DM_THREAT_ROWS", min = 1, max = 10, step = 1, feature = "threatMeter",
+      disabled = noThreat },
+    { type = "range", key = "threat.width", label = "UF_WIDTH", min = 120, max = 400, step = 1, feature = "threatMeter",
+      disabled = noThreat },
     { type = "header", label = "DM_EDIT_MODE", icon = "editmode" },
     { type = "description", text = "DM_EDIT_MODE_TEXT" },
     { type = "button", label = "DM_EDIT_MODE_OPEN", desc = "DM_EDIT_MODE_OPEN_DESC", button = "OPEN_EDIT_MODE", icon = "editmode",

@@ -38,6 +38,10 @@ ns.FEATURES = {
     skyriding = { retail = true },
     -- Swing timer: PLAYER_SWING and C_SwingTimer exist on WoW Forever only (Blizzard_SwingTimer).
     swingTimer = { forever = true },
+    -- Spell ranks (auto uprank on the action bars): only Forever's spells have ranks.
+    uprank = { forever = true },
+    -- Threat meter: Forever's threat values are plain; retail's are secret in combat.
+    threatMeter = { forever = true },
     -- GCD bar: the Global Cooldown spell (61304) is not in Forever's spell table.
     gcdBar = { retail = true },
     -- Cooldown Manager reminders for flasks, food, augment runes and raid buffs: the aura IDs are retail's.
