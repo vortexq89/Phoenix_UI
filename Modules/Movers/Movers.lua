@@ -264,6 +264,13 @@ local function syncOverlay(o)
     o.state:SetText(s and s.point and ("%s  %d, %d"):format(s.point, s.x, s.y) or L.MOVERS_DEFAULT_POS)
 end
 
+-- Puts a registered frame's box back over the frame (another module moved the frame itself, e.g. the other
+-- bars of an action bar multi-selection following the dragged one).
+function M:SyncOverlay(key)
+    local o = overlays[key]
+    if o then syncOverlay(o) end
+end
+
 -- Every other shown overlay's box, for edge snapping.
 local function otherBoxes(self)
     local out = {}

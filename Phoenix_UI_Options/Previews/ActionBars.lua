@@ -127,30 +127,31 @@ P:Register("actionbar", {
         { key = "empty", label = "PREVIEW_STATE_EMPTY", icon = "grid" },
     },
     build = function(stage, m)
-        local holder = CreateFrame("Frame", nil, stage)
-        holder:SetPoint("CENTER")
-        local buttons = {}
-        for i = 1, 12 do buttons[i] = button(holder, i) end
+        local MAX = 4 -- bars drawn at once when several are being edited
+        local holders = {}
+        for k = 1, MAX do
+            local holder = CreateFrame("Frame", nil, stage)
+            holder.buttons = {}
+            for i = 1, 12 do holder.buttons[i] = button(holder, i) end
+            holders[k] = holder
+        end
         local scaleText = ns.Widgets.Text(stage, "small", "text.muted", "RIGHT")
         scaleText:SetPoint("BOTTOMRIGHT", -6, 4)
-        return function(self, bar)
+        -- one bar into one holder: its real layout and dress; returns the holder's unscaled size
+        local function drawBar(self, holder, bar)
             local db = m.db
-            local b = db.bars[bar or "bar1"] or db.bars.bar1
+            local b = db.bars[bar] or db.bars.bar1
             local showEmpty = b.showEmpty or self.states.empty
-            local def = m.BAR_BY_KEY and m.BAR_BY_KEY[bar or "bar1"]
+            local def = m.BAR_BY_KEY and m.BAR_BY_KEY[bar]
             local n = math.min(b.buttons, 12)
             local points, W, H, w, h = m.Layout(b, n)
             local pad = b.backdrop.show and b.backdrop.padding or 0
             holder:SetSize(W + pad * 2, H + pad * 2)
-            local fit = math.min(1, (STAGE_W - 24) / math.max(1, W + pad * 2), (STAGE_H - 20) / math.max(1, H + pad * 2))
-            fit = math.max(0.2, fit)
-            holder:SetScale(ns.Previews.ClampScale(fit))
-            scaleText:SetText(fit < 1 and string.format("%d%%", math.floor(fit * 100 + 0.5)) or "1:1")
             Skin:Backdrop(holder, { alpha = b.backdrop.show and b.backdrop.alpha or 0, color = b.backdrop.color,
                 style = b.backdrop.style }, "bg.sunken")
             Skin:BorderSpec(holder, b.border, "border.black")
             holder:SetAlpha(b.vis.alpha)
-            for i, btn in ipairs(buttons) do
+            for i, btn in ipairs(holder.buttons) do
                 local sample = actionSlot(def, i)
                 local p = points[i]
                 btn:SetShown(p ~= nil and (sample ~= nil or showEmpty))
@@ -165,6 +166,38 @@ P:Register("actionbar", {
                 cooldown(m, btn, sample and (sample.cooldown or (self.states.cooldown and i == 1 and 0.35)), h)
                 glows(m, btn, sample)
             end
+            return W + pad * 2, H + pad * 2
+        end
+        -- the picked bar, or every edited bar stacked (up to MAX), all scaled by one factor to fit the stage
+        return function(self, bar, targets)
+            local list = {}
+            for _, key in ipairs(type(targets) == "table" and #targets > 1 and targets or { bar or "bar1" }) do
+                if #list < MAX and m.db.bars[key] then list[#list + 1] = key end
+            end
+            if #list == 0 then list[1] = "bar1" end
+            local sizes, totalH, maxW, GAP = {}, 0, 0, 8
+            for k, holder in ipairs(holders) do
+                if list[k] then
+                    local w, h = drawBar(self, holder, list[k])
+                    sizes[k] = h
+                    totalH, maxW = totalH + h + (k > 1 and GAP or 0), math.max(maxW, w)
+                    holder:Show()
+                else
+                    holder:Hide()
+                end
+            end
+            local fit = math.min(1, (STAGE_W - 24) / math.max(1, maxW), (STAGE_H - 20) / math.max(1, totalH))
+            fit = ns.Previews.ClampScale(math.max(0.2, fit))
+            local y = -(STAGE_H / fit - totalH) / 2
+            for k = 1, #list do
+                local holder = holders[k]
+                holder:SetScale(fit)
+                holder:ClearAllPoints()
+                holder:SetPoint("TOP", stage, "TOP", 0, y)
+                y = y - sizes[k] - GAP
+            end
+            local pct = fit < 1 and string.format("%d%%", math.floor(fit * 100 + 0.5)) or "1:1"
+            scaleText:SetText((#list > 1 and (#list .. " x  ") or "") .. pct)
         end
     end,
 })

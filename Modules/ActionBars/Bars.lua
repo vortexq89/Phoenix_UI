@@ -18,6 +18,7 @@ M.BarsEngine = B
 
 -- Show empty slots: the snippet sets bit 1024 of the button's showgrid mask (Blizzard uses 1, 2 and 4).
 local headers, parking = {}, nil
+function M.GetHeader(key) return headers[key] end
 
 -- Pass 1 sets attributes on every button (each one makes Blizzard re-run its bar's UpdateShownButtons), pass 2
 -- places and shows them, so the visibility we set last is the one that stays.
@@ -362,6 +363,35 @@ function B.Fade(h, reset)
 end
 
 ---------------------------------------------------------------- Layout mode (Movers)
+-- The bars being edited together in the settings (multi-select / Edit all), or nil.
+function M.EditTargets()
+    local C = ns.Config
+    local page = C and C.pages and C.pages[M.key]
+    if not (page and page.Targets) then return nil end
+    local t = page:Targets()
+    return type(t) == "table" and #t > 1 and t or nil
+end
+
+-- Layout mode drag of one bar of a multi-selection: the other selected bars move by the same offset, so the
+-- group keeps its shape. Only plain offsets are shifted (each bar keeps its own anchor).
+function M.MoveWithSelection(key, dx, dy)
+    if (dx == 0 and dy == 0) or not (tonumber(dx) and tonumber(dy)) then return end
+    local targets = M.EditTargets()
+    if not targets then return end
+    local inGroup = false
+    for _, k in ipairs(targets) do if k == key then inGroup = true end end
+    if not inGroup then return end
+    local movers = ns:GetModule("Movers")
+    for _, k in ipairs(targets) do
+        local b = k ~= key and M.db.bars[k]
+        if b then
+            b.x, b.y = b.x + dx, b.y + dy
+            M:RefreshBar(k)
+            if movers and movers.SyncOverlay then movers:SyncOverlay("ab." .. k) end
+        end
+    end
+end
+
 local function store(def)
     local key = def.key
     return {
@@ -372,8 +402,11 @@ local function store(def)
         end,
         set = function(s)
             local b = M.db.bars[key]
+            local ox, oy, opoint, oscale = b.x, b.y, b.point, b.scale
             b.point, b.x, b.y = s.point or b.point, s.x or b.x, s.y or b.y
             if s.scale then b.scale = s.scale end
+            -- a move (not a rescale, which re-derives the offsets) carries the rest of the selection along
+            if b.point == opoint and b.scale == oscale then M.MoveWithSelection(key, b.x - ox, b.y - oy) end
             if s.alpha then b.vis.alpha = s.alpha end
         end,
         apply = function() M:RefreshBar(key) end,

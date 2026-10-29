@@ -255,6 +255,7 @@ end
 
 function M:OnSettingChanged(path)
     local root, element = path:match("^([^.]+)%.?([^.]*)")
+    if root == "bars" and element ~= "" and path == "bars." .. element .. ".point" then self:KeepSpot(element) end
     if root == "bars" and element ~= "" then
         self:RefreshBar(element)
         if element == "items" then self:RefreshItems() end
@@ -269,6 +270,28 @@ function M:OnSettingChanged(path)
     else
         self:RefreshButtons()
     end
+end
+
+-- A new anchor keeps the bar where it is on screen: its offsets are re-derived from where it is now (so an
+-- anchor change on several selected bars at once moves none of them).
+function M.AnchorOffsets(point, l, r, t, b, sw, sh)
+    local function axis(lo, hi, size, wantLo, wantHi)
+        if wantLo then return lo, 0 elseif wantHi then return hi, size end
+        return (lo + hi) / 2, size / 2
+    end
+    local px, ux = axis(l, r, sw, point:find("LEFT"), point:find("RIGHT"))
+    local py, uy = axis(b, t, sh, point:find("BOTTOM"), point:find("TOP"))
+    return math.floor(px - ux + 0.5), math.floor(py - uy + 0.5)
+end
+
+function M:KeepSpot(key)
+    local h = self.GetHeader and self.GetHeader(key)
+    local b = self.db.bars[key]
+    if not (h and b and h:IsShown()) then return end
+    local l, r, t, bt = h:GetLeft(), h:GetRight(), h:GetTop(), h:GetBottom()
+    if not (tonumber(l) and tonumber(r) and tonumber(t) and tonumber(bt)) then return end
+    local k = (h:GetEffectiveScale() or 1) / (UIParent:GetEffectiveScale() or 1)
+    b.x, b.y = M.AnchorOffsets(b.point, l * k, r * k, t * k, bt * k, UIParent:GetWidth(), UIParent:GetHeight())
 end
 
 function M:Refresh()

@@ -172,7 +172,8 @@ function P:Create(kind, parent, m, page)
             end
             return
         end
-        if draw then ns.SafeCall(draw, self, page.scope and page.scope.unit) end
+        -- third argument: every element being edited (multi-select / Edit all), the picked one first
+        if draw then ns.SafeCall(draw, self, page.scope and page.scope.unit, page.Targets and page:Targets() or nil) end
         if not measureQueued and self:IsVisible() then
             measureQueued = true
             C_Timer.After(0, function() ns.SafeCall(measure) end)

@@ -1736,10 +1736,12 @@ try("multi-select editing", function()
                 local xrow
                 for _, r in ipairs(page.rows) do if r.item.key == root .. ".@.x" then xrow = r end end
                 if xrow and m.db[root][b].x ~= nil then
-                    local bx = m.db[root][b].x
+                    local ax, bx = m.db[root][a].x, m.db[root][b].x
                     C.SetRowValue(page, m, xrow.item, 7)
-                    assert(m.db[root][a].x == 7 and m.db[root][b].x == bx, key .. ": a position was copied to every element")
-                    m.db[root][a].x = old.x or m.defaults[root][a].x
+                    -- relative offsets (action bars) move the group by the same amount; others stay per element
+                    local want = xrow.item.relative and bx + (7 - ax) or bx
+                    assert(m.db[root][a].x == 7 and m.db[root][b].x == want, key .. ": a position was copied to every element")
+                    m.db[root][a].x, m.db[root][b].x = ax, bx
                 end
                 sc.mode, sc.multi = "this", {}
                 ns.DB:Set(m, root .. "." .. a .. "." .. leaf, old[1])
@@ -3012,6 +3014,45 @@ try("settings quality pass", function()
     local mv = ns.modules.Movers
     local snap = mv.db.snap
     ns.DB:Set(mv, "snap", not snap); ns.DB:Set(mv, "snap", snap)
+end)
+
+try("action bar multi-select everywhere", function()
+    local C, m = ns.Config, ns.modules.ActionBars
+    local page = C:Show("ActionBars")
+    local sc = page.scope
+    assert(sc, "action bars have a scope")
+    -- every bar row (a "@" key) takes part in multi-select: none is single any more
+    for _, r in ipairs(page.rows) do
+        local k = r.item.key
+        if k and k:find("@", 1, true) then assert(not r.item.single, "single bar row " .. k) end
+    end
+    -- anchor change keeps the spot: offsets re-derived from the bar's rectangle
+    local x, y = m.AnchorOffsets("TOPLEFT", 100, 300, 500, 460, 1000, 600)
+    assert(x == 100 and y == -100, "TOPLEFT offsets " .. x .. "," .. y)
+    x, y = m.AnchorOffsets("CENTER", 100, 300, 500, 460, 1000, 600)
+    assert(x == -300 and y == 180, "CENTER offsets")
+    -- layout-mode drag of one selected bar moves the others by the same amount
+    sc.unit, sc.mode, sc.multi = "bar2", "multi", { bar3 = true }
+    local b2, b3, b4 = m.db.bars.bar2, m.db.bars.bar3, m.db.bars.bar4
+    local o = { b2.x, b2.y, b3.x, b3.y, b4.x, b4.y }
+    local t = m.EditTargets()
+    assert(t and #t == 2, "edit targets from the settings selection")
+    m.MoveWithSelection("bar2", 10, -5)
+    assert(b3.x == o[3] + 10 and b3.y == o[4] - 5 and b4.x == o[5], "selection follows the dragged bar")
+    m.MoveWithSelection("bar4", 10, 0)
+    assert(b3.x == o[3] + 10, "a bar outside the selection drags alone")
+    b3.x, b3.y = o[3], o[4]
+    -- colour groups report MIXED across the selection
+    for _, r in ipairs(page.rows) do
+        if r.item.type == "colors" and r.item.keys and r.item.keys[1]:find("@", 1, true) then
+            assert(C.IsMixed(page, m, r.item) ~= nil, "colour mixed check runs")
+        end
+    end
+    -- the preview draws every selected bar
+    local stage = ns.Previews:Create("actionbar", CreateFrame("Frame", nil, env.UIParent), m, page)
+    stage:Redraw()
+    sc.mode, sc.multi = "this", {}
+    C:Show("home")
 end)
 
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)

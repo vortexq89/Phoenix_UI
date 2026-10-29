@@ -51,8 +51,14 @@ local function setValue(page, m, item, value, key)
     elseif page.scope and key:find("@", 1, true) then
         -- item.single: a per-element value (a position) that must never be copied onto the other selected elements
         local targets = item.single and { page.scope.unit } or page:Targets()
+        -- item.relative: an offset (a bar's X / Y): the picked element takes the value, the others move by the same
+        -- amount, so a selected group keeps its shape instead of stacking on one spot
+        local delta = item.relative and tonumber(value) and (value - (tonumber(U.GetPath(m.db, (key:gsub("@", page.scope.unit)))) or value))
         for _, unit in ipairs(targets) do
-            ns.DB:Set(m, (key:gsub("@", unit)), type(value) == "table" and U.DeepCopy(value) or value)
+            local path = key:gsub("@", unit)
+            local v = value
+            if delta and unit ~= page.scope.unit then v = (tonumber(U.GetPath(m.db, path)) or 0) + delta end
+            ns.DB:Set(m, path, type(v) == "table" and U.DeepCopy(v) or v)
         end
         if #targets > 1 and page.scope.bar then page.scope.bar.units:Flash(targets) end
     else
@@ -69,10 +75,21 @@ end
 -- Do the elements being edited (Targets) hold different values for this row? Rows with their own getter,
 -- single rows and rows outside the scope are never mixed.
 function Config.IsMixed(page, m, item)
-    if not (page.scope and page.Targets and item.key and not item.get and not item.single) then return false end
-    if not item.key:find("@", 1, true) or item.type == "button" or item.type == "colors" then return false end
+    if not (page.scope and page.Targets and not item.get and not item.single and not item.relative) then return false end
     local targets = page:Targets()
-    if #targets < 2 then return false end
+    if #targets < 2 or item.type == "button" then return false end
+    if item.type == "colors" then -- a colour group is mixed when any of its keys differs
+        for _, key in ipairs(item.keys or {}) do
+            if key:find("@", 1, true) then
+                local first = U.GetPath(m.db, (key:gsub("@", targets[1])))
+                for i = 2, #targets do
+                    if not U.Equal(U.GetPath(m.db, (key:gsub("@", targets[i]))), first) then return true end
+                end
+            end
+        end
+        return false
+    end
+    if not (item.key and item.key:find("@", 1, true)) then return false end
     local first = U.GetPath(m.db, (item.key:gsub("@", targets[1])))
     for i = 2, #targets do
         if not U.Equal(U.GetPath(m.db, (item.key:gsub("@", targets[i]))), first) then return true end
@@ -327,7 +344,7 @@ local function rowKeys(item)
 end
 
 local function isScoped(page, item)
-    if not page.scope or item.get or item.set or item.single then return false end
+    if not page.scope or item.get or item.set or item.single or item.relative then return false end
     for _, key in ipairs(rowKeys(item)) do if key:find("@", 1, true) then return true end end
     return false
 end
