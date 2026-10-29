@@ -3521,7 +3521,7 @@ ns.RegisterLocale("enUS", {
     GEN_OUTLINE = "Global outline",
     GEN_OUTLINE_DESC = "Outline for Phoenix text that has no outline of its own. Rows that set an outline keep theirs.",
     GEN_BLIZZARD_FONTS = "Use theme fonts on Blizzard UI",
-    GEN_BLIZZARD_FONTS_DESC = "Gives the game's own text (windows, tooltips, chat, names above heads) the theme fonts, keeping their sizes. Needs a reload.",
+    GEN_BLIZZARD_FONTS_DESC = "Gives the game's own text (windows, tooltips, names above heads) the Phoenix font, keeping its sizes. Applies at once; names above heads change after a relog.",
     GEN_SOUND = "Sound",
     GEN_CHANNEL = "Sound channel",
     GEN_CHANNEL_DESC = "Where Phoenix alerts play. Master is heard even with game sound effects off.",

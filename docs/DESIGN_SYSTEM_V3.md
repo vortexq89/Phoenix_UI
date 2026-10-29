@@ -40,17 +40,39 @@ behind all of this, not each screen on its own.
 
 ## 3. Type scale
 
-Family: the theme's UI family (default Inter), with the number family for values (tabular figures).
+**One family for all Phoenix text: Inter** (SIL OFL 1.1, `Media/Fonts/Inter-*.ttf`, licence in
+`Media/Fonts/Licenses`). Only the brand wordmark stays Cinzel.
 
-| token        | size | weight   | line | use                                        |
-|--------------|------|----------|------|--------------------------------------------|
-| `display`    | 22   | Bold     | 28   | page title                                 |
-| `title`      | 16   | SemiBold | 22   | card title, window title                   |
-| `body`       | 13   | Regular  | 18   | labels, row text                           |
-| `body.strong`| 13   | SemiBold | 18   | selected nav, row title                    |
-| `small`      | 11   | Medium   | 14   | descriptions, hints, captions              |
-| `micro`      | 10   | SemiBold | 12   | badges (uppercase, +4% tracking)           |
-| `number`     | 13   | Medium   | 18   | values, tabular                            |
+Chosen by rendering six OFL candidates at true pixel sizes 10–14 on the Phoenix surface
+(`docs/screenshots/v3/font_compare.png`):
+
+| font          | x-height / cap | width of a 12 px sample | at 10–12 px                                              |
+|---------------|----------------|-------------------------|----------------------------------------------------------|
+| **Inter**     | 0.75           | 234 px                  | clearest: open counters, distinct `I l 1`, `rn` ≠ `m`    |
+| Noto Sans     | 0.75           | 230 px                  | very close second; slightly softer stems at 10 px        |
+| Source Sans 3 | 0.74           | 203 px                  | the narrowest (fits the most text), but cramped at 10–11 |
+| Roboto (old)  | 0.75           | 216 px                  | good, but `I/l` look alike; it was mixed with Inter      |
+| Fira Sans     | 0.77           | 222 px                  | readable; its humanist shapes clash with the geometric UI |
+| Lato          | 0.71           | 213 px                  | the smallest x-height; blurs at 10 px                    |
+
+Roles (`Core/Theme.lua` `fontRoles`, at 1:1 pixels at pixel-perfect scale; render
+`docs/screenshots/v3/type_scale.png`). No role goes below 12:
+
+| role      | face           | size | use                                         |
+|-----------|----------------|------|---------------------------------------------|
+| `title`   | Inter Bold     | 20   | page / window title                         |
+| `heading` | Inter Bold     | 13   | card headers (uppercase)                    |
+| `body`    | Inter Medium   | 14   | labels, row text                            |
+| `desc`    | Inter Regular  | 12   | descriptions, hints                         |
+| `number`  | Inter SemiBold | 13   | values, timers                              |
+| `small`   | Inter Medium   | 12   | badges, captions, chips                     |
+| `unit`    | Inter SemiBold | 12   | unit frame names and health text            |
+| `combat`  | Inter Bold     | 16   | in-world numbers (outlined); combat text 20 |
+
+Skins: Blizzard's font objects (GameFont*, SystemFont*, tooltip, quest and GameNN fonts used by the skinned windows)
+take the same Inter faces, keeping their sizes and outlines (General › Text › "Use theme fonts on Blizzard UI",
+**on by default**, live; names above heads change after a relog). CJK clients keep the game font; ruRU uses Inter,
+which includes Cyrillic. The user's own UI font and unit font choices still override the roles.
 
 Colour roles: `text.primary` (92% white), `text.secondary` (68%), `text.muted` (48%), `accent.text`.
 Minimum contrast: 4.5:1 for body text on its surface, and 3:1 for icons and borders that carry meaning.
@@ -193,7 +215,23 @@ a fixed right column. The header has the page title (`display`) and a descriptio
 toggle on the right. Tabs sit below the header and never truncate. The footer holds save status, the scale
 slider and Reload (only when one is needed).
 
-## 12. Delivery plan (after approval)
+## 12. Feature catalogue
+
+`docs/design_v3/FEATURES.md` has one entry per feature: all 30 modules, each section (card) inside them, and the
+8 built-in pages, 1,488 options in all. Each entry gives the feature's purpose, what it shows, its place in the
+settings tree, the components it uses (per section), how it fits with its neighbours, and whether it gets a live
+preview, with the reason under §6. The catalogue is regenerated from the live option schemas
+(`PUI_DUMP=… lua5.1 tools/smoke/harness.lua . retail`, then `tools/design/features.py`), so it can't drift from the
+code.
+
+Preview verdicts under §6 (today every module has one):
+- **Keep:** Action Bars, Cooldown Manager, Cooldown Text, Unit Frames, Group Frames, Cast Bars, Nameplates, Auras,
+  Combat Text, Spell History, Tooltip, Item Level, Mythic+, Encounters, General.
+- **"Show in world" instead:** Damage Meter, Bags, PvP, AFK.
+- **Drop:** Chat, Minimap, Data Texts, Skins (an "Open" button per window instead), Quests, Group Finder, Sim,
+  Layout mode, Quality of Life, Automation, Bugs.
+
+## 13. Delivery plan (after approval)
 
 1. Tokens + type scale + spacing in `Core/Theme.lua`; component states in `UI/Widgets` (1 commit, live).
 2. Settings window v3 layout + preview rule (§6, §11).
@@ -204,7 +242,7 @@ slider and Reload (only when one is needed).
 5. `Movers.Window` (move any panel).
 Each step: harness tests, guard, push, install and in-game screenshots for review.
 
-## Already fixed (t146 quick fixes, 9c4810a)
+## Already done (t146 quick fixes and t147 font, before approval)
 
 - (a) Nav rail, tabs and icon tiles: the selected `accent.soft` was forced to alpha 1 and became a solid
   orange block over the orange icon. Now a 10% tint; a lint test blocks forced alpha on soft tokens.
@@ -215,3 +253,6 @@ Each step: harness tests, guard, push, install and in-game screenshots for revie
   128-RedButton centre showed. All three pieces are hidden now; test added.
 - (d) Character window: a player model between the slot columns, readable empty slots (filled slot plus
   outline art), no icon left over from another tab on stat rows, and wider tabs (no "Reputati…").
+- Font: Inter for every role (it replaces the Roboto / Roboto Condensed mix), Inter Bold for combat text,
+  Inter as the Cyrillic fallback, and Blizzard font objects in Inter by default (extended to the faces the
+  skinned windows use).

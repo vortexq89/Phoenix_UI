@@ -109,7 +109,7 @@ ns:RegisterOptions("General", {
       percent = true, keywords = "size accessibility" },
     { type = "select", key = "theme.outline", label = "GEN_OUTLINE", desc = "GEN_OUTLINE_DESC", values = ns.Opt.OUTLINE,
       keywords = "font outline thick monochrome global" },
-    { type = "toggle", key = "blizzardFonts", label = "GEN_BLIZZARD_FONTS", desc = "GEN_BLIZZARD_FONTS_DESC", reload = true,
+    { type = "toggle", key = "blizzardFonts", label = "GEN_BLIZZARD_FONTS", desc = "GEN_BLIZZARD_FONTS_DESC",
       keywords = "replace blizzard game fonts names world" },
     { type = "tab", label = "UF_COLORS" },
     { type = "header", label = "GEN_CLASS_COLORS", icon = "palette", desc = "GEN_CLASS_COLORS_DESC" },

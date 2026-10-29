@@ -7569,6 +7569,53 @@ try("game menu hides the three-slice art", function()
     end
 end)
 
+-- PUI_DUMP=<file>: the feature catalogue for docs/DESIGN_SYSTEM_V3 (modules, settings tree, every row, previews)
+if os.getenv("PUI_DUMP") then try("dump feature catalogue", function()
+    local L = ns.L
+    local function str(v) return type(v) == "string" and (L[v] ~= nil and tostring(L[v]) or v) or "" end
+    local function q(v) return '"' .. tostring(v):gsub('\\', '\\\\'):gsub('"', '\\"'):gsub("\n", "\\n"):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "") .. '"' end
+    local out = {}
+    local Config = ns.Config
+    local where = {}
+    for _, g in ipairs(Config.GROUPS) do
+        local sub
+        for _, e in ipairs(g.entries) do
+            if type(e) == "table" then sub = str(e.heading) else where[e] = str(g.label) .. (sub and (" › " .. sub) or "") end
+        end
+    end
+    local previews = {}
+    for kind, def in pairs(ns.Previews.kinds) do
+        local k = def.module or kind
+        previews[k] = previews[k] or {}
+        table.insert(previews[k], kind)
+    end
+    local keys = {}
+    for k in pairs(ns.options) do keys[#keys + 1] = k end
+    for k in pairs(ns.modules) do if not ns.options[k] then keys[#keys + 1] = k end end
+    table.sort(keys)
+    for _, k in ipairs(keys) do
+        local m = ns.modules[k]
+        local rows = {}
+        local schema = ns.options[k]
+        if type(schema) == "function" then local ok, r = pcall(schema, m); schema = ok and r or nil end
+        for _, r in ipairs(type(schema) == "table" and schema or {}) do
+            if type(r) == "table" and r.type then
+                local label = type(r.label) == "function" and "" or str(r.label)
+                local desc = type(r.desc) == "function" and "" or str(r.desc)
+                rows[#rows + 1] = "{" .. table.concat({ '"t":' .. q(r.type), '"l":' .. q(label), '"d":' .. q(desc),
+                    '"k":' .. q(type(r.key) == "string" and r.key or "") }, ",") .. "}"
+            end
+        end
+        local pv = previews[k] and table.concat(previews[k], ",") or ""
+        out[#out + 1] = "{" .. table.concat({ '"key":' .. q(k), '"label":' .. q(m and str(m.label) or ""),
+            '"desc":' .. q(m and str(m.desc) or ""), '"cat":' .. q(m and m.category or "page"),
+            '"where":' .. q(where[k] or ""), '"preview":' .. q(pv), '"rows":[' .. table.concat(rows, ",") .. "]" }, ",") .. "}"
+    end
+    local f = assert(io.open(os.getenv("PUI_DUMP"), "w"))
+    f:write("[" .. table.concat(out, ",\n") .. "]\n"); f:close()
+    print("  dumped " .. #out .. " features")
+end) end
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

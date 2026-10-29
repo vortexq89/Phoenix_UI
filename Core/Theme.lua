@@ -42,18 +42,19 @@ T.presets = {
 }
 
 -- No role below 12: smaller sizes turn into blurry, blocky glyphs once the UI scale goes under 0.7.
--- The options use two families (Inter for titles and section headings, Roboto for rows and hints) in four
--- clear steps: title 20 > heading 13 caps > body 14 > desc 12. Condensed faces are for in-world numbers.
+-- ONE family for all Phoenix text (DESIGN_SYSTEM_V3 §3): Inter (SIL OFL), chosen against Noto Sans, Source Sans 3,
+-- Roboto, Fira Sans and Lato at 10-14 px for its tall x-height and distinct Il1 / rn-m shapes. Weights carry the
+-- hierarchy: title 20 Bold > heading 13 Bold > body 14 Medium > desc 12 Regular. Only the brand wordmark is Cinzel.
 T.fontRoles = {
-    brand   = { font = "CinzelBold",        size = 20, flags = "" },
-    title   = { font = "InterBold",         size = 20, flags = "" },
-    heading = { font = "InterBold",         size = 13, flags = "" },
-    body    = { font = "RobotoMedium",      size = 14, flags = "" },
-    desc    = { font = "Roboto",            size = 12, flags = "" },
-    number  = { font = "CondensedSemiBold", size = 13, flags = "" },
-    small   = { font = "CondensedMedium",   size = 12, flags = "" },
-    unit    = { font = "CondensedSemiBold", size = 12, flags = "" },
-    combat  = { font = "CondensedBold",     size = 16, flags = "OUTLINE" },
+    brand   = { font = "CinzelBold",    size = 20, flags = "" },
+    title   = { font = "InterBold",     size = 20, flags = "" },
+    heading = { font = "InterBold",     size = 13, flags = "" },
+    body    = { font = "InterMedium",   size = 14, flags = "" },
+    desc    = { font = "InterRegular",  size = 12, flags = "" },
+    number  = { font = "InterSemiBold", size = 13, flags = "" },
+    small   = { font = "InterMedium",   size = 12, flags = "" },
+    unit    = { font = "InterSemiBold", size = 12, flags = "" },
+    combat  = { font = "InterBold",     size = 16, flags = "OUTLINE" },
 }
 
 local tokens = {}

@@ -24,7 +24,7 @@ local M = ns:NewModule("General", {
             surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = CLASS_DEFAULTS,
             powerColors = POWER_DEFAULTS, dispelColors = DISPEL_DEFAULTS,
         },
-        blizzardFonts = false, mute = "",
+        blizzardFonts = true, mute = "",
         -- Phoenix's UI scale (UIParent), below the game's 64 % floor too. Off: the game's own setting rules.
         scale = { enabled = false, auto = true, value = 0.71 },
     },
@@ -37,6 +37,11 @@ M.FONT_OBJECTS = {
     "GameFontHighlightMedium", "GameTooltipHeaderText", "GameTooltipText", "GameTooltipTextSmall",
     "SystemFont_Shadow_Small", "SystemFont_Shadow_Med1", "SystemFont_Shadow_Med2", "SystemFont_Shadow_Large",
     "SystemFont_Med1", "SystemFont_Med2", "SystemFont_Small", "QuestFont", "NumberFontNormal",
+    -- the faces the skinned windows use (Collections, Achievements, Group Finder, Character, Game Menu)
+    "GameFontNormalLeft", "GameFontHighlightLeft", "GameFontHighlightSmallLeft", "GameFontNormalSmall2",
+    "GameFontHighlightSmall2", "GameFontNormalHuge", "GameFontNormalMed1", "GameFontNormalMed2", "GameFontHighlightMed2",
+    "GameFontNormalLarge2", "GameFontDisableLarge", "SystemFont_Large", "SystemFont_Huge1", "SystemFont_Shadow_Med3",
+    "QuestFont_Large", "QuestFont_Huge", "Game12Font", "Game13Font", "Game15Font", "Game18Font", "Game20Font",
 }
 
 local originals = {}

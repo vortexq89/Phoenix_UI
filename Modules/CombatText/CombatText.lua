@@ -18,7 +18,7 @@ local M = ns:NewModule("CombatText", {
             crit = "sticky", critScale = 1.5, critArea = "same", critSound = "",
             castIcons = true,
             -- the MSBT-style look: a bold condensed face, thick outline and a drop shadow
-            font = Style.Text(20, { font = "CondensedBold", outline = "THICK", shadow = true }),
+            font = Style.Text(20, { font = "InterBold", outline = "THICK", shadow = true }),
             areas = {
                 incoming = { show = true, x = -320, y = 60, width = 260, height = 240, dir = "UP", anim = "parabola", align = "RIGHT",
                     duration = 2.4, scale = 1, iconSide = "LEFT", iconSize = 22, useColor = false, color = { r = 1, g = 0.3, b = 0.25 } },

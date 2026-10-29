@@ -98,7 +98,7 @@ function M:Font(key, latinOnly)
     if self.needsFallbackFont then return STANDARD_TEXT_FONT end
     local m = byKey[key]
     if m then
-        if self.needsCyrillic and not m.cyrillic and not latinOnly then return byKey.Roboto.path end
+        if self.needsCyrillic and not m.cyrillic and not latinOnly then return byKey.InterRegular.path end
         return m.path
     end
     return LSM:Fetch("font", key, true) or STANDARD_TEXT_FONT
