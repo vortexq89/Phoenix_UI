@@ -17,6 +17,7 @@ local function captureStatus()
 end
 
 ns:RegisterOptions("Bugs", {
+    { type = "preview", kind = "bugs" },
     { type = "header", label = "BUGS_CAPTURE", icon = "bugs" },
     { type = "description", text = captureStatus },
     { type = "select", key = "scope", label = "BUGS_SCOPE", desc = "BUGS_SCOPE_DESC", keywords = "filter addons own only", values = {

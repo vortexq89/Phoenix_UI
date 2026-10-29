@@ -35,6 +35,7 @@ Previews\Encounters.lua
 Previews\Sim.lua
 Previews\Quests.lua
 Previews\GroupFinder.lua
+Previews\Tools.lua
 Config\Window.lua
 Config\Groups.lua
 Config\Renderer.lua

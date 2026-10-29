@@ -1,6 +1,7 @@
 local _, ns = ...
 
 ns:RegisterOptions("Automation", {
+    { type = "preview", kind = "automation" },
     { type = "header", label = "AUTO_VENDOR", icon = "gold" },
     { type = "select", key = "repair", label = "AUTO_REPAIR", desc = "AUTO_REPAIR_DESC", values = {
         { value = "off", label = "OFF" },
