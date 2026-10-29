@@ -23,7 +23,7 @@ local M = ns:NewModule("Minimap", {
         calendar = true, tracking = true, mail = true, craftingOrder = true, difficulty = true, expansion = true,
         compartment = true,
         bin = true, binColumns = 4, binSize = 28, binIgnore = "", binMouseover = false,
-        pingNames = true, worldMapCoords = true, worldMapScale = 1,
+        pingNames = true, worldMapCoords = true, worldMapScale = 1, zoneLevels = true,
     },
 })
 
@@ -435,7 +435,7 @@ end
 local function onAddOn(_, name)
     if name == "Blizzard_HybridMinimap" then hybridMask()
     elseif name == "Blizzard_TimeManager" then styleClock()
-    elseif name == "Blizzard_WorldMap" then setupMapCoords(); hookMapScale(); applyMapScale() end
+    elseif name == "Blizzard_WorldMap" then setupMapCoords(); hookMapScale(); applyMapScale(); M:SetupZoneLevels() end
     if M.db.bin then scanSoon() end
 end
 
@@ -468,6 +468,8 @@ function M:Refresh()
     setupMapCoords()
     hookMapScale()
     applyMapScale()
+    self:SetupZoneLevels() -- ZoneLevels.lua
+    self:DrawZoneLevels()
     self:ApplyElements()
     scheduleZoomOut()
     if bin then layoutBin() end

@@ -3713,6 +3713,8 @@ local T = {
     -- S17: world map scale
     MINIMAP_MAP_SCALE = "世界地圖縮放",
     MINIMAP_MAP_SCALE_DESC = "視窗模式世界地圖的大小（全螢幕地圖保持遊戲預設）。在非戰鬥狀態下套用。",
+    MINIMAP_ZONE_LEVELS = "世界地圖上的區域等級",
+    MINIMAP_ZONE_LEVELS_DESC = "在大陸地圖上，每個區域顯示名稱和等級範圍，範圍依其對你的難度著色。等級來自遊戲。",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "視窗內的背包列",
     BAGS_BAG_BAR_DESC = "在標題旁顯示已裝備的背包及遊戲提示；懸停其中一個會使其他背包的格子變暗。",

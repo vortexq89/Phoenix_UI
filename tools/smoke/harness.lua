@@ -3574,6 +3574,39 @@ try("loot feed: localized loot lines, stacking, money, currencies, expiry", func
     for _, k in ipairs(names) do rawset(env, k, saved[k]) end
 end)
 
+try("zone levels on continent maps", function()
+    local MM = ns.modules.Minimap
+    assert(MM.ZoneLevelText(10, 20) == "10-20" and MM.ZoneLevelText(60, 60) == "60" and MM.ZoneLevelText(0, 0) == nil, "range text")
+    local names = { "C_Map", "WorldMapFrame", "GetQuestDifficultyColor" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local continent = env.Enum.UIMapType.Continent
+    env.C_Map = setmetatable({
+        GetMapInfo = function(id) return { mapType = id == 1415 and continent or "zone" } end,
+        GetMapChildrenInfo = function() return { { mapID = 1429, name = "Elwynn Forest" }, { mapID = 1, name = "No levels" } } end,
+        GetMapLevels = function(id) if id == 1429 then return 1, 10 end return 0, 0 end,
+        GetMapRectOnMap = function() return 0.4, 0.5, 0.6, 0.8 end,
+    }, { __index = saved.C_Map })
+    local list = MM:ZoneLevelList(1415)
+    assert(#list == 1 and list[1].text == "1-10" and math.abs(list[1].x - 0.45) < 1e-6 and math.abs(list[1].y - 0.7) < 1e-6,
+        "zones with levels at their middle")
+    assert(#MM:ZoneLevelList(1429) == 0, "only on continent maps")
+    local canvas = CreateFrame("Frame", nil, env.UIParent)
+    canvas:SetSize(1000, 700)
+    env.WorldMapFrame = setmetatable({ GetCanvas = function() return canvas end, IsShown = function() return true end,
+        GetCanvasScale = function() return 2 end, GetMapID = function() return 1415 end }, { __index = canvas })
+    env.GetQuestDifficultyColor = function() return { r = 0.25, g = 0.75, b = 0.25 } end
+    MM.db.zoneLevels = true
+    MM:DrawZoneLevels()
+    local l = MM:ZoneLevelLabels()[1]
+    assert(l and l:IsShown() and not MM:ZoneLevelLabels()[2], "one label per zone with levels")
+    MM.db.zoneLevels = false
+    MM:DrawZoneLevels()
+    assert(not l:IsShown(), "switch off live")
+    MM.db.zoneLevels = true
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
+
 try("audit: live switches and idle timers", function()
     local S, TT, DT = ns.modules.Skins, ns.modules.Tooltip, ns.modules.DataTexts
     -- title / close / tabs restyle every dressed window live

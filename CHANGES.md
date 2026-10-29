@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Zone levels on the world map** (both clients, on by default): on a continent map each zone shows its name and
+  level range at its middle, the range coloured by how hard it is for you; the levels come from the game, the labels
+  stay a fixed size when you zoom. Minimap > Zone levels on the world map; applies live.
 - **Loot feed** (both clients, off by default): a short-lived stack of Phoenix item cards for what you gain:
   looted, received and crafted items (real icon in its quality frame, count, item level and slot, how many you carry),
   money (outside vendors, mail, trade and the auction house) and currencies; the same thing again adds to its card.

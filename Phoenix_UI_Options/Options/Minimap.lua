@@ -97,4 +97,6 @@ ns:RegisterOptions("Minimap", {
       feature = "worldMapCoords", keywords = "world map cursor coordinates" },
     { type = "range", key = "worldMapScale", label = "MINIMAP_MAP_SCALE", desc = "MINIMAP_MAP_SCALE_DESC", min = 0.5, max = 1.5,
       step = 0.05, percent = true, feature = "worldMapCoords", keywords = "world map scale size smaller bigger" },
+    { type = "toggle", key = "zoneLevels", label = "MINIMAP_ZONE_LEVELS", desc = "MINIMAP_ZONE_LEVELS_DESC",
+      keywords = "zone level range continent world map leveling" },
 })

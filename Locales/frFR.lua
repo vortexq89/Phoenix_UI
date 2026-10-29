@@ -3713,6 +3713,8 @@ local T = {
     -- S17: world map scale
     MINIMAP_MAP_SCALE = "Échelle de la carte du monde",
     MINIMAP_MAP_SCALE_DESC = "Taille de la carte du monde fenêtrée (la carte plein écran garde celle du jeu). Appliquée hors combat.",
+    MINIMAP_ZONE_LEVELS = "Niveaux des zones sur la carte du monde",
+    MINIMAP_ZONE_LEVELS_DESC = "Sur une carte de continent, chaque zone affiche son nom et sa tranche de niveaux, colorée selon sa difficulté pour vous. Les niveaux viennent du jeu.",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "Barre de sacs dans la fenêtre",
     BAGS_BAG_BAR_DESC = "Affiche vos sacs équipés à côté du titre avec l'infobulle du jeu ; en survoler un assombrit les emplacements des autres.",

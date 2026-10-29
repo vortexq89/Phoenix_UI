@@ -3739,6 +3739,8 @@ ns.RegisterLocale("enUS", {
     -- S17: world map scale
     MINIMAP_MAP_SCALE = "World map scale",
     MINIMAP_MAP_SCALE_DESC = "The size of the windowed world map (the full-screen map keeps the game's). Applied out of combat.",
+    MINIMAP_ZONE_LEVELS = "Zone levels on the world map",
+    MINIMAP_ZONE_LEVELS_DESC = "On a continent map each zone shows its name and level range, the range coloured by how hard it is for you. The levels come from the game.",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "Bag bar in the window",
     BAGS_BAG_BAR_DESC = "Shows your equipped bags beside the title with the game's tooltip; hovering one dims the slots of the others.",

@@ -3713,6 +3713,8 @@ local T = {
     -- S17: world map scale
     MINIMAP_MAP_SCALE = "Weltkartenskalierung",
     MINIMAP_MAP_SCALE_DESC = "Größe der Weltkarte im Fenstermodus (die Vollbildkarte bleibt wie im Spiel). Wird außerhalb des Kampfes angewendet.",
+    MINIMAP_ZONE_LEVELS = "Gebietsstufen auf der Weltkarte",
+    MINIMAP_ZONE_LEVELS_DESC = "Auf einer Kontinentkarte zeigt jedes Gebiet Name und Stufenbereich, der Bereich gefärbt nach der Schwierigkeit für dich. Die Stufen kommen vom Spiel.",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "Taschenleiste im Fenster",
     BAGS_BAG_BAR_DESC = "Zeigt deine angelegten Taschen neben dem Titel mit dem Tooltip des Spiels; beim Überfahren werden die Plätze der anderen abgedunkelt.",
