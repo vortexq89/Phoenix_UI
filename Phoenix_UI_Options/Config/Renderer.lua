@@ -66,7 +66,13 @@ local function setValue(page, m, item, value, key)
     end
     if item.reload then
         m.needsReload = true
+        m.reloadKeys = m.reloadKeys or {}
+        m.reloadKeys[item] = true
         Config:SetStatus(L.STATUS_RELOAD, "state.warning")
+        -- the row's badge turns into a "Reload needed" button: one click reloads
+        for _, r in ipairs(page.rows or {}) do
+            if r.item == item and r.ArmReload then r:ArmReload() end
+        end
     elseif item.combat and InCombatLockdown() then
         Config:SetStatus(L.STATUS_AFTER_COMBAT, "state.warning")
     end
@@ -433,6 +439,17 @@ function buildRow(card, page, m, item)
     -- only "needs a reload" earns a badge; "out of combat" is in the tooltip (a badge on half the rows was noise)
     if item.reload then
         row.badge = W:Badge(row, L.BADGE_RELOAD, "state.warning", "reload")
+        function row.ArmReload(self)
+            local b = self.badge
+            b:Set(L.RELOAD_NEEDED, "accent.primary")
+            b:EnableMouse(true)
+            b:SetScript("OnMouseUp", function() C_UI.Reload() end)
+            b:SetScript("OnEnter", function(me) W.ShowTooltip(me, L.RELOAD_NEEDED, L.RELOAD_NEEDED_TIP) end)
+            b:SetScript("OnLeave", function() W.HideTooltip() end)
+            self.reloadArmed = true
+            if self.Arrange and self.lastArrange then self:Arrange(unpack(self.lastArrange)) end
+        end
+        if m.needsReload and m.reloadKeys and m.reloadKeys[item] then row:ArmReload() end
     end
     attachSide(row, card, page, m, item)
     Skin:Register(row, function(self)
@@ -527,6 +544,7 @@ function buildRow(card, page, m, item)
     end
 
     function row:Arrange(mode, width)
+        self.lastArrange = { mode, width }
         self.mode, self.textW = mode, nil
         local c = self.control
         local icons = sideIcons(self)
