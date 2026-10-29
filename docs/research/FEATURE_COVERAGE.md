@@ -12,9 +12,9 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 106 |
+| Phoenix has | 109 |
 | partial | 7 |
-| missing | 4 |
+| missing | 1 |
 | duplicate (skip) | 1 |
 | out of scope | 10 |
 
@@ -96,7 +96,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_GroupFinder | Search tweaks and applications bar | Phoenix has | Phoenix GroupFinder is complete. |
 | EllesmereUI_Minimap | Button flyout and indicators | Phoenix has | `Modules/Minimap/Minimap.lua` (button bin, mail, difficulty, crafting order icons). |
 | EllesmereUI_Minimap | Calendar tooltip with lockouts | Phoenix has | GroupFinder lockouts list |
-| EllesmereUI_MythicTimer | Kick tracker | missing | No party cooldown or interrupt tracker on this branch. |
+| EllesmereUI_MythicTimer | Kick tracker | Phoenix has | Built 2026-10-29: interrupt tracker, `Modules/MythicPlus/Kicks.lua` (Mythic+ > Interrupt tracker). |
 | EllesmereUI_MythicTimer | Targeted spell bars | Phoenix has | Cast Bars > Target > Casts on me. |
 | EllesmereUI_MythicTimer | Run summary and history | Phoenix has | Phoenix `ascent.summary`, `ascent.records`. |
 | EllesmereUI_Nameplates | Engine aura containers on plates | Phoenix has | Phoenix `np.auras`, aura lanes. |
@@ -114,7 +114,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_QuestTracker | Quest item hotkey | Phoenix has | Action Bars > Quest item key. |
 | EllesmereUI_Quickdraw | Hold-to-open secure palette | Phoenix has | Action Bars > Quick ring (secure, up to 12 entries). |
 | EllesmereUI_RaidFrames | Buff and debuff managers | Phoenix has | Phoenix `rf.buffs`, `rf.debuffs`, `rf.corners`, `rf.privateAuras`, `rf.dispel*`, Indicators.lua. |
-| EllesmereUI_RaidFrames | Click casting | missing | Not built: `Modules/GroupFrames/Headers.lua` only registers frames in `ClickCastFrames` for Clique. |
+| EllesmereUI_RaidFrames | Click casting | Phoenix has | Built 2026-10-29: `Modules/GroupFrames/ClickCast.lua` (Group Frames > Click casting); stands aside for Clique. Blizzard's own Click Casting also works on Phoenix frames. |
 | EllesmereUI_RaidFrames | Pet frames, party targets, portraits | Phoenix has | Phoenix `rf.pets`, `rf.partyTargets` (Extra.lua). |
 | EllesmereUI_RaidFrames | Forever missing buffs | Phoenix has | Phoenix Reminders (`rm.raid`, `rm.class`). |
 | EllesmereUI_ResourceBars | Thresholds and colour bands per spec | Phoenix has | Phoenix `Phoenix_UI_ResourceBars` (`rb.*`), CooldownManager thresholds. Colour-by-threshold through curves: unverified. `C_CurveUtil` is used in `Phoenix_UI_ResourceBars/ |
@@ -127,7 +127,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_UnitFrames | Forever weapon imbues | Phoenix has | Built 2026-10-29: `Modules/UnitFrames/Imbues.lua` (Unit Frames > Resources > Weapon imbues), both flavours. |
 | EllesmereUI_WindTools | Extra Item Bar (loaded) | Phoenix has | Phoenix auto item bars (PR #66, `ab.ibar1..ibar5`, `ab.ibars`, `Data/ItemBarData.lua`, battle res button, M+ teleports on bar 5). |
 | EllesmereUI_WindTools | Quick Focus (loaded) | Phoenix has | Unit Frames > quickFocus (`Modules/UnitFrames/UnitFrames.lua`). |
-| EllesmereUI_WindTools | Raid Markers bar (loaded) | missing | No raid or world marker bar on this branch. |
+| EllesmereUI_WindTools | Raid Markers bar (loaded) | Phoenix has | This row was wrong: Quality of Life already had a basic bar. Built 2026-10-29 as one bar in Group Frames > Markers (`Modules/GroupFrames/Markers.lua`, world markers, ready check, pull); the Quality bar was merged into it (schema 7 migration). |
 | EllesmereUI_WindTools | Chat Bar (loaded) | Phoenix has | Phoenix `chat.channelBar`, `chat.channelBarSide`. |
 | EllesmereUI_WindTools | Friendly Nameplate Outline (loaded) | Phoenix has | Nameplates > Friendly > name text outline (`np.styles.friendly.name.outline`, OUTLINE by default). |
 | EllesmereUI_WindTools | Disconnected modules (present on disk, not loaded) | Phoenix has | Already Known tint: built (Automation). Mute list: built (General). Smart tab: declined (writing the chat edit box's chat type taints it and breaks secure slash commands typed in chat). Extended merchant pages: declined (re-anchors Blizzard merchant slots). Event tracker: built (Data Texts > Events: the game's event POIs on your continent with time left, today's holidays). |

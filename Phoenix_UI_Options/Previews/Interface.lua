@@ -602,23 +602,12 @@ P:Register("afk", {
 })
 
 ---------------------------------------------------------------- quality of life (S16)
--- Raid markers bar, the combat banner, the flight timer, a loot feed card, the cursor ring and a merchant item tinted
+-- The combat banner, the flight timer, a loot feed card, the cursor ring and a merchant item tinted
 -- as already known.
 P:Register("quality", {
     module = "Quality",
     height = 210,
     build = function(stage, m)
-        local bar = CreateFrame("Frame", nil, stage)
-        bar:SetSize(9 * 23 + 8, 28)
-        bar:SetPoint("TOPLEFT", 16, -14)
-        bar.icons = {}
-        for i = 1, 9 do
-            local t = bar:CreateTexture(nil, "ARTWORK")
-            t:SetSize(18, 18)
-            t:SetPoint("LEFT", 6 + (i - 1) * 23, 0)
-            if i <= 8 then m.SetMarker(t, i) else ns.Icons:Apply(t, "close", 16) end
-        end
-        bar.caption = caption(stage, bar, L.QUALITY_MARKERS)
         local banner = P.Text(stage, "OVERLAY")
         banner:SetPoint("TOPRIGHT", -24, -18)
         local item = P.Icon(stage, 36, 9)
@@ -662,8 +651,6 @@ P:Register("quality", {
             flight:SetAlpha(fd.enabled and 1 or 0.35)
             m.LootFeedPaint(feedCard, m:LootFeedSample()[1], db.feed.enabled and 1 or 0.35)
             feedCard:SetWidth(math.min(db.feed.width, 260))
-            Skin:Panel(bar, "base", { border = "border.subtle" })
-            bar:SetAlpha(db.markers and 1 or 0.35)
             Skin:Text(banner, "title", "state.danger", 18, "OUTLINE")
             banner:SetText(L.QUALITY_COMBAT_IN)
             banner:SetAlpha(db.combatAlert and 1 or 0.3)

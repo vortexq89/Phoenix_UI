@@ -6305,11 +6305,11 @@ try("remaining modules styling and previews (S16)", function()
     sc.enabled, sc.merge = keep[1], keep[2]
     -- Quality: markers, banners and the combat banner
     local Q = ns.modules.Quality
-    Q.db.markers, Q.db.hideZoneText, Q.db.hideBossBanner = true, true, true
-    Q:ApplyMarkers(); Q:ApplyBanners()
+    Q.db.hideZoneText, Q.db.hideBossBanner = true, true
+    Q:ApplyBanners()
     Q.ShowCombatBanner(true); Q.ShowCombatBanner(false)
-    Q.db.markers, Q.db.hideZoneText, Q.db.hideBossBanner = false, false, false
-    Q:ApplyMarkers(); Q:ApplyBanners()
+    Q.db.hideZoneText, Q.db.hideBossBanner = false, false
+    Q:ApplyBanners()
     -- Sim: bank and vault items join the picker with their source
     local S = ns.modules.Sim
     if RETAIL and S:IsEnabled() then
@@ -7333,6 +7333,18 @@ try("quick keybind mode", function()
     ns.TestSlash("actionbars kb")
     M.OpenQuickKeybind = old
     assert(opened, "/pui actionbars kb")
+end)
+
+-- one raid marker bar: the Quality of Life bar merged into Group Frames > Markers, its setting migrates
+try("raid marker bar merge migration", function()
+    local profile = { modules = { Quality = { markers = true }, GroupFrames = {} } }
+    ns.Migrations:UpgradeProfile(profile, 6)
+    assert(profile.modules.Quality.markers == nil, "old Quality marker setting left behind")
+    assert(profile.modules.GroupFrames.markers.show == true, "marker bar setting did not move to Group Frames")
+    local kept = { modules = { Quality = { markers = true }, GroupFrames = { markers = { show = false } } } }
+    ns.Migrations:UpgradeProfile(kept, 6)
+    assert(kept.modules.GroupFrames.markers.show == false, "migration overwrote an existing Group Frames choice")
+    assert(ns.modules.Quality.ApplyMarkers == nil and ns.modules.Quality.defaults.markers == nil, "Quality still owns a bar")
 end)
 
 fire("PLAYER_LOGOUT")

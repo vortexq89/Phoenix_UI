@@ -107,6 +107,8 @@ Mg.MOVES = {
 -- Auras & Cooldowns (Tracker) to Encounters in 2.0 Stage 1, so one module owns every pull and start timer.
 Mg.MODULE_MOVES = {
     { "Tracker", "countdown", "Encounters", "countdown" },
+    -- the Quality of Life marker bar merged into the Group Frames raid marker bar
+    { "Quality", "markers", "GroupFrames", "markers.show" },
 }
 
 -- Settings whose value changed shape: { module, old path, new path, convert(old) -> new }.
@@ -133,7 +135,9 @@ local function moveBetweenModules(modules)
         if type(from) == "table" then value = from[row[2]] end
         if value ~= nil then
             modules[row[3]] = type(modules[row[3]]) == "table" and modules[row[3]] or {}
-            if modules[row[3]][row[4]] == nil then modules[row[3]][row[4]] = value end
+            local to = modules[row[3]]
+            local ok, old = pcall(ns.Util.GetPath, to, row[4])
+            if ok and old == nil then pcall(ns.Util.SetPath, to, row[4], value) end
             from[row[2]] = nil
         end
     end
@@ -172,6 +176,7 @@ Mg.steps = {
     { version = 4, run = moveKeys },   -- Tracker.countdown -> Encounters.countdown (MODULE_MOVES)
     { version = 5, run = moveKeys },   -- Minimap.square -> Minimap.shape (CONVERTS)
     { version = 6, run = moveKeys },   -- Bags.countSize -> Bags.count.size (MOVES)
+    { version = 7, run = moveKeys },   -- Quality.markers -> GroupFrames.markers.show (MODULE_MOVES)
 }
 
 function Mg:Run(sv)

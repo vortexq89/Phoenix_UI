@@ -6,8 +6,7 @@ local Theme, Skin, Media = ns.Theme, ns.Skin, ns.Media
     S16 adds:
     * hide zone text and the boss kill banner: their own events are unregistered (as UIErrorsFrame's error
       event already is in combat) and registered back when the option goes off; nothing else is touched;
-    * a raid markers bar: our own SecureActionButtons running /tm (left click) and /wm (right click), made out
-      of combat, shown in a group through a state driver, placed with Phoenix Edit Mode;
+    * (the raid markers bar moved to Group Frames > Markers, Modules/GroupFrames/Markers.lua; schema 7 migrates it)
     * a cursor ring (our frame following GetCursorPosition), a combat enter / leave banner and sound;
     * an "already known" tint on merchant items (tooltip data line ITEM_SPELL_KNOWN), icon vertex colour only.
     Camera distance and the safe CVars live on the page as CVar rows (account settings). ]]
@@ -16,7 +15,7 @@ local M = ns:NewModule("Quality", {
     defaults = {
         hideTalkingHead = false, filterErrors = false, achievementScreenshot = false,
         hideZoneText = false, hideBossBanner = false,
-        markers = false, cursorRing = false, ringSize = 48, ringCombatOnly = false,
+        cursorRing = false, ringSize = 48, ringCombatOnly = false,
         combatAlert = false, combatSound = "", knownTint = true,
         -- flight timer (Flight.lua)
         flight = { enabled = true, mapTimes = true, land = true, width = 260, point = "TOP", x = 0, y = -170 },
@@ -49,67 +48,6 @@ function M:ApplyBanners()
     local on = self:IsEnabled()
     setEvents(ZoneTextFrame, ZONE_EVENTS, on and self.db.hideZoneText or false)
     setEvents(BossBanner, BOSS_EVENTS, on and self.db.hideBossBanner or false)
-end
-
----------------------------------------------------------------- raid markers bar
-local MARKERS = "Interface\\TargetingFrame\\UI-RaidTargetingIcons"
-local SIZE, GAP = 24, 3
-local bar
-
-function M.SetMarker(tex, i)
-    local col, row = (i - 1) % 4, math.floor((i - 1) / 4)
-    tex:SetTexture(MARKERS)
-    tex:SetTexCoord(col * 0.25, col * 0.25 + 0.25, row * 0.25, row * 0.25 + 0.25)
-end
-
-local function markerTip(self, i)
-    ns.Widgets.ShowTooltip(self, i <= 8 and _G["RAID_TARGET_" .. i] or L.QUALITY_MARKERS_CLEAR, L.QUALITY_MARKERS_TIP)
-end
-
-local function markerButton(parent, i)
-    local b = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate")
-    b:SetSize(SIZE, SIZE)
-    b:RegisterForClicks("AnyUp", "AnyDown")
-    b:SetAttribute("type1", "macro")
-    b:SetAttribute("type2", "macro")
-    -- 9 = clear: /tm 0 clears the target's icon, /cwm 0 clears every world marker
-    b:SetAttribute("macrotext1", i <= 8 and ("/tm " .. i) or "/tm 0")
-    b:SetAttribute("macrotext2", i <= 8 and ("/wm " .. i) or "/cwm 0")
-    b.tex = b:CreateTexture(nil, "ARTWORK")
-    b.tex:SetPoint("TOPLEFT", 3, -3); b.tex:SetPoint("BOTTOMRIGHT", -3, 3)
-    if i <= 8 then M.SetMarker(b.tex, i) else ns.Icons:Apply(b.tex, "close", SIZE - 8) end
-    b:SetScript("OnEnter", function(self) markerTip(self, i) end)
-    b:SetScript("OnLeave", function() ns.Widgets.HideTooltip() end)
-    return b
-end
-
-local function buildBar()
-    local f = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
-    f:SetSize(9 * (SIZE + GAP) - GAP + 8, SIZE + 8)
-    f:SetFrameStrata("MEDIUM")
-    f:SetClampedToScreen(true)
-    for i = 1, 9 do
-        local b = markerButton(f, i)
-        b:SetPoint("LEFT", 4 + (i - 1) * (SIZE + GAP), 0)
-    end
-    Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.subtle", shadow = 8 }) end)
-    ns.EditMode:Register(f, { key = "QualityMarkers", name = ns.title .. " – " .. L.QUALITY_MARKERS,
-        default = { point = "TOP", x = 0, y = -120 } })
-    return f
-end
-
-function M:ApplyMarkers()
-    local want = self:IsEnabled() and self.db.markers
-    if not want and not bar then return end
-    ns.Combat:Run("quality.markers", function()
-        if want then
-            bar = bar or buildBar()
-            RegisterStateDriver(bar, "visibility", "[petbattle] hide; [group] show; hide")
-        elseif bar then
-            UnregisterStateDriver(bar, "visibility")
-            bar:Hide()
-        end
-    end)
 end
 
 ---------------------------------------------------------------- cursor ring
@@ -209,7 +147,6 @@ end
 
 function M:Refresh()
     self:ApplyBanners()
-    self:ApplyMarkers()
     self:ApplyRing()
     if self.ApplyFlight then self:ApplyFlight() end
     if self.ApplyLootFeed then self:ApplyLootFeed() end

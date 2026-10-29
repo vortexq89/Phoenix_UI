@@ -245,3 +245,9 @@ runtime in game.
 - **Quick keybind mode built** (`Modules/ActionBars/Keybind.lua`): Action Bars > Text > "Bind keys" and `/pui actionbars kb`
   open the game's own Quick Keybind mode (Phoenix bars hold Blizzard's buttons, so it binds them directly). Faded and
   mouseover bars are revealed while it is open, however it was opened. Out of combat only. When it closes, the game reopens its Settings panel (Blizzard's own behaviour).
+- **Options tree audit (t141u).** Duplicate found: Quality of Life > Interface had its own raid markers bar (macro `/tm` and
+  `/wm` buttons), which the audit missed and called "missing". It is merged into Group Frames > Markers: the Quality bar, its
+  rows, preview and 7 locale keys are gone, and schema 7 moves `Quality.markers` to `GroupFrames.markers.show` without
+  overwriting an existing choice (harness "raid marker bar merge migration"). Misplaced sections moved: Unit Frames auras
+  (Portrait tab -> Icons and auras), Unit Frames Blizzard-mode skin (Resources tab -> Frames, after the mode picker),
+  Nameplates Blizzard restyle (Auras tab -> Plates) and Blizzard cast bar (Auras tab -> Cast bar).
