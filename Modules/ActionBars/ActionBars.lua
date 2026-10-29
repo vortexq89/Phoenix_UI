@@ -80,6 +80,7 @@ local DEFAULTS = {
     vehicle = { enabled = true, size = 36 },
     micro = "bar", bags = "bar",
     ring = { enabled = false, key = "", list = "", size = 40, radius = 90 }, -- quick ring (Ring.lua)
+    uprank = true, -- WoW Forever: a newly learned rank replaces the old one on your bars (Uprank.lua)
     items = { quest = true, list = "", hotkey = "" }, -- hotkey: uses the first item (e.g. "SHIFT-E")
 }
 
@@ -251,6 +252,7 @@ function M:OnEnable()
     if self:IsPhoenix() then self:EnableBars() end -- Bars.lua
     self:EnableExtras()                  -- Extras.lua
     self:RefreshRing()                   -- Ring.lua
+    self:SetupUprank()                   -- Uprank.lua (Forever)
 end
 
 function M:OnSettingChanged(path)

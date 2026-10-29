@@ -173,6 +173,8 @@ ns:RegisterOptions("ActionBars", {
       cog = { { type = "range", key = "vehicle.size", label = "AB_VEHICLE_SIZE", min = 20, max = 64, step = 1 } } },
     { type = "select", key = "micro", label = "AB_MICRO", values = MENU },
     { type = "select", key = "bags", label = "AB_BAGS", values = MENU },
+    { type = "toggle", key = "uprank", label = "AB_UPRANK", desc = "AB_UPRANK_DESC", feature = "uprank",
+      keywords = "rank spell upgrade new rank replace" },
     { type = "header", label = "AB_ITEMS", icon = "items" },
     { type = "description", text = "AB_ITEMS_NOTE" },
     { type = "toggle", key = "items.quest", label = "AB_ITEMS_QUEST", desc = "AB_ITEMS_QUEST_DESC", disabled = noBars, combat = true },
