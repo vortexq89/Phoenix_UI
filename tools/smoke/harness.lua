@@ -3785,6 +3785,27 @@ try("emblem effects", function()
     assert(not f.embers:IsShown(), "switch off did not hide the embers")
     ns.DB:Set(gen, "theme.emblemFX", true); ns.Theme:Apply(gen.db.theme)
 end)
+-- share strings v2: header, checksum, short code, setting-level changes, merge vs replace
+try("share strings v2", function()
+    local P, np = ns.Profiles, ns.modules.NamePlates
+    local text, code = P:Export(nil, { title = "My look", author = "Tester" })
+    assert(text:sub(1, 6) == "!PUI2!" and code:match("^PX%-%w%w%w%w%-%w%w%w%w$"), "v2 prefix and short code")
+    local payload = assert(P:Decode(text))
+    assert(payload.title == "My look" and payload.author == "Tester" and payload.code == code and payload.flavor == ns.flavor,
+        "header lost")
+    assert(P.ShortCode({ modules = { A = { x = 1, y = "z" } } }) == "PX-N8HG-AY94", "short code must match the website")
+    payload.sum = payload.sum + 1
+    local bad, err = P:Decode(text); payload.sum = payload.sum - 1
+    assert(not bad and err == "IMPORT_ERR_CORRUPT", "a wrong checksum must be refused")
+    local old = np.db.health.size
+    local foreign = { schema = ns.C.SCHEMA, v = 2, profile = { modules = { NamePlates = { health = { size = old + 3 } } } } }
+    local list, total = P:Changes(foreign, "NamePlates")
+    assert(total == 1 and list[1].path == "health.size" and list[1].theirs == old + 3, "changes list")
+    local keepTex = np.db.health.texture
+    assert(P:Apply(foreign, nil, "merge") == 1 and np.db.health.size == old + 3 and np.db.health.texture == keepTex,
+        "merge must keep the settings the string does not mention")
+    ns.DB:Set(np, "health.size", old)
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

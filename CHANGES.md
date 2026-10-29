@@ -3,6 +3,10 @@
 ## 2.0.0-beta1
 
 ### New
+- **Share strings v2**: export the whole profile or picked modules with a title; the string carries author, client,
+  version, date and a checksum, plus a short code (PX-XXXX-XXXX) that names it on vq8s.com/phoenix/profiles. Import shows
+  each module with its change count and the first changed settings (old > new), then Merge or Replace the picked modules,
+  or import as a new profile. Old !PUI1! strings still import.
 - **New Phoenix emblem** (Flame Crest) on the addon list, compartment, minimap, Game Menu, settings, installer and
   AFK screen, with a breathing glow and rising embers (General > Emblem effects; never in combat, no OnUpdate).
 - **Installer** (both clients): one window with nine steps (welcome, look, UI scale, accent, action bars, unit

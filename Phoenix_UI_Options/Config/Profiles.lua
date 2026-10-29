@@ -61,7 +61,8 @@ local function profileValues(includeNone, excludeActive)
 end
 
 local deleteTarget
-local exportBox, importBox, importStatus, importName, pending, exportChips
+local exportBox, importBox, importStatus, importName, pending, exportChips, exportTitle, exportInfo
+local applyChips, modeChips, detailText
 
 local function moduleChips()
     local out = {}
@@ -72,19 +73,55 @@ local function moduleChips()
     return out
 end
 
--- "Name: 4 modules, 23 settings change" and one line of "Label (n)" per module, unchanged ones muted
+-- "Title: 4 modules, 23 settings change" with the header line (author, client, version, code)
 local function previewText(payload)
-    local diff, total, parts = Profiles:Diff(payload), 0, {}
-    for _, e in ipairs(diff) do
-        total = total + e.changes
-        parts[#parts + 1] = e.changes > 0 and ("%s (%d)"):format(e.label, e.changes) or ns.Theme:Wrap(e.label, "text.muted")
+    local diff, total = Profiles:Diff(payload), 0
+    for _, e in ipairs(diff) do total = total + e.changes end
+    local head = L.IMPORT_HEADER:format(tostring(payload.author or "?"), tostring(payload.flavor or "?"),
+        tostring(payload.addon or "?"), tostring(payload.code or ""))
+    return ns.Theme:Wrap(L.IMPORT_DIFF:format(tostring(payload.title or payload.name), #diff, total), "state.success") .. "\n"
+        .. ns.Theme:Wrap(head, "text.muted")
+end
+
+local function show(v)
+    if type(v) == "table" then return "{…}" end
+    return tostring(v)
+end
+
+local I = {}
+
+-- The chips of the modules in the string ("Label  n") and the first changed settings of the picked ones.
+local function refreshImport()
+    if not pending then
+        if applyChips then applyChips:SetItems({}) end
+        if detailText then detailText:SetText("") end
+        return
     end
-    return ns.Theme:Wrap(L.IMPORT_DIFF:format(tostring(payload.name), #diff, total), "state.success") .. "\n"
-        .. table.concat(parts, ", ")
+    local items, picked = {}, {}
+    for _, e in ipairs(Profiles:Diff(pending)) do
+        items[#items + 1] = { value = e.key, label = ("%s  %d"):format(e.label, e.changes) }
+        picked[e.key] = e.changes > 0 or nil
+    end
+    applyChips:SetItems(items)
+    applyChips:SetValue(picked)
+    I.details(picked)
+end
+
+function I.details(picked)
+    local lines = {}
+    for key in pairs(picked) do
+        local list, total = Profiles:Changes(pending, key, 4)
+        local m = ns.modules[key]
+        lines[#lines + 1] = ns.Theme:Wrap((L[m and m.label] or key) .. (" (%d)"):format(total), "text.primary")
+        for _, c in ipairs(list) do lines[#lines + 1] = ("  %s: %s > %s"):format(c.path, show(c.mine), show(c.theirs)) end
+        if #lines > 14 then break end
+    end
+    detailText:SetText(table.concat(lines, "\n"))
 end
 
 local function clearImport()
     pending = nil
+    refreshImport()
     importBox:SetValue("")
     importName:SetValue("")
     importStatus:SetText("")
@@ -177,11 +214,18 @@ local function buildSchema()
             exportChips = W:Chips(row, moduleChips(), true)
             return exportChips
         end },
+        { type = "custom", label = "EXPORT_TITLE", desc = "EXPORT_TITLE_DESC", build = function(row)
+            exportTitle = W:Input(row, W.CONTROL_WIDTH, L.EXPORT_TITLE)
+            return exportTitle
+        end },
         { type = "custom", label = "EXPORT_STRING", desc = "EXPORT_DESC", build = function(row)
             local b = W:Button(row, L.GENERATE, "primary", "export", 140)
             b.onClick = function()
                 local keys = exportChips and next(exportChips:GetValue()) and exportChips:GetValue() or nil
-                exportBox:SetValue(Profiles:Export(keys))
+                local title = exportTitle and strtrim(exportTitle:GetText() or "") or ""
+                local text, code = Profiles:Export(keys, { title = title, author = UnitName("player") })
+                exportBox:SetValue(text)
+                if exportInfo then exportInfo:SetText(L.EXPORT_INFO:format(code, #text)) end
                 exportBox.edit:SetFocus()
                 exportBox.edit:HighlightText()
                 Config:SetStatus(L.EXPORT_READY, "state.success")
@@ -191,6 +235,8 @@ local function buildSchema()
         { type = "custom", label = "", fullWidth = true, height = 120, build = function(row)
             exportBox = W:TextArea(row, 600, 80)
             exportBox.edit:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
+            exportInfo = W.Text(row, "small", "text.muted", "LEFT")
+            exportInfo:SetPoint("TOPLEFT", exportBox, "BOTTOMLEFT", 0, -6)
             return exportBox
         end },
         { type = "header", label = "IMPORT", icon = "import" },
@@ -204,6 +250,7 @@ local function buildSchema()
                     importStatus:SetText(importBox:GetValue() == "" and "" or ns.Theme:Wrap(L[err], "state.danger"))
                 else
                     importStatus:SetText(previewText(payload))
+                    refreshImport()
                     if importName:GetText() == "" and type(payload.name) == "string" then importName:SetValue(payload.name) end
                 end
             end)
@@ -237,14 +284,34 @@ local function buildSchema()
             Skin:Register(importStatus, function(fs) Skin:Text(fs, "desc", "text.secondary") end)
             return holder
         end },
+        { type = "custom", label = "IMPORT_PICK", desc = "IMPORT_PICK_DESC", fullWidth = true, height = 96, build = function(row)
+            applyChips = W:Chips(row, {}, true)
+            applyChips.onChange = function() if pending then I.details(applyChips:GetValue()) end end
+            return applyChips
+        end },
+        { type = "custom", label = "IMPORT_CHANGES", fullWidth = true, height = 150, build = function(row)
+            detailText = W.Text(row, "desc", "text.secondary", "LEFT")
+            detailText:SetPoint("TOPLEFT", 16, -34); detailText:SetPoint("RIGHT", -16, 0)
+            detailText:SetJustifyV("TOP"); detailText:SetSpacing(2)
+            local holder = CreateFrame("Frame", nil, row); holder:SetSize(10, 10)
+            return holder
+        end },
+        { type = "custom", label = "IMPORT_MODE", desc = "IMPORT_MODE_DESC", build = function(row)
+            modeChips = W:Chips(row, { { value = "merge", label = L.IMPORT_MODE_MERGE },
+                { value = "replace", label = L.IMPORT_MODE_REPLACE } })
+            modeChips:SetValue("merge")
+            return modeChips
+        end },
         { type = "custom", label = "IMPORT_MERGE", desc = "IMPORT_MERGE_DESC", keywords = "partial combine", build = function(row)
-            local b = W:Button(row, L.IMPORT_MERGE_BUTTON, "secondary", "import", 140)
+            local b = W:Button(row, L.IMPORT_MERGE_BUTTON, "primary", "check", 140)
             b.onClick = function()
                 if not pending then
                     Config:SetStatus(L.IMPORT_ERR_EMPTY, "state.danger")
                     return
                 end
-                local n = Profiles:Merge(pending)
+                local keys = applyChips and applyChips:GetValue() or nil
+                if keys and not next(keys) then keys = nil end
+                local n = Profiles:Apply(pending, keys, modeChips and modeChips:GetValue() or "merge")
                 clearImport()
                 Config:SetStatus(L.IMPORT_MERGED:format(n, DB:GetProfileName()), "state.success")
             end
