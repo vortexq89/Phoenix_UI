@@ -70,6 +70,7 @@
     <Script file="Tooltip\Extras.lua"/>
     <Script file="ItemLevel\ItemLevel.lua"/>
     <Script file="ItemLevel\Upgrades.lua"/>
+    <Script file="ItemLevel\StatDR.lua"/>
     <Script file="Bags\Bags.lua"/>
     <Script file="Bags\Window.lua"/>
     <Script file="Bags\Chrome.lua"/>

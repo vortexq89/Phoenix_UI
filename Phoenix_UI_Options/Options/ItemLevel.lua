@@ -37,6 +37,8 @@ ns:RegisterOptions("ItemLevel", {
       keywords = "gem socket empty missing warning" },
     { type = "toggle", key = "statsPanel", label = "ITEMLEVEL_STATS", desc = "ITEMLEVEL_STATS_DESC", reload = true,
       keywords = "character sheet stats panel attributes enhancements crit haste" },
+    { type = "toggle", key = "statDR", label = "ITEMLEVEL_STAT_DR", desc = "ITEMLEVEL_STAT_DR_DESC",
+      keywords = "diminishing returns dr stats crit haste mastery versatility rating tooltip" },
     { type = "range", key = "decimals", label = "ITEMLEVEL_DECIMALS", desc = "ITEMLEVEL_DECIMALS_DESC", min = 0, max = 2, step = 1,
       keywords = "average item level decimals character sheet" },
 })

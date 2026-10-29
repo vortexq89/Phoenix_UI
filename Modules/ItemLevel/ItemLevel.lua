@@ -14,7 +14,7 @@ local M = ns:NewModule("ItemLevel", {
         enabled = true, character = true, bags = true, inspect = true, flyout = true, loot = true, merchant = true,
         qualityColor = true, size = 12,
         text = Style.Text(12, { anchor = "TOPRIGHT", x = -1, y = -2, outline = "OUTLINE", shadow = false }),
-        track = false, enchant = false, gems = true, decimals = 1, statsPanel = false,
+        track = false, enchant = false, gems = true, decimals = 1, statsPanel = false, statDR = true,
     },
 })
 
@@ -300,6 +300,7 @@ local function hookOptional()
     if type(PaperDollFrame_SetItemLevel) == "function" then hooksecurefunc("PaperDollFrame_SetItemLevel", onAverage) end
     if type(PaperDollFrame_UpdateStats) == "function" then hooksecurefunc("PaperDollFrame_UpdateStats", M.StyleStats) end
     hookInspect()
+    if M.SetupStatDR then M:SetupStatDR() end -- StatDR.lua
 end
 
 local hooked

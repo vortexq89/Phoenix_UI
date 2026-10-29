@@ -2409,6 +2409,17 @@ try("pvp scoreboard phase 4 skin", function()
     for _, f in ipairs({ sb, res }) do assert(not f:GetScript("OnUpdate"), "pvp skin added an OnUpdate") end
     env.PVPMatchScoreboard, env.PVPMatchResults = nil, nil
 end)
+try("stat diminishing returns lines", function()
+    local IL = ns.modules.ItemLevel
+    local lost, nextGain = IL.StatDRMath(1000, 25, 0.03, 25, 27)
+    assert(math.abs(lost - 5) < 1e-9 and nextGain == 2, "dr math")
+    local l2, n2 = IL.StatDRMath(1000, 25, 0.03, 30, 33) -- conversion without DR: no next-step guess
+    assert(math.abs(l2 - 5) < 1e-9 and n2 == nil, "dr guess")
+    assert(IL.StatDRMath(0, 0, 0.03) == nil and IL.StatDRMath(nil, 1, 1) == nil, "dr nil")
+    if IL.SetupStatDR then IL:SetupStatDR() end
+    local lines = IL.StatDRLines(env.CR_CRIT_MELEE or 9)
+    assert(lines == nil or type(lines[1]) == "string", "dr lines")
+end)
 try("safe scale never hands SetScale a bad value", function()
     local U = ns.Util
     for _, v in ipairs({ 0, -1, 0 / 0, math.huge, "1", false }) do assert(U.SafeScale(v) == 1, tostring(v)) end
