@@ -2619,7 +2619,8 @@ try("phoenix merchant window", function()
 end)
 try("phoenix friends window", function()
     local S = ns.modules.Skins
-    local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab" }
+    local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab",
+        "FriendsFrame_InviteOrRequestToJoin", "BNInviteFriend", "ChatFrameUtil" }
     local saved = {}
     for _, n in ipairs(names) do saved[n] = rawget(env, n) end
     local shown, invited, tabN = true, nil, 1
@@ -2628,10 +2629,13 @@ try("phoenix friends window", function()
     env.BNGetNumFriends = function() return 2, 1 end
     env.C_BattleNet = { GetFriendAccountInfo = function(i)
         return { accountName = "Acc" .. i, isAFK = i == 2, gameAccountInfo = { isOnline = i == 2, clientProgram = "WoW",
-            characterName = "Char", realmName = "Realm", areaName = "Dornogal" } } end }
+            characterName = "Char", realmName = "Realm", areaName = "Dornogal", gameAccountID = 77, playerGuid = "G" } } end }
     env.C_FriendList = { GetNumFriends = function() return 1 end, GetFriendInfoByIndex = function()
         return { name = "Wow", connected = false } end, AddFriend = function() end }
     env.C_PartyInfo = { InviteUnit = function(n) invited = n end }
+    local told
+    env.FriendsFrame_InviteOrRequestToJoin = function(guid, id) invited = guid .. ":" .. id end
+    env.ChatFrameUtil = { SendBNetTell = function(n) told = n end, SendTell = function() end }
     local list = S.FriendList()
     assert(#list == 3 and list[1].name == "Acc2" and list[1].online, "online friends first")
     assert(S.FriendStatusToken(list[1]) == "state.warning" and S.FriendStatusToken(list[3]) == "text.muted", "status colours")
@@ -2640,7 +2644,13 @@ try("phoenix friends window", function()
     assert(r.win and r.win:IsShown(), "friends window shown")
     r.rows[1]:GetScript("OnClick")(r.rows[1])
     r.invite.onClick()
-    assert(invited == "Char-Realm", "invite the picked friend's character")
+    assert(invited == "G:77", "Battle.net invite by game account")
+    env.FriendsFrame_InviteOrRequestToJoin = false
+    env.BNInviteFriend = function(id) invited = id end
+    r.invite.onClick()
+    assert(invited == 77, "older BNInviteFriend fallback by game account")
+    r.whisper.onClick()
+    assert(told == "Acc2", "Battle.net whisper through SendBNetTell")
     tabN = 2; S:SyncFriends()
     assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.FriendsFrame), "other tabs show Blizzard's window")
     tabN = 1; S.db.ownFriends = false; S:Refresh()

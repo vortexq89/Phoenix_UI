@@ -31,7 +31,9 @@ local function bnetRecord(i)
     if char then sub = ("%s  %s"):format(tostring(char), tostring(g.areaName or "")) end
     return { bnet = true, id = i, name = a.accountName or a.battleTag or "?", sub = sub, online = online,
         afk = plain(a.isAFK) == true, dnd = plain(a.isDND) == true, wow = wow and char ~= nil,
-        character = char and (realm and (char .. "-" .. realm) or char) or nil }
+        character = char and (realm and (char .. "-" .. realm) or char) or nil,
+        gameAccountID = wow and plain(g.gameAccountID) or nil, guid = wow and plain(g.playerGuid) or nil,
+        accountName = a.accountName }
 end
 
 local function wowRecord(i)
@@ -69,15 +71,26 @@ end
 local function whisper(rec)
     if not ChatFrameUtil then return end
     if rec.bnet then
-        if ChatFrameUtil.SendBNetTell then ChatFrameUtil.SendBNetTell(rec.name) end
+        -- Blizzard's own Battle.net whisper takes the account's (tokenised) name, the same value its list passes
+        if ChatFrameUtil.SendBNetTell and rec.accountName then ChatFrameUtil.SendBNetTell(rec.accountName) end
     elseif ChatFrameUtil.SendTell then
         ChatFrameUtil.SendTell(rec.name)
     end
 end
 
 local function invite(rec)
-    if not (rec.online and rec.wow and rec.character) then return end
-    if C_PartyInfo and C_PartyInfo.InviteUnit then C_PartyInfo.InviteUnit(rec.character) end
+    if not (rec.online and rec.wow) then return end
+    if rec.bnet then
+        -- by game account: Blizzard's friends-list invite (handles cross-realm / request-to-join), else the older call
+        if not rec.gameAccountID then return end
+        if FriendsFrame_InviteOrRequestToJoin and rec.guid then
+            FriendsFrame_InviteOrRequestToJoin(rec.guid, rec.gameAccountID)
+        elseif _G.BNInviteFriend then
+            _G.BNInviteFriend(rec.gameAccountID)
+        end
+    elseif rec.character and C_PartyInfo and C_PartyInfo.InviteUnit then
+        C_PartyInfo.InviteUnit(rec.character)
+    end
 end
 
 local function row(i)
