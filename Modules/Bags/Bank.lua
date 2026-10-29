@@ -210,10 +210,10 @@ end
 
 ---------------------------------------------------------------- tab settings and gold
 -- Deposit filters a tab can take (Enum.BagSlotFlags names; missing ones are skipped).
-M.BANK_FLAGS = { { "ExpansionCurrent", "BAGS_FLAG_CURRENT" }, { "ExpansionLegacy", "BAGS_FLAG_LEGACY" },
-    { "ClassEquipment", "BAGS_CAT_EQUIPMENT" }, { "ClassConsumables", "BAGS_CAT_CONSUMABLES" },
-    { "ClassProfessionGoods", "BAGS_FLAG_PROFESSION" }, { "ClassReagents", "BAGS_CAT_REAGENTS" },
-    { "ClassJunk", "BAGS_CAT_JUNK" }, { "ClassQuestItems", "BAGS_CAT_QUEST" } }
+M.BANK_FLAGS = { { "ExpansionCurrent", L.BAGS_FLAG_CURRENT }, { "ExpansionLegacy", L.BAGS_FLAG_LEGACY },
+    { "ClassEquipment", L.BAGS_CAT_EQUIPMENT }, { "ClassConsumables", L.BAGS_CAT_CONSUMABLES },
+    { "ClassProfessionGoods", L.BAGS_FLAG_PROFESSION }, { "ClassReagents", L.BAGS_CAT_REAGENTS },
+    { "ClassJunk", L.BAGS_CAT_JUNK }, { "ClassQuestItems", L.BAGS_CAT_QUEST } }
 
 function M.BankFlagOn(flags, bitValue) return bit.band(tonumber(flags) or 0, bitValue) ~= 0 end
 
@@ -243,7 +243,7 @@ function M:BuildBankExtras()
             c:SetSize(196, 20)
             c:SetPoint("TOPLEFT", 12, y)
             c.box = W.Texture(c, "ARTWORK", 1); c.box:SetSize(14, 14); c.box:SetPoint("LEFT")
-            c.label = W.Text(c, "small", "text.secondary"); c.label:SetPoint("LEFT", 22, 0); c.label:SetText(L[def[2]])
+            c.label = W.Text(c, "small", "text.secondary"); c.label:SetPoint("LEFT", 22, 0); c.label:SetText(def[2])
             c.value = value
             c:SetScript("OnClick", function(self) self.on = not self.on; M.PaintBankCheck(self) end)
             s.checks[#s.checks + 1] = c
