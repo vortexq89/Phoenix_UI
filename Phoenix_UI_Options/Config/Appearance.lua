@@ -181,7 +181,7 @@ local function specimenRow(kind, page)
                     b:SetStatusBarTexture(path)
                     b:SetStatusBarColor(ns.Theme:Color(TOKENS[i]))
                     b.bg:SetTexture(path)
-                    b.bg:SetVertexColor(0.1, 0.1, 0.12, 0.8)
+                    ns.Widgets.Color(b.bg, "bg.sunken", 0.85)
                 end
             end
         end

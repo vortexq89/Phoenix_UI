@@ -113,17 +113,23 @@ function M:HealthColor(p, src)
     return baseColor(p, src, s)
 end
 
+-- the empty part of a bar: the theme's sunken surface (follows theme / skin changes), never a fixed grey
+local function emptyBg(bar)
+    local r, g, b = ns.Theme:Color("bg.sunken")
+    bar.bg:SetVertexColor(r, g, b, 0.5)
+end
+
 local function paintHealth(p, src)
     local bar = p.Health
     local r, g, b = M:HealthColor(p, src)
     if r == nil and g == "curve" then
         local color = src:HealthColorFromCurve(p)
         if color then bar:SetStatusBarColor(color:GetRGB()) else bar:SetStatusBarColor(UF:Color("high")) end
-        bar.bg:SetVertexColor(0.1, 0.1, 0.1, 0.5)
+        emptyBg(bar)
     elseif r == nil then
         local ok = pcall(function() bar:SetStatusBarColor(UnitSelectionColor(p.unit)) end)
         if not ok then bar:SetStatusBarColor(M:Color("hostile")) end
-        bar.bg:SetVertexColor(0.1, 0.1, 0.1, 0.5)
+        emptyBg(bar)
     else
         bar:SetStatusBarColor(r, g, b)
         bar.bg:SetVertexColor(r * 0.25, g * 0.25, b * 0.25, 0.5)

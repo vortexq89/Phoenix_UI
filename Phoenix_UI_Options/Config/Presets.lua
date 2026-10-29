@@ -140,7 +140,7 @@ local function lookCard(parent, p, width, onApply)
             b:SetStatusBarTexture(tex)
             b:SetStatusBarColor(fills[i][1], fills[i][2], fills[i][3])
             b.bg:SetTexture(tex)
-            b.bg:SetVertexColor(0.08, 0.08, 0.1, 0.85)
+            ns.Widgets.Color(b.bg, "bg.sunken", 0.85)
             Skin:BorderSpec(b.edge, { style = p.border, size = 1, color = false }, "border.black")
         end
         self.name:SetFont(unitFont, 11, "OUTLINE")
