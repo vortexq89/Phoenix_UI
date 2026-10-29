@@ -4,6 +4,7 @@ local Opt = ns.Opt
 local TITLE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = "minimal", label = "SKINS_TITLE_MINIMAL" },
     { value = "blizzard", label = "SKINS_TITLE_BLIZZARD" } }
 local LOOT_PLACE = { { value = "blizzard", label = "LOOTW_PLACE_BLIZZARD" }, { value = "own", label = "LOOTW_PLACE_OWN" } }
+local GOSSIP_PLACE = { { value = "blizzard", label = "GOSSIPW_PLACE_BLIZZARD" }, { value = "own", label = "LOOTW_PLACE_OWN" } }
 local LOOT_SORT = { { value = "quality", label = "LOOTW_SORT_QUALITY" }, { value = "slot", label = "LOOTW_SORT_SLOT" } }
 local CLOSE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = "blizzard", label = "SKINS_TITLE_BLIZZARD" } }
 
@@ -48,6 +49,11 @@ ns:RegisterOptions("Skins", {
       disabled = function(m) return not m.db.ownLoot end },
     { type = "select", key = "lootSort", label = "LOOTW_SORT", desc = "LOOTW_SORT_DESC", values = LOOT_SORT,
       disabled = function(m) return not m.db.ownLoot end },
+    { type = "toggle", key = "ownGossip", label = "GOSSIPW_OWN", desc = "GOSSIPW_OWN_DESC", keywords = "gossip npc dialog talk own window" },
+    { type = "select", key = "gossipPlace", label = "GOSSIPW_PLACE", desc = "GOSSIPW_PLACE_DESC", values = GOSSIP_PLACE,
+      disabled = function(m) return not m.db.ownGossip end },
+    { type = "toggle", key = "gossipPortrait", label = "GOSSIPW_PORTRAIT", desc = "GOSSIPW_PORTRAIT_DESC",
+      disabled = function(m) return not m.db.ownGossip end },
     { type = "toggle", key = "mailAlts", label = "SKINS_MAIL_ALTS", desc = "SKINS_MAIL_ALTS_DESC",
       keywords = "mail alts characters recipient" },
     { type = "toggle", key = "merchant", label = "SKINS_MERCHANT", keywords = "vendor shop" },

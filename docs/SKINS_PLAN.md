@@ -57,7 +57,8 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   window, live, and an arrow button for Blizzard's window this visit): bags (default view now Phoenix, live
   switch), bank (`Bags/Bank.lua`), mail (`Skins/MailWindow.lua`), merchant, friends, achievements, calendar,
   Great Vault, collections (mounts, pets, toys, heirlooms, appearances), Adventure Guide (boss abilities, journeys), loot
-  (`Skins/LootWindow.lua`, the only one that also stands in during combat: LootFrame holds no protected child)
+  (`Skins/LootWindow.lua`, the only one that also stands in during combat: LootFrame holds no protected child), gossip
+  (`Skins/GossipWindow.lua`; the quest accept / turn-in window is still Blizzard's, reskinned)
   (`Skins/*Window.lua` on the shared `Skins/Replace.lua`). Also own: achievements guild / statistics / summary, calendar
   create event + invite answers, friends Who / ignore / remove, bank tab settings + gold transfer, Character
   (stats, reputation, currency, titles, equipment sets), Guild roster. Partial overlays (`M.Overlay`, our panel over

@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Phoenix gossip window**: Phoenix's own NPC dialog: portrait (optional), greeting text that scrolls when long, then
+  Available quests, Quests in progress (ready ones marked) and Options, each with the game's own icon; Goodbye. Opens
+  on Blizzard's spot or its own place. Skins > Phoenix gossip window off brings back Blizzard's dialog, live.
 - **Phoenix loot window**: Phoenix's own loot window stands in for Blizzard's (also in combat): each item's real icon
   framed in its quality colour, item level and slot for gear, quest tags, locked slots marked, gold first and best
   quality next (or as dropped), Loot all. It opens where Blizzard's would (your Edit Mode spot or under the mouse) or

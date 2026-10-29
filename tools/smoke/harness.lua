@@ -2677,6 +2677,52 @@ try("phoenix loot window", function()
     r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix gossip window", function()
+    local S = ns.modules.Skins
+    local names = { "GossipFrame", "C_GossipInfo", "QuestUtil", "UnitName", "UnitExists", "SetPortraitTexture" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown, picked = true, {}
+    env.GossipFrame = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.C_GossipInfo = {
+        GetText = function() return "Well met, traveller." end,
+        GetAvailableQuests = function() return { { questID = 11, title = "New task" }, { questID = 12, title = "Old task", isTrivial = true } } end,
+        GetActiveQuests = function() return { { questID = 21, title = "Done task", isComplete = true } } end,
+        GetOptions = function() return { { orderIndex = 2, name = "Train me", icon = 5 }, { orderIndex = 1, name = "Story", icon = 6, flags = 0 } } end,
+        SelectAvailableQuest = function(id) picked[#picked + 1] = "a" .. id end,
+        SelectActiveQuest = function(id) picked[#picked + 1] = "q" .. id end,
+        SelectOptionByIndex = function(i) picked[#picked + 1] = "o" .. i end,
+        CloseGossip = function() shown = false end,
+    }
+    env.QuestUtil = { ApplyQuestIconOfferToTextureForQuestID = function() end, ApplyQuestIconActiveToTextureForQuestID = function() end }
+    env.UnitName = function() return "Innkeeper" end
+    env.UnitExists = function() return true end
+    env.SetPortraitTexture = function() end
+    local rows = S.GossipRows()
+    assert(#rows == 8 and rows[1].kind == "header" and rows[2].info.questID == 11, "available quests first under a header")
+    assert(rows[5].kind == "active" and rows[7].info.orderIndex == 1, "active quests, then options in the game's order")
+    for _, row in ipairs(rows) do S:GossipPick(row) end
+    assert(table.concat(picked, ",") == "a11,a12,q21,o1,o2", "each row makes the game's own select call")
+    S.db.ownGossip = true
+    S:SetupGossipWindow()
+    local r = S.GossipReplacement
+    r:Opened(); r:Sync()
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.GossipFrame), "gossip window with Blizzard's tucked")
+    S.db.gossipPortrait = false; S:SyncGossip()
+    assert(not r.portrait:IsShown(), "portrait switch applies live")
+    S.db.gossipPortrait = true
+    S.db.ownGossip = false; S:SyncGossip()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.GossipFrame), "switch off live")
+    S.db.ownGossip = true; S:SyncGossip()
+    r.win.blizz.onClick()
+    assert(not r.win:IsShown(), "arrow shows Blizzard's dialog for this visit")
+    r.visit = false; r:Sync()
+    r.bye.onClick()
+    assert(not shown, "Goodbye closes the dialog")
+    r:Closed()
+    assert(not r.win:IsShown(), "closed with the dialog")
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 try("phoenix friends window", function()
     local S = ns.modules.Skins
     local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab",

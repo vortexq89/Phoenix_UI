@@ -21,6 +21,7 @@ local M = ns:NewModule("Skins", {
         ownVault = true, ownCollections = true, ownJournal = true,
         ownCharacter = true, ownGuild = true, ownProfessions = true, ownQuestLog = true,
         ownLoot = true, lootPlace = "blizzard", lootSort = "quality", lootPos = {},
+        ownGossip = true, gossipPlace = "blizzard", gossipPos = {}, gossipPortrait = true,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
         moveWindows = false, movedWindows = {}, mailAlts = true, premadeSearches = {},
