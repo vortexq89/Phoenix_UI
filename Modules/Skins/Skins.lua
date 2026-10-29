@@ -164,10 +164,12 @@ end
 
 -- One window or dialog. dialog: a centred panel without a title strip.
 local winOn, winSeen = setmetatable({}, { __mode = "k" }), setmetatable({}, { __mode = "k" })
+local winDialog = setmetatable({}, { __mode = "k" })
 local function window(frame, dialog)
     if not frame or winOn[frame] then return end
     if Skin:IsSkinned(frame) and not winSeen[frame] then return end -- dressed by another Phoenix module
     winOn[frame], winSeen[frame] = true, true
+    winDialog[frame] = dialog or false
     local db = M.db
     for _, key in ipairs(ART) do
         if key ~= "PortraitContainer" or db.titleStyle ~= "blizzard" then Skin:HideRegion(frame[key]) end
@@ -187,7 +189,7 @@ local function window(frame, dialog)
         e.strip:SetPoint("TOPRIGHT", -1, -1)
         e.strip:SetHeight(22)
     end
-    if e.strip then e.strip:Show() end
+    if e.strip then e.strip:SetShown(not dialog and db.titleStyle == "phoenix") end
     if db.closeStyle == "phoenix" then closeButton(frame.CloseButton or frame.ClosePanelButton) end
     Skin:Register(frame, function(self)
         local now = M.db
@@ -232,6 +234,34 @@ local function unwindow(frame)
     Skin:Restore(frame)
 end
 M.UnskinWindow = unwindow
+
+-- Title style, close button style and tabs apply live: every dressed window is undressed and dressed again.
+local tabHooked
+local function hookTabs()
+    if not M.db.tabs or tabHooked or not PanelTemplates_SelectTab then return end
+    tabHooked = true
+    hooksecurefunc("PanelTemplates_SelectTab", function(tab)
+        if skinnedTabs[tab] then
+            for t in pairs(skinnedTabs) do paintTab(t) end
+        end
+    end)
+end
+function M:Redress()
+    hookTabs()
+    local list = {}
+    for frame in pairs(winOn) do list[#list + 1] = frame end
+    for _, frame in ipairs(list) do
+        local dialog = winDialog[frame]
+        unwindow(frame)
+        window(frame, dialog)
+    end
+    Skin:Reapply()
+    return #list
+end
+function M:OnSettingChanged(path)
+    if path == "titleStyle" or path == "closeStyle" or path == "tabs" then self:Redress() end
+    self:Refresh()
+end
 function M.IsWindowOn(frame) return winOn[frame] and true or false end
 
 -- Windows whose switch applies live both ways (the rest restore Blizzard's look after /reload).
@@ -283,7 +313,7 @@ function M.SkinAlert(frame)
     end)
 end
 
-local tabHooked, alertHooked
+local alertHooked
 function M:OnEnable()
     if self.db.alerts and not alertHooked and AlertFrame and AlertFrame.AddAlertFrame then
         alertHooked = true
@@ -315,12 +345,5 @@ function M:OnEnable()
     self:RunSetups()
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
-    if self.db.tabs and not tabHooked and PanelTemplates_SelectTab then
-        tabHooked = true
-        hooksecurefunc("PanelTemplates_SelectTab", function(tab)
-            if skinnedTabs[tab] then
-                for t in pairs(skinnedTabs) do paintTab(t) end
-            end
-        end)
-    end
+    hookTabs()
 end
