@@ -2830,6 +2830,55 @@ try("phoenix quest window", function()
     r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix inspect window", function()
+    local S = ns.modules.Skins
+    local names = { "InspectFrame", "C_PaperDollInfo", "GetInventoryItemLink", "GetInventoryItemTexture", "GetInventoryItemQuality",
+        "C_Item", "C_SpecializationInfo", "GetSpecializationInfoByID", "GetGuildInfo", "UnitLevel", "UnitName", "UnitClass" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown = true
+    env.InspectFrame = setmetatable({ unit = "target", IsShown = function() return shown end },
+        { __index = CreateFrame("Frame", nil, env.UIParent) })
+    local ids = { HeadSlot = 1, MainHandSlot = 16 }
+    env.C_PaperDollInfo = { GetInventorySlotInfo = function(n) return ids[n] or 5, 999 end,
+        GetInspectItemLevel = function() return 642.3 end }
+    env.GetInventoryItemLink = function(_, id)
+        if id == 1 then return "|cffa335ee|Hitem:123:7000:5001:5002::::::|h[Helm]|h|r" end
+        if id == 16 then return "|cffa335ee|Hitem:456::::::::|h[Blade]|h|r" end
+    end
+    env.GetInventoryItemTexture = function(_, id) return 100 + id end
+    env.GetInventoryItemQuality = function() return 4 end
+    env.C_Item = setmetatable({ GetItemInfo = function(link) return link:match("%[(.-)%]"), nil, 4 end,
+        GetDetailedItemLevelInfo = function() return 639 end }, { __index = saved.C_Item })
+    env.C_SpecializationInfo = { GetInspectSpecialization = function() return 62 end }
+    env.GetSpecializationInfoByID = function() return 62, "Arcane", "", 77 end
+    env.GetGuildInfo = function() return "Phoenix" end
+    env.UnitLevel = function() return 90 end
+    env.UnitName = function() return "Tester" end
+    env.UnitClass = function() return "Mage", "MAGE" end
+    local e, g = S.InspectLinkMarks("|Hitem:123:7000:5001:5002::::::|h")
+    assert(e == true and g == 2, "enchant and two gems from the link")
+    e, g = S.InspectLinkMarks("|Hitem:456::::::::|h")
+    assert(e == false and g == 0 and select(2, S.InspectLinkMarks(nil)) == 0, "no marks, no link")
+    local d = S.InspectSlotData("target", "Head")
+    assert(d.name == "Helm" and d.quality == 4 and d.texture == 101 and d.sub:find("639", 1, true)
+        and d.sub:find(ns.L.INSPECTW_ENCHANTED, 1, true), "a worn item as a card")
+    local empty = S.InspectSlotData("target", "Waist")
+    assert(empty.dim and empty.texture == 999 and not empty.link, "an empty slot shows its slot art")
+    S.db.ownInspect = true
+    S:SetupInspectWindow()
+    local r = S.InspectReplacement
+    r:Opened(); r:Sync()
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.InspectFrame), "inspect window with Blizzard's tucked")
+    assert(r.cards.Head.data.link and r.cards.MainHand.data.name == "Blade" and r.cards.Waist.data.dim, "every slot painted")
+    S.db.ownInspect = false; S:SyncInspect()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.InspectFrame), "switch off live")
+    S.db.ownInspect = true; S:SyncInspect()
+    r.win.blizz.onClick()
+    assert(not r.win:IsShown(), "arrow: Blizzard's window for this visit")
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 try("phoenix friends window", function()
     local S = ns.modules.Skins
     local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab",

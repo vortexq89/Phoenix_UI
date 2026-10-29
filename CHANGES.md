@@ -3,6 +3,10 @@
 ## 2.0.0-beta1
 
 ### New
+- **Phoenix inspect window** (both clients, on by default): name in class colour, level, specialization, guild and
+  average item level, and every gear slot as a card (real icon in its quality frame, item level, enchanted and gem
+  marks) around the player's model; shift-click links, ctrl-click previews. The arrow opens Blizzard's window (talents,
+  PvP) for that visit. Skins > Phoenix inspect window off: Blizzard's window, restyled; applies live.
 - **Zone levels on the world map** (both clients, on by default): on a continent map each zone shows its name and
   level range at its middle, the range coloured by how hard it is for you; the levels come from the game, the labels
   stay a fixed size when you zoom. Minimap > Zone levels on the world map; applies live.

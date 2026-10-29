@@ -23,6 +23,7 @@ local M = ns:NewModule("Skins", {
         ownLoot = true, lootPlace = "blizzard", lootSort = "quality", lootPos = {},
         ownGossip = true, gossipPlace = "blizzard", gossipPos = {}, gossipPortrait = true,
         ownQuest = true, questPlace = "blizzard", questPos = {},
+        ownInspect = true,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
         moveWindows = false, movedWindows = {}, mailAlts = true, premadeSearches = {},

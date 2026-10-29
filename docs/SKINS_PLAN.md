@@ -59,7 +59,9 @@ Midnight/Horde/Alliance variants) and on `SKINS_AUDIT.md` / `SKINS_FEATURE_AUDIT
   Great Vault, collections (mounts, pets, toys, heirlooms, appearances), Adventure Guide (boss abilities, journeys), loot
   (`Skins/LootWindow.lua`, the only one that also stands in during combat: LootFrame holds no protected child), gossip
   (`Skins/GossipWindow.lua`), quest dialog (`Skins/QuestWindow.lua`: greeting, offer, progress, turn-in; PvP-flagged
-  offers stay Blizzard's for its confirmation popup)
+  offers stay Blizzard's for its confirmation popup), inspect (`Skins/InspectWindow.lua`: header with spec,
+  guild and average item level, gear cards with item level and enchant/gem marks around the player's model;
+  talents and PvP tabs via the arrow)
   (`Skins/*Window.lua` on the shared `Skins/Replace.lua`). Also own: achievements guild / statistics / summary, calendar
   create event + invite answers, friends Who / ignore / remove, bank tab settings + gold transfer, Character
   (stats, reputation, currency, titles, equipment sets), Guild roster. Partial overlays (`M.Overlay`, our panel over

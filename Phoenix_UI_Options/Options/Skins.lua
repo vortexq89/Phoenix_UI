@@ -59,6 +59,8 @@ ns:RegisterOptions("Skins", {
       keywords = "quest accept turn in reward complete npc own window" },
     { type = "select", key = "questPlace", label = "QUESTW_PLACE", desc = "QUESTW_PLACE_DESC", values = GOSSIP_PLACE,
       disabled = function(m) return not m.db.ownQuest end },
+    { type = "toggle", key = "ownInspect", label = "INSPECTW_OWN", desc = "INSPECTW_OWN_DESC",
+      keywords = "inspect gear item level other player own window" },
     { type = "toggle", key = "mailAlts", label = "SKINS_MAIL_ALTS", desc = "SKINS_MAIL_ALTS_DESC",
       keywords = "mail alts characters recipient" },
     { type = "toggle", key = "merchant", label = "SKINS_MERCHANT", keywords = "vendor shop" },
