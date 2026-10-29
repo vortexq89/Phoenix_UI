@@ -208,12 +208,7 @@ local function plainPaint(c, d) c.border = "border.subtle"; c.mark:Hide(); M.Pai
 
 local function paintQuest(c, d)
     plainPaint(c, d)
-    local util = QuestUtil
-    if util and d.active and util.ApplyQuestIconActiveToTextureForQuestID then
-        util.ApplyQuestIconActiveToTextureForQuestID(c.icon, d.questID, d.done)
-    elseif util and not d.active and util.ApplyQuestIconOfferToTextureForQuestID then
-        util.ApplyQuestIconOfferToTextureForQuestID(c.icon, d.questID, d.legendary, d.frequency, d.repeatable, d.important, d.meta)
-    end
+    M.QuestIcon(c.icon, d.active, d)
     if d.trivial then Skin:Text(c.name, "body", "text.muted") end
 end
 
@@ -222,13 +217,14 @@ function M.QuestGreetingRows()
     local active, new = {}, {}
     for i = 1, num(GetNumActiveQuests) do
         local t, done = GetActiveTitle(i)
-        active[#active + 1] = { questRow = i, active = true, name = t, done = done, questID = GetActiveQuestID and GetActiveQuestID(i),
+        active[#active + 1] = { questRow = i, active = true, name = t, isComplete = done,
+            questID = GetActiveQuestID and GetActiveQuestID(i),
             trivial = IsActiveQuestTrivial and IsActiveQuestTrivial(i), sub = done and L.GOSSIPW_READY or nil }
     end
     for i = 1, num(GetNumAvailableQuests) do
         local trivial, freq, rep, legendary, qid, important, meta = GetAvailableQuestInfo(i)
-        new[#new + 1] = { questRow = i, name = GetAvailableTitle(i), trivial = trivial, frequency = freq, repeatable = rep,
-            legendary = legendary, questID = qid, important = important, meta = meta, sub = trivial and L.GOSSIPW_TRIVIAL or nil }
+        new[#new + 1] = { questRow = i, name = GetAvailableTitle(i), trivial = trivial, frequency = freq, isRepeatable = rep,
+            isLegendary = legendary, questID = qid, isImportant = important, isMeta = meta, sub = trivial and L.GOSSIPW_TRIVIAL or nil }
     end
     return active, new
 end

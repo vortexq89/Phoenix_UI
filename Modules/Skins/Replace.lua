@@ -226,6 +226,7 @@ function M.ReplaceCard(parent, width, height)
 end
 
 function M.PaintCard(c, d, border)
+    c.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) -- a quest icon atlas may have been on this card before
     c.icon:SetTexture(d.texture)
     c.icon:SetDesaturated(d.dim and true or false)
     c.count:SetText((tonumber(d.count) or 0) > 1 and BreakUpLargeNumbers(d.count) or "")
@@ -241,6 +242,24 @@ function M.PaintCard(c, d, border)
     end
     Skin:Panel(c, "raised", { border = border or "border.subtle" })
     c:Show()
+end
+
+-- The game's own quest icon (offer or in-progress look: daily, campaign, important, legendary, ready ...) on one of our
+-- textures. The look comes from QuestUtil's getters; we apply it ourselves so our icon keeps its size (QuestUtil's
+-- apply helpers resize the texture to the atlas). q: questID plus the gossip / greeting fields.
+function M.QuestIcon(tex, active, q)
+    local util = QuestUtil
+    local get = util and (active and util.GetQuestIconActiveForQuestID or util.GetQuestIconOfferForQuestID)
+    tex:SetTexCoord(0, 1, 0, 1)
+    if not (get and q and q.questID) then tex:SetTexture(nil); return end
+    local asset, isAtlas
+    if active then
+        asset, isAtlas = get(q.questID, q.isComplete, q.isLegendary, q.frequency, q.isRepeatable or q.repeatable, q.isImportant,
+            q.isMeta, q.questInfoID)
+    else
+        asset, isAtlas = get(q.questID, q.isLegendary, q.frequency, q.isRepeatable or q.repeatable, q.isImportant, q.isMeta, q.questInfoID)
+    end
+    if isAtlas then tex:SetAtlas(asset) else tex:SetTexture(asset) end
 end
 
 -- A row of Phoenix buttons acting as tabs: defs = { { key, label } }; returns t with t.Paint(current).

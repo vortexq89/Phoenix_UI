@@ -4,7 +4,7 @@ local M = ns:GetModule("Skins")
 
 --[[ The Phoenix gossip window: our own NPC dialog fed by C_GossipInfo. The NPC's portrait and name, the greeting
     text (scrolls when long), then Available quests, Quests in progress (ready ones marked) and Options, each row with
-    the game's own icon for it (quest offer / turn-in icons drawn by the game's QuestUtil, option icons from the
+    the game's own icon for it (quest offer / turn-in looks from the game's QuestUtil, option icons from the
     gossip data). A click is the game's own select call, as Blizzard's button would make it; gold-cost and other
     confirmations stay Blizzard's popups, and Goodbye closes the dialog.
 
@@ -56,18 +56,6 @@ function M:GossipPick(row)
     else C_GossipInfo.SelectOptionByIndex(info.orderIndex or 0) end
 end
 
-local function questIcon(tex, row)
-    local q, util = row.info, QuestUtil
-    if not util then tex:SetTexture(nil); return end
-    if row.kind == "available" and util.ApplyQuestIconOfferToTextureForQuestID then
-        util.ApplyQuestIconOfferToTextureForQuestID(tex, q.questID, q.isLegendary, q.frequency, q.isRepeatable, q.isImportant,
-            q.isMeta, q.questInfoID)
-    elseif util.ApplyQuestIconActiveToTextureForQuestID then
-        util.ApplyQuestIconActiveToTextureForQuestID(tex, q.questID, q.isComplete, q.isLegendary, q.frequency, q.isRepeatable,
-            q.isImportant, q.isMeta, q.questInfoID)
-    end
-end
-
 local function paint(b, row)
     b.icon:SetTexCoord(0, 1, 0, 1)
     b.icon:SetVertexColor(1, 1, 1, 1)
@@ -87,7 +75,7 @@ local function paint(b, row)
         b.title:SetText(M.GossipOptionText(info))
         return
     end
-    questIcon(b.icon, row)
+    M.QuestIcon(b.icon, row.kind == "active", info)
     b.title:SetText(tostring(info.title or ""))
     if info.isIgnored or info.isTrivial then
         Skin:Text(b.title, "body", "text.muted")

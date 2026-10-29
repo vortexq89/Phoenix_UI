@@ -2694,7 +2694,9 @@ try("phoenix gossip window", function()
         SelectOptionByIndex = function(i) picked[#picked + 1] = "o" .. i end,
         CloseGossip = function() shown = false end,
     }
-    env.QuestUtil = { ApplyQuestIconOfferToTextureForQuestID = function() end, ApplyQuestIconActiveToTextureForQuestID = function() end }
+    local looks = 0
+    env.QuestUtil = { GetQuestIconOfferForQuestID = function() looks = looks + 1; return "QuestNormal", true end,
+        GetQuestIconActiveForQuestID = function() looks = looks + 1; return 5, false end }
     env.UnitName = function() return "Innkeeper" end
     env.UnitExists = function() return true end
     env.SetPortraitTexture = function() end
@@ -2708,6 +2710,7 @@ try("phoenix gossip window", function()
     local r = S.GossipReplacement
     r:Opened(); r:Sync()
     assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.GossipFrame), "gossip window with Blizzard's tucked")
+    assert(looks == 3, "each quest row gets the game's own quest icon look")
     S.db.gossipPortrait = false; S:SyncGossip()
     assert(not r.portrait:IsShown(), "portrait switch applies live")
     S.db.gossipPortrait = true
@@ -2813,7 +2816,7 @@ try("phoenix quest window", function()
     cost = 0
     page = "greeting"; r:Layout()
     local qa, qn = S.QuestGreetingRows()
-    assert(#qa == 1 and #qn == 1 and qa[1].done, "greeting lists in-progress and new quests")
+    assert(#qa == 1 and #qn == 1 and qa[1].isComplete, "greeting lists in-progress and new quests")
     r.cards[1]:GetScript("OnClick")(r.cards[1])
     assert(calls[#calls] == "active1", "greeting row selects the quest")
     page, pvp = "detail", true; r:Sync()
