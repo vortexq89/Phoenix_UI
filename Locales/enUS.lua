@@ -3839,6 +3839,11 @@ ns.RegisterLocale("enUS", {
     MINIMAP_MAP_SCALE_DESC = "The size of the windowed world map (the full-screen map keeps the game's). Applied out of combat.",
     MINIMAP_ZONE_LEVELS = "Zone levels on the world map",
     MINIMAP_ZONE_LEVELS_DESC = "On a continent map each zone shows its name and level range, the range coloured by how hard it is for you. The levels come from the game.",
+    MINIMAP_REVEAL = "Reveal unexplored areas",
+    MINIMAP_REVEAL_DESC = "Zone maps also show the parts you have not explored yet. The pieces are the game's own map art.",
+    MINIMAP_REVEAL_TINT = "Tint unexplored areas",
+    MINIMAP_REVEAL_TINT_DESC = "Unexplored parts take the accent colour, so you can still tell them apart.",
+    MINIMAP_REVEAL_ALPHA = "Unexplored opacity",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "Bag bar in the window",
     BAGS_BAG_BAR_DESC = "Shows your equipped bags beside the title with the game's tooltip; hovering one dims the slots of the others.",

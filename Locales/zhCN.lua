@@ -3813,6 +3813,11 @@ local T = {
     MINIMAP_MAP_SCALE_DESC = "窗口模式世界地图的大小（全屏地图保持游戏默认）。在非战斗状态下应用。",
     MINIMAP_ZONE_LEVELS = "世界地图上的区域等级",
     MINIMAP_ZONE_LEVELS_DESC = "在大陆地图上，每个区域显示名称和等级范围，范围按其对你的难度着色。等级来自游戏。",
+    MINIMAP_REVEAL = "显示未探索区域",
+    MINIMAP_REVEAL_DESC = "区域地图也显示你尚未探索的部分。这些图块来自游戏自身的地图图像。",
+    MINIMAP_REVEAL_TINT = "为未探索区域着色",
+    MINIMAP_REVEAL_TINT_DESC = "未探索部分使用强调色，便于区分。",
+    MINIMAP_REVEAL_ALPHA = "未探索区域不透明度",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "窗口内的背包栏",
     BAGS_BAG_BAR_DESC = "在标题旁显示已装备的背包及游戏提示；悬停其中一个会使其他背包的格子变暗。",

@@ -3813,6 +3813,11 @@ local T = {
     MINIMAP_MAP_SCALE_DESC = "視窗模式世界地圖的大小（全螢幕地圖保持遊戲預設）。在非戰鬥狀態下套用。",
     MINIMAP_ZONE_LEVELS = "世界地圖上的區域等級",
     MINIMAP_ZONE_LEVELS_DESC = "在大陸地圖上，每個區域顯示名稱和等級範圍，範圍依其對你的難度著色。等級來自遊戲。",
+    MINIMAP_REVEAL = "顯示未探索區域",
+    MINIMAP_REVEAL_DESC = "區域地圖也顯示你尚未探索的部分。這些圖塊來自遊戲本身的地圖圖像。",
+    MINIMAP_REVEAL_TINT = "為未探索區域著色",
+    MINIMAP_REVEAL_TINT_DESC = "未探索部分使用強調色，方便辨識。",
+    MINIMAP_REVEAL_ALPHA = "未探索區域不透明度",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "視窗內的背包列",
     BAGS_BAG_BAR_DESC = "在標題旁顯示已裝備的背包及遊戲提示；懸停其中一個會使其他背包的格子變暗。",

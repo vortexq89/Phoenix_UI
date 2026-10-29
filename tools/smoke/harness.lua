@@ -1467,6 +1467,39 @@ try("data text events", function()
     for k, v in pairs(saved) do rawset(env, k, v or nil) end
     rawset(env.Enum, "UIMapType", savedT)
 end)
+-- map reveal (Forever): shipped overlays all decode; explored ones are skipped; tiles follow the game's grid rule
+try("map reveal", function()
+    local MM = ns.modules.Minimap
+    local o = MM.ParseOverlay("300,300,10,-5,2,11.12.13.14")
+    assert(o and o.w == 300 and o.y == -5 and o.cols == 2 and #o.fids == 4, "overlay decode")
+    assert(MM.ParseOverlay("300,200,10,5,3,11.12") == nil and MM.ParseOverlay("junk") == nil, "malformed accepted")
+    local tiles = MM.RevealTiles(o, 256, 256)
+    assert(#tiles == 4, "tile count " .. #tiles)
+    assert(tiles[2].x == 266 and tiles[2].w == 44 and tiles[2].u == 44 / 64, "last column width / tex coord")
+    assert(tiles[3].y == 251 and tiles[3].fid == 13 and tiles[1].u == 1, "row step / file order")
+    assert(MM.RevealFileSize(10, 256) == 16 and MM.RevealFileSize(256, 256) == 256, "file size rule")
+    if ns.flavor == "forever" then
+        local n = 0
+        for _, list in pairs(ns.RevealData.arts) do
+            for _, s in ipairs(list) do assert(MM.ParseOverlay(s), "bad shipped overlay " .. s); n = n + 1 end
+        end
+        assert(n > 500, "only " .. n .. " overlays shipped")
+    else
+        assert(ns.RevealData == nil, "retail builds Forever's overlay table")
+    end
+    local savedData, savedMap, savedEx = ns.RevealData, rawget(env, "C_Map"), rawget(env, "C_MapExplorationInfo")
+    ns.RevealData = { arts = { [77] = { "100,100,0,0,1,5", "100,100,100,0,1,6" } } }
+    rawset(env, "C_Map", setmetatable({ GetMapArtID = function() return 77 end }, { __index = savedMap or nil }))
+    rawset(env, "C_MapExplorationInfo", { GetExploredMapTextures = function() return { { offsetX = 0, offsetY = 0 } } end })
+    local left = MM:UnexploredOverlays(5)
+    assert(#left == 1 and left[1].fids[1] == 6, "explored overlay not skipped")
+    ns.RevealData = savedData
+    rawset(env, "C_Map", savedMap or nil)
+    rawset(env, "C_MapExplorationInfo", savedEx or nil)
+    MM:DrawReveal()
+    MM:HideReveal()
+    assert(MM:RevealCount() == 0, "reveal not hidden")
+end)
 -- minimap bin: LibDBIcon buttons (present now or created later) are collected; hidden ones are skipped
 try("minimap bin", function()
     local MM = ns.modules.Minimap

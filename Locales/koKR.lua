@@ -3813,6 +3813,11 @@ local T = {
     MINIMAP_MAP_SCALE_DESC = "창 모드 세계 지도의 크기입니다(전체 화면 지도는 게임 기본값 유지). 전투 중이 아닐 때 적용됩니다.",
     MINIMAP_ZONE_LEVELS = "세계 지도에 지역 레벨",
     MINIMAP_ZONE_LEVELS_DESC = "대륙 지도에서 각 지역의 이름과 레벨 범위를 표시하며, 범위는 내게 얼마나 어려운지에 따라 색이 바뀝니다. 레벨은 게임에서 가져옵니다.",
+    MINIMAP_REVEAL = "미탐험 지역 표시",
+    MINIMAP_REVEAL_DESC = "지역 지도에 아직 탐험하지 않은 부분도 표시합니다. 조각은 게임 자체의 지도 그림입니다.",
+    MINIMAP_REVEAL_TINT = "미탐험 지역 색칠",
+    MINIMAP_REVEAL_TINT_DESC = "미탐험 부분을 강조 색으로 칠해 구분할 수 있게 합니다.",
+    MINIMAP_REVEAL_ALPHA = "미탐험 불투명도",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "창 안의 가방 바",
     BAGS_BAG_BAR_DESC = "장착한 가방을 제목 옆에 게임 툴팁과 함께 표시합니다. 하나에 마우스를 올리면 다른 가방의 칸이 어두워집니다.",

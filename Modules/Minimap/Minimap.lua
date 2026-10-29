@@ -24,6 +24,7 @@ local M = ns:NewModule("Minimap", {
         compartment = true,
         bin = true, binColumns = 4, binSize = 28, binIgnore = "", binMouseover = false,
         pingNames = true, worldMapCoords = true, worldMapScale = 1, zoneLevels = true,
+        mapReveal = true, revealTint = true, revealAlpha = 0.85,
     },
 })
 
@@ -441,7 +442,7 @@ end
 local function onAddOn(_, name)
     if name == "Blizzard_HybridMinimap" then hybridMask()
     elseif name == "Blizzard_TimeManager" then styleClock()
-    elseif name == "Blizzard_WorldMap" then setupMapCoords(); hookMapScale(); applyMapScale(); M:SetupZoneLevels() end
+    elseif name == "Blizzard_WorldMap" then setupMapCoords(); hookMapScale(); applyMapScale(); M:SetupZoneLevels(); M:SetupReveal() end
     if M.db.bin then scanSoon() end
 end
 
@@ -477,6 +478,8 @@ function M:Refresh()
     applyMapScale()
     self:SetupZoneLevels() -- ZoneLevels.lua
     self:DrawZoneLevels()
+    self:SetupReveal() -- Reveal.lua
+    self:DrawReveal()
     self:ApplyElements()
     scheduleZoomOut()
     if bin then layoutBin() end
@@ -494,6 +497,7 @@ function M:OnDisable()
     if coords then coords:Hide() end
     if mapCoords then mapCoords:Hide() end
     applyMapScale()
+    self:HideReveal()
     for frame in pairs(tucked) do tuck(frame, true) end
     Minimap:EnableMouseWheel(true)
 end

@@ -3813,6 +3813,11 @@ local T = {
     MINIMAP_MAP_SCALE_DESC = "Tamaño del mapa del mundo en ventana (el mapa a pantalla completa queda como el del juego). Se aplica fuera de combate.",
     MINIMAP_ZONE_LEVELS = "Niveles de zona en el mapa del mundo",
     MINIMAP_ZONE_LEVELS_DESC = "En un mapa de continente cada zona muestra su nombre y rango de niveles, coloreado según lo difícil que es para ti. Los niveles los da el juego.",
+    MINIMAP_REVEAL = "Revelar zonas inexploradas",
+    MINIMAP_REVEAL_DESC = "Los mapas de zona muestran también las partes que aún no has explorado. Las piezas son el arte del propio juego.",
+    MINIMAP_REVEAL_TINT = "Teñir zonas inexploradas",
+    MINIMAP_REVEAL_TINT_DESC = "Las partes inexploradas toman el color de acento para distinguirlas.",
+    MINIMAP_REVEAL_ALPHA = "Opacidad inexplorada",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "Barra de bolsas en la ventana",
     BAGS_BAG_BAR_DESC = "Muestra tus bolsas equipadas junto al título con el tooltip del juego; al pasar el ratón por una se atenúan las casillas de las demás.",

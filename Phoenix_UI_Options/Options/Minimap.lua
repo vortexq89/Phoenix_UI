@@ -99,4 +99,10 @@ ns:RegisterOptions("Minimap", {
       step = 0.05, percent = true, feature = "worldMapCoords", keywords = "world map scale size smaller bigger" },
     { type = "toggle", key = "zoneLevels", label = "MINIMAP_ZONE_LEVELS", desc = "MINIMAP_ZONE_LEVELS_DESC",
       keywords = "zone level range continent world map leveling" },
+    { type = "toggle", key = "mapReveal", label = "MINIMAP_REVEAL", desc = "MINIMAP_REVEAL_DESC", feature = "mapReveal",
+      keywords = "reveal unexplored fog world map explore" },
+    { type = "toggle", key = "revealTint", label = "MINIMAP_REVEAL_TINT", desc = "MINIMAP_REVEAL_TINT_DESC", feature = "mapReveal",
+      keywords = "tint colour unexplored", disabled = function(m) return not m.db.mapReveal end },
+    { type = "range", key = "revealAlpha", label = "MINIMAP_REVEAL_ALPHA", min = 0.2, max = 1, step = 0.05, percent = true,
+      feature = "mapReveal", keywords = "opacity unexplored", disabled = function(m) return not m.db.mapReveal end },
 })

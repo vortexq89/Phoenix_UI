@@ -10,8 +10,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 116 |
-| partial - EllesmereUI reference (Forever map reveal) | 1 |
+| Phoenix has | 117 |
 | missing | 1 |
 | duplicate (skip) | 1 |
 | out of scope | 9 |
@@ -87,7 +86,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_DamageMeters | Meter windows on C_DamageMeter | Phoenix has | Phoenix Embers (up to four windows `embers.w1..w4`, breakdown, death recap, best-pull compare, report). |
 | EllesmereUI_DamageMeters | Threat meter type (Forever) | Phoenix has | Built 2026-10-29: `Modules/DamageMeter/Threat.lua` (Damage Meter > Threat meter), event-driven, movable. |
 | EllesmereUI_DataBars | Block bars | Phoenix has | Phoenix `Phoenix_UI_HUD/DataBars.lua` (`db.*`), HUD extras. |
-| EllesmereUI_ForeverEssentials | Map tools | partial - zone levels built (Minimap > Zone levels, both clients) | Open: map reveal (P2, Forever). Data must be ours (from client map art IDs, which are game data). |
+| EllesmereUI_ForeverEssentials | Map tools | Phoenix has | Zone levels (Minimap > Zone levels, both clients) and map reveal (Minimap > Reveal unexplored areas, Forever; overlays generated from the client's WorldMapOverlay DB2 by tools/mapreveal/build.py). |
 | EllesmereUI_ForeverEssentials | Auto uprank | Phoenix has | Built 2026-10-29: `Modules/ActionBars/Uprank.lua` (Action Bars > Extra > Auto uprank), out of combat, cursor-safe. |
 | EllesmereUI_ForeverEssentials | Gathering skill, quest reward value, simplified stats, flight timer, fishing, pet summon, threat meter, loot feed, junk window | Phoenix has | Built 2026-10-29: quest reward value marker (Quests > Mark the most valuable reward), gathering skill in tooltip (Tooltip), threat meter (above), flight timer (Quality of Life > Travel, both clients, learned times), pet summon (Automation > Companion pet, both clients), loot feed (Quality of Life > Loot feed, both clients), simplified stats (Phoenix Character window on Forever), fishing helper and junk window (Automation, both clients). |
 | EllesmereUI_Friends | Friends list restyle | Phoenix has | Phoenix `Phoenix_UI_Friends` (search across friends/guild/recent, sort, app-only filter, notes, invite accept). |

@@ -99,6 +99,8 @@
     <Script file="Sim\Sim.lua"/>
     <Script file="Minimap\Minimap.lua"/>
     <Script file="Minimap\ZoneLevels.lua"/>
+    <Script file="Minimap\RevealData.lua"/>
+    <Script file="Minimap\Reveal.lua"/>
     <Script file="DataTexts\DataTexts.lua"/>
     <Script file="DataTexts\Bar.lua"/>
     <Script file="DataTexts\Events.lua"/>

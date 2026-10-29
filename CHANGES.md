@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Map reveal** (WoW Forever): zone maps also show the parts you have not explored yet, tinted in the accent colour
+  (switch and opacity on Minimap > World map). The pieces are the client's own map overlays, generated from its
+  WorldMapOverlay tables by tools/mapreveal/build.py; explored parts stay Blizzard's.
 - **Event tracker** (both clients): a new Data Texts segment, Events, counts the world events running on your
   continent and today's holidays; its tooltip lists each one with its zone and time left (soonest first) and a click
   opens the world map on the next one. All from the game's own event markers and calendar, no shipped schedules.

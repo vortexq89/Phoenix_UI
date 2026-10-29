@@ -38,6 +38,8 @@ ns.FEATURES = {
     skyriding = { retail = true },
     -- Swing timer: PLAYER_SWING and C_SwingTimer exist on WoW Forever only (Blizzard_SwingTimer).
     swingTimer = { forever = true },
+    -- Map reveal: the shipped overlay data is Forever's (Modules/Minimap/RevealData.lua, tools/mapreveal/build.py).
+    mapReveal = { forever = true },
     -- Spell ranks (auto uprank on the action bars): only Forever's spells have ranks.
     uprank = { forever = true },
     -- Threat meter: Forever's threat values are plain; retail's are secret in combat.

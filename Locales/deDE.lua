@@ -3813,6 +3813,11 @@ local T = {
     MINIMAP_MAP_SCALE_DESC = "Größe der Weltkarte im Fenstermodus (die Vollbildkarte bleibt wie im Spiel). Wird außerhalb des Kampfes angewendet.",
     MINIMAP_ZONE_LEVELS = "Gebietsstufen auf der Weltkarte",
     MINIMAP_ZONE_LEVELS_DESC = "Auf einer Kontinentkarte zeigt jedes Gebiet Name und Stufenbereich, der Bereich gefärbt nach der Schwierigkeit für dich. Die Stufen kommen vom Spiel.",
+    MINIMAP_REVEAL = "Unerforschte Gebiete aufdecken",
+    MINIMAP_REVEAL_DESC = "Zonenkarten zeigen auch die Teile, die du noch nicht erkundet hast. Die Teile sind die Kartenbilder des Spiels.",
+    MINIMAP_REVEAL_TINT = "Unerforschte Gebiete einfärben",
+    MINIMAP_REVEAL_TINT_DESC = "Unerforschte Teile nehmen die Akzentfarbe an, damit du sie weiter erkennst.",
+    MINIMAP_REVEAL_ALPHA = "Deckkraft unerforscht",
     -- S17: bag bar in the bag window
     BAGS_BAG_BAR = "Taschenleiste im Fenster",
     BAGS_BAG_BAR_DESC = "Zeigt deine angelegten Taschen neben dem Titel mit dem Tooltip des Spiels; beim Überfahren werden die Plätze der anderen abgedunkelt.",
