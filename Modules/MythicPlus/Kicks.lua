@@ -62,10 +62,11 @@ local function memberKick(unit)
     if not readable(class) then return nil end
     local spec
     if unit == "player" then
-        local idx = GetSpecialization and GetSpecialization()
-        spec = idx and GetSpecializationInfo and GetSpecializationInfo(idx) or nil
-    elseif GetInspectSpecialization then
-        spec = GetInspectSpecialization(unit)
+        local SI = C_SpecializationInfo
+        local idx = SI and SI.GetSpecialization and SI.GetSpecialization()
+        spec = idx and SI.GetSpecializationInfo and SI.GetSpecializationInfo(idx) or nil
+    elseif C_SpecializationInfo and C_SpecializationInfo.GetInspectSpecialization then
+        spec = C_SpecializationInfo.GetInspectSpecialization(unit)
         if not readable(spec) or spec == 0 then spec = nil end
     end
     if not readable(spec) then spec = nil end
