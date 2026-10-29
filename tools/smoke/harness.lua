@@ -7166,7 +7166,7 @@ try("combat text events: secret types skipped, merges, areas off", function()
     rawset(env, "C_CombatText", { GetCurrentEventInfo = function() return SECRET, SECRET end })
     ns.Secret.IsSecret = function(v) return v == SECRET end
     local lines = 0
-    CT.StyleLine = function(self, f, crit) lines = lines + 1; return oldStyle(self, f, crit) end
+    CT.StyleLine = function(self, ...) lines = lines + 1; return oldStyle(self, ...) end
     sc.enabled, sc.merge, sc.areas.incoming.show, sc.areas.target.show = true, true, true, true
     CT:EnableScroll()
     lines = 0 -- EnableScroll restyles lines other tests left in flight
@@ -7345,6 +7345,59 @@ try("raid marker bar merge migration", function()
     ns.Migrations:UpgradeProfile(kept, 6)
     assert(kept.modules.GroupFrames.markers.show == false, "migration overwrote an existing Group Frames choice")
     assert(ns.modules.Quality.ApplyMarkers == nil and ns.modules.Quality.defaults.markers == nil, "Quality still owns a bar")
+end)
+
+-- scrolling combat text: animation paths, per-event routing and switches, crit area, throttle, combat-only
+try("scrolling combat text: paths, events, crits, throttle", function()
+    local CT = ns.modules.CombatText
+    local sc = CT.db.scroll
+    local P = CT.Path
+    local x0, y0 = P("straight", 0, 200, 240, 1)
+    local x1, y1 = P("straight", 1, 200, 240, 1)
+    assert(x0 == x1 and y1 > y0, "straight rises without drifting")
+    local px1 = P("parabola", 0.5, 200, 240, 1); local px2 = P("parabola", 1, 200, 240, 1)
+    assert(px2 > 2 * px1, "parabola bends outward faster as it climbs")
+    local ax1, ay1 = P("angled", 0.5, 200, 240, -1)
+    assert(ax1 < 0 and ay1 > 0, "angled drifts to its side")
+    local _, s0 = P("static", 0.9, 200, 240, 1, 0, 20); local _, s2 = P("static", 0.1, 200, 240, 1, 2, 20)
+    assert(s0 == 0 and s2 == 40, "static stacks by slot and does not move")
+    local saved = ns.Util.DeepCopy and ns.Util.DeepCopy(sc) or nil
+    local oldIs, oldStyle, oldCT = ns.Secret.IsSecret, CT.StyleLine, rawget(env, "C_CombatText")
+    local SECRET = {}
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    rawset(env, "C_CombatText", { GetCurrentEventInfo = function() return SECRET, SECRET end })
+    local got = {}
+    CT.StyleLine = function(self, fs, crit, key, ...) got[#got + 1] = key; return oldStyle(self, fs, crit, key, ...) end
+    sc.enabled, sc.merge, sc.throttle, sc.onlyCombat = true, false, 0, false
+    for _, k in ipairs(CT.AREAS) do sc.areas[k].show = true end
+    CT:EnableScroll()
+    got = {}
+    sc.events.damage.area = "notify"
+    fire("COMBAT_TEXT_UPDATE", "DAMAGE")
+    assert(got[1] == "notify", "an event goes to the area it is routed to")
+    sc.critArea = "crits"
+    fire("COMBAT_TEXT_UPDATE", "DAMAGE_CRIT")
+    assert(got[2] == "crits", "crits go to the crit area")
+    sc.events.heal.show = false
+    fire("COMBAT_TEXT_UPDATE", "HEAL")
+    assert(#got == 2, "a switched-off event adds nothing")
+    got = {}
+    sc.throttle = 2
+    for _ = 1, 5 do fire("COMBAT_TEXT_UPDATE", "SPELL_DAMAGE") end
+    assert(#got == 2, "throttle keeps at most n lines a second (" .. #got .. ")")
+    sc.throttle, sc.onlyCombat = 0, true
+    got = {}
+    fire("COMBAT_TEXT_UPDATE", "SHIELD")
+    fire("COMBAT_TEXT_UPDATE", "DAMAGE_SHIELD")
+    assert(#got == 0, "only in combat hides lines out of combat")
+    sc.onlyCombat = false
+    assert(CT:TestScroll(), "test lines run through every event")
+    CT.StyleLine, ns.Secret.IsSecret = oldStyle, oldIs
+    rawset(env, "C_CombatText", oldCT)
+    sc.events.damage.area, sc.critArea, sc.events.heal.show = "incoming", "same", true
+    if saved then for k, v in pairs(saved) do sc[k] = v end end
+    sc.enabled = false
+    CT:EnableScroll()
 end)
 
 fire("PLAYER_LOGOUT")

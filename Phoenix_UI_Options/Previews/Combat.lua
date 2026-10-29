@@ -207,27 +207,31 @@ local FCT = {
     { "enableFloatingCombatText", "-2 960", { 1, 0.25, 0.2 }, 1 },
 }
 
--- Phoenix scroll areas: sample lines per area, in the area's font and crit style (CombatText:StyleLine).
+-- Phoenix scrolling text: each area plays sample lines along its own animation path (CombatText.Path), in its
+-- events' colours and sizes, with crits styled the way the page says. The motion runs only while the preview
+-- is on screen (an OnUpdate on the preview's own frame, cleared on hide).
+local AREA_KEYS = { "incoming", "target", "notify", "crits" }
 local AREA_SAMPLE = {
-    incoming = { { "-12 846", { 1, 0.3, 0.25 } }, { "+8 230", { 0.3, 1, 0.35 }, true }, { "COMBAT_TEXT_DODGE", { 1, 1, 1 } } },
-    target = { { "31 044", { 1, 0.95, 0.85 }, true }, { "4 112 ×3", { 1, 0.95, 0.85 } } },
-    notify = { { "+FCT_SAMPLE_AURA", { 1, 0.85, 0.4 } } },
+    incoming = { { "damage", "-12 846" }, { "heal", "+8 230", true }, { "avoid", "COMBAT_TEXT_DODGE" }, { "spell", "-4 410" } },
+    target = { { "hit", "31 044", true }, { "hit", "4 112 ×3" }, { "theal", "+2 950" } },
+    notify = { { "buff", "+FCT_SAMPLE_AURA" }, { "reactive", "FCT_SAMPLE_AURA" } },
+    crits = { { "hit", "58 120", true }, { "heal", "+19 400", true } },
 }
 
 local function sampleText(t)
-    local word = t:gsub("^%+", "")
-    if L[word] and word ~= t then return "+" .. L[word] end
-    return _G[t] or L[t] or t
+    local word = t:gsub("^[%+%-]", "")
+    if word ~= t and L[word] then return t:sub(1, 1) .. L[word] end
+    return _G[t] or rawget(L, t) or t
 end
 
 P:Register("combattext", {
     module = "CombatText",
-    height = 150,
+    height = 190,
     build = function(stage, m)
         local texts = {}
         for i = 1, #FCT do texts[i] = P.Text(stage, "OVERLAY") end
         local areas = {}
-        for _, key in ipairs({ "incoming", "target", "notify" }) do
+        for _, key in ipairs(AREA_KEYS) do
             local box = CreateFrame("Frame", nil, stage)
             box.caption = P.Caption(box, L["FCT_AREA_" .. key:upper()])
             box.caption:SetPoint("BOTTOM", box, "TOP", 0, 2)
@@ -235,6 +239,31 @@ P:Register("combattext", {
             for i = 1, #AREA_SAMPLE[key] do box.lines[i] = P.Text(box, "OVERLAY") end
             areas[key] = box
         end
+        local clock = 0
+        local function animate(w)
+            local scroll = m.db.scroll
+            local slots = { incoming = { -0.33, -18 }, target = { 0.33, -18 }, notify = { 0, 52 }, crits = { 0, -18 } }
+            for key, box in pairs(areas) do
+                local a = scroll.areas[key]
+                local bw, bh = w * 0.28, key == "notify" and 44 or 104
+                box:SetShown(scroll.enabled and a.show)
+                box:SetSize(bw, bh)
+                box:ClearAllPoints()
+                box:SetPoint("CENTER", stage, "CENTER", w * slots[key][1], slots[key][2])
+                local dur = math.max(0.5, a.duration or 2.4)
+                for i, fs in ipairs(box.lines) do
+                    local t = ((clock / dur) + (i - 1) / #box.lines) % 1
+                    local x, y = m.Path(a.anim, t, bh, bw, i % 2 == 0 and 1 or -1, i - 1, 18)
+                    fs:ClearAllPoints()
+                    if a.dir == "DOWN" then fs:SetPoint("TOP", box, "TOP", x, -y) else fs:SetPoint("BOTTOM", box, "BOTTOM", x, y) end
+                    fs:SetAlpha(t > 0.66 and math.max(0, 1 - (t - 0.66) / 0.34) or 1)
+                end
+            end
+        end
+        stage:HookScript("OnShow", function(self)
+            self:SetScript("OnUpdate", function(_, dt) clock = clock + dt; animate(self:GetWidth()) end)
+        end)
+        stage:HookScript("OnHide", function(self) self:SetScript("OnUpdate", nil) end)
         return function(self)
             local scroll = m.db.scroll
             local scale = tonumber((GetCVar("WorldTextScale_v2"))) or 1
@@ -248,33 +277,26 @@ P:Register("combattext", {
                 fs:SetFont(font, math.floor(15 * s[4] * math.min(scale, 1.6) + 0.5), "OUTLINE")
                 fs:SetTextColor(s[3][1], s[3][2], s[3][3])
                 fs:SetText(s[2])
-                fs:SetAlpha((on and 1 or 0.18) * (scroll.enabled and 0.35 or 1))
+                fs:SetAlpha((on and 1 or 0.18) * (scroll.enabled and 0.2 or 1))
                 fs:ClearAllPoints()
                 local t = (i - 1) / (#FCT - 1)
                 local y = (mode == 2) and (h * 0.32 - t * h * 0.64) or (-h * 0.32 + t * h * 0.64)
                 local x = (mode == 3) and (math.sin(t * math.pi) * w * 0.18) or ((i % 2 == 0) and 40 or -40)
                 fs:SetPoint("CENTER", self, "CENTER", x, y)
             end
-            -- the three areas, laid out left / right / top like their default places
-            local slots = { incoming = { -0.33, -10 }, target = { 0.33, -10 }, notify = { 0, 34 } }
             for key, box in pairs(areas) do
-                local a = scroll.areas[key]
-                box:SetShown(scroll.enabled and a.show)
-                box:SetSize(w * 0.28, key == "notify" and 40 or 86)
-                box:ClearAllPoints()
-                box:SetPoint("CENTER", self, "CENTER", w * slots[key][1], slots[key][2])
                 for i, fs in ipairs(box.lines) do
                     local sample = AREA_SAMPLE[key][i]
-                    m:StyleLine(fs, sample[3])
-                    local r, g, b = sample[2][1], sample[2][2], sample[2][3]
+                    local ev = scroll.events[sample[1]]
+                    m:StyleLine(fs, sample[3], key, ev.scale)
+                    local c = ev.color
+                    local r, g, b = c.r, c.g, c.b
                     if sample[3] and scroll.crit == "flash" then r, g, b = ns.Theme:Color("accent.primary") end
                     fs:SetTextColor(r, g, b)
-                    fs:SetText(sampleText(sample[1]))
-                    fs:ClearAllPoints()
-                    local step = (i - 1) * 24
-                    if a.dir == "DOWN" then fs:SetPoint("TOP", box, "TOP", 0, -step) else fs:SetPoint("BOTTOM", box, "BOTTOM", 0, step) end
+                    fs:SetText(sampleText(sample[2]))
                 end
             end
+            animate(w)
         end
     end,
 })

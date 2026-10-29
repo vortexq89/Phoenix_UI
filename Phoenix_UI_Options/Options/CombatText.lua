@@ -14,8 +14,25 @@ local function noScroll(m) return not m.db.scroll.enabled end
 local function scroll(row) return Opt.With(row, { disabled = row.disabled or noScroll }) end
 local AREAS = {
     { value = "incoming", label = "FCT_AREA_INCOMING" }, { value = "target", label = "FCT_AREA_TARGET" },
-    { value = "notify", label = "FCT_AREA_NOTIFY" },
+    { value = "notify", label = "FCT_AREA_NOTIFY" }, { value = "crits", label = "FCT_AREA_CRITS" },
 }
+local CRIT_AREA = { { value = "same", label = "FCT_CRIT_SAME" } }
+for _, a in ipairs(AREAS) do CRIT_AREA[#CRIT_AREA + 1] = a end
+local ANIM = { { value = "straight", label = "FCT_ANIM_STRAIGHT" }, { value = "parabola", label = "FCT_ANIM_PARABOLA" },
+    { value = "angled", label = "FCT_ANIM_ANGLED" }, { value = "static", label = "FCT_ANIM_STATIC" } }
+local ALIGN = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "CENTER", label = "ANCHOR_CENTER" },
+    { value = "RIGHT", label = "ANCHOR_RIGHT" } }
+-- one switch per event type, its colour, size, area and sound behind the cog
+local function event(key, t)
+    local base = "scroll.events." .. key
+    return Opt.With({ type = "toggle", key = base .. ".show", label = t.label, desc = t.desc,
+        keywords = t.keywords, cog = {
+            { type = "color", key = base .. ".color", label = "FCT_EV_COLOR" },
+            { type = "range", key = base .. ".scale", label = "FCT_EV_SCALE", min = 0.5, max = 2, step = 0.05, percent = true },
+            { type = "select", key = base .. ".area", label = "FCT_EV_AREA", values = AREAS },
+            { type = "sound", key = base .. ".sound", label = "FCT_EV_SOUND" },
+        } }, { disabled = noScroll })
+end
 local DIRS = { { value = "UP", label = "GROW_UP" }, { value = "DOWN", label = "GROW_DOWN" } }
 local CRIT = { { value = "grow", label = "FCT_CRIT_GROW" }, { value = "flash", label = "FCT_CRIT_FLASH" },
     { value = "none", label = "FCT_CRIT_NONE" } }
@@ -59,11 +76,51 @@ ns:RegisterOptions("CombatText", {
       func = function(m) ns.Config.frame:Hide(); m:TestScroll() end, keywords = "test sample" }),
     scroll(Opt.Text("scroll.font", "FCT_SCROLL_FONT", { min = 10, max = 40 })),
     scroll({ type = "toggle", key = "scroll.merge", label = "FCT_MERGE", desc = "FCT_MERGE_DESC", keywords = "merge spam combine hits" }),
-    scroll({ type = "select", key = "scroll.crit", label = "FCT_CRIT", desc = "FCT_CRIT_DESC", values = CRIT, keywords = "critical crit" }),
+    scroll({ type = "range", key = "scroll.mergeWindow", label = "FCT_MERGE_WINDOW", desc = "FCT_MERGE_WINDOW_DESC", min = 0.1, max = 2,
+      step = 0.05, disabled = function(m) return noScroll(m) or not m.db.scroll.merge end }),
+    scroll({ type = "range", key = "scroll.throttle", label = "FCT_THROTTLE", desc = "FCT_THROTTLE_DESC", min = 0, max = 30, step = 1,
+      keywords = "throttle spam limit lines per second" }),
+    scroll({ type = "toggle", key = "scroll.onlyCombat", label = "FCT_ONLY_COMBAT", desc = "FCT_ONLY_COMBAT_DESC" }),
+    ------------------------------------------------------------ areas
+    { type = "tab", label = "FCT_TAB_AREAS" },
     { type = "header", label = "FCT_AREA_HEADER", icon = "layout" },
     scroll({ type = "toggle", key = "scroll.areas.@.show", label = "FCT_AREA_SHOW", desc = "FCT_AREA_SHOW_DESC" }),
+    scroll({ type = "select", key = "scroll.areas.@.anim", label = "FCT_ANIM", desc = "FCT_ANIM_DESC", values = ANIM,
+      keywords = "animation parabola curve angled static straight msbt xct" }),
+    scroll({ type = "select", key = "scroll.areas.@.dir", label = "FCT_AREA_DIR", values = DIRS, keywords = "direction up down" }),
+    scroll({ type = "select", key = "scroll.areas.@.align", label = "FCT_ALIGN", values = ALIGN }),
+    scroll({ type = "range", key = "scroll.areas.@.duration", label = "FCT_DURATION", min = 0.6, max = 6, step = 0.1 }),
+    scroll({ type = "range", key = "scroll.areas.@.scale", label = "FCT_AREA_SCALE", min = 0.5, max = 2, step = 0.05, percent = true }),
+    { type = "header", label = "UF_POSITION", icon = "movers" },
     scroll({ type = "range", key = "scroll.areas.@.x", label = "OFFSET_X", min = -800, max = 800, step = 10 }),
     scroll({ type = "range", key = "scroll.areas.@.y", label = "OFFSET_Y", min = -500, max = 500, step = 10 }),
+    scroll({ type = "range", key = "scroll.areas.@.width", label = "FCT_AREA_WIDTH", min = 100, max = 600, step = 10 }),
     scroll({ type = "range", key = "scroll.areas.@.height", label = "FCT_AREA_HEIGHT", min = 60, max = 500, step = 10 }),
-    scroll({ type = "select", key = "scroll.areas.@.dir", label = "FCT_AREA_DIR", values = DIRS, keywords = "direction up down" }),
+    ------------------------------------------------------------ events
+    { type = "tab", label = "FCT_TAB_EVENTS" },
+    { type = "header", label = "FCT_INCOMING", icon = "arrow-down" },
+    event("damage", { label = "FCT_EV_DAMAGE", desc = "FCT_EV_DAMAGE_DESC", keywords = "melee hits taken" }),
+    event("spell", { label = "FCT_EV_SPELL", desc = "FCT_EV_SPELL_DESC", keywords = "spell damage taken" }),
+    event("shield", { label = "FCT_EV_SHIELD", desc = "FCT_EV_SHIELD_DESC", keywords = "damage shield thorns" }),
+    event("heal", { label = "FCT_EV_HEAL", desc = "FCT_EV_HEAL_DESC", keywords = "heals received" }),
+    event("hot", { label = "FCT_EV_HOT", desc = "FCT_EV_HOT_DESC", keywords = "heal over time periodic" }),
+    event("avoid", { label = "FCT_EV_AVOID", desc = "FCT_EV_AVOID_DESC", keywords = "miss dodge parry block absorb" }),
+    { type = "header", label = "FCT_EV_TARGET", icon = "arrow-up" },
+    event("hit", { label = "FCT_EV_HIT", desc = "FCT_EV_HIT_DESC", keywords = "outgoing damage target" }),
+    event("theal", { label = "FCT_EV_THEAL", desc = "FCT_EV_THEAL_DESC", keywords = "target heals" }),
+    { type = "header", label = "FCT_AREA_NOTIFY", icon = "warning" },
+    event("buff", { label = "FCT_EV_BUFF", desc = "FCT_EV_BUFF_DESC", keywords = "aura gained buff" }),
+    event("debuff", { label = "FCT_EV_DEBUFF", desc = "FCT_EV_DEBUFF_DESC", keywords = "debuff gained" }),
+    event("fade", { label = "FCT_EV_FADE", desc = "FCT_EV_FADE_DESC", keywords = "aura faded" }),
+    event("reactive", { label = "FCT_EV_REACTIVE", desc = "FCT_EV_REACTIVE_DESC", keywords = "proc reactive spell" }),
+    event("honor", { label = "FCT_EV_HONOR", desc = "FCT_EV_HONOR_DESC", keywords = "honour pvp" }),
+    event("rep", { label = "FCT_EV_REP", desc = "FCT_EV_REP_DESC", keywords = "reputation faction" }),
+    ------------------------------------------------------------ crits
+    { type = "tab", label = "FCT_TAB_CRITS" },
+    { type = "header", label = "FCT_CRIT", icon = "warning" },
+    scroll({ type = "select", key = "scroll.crit", label = "FCT_CRIT", desc = "FCT_CRIT_DESC", values = CRIT, keywords = "critical crit" }),
+    scroll({ type = "range", key = "scroll.critScale", label = "FCT_CRIT_SCALE", min = 1, max = 3, step = 0.05, percent = true,
+      disabled = function(m) return noScroll(m) or m.db.scroll.crit ~= "grow" end }),
+    scroll({ type = "select", key = "scroll.critArea", label = "FCT_CRIT_AREA", desc = "FCT_CRIT_AREA_DESC", values = CRIT_AREA }),
+    scroll({ type = "sound", key = "scroll.critSound", label = "FCT_CRIT_SOUND", desc = "FCT_CRIT_SOUND_DESC" }),
 })

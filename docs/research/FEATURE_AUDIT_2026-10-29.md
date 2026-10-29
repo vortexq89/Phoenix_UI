@@ -251,3 +251,11 @@ runtime in game.
   overwriting an existing choice (harness "raid marker bar merge migration"). Misplaced sections moved: Unit Frames auras
   (Portrait tab -> Icons and auras), Unit Frames Blizzard-mode skin (Resources tab -> Frames, after the mode picker),
   Nameplates Blizzard restyle (Auras tab -> Plates) and Blizzard cast bar (Auras tab -> Cast bar).
+- **Scrolling combat text rebuilt (t142u part 3 / step 6)** (`Modules/CombatText/Scroll.lua`, Combat Text > Scrolling
+  text, Areas, Events, Crits and sounds; off by default). Four areas (incoming, your target, notifications, crits), each
+  with its own animation (straight, parabola, angled, static), direction, alignment, width, height, duration and text
+  size. 14 event types, each with a switch, colour, size, area and sound. Merge window, throttle (lines per second per area),
+  only-in-combat filter, crit grow/flash/size, a crit area and a crit sound. The options preview animates every area along
+  its real path. Secret-safe: amounts only reach SetFormattedText; message types, actions and flags are IsSecret-checked
+  first; merging counts hits. Limit, stated in the UI: 12.x gives addons no "only my outgoing damage" source, so the outgoing
+  area shows all damage your target takes. Harness "scrolling combat text: paths, events, crits, throttle".
