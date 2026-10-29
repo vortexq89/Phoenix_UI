@@ -1893,6 +1893,11 @@ try("smart macros", function()
     end
     assert(list[3].body:find("@focus,exists,harm,nodead", 1, true), "kick macro has no focus condition")
     assert(#A.SmartMacros(nil) == 2, "kick macro without an interrupt")
+    assert(A.MountMacro({}):find("SummonByID(0)", 1, true), "random favourite without rules")
+    local body = A.MountMacro({ flyer = " Swift Wind ", ground = "Horse;[x]", swimmer = "" })
+    assert(body:find("/cast [flyable] Swift Wind; Horsex", 1, true) and #body <= 255, "mount rules: " .. body)
+    assert(A.MountMacro({ swimmer = "Seahorse", flyer = "Drake" }):find("/cast [swimming] Seahorse; Drake", 1, true), "swim + fly")
+    assert(A.MountMacro({ flyer = "Drake" }):find("/cast Drake", 1, true), "flyer only")
 end)
 -- aura glows: rules parsed; the update runs without reading aura contents
 try("tracker aura glows", function()

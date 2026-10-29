@@ -16,6 +16,7 @@ local M = ns:NewModule("Automation", {
         acceptResurrect = false, autoRelease = false, skipCinematics = false,
         fastLoot = false, confirmBoP = false, gossip = false, declinePetDuels = false, declineGuild = false,
         lowHealth = false, lowHealthSound = "AlertOnYou",
+        mountFlyer = "", mountGround = "", mountSwimmer = "", -- PUI Mount rules (Macros.lua)
     },
 })
 
