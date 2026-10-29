@@ -15,5 +15,6 @@
     <Script file="Widgets\Chips.lua"/>
     <Script file="Widgets\StylePicker.lua"/>
     <Script file="Widgets\Popup.lua"/>
+    <Script file="Widgets\IconPicker.lua"/>
     <Script file="Launcher.lua"/>
 </Ui>
