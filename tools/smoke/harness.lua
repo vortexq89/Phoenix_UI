@@ -3767,6 +3767,24 @@ try("icon picker", function()
     W.ResetIconList()
 end)
 
+-- emblem effects: glow + embers, no OnUpdate, off in combat and with the switch
+try("emblem effects", function()
+    local FX, gen = ns.EmblemFX, ns.modules.General
+    local host = CreateFrame("Frame", nil, UIParent); host:Show()
+    local tex = host:CreateTexture()
+    local f = FX:Attach(tex, 64)
+    assert(f and f.glow and f.embers and f.pulse, "effects not built")
+    assert(FX:Attach(tex, 64) == f, "attached twice")
+    assert(not f:GetScript("OnUpdate"), "effects must not use OnUpdate")
+    local real = env.InCombatLockdown
+    env.InCombatLockdown = function() return true end
+    FX:UpdateAll(); assert(not f.glow:IsShown(), "glow shown in combat")
+    env.InCombatLockdown = real
+    FX:UpdateAll()
+    ns.DB:Set(gen, "theme.emblemFX", false); ns.Theme:Apply(gen.db.theme); FX:UpdateAll()
+    assert(not f.embers:IsShown(), "switch off did not hide the embers")
+    ns.DB:Set(gen, "theme.emblemFX", true); ns.Theme:Apply(gen.db.theme)
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

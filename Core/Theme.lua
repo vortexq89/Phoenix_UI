@@ -60,7 +60,7 @@ local tokens = {}
 T.tokens = tokens
 T.settings = {
     preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
-    uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false,
+    uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false, emblemFX = true,
     borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
     surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = {},
     powerColors = {}, dispelColors = {},

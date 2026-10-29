@@ -18,7 +18,7 @@ local M = ns:NewModule("General", {
     defaults = {
         theme = {
             preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
-            uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false,
+            uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false, emblemFX = true,
             -- the style library defaults every module border set to "Follow Appearance" uses (Core/Style.lua)
             borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
             surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = CLASS_DEFAULTS,

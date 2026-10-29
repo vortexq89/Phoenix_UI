@@ -130,5 +130,6 @@ ns:RegisterOptions("General", {
     { type = "input", key = "mute", label = "GEN_MUTE", desc = "GEN_MUTE_DESC", wide = true,
       keywords = "mute sound file id silence annoying" },
     { type = "header", label = "ACCESSIBILITY", icon = "user" },
+    { type = "toggle", key = "theme.emblemFX", label = "EMBLEM_FX", desc = "EMBLEM_FX_DESC", keywords = "logo glow embers animation" },
     { type = "toggle", key = "theme.reduceMotion", label = "REDUCE_MOTION", desc = "REDUCE_MOTION_DESC", keywords = "animation" },
 })

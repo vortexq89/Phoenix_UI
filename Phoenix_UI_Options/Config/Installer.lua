@@ -112,6 +112,7 @@ step({ key = "welcome", label = "INST_WELCOME", icon = "home",
         pv.emblem = pv:CreateTexture(nil, "ARTWORK")
         pv.emblem:SetSize(128, 128); pv.emblem:SetPoint("CENTER", 0, 24)
         ns.Icons:Brand(pv.emblem, "emblem", 128)
+        ns.EmblemFX:Attach(pv.emblem, 128)
         pv.name = W.Text(pv, "brand", "accent.primary", "CENTER"); pv.name:SetPoint("TOP", pv.emblem, "BOTTOM", 0, -10)
         pv.ver = W.Text(pv, "small", "text.muted", "CENTER"); pv.ver:SetPoint("TOP", pv.name, "BOTTOM", 0, -4)
         function pv:Paint() self.name:SetText(ns.title or "Phoenix UI"); self.ver:SetText(tostring(ns.version or "")) end

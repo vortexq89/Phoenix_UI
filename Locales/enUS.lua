@@ -2848,6 +2848,8 @@ ns.RegisterLocale("enUS", {
     QLOGW_DAILY = "Daily",
     QLOGW_OWN = "Phoenix quest log",
     QLOGW_OWN_DESC = "Phoenix's own quest list beside the map: zones, levels, objectives, search and tracking (right-click). Details, abandon and share stay Blizzard's. Off: Blizzard's list. Applies live.",
+    EMBLEM_FX = "Emblem effects",
+    EMBLEM_FX_DESC = "A soft breathing glow and rising embers on the Phoenix emblem. Never in combat.",
     INST_TITLE = "Phoenix UI installer",
     INST_WELCOME = "Welcome",
     INST_WELCOME_TITLE = "Let's set up your interface",

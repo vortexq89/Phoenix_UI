@@ -3,6 +3,8 @@
 ## 2.0.0-beta1
 
 ### New
+- **New Phoenix emblem** (Flame Crest) on the addon list, compartment, minimap, Game Menu, settings, installer and
+  AFK screen, with a breathing glow and rising embers (General > Emblem effects; never in combat, no OnUpdate).
 - **Installer** (both clients): one window with nine steps (welcome, look, UI scale, accent, action bars, unit
   frames, chat, windows, finish), a step rail, a live preview, Back / Next / Skip. Choices apply at once; a module
   that only switches at load makes Finish reload once. Replaces the three-popup wizard; reopen with /pui install.
