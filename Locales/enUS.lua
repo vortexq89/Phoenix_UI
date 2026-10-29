@@ -2014,6 +2014,7 @@ ns.RegisterLocale("enUS", {
     PREVIEW_DRAG_SIZE_DESC = "Hold and drag to change the width and height (or size). Applies live, within the slider limits.",
     PREVIEW_DRAG_MOVE = "Drag to move",
     PREVIEW_DRAG_MOVE_DESC = "Hold and drag to change the X and Y offset. You can also drag a highlighted part of the preview.",
+    PREVIEW_DRAG_NONE = "Nothing to drag here: this page has no size or position settings, or the feature that owns them is off.",
     MIXED_VALUES = "Mixed",
     EDITING_SEVERAL = "Editing %d",
     PREVIEW_WORLD = "Show in world",

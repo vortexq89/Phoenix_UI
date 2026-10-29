@@ -1988,6 +1988,7 @@ local T = {
     PREVIEW_DRAG_SIZE_DESC = "Gedrückt halten und ziehen, um Breite und Höhe (oder Größe) zu ändern. Wirkt sofort, innerhalb der Reglergrenzen.",
     PREVIEW_DRAG_MOVE = "Ziehen zum Verschieben",
     PREVIEW_DRAG_MOVE_DESC = "Gedrückt halten und ziehen, um den X- und Y-Versatz zu ändern. Du kannst auch einen hervorgehobenen Teil der Vorschau ziehen.",
+    PREVIEW_DRAG_NONE = "Hier gibt es nichts zu ziehen: Diese Seite hat keine Größen- oder Positionseinstellungen, oder die zugehörige Funktion ist aus.",
     MIXED_VALUES = "Gemischt",
     EDITING_SEVERAL = "%d werden bearbeitet",
     PREVIEW_WORLD = "In der Welt zeigen",

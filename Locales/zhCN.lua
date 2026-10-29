@@ -1988,6 +1988,7 @@ local T = {
     PREVIEW_DRAG_SIZE_DESC = "按住并拖动以更改宽度和高度（或大小）。即时生效，不超出滑块范围。",
     PREVIEW_DRAG_MOVE = "拖动以移动",
     PREVIEW_DRAG_MOVE_DESC = "按住并拖动以更改 X 和 Y 偏移。也可以直接拖动预览中高亮的部分。",
+    PREVIEW_DRAG_NONE = "这里没有可拖动的内容：此页面没有大小或位置设置，或相关功能已关闭。",
     MIXED_VALUES = "混合",
     EDITING_SEVERAL = "正在编辑 %d 个",
     PREVIEW_WORLD = "在游戏中显示",

@@ -1988,6 +1988,7 @@ local T = {
     PREVIEW_DRAG_SIZE_DESC = "按住並拖曳以變更寬度與高度（或大小）。即時生效，不超出滑桿範圍。",
     PREVIEW_DRAG_MOVE = "拖曳以移動",
     PREVIEW_DRAG_MOVE_DESC = "按住並拖曳以變更 X 與 Y 位移。也可以直接拖曳預覽中醒目的部分。",
+    PREVIEW_DRAG_NONE = "這裡沒有可拖曳的內容：此頁面沒有大小或位置設定，或相關功能已關閉。",
     MIXED_VALUES = "混合",
     EDITING_SEVERAL = "正在編輯 %d 個",
     PREVIEW_WORLD = "在遊戲中顯示",

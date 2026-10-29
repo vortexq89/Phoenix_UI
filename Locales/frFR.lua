@@ -1988,6 +1988,7 @@ local T = {
     PREVIEW_DRAG_SIZE_DESC = "Maintenez et glissez pour changer la largeur et la hauteur (ou la taille). S'applique en direct, dans les limites du curseur.",
     PREVIEW_DRAG_MOVE = "Glisser pour déplacer",
     PREVIEW_DRAG_MOVE_DESC = "Maintenez et glissez pour changer le décalage X et Y. Vous pouvez aussi glisser une partie surlignée de l'aperçu.",
+    PREVIEW_DRAG_NONE = "Rien à glisser ici : cette page n'a pas de réglage de taille ou de position, ou la fonction concernée est désactivée.",
     MIXED_VALUES = "Mixte",
     EDITING_SEVERAL = "%d en édition",
     PREVIEW_WORLD = "Afficher en jeu",

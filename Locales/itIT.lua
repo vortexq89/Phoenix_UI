@@ -1988,6 +1988,7 @@ local T = {
     PREVIEW_DRAG_SIZE_DESC = "Tieni premuto e trascina per cambiare larghezza e altezza (o dimensione). Si applica subito, entro i limiti del cursore.",
     PREVIEW_DRAG_MOVE = "Trascina per spostare",
     PREVIEW_DRAG_MOVE_DESC = "Tieni premuto e trascina per cambiare lo scostamento X e Y. Puoi anche trascinare una parte evidenziata dell'anteprima.",
+    PREVIEW_DRAG_NONE = "Niente da trascinare qui: questa pagina non ha impostazioni di dimensione o posizione, oppure la funzione è disattivata.",
     MIXED_VALUES = "Misto",
     EDITING_SEVERAL = "Modifica di %d",
     PREVIEW_WORLD = "Mostra nel mondo",

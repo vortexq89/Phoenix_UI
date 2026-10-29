@@ -1988,6 +1988,7 @@ local T = {
     PREVIEW_DRAG_SIZE_DESC = "누른 채 드래그하여 너비와 높이(또는 크기)를 바꿉니다. 슬라이더 범위 안에서 즉시 적용됩니다.",
     PREVIEW_DRAG_MOVE = "드래그하여 이동",
     PREVIEW_DRAG_MOVE_DESC = "누른 채 드래그하여 X·Y 오프셋을 바꿉니다. 미리보기에서 강조된 부분을 직접 드래그할 수도 있습니다.",
+    PREVIEW_DRAG_NONE = "여기서는 드래그할 것이 없습니다. 이 페이지에 크기·위치 설정이 없거나 해당 기능이 꺼져 있습니다.",
     MIXED_VALUES = "혼합",
     EDITING_SEVERAL = "%d개 편집 중",
     PREVIEW_WORLD = "게임 화면에 표시",

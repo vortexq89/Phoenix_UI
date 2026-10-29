@@ -1988,6 +1988,7 @@ local T = {
     PREVIEW_DRAG_SIZE_DESC = "Segure e arraste para mudar a largura e a altura (ou o tamanho). Aplica na hora, dentro dos limites do controle.",
     PREVIEW_DRAG_MOVE = "Arraste para mover",
     PREVIEW_DRAG_MOVE_DESC = "Segure e arraste para mudar o deslocamento X e Y. Você também pode arrastar uma parte destacada da prévia.",
+    PREVIEW_DRAG_NONE = "Nada para arrastar aqui: esta página não tem ajustes de tamanho ou posição, ou o recurso está desligado.",
     MIXED_VALUES = "Misto",
     EDITING_SEVERAL = "Editando %d",
     PREVIEW_WORLD = "Mostrar no mundo",

@@ -25,7 +25,8 @@ D.LEAF = {
 }
 
 -- binSize, worldMapScale, windowScale …: a size / scale row under another name, ranked after the exact names
-function D.Suffix(axis, leaf)
+function D.Suffix(axis, leaf, key)
+    if axis == "s" and key == "scale.value" then return 30 end -- General: the UI scale itself
     if axis ~= "s" or leaf:match("^border") or leaf:match("^font") or leaf:match("^shadow") or leaf:match("^text") then return nil end
     if leaf:match("%lSize$") or leaf:match("%lScale$") then return 20 end
 end
@@ -49,7 +50,7 @@ function D.Pick(page, m, prefix)
             local p, leaf = split(it.key)
             if not prefix or p == prefix then
                 for axis, leaves in pairs(D.LEAF) do
-                    local rank = leaves[leaf] or D.Suffix(axis, leaf)
+                    local rank = leaves[leaf] or D.Suffix(axis, leaf, it.key)
                     if rank then
                         local set = sets[p]
                         if not set then set = { rank = {} }; sets[p] = set; order[#order + 1] = p end
@@ -92,7 +93,7 @@ function D.Step(pick, start, mode, dx, dy)
     if mode == "size" and pick.s and not pick.w and not pick.h then
         local grow = (dx - dy) / 2
         local _, leaf = split(pick.s.key)
-        if leaf == "scale" or leaf:match("Scale$") then
+        if leaf == "scale" or leaf == "value" or leaf:match("Scale$") then
             out.s = snap(pick.s, start.s * (1 + grow / 200))
         else
             out.s = snap(pick.s, start.s + grow)
@@ -167,7 +168,8 @@ local function grip(parent, icon, title, desc, size)
         W.Color(self.bg, "bg.raised", 0.85)
         W.Color(self.icon, "accent.text", 1)
     end)
-    b:SetScript("OnEnter", function(self) W.ShowTooltip(self, title, desc) end)
+    b.tipTitle, b.tipDesc = title, desc
+    b:SetScript("OnEnter", function(self) W.ShowTooltip(self, self.tipTitle, self.tipDesc) end)
     b:SetScript("OnLeave", function() W.HideTooltip() end)
     return b
 end
@@ -195,10 +197,18 @@ function D:Attach(stage, page, m)
     wire(size, page, m, "size")
     wire(move, page, m, "move")
     stage.puiGrips = { size = size, move = move }
+    -- always shown, so every preview reads the same; a grip with nothing to drive is dimmed and says why
+    -- (no size settings on this page, or the feature that owns them is switched off)
+    local function state(b, live, title, desc)
+        b.live = live
+        b:SetAlpha(live and 1 or 0.35)
+        b.tipTitle, b.tipDesc = title, live and desc or ns.L.PREVIEW_DRAG_NONE
+    end
     function stage.puiGrips:Sync()
         local pick = D.Pick(page, m)
-        self.size:SetShown(pick and (pick.w or pick.h or pick.s) and true or false)
-        self.move:SetShown(pick and (pick.x or pick.y) and true or false)
+        state(self.size, pick and (pick.w or pick.h or pick.s) and true or false, ns.L.PREVIEW_DRAG_SIZE, ns.L.PREVIEW_DRAG_SIZE_DESC)
+        state(self.move, pick and (pick.x or pick.y) and true or false, ns.L.PREVIEW_DRAG_MOVE, ns.L.PREVIEW_DRAG_MOVE_DESC)
+        self.size:Show(); self.move:Show()
     end
     stage.puiGrips:Sync()
     ns.Events:Listen("PUI_SETTING_CHANGED", stage.puiGrips, function(_, _, key)
