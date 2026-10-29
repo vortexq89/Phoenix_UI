@@ -114,7 +114,10 @@ function P:Create(kind, parent, m, page)
             if zoom > 1.05 then scale = zoom end
         end
         scale = ns.Previews.ClampScale(scale)
-        self:SetScale(scale)
+        if math.abs((self:GetScale() or 1) - scale) > 0.001 then
+            self:SetScale(scale)
+            ns.Skin:Reapply() -- 1px borders inside the stage are re-measured at the new scale
+        end
         self:SetHeight(base / scale)
         return scale
     end

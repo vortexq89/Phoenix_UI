@@ -31,6 +31,15 @@ end
 local function reapplyAll()
     for obj, fn in pairs(registry) do ns.SafeCall(fn, obj) end
 end
+-- Re-measure every skinned object on the next frame (after a frame's own SetScale: borders are converted from
+-- screen pixels at that frame's effective scale, so a stale one is 0 or 2 pixels thick). Several calls in
+-- one frame run once.
+local reapplyQueued = false
+function Sk:Reapply()
+    if reapplyQueued then return end
+    reapplyQueued = true
+    C_Timer.After(0, function() reapplyQueued = false; reapplyAll() end)
+end
 ns.Events:Listen("PUI_THEME_CHANGED", Sk, reapplyAll)
 ns.Events:On("UI_SCALE_CHANGED", Sk, reapplyAll)
 ns.Events:On("DISPLAY_SIZE_CHANGED", Sk, reapplyAll)

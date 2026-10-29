@@ -21,7 +21,6 @@ Config.pages, Config.builders, Config.navRows = {}, {}, {}
 local TOP_H, RAIL_W, LIST_W, FOOTER_H = 52, 64, 212, 34
 local DOCK_MIN, DOCK_MAX, DOCK_AT = 380, 460, 1100
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
-local MIN_W, MIN_H, MAX_W, MAX_H = 900, 560, 1800, 1200
 local DEFAULT_W, DEFAULT_H = 1180, 740
 local SCREEN_W, SCREEN_H = 0.8, 0.85 -- the window never covers more of the screen than this
 local RAIL_BTN = 52
@@ -37,7 +36,9 @@ end
 ---------------------------------------------------------------- frame
 local function uiStore() return ns.DB.sv.global.ui end
 
+local snapPosition
 local function savePosition(f)
+    if snapPosition then snapPosition(f) end
     local point, _, rel, x, y = f:GetPoint(1)
     local s = uiStore()
     s.point, s.rel, s.x, s.y = point, rel, x, y
@@ -51,27 +52,42 @@ local function readable()
     if e <= 0 then return 1 end
     return math.max(1, math.min(1.6, 0.71 / e))
 end
--- Keeps the whole window within SCREEN_W x SCREEN_H of the screen: first by shrinking the window (down to its
--- minimum size), then by lowering the scale. Window size never follows page content.
+-- The window has one fixed, readable size (DEFAULT_W x DEFAULT_H): it never follows page content and is not
+-- resizable, so every page is laid out for the same room. Small screens get a lower scale instead of a
+-- smaller window, keeping it within SCREEN_W x SCREEN_H of the screen.
 local function fitToScreen(f)
     local uw, uh = UIParent:GetWidth(), UIParent:GetHeight()
     if type(uw) ~= "number" or uw <= 0 or type(uh) ~= "number" or uh <= 0 then return end
+    if f:GetWidth() ~= DEFAULT_W or f:GetHeight() ~= DEFAULT_H then f:SetSize(DEFAULT_W, DEFAULT_H) end
     local scale = f:GetScale() or 1
-    local maxW, maxH = uw * SCREEN_W / scale, uh * SCREEN_H / scale
-    if maxW < MIN_W or maxH < MIN_H then
-        scale = math.max(0.5, math.min(scale, uw * SCREEN_W / MIN_W, uh * SCREEN_H / MIN_H))
-        f:SetScale(scale)
-        maxW, maxH = uw * SCREEN_W / scale, uh * SCREEN_H / scale
+    if uw * SCREEN_W / scale < DEFAULT_W or uh * SCREEN_H / scale < DEFAULT_H then
+        f:SetScale(math.max(0.5, math.min(scale, uw * SCREEN_W / DEFAULT_W, uh * SCREEN_H / DEFAULT_H)))
     end
-    local w, h = f:GetSize()
-    if w > maxW or h > maxH then f:SetSize(math.max(MIN_W, math.min(w, maxW)), math.max(MIN_H, math.min(h, maxH))) end
 end
 Config.FitToScreen = fitToScreen
 Config.SCREEN_W, Config.SCREEN_H = SCREEN_W, SCREEN_H
 
+-- Puts the window's top-left corner on a whole screen pixel: a window that sits between pixels draws its
+-- 1px borders and its text half on one pixel and half on the next (soft text, 2px grey lines).
+function snapPosition(f)
+    local left, top = f:GetLeft(), f:GetTop()
+    if type(left) ~= "number" or type(top) ~= "number" then return end
+    local unit = PixelUtil.ConvertPixelsToUIForRegion(1, f)
+    if not unit or unit <= 0 then return end
+    local x = math.floor(left / unit + 0.5) * unit
+    local y = math.floor((top - UIParent:GetHeight() / f:GetScale()) / unit + 0.5) * unit
+    f:ClearAllPoints()
+    f:SetPoint("TOPLEFT", UIParent, "TOPLEFT", x, y)
+end
+Config.SnapPosition = snapPosition
+
+-- A new scale changes how many UI units one screen pixel is: borders are re-measured (1 screen pixel) and
+-- the window is put back on the pixel grid.
 local function setScale(f, v)
     f:SetScale(v * readable())
     fitToScreen(f)
+    snapPosition(f)
+    Skin:Reapply()
 end
 
 -- 768 / physical height: the UI scale at which one UI pixel is one screen pixel.
@@ -541,16 +557,6 @@ local function buildFooter(f)
         Skin:Text(self.scaleLabel, "small", "text.muted")
         Skin:Text(self.pixel, "small", "text.muted")
     end)
-    local grip = CreateFrame("Button", nil, f)
-    grip:SetSize(16, 16)
-    grip:SetPoint("BOTTOMRIGHT", -4, 4)
-    grip.tex = W.Icon(grip, "resize", 14, "text.muted", "OVERLAY")
-    grip.tex:SetPoint("CENTER")
-    Skin:Register(grip, function(self) W.Color(self.tex, "text.muted") end)
-    grip:SetScript("OnEnter", function(self) W.Color(self.tex, "accent.primary") end)
-    grip:SetScript("OnLeave", function(self) W.Color(self.tex, "text.muted") end)
-    grip:SetScript("OnMouseDown", function() f:StartSizing("BOTTOMRIGHT") end)
-    grip:SetScript("OnMouseUp", function() f:StopMovingOrSizing(); savePosition(f) end)
 end
 
 local STATUS_ICON = {
@@ -591,15 +597,13 @@ function Config:Build()
     f:SetFrameStrata("HIGH")
     f:SetToplevel(true)
     f:SetMovable(true)
-    f:SetResizable(true)
-    f:SetResizeBounds(MIN_W, MIN_H, MAX_W, MAX_H)
     f:SetClampedToScreen(true)
     f:EnableMouse(true)
     local s = uiStore()
     -- windows saved by the 13-group layout (1100 x 720) grow once to the v2 default
     -- v3: the 1280 x 800 default covered most of a 1440p screen with the readable scale; start smaller once
     if s.v ~= 3 then s.w, s.h, s.v = nil, nil, 3 end
-    f:SetSize(s.w or DEFAULT_W, s.h or DEFAULT_H)
+    f:SetSize(DEFAULT_W, DEFAULT_H)
     f:SetPoint(s.point or "CENTER", UIParent, s.rel or "CENTER", s.x or 0, s.y or 0)
     setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
     Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.strong", shadow = 18 }) end)
