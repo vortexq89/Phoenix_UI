@@ -165,6 +165,9 @@ local DEFAULTS = {
     totems = { style = "blizzard", size = 28, spacing = 4, growth = "RIGHT", point = "CENTER", x = 0, y = -214, zoom = 0.08,
                border = Style.Border({ style = "pixel" }),
                duration = Style.Text(10, { anchor = "BOTTOM", outline = "OUTLINE", shadow = false, y = -2 }) },
+    -- weapon imbues (poisons, oils, stones, shaman weapon spells): the weapon's icon with the time left
+    imbues = { show = true, size = 28, spacing = 4, zoom = 0.08, point = "CENTER", x = 120, y = -214,
+               text = Style.Text(11, { outline = "OUTLINE", shadow = false }) },
     -- colours (every frame)
     colors = {
         low = false, mid = false, high = false, tapped = false, dead = false, offline = false,

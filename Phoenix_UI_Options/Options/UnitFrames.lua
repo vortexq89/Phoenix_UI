@@ -14,6 +14,7 @@ local function notArenaAny(_, unit) return unit ~= "arena" and unit ~= "arenapet
 local function drOff(m) return not m.db.units.arena.dr.show end
 local function resOff(m) return not m.db.resources.enabled end
 local function totemsOff(m) return m.db.totems.style ~= "phoenix" end
+local function imbuesOff(m) return not m.db.imbues.show end
 local function stripOff(m, unit) return not m.db.units[unit or "player"].strip.show end
 local function noCast(m, unit) return blizzard(m) or unit == "player" or ns.modules.UnitFrames.SMALL[unit] ~= nil end
 local function castHidden(_, u) return u == "player" or ns.modules.UnitFrames.SMALL[u] ~= nil end
@@ -493,6 +494,16 @@ ns:RegisterOptions("UnitFrames", {
     px({ type = "range", key = "totems.y", label = "OFFSET_Y", min = -800, max = 800, step = 1, combat = true, disabled = totemsOff }),
     px(Opt.With(Opt.Border("totems.border", "UF_BORDER"), { disabled = totemsOff })),
     px(Opt.Text("totems.duration", "UF_TOTEMS_FONT", { place = true, max = 24, row = { disabled = totemsOff } })),
+    { type = "header", label = "UF_IMBUES", icon = "grid" },
+    px({ type = "toggle", key = "imbues.show", label = "UF_IMBUES_SHOW", desc = "UF_IMBUES_DESC",
+      keywords = "weapon enchant poison oil sharpening stone windfury flametongue" }),
+    px({ type = "range", key = "imbues.size", label = "ICON_SIZE", min = 16, max = 64, step = 1, disabled = imbuesOff }),
+    px({ type = "range", key = "imbues.spacing", label = "ICON_SPACING", min = 0, max = 16, step = 1, disabled = imbuesOff }),
+    px({ type = "range", key = "imbues.zoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01, disabled = imbuesOff }),
+    px({ type = "select", key = "imbues.point", label = "UF_POINT", values = Opt.ANCHOR, disabled = imbuesOff }),
+    px({ type = "range", key = "imbues.x", label = "OFFSET_X", min = -1200, max = 1200, step = 1, disabled = imbuesOff }),
+    px({ type = "range", key = "imbues.y", label = "OFFSET_Y", min = -800, max = 800, step = 1, disabled = imbuesOff }),
+    px(Opt.Text("imbues.text", "UF_IMBUES_FONT", { max = 24, row = { disabled = imbuesOff } })),
     { type = "description", text = "UF_RES_NOTE" },
     ------------------------------------------------------------ Blizzard mode (the 2.0 skin)
     { type = "header", label = "UF_BLIZZARD_SKIN", icon = "skins" },

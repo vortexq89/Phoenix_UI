@@ -447,9 +447,11 @@ end
 function M:SpawnResources()
     if not block then spawnBlock() end
     if not totems then spawnTotems() end
+    M:SpawnImbues() -- Imbues.lua: weapon enchant icons
 end
 
 function M:RefreshResources()
     if block then placeBlock() end
     ns.Combat:Run("uf.totembar", placeTotemBar)
+    M:UpdateImbues()
 end
