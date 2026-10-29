@@ -148,7 +148,7 @@ end
 
 local ej = M.Replacement({ key = "ownJournal", frame = "EncounterJournal", title = L.EJW_TITLE,
     width = 3 * COL_W + 140, height = 34 + 32 + ROWS * ROW_H + 24, build = build, layout = layout,
-    close = function() if EncounterJournal then HideUIPanel(EncounterJournal) end end })
+    close = function() local f = _G.EncounterJournal; if f then HideUIPanel(f) end end })
 M.JournalReplacement = ej
 
 function M:SetupJournalWindow()

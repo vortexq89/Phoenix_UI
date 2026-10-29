@@ -2751,7 +2751,7 @@ try("phoenix collections window", function()
     env.C_MountJournal = { GetNumDisplayedMounts = function() return 2 end,
         GetDisplayedMountInfo = function(i) return "M" .. i, 10 + i, 1, false, true, 0, i == 1, false, nil, false, true, 50 + i end,
         SetSearch = function() end, SummonByID = function(id) summoned = id end, SetIsFavorite = function() end,
-        SetCollectedFilterSetting = function() end }
+        SetCollectedFilterSetting = function() end, GetCollectedFilterSetting = function() return true end }
     env.C_Spell = { GetSpellLink = function() return "l" end }
     assert(S.MountRecord(1).favorite and S.MountRecord(2).mountID == 52, "mount record")
     S.db.ownCollections = true; S:SyncCollections()
