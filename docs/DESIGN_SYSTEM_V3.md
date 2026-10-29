@@ -3,7 +3,7 @@
 Status: **proposal, revision 4 (t150)**. Nothing in this document is built yet, except the t146/t147 fixes listed at the end.
 
 **Revision 4 (owner, t150):** Expressway as the default font, by reference only, with Barlow Semi Condensed as the
-fallback (§3a); the settings GUI redesigned as v4 "Flow" (§11), with three concepts compared.
+fallback (§3a), and an own OFL family, Phoenix Font, proposed as that fallback (§3b); the settings GUI redesigned as v4 "Flow" (§11), with three concepts compared.
 
 **Revision 3 (owner, t149):** full-colour ember chrome icons with hover glow and a pressed light burst (§5a);
 a Phoenix panel icon in the top-left corner of every window (§5b); the UI font becomes Barlow Semi Condensed, the
@@ -151,6 +151,38 @@ Rules:
 - **Licence note** in `CREDITS.md`: Phoenix does not include Expressway. It only uses a copy supplied by another
   installed addon.
 - **Harness test:** stub LSM with and without "Expressway" and stub `SetFont` to fail, then assert each fallback step.
+
+### 3b. Phoenix Font (t154, awaiting approval)
+
+**Phoenix Font** is Phoenix's own OFL family, tuned to look as close to Expressway as an OFL derivative can. It is
+a Modified Version of **Barlow Semi Condensed** (© 2017 The Barlow Project Authors, OFL 1.1). Barlow declares no
+Reserved Font Name; the family is renamed anyway, as the OFL expects of Modified Versions.
+
+- **Files:** source `tools/media/phoenix_font/build.py`, output `tools/media/phoenix_font/build/PhoenixFont-{Regular,
+  SemiBold,Bold}.ttf`, `OFL.txt` with the Barlow credit.
+- **Method:** only fontTools geometric transforms of Barlow's own outlines.
+- **Expressway's role:** a visual reference only. It is rendered from the owner's local EllesmereUI copy, on the
+  owner's PC, and its rendered x-height and string widths are the targets. None of its outlines are opened, copied,
+  traced or committed.
+
+| tuning | Barlow SC | Phoenix Font | reference (rendered) |
+|---|---|---|---|
+| weight (Regular) | Medium | from Barlow SC **Bold** (SemiBold ← ExtraBold, Bold ← Black) | heavy at small sizes |
+| x-height / cap height | 0.73 | **0.77** (x-height zone raised 6.5%, ascenders shifted, stems kept straight) | 0.78 |
+| lowercase a–z width @100 px | 1150 | **1209** (x1.004) | 1210 |
+| uppercase A–Z width @100 px | 1371 | **1501** (x1.067) | 1502 |
+| digits 0–9 width @100 px | 457 | **539** (x1.126) | 539 |
+| curves | round | off-curve points pushed 3% outward (squarer bowls) | squarish |
+| spacing | | +4 units tracking per glyph on 1000 UPM | |
+| hinting | TrueType | instructions removed; FreeType autohints, as WoW does | |
+
+- **Comparison:** `renders/t150/font/font_compare_t154.png` shows Phoenix Font, Expressway and Barlow at
+  10/11/12/14/16 px, with no outline, OUTLINE and shadow.
+- **Still open:** Expressway pairs letters slightly tighter and uses a wider word space. If the owner wants it
+  closer, the next pass changes the space width and kerning.
+- **Default chain once approved** (§3a): Expressway by reference if installed, then Phoenix Font, then
+  PT Sans Narrow for ruRU. Until the owner approves, the in-game build is unchanged (Inter), and Barlow Semi
+  Condensed stays the documented fallback.
 
 Colour roles: `text.primary` (92% white), `text.secondary` (68%), `text.muted` (48%), `accent.text`.
 Minimum contrast: 4.5:1 for body text on its surface, and 3:1 for icons and borders that carry meaning.
