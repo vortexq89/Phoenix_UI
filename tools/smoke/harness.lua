@@ -7306,6 +7306,35 @@ try("raid marker bar", function()
     assert(n >= 7, "marker rows: " .. n)
 end)
 
+try("quick keybind mode", function()
+    local M = ns.modules.ActionBars
+    local vis = { alpha = 1, fade = true, oocAlpha = 0.3, mouseover = true, linked = false }
+    assert(M.TargetAlpha(vis, { combat = false, hover = false, reveal = false }) == 0, "mouseover bar hidden")
+    local shows, hooks = 0, {}
+    local frame = env.CreateFrame("Frame")
+    rawset(frame, "HookScript", function(_, k, fn) hooks[k] = fn end)
+    rawset(frame, "Show", function() shows = shows + 1; if hooks.OnShow then hooks.OnShow() end end)
+    local savedF, savedP, savedC = rawget(env, "QuickKeybindFrame"), rawget(env, "ShowUIPanel"), rawget(env, "InCombatLockdown")
+    rawset(env, "QuickKeybindFrame", frame); rawset(env, "ShowUIPanel", function(f) f:Show() end)
+    rawset(env, "InCombatLockdown", function() return true end)
+    local ok, why = M:OpenQuickKeybind()
+    assert(not ok and why == "AB_KEYBIND_COMBAT", "not in combat")
+    rawset(env, "InCombatLockdown", savedC)
+    ok = M:OpenQuickKeybind()
+    assert(ok and shows == 1 and M.keybindMode, "opened, bars revealed")
+    local h = next(M.BarsEngine.Headers()) and select(2, next(M.BarsEngine.Headers()))
+    if h then assert(M.BarsEngine.State(h).reveal, "keybind mode reveals faded bars") end
+    hooks.OnHide()
+    assert(not M.keybindMode, "closed")
+    rawset(env, "QuickKeybindFrame", savedF); rawset(env, "ShowUIPanel", savedP)
+    local opened = false
+    local old = M.OpenQuickKeybind
+    M.OpenQuickKeybind = function() opened = true; return true end
+    ns.TestSlash("actionbars kb")
+    M.OpenQuickKeybind = old
+    assert(opened, "/pui actionbars kb")
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

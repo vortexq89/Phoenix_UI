@@ -242,3 +242,6 @@ runtime in game.
   target markers (SetRaidTarget), world markers through the game's secure `worldmarker` action (mapping checked against
   Blizzard's `WORLD_RAID_MARKER_ORDER` in Blizzard_CompactRaidFrameManager.lua), clear buttons, ready check, 10 s pull.
   Visibility by state driver (group / raid / always), layout out of combat only, movable in Layout mode.
+- **Quick keybind mode built** (`Modules/ActionBars/Keybind.lua`): Action Bars > Text > "Bind keys" and `/pui actionbars kb`
+  open the game's own Quick Keybind mode (Phoenix bars hold Blizzard's buttons, so it binds them directly). Faded and
+  mouseover bars are revealed while it is open, however it was opened. Out of combat only. When it closes, the game reopens its Settings panel (Blizzard's own behaviour).

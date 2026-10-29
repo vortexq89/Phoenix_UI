@@ -150,6 +150,12 @@ ns:RegisterOptions("ActionBars", {
     ------------------------------------------------------------ text
     { type = "tab", label = "TAB_TEXT" },
     { type = "header", label = "AB_HOTKEYS_HEADER", icon = "fonts" },
+    { type = "button", label = "AB_KEYBIND_MODE", desc = "AB_KEYBIND_MODE_DESC", button = "AB_KEYBIND_MODE_BUTTON", icon = "keyboard",
+      combat = true, keywords = "quick keybind bind keys hotkeys hover press key mode",
+      func = function(m)
+          local ok, why = m:OpenQuickKeybind()
+          if not ok then ns.Config:SetStatus(ns.L[why], "state.warning", "warning") end
+      end },
     { type = "toggle", key = "hotkeys", label = "AB_HOTKEYS", desc = "AB_HOTKEYS_DESC", keywords = "keybind" },
     { type = "toggle", key = "shortHotkeys", label = "AB_SHORT_KEYS", desc = "AB_SHORT_KEYS_DESC" },
     Opt.Text("hotkey", "AB_HOTKEY_FONT", { place = true, max = 40, row = { disabled = function(m) return not m.db.hotkeys end } }),

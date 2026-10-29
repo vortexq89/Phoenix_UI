@@ -59,6 +59,7 @@
     <Script file="ActionBars\Extras.lua"/>
     <Script file="ActionBars\Ring.lua"/>
     <Script file="ActionBars\Uprank.lua"/>
+    <Script file="ActionBars\Keybind.lua"/>
     <Script file="UnitFrames\UnitFrames.lua"/>
     <Script file="UnitFrames\Blizzard.lua"/>
     <Script file="UnitFrames\Build.lua"/>

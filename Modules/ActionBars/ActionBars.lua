@@ -248,6 +248,7 @@ end
 
 ---------------------------------------------------------------- lifecycle
 function M:OnEnable()
+    self:HookQuickKeybind() -- Keybind.lua (the window may already be loaded)
     self:EnableButtons()                 -- Buttons.lua (both modes)
     if self:IsPhoenix() then self:EnableBars() end -- Bars.lua
     self:EnableExtras()                  -- Extras.lua
