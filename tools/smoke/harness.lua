@@ -2767,6 +2767,39 @@ try("phoenix collections window", function()
     tabN = 1; shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix adventure guide window", function()
+    local frameName = "EncounterJournal"
+    local names = { "EncounterJournal", "EJ_GetInstanceByIndex", "EJ_GetEncounterInfoByIndex", "EJ_GetNumLoot", "C_EncounterJournal", "EJ_GetCurrentTier", "EJ_GetTierInfo", "EJ_GetNumTiers", "EJ_SelectTier", "EJ_SelectInstance", "EJ_SelectEncounter", "EJ_GetEncounterInfo" }
+    local S = ns.modules.Skins
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown = true
+    env[frameName] = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    local tier = 2
+    env.EJ_GetInstanceByIndex = function(i) if i <= 3 then return 500 + i, "I" .. i end end
+    env.EJ_GetEncounterInfoByIndex = function(i) if i <= 2 then return "B" .. i, "", 700 + i end end
+    env.EJ_GetNumLoot = function() return 2 end
+    env.C_EncounterJournal = { GetLootInfoByIndex = function(i) return { name = "L" .. i, icon = 1, link = "x" } end }
+    env.EJ_GetCurrentTier = function() return tier end
+    env.EJ_GetTierInfo = function() return "Midnight" end
+    env.EJ_GetNumTiers = function() return 3 end
+    env.EJ_SelectTier = function(t) tier = t end
+    env.EJ_SelectInstance = function() end
+    env.EJ_SelectEncounter = function() end
+    env.EJ_GetEncounterInfo = function() return "Boss", "desc" end
+    assert(#S.JournalInstances(false) == 3 and #S.JournalBosses() == 2, "instances and bosses")
+    S.db.ownJournal = true; S:SyncJournal()
+    local r = S.JournalReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env[frameName]), "ownJournal: window with Blizzard's tucked")
+    S.db.ownJournal = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env[frameName]), "ownJournal: switch off live")
+    S.db.ownJournal = true; S:Refresh()
+    assert(r.win:IsShown(), "ownJournal: on again")
+    r.next.onClick()
+    assert(tier == 3, "tier stepper")
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

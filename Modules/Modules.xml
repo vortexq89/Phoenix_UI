@@ -35,6 +35,7 @@
     <Script file="Skins\CalendarWindow.lua"/>
     <Script file="Skins\VaultWindow.lua"/>
     <Script file="Skins\CollectionsWindow.lua"/>
+    <Script file="Skins\JournalWindow.lua"/>
     <Script file="Skins\Merchant.lua"/>
     <Script file="Skins\Vault.lua"/>
     <Script file="Skins\Calendar.lua"/>
