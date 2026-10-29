@@ -73,3 +73,17 @@ class Canvas:
         if label:
             d=ImageDraw.Draw(im); d.text((12,s.h-20),label,font=ImageFont.truetype(FD+'Inter-Medium.ttf',12),fill=(150,150,150))
         im.save(p)
+
+# Phoenix chrome icons (tools/media/gen_chrome_icons.py), tinted, at any size
+import io, sys as _sys
+_sys.path.insert(0, '/workspace/pui_restore/tools/media')
+from gen_chrome_icons import P as CHROME, svg as _svg
+import cairosvg as _cs
+_ic = {}
+def chrome(c, x, y, name, col, size=20):
+    k = (name, col, size)
+    if k not in _ic:
+        hexc = '#%02x%02x%02x' % col
+        png = _cs.svg2png(bytestring=_svg(CHROME[name], hexc).encode(), output_width=size * S, output_height=size * S)
+        _ic[k] = Image.open(io.BytesIO(png)).convert('RGBA')
+    im = _ic[k]; c.im.paste(im, (int(x * S), int(y * S)), im); c.d = ImageDraw.Draw(c.im)

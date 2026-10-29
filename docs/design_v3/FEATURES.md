@@ -2153,8 +2153,8 @@ Legend: **Component** names are from §5. A section's options are listed in orde
 
 ## Skins  (`Skins`)
 
-- **Purpose:** Phoenix look for Blizzard windows, and Phoenix replacement windows.
-- **Shows:** Per-window on/off, design choice (v3 §10).
+- **Purpose:** Phoenix theme on Blizzard windows, in the game's own layout (ElvUI / EllesmereUI style).
+- **Shows:** Per-window on/off, skin design (v3 §8, §10), extras per window.
 - **Settings tree:** Interface › Windows › Skins
 - **Fits with:** Interface › Windows.
 - **Live preview:** No — Window skins are judged on the real window; each row gets an 'Open' button instead of a preview.

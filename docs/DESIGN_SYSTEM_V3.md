@@ -1,7 +1,23 @@
 # Phoenix UI — Design System v3 (draft for owner approval)
 
-Status: **proposal**. Nothing in this document is built yet, except the t146 quick fixes listed at the end.
-Mockups: `docs/screenshots/v3/` (settings, character, collections). They are schematic renders, not in-game.
+Status: **proposal, revision 2 (t148)**. Nothing in this document is built yet, except the t146/t147 fixes listed at the end.
+
+**Revision 2 direction (owner, t148):** every Blizzard window keeps **the game's own layout and structure** and is
+restyled in the Phoenix theme, with our extra features and settings added, the way ElvUI and EllesmereUI skin
+(no custom re-layouts of Blizzard windows). Phoenix's own icon set appears **only on UI chrome**: micro menu,
+macro window controls, settings GUI tabs and navigation, and window controls. Class, spec, ability, spell, item,
+mount, pet, toy and portrait icons are never replaced.
+Mockups (`docs/screenshots/v3/`, schematic renders, not in-game). Each Blizzard-window mockup is drawn on the real
+geometry from the Blizzard source (`BlizzardInterfaceCode`, read-only):
+- `character_v3.png`: CharacterFrame expanded (540×424; 8+8 slots 37 px at 4 px gaps; model; InsetRight stats pane 172 wide
+  with its 3 sidebar tabs; Character / Reputation / Currency bottom tabs).
+- `collections_v3.png`: CollectionsJournal (703×606; MountCount; LeftInset list of 208×46 rows with 38 px icons; search 145×20;
+  Filter; MountDisplay; Summon; 6 bottom tabs).
+- `macro_v3.png`: MacroFrame (338×424; General / Character top tabs; 319×146 selector, 6 per row; selected macro, Change
+  Name/Icon; 286×85 edit box; Delete / New / Exit).
+- `micromenu_v3.png`: the 13 micro buttons (32×40) in Blizzard's order, with their states.
+- `settings_v3.png`: Phoenix's own settings GUI (not a Blizzard window), with the chrome icon set on the rail and tabs.
+- `chrome_icons.png`: the chrome icon set (§5a).
 
 Why v3: the first real in-game review (2026-10-29, 16 screenshots at 2560×1440, UI scale 0.53) showed the
 settings window wasting about 35% of its width, clipped labels, previews that are bigger than what they preview,
@@ -12,6 +28,11 @@ behind all of this, not each screen on its own.
 
 ## 1. Principles
 
+0. **Same as the game.** A Blizzard window keeps Blizzard's layout: the same frames, positions, sizes, tabs,
+   lists and order. Phoenix restyles every region (surfaces, borders, fonts, buttons, tabs, scroll bars, inputs),
+   and may *add* information inside the existing structure (item level on slots, a usage count, syntax colours,
+   tooltip lines) and settings for it. It never moves Blizzard controls into a new arrangement or replaces a
+   window with its own. Phoenix's own frames (bars, unit frames, nameplates, the settings GUI) are designed freely.
 1. **One surface language.** Every Phoenix surface is one of three levels: `base`, `raised` or `sunken`.
    No window ever shows Blizzard parchment, red buttons or gold frames next to Phoenix chrome. A frame is
    either fully skinned (every region listed in §8 handled), or left fully Blizzard and marked "not skinned".
@@ -21,8 +42,9 @@ behind all of this, not each screen on its own.
 3. **Nothing truncates by design.** Labels wrap to two lines, or the control moves under its label. "…" is only
    allowed in user data (names, item links), and then a tooltip shows the full text.
 4. **Show, don't decorate.** A preview appears only when it shows something the controls can't (§6).
-5. **The game's art stays.** Item, spell, mount and pet icons are never replaced, recoloured or desaturated,
-   except for empty, unknown or unusable states.
+5. **The game's art stays.** Class, spec, ability, spell, item, mount, pet, toy, macro and portrait icons are never
+   replaced or recoloured. The only exceptions are the game's own states: empty, not collected, unusable.
+   Phoenix chrome icons (§5a) go only on chrome.
 6. **Live.** Every setting applies without /reload. A reload is allowed only for a module's first enable,
    and the badge says so in its own line (it never shares a line with a label).
 
@@ -118,6 +140,24 @@ it applies. Its focus ring is a 1 px `accent.primary` outline plus a 2 px gap.
 - **Empty / unknown slot**: the slot fill `bg.raised` plus a 1 px `border.subtle` border; the game's empty-slot
   art is drawn at 70%, additive, so it reads as an outline rather than a black square.
 
+## 5a. Chrome icon set
+
+An original set (`tools/media/gen_chrome_icons.py`, SVG sources in `tools/media/chrome/`, sheet
+`docs/screenshots/v3/chrome_icons.png`): 45 icons on a 24-unit grid with a 2-unit safe margin, a 1.75 stroke,
+round caps and joins, outline only, and one tint set by the theme per state (default `text.secondary`, hover
+`text.primary`, active `accent.primary`, disabled 40%). Drawn at 16 / 20 px in game.
+
+| group | icons | used on |
+|---|---|---|
+| Micro menu (13) | character, professions, spells, achievements, quests, housing, guild, group finder, collections, journal, help, shop, menu | the 13 micro buttons, in Blizzard's order |
+| Settings nav & GUI tabs (17) | home, bars, frames, interface, combat, content, windows, systems, phoenix, profiles, look, support; tab: layout, appearance, text, behaviour, colours | settings rail, sub-nav, page tabs |
+| Macro window (6) | general, character, new, delete, rename, save | the macro tabs and buttons (never the macros' own icons) |
+| Window controls (9) | close, move, settings, search, filter, lock, reset, favourite, expand | title bars, search boxes, filter dropdowns, list markers |
+
+Where a Blizzard chrome element has a glyph (sidebar tabs, filter dropdown, search magnifier, close X), the
+Phoenix one replaces that glyph. Where the element shows game content (the portrait tab, a mount icon, a
+macro's icon), nothing changes.
+
 ## 6. When a preview is shown
 
 A preview appears **only** if all three are true:
@@ -144,15 +184,25 @@ combat). Covers Character, Collections, Achievements, Group Finder, Friends, Gui
 Spellbook, Map, Quest Log, Mail, Merchant, Bank, Bags, Auction, Calendar, Encounter Journal, Inspect, Trade and
 Vault (list in `SKINS_PLAN.md` §window list).
 
-## 8. Skin coverage rule
+## 8. Skin coverage rule (ElvUI / EllesmereUI style)
 
-For each skinned frame, Phoenix keeps a **region manifest** taken from the Blizzard source
-(`BlizzardInterfaceCode/Interface/AddOns`, read-only reference). Every NineSlice, Bg, Inset, ThreeSlice
-piece (`Left/Center/Right`), tab, scroll bar, close button, portrait and parchment texture of that frame is
-listed and either hidden, restyled or explicitly kept. A frame ships as "skinned" only when its manifest has no
-unhandled region. A dev command (`/pui skincheck`) walks the frame's regions and lists anything that is still
-Blizzard art. First targets, in order: Game Menu, Character, Collections (Mounts, Pets, Toys, Heirlooms,
-Appearances), Achievements, Group Finder, Bags, Quest Log and objective tracker.
+A skin keeps the frame and restyles its regions in place. For each skinned frame, Phoenix keeps a **region
+manifest** taken from the Blizzard source (`BlizzardInterfaceCode/Interface/AddOns`, read-only reference). Every
+NineSlice, Bg, Inset, ThreeSlice piece (`Left/Center/Right`), tab, scroll bar, close button and parchment
+texture of that frame is listed, then either hidden behind a Phoenix surface or restyled. Game content (model
+scenes, item and portrait art, icons) is kept. Nothing is re-anchored except where Blizzard's own art left gaps
+that our 1 px borders don't need; such shifts are at most 4 px and listed in the manifest. A frame ships as
+"skinned" only when its manifest has no unhandled region. A dev command (`/pui skincheck`) walks the frame's
+regions and lists anything that is still Blizzard art.
+
+Order: Game Menu, Character (with Reputation, Currency), Collections (Mounts, Pets, Toys, Heirlooms, Appearances,
+Campsites), Macro, micro menu, Achievements, Group Finder, Bags, Quest Log and objective tracker, then the rest of
+`SKINS_PLAN.md`.
+
+**Replacement windows retire:** Phoenix's own re-laid-out windows (the Phoenix character, friends, guild,
+mail, merchant, inspect... windows in `Modules/Skins/*Window.lua`) go against principle 0. Under v3 they become
+skins of Blizzard's window, keeping their extra data (item level, set tools, search) inside Blizzard's layout.
+Until that skin exists, each one stays available as an opt-in "classic Phoenix window", off by default.
 
 ## 9. Media pickers
 
@@ -190,8 +240,11 @@ Phoenix:RegisterDesign("Character", "phoenix", {        -- id unique per system
 })
 ```
 
-- Built-in designs per system: `blizzard` (reskin only), `phoenix` (our replacement), and optionally
-  `compact`.
+- Built-in designs per system: `blizzard` (the game's frame, untouched) and `phoenix` (the game's frame in the Phoenix
+  theme, plus our extras). For Phoenix-owned systems (bars, unit frames, nameplates, group frames, auras,
+  combat text) designs may differ freely. **For Blizzard windows, a design is a skin:** it may restyle and add,
+  never re-lay out (principle 0). The registration check refuses a window design that re-anchors the frame's
+  manifest regions.
 - A third-party addon declares `## Dependencies: Phoenix_UI` and calls `RegisterDesign` at load. Phoenix lists
   it in the system's **Design** picker, with its thumbnail and author.
 - Contract: designs only use the public API (`Phoenix.Skin`, `Phoenix.Widgets`, tokens, `Phoenix.Events`).
@@ -235,11 +288,12 @@ Preview verdicts under §6 (today every module has one):
 
 1. Tokens + type scale + spacing in `Core/Theme.lua`; component states in `UI/Widgets` (1 commit, live).
 2. Settings window v3 layout + preview rule (§6, §11).
-3. Plugin API (§10) on top of the module manager; convert Character, Collections and Game Menu to systems with
-   `blizzard` / `phoenix` designs.
-4. Skin manifests + `/pui skincheck`; finish Game Menu, Character, Collections, Achievements, Group Finder,
-   Bags, then the Quest log and tracker.
-5. `Movers.Window` (move any panel).
+3. Chrome icon set into `Media` (an atlas sheet like the current icons) and onto the micro menu, macro window,
+   settings rail and tabs.
+4. Plugin API (§10) on top of the module manager; Game Menu, Character, Collections and Macro become systems with
+   `blizzard` / `phoenix` (skin) designs.
+5. Skin manifests + `/pui skincheck`; same-as-the-game skins in the §8 order, each retiring its replacement window.
+6. `Movers.Window` (move any panel).
 Each step: harness tests, guard, push, install and in-game screenshots for review.
 
 ## Already done (t146 quick fixes and t147 font, before approval)

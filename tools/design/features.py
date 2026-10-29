@@ -42,7 +42,7 @@ N = {
    "The real bag opens beside the settings ('Show in world'); a fake grid is redundant."),
  'ItemLevel': ("Item level on items in bags, character, inspect and loot.", "Number + quality colour on icons.", "Interface › Tooltips & items.", 'Y',
    "Position and size on an icon: a 3-icon strip."),
- 'Skins': ("Phoenix look for Blizzard windows, and Phoenix replacement windows.", "Per-window on/off, design choice (v3 §10).", "Interface › Windows.", 'N',
+ 'Skins': ("Phoenix theme on Blizzard windows, in the game's own layout (ElvUI / EllesmereUI style).", "Per-window on/off, skin design (v3 §8, §10), extras per window.", "Interface › Windows.", 'N',
    "Window skins are judged on the real window; each row gets an 'Open' button instead of a preview."),
  'Quests': ("Objective tracker and quest log styling.", "Tracker headers, progress bars, quest item button, automation.", "Content › Questing & groups.", 'N',
    "The tracker is on screen; a preview duplicates it."),

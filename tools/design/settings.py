@@ -9,18 +9,18 @@ c.R(X,Y,WW,HH,fill=C['base'],r=8,outline=C['border'])
 # title bar
 c.R(X+1,Y+1,WW-2,47,fill=C['raised'],r=8); c.R(X+1,Y+30,WW-2,18,fill=C['raised'])
 c.L(X,Y+48,X+WW,Y+48,C['borderS'])
-c.glyph(X+16,Y+14,'phoenix',C['acc'],20); c.T(X+44,Y+24,'PHOENIX',15,'Bold',C['t1'],'lm'); c.badge(X+120,Y+16,'v3 · BETA',C['acc'])
-c.R(X+400,Y+10,380,28,fill=C['sunken'],r=4,outline=C['borderS']); c.glyph(X+410,Y+16,'search',C['t3'],16); c.T(X+434,Y+24,'Search 2,472 settings',13,fill=C['t3'],anchor='lm'); c.T(X+760,Y+24,'Ctrl K',11,'Medium',C['t3'],'rm')
-c.select(X+790,Y+10,150,'Profile: Default'); bx=X+950; bx+=c.btn(bx,Y+10,'Layout','secondary',icon='move')+8; c.btn(bx,Y+10,'Test frames','secondary')
-c.glyph(X+WW-32,Y+16,'close',C['t2'],16)
+chrome(c,X+14,Y+13,'nav-phoenix',C['acc'],22); c.T(X+44,Y+24,'PHOENIX',15,'Bold',C['t1'],'lm'); c.badge(X+120,Y+16,'v3 · BETA',C['acc'])
+c.R(X+400,Y+10,380,28,fill=C['sunken'],r=4,outline=C['borderS']); chrome(c,X+410,Y+16,'win-search',C['t3'],16); c.T(X+434,Y+24,'Search 2,472 settings',13,fill=C['t3'],anchor='lm'); c.T(X+760,Y+24,'Ctrl K',11,'Medium',C['t3'],'rm')
+c.select(X+790,Y+10,150,'Profile: Default'); bx=X+950; bx+=c.btn(bx,Y+10,'Layout','secondary')+8; c.btn(bx,Y+10,'Test frames','secondary')
+chrome(c,X+WW-32,Y+16,'win-close',C['t2'],16)
 # rail
 RY=Y+49; RH=HH-49-36
 c.R(X+1,RY,64,RH,fill=C['sunken']); c.L(X+65,RY,X+65,RY+RH,C['borderS'])
-items=[('home','Home'),('bars','Bars'),('frames','Frames'),('ui','Interface'),('combat','Combat'),('content','Content'),('windows','Windows'),('plug','Systems'),('phoenix','Phoenix')]
+items=[('nav-home','Home'),('nav-bars','Bars'),('nav-frames','Frames'),('nav-interface','Interface'),('nav-combat','Combat'),('nav-content','Content'),('nav-windows','Windows'),('nav-systems','Systems'),('nav-phoenix','Phoenix')]
 for i,(g,l) in enumerate(items):
-    yy=RY+10+i*60; on=g=='bars'
+    yy=RY+10+i*60; on=g=='nav-bars'
     if on: c.R(X+6,yy,54,54,fill=soft(C['acc'],0.14,C['sunken']),r=6); c.R(X+1,yy+14,3,26,fill=C['acc'],r=1)
-    col=C['acc'] if on else C['t2']; c.glyph(X+23,yy+9,g,col,20); c.T(X+33,yy+42,l,10,'SemiBold',C['t1'] if on else C['t3'],'mm')
+    col=C['acc'] if on else C['t2']; chrome(c,X+23,yy+9,g,col,20); c.T(X+33,yy+42,l,10,'SemiBold',C['t1'] if on else C['t3'],'mm')
 # subnav
 SX=X+66; c.R(SX,RY,200,RH,fill=C['base']); c.L(SX+200,RY,SX+200,RY+RH,C['borderS'])
 c.T(SX+16,RY+22,'BARS',10,'SemiBold',C['t3'],'lm')
@@ -36,11 +36,12 @@ c.T(CX+m,cy+44,"Phoenix's own secure bars: layout, paging, fading, shapes and ke
 bx=CX+CW-m-36; c.toggle(bx,cy+2,True); c.btn(bx-100,cy-2,'Reset','ghost')
 # tabs
 ty=cy+64
-tabs=['Layout','Appearance','Text','Paging','Fading','Keybinds','Per bar']
+tabs=[('Layout','tab-layout'),('Appearance','tab-appearance'),('Text','tab-text'),('Behaviour','tab-behaviour'),('Colours','tab-colours'),('Per bar','nav-bars')]
 tx=CX+m
-for i,t in enumerate(tabs):
-    w=c.tw(t,13,'Medium')+24; on=i==0
-    c.T(tx+12,ty+14,t,13,'SemiBold' if on else 'Medium',C['t1'] if on else C['t2'],'lm')
+for i,(t,ic) in enumerate(tabs):
+    w=c.tw(t,13,'Medium')+46; on=i==0
+    chrome(c,tx+10,ty+6,ic,C['acc'] if on else C['t3'],16)
+    c.T(tx+32,ty+14,t,13,'SemiBold' if on else 'Medium',C['t1'] if on else C['t2'],'lm')
     if on: c.R(tx+8,ty+30,w-16,2,fill=C['acc'])
     tx+=w
 c.L(CX+m,ty+32,CX+CW-m,ty+32,C['borderS'])
@@ -58,7 +59,7 @@ for i in range(n):
     c.R(xx,stage[1]+12,bw,bw,r=3,outline=(0,0,0))
     c.T(xx+bw-4,stage[1]+16,str((i+1)%10 if i<10 else ['-','='][i-10]),10,'SemiBold',C['t1'],'ra')
     if i in (2,7): c.R(xx,stage[1]+12,bw,bw,fill=None,r=3); c.T(xx+bw/2,stage[1]+32,'4',16,'Bold',C['t1'],'mm')
-c.R(stage[0]+stage[2]-26,stage[1]+stage[3]-24,18,18,fill=C['raised'],r=3); c.glyph(stage[0]+stage[2]-23,stage[1]+stage[3]-21,'move',C['acc'],12)
+c.R(stage[0]+stage[2]-26,stage[1]+stage[3]-24,18,18,fill=C['raised'],r=3); chrome(c,stage[0]+stage[2]-23,stage[1]+stage[3]-21,'win-move',C['acc'],12)
 # cards two columns
 gy=py+ph+16; colw=(pw-16)//2
 def card(x,y,w,title,rows):
@@ -91,9 +92,9 @@ def note(x,y,t,tx,ty):
     w=c.tw(t,12,'Medium')+20
     if x>X: x=W_-12-w
     c.R(x,y,w,26,fill=(255,214,102),r=4); c.T(x+10,y+13,t,12,'Medium',(30,24,10),'lm'); c.L((x+w if tx>x else x), y+13, tx,ty,(255,214,102),1)
-note(12,150,'Selected: 10% tint + bar, icon stays visible',X+40,RY+100)
+note(12,150,'Nav: Phoenix chrome icons, 10% tint when selected',X+40,RY+100)
 note(12,290,'Sub-nav only when a group has 2+ pages',SX+10,RY+60)
 note(1400,300,'Preview fitted, real size, only where useful',X+WW-30,py+40)
 note(1400,460,'Badges on their own line, never truncating a label',X+WW-60,gy+260)
-note(1400,170,'Tabs auto-width, overflow to More',X+WW-200,ty+14)
-c.save('/workspace/pui_restore/docs/screenshots/v3/settings_v3.png','Phoenix UI v3 mockup · settings window · schematic render, not in-game · icons are placeholders for game art')
+note(1400,170,'Tabs: Phoenix chrome icons + auto-width labels',X+WW-200,ty+14)
+c.save('/workspace/pui_restore/docs/screenshots/v3/settings_v3.png','Phoenix UI v3 mockup (revised t148) · settings window (Phoenix\'s own GUI) with the chrome icon set · schematic render, not in-game · action icons are placeholders for game art')
