@@ -8,7 +8,7 @@ local Opt = ns.Opt
 local LABEL = { fps = "DT_FPS", latency = "DT_LATENCY", speed = "DT_SPEED", durability = "DT_DURABILITY", gold = "DT_GOLD",
     clock = "DT_CLOCK", bugs = "DT_BUGS", bags = "DT_BAGS", itemlevel = "DT_ITEMLEVEL", friends = "DT_FRIENDS",
     guild = "DT_GUILD", mail = "DT_MAIL", spec = "DT_SPEC", keystone = "DT_KEYSTONE", coords = "DT_COORDS",
-    volume = "DT_VOLUME", currency = "DT_CURRENCY" }
+    volume = "DT_VOLUME", currency = "DT_CURRENCY", events = "DT_EVENTS" }
 
 -- The currency picker: every currency in your currency list, plus "none".
 local function currencyValues(m)
@@ -96,6 +96,10 @@ ns:RegisterOptions("DataTexts", {
       keywords = "mythic plus key dungeon rating" },
     { type = "toggle", key = "coords", label = "DT_COORDS", desc = "DT_COORDS_DESC", keywords = "coordinates position map" },
     { type = "toggle", key = "volume", label = "DT_VOLUME", desc = "DT_VOLUME_DESC", keywords = "sound master audio" },
+    { type = "toggle", key = "events", label = "DT_EVENTS", desc = "DT_EVENTS_DESC",
+      keywords = "event tracker world events holidays timers calendar" },
+    { type = "toggle", key = "eventsHolidays", label = "DT_EVENTS_HOLIDAYS", desc = "DT_EVENTS_HOLIDAYS_DESC",
+      keywords = "holiday festival calendar", disabled = function(m) return not m.db.events end },
     { type = "toggle", key = "currency", label = "DT_CURRENCY", desc = "DT_CURRENCY_DESC",
       keywords = "currency currencies crests valorstones tokens picker" },
     { type = "select", key = "currency1", label = "DT_CURRENCY_1", values = currencyValues, disabled = noCurrency },

@@ -21,6 +21,7 @@ P:Register("datatexts", {
             itemlevel = { "712.4", L.DT_ITEMLEVEL_UNIT }, friends = { 7, L.DT_ONLINE_UNIT }, guild = { 31, L.DT_ONLINE_UNIT },
             mail = { L.DT_MAIL_NEW, "", "state.success" }, spec = { L.DT_SAMPLE_SPEC, "" },
             keystone = { "+12", L.DT_SAMPLE_KEY }, coords = { "45.2, 61.8", "" }, volume = { 80, "%" },
+            events = { 3, L.DT_EVENTS_UNIT, "accent.primary" },
             currency = { ns.Icons:Markup("gold", 12) .. " 1,250  " .. ns.Icons:Markup("mythicplus", 12) .. " 34", "" },
         }
         return function()

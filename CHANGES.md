@@ -3,6 +3,10 @@
 ## 2.0.0-beta1
 
 ### New
+- **Event tracker** (both clients): a new Data Texts segment, Events, counts the world events running on your
+  continent and today's holidays; its tooltip lists each one with its zone and time left (soonest first) and a click
+  opens the world map on the next one. All from the game's own event markers and calendar, no shipped schedules.
+  Data Texts > Events.
 - **Drag the live preview** to size and place a module: grips in the preview's corner resize (width / height, or
   size / scale) and move (X / Y); highlighted parts also take edge drags (right = width, bottom = height, corner =
   both) and body drags. Values go through the same rows as the sliders: live, clamped, snapped, multi-select aware.

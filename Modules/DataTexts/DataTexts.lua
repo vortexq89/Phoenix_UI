@@ -3,9 +3,9 @@ local L = ns.L
 local Skin, Secret, W, Style, Theme = ns.Skin, ns.Secret, ns.Widgets, ns.Style, ns.Theme
 
 --[[ DataTexts: one slim, Edit Mode movable info bar (FPS, latency, speed, durability, gold, clock, bugs, free bag
-    slots, equipped item level, friends and guild online, new mail). Each segment is an accent glyph + value +
-    muted unit label, in the order you drag them to on the settings page (db.order, a comma list so saved
-    profiles stay plain strings). Segments with a window behind them open it on click, out of combat only.
+    slots, equipped item level, friends and guild online, new mail, world events: DataTexts/Events.lua). Each
+    segment is an accent glyph + value + muted unit label, in the order you drag them to on the settings page
+    (db.order, a comma list so saved profiles stay plain strings). Segments with a window behind them open it on click, out of combat only.
     The bugs segment shows this session's error count (Bugs module), flashes on a new one and opens the bug
     viewer. Slow-changing segments (bags, item level, friends, guild, mail) refresh on their events; the
     1 s ticker only redraws the bar and is stopped while the bar is hidden.
@@ -18,9 +18,10 @@ local M = ns:NewModule("DataTexts", {
     defaults = {
         fps = true, latency = true, speed = false, durability = true, gold = false, clock = true, bugs = true,
         bags = false, itemlevel = false, friends = false, guild = false, mail = false,
-        spec = false, keystone = false, coords = false, volume = false, currency = false,
+        spec = false, keystone = false, coords = false, volume = false, currency = false, events = false, eventsHolidays = true,
         currency1 = 0, currency2 = 0, currency3 = 0,
-        order = "fps,latency,speed,durability,gold,currency,bags,itemlevel,friends,guild,mail,spec,keystone,coords,volume,clock,bugs",
+        order = "fps,latency,speed,durability,gold,currency,bags,itemlevel,friends,guild,mail,spec,keystone,coords,volume,events,"
+            .. "clock,bugs",
         order2 = "", panel2 = false, width = 0, justify = "LEFT", mouseover = false,
         clock24 = true, clockRealm = false, goldCopper = false, goldAccount = true, durabilityWarn = 25,
         tooltips = true, combatTips = true,
@@ -36,12 +37,13 @@ local M = ns:NewModule("DataTexts", {
 })
 
 local ORDER = { "fps", "latency", "speed", "durability", "gold", "currency", "bags", "itemlevel", "friends", "guild", "mail", "spec",
-    "keystone", "coords", "volume", "clock", "bugs" }
+    "keystone", "coords", "volume", "events", "clock", "bugs" }
 M.ORDER = ORDER
 local KNOWN = {}
 for i, key in ipairs(ORDER) do KNOWN[key] = i end
 -- Segment glyphs whose icon name differs from the key.
-local ICON = { bags = "items", spec = "spec", keystone = "mythicplus", coords = "maps", volume = "sound", currency = "gold" }
+local ICON = { bags = "items", spec = "spec", keystone = "mythicplus", coords = "maps", volume = "sound", currency = "gold",
+    events = "bell" }
 -- Segments that need a client feature (ns:Supports).
 local FEATURE = { keystone = "mythicplus" }
 M.FEATURE = FEATURE
@@ -177,6 +179,11 @@ local PROVIDERS = {
         local has = HasNewMail()
         return has and L.DT_MAIL_NEW or L.DT_MAIL_NONE, "", has and "state.success" or "text.muted"
     end,
+    events = function()
+        local list, holidays = M:EventList()
+        local n = #list + #holidays
+        return n, L.DT_EVENTS_UNIT, n > 0 and "accent.primary" or "text.muted"
+    end,
     currency = function()
         local parts = {}
         for _, c in ipairs(M:PickedCurrencies()) do
@@ -252,11 +259,12 @@ local OPEN = {
     keystone = function() PVEFrame_ToggleFrame("ChallengesFrame") end,
     currency = function() ToggleCharacter("TokenFrame") end,
     coords = function() ToggleWorldMap() end,
+    events = function() M:OpenEventMap() end,
 }
 local TIP = { fps = "DT_FPS", latency = "DT_LATENCY", speed = "DT_SPEED", durability = "DT_DURABILITY", gold = "DT_GOLD",
     clock = "DT_CLOCK", bags = "DT_BAGS", itemlevel = "DT_ITEMLEVEL", friends = "DT_FRIENDS", guild = "DT_GUILD",
     mail = "DT_MAIL", spec = "DT_SPEC", keystone = "DT_KEYSTONE", coords = "DT_COORDS", volume = "DT_VOLUME",
-    currency = "DT_CURRENCY" }
+    currency = "DT_CURRENCY", events = "DT_EVENTS" }
 M.TIP = TIP
 
 -- A segment is shown when enabled here, when its client feature exists and, for bugs, when Bugs is running.
@@ -385,6 +393,20 @@ local TIPS = {
         return sub ~= "" and sub ~= zone and (zone .. " · " .. sub) or zone
     end,
     volume = function() return L.DT_VOLUME_TIP end,
+    events = function()
+        local list, holidays = M:EventList()
+        local out = {}
+        for _, e in ipairs(list) do
+            if #out < MAX_LINES then
+                local left = e.left and Theme:Wrap(M.EventTimeText(e.left), "accent.primary") or ""
+                out[#out + 1] = line(e.name, (e.zone ~= "" and (e.zone .. "  ") or "") .. left)
+            end
+        end
+        for _, title in ipairs(holidays) do
+            if #out < MAX_LINES then out[#out + 1] = line(L.DT_HOLIDAY, title) end
+        end
+        return #out > 0 and table.concat(out, "\n") or L.DT_EVENTS_NONE
+    end,
     currency = function()
         local out = {}
         for _, c in ipairs(M:PickedCurrencies()) do
@@ -605,12 +627,14 @@ function M:OnEnable()
         if isNew and seg and b and b.db.flash then b.Pulse(seg.glow) end
     end)
     if self.EnableBar then self:EnableBar() end
+    if self.SyncEvents then self:SyncEvents() end
 end
 
 function M:OnDisable()
     stopTicker()
     for _, o in pairs(bars) do o.frame:Hide() end
     if self.DisableBar then self:DisableBar() end
+    if self.SyncEvents then self:SyncEvents() end
 end
 
 function M:Refresh()
@@ -624,6 +648,7 @@ function M:Refresh()
         self:StyleBar(o)
     end
     self:SyncFader()
+    if self.SyncEvents then self:SyncEvents() end
     update()
     if self.RefreshBar then self:RefreshBar() end
 end

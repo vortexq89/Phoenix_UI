@@ -10,8 +10,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 114 |
-| missing - EllesmereUI reference | 3 |
+| Phoenix has | 116 |
+| partial - EllesmereUI reference (Forever map reveal) | 1 |
 | missing | 1 |
 | duplicate (skip) | 1 |
 | out of scope | 9 |
@@ -128,7 +128,7 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 | EllesmereUI_WindTools | Raid Markers bar (loaded) | Phoenix has | Phoenix `rt.markers`, `rt.worldMarkers`, `rt.readyButton`, `rt.pullButton`. |
 | EllesmereUI_WindTools | Chat Bar (loaded) | Phoenix has | Phoenix `chat.channelBar`, `chat.channelBarSide`. |
 | EllesmereUI_WindTools | Friendly Nameplate Outline (loaded) | Phoenix has | Nameplates > Friendly > name text outline (`np.styles.friendly.name.outline`, OUTLINE by default). |
-| EllesmereUI_WindTools | Disconnected modules (present on disk, not loaded) | missing - EllesmereUI reference | Already Known tint: built (Automation). Mute list: built (General). Smart tab: declined (writing the chat edit box's chat type taints it and breaks secure slash commands typed in chat). Extended merchant pages: declined (re-anchors Blizzard merchant slots). Event tracker: open. |
+| EllesmereUI_WindTools | Disconnected modules (present on disk, not loaded) | Phoenix has | Already Known tint: built (Automation). Mute list: built (General). Smart tab: declined (writing the chat edit box's chat type taints it and breaks secure slash commands typed in chat). Extended merchant pages: declined (re-anchors Blizzard merchant slots). Event tracker: built (Data Texts > Events: the game's event POIs on your continent with time left, today's holidays). |
 | LittleWigs | Dungeon boss modules | missing | Ship the per-dungeon NPC packs (dangerous casts, priority mobs) as data: highest value for M+ players. Keep them original (ours from in-game testing or public spell data) |
 | MikScrollingBattleText | Scroll areas and animation styles | Phoenix has | Phoenix `Phoenix_UI_Spark` (`spark.area`, four scroll areas, live preview). Spark moves lines with C-side AnimationGroups so no Lua runs per frame. |
 | MikScrollingBattleText | Hit attribution without the combat log ("worked out") | Phoenix has | Phoenix Spark has `spark.attributionWindow` and `spark.outgoingMode`: outgoing attribution exists (Feed.lua uses `UNIT_SPELLCAST_SUCCEEDED`). |

@@ -1412,6 +1412,61 @@ try("data text order", function()
     assert(DT:Order()[1] == "mail" and DT:Order()[2] == "bags", "saved order not used")
     ns.DB:Set(DT, "order", was)
 end)
+-- event tracker: event POIs of the continent and its zones, deduplicated, soonest first; today's holidays only
+try("data text events", function()
+    local DT = ns.modules.DataTexts
+    local saved = {}
+    for _, k in ipairs({ "C_Map", "C_AreaPoiInfo", "C_Calendar", "C_DateAndTime" }) do saved[k] = rawget(env, k) or false end
+    local savedT = rawget(env.Enum, "UIMapType")
+    rawset(env.Enum, "UIMapType", { Cosmic = 0, World = 1, Continent = 2, Zone = 3, Dungeon = 4, Micro = 5 })
+    local T = env.Enum.UIMapType
+    local maps = { [10] = { mapType = T.Continent, name = "Land" },
+        [11] = { mapType = T.Zone, name = "East", parentMapID = 10 },
+        [12] = { mapType = T.Zone, name = "West", parentMapID = 10 },
+        [13] = { mapType = T.Micro, name = "Inn", parentMapID = 11 } }
+    rawset(env, "C_Map", setmetatable({
+        GetMapInfo = function(id) return maps[id] end,
+        GetBestMapForUnit = function() return 13 end,
+        GetMapChildrenInfo = function() return { { mapID = 11, name = "East" }, { mapID = 12, name = "West" } } end,
+    }, { __index = saved.C_Map or nil }))
+    local events = { [10] = { 1 }, [11] = { 1, 2 }, [12] = { 3 } }
+    local names = { "Feast", "Siege", "Storm" }
+    local left = { 600, nil, 120 }
+    rawset(env, "C_AreaPoiInfo", {
+        GetEventsForMap = function(id) return events[id] or {} end,
+        GetAreaPOIInfo = function(_, id) return { name = names[id] } end,
+        GetAreaPOISecondsLeft = function(id) return left[id] end,
+    })
+    rawset(env, "C_DateAndTime", { GetCurrentCalendarTime = function() return { year = 2026, month = 10, monthDay = 29 } end })
+    rawset(env, "C_Calendar", {
+        GetMonthInfo = function() return { year = 2026, month = 9 } end,
+        GetNumDayEvents = function(offset, day) return offset == 1 and day == 29 and 2 or 0 end,
+        GetDayEvent = function(_, _, i)
+            return i == 1 and { calendarType = "HOLIDAY", title = "Hallow's End" } or { calendarType = "PLAYER", title = "Raid" }
+        end,
+        OpenCalendar = function() end,
+    })
+    assert(DT.ContinentOf(13) == 10, "continent walk")
+    local list = DT:ScanEvents(10)
+    assert(#list == 3, "events not deduplicated: " .. #list)
+    assert(list[1].name == "Storm" and list[2].name == "Feast" and list[3].name == "Siege", "not soonest first")
+    assert(list[1].zone == "West" and list[3].left == nil, "zone / untimed event")
+    assert(DT.TodayOffset({ year = 2025, month = 12 }, { year = 2026, month = 1 }) == 1, "month offset across a year")
+    local h = DT:Holidays()
+    assert(#h == 1 and h[1] == "Hallow's End", "holidays")
+    assert(DT.EventTimeText(3900) == "1h 05m" and DT.EventTimeText(125) == "2m" and DT.EventTimeText(9) == "9s", "time text")
+    DT.db.events = true
+    assert(DT:SyncEvents(), "scan not started")
+    local l2, h2 = DT:EventList()
+    assert(#l2 == 3 and #h2 == 1, "cached list")
+    local title, body = DT:TooltipFor("events")
+    assert(title == ns.L.DT_EVENTS and body:find("Storm") and body:find("Hallow"), "tooltip")
+    DT.db.events = false
+    assert(not DT:SyncEvents(), "scan not stopped")
+    assert(#(DT:EventList()) == 0, "cache kept after off")
+    for k, v in pairs(saved) do rawset(env, k, v or nil) end
+    rawset(env.Enum, "UIMapType", savedT)
+end)
 -- minimap bin: LibDBIcon buttons (present now or created later) are collected; hidden ones are skipped
 try("minimap bin", function()
     local MM = ns.modules.Minimap
