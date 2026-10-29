@@ -94,7 +94,7 @@ ns:RegisterOptions("CastBars", {
     { type = "range", key = "bars.@.y", single = true, label = "OFFSET_Y", min = -800, max = 800, step = 1, disabled = placed },
     { type = "description", text = "CB_ATTACH_NOTE", hidden = notAttachable },
     ------------------------------------------------------------ look
-    { type = "tab", label = "CB_TAB_LOOK" },
+    { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "CB_FILL", icon = "border" },
     { type = "texture", key = "bars.@.texture", label = "BAR_TEXTURE", allowDefault = true,
       disabled = function(m, u) return blizzard(m) and not m.db.style or (phoenix(m) and off(m, u)) end,
@@ -137,7 +137,7 @@ ns:RegisterOptions("CastBars", {
     px({ type = "range", key = "bars.@.decimals", label = "UF_DECIMALS", min = 0, max = 2, step = 1 }),
     px({ type = "range", key = "bars.@.nameLength", label = "CB_NAME_LENGTH", desc = "CB_NAME_LENGTH_DESC", min = 0, max = 40, step = 1 }),
     ------------------------------------------------------------ behaviour
-    { type = "tab", label = "CB_TAB_EXTRAS" },
+    { type = "tab", label = "TAB_BEHAVIOUR" },
     { type = "header", label = "CB_END", icon = "error" },
     px({ type = "range", key = "bars.@.hold", label = "CB_HOLD", desc = "CB_HOLD_DESC", min = 0, max = 3, step = 0.1 }),
     px({ type = "toggle", key = "bars.@.flash", label = "CB_FLASH", desc = "CB_FLASH_DESC", keywords = "interrupted flash success" }),

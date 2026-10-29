@@ -92,7 +92,7 @@ ns:RegisterOptions("GroupFrames", {
     { type = "scope", key = "profiles", label = "GF_PROFILE", values = PROFILES },
     { type = "preview", kind = "groupframe" },
     ------------------------------------------------------------ layout
-    { type = "tab", label = "GF_TAB_LAYOUT" },
+    { type = "tab", label = "TRACKER_TAB_LAYOUT" },
     { type = "header", label = "GF_MODE", icon = "groupframes" },
     { type = "select", key = "mode", label = "GF_MODE", desc = "GF_MODE_DESC", values = MODE, reload = true,
       keywords = "own raid party frames blizzard compact fallback replace" },

@@ -59,7 +59,7 @@ ns:RegisterOptions("Auras", {
     { type = "scope", key = "headers", label = "AURAS_HEADER", values = HEADERS },
     { type = "preview", kind = "auras" },
     ------------------------------------------------------------ layout
-    { type = "tab", label = "AURAS_TAB_LAYOUT" },
+    { type = "tab", label = "TRACKER_TAB_LAYOUT" },
     { type = "header", label = "AURAS_MODE", icon = "auras" },
     { type = "select", key = "mode", label = "AURAS_MODE", desc = "AURAS_MODE_DESC", values = MODE, reload = true,
       keywords = "buffs debuffs secure header blizzard edit mode" },
@@ -89,7 +89,7 @@ ns:RegisterOptions("Auras", {
     hx({ type = "range", key = "headers.@.x", single = true, label = "OFFSET_X", min = -1200, max = 1200, step = 1, combat = true }),
     hx({ type = "range", key = "headers.@.y", single = true, label = "OFFSET_Y", min = -800, max = 800, step = 1, combat = true }),
     ------------------------------------------------------------ look
-    { type = "tab", label = "AURAS_TAB_LOOK" },
+    { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "AURAS_STYLE", icon = "theme" },
     { type = "toggle", key = "style", label = "AURAS_SKIN", desc = "AURAS_SKIN_DESC", reload = true, hidden = phoenix,
       keywords = "buffs debuffs" },
