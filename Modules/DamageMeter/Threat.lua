@@ -15,7 +15,7 @@ local win
 -- Group units to read: player, party or raid members (and pets are left out).
 local function units()
     local out = { "player" }
-    local n = GetNumGroupMembers() or 0
+    local n = tonumber((GetNumGroupMembers())) or 0
     if IsInRaid() then
         out = {}
         for i = 1, n do out[#out + 1] = "raid" .. i end
