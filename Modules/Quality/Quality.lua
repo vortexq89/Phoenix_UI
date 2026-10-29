@@ -18,7 +18,11 @@ local M = ns:NewModule("Quality", {
         hideZoneText = false, hideBossBanner = false,
         markers = false, cursorRing = false, ringSize = 48, ringCombatOnly = false,
         combatAlert = false, combatSound = "", knownTint = true,
+        -- flight timer (Flight.lua)
+        flight = { enabled = true, mapTimes = true, land = true, width = 260, point = "TOP", x = 0, y = -170 },
     },
+    -- learned flight times per route and the learned flight speed (Flight.lua), shared by every character
+    globalDefaults = { flight = { times = {} } },
 })
 
 local function talkingHeadHook()
@@ -195,6 +199,7 @@ function M:OnEnable()
     ns.Events:On("ACHIEVEMENT_EARNED", self, function()
         if self.db.achievementScreenshot then C_Timer.After(1, Screenshot) end
     end)
+    self:SetupFlight() -- Flight.lua
     self:Refresh()
 end
 
@@ -202,6 +207,7 @@ function M:Refresh()
     self:ApplyBanners()
     self:ApplyMarkers()
     self:ApplyRing()
+    if self.ApplyFlight then self:ApplyFlight() end
 end
 
 function M:OnDisable()

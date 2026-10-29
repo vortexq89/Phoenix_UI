@@ -3,6 +3,11 @@
 ## 2.0.0-beta1
 
 ### New
+- **Flight timer** (both clients): while you ride a flight path a Phoenix bar shows the destination, a progress fill
+  in the accent colour and the time left, with a Land button. Phoenix learns each route's time from your own landed
+  flights (account-wide); routes not flown yet are estimated from their length and a speed learned from your flights
+  (shown with a ~). The flight map's node tooltips show the same time. A reload mid-flight keeps the bar. Quality of
+  Life > Travel; movable in Layout mode (it shows a sample there).
 - **Phoenix quest window**: Phoenix's own window for all four quest pages: the NPC's quest list (in progress first),
   offers with every reward (items and currencies with their real icons in quality frames, spells, gold, experience,
   honor, title, renown), what you still need, and turn-in with reward cards to pick (the best vendor value carries

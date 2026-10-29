@@ -3400,6 +3400,71 @@ try("open items: imbues, reward mark, gathering, uprank, threat", function()
     if DM.UpdateThreat then DM:UpdateThreat() end
 end)
 
+try("flight timer: learned and estimated routes, take-off to landing", function()
+    local Q = ns.modules.Quality
+    local st = { times = {} }
+    assert(Q.FlightKey(5, 7) == "5>7" and Q.FlightKey(nil, 7) == nil, "route key from node IDs")
+    local t, exact = Q.FlightEstimate(st, "5>7", 3200)
+    assert(t == 100 and not exact, "estimate from length at the default speed")
+    assert(Q.FlightEstimate(st, "5>7", nil) == nil, "no length, no time")
+    assert(not Q.FlightLearn(st, "5>7", 3, 3200), "a cancelled take-off is not learned")
+    assert(Q.FlightLearn(st, "5>7", 80, 3200) and st.times["5>7"] == 80 and st.speed > 32, "landed flight learned")
+    t, exact = Q.FlightEstimate(st, "5>7", 3200)
+    assert(t == 80 and exact, "learned time wins")
+    assert(Q.FlightTimeText(80, true, 20) == "1:00" and Q.FlightTimeText(80, false, 0) == "~1:20", "time left")
+    assert(Q.FlightTimeText(nil, false, 42) == "+0:42", "elapsed when unknown")
+    -- a whole flight with a stub taxi map: two hops of 1000 and 600 yards
+    local names = { "GetTaxiMapID", "C_TaxiMap", "GetNumRoutes", "TaxiGetNodeSlot", "TaxiNodeName", "UnitOnTaxi", "GetTime",
+        "C_Timer", "C_Map", "CreateVector2D" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local now, onTaxi = 100, false
+    local pos = { [1] = { 0, 0 }, [2] = { 1000, 0 }, [3] = { 1000, 600 } }
+    env.GetTaxiMapID = function() return 1414 end
+    env.C_TaxiMap = { GetAllTaxiNodes = function() return {
+        { nodeID = 11, slotIndex = 1, name = "Home", state = env.Enum.FlightPathState.Current, position = { slot = 1 } },
+        { nodeID = 12, slotIndex = 2, name = "Middle", state = 1, position = { slot = 2 } },
+        { nodeID = 13, slotIndex = 3, name = "Far Post", state = 1, position = { slot = 3 } } } end }
+    env.GetNumRoutes = function() return 2 end
+    env.TaxiGetNodeSlot = function(_, hop, from) return from and hop or hop + 1 end
+    env.TaxiNodeName = function() return "?" end
+    env.C_Map = setmetatable({ GetWorldPosFromMapPos = function(_, p)
+        local xy = pos[p.slot]
+        return 1, { GetXY = function() return xy[1], xy[2] end }
+    end }, { __index = saved.C_Map })
+    env.UnitOnTaxi = function() return onTaxi end
+    env.GetTime = function() return now end
+    env.C_Timer = setmetatable({ After = function(_, fn) fn() end }, { __index = saved.C_Timer })
+    Q.db.flight.enabled = true
+    if Q.ForgetFlights then Q:ForgetFlights() end
+    local route = Q:FlightRoute(3)
+    assert(route.key == "11>13" and route.name == "Far Post" and math.abs(route.yards - 1600) < 0.01, "route from the map")
+    onTaxi = false
+    Q.FlightPicked(3)
+    assert(not Q:FlightActive(), "not under way before the taxi starts")
+    onTaxi = true
+    Q.FlightControl()
+    local f = Q:FlightActive()
+    assert(f and f.name == "Far Post" and Q.FlightBar():IsShown(), "bar up at take-off")
+    assert(Q:FlightLastName() == "Far Post", "last destination kept for the preview")
+    now = 160; onTaxi = false
+    Q.FlightControl()
+    assert(not Q:FlightActive() and not Q.FlightBar():IsShown(), "bar down on landing")
+    assert(Q:FlightCount() == 1 and Q.global.flight.times["11>13"] == 60, "landed time learned")
+    -- early landing is not learned
+    onTaxi = true; now = 200
+    Q.FlightPicked(2); Q.FlightControl()
+    Q:FlightActive().early = true
+    now = 205; onTaxi = false; Q.FlightControl()
+    assert(Q.global.flight.times["11>12"] == nil, "early landing not learned")
+    Q.db.flight.enabled = false; Q:ApplyFlight()
+    assert(not Q.FlightBar():IsShown(), "switch off live")
+    Q.db.flight.enabled = true
+    Q:ForgetFlights()
+    assert(Q:FlightCount() == 0, "forget clears")
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
+
 try("audit: live switches and idle timers", function()
     local S, TT, DT = ns.modules.Skins, ns.modules.Tooltip, ns.modules.DataTexts
     -- title / close / tabs restyle every dressed window live

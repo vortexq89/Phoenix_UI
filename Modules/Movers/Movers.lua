@@ -94,7 +94,8 @@ local function remember(e, f)
 end
 
 -- A store lets a module keep the position in its own settings (action bars write bars.<key>.point/x/y…) and
--- place the frame itself: { get() -> {point,x,y,scale,alpha}|nil, set(s), apply(), reset(), active() }.
+-- place the frame itself: { get() -> {point,x,y,scale,alpha}|nil, set(s), apply(), reset(), active(),
+-- preview(unlocked) (optional: show or drop a sample when Layout mode opens or closes) }.
 local function saved(e)
     if e.store then return e.store.get() end
     return M.db.frames[e.key]
@@ -512,6 +513,10 @@ function M:SetUnlocked(on)
         return
     end
     unlocked = on and true or false
+    -- frames that only show now and then (flight timer, threat meter) put up a sample first, so they get a box
+    for _, e in ipairs(entries) do
+        if e.store and e.store.preview then ns.SafeCall(e.store.preview, unlocked) end
+    end
     if unlocked then
         grid = grid or buildGrid()
         if self.db.grid then grid:Layout(); grid:Show() else grid:Hide() end

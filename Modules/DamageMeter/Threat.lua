@@ -66,6 +66,7 @@ local function build()
             get = function() local t = M.db.threat; return { point = t.point, x = t.x, y = t.y } end,
             set = function(v) local t = M.db.threat; t.point, t.x, t.y = v.point or t.point, v.x or t.x, v.y or t.y end,
             apply = function() M:UpdateThreat() end,
+            preview = function() M:UpdateThreat() end,
             reset = function()
                 local d, t = M.defaults.threat, M.db.threat
                 t.point, t.x, t.y = d.point, d.x, d.y

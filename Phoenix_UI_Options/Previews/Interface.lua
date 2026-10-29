@@ -602,10 +602,10 @@ P:Register("afk", {
 })
 
 ---------------------------------------------------------------- quality of life (S16)
--- Raid markers bar, the combat banner, the cursor ring and a merchant item tinted as already known.
+-- Raid markers bar, the combat banner, the flight timer, the cursor ring and a merchant item tinted as already known.
 P:Register("quality", {
     module = "Quality",
-    height = 130,
+    height = 168,
     build = function(stage, m)
         local bar = CreateFrame("Frame", nil, stage)
         bar:SetSize(9 * 23 + 8, 28)
@@ -629,8 +629,32 @@ P:Register("quality", {
         ring:SetPoint("CENTER", stage, "BOTTOMRIGHT", -70, 44)
         local arrow = W.Icon(stage, "chevron-left", 12, "text.primary")
         arrow:SetPoint("CENTER", ring, "CENTER", 0, 0)
+        -- the flight timer at its real height: your last destination (or a sample), a learned time
+        local flight = CreateFrame("Frame", nil, stage)
+        flight:SetPoint("TOPLEFT", 16, -72)
+        flight.fill = CreateFrame("StatusBar", nil, flight)
+        flight.fill:SetPoint("TOPLEFT", 2, -2); flight.fill:SetPoint("BOTTOMRIGHT", -2, 2)
+        flight.fill:SetMinMaxValues(0, 1)
+        flight.icon = W.Icon(flight.fill, "maps", 14, "text.primary", "OVERLAY")
+        flight.icon:SetPoint("LEFT", 5, 0)
+        flight.time = W.Text(flight.fill, "small", "text.primary", "RIGHT")
+        flight.time:SetPoint("RIGHT", -6, 0)
+        flight.name = W.Text(flight.fill, "small", "text.primary", "LEFT")
+        flight.name:SetPoint("LEFT", flight.icon, "RIGHT", 5, 0)
+        flight.name:SetPoint("RIGHT", flight.time, "LEFT", -6, 0)
+        flight.name:SetWordWrap(false)
+        flight.caption = caption(stage, flight, L.QUALITY_FLIGHT)
         return function()
             local db = m.db
+            local fd = db.flight
+            flight:SetSize(math.min(fd.width, 300), 22)
+            Skin:Panel(flight, "base", { border = "border.subtle" })
+            flight.fill:SetStatusBarTexture(Theme:Bar())
+            flight.fill:SetStatusBarColor(Theme:Color("accent.primary"))
+            flight.fill:SetValue(0.4)
+            flight.name:SetText(m:FlightLastName() or L.QUALITY_FLIGHT_SAMPLE)
+            flight.time:SetText(m.FlightTimeText(83, true, 0))
+            flight:SetAlpha(fd.enabled and 1 or 0.35)
             Skin:Panel(bar, "base", { border = "border.subtle" })
             bar:SetAlpha(db.markers and 1 or 0.35)
             Skin:Text(banner, "title", "state.danger", 18, "OUTLINE")

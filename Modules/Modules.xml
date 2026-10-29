@@ -127,6 +127,7 @@
     <Script file="AFK\AFK.lua"/>
     <!-- utility -->
     <Script file="Quality\Quality.lua"/>
+    <Script file="Quality\Flight.lua"/>
     <Script file="Automation\Automation.lua"/>
     <Script file="Automation\BulkBuy.lua"/>
     <Script file="Automation\RareAlert.lua"/>

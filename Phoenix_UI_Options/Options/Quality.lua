@@ -1,6 +1,7 @@
 local _, ns = ...
 
 local cvar = ns.Combat.CVarAccessors
+local function noFlight(m) return not m.db.flight.enabled end
 
 -- Curated account CVars that exist on both clients and are safe to flip at any time out of combat.
 -- item = { label, desc, keywords, min/max/step for ranges }
@@ -40,6 +41,22 @@ ns:RegisterOptions("Quality", {
       keywords = "cursor mouse ring circle highlight" },
     { type = "range", key = "ringSize", label = "QUALITY_RING_SIZE", min = 24, max = 128, step = 2 },
     { type = "toggle", key = "ringCombatOnly", label = "QUALITY_RING_COMBAT", desc = "QUALITY_RING_COMBAT_DESC" },
+
+    { type = "tab", label = "QUALITY_TAB_TRAVEL" },
+    { type = "header", label = "QUALITY_FLIGHT", icon = "maps" },
+    { type = "toggle", key = "flight.enabled", label = "QUALITY_FLIGHT_SHOW", desc = "QUALITY_FLIGHT_DESC", gate = true,
+      keywords = "flight path taxi timer gryphon wyvern travel eta" },
+    { type = "toggle", key = "flight.mapTimes", label = "QUALITY_FLIGHT_MAP", desc = "QUALITY_FLIGHT_MAP_DESC", disabled = noFlight,
+      keywords = "flight map tooltip time" },
+    { type = "toggle", key = "flight.land", label = "QUALITY_FLIGHT_LAND_SHOW", desc = "QUALITY_FLIGHT_LAND_DESC", disabled = noFlight,
+      keywords = "land early dismount taxi" },
+    { type = "range", key = "flight.width", label = "UF_WIDTH", min = 160, max = 480, step = 2, disabled = noFlight },
+    { type = "description", text = function()
+        local m = ns.modules.Quality
+        return m and m.FlightCount and ns.L.QUALITY_FLIGHT_LEARNED:format(m:FlightCount()) or ""
+    end },
+    { type = "button", label = "QUALITY_FLIGHT_FORGET", desc = "QUALITY_FLIGHT_FORGET_DESC", button = "QUALITY_FLIGHT_FORGET_BUTTON",
+      icon = "delete", func = function(m) m:ForgetFlights() end },
 
     { type = "tab", label = "QUALITY_TAB_GAME" },
     { type = "header", label = "QUALITY_CAMERA", icon = "preview" },
