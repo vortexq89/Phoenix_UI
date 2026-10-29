@@ -18,7 +18,10 @@ local M = ns:GetModule("CombatText")
     a secret one is skipped. Merging counts hits instead of summing amounts, so it works on secret amounts too.
     Movement runs in each area's own OnUpdate, set only while a line is in flight (this branch has no Ticker
     registry; the handler is cleared when the area empties). ]]
-local AREAS = { "incoming", "target", "notify", "crits" }
+local AREAS = { "incoming", "heals", "target", "outheal", "power", "notify", "crits" }
+-- power types the game reports through ENERGIZE / PERIODIC_ENERGIZE (arg3 is the power token)
+local POWERS = { "MANA", "RAGE", "FOCUS", "ENERGY", "RUNIC_POWER", "INSANITY", "FURY", "PAIN", "MAELSTROM",
+    "LUNAR_POWER", "COMBO_POINTS", "HOLY_POWER", "SOUL_SHARDS", "CHI", "ARCANE_CHARGES", "ESSENCE" }
 
 -- event key -> { message types }, a fixed word (avoidance) or which GetCurrentEventInfo value is the amount, prefix
 local EVENTS = {
@@ -34,9 +37,16 @@ local EVENTS = {
     { key = "reactive", types = { "SPELL_ACTIVE" }, prefix = "" },
     { key = "honor", types = { "HONOR_GAINED" }, prefix = "+" },
     { key = "rep", types = { "FACTION" }, value = 2, prefix = "+" },
-    { key = "hit", unit = "WOUND", prefix = "" },
-    { key = "theal", unit = "HEAL", prefix = "+" },
+    { key = "hit", unit = "WOUND", prefix = "", castIcon = true },
+    { key = "theal", unit = "HEAL", prefix = "+", castIcon = true },
 }
+for _, token in ipairs(POWERS) do
+    EVENTS[#EVENTS + 1] = { key = "p_" .. token:lower(), power = token, prefix = "+", castIcon = true }
+end
+local BY_POWER = {}
+for _, e in ipairs(EVENTS) do if e.power then BY_POWER[e.power] = e end end
+-- spell-name events whose name can give an icon
+local NAME_ICON = { buff = true, debuff = true, fade = true, reactive = true }
 local WORDS = {
     MISS = "COMBAT_TEXT_MISS", SPELL_MISS = "COMBAT_TEXT_MISS", DODGE = "COMBAT_TEXT_DODGE", SPELL_DODGE = "COMBAT_TEXT_DODGE",
     PARRY = "COMBAT_TEXT_PARRY", SPELL_PARRY = "COMBAT_TEXT_PARRY", BLOCK = "COMBAT_TEXT_BLOCK",
@@ -49,7 +59,7 @@ for _, e in ipairs(EVENTS) do
     for _, t in ipairs(e.types or {}) do BY_TYPE[t] = e; if t:find("_CRIT$") then CRIT_TYPES[t] = true end end
     if e.unit then BY_UNIT[e.unit] = e end
 end
-M.EVENTS, M.AREAS, M.WORDS = EVENTS, AREAS, WORDS
+M.EVENTS, M.AREAS, M.WORDS, M.POWERS = EVENTS, AREAS, WORDS, POWERS
 
 local frames = {}
 local function areaDB(key) return M.db.scroll.areas[key] end
@@ -80,7 +90,21 @@ end
 local function newLine(f)
     local fs = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     fs:SetWordWrap(false)
+    fs.icon = f:CreateTexture(nil, "OVERLAY")
+    fs.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    fs.icon:Hide()
     return fs
+end
+
+-- The icon beside a line: left or right of the text, sized by the area; hidden without a texture or when off.
+local function placeIcon(fs, a, tex)
+    local ic = fs.icon
+    if not (tex and a.iconSide ~= "OFF") then ic:Hide(); return end
+    ic:SetTexture(tex)
+    ic:SetSize(a.iconSize or 20, a.iconSize or 20)
+    ic:ClearAllPoints()
+    if a.iconSide == "RIGHT" then ic:SetPoint("LEFT", fs, "RIGHT", 4, 0) else ic:SetPoint("RIGHT", fs, "LEFT", -4, 0) end
+    ic:Show()
 end
 
 -- Paint one line: the shared font, scaled by the area, the event and the crit style.
@@ -95,7 +119,7 @@ function M:StyleLine(fs, crit, areaKey, scale)
         local path, _, flags = fs:GetFont()
         fs:SetFont(path, math.max(6, math.floor(spec.size * mult + 0.5)), flags)
     end
-    if a then fs:SetWidth(a.width); fs:SetJustifyH(a.align or "CENTER") end
+    if a then fs:SetJustifyH(a.align or "CENTER") end
 end
 
 local function move(self, dt)
@@ -106,19 +130,22 @@ local function move(self, dt)
         local line = self.active[i]
         line.t = line.t + dt
         if line.t >= dur then
-            line.fs:Hide()
+            line.fs:Hide(); line.fs.icon:Hide()
             table.remove(self.active, i)
             self.free[#self.free + 1] = line.fs
         else
             local x, y = M.Path(a.anim, line.t / dur, a.height, a.width, line.side, line.slot, line.h)
             if a.align == "LEFT" then x = math.abs(x) elseif a.align == "RIGHT" then x = -math.abs(x) end
+            local side = a.align == "LEFT" and "LEFT" or (a.align == "RIGHT" and "RIGHT" or "")
+            local inset = (side == "LEFT" and (a.iconSize or 20) + 6) or (side == "RIGHT" and -((a.iconSize or 20) + 6)) or 0
             line.fs:ClearAllPoints()
-            if a.dir == "DOWN" then line.fs:SetPoint("TOP", self, "TOP", x, -y)
-            else line.fs:SetPoint("BOTTOM", self, "BOTTOM", x, y) end
-            line.fs:SetAlpha(line.t > fadeAt and math.max(0, 1 - (line.t - fadeAt) / (dur - fadeAt)) or 1)
+            if a.dir == "DOWN" then line.fs:SetPoint("TOP" .. side, self, "TOP" .. side, x + inset, -y)
+            else line.fs:SetPoint("BOTTOM" .. side, self, "BOTTOM" .. side, x + inset, y) end
+            local alpha = line.t > fadeAt and math.max(0, 1 - (line.t - fadeAt) / (dur - fadeAt)) or 1
+            line.fs:SetAlpha(alpha); line.fs.icon:SetAlpha(alpha)
         end
     end
-    if #self.active == 0 then self:SetScript("OnUpdate", nil); self:Hide() end
+    if #self.active == 0 then self:SetScript("OnUpdate", nil); if not self.unlocked then self:Hide() end end
 end
 
 local function area(key)
@@ -165,7 +192,7 @@ local function merge(db, f, mergeKey, now, prefix, amount)
     for _, line in ipairs(f.active) do
         if line.key == mergeKey and now - line.born < (db.mergeWindow or 0.35) then
             line.n, line.born, line.t = line.n + 1, now, 0
-            line.fs:SetFormattedText("%s%s ×%d", prefix, amount, line.n)
+            line.fs:SetFormattedText("%s%s%s ×%d", prefix, amount, line.suffix or "", line.n)
             return true
         end
     end
@@ -180,7 +207,7 @@ local function freeSlot(f)
 end
 
 -- Add (or merge into) a line. amount may be secret: it only goes to SetFormattedText.
-local function add(key, color, prefix, amount, crit, mergeKey, scale, sound)
+local function add(key, color, prefix, amount, crit, mergeKey, scale, sound, icon, suffix)
     local db = M.db.scroll
     local a
     key, a = route(db, key, crit)
@@ -190,28 +217,49 @@ local function add(key, color, prefix, amount, crit, mergeKey, scale, sound)
     if merge(db, f, mergeKey, now, prefix, amount) or not allow(f, db.throttle, now) then return end
     local fs = table.remove(f.free) or newLine(f)
     M:StyleLine(fs, crit, key, scale)
-    local r, g, b = colorOf(color)
+    local r, g, b = colorOf(a.useColor and a.color or color)
     if crit and db.crit == "flash" then r, g, b = Theme:Color("accent.primary") end
     fs:SetTextColor(r, g, b)
-    if amount == nil then fs:SetText(prefix) else fs:SetFormattedText("%s%s", prefix, amount) end
+    if amount == nil then fs:SetText(prefix) else fs:SetFormattedText("%s%s%s", prefix, amount, suffix or "") end
     fs:SetAlpha(1)
     fs:Show()
+    placeIcon(fs, a, icon)
     local snd = crit and db.critSound ~= "" and db.critSound or sound
     if snd and snd ~= "" and not M.testing then Media:PlaySound(snd) end
     local slot = a.anim == "static" and freeSlot(f) or 0
     f.flip = not f.flip
     local _, h = fs:GetFont()
     f.active[#f.active + 1] = { fs = fs, t = 0, side = f.flip and -1 or 1, slot = slot, h = (h or 18) + 4,
-        key = mergeKey, n = 1, born = now }
+        key = mergeKey, n = 1, born = now, suffix = suffix }
     f:SetScript("OnUpdate", move)
     f:Show()
 end
 M.AddLine = add
 
-local function fire(e, amount, crit, mergeKey, word)
+-- Your last cast's icon, for outgoing and power lines: UNIT_SPELLCAST_SUCCEEDED "player", only a spell ID that is not
+-- secret, kept for CAST_WINDOW seconds. 12.x gives these lines no spell of their own, so it is labelled "your last
+-- cast" on the page and can be switched off.
+local CAST_WINDOW = 1.2
+local lastIcon, lastAt = nil, 0
+local function onCast(_, _, unit, _, spellID)
+    if unit ~= "player" or spellID == nil or Secret.IsSecret(spellID) then return end
+    local tex = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(spellID)
+    if tex and not Secret.IsSecret(tex) then lastIcon, lastAt = tex, GetTime() end
+end
+
+local function iconFor(e, name)
+    local db = M.db.scroll
+    if NAME_ICON[e.key] and type(name) == "string" and not Secret.IsSecret(name) and C_Spell and C_Spell.GetSpellTexture then
+        local tex = C_Spell.GetSpellTexture(name)
+        if tex and not Secret.IsSecret(tex) then return tex end
+    end
+    if e.castIcon and db.castIcons and lastIcon and GetTime() - lastAt < CAST_WINDOW then return lastIcon end
+end
+
+local function fire(e, amount, crit, mergeKey, word, name, suffix)
     local s = M.db.scroll.events[e.key]
     if not (s and s.show) then return end
-    add(s.area, s.color, word or e.prefix, amount, crit, mergeKey, s.scale, s.sound)
+    add(s.area, s.color, word or e.prefix, amount, crit, mergeKey, s.scale, s.sound, iconFor(e, name), suffix)
 end
 M.Fire = fire
 
@@ -219,12 +267,20 @@ local function onCombatText(_, _, messageType)
     if Secret.IsSecret(messageType) or type(messageType) ~= "string" then return end
     local word = WORDS[messageType]
     if word then return fire(EVENTS[6], nil, false, messageType, _G[word] or messageType) end
+    if messageType == "ENERGIZE" or messageType == "PERIODIC_ENERGIZE" then
+        local amount, token = C_CombatText.GetCurrentEventInfo()
+        if amount == nil or Secret.IsSecret(token) or type(token) ~= "string" then return end
+        local e = BY_POWER[token]
+        if not e then return end
+        local label = _G[token]
+        return fire(e, amount, false, token, nil, nil, type(label) == "string" and (" " .. label) or nil)
+    end
     local e = BY_TYPE[messageType]
     if not e then return end
     local data, arg3 = C_CombatText.GetCurrentEventInfo()
     local amount = e.value == 2 and arg3 or data
     if amount == nil then return end
-    fire(e, amount, CRIT_TYPES[messageType] or false, messageType)
+    fire(e, amount, CRIT_TYPES[messageType] or false, messageType, nil, data)
 end
 
 local function onUnitCombat(_, _, unit, action, flags, amount)
@@ -244,7 +300,9 @@ function M:EnableScroll()
             placeArea(key)
             local on = db.enabled and areaDB(key).show
             if not on then
-                for _, line in ipairs(frames[key].active) do line.fs:Hide(); frames[key].free[#frames[key].free + 1] = line.fs end
+                for _, line in ipairs(frames[key].active) do
+                    line.fs:Hide(); line.fs.icon:Hide(); frames[key].free[#frames[key].free + 1] = line.fs
+                end
                 wipe(frames[key].active)
                 frames[key]:SetScript("OnUpdate", nil)
                 frames[key]:Hide()
@@ -256,6 +314,7 @@ function M:EnableScroll()
     if C_CombatText and C_CombatText.GetCurrentEventInfo then ns.Events:On("COMBAT_TEXT_UPDATE", owner, onCombatText) end
     local ev = db.events
     if ev.hit.show or ev.theal.show then ns.Events:On("UNIT_COMBAT", owner, onUnitCombat) end
+    if db.castIcons then ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", owner, onCast, "player") end
 end
 
 -- Test lines through every event's real route (colour, size, area): plain sample numbers.
@@ -270,8 +329,66 @@ function M:TestScroll()
         local v = SAMPLE[e.key]
         if v == "FCT_SAMPLE_AURA" then v = ns.L.FCT_SAMPLE_AURA end
         if e.words then fire(e, nil, false, nil, _G.COMBAT_TEXT_DODGE or "Dodge")
-        else fire(e, v, i == 1 or e.key == "hit", nil) end
+        elseif e.power then
+            if e.power == "MANA" or e.power == "RAGE" or e.power == "ENERGY" or e.power == "RUNIC_POWER" then
+                fire(e, "240", false, nil, nil, nil, " " .. (_G[e.power] or e.power))
+            end
+        else fire(e, v, i == 1 or e.key == "hit", nil, nil, e.key == "reactive" and "Fireball" or nil) end
     end
     self.testing = false
     return true
 end
+
+---------------------------------------------------------------- unlock: drag the areas on screen
+-- Shows every area that is on as a labelled box; dragging one writes its x / y (offset from the screen centre),
+-- the same values as the sliders, so the page and the preview follow. Out of combat only (plain frames, but a
+-- drag mid-fight is never wanted); locking again, or entering combat, hides the boxes.
+function M:UnlockAreas(on)
+    local db = self.db.scroll
+    if on and InCombatLockdown() then return false end
+    for _, key in ipairs(AREAS) do
+        local a = db.areas[key]
+        local f = (on and db.enabled and a.show) and area(key) or frames[key]
+        if f then
+            if on and db.enabled and a.show then
+                placeArea(key)
+                if not f.handle then
+                    f.handle = CreateFrame("Frame", nil, f)
+                    f.handle:SetAllPoints()
+                    Skin:Register(f.handle, function(h) Skin:Panel(h, "base", { border = "accent.primary" }); h:SetAlpha(0.55) end)
+                    f.handle.label = f.handle:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+                    f.handle.label:SetPoint("CENTER")
+                    f.handle.label:SetText(ns.L["FCT_AREA_" .. key:upper()])
+                    f:SetMovable(true); f:RegisterForDrag("LeftButton")
+                    f:SetScript("OnDragStart", function(self) if not InCombatLockdown() then self:StartMoving() end end)
+                    f:SetScript("OnDragStop", function(self)
+                        self:StopMovingOrSizing()
+                        local x, y = self:GetCenter()
+                        local cx, cy = UIParent:GetCenter()
+                        local s = areaDB(self.key)
+                        s.x, s.y = math.floor(x - cx + 0.5), math.floor(y - cy + 0.5)
+                        placeArea(self.key)
+                        ns.Events:Fire("PUI_SETTING_CHANGED", "CombatText", "scroll.areas." .. self.key .. ".x", s.x)
+                    end)
+                end
+                f.unlocked = true
+                f:EnableMouse(true)
+                f.handle:Show()
+                f:Show()
+            else
+                f.unlocked = nil
+                f:EnableMouse(false)
+                if f.handle then f.handle:Hide() end
+                if #f.active == 0 then f:Hide() end
+            end
+        end
+    end
+    self.unlocked = on and true or nil
+    if on then
+        ns.Events:On("PLAYER_REGEN_DISABLED", self.unlockOwner, function() self:UnlockAreas(false) end)
+    else
+        ns.Events:OffAll(self.unlockOwner)
+    end
+    return true
+end
+M.unlockOwner = {}

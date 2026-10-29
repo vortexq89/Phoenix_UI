@@ -7183,9 +7183,10 @@ try("combat text events: secret types skipped, merges, areas off", function()
     assert(lines == 2, "secret actions and other units are skipped")
     fire("UNIT_COMBAT", "target", "WOUND", SECRET, SECRET)
     assert(lines == 3, "target wound with secret flags")
-    sc.areas.incoming.show = false
+    sc.areas.incoming.show, sc.areas.heals.show = false, false
     fire("COMBAT_TEXT_UPDATE", "HEAL")
     assert(lines == 3, "a hidden area adds nothing")
+    sc.areas.heals.show = true
     sc.enabled = false; CT:EnableScroll() -- restyles lines still in flight
     local before = lines
     fire("COMBAT_TEXT_UPDATE", "SPELL_DAMAGE")
@@ -7396,6 +7397,69 @@ try("scrolling combat text: paths, events, crits, throttle", function()
     rawset(env, "C_CombatText", oldCT)
     sc.events.damage.area, sc.critArea, sc.events.heal.show = "incoming", "same", true
     if saved then for k, v in pairs(saved) do sc[k] = v end end
+    sc.enabled = false
+    CT:EnableScroll()
+end)
+
+-- MSBT-style areas: power types, spell icons only from non-secret sources, area colour, unlock
+try("combat text areas: power, icons, unlock", function()
+    local CT = ns.modules.CombatText
+    local sc = CT.db.scroll
+    local oldIs, oldStyle, oldCT, oldSpell = ns.Secret.IsSecret, CT.StyleLine, rawget(env, "C_CombatText"), rawget(env, "C_Spell")
+    local SECRET = {}
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    local info = { 240, "MANA" }
+    rawset(env, "C_CombatText", { GetCurrentEventInfo = function() return info[1], info[2] end })
+    local asked = {}
+    rawset(env, "C_Spell", setmetatable({ GetSpellTexture = function(id)
+        local fromCT = debug.traceback():find("CombatText", 1, true)
+        if not fromCT then return 135812 end -- other modules (Spell History) are not under test here
+        assert(id ~= SECRET, "a secret spell reached GetSpellTexture"); asked[#asked + 1] = id; return 135812 end }, { __index = oldSpell }))
+    local got = {}
+    CT.StyleLine = function(self, fs, crit, key, ...) got[#got + 1] = { key = key, fs = fs }; return oldStyle(self, fs, crit, key, ...) end
+    sc.enabled, sc.merge, sc.throttle, sc.onlyCombat, sc.castIcons = true, false, 0, false, true
+    for _, k in ipairs(CT.AREAS) do sc.areas[k].show = true end
+    CT:EnableScroll()
+    fire("COMBAT_TEXT_UPDATE", "ENERGIZE")
+    assert(got[1] and got[1].key == "power", "mana goes to the power area")
+    info = { 30, SECRET }
+    fire("COMBAT_TEXT_UPDATE", "ENERGIZE")
+    assert(#got == 1, "a secret power token is skipped")
+    info = { 12, "RAGE" }; sc.events.p_rage.show = false
+    fire("COMBAT_TEXT_UPDATE", "PERIODIC_ENERGIZE")
+    assert(#got == 1, "a switched-off power type adds nothing")
+    sc.events.p_rage.show = true
+    -- your last cast gives outgoing lines an icon; a secret cast gives none
+    fire("UNIT_SPELLCAST_SUCCEEDED", "player", "cast", SECRET)
+    fire("UNIT_COMBAT", "target", "WOUND", "", SECRET)
+    assert(#asked == 0, "no icon lookup for a secret cast")
+    fire("UNIT_SPELLCAST_SUCCEEDED", "player", "cast", 133)
+    fire("UNIT_COMBAT", "target", "WOUND", "", SECRET)
+    assert(asked[1] == 133 and got[#got].key == "target", "the last cast's icon is looked up for outgoing damage")
+    assert(got[#got].fs.icon:IsShown(), "outgoing line shows its icon")
+    sc.areas.target.iconSide = "OFF"
+    fire("UNIT_COMBAT", "target", "WOUND", "", SECRET)
+    assert(not got[#got].fs.icon:IsShown(), "icon off hides it")
+    sc.areas.target.iconSide = "LEFT"
+    -- aura names give icons; a secret name does not
+    info = { SECRET, nil }
+    local n = #asked
+    fire("COMBAT_TEXT_UPDATE", "SPELL_AURA_START")
+    assert(#asked == n, "a secret aura name is never looked up")
+    info = { "Power Infusion", nil }
+    fire("COMBAT_TEXT_UPDATE", "SPELL_AURA_START")
+    assert(asked[#asked] == "Power Infusion", "an aura name gives the icon")
+    -- heals go to their own area
+    info = { "Healer", 900 }
+    fire("COMBAT_TEXT_UPDATE", "HEAL")
+    assert(got[#got].key == "heals", "heals taken have their own area")
+    -- unlock shows draggable areas and writes x / y on drag stop; combat locks again
+    assert(CT:UnlockAreas(true), "unlock out of combat")
+    assert(CT.unlocked, "unlocked")
+    CT:UnlockAreas(false)
+    assert(not CT.unlocked, "locked again")
+    CT.StyleLine, ns.Secret.IsSecret = oldStyle, oldIs
+    rawset(env, "C_CombatText", oldCT); rawset(env, "C_Spell", oldSpell)
     sc.enabled = false
     CT:EnableScroll()
 end)

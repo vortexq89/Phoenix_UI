@@ -13,13 +13,20 @@ local scaleGet, scaleSet = CVar("WorldTextScale_v2", "number")
 local function noScroll(m) return not m.db.scroll.enabled end
 local function scroll(row) return Opt.With(row, { disabled = row.disabled or noScroll }) end
 local AREAS = {
-    { value = "incoming", label = "FCT_AREA_INCOMING" }, { value = "target", label = "FCT_AREA_TARGET" },
-    { value = "notify", label = "FCT_AREA_NOTIFY" }, { value = "crits", label = "FCT_AREA_CRITS" },
+    { value = "incoming", label = "FCT_AREA_INCOMING" }, { value = "heals", label = "FCT_AREA_HEALS" },
+    { value = "target", label = "FCT_AREA_TARGET" }, { value = "outheal", label = "FCT_AREA_OUTHEAL" },
+    { value = "power", label = "FCT_AREA_POWER" }, { value = "notify", label = "FCT_AREA_NOTIFY" },
+    { value = "crits", label = "FCT_AREA_CRITS" },
 }
 local CRIT_AREA = { { value = "same", label = "FCT_CRIT_SAME" } }
 for _, a in ipairs(AREAS) do CRIT_AREA[#CRIT_AREA + 1] = a end
 local ANIM = { { value = "straight", label = "FCT_ANIM_STRAIGHT" }, { value = "parabola", label = "FCT_ANIM_PARABOLA" },
     { value = "angled", label = "FCT_ANIM_ANGLED" }, { value = "static", label = "FCT_ANIM_STATIC" } }
+local ICON = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "RIGHT", label = "ANCHOR_RIGHT" }, { value = "OFF", label = "OFF" } }
+local function unlock(m)
+    if m.unlocked then m:UnlockAreas(false) return end
+    if m:UnlockAreas(true) then ns.Config.frame:Hide() end
+end
 local ALIGN = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "CENTER", label = "ANCHOR_CENTER" },
     { value = "RIGHT", label = "ANCHOR_RIGHT" } }
 -- one switch per event type, its colour, size, area and sound behind the cog
@@ -38,7 +45,7 @@ local CRIT = { { value = "grow", label = "FCT_CRIT_GROW" }, { value = "flash", l
     { value = "none", label = "FCT_CRIT_NONE" } }
 local modeGet, modeSet = CVar("floatingCombatTextFloatMode_v2", "number")
 
-ns:RegisterOptions("CombatText", {
+local schema = {
     { type = "scope", key = "scroll.areas", label = "FCT_AREA", values = AREAS },
     { type = "preview", kind = "combattext" },
     { type = "tab", label = "FCT_TAB_BLIZZARD" },
@@ -84,6 +91,8 @@ ns:RegisterOptions("CombatText", {
     ------------------------------------------------------------ areas
     { type = "tab", label = "FCT_TAB_AREAS" },
     { type = "header", label = "FCT_AREA_HEADER", icon = "layout" },
+    scroll({ type = "button", label = "FCT_UNLOCK", desc = "FCT_UNLOCK_DESC", button = "FCT_UNLOCK_BUTTON", icon = "movers",
+      combat = true, func = unlock, keywords = "move drag unlock areas position" }),
     scroll({ type = "toggle", key = "scroll.areas.@.show", label = "FCT_AREA_SHOW", desc = "FCT_AREA_SHOW_DESC" }),
     scroll({ type = "select", key = "scroll.areas.@.anim", label = "FCT_ANIM", desc = "FCT_ANIM_DESC", values = ANIM,
       keywords = "animation parabola curve angled static straight msbt xct" }),
@@ -91,6 +100,13 @@ ns:RegisterOptions("CombatText", {
     scroll({ type = "select", key = "scroll.areas.@.align", label = "FCT_ALIGN", values = ALIGN }),
     scroll({ type = "range", key = "scroll.areas.@.duration", label = "FCT_DURATION", min = 0.6, max = 6, step = 0.1 }),
     scroll({ type = "range", key = "scroll.areas.@.scale", label = "FCT_AREA_SCALE", min = 0.5, max = 2, step = 0.05, percent = true }),
+    scroll({ type = "toggle", key = "scroll.areas.@.useColor", label = "FCT_AREA_COLOR", desc = "FCT_AREA_COLOR_DESC",
+      cog = { { type = "color", key = "scroll.areas.@.color", label = "FCT_EV_COLOR" } } }),
+    { type = "header", label = "FCT_ICON", icon = "auras" },
+    scroll({ type = "select", key = "scroll.areas.@.iconSide", label = "FCT_ICON", desc = "FCT_ICON_DESC", values = ICON,
+      keywords = "spell icon msbt" }),
+    scroll({ type = "range", key = "scroll.areas.@.iconSize", label = "FCT_ICON_SIZE", min = 10, max = 48, step = 1 }),
+    scroll({ type = "toggle", key = "scroll.castIcons", label = "FCT_CAST_ICONS", desc = "FCT_CAST_ICONS_DESC" }),
     { type = "header", label = "UF_POSITION", icon = "movers" },
     scroll({ type = "range", key = "scroll.areas.@.x", label = "OFFSET_X", min = -800, max = 800, step = 10 }),
     scroll({ type = "range", key = "scroll.areas.@.y", label = "OFFSET_Y", min = -500, max = 500, step = 10 }),
@@ -115,6 +131,7 @@ ns:RegisterOptions("CombatText", {
     event("reactive", { label = "FCT_EV_REACTIVE", desc = "FCT_EV_REACTIVE_DESC", keywords = "proc reactive spell" }),
     event("honor", { label = "FCT_EV_HONOR", desc = "FCT_EV_HONOR_DESC", keywords = "honour pvp" }),
     event("rep", { label = "FCT_EV_REP", desc = "FCT_EV_REP_DESC", keywords = "reputation faction" }),
+    { type = "header", label = "FCT_AREA_POWER", icon = "speed" },
     ------------------------------------------------------------ crits
     { type = "tab", label = "FCT_TAB_CRITS" },
     { type = "header", label = "FCT_CRIT", icon = "warning" },
@@ -123,4 +140,18 @@ ns:RegisterOptions("CombatText", {
       disabled = function(m) return noScroll(m) or m.db.scroll.crit ~= "grow" end }),
     scroll({ type = "select", key = "scroll.critArea", label = "FCT_CRIT_AREA", desc = "FCT_CRIT_AREA_DESC", values = CRIT_AREA }),
     scroll({ type = "sound", key = "scroll.critSound", label = "FCT_CRIT_SOUND", desc = "FCT_CRIT_SOUND_DESC" }),
-})
+}
+
+-- one row per power type, named by the game's own power strings, after the Power header
+for i, item in ipairs(schema) do
+    if item.type == "header" and item.label == "FCT_AREA_POWER" then
+        local at = i + 1
+        for _, token in ipairs(ns.modules.CombatText.POWERS) do
+            table.insert(schema, at, event("p_" .. token:lower(), { label = type(_G[token]) == "string" and _G[token] or token,
+                desc = "FCT_EV_POWER_DESC", keywords = "power gain energize " .. token:lower() }))
+            at = at + 1
+        end
+        break
+    end
+end
+ns:RegisterOptions("CombatText", schema)

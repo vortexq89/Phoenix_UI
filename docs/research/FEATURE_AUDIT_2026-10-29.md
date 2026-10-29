@@ -259,3 +259,13 @@ runtime in game.
   its real path. Secret-safe: amounts only reach SetFormattedText; message types, actions and flags are IsSecret-checked
   first; merging counts hits. Limit, stated in the UI: 12.x gives addons no "only my outgoing damage" source, so the outgoing
   area shows all damage your target takes. Harness "scrolling combat text: paths, events, crits, throttle".
+- **MSBT-style combat text (t143u).** Seven movable areas: damage taken, heals taken, outgoing damage and outgoing heals
+  (both on your target), power gains, notifications and crits, each with its own text size, animation, alignment,
+  duration and an optional single colour. Power gains have one switch, colour, size, area and sound per type (16 types, from
+  ENERGIZE / PERIODIC_ENERGIZE; a secret power token is skipped). Default look: Phoenix Condensed Bold, thick outline, drop
+  shadow, per-event colours. Spell icons beside lines (left, right or off, with a size): aura and proc lines from the spell
+  name; outgoing and power lines from your last cast within ~1.2 s (12.x gives these lines no spell, so the option is
+  labelled "your last cast"); damage taken has no icon source. Icons are looked up only from values that are not secret and
+  never measured (icons are anchored to the text, no GetStringWidth). "Move the areas" unlocks labelled boxes on screen that
+  drag and write x / y; the preview is a scaled copy of the screen where the picked area drags one to one. Harness
+  "combat text areas: power, icons, unlock".
