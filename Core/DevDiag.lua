@@ -500,15 +500,15 @@ local function expand(page, key)
     for n = 1, #(page.tabList or {}) do tabs(n) end
     local card = page.pinned
     -- preview drag: one step up and back on what the size grip drives (written through the rows, like a drag)
-    local D, m = ns.PreviewDrag, ns.modules and ns.modules[key]
-    if card and D and m then
+    local PD, m = ns.PreviewDrag, ns.modules and ns.modules[key]
+    if card and PD and m then
         out[#out + 1] = { page = key, label = key .. " preview drag", run = function()
-            local pick = D.Pick(page, m)
+            local pick = PD.Pick(page, m)
             local it = pick and (pick.w or pick.s or pick.h)
             if not it then return end
             local v = tonumber(ns.Config.GetRowValue(page, m, it))
             if not v then return end
-            local up = D.Snap(it, v + (it.step or 1))
+            local up = PD.Snap(it, v + (it.step or 1))
             ns.Config.SetRowValue(page, m, it, up)
             ns.Config.SetRowValue(page, m, it, v)
         end }
