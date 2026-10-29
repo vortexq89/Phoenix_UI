@@ -3,9 +3,11 @@ local L, W, Skin = ns.L, ns.Widgets, ns.Skin
 
 --[[ The Phoenix bank window: our own window for the character bank and the Warband bank, drawn from the bank
     API (C_Bank tab data, C_Container slots) in the Phoenix look: bank-type rail, tab strip with the tabs' own
-    icons, a slot grid, search, sort, deposit reagents and the Warband gold. Bags > "Phoenix bank window" off
-    brings back Blizzard's bank (reskinned), live; the arrow button opens Blizzard's bank for this visit only
-    (buying tabs, tab settings, gold transfers).
+    icons, a slot grid, search, sort, deposit reagents and the Warband gold. Tab settings (the cog: name and
+    which items auto-deposit there, saved with the bank's own update call; the tab icon is kept) and gold
+    deposit / withdraw where the bank type allows it (the game's own checks and calls, on your click).
+    Bags > "Phoenix bank window" off brings back Blizzard's bank (reskinned), live; the arrow button opens
+    Blizzard's bank for this visit only (buying tabs, the tab icon picker).
 
     Safety: Blizzard's BankFrame stays open the whole visit (so Escape, right-click deposits from the bags and
     every "is the bank open" check behave as usual); Skin:Tuck only makes it see-through and parks its child
@@ -145,6 +147,16 @@ function M:LayoutBank()
     local E = Enum.BankType or {}
     local gold = bankType == E.Account and C_Bank.FetchDepositedMoney and C_Bank.FetchDepositedMoney(bankType)
     win.money:SetText(C_CurrencyInfo.GetCoinTextureString(gold or GetMoney()))
+    self:LayoutBankExtras()
+end
+
+function M:LayoutBankExtras()
+    local transfer = C_Bank.DoesBankTypeSupportMoneyTransfer and C_Bank.DoesBankTypeSupportMoneyTransfer(bankType) or false
+    win.gold:SetShown(transfer)
+    win.goldIn:SetShown(transfer and C_Bank.CanDepositMoney(bankType) or false)
+    win.goldOut:SetShown(transfer and C_Bank.CanWithdrawMoney(bankType) or false)
+    win.cog:SetShown(tabID ~= nil)
+    if win.settings:IsShown() then M:LayoutBankSettings() end
 end
 
 local function build()
@@ -175,9 +187,14 @@ local function build()
         if C_Bank and C_Bank.AutoDepositItemsIntoBank then C_Bank.AutoDepositItemsIntoBank(bankType) end
     end)
     win.deposit:SetPoint("RIGHT", win.sort, "LEFT", -4, 0)
+    win.cog = M.IconButton(win, "cog", L.BAGS_BANK_SETTINGS, function()
+        if win.settings:IsShown() then win.settings:Hide() else win.settings:Show(); M:LayoutBankSettings() end
+    end)
+    win.cog:SetPoint("RIGHT", win.deposit, "LEFT", -4, 0)
+    M:BuildBankExtras()
     win.search = CreateFrame("EditBox", nil, win, "BagSearchBoxTemplate")
     win.search:SetSize(130, 18)
-    win.search:SetPoint("RIGHT", win.deposit, "LEFT", -8, 0)
+    win.search:SetPoint("RIGHT", win.cog, "LEFT", -8, 0)
     win.content = CreateFrame("Frame", nil, win)
     win.content:SetPoint("TOPLEFT", PAD + RAIL, -PAD - HEAD - 32)
     win.empty = win:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -189,6 +206,94 @@ local function build()
     Skin:Register(win, function() M:StyleBank() end)
     local movers = ns:GetModule("Movers")
     if movers then movers:Register("bank", win, L.BAGS_BANK_TITLE) end
+end
+
+---------------------------------------------------------------- tab settings and gold
+-- Deposit filters a tab can take (Enum.BagSlotFlags names; missing ones are skipped).
+M.BANK_FLAGS = { { "ExpansionCurrent", "BAGS_FLAG_CURRENT" }, { "ExpansionLegacy", "BAGS_FLAG_LEGACY" },
+    { "ClassEquipment", "BAGS_CAT_EQUIPMENT" }, { "ClassConsumables", "BAGS_CAT_CONSUMABLES" },
+    { "ClassProfessionGoods", "BAGS_FLAG_PROFESSION" }, { "ClassReagents", "BAGS_CAT_REAGENTS" },
+    { "ClassJunk", "BAGS_CAT_JUNK" }, { "ClassQuestItems", "BAGS_CAT_QUEST" } }
+
+function M.BankFlagOn(flags, bitValue) return bit.band(tonumber(flags) or 0, bitValue) ~= 0 end
+
+local function tabData()
+    for _, t in ipairs(C_Bank.FetchPurchasedBankTabData(bankType) or {}) do
+        if type(t) == "table" and t.ID == tabID then return t end
+    end
+end
+
+function M:BuildBankExtras()
+    local s = CreateFrame("Frame", nil, win)
+    s:SetSize(220, 60 + #M.BANK_FLAGS * 24)
+    s:SetPoint("TOPLEFT", win, "TOPRIGHT", 6, 0)
+    s:SetFrameLevel(win:GetFrameLevel() + 10)
+    s:EnableMouse(true)
+    s:Hide()
+    win.settings = s
+    s.name = W:Input(s, 196, L.BAGS_BANK_TAB_NAME)
+    s.name:SetPoint("TOPLEFT", 12, -12)
+    s.checks = {}
+    local E = Enum.BagSlotFlags or {}
+    local y = -46
+    for _, def in ipairs(M.BANK_FLAGS) do
+        local value = E[def[1]]
+        if type(value) == "number" then
+            local c = CreateFrame("Button", nil, s)
+            c:SetSize(196, 20)
+            c:SetPoint("TOPLEFT", 12, y)
+            c.box = W.Texture(c, "ARTWORK", 1); c.box:SetSize(14, 14); c.box:SetPoint("LEFT")
+            c.label = W.Text(c, "small", "text.secondary"); c.label:SetPoint("LEFT", 22, 0); c.label:SetText(L[def[2]])
+            c.value = value
+            c:SetScript("OnClick", function(self) self.on = not self.on; M.PaintBankCheck(self) end)
+            s.checks[#s.checks + 1] = c
+            y = y - 24
+        end
+    end
+    s.save = W:Button(s, SAVE or "Save", "primary", nil, 90)
+    s.save:SetHeight(22)
+    s.save:SetPoint("BOTTOMLEFT", 12, 10)
+    s.save.onClick = function() M:SaveBankTab() end
+    Skin:Register(s, function(self) Skin:Panel(self, "base", { border = "border.strong" }) end)
+    -- gold transfer (bank types that allow it)
+    win.gold = W:Input(win, 90, L.BAGS_BANK_GOLD)
+    win.gold:SetNumeric(true)
+    win.gold:SetPoint("BOTTOMLEFT", PAD, PAD - 4)
+    win.goldIn = M.IconButton(win, "import", L.BAGS_BANK_DEPOSIT_GOLD, function() M:BankMoney(true) end)
+    win.goldIn:SetPoint("LEFT", win.gold, "RIGHT", 4, 0)
+    win.goldOut = M.IconButton(win, "export", L.BAGS_BANK_WITHDRAW_GOLD, function() M:BankMoney(false) end)
+    win.goldOut:SetPoint("LEFT", win.goldIn, "RIGHT", 4, 0)
+end
+
+function M.PaintBankCheck(c)
+    W.Color(c.box, c.on and "accent.primary" or "bg.sunken", 1)
+end
+
+function M:LayoutBankSettings()
+    local t = tabData()
+    local s = win.settings
+    if not t then s:Hide(); return end
+    s.name:SetValue(t.name or "")
+    for _, c in ipairs(s.checks) do c.on = M.BankFlagOn(t.depositFlags, c.value); M.PaintBankCheck(c) end
+end
+
+function M:SaveBankTab()
+    local t = tabData()
+    if not t then return end
+    local flags = tonumber(t.depositFlags) or 0
+    for _, c in ipairs(win.settings.checks) do
+        if c.on then flags = bit.bor(flags, c.value) elseif M.BankFlagOn(flags, c.value) then flags = flags - c.value end
+    end
+    local name = win.settings.name:GetText()
+    C_Bank.UpdateBankTabSettings(bankType, tabID, (name ~= nil and name ~= "") and name or t.name, t.icon, flags)
+    win.settings:Hide()
+end
+
+function M:BankMoney(deposit)
+    local copper = (tonumber(win.gold:GetText()) or 0) * 10000
+    if copper <= 0 then return end
+    if deposit then C_Bank.DepositMoney(bankType, copper) else C_Bank.WithdrawMoney(bankType, copper) end
+    win.gold:SetValue("")
 end
 
 local visitBlizzard -- the arrow button: Blizzard's bank for the rest of this visit
@@ -234,7 +339,8 @@ function M:SetupBank()
     ns.Events:On("BANKFRAME_CLOSED", owner, function() visitBlizzard = false; M:SyncBank() end)
     ns.Events:On("PLAYER_REGEN_ENABLED", owner, function() M:SyncBank() end)
     for _, event in ipairs({ "BAG_UPDATE_DELAYED", "PLAYERBANKSLOTS_CHANGED", "PLAYER_ACCOUNT_BANK_TAB_SLOTS_CHANGED",
-        "BANK_TABS_CHANGED", "ITEM_LOCK_CHANGED", "INVENTORY_SEARCH_UPDATE", "PLAYER_MONEY", "BAG_UPDATE_COOLDOWN" }) do
+        "BANK_TABS_CHANGED", "BANK_TAB_SETTINGS_UPDATED", "ACCOUNT_MONEY", "ITEM_LOCK_CHANGED", "INVENTORY_SEARCH_UPDATE",
+        "PLAYER_MONEY", "BAG_UPDATE_COOLDOWN" }) do
         ns.Events:On(event, owner, soon)
     end
     self:SyncBank()
