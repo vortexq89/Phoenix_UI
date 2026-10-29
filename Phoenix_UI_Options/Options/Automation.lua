@@ -57,4 +57,13 @@ ns:RegisterOptions("Automation", {
         { value = "favorite", label = "AUTO_PET_FAVORITE" },
         { value = "last", label = "AUTO_PET_LAST" },
     }, disabled = function(m) return not m.db.petSummon end },
+    { type = "header", label = "AUTO_FISHING", icon = "sound" },
+    { type = "toggle", key = "fishing", label = "AUTO_FISHING_ON", desc = "AUTO_FISHING_DESC",
+      keywords = "fishing bobber splash sound volume auto loot" },
+    { type = "toggle", key = "fishingQuiet", label = "AUTO_FISHING_QUIET", desc = "AUTO_FISHING_QUIET_DESC",
+      disabled = function(m) return not m.db.fishing end },
+    { type = "header", label = "JUNK", icon = "gold" },
+    { type = "toggle", key = "junkWindow", label = "JUNK_WINDOW", desc = "JUNK_WINDOW_DESC",
+      keywords = "junk grey gray poor sell destroy vendor trash" },
+    { type = "button", label = "JUNK_OPEN", button = "JUNK_OPEN_BUTTON", icon = "gold", func = function(m) m:ShowJunk() end },
 })

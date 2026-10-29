@@ -3678,6 +3678,38 @@ try("audit: live switches and idle timers", function()
     end
 end)
 
+try("forever extras: stats, fishing, junk", function()
+    local S, A = ns.modules.Skins, ns.modules.Automation
+    assert(#S.ForeverStats() >= 6, "simplified stats rows")
+    local cv = A.FishingCVars(true)
+    assert(cv.Sound_SFXVolume == "1" and cv.Sound_MusicVolume == "0" and cv.autoLootDefault == "1", "fishing cvars")
+    assert(A.FishingCVars(false).Sound_MusicVolume == nil, "music kept when not quiet")
+    -- start / restore round trip
+    local store = { Sound_SFXVolume = "0.3", Sound_MusicVolume = "0.5", Sound_AmbienceVolume = "0.4", autoLootDefault = "0" }
+    local CV = env.C_CVar
+    local og, os_ = CV.GetCVar, CV.SetCVar
+    CV.GetCVar = function(k) return store[k] end
+    CV.SetCVar = function(k, v) store[k] = v end
+    A.db.fishing = true
+    A.global.fishingSaved = nil
+    A:StartFishing()
+    assert(store.Sound_SFXVolume == "1" and store.Sound_MusicVolume == "0", "boosted")
+    A.RestoreFishing()
+    assert(store.Sound_SFXVolume == "0.3" and store.autoLootDefault == "0", "restored")
+    CV.GetCVar, CV.SetCVar = og, os_
+    -- junk list: greys only, dearest first
+    local CC = env.C_Container
+    local ons = CC.GetContainerNumSlots
+    CC.GetContainerNumSlots = function(bag) return bag == 0 and 3 or 0 end
+    local bag = { { quality = 0, hyperlink = "a", stackCount = 2, iconFileID = 1 }, { quality = 1, hyperlink = "b" },
+                  { quality = 0, hyperlink = "c", stackCount = 1, iconFileID = 2 } }
+    local items, total = A.JunkItems(function(_, slot) return bag[slot] end,
+        function(link) return link == "a" and 5 or 30 end)
+    CC.GetContainerNumSlots = ons
+    assert(#items == 2 and items[1].link == "c" and total == 40, "junk sorted and totalled")
+    A:ShowJunk()
+end)
+
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

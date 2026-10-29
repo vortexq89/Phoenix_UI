@@ -138,6 +138,8 @@
     <Script file="Automation\Macros.lua"/>
     <Script file="Automation\Undercut.lua"/>
     <Script file="Automation\PetSummon.lua"/>
+    <Script file="Automation\Fishing.lua"/>
+    <Script file="Automation\Junk.lua"/>
     <Script file="Quests\Quests.lua"/>
     <Script file="Quests\Tracker.lua"/>
     <Script file="Quests\Pins.lua"/>

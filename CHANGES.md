@@ -3,6 +3,12 @@
 ## 2.0.0-beta1
 
 ### New
+- **Junk window** (both clients): at a vendor a Phoenix window lists your grey items with real icons and value;
+  Sell all, or click a row to sell it; away from a vendor two clicks on a row destroy it. Automation > Junk.
+- **Fishing helper** (both clients): effects volume up, auto loot on and (optionally) music and ambience muted while
+  you fish; everything goes back when the cast ends. Automation > Fishing.
+- **Simplified stats** (WoW Forever): the Phoenix Character window lists the five attributes, armour, attack power,
+  spell power, healing, hit, crits, dodge, parry and block instead of retail's haste / mastery / versatility.
 - **Phoenix inspect window** (both clients, on by default): name in class colour, level, specialization, guild and
   average item level, and every gear slot as a card (real icon in its quality frame, item level, enchanted and gem
   marks) around the player's model; shift-click links, ctrl-click previews. The arrow opens Blizzard's window (talents,
