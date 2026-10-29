@@ -7,19 +7,21 @@ local M = ns:GetModule("Skins")
     game's tooltip, shift-click to link, click or drag to pick up and drop to equip (plain inventory calls, not
     protected). Right, three tabs: Stats (item level, health, primary stat, stamina, armor, secondary and tertiary
     stats), Reputation (headers expand / collapse, click a faction to track it) and Currency (headers expand /
-    collapse, tooltip, shift-click link), with a search box. Titles, equipment sets and the model stay Blizzard's
-    (the arrow button). Skins > "Phoenix character window" off: Blizzard's panel, reskinned, live. ]]
+    collapse, tooltip, shift-click link), Titles (click to wear one) and Sets (equip, save the gear you wear,
+    delete with a second click, new set from a name), with a search box. The model and the set icon picker stay
+    Blizzard's (the arrow button). Skins > "Phoenix character window" off: Blizzard's panel, reskinned, live. ]]
 
-local SLOT, GAP, LIST_W, ROWS, ROW_H = 40, 6, 400, 12, 32
+local SLOT, GAP, LIST_W, ROWS, ROW_H = 40, 6, 470, 12, 32
 local LEFT = { "HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot", "WristSlot",
     "MainHandSlot" }
 local RIGHT = { "HandsSlot", "WaistSlot", "LegsSlot", "FeetSlot", "Finger0Slot", "Finger1Slot", "Trinket0Slot",
     "Trinket1Slot", "SecondaryHandSlot" }
-local TABS = { "stats", "reputation", "currency" }
+local TABS = { "stats", "reputation", "currency", "titles", "sets" } -- the first three match Blizzard's tabs
 
 local r, list
 local mode, search = "stats", ""
 local slots = {}
+local armed -- equipment set ID waiting for the confirming second Delete click
 
 local function pct(v) return ("%.2f%%"):format(tonumber(v) or 0) end
 
@@ -108,6 +110,36 @@ function M.CharacterCurrency()
     return out
 end
 
+-- Known titles ("no title" first), the one you wear marked.
+function M.CharacterTitles()
+    local out = { { id = -1, name = tostring(_G.NONE or "None"), current = (tonumber(GetCurrentTitle()) or -1) <= 0 } }
+    local current = tonumber(GetCurrentTitle()) or -1
+    for i = 1, tonumber(GetNumTitles()) or 0 do
+        if IsTitleKnown(i) then
+            local name = GetTitleName(i)
+            if name and matches(tostring(name)) then
+                out[#out + 1] = { id = i, name = (tostring(name):gsub("^%s+", ""):gsub("%s+$", "")), current = i == current }
+            end
+        end
+    end
+    return out
+end
+
+-- Equipment sets: name, icon, equipped flag and how many of its items are missing.
+function M.CharacterSets()
+    local out = {}
+    local E = _G.C_EquipmentSet
+    if not (E and E.GetEquipmentSetIDs) then return out end
+    for _, id in ipairs(E.GetEquipmentSetIDs() or {}) do
+        local name, icon, setID, equipped, items, _, _, lost = E.GetEquipmentSetInfo(id)
+        if name then
+            out[#out + 1] = { id = setID or id, name = tostring(name), icon = icon, equipped = equipped and true or false,
+                items = tonumber(items) or 0, lost = tonumber(lost) or 0 }
+        end
+    end
+    return out
+end
+
 local function paintSlot(b)
     local tex = GetInventoryItemTexture("player", b.slot)
     b.icon:SetTexture(tex or b.empty)
@@ -123,6 +155,24 @@ local function paintRows()
     if mode == "stats" then
         list.Set(M.CharacterStats(), function(b, s)
             b.title:SetText(s.label); b.sub:SetText(""); b.right:SetText(s.value)
+        end)
+        return
+    end
+    if mode == "titles" then
+        list.Set(M.CharacterTitles(), function(b, t)
+            b.title:SetText(t.name); b.sub:SetText(""); b.right:SetText("")
+            if t.current then list.Mark(b, "accent.primary", 0.25); list.Bar(b, "accent.primary") end
+        end)
+        return
+    end
+    if mode == "sets" then
+        list.Set(M.CharacterSets(), function(b, e)
+            if b.icon then b.icon:SetTexture(e.icon) end
+            b.title:SetText(e.name)
+            b.sub:SetText(e.lost > 0 and L.CHARW_SET_MISSING:format(e.lost) or "")
+            b.right:SetText(e.equipped and L.CHARW_SET_EQUIPPED or "")
+            if e.id == r.pickSet then list.Mark(b, "accent.primary", 0.25) end
+            if e.equipped then list.Bar(b, "state.success") end
         end)
         return
     end
@@ -150,7 +200,15 @@ end
 local function layout()
     r.tabs.Paint(mode)
     for _, b in ipairs(slots) do paintSlot(b) end
-    r.search:SetShown(mode ~= "stats")
+    r.search:SetShown(mode ~= "stats" and mode ~= "sets")
+    local sets = mode == "sets"
+    for _, w in ipairs(r.setTools) do w:SetShown(sets) end
+    r.who:SetShown(not sets)
+    if sets then
+        local picked = r.pickSet ~= nil
+        for _, w in ipairs({ r.equip, r.saveSet, r.deleteSet }) do w:SetEnabled(picked) end
+        r.deleteSet:SetText(armed and armed == r.pickSet and L.FRIENDW_REMOVE_CONFIRM or (_G.DELETE or "Delete"))
+    end
     local name = UnitName("player")
     r.who:SetText(("%s  %s %s"):format(tostring(name or ""), LEVEL or "Level", tostring(UnitLevel("player") or "")))
     paintRows()
@@ -183,6 +241,8 @@ local function slotButton(name, col, i)
 end
 
 local function rowClick(e)
+    if mode == "titles" then SetCurrentTitle(e.id); r:Layout(); return end
+    if mode == "sets" then r.pickSet, armed = e.id, nil; r:Layout(); return end
     if mode == "stats" or not e.index then return end
     if mode == "reputation" then
         if e.header then
@@ -214,12 +274,45 @@ local function build(rr)
     end
     local defs = {}
     for _, key in ipairs(TABS) do defs[#defs + 1] = { key = key, label = L["CHARW_" .. key:upper()] } end
-    r.tabs = M.ReplaceTabs(r.body, defs, 96, function(key) mode, list.offset = key, 0; r:Layout() end)
-    r.search = W:Input(r.body, 150, SEARCH or "")
+    r.tabs = M.ReplaceTabs(r.body, defs, 84, function(key) mode, list.offset, armed = key, 0, nil; r:Layout() end)
+    r.search = W:Input(r.body, 120, SEARCH or "")
     r.search:SetPoint("TOPRIGHT", 0, 0)
     r.search.onTextChanged = function(_, text) search = text or ""; list.offset = 0; r:Layout() end
     r.who = W.Text(r.body, "small", "text.secondary")
     r.who:SetPoint("BOTTOMLEFT", 0, 2)
+    M.BuildSetTools(x)
+end
+
+-- Equipment set tools under the list: equip, save the gear you wear into the set, delete (second click), and
+-- a name box that creates a new set from what you wear (Enter). Out of combat only, like Blizzard's.
+function M.BuildSetTools(x)
+    local E = _G.C_EquipmentSet
+    local function ready() return E and not InCombatLockdown() end
+    r.equip = W:Button(r.body, L.CHARW_SET_EQUIP, "primary", nil, 90)
+    r.equip:SetHeight(24); r.equip:SetPoint("BOTTOMLEFT", x, 0)
+    r.equip.onClick = function() if ready() and r.pickSet then E.UseEquipmentSet(r.pickSet) end end
+    r.saveSet = W:Button(r.body, _G.SAVE or "Save", "secondary", nil, 80)
+    r.saveSet:SetHeight(24); r.saveSet:SetPoint("LEFT", r.equip, "RIGHT", 6, 0)
+    r.saveSet.onClick = function() if ready() and r.pickSet then E.SaveEquipmentSet(r.pickSet); r:Layout() end end
+    r.deleteSet = W:Button(r.body, "", "danger", nil, 110)
+    r.deleteSet:SetHeight(24); r.deleteSet:SetPoint("LEFT", r.saveSet, "RIGHT", 6, 0)
+    r.deleteSet.onClick = function()
+        if not (ready() and r.pickSet) then return end
+        if armed ~= r.pickSet then armed = r.pickSet; r:Layout(); return end
+        E.DeleteEquipmentSet(r.pickSet)
+        armed, r.pickSet = nil, nil
+        r:Layout()
+    end
+    r.newSet = W:Input(r.body, 150, L.CHARW_SET_NEW)
+    r.newSet:SetPoint("BOTTOMRIGHT", 0, 0)
+    r.newSet.onChange = function(box, name)
+        name = tostring(name or "")
+        if name == "" or not ready() then return end
+        E.CreateEquipmentSet(name, 134400) -- the question-mark icon; Blizzard's manager changes it
+        box:SetValue("")
+        r:Layout()
+    end
+    r.setTools = { r.equip, r.saveSet, r.deleteSet, r.newSet }
 end
 
 -- Which tab Blizzard's panel opened on (U opens reputation, the currency key opens currency).
@@ -239,7 +332,7 @@ function M.CharacterMode(m) if m then mode = m; char:Layout() end; return mode e
 function M:SetupCharacterWindow()
     if not M.ReplacementHook(char) then return end
     for _, event in ipairs({ "PLAYER_EQUIPMENT_CHANGED", "UNIT_STATS", "COMBAT_RATING_UPDATE", "UPDATE_FACTION",
-        "CURRENCY_DISPLAY_UPDATE", "PLAYER_AVG_ITEM_LEVEL_UPDATE" }) do
+        "CURRENCY_DISPLAY_UPDATE", "PLAYER_AVG_ITEM_LEVEL_UPDATE", "KNOWN_TITLES_UPDATE", "EQUIPMENT_SETS_CHANGED" }) do
         ns.Events:On(event, char, function() char:Soon() end)
     end
     char:Sync()
