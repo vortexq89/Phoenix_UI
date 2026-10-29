@@ -2390,6 +2390,11 @@ try("housing phase 4 skin", function()
     S:SkinHousing(); S.db.housing = false; S:Refresh(); S.db.housing = true; S:Refresh()
     env.HousingDashboardFrame = nil
 end)
+try("safe scale never hands SetScale a bad value", function()
+    local U = ns.Util
+    for _, v in ipairs({ 0, -1, 0 / 0, math.huge, "1", false }) do assert(U.SafeScale(v) == 1, tostring(v)) end
+    assert(U.SafeScale(nil) == 1 and U.SafeScale(0.01) == 0.05 and U.SafeScale(1.5) == 1.5)
+end)
 try("shop launcher only", function()
     local found = false
     for _, e in ipairs(ns.modules.Skins.MICRO or {}) do if e[1] == "StoreMicroButton" then found = true end end

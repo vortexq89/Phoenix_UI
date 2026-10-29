@@ -342,7 +342,7 @@ local function layoutBin()
     table.sort(shown, function(a, b) return bin.buttons[a] < bin.buttons[b] end)
     for i, b in ipairs(shown) do
         local col, row = (i - 1) % cols, math.floor((i - 1) / cols)
-        local scale = size / math.max(1, b:GetWidth() or 31)
+        local scale = ns.Util.SafeScale(size / math.max(1, b:GetWidth() or 31))
         b:SetParent(bin.flyout)
         b:SetScale(scale)
         b:ClearAllPoints()

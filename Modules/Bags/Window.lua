@@ -266,7 +266,7 @@ end
 function M:StyleWindow()
     if not win then return end
     local db = self.db
-    win:SetScale(db.scale)
+    win:SetScale(ns.Util.SafeScale(db.scale))
     Skin:Backdrop(win, db.backdrop, "bg.base")
     Skin:BorderSpec(win, db.border, "border.strong")
     Skin:TextSpec(win.title, db.title, "heading", "accent.primary")

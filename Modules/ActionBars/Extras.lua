@@ -32,7 +32,7 @@ local function zoneButtons()
 end
 
 local function scaleExtras()
-    local s = M.db.extra.scale
+    local s = ns.Util.SafeScale(M.db.extra.scale)
     for _, f in ipairs({ ExtraActionBarFrame, ZoneAbilityFrame }) do
         if f and f.SetScale and not f:IsForbidden() then f:SetScale(s) end
     end

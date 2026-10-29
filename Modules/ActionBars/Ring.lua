@@ -37,7 +37,11 @@ function M.RingPoints(n, r)
 end
 
 local function iconOf(e)
-    if e.type == "item" then return C_Item.GetItemIconByID(tonumber(e.value:match("%d+"))) end
+    if e.type == "item" then
+        -- a typed item name has no ID; GetItemIconByID(nil) raises, so it simply shows no icon yet
+        local id = tonumber(tostring(e.value or ""):match("%d+"))
+        return id and C_Item.GetItemIconByID(id)
+    end
     if e.type == "macro" then local _, icon = GetMacroInfo(e.value); return icon end
     local ok, info = pcall(C_Spell.GetSpellInfo, e.value)
     return ok and info and info.iconID

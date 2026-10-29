@@ -109,7 +109,7 @@ local function apply(e)
     if not s then return end
     remember(e, f)
     e.applying = true
-    if not e.noScale and s.scale then f:SetScale(s.scale) end
+    if not e.noScale and s.scale then f:SetScale(ns.Util.SafeScale(s.scale)) end
     if not e.noAlpha and s.alpha then f:SetAlpha(s.alpha) end
     if s.point then
         local k = uiScale(f) -- offsets are in the frame's own units
@@ -124,7 +124,7 @@ local function restore(e)
     local f = resolve(e)
     if not f or not e.orig then return end
     if blocked(f) then return ns.Combat:Run("movers." .. e.key, restore, e) end
-    f:SetScale(e.orig.scale)
+    f:SetScale(ns.Util.SafeScale(e.orig.scale))
     if not e.noAlpha then f:SetAlpha(e.orig.alpha) end
     f:ClearAllPoints()
     for _, p in ipairs(e.orig.points) do f:SetPoint(unpack(p)) end
@@ -550,7 +550,7 @@ end
 local scaledHooks = {}
 local function scaleWindow(f)
     if not (M:IsEnabled() and type(f) == "table" and f.SetScale) or f:IsForbidden() or M.IsManaged(f) then return end
-    local want = M.db.windowScale or 1
+    local want = ns.Util.SafeScale(M.db.windowScale)
     if blocked(f) then return ns.Combat:Run("movers.window", scaleWindow, f) end
     if want == 1 and not scaledHooks[f] then return end
     f:SetScale(want)

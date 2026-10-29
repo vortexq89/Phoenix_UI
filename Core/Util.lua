@@ -69,6 +69,13 @@ function U.SetPath(tbl, path, value)
     tbl[keys[#keys]] = value
 end
 
+-- Frame:SetScale rejects 0, negatives, NaN and infinity with a Lua error. A saved or computed scale that is
+-- not a usable positive number becomes 1; tiny values are floored at 0.05 so the frame stays reachable.
+function U.SafeScale(v)
+    if type(v) ~= "number" or v ~= v or v == math.huge or v <= 0 then return 1 end
+    return math.max(0.05, v)
+end
+
 function U.Round(v, decimals)
     local m = 10 ^ (decimals or 0)
     return math.floor(v * m + 0.5) / m

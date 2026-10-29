@@ -611,7 +611,7 @@ function M:Refresh()
     if not bars[1] then return end
     if self.db.panel2 and not bars[2] then build(2) end
     for i, o in pairs(bars) do
-        o.frame:SetScale(self.db.scale)
+        o.frame:SetScale(ns.Util.SafeScale(self.db.scale))
         o.frame:SetFrameStrata(self.db.strata)
         o.frame:SetShown(i == 1 or self.db.panel2)
         o.frame:SetAlpha(self.db.mouseover and 0 or 1)
