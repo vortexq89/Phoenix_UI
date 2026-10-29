@@ -144,30 +144,8 @@ local function build(rr)
     r.all.onClick = function() M:LootAll() end
 end
 
--- Where Blizzard's loot window would stand (Edit Mode spot or under the mouse), or the player's own place.
-local function place(win)
-    local blizz, pos = _G.LootFrame, M.db.lootPos
-    win:ClearAllPoints()
-    if M.db.lootPlace ~= "own" and blizz then
-        win:SetScale(1)
-        win:SetPoint("TOPLEFT", blizz, "TOPLEFT", 0, 0)
-    elseif type(pos) == "table" and pos.point then
-        win:SetScale(ns.Util.SafeScale(pos.scale or 1))
-        win:SetPoint(pos.point, UIParent, pos.point, pos.x or 0, pos.y or 0)
-    else
-        win:SetScale(1)
-        win:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 60, -260)
-    end
-end
-
 local loot
-local mover = {
-    active = function() return M.db.lootPlace == "own" end,
-    get = function() local p = M.db.lootPos; return type(p) == "table" and p.point and p or nil end,
-    set = function(v) M.db.lootPos = { point = v.point, x = v.x, y = v.y, scale = v.scale } end,
-    apply = function() if loot.win then place(loot.win) end end,
-    reset = function() M.db.lootPos = {}; if loot.win then place(loot.win) end end,
-}
+local place, mover, reposition = M.ReplacePlace("lootPlace", "lootPos", "LootFrame", function() return loot end)
 
 loot = M.Replacement({ key = "ownLoot", frame = "LootFrame", title = L.LOOTW_TITLE, strata = "HIGH", combat = true,
     width = WIDTH + 20, height = 34 + 20 + ROWS * ROW_H + 38, build = build, layout = layout, place = place, mover = mover,
@@ -194,7 +172,7 @@ function M:SetupLootWindow()
 end
 function M:SyncLoot()
     loot:Sync()
-    if loot.win and loot.win:IsShown() then place(loot.win) end -- a new place choice applies to the open window
+    if loot.win and loot.win:IsShown() then reposition() end -- a new place choice applies to the open window
 end
 M.SETUPS[#M.SETUPS + 1] = "SetupLootWindow"
 M.RESKINS[#M.RESKINS + 1] = "SyncLoot"

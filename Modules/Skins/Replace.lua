@@ -92,6 +92,35 @@ function M.Replacement(opts)
     return r
 end
 
+--[[ Where a replacement opens: on the Blizzard window's own spot (its Edit Mode or UI panel place, or under the
+    mouse for loot) or, with the db[placeKey] choice "own", at a place of the player's (layout mode; db[posKey]).
+    Returns place(win) for opts.place and a Movers store for opts.mover. getR() returns the replacement. ]]
+function M.ReplacePlace(placeKey, posKey, frame, getR)
+    local function place(win)
+        local blizz, pos = _G[frame], M.db[posKey]
+        win:ClearAllPoints()
+        if M.db[placeKey] ~= "own" and blizz then
+            win:SetScale(1)
+            win:SetPoint("TOPLEFT", blizz, "TOPLEFT", 0, 0)
+        elseif type(pos) == "table" and pos.point then
+            win:SetScale(ns.Util.SafeScale(pos.scale or 1))
+            win:SetPoint(pos.point, UIParent, pos.point, pos.x or 0, pos.y or 0)
+        else
+            win:SetScale(1)
+            win:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 60, -120)
+        end
+    end
+    local function again() local r = getR(); if r and r.win then place(r.win) end end
+    local mover = {
+        active = function() return M.db[placeKey] == "own" end,
+        get = function() local p = M.db[posKey]; return type(p) == "table" and p.point and p or nil end,
+        set = function(v) M.db[posKey] = { point = v.point, x = v.x, y = v.y, scale = v.scale } end,
+        apply = again,
+        reset = function() M.db[posKey] = {}; again() end,
+    }
+    return place, mover, again
+end
+
 -- Hooks the Blizzard window's own show / hide (for windows opened by toggles, not by an event).
 function M.ReplacementHook(r)
     local f = r.Blizzard()
