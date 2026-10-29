@@ -3522,6 +3522,58 @@ try("auto summon pet: choice, blockers, put away by you", function()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
 
+try("loot feed: localized loot lines, stacking, money, currencies, expiry", function()
+    local Q = ns.modules.Quality
+    local p = Q.LootPattern("You receive loot: %sx%d.")
+    local list = { p, Q.LootPattern("You receive loot: %s.") }
+    local link, n = Q.LootParse("You receive loot: |cff1eff00|Hitem:2589::|h[Linen Cloth]|h|rx3.", list)
+    assert(link == "|cff1eff00|Hitem:2589::|h[Linen Cloth]|h|r" and n == 3, "multiple count from the client format")
+    link, n = Q.LootParse("You receive loot: |Hitem:6948::|h[Hearthstone]|h.", list)
+    assert(link and link:find("item:6948") and n == 1, "single item")
+    assert(Q.LootParse("Bob receives loot: [Thing].", list) == nil, "other players' loot ignored")
+    local feed = {}
+    Q.LootFeedAdd(feed, { key = "i1", count = 2 }, 10, 3)
+    Q.LootFeedAdd(feed, { key = "i2", count = 1 }, 11, 3)
+    Q.LootFeedAdd(feed, { key = "i1", count = 3 }, 12, 3)
+    assert(#feed == 2 and feed[1].key == "i1" and feed[1].count == 5 and feed[1].at == 12, "same item adds to its card, moves up")
+    for i = 3, 6 do Q.LootFeedAdd(feed, { key = "i" .. i, count = 1 }, 12 + i, 3) end
+    assert(#feed == 3 and feed[1].key == "i6", "capped at the row count, oldest dropped")
+    -- live: chat lines, money and currency into the stack, then expiry
+    local names = { "GetMoney", "GetTime", "C_CurrencyInfo", "LOOT_ITEM_SELF", "LOOT_ITEM_SELF_MULTIPLE" }
+    local saved = {}
+    for _, k in ipairs(names) do saved[k] = rawget(env, k) end
+    local cash, now = 1000, 50
+    env.GetMoney = function() return cash end
+    env.GetTime = function() return now end
+    env.LOOT_ITEM_SELF, env.LOOT_ITEM_SELF_MULTIPLE = "You receive loot: %s.", "You receive loot: %sx%d."
+    env.C_CurrencyInfo = setmetatable({ GetCoinIcon = function() return 133784 end, GetCoinTextureString = function(v) return v .. "c" end,
+        GetCurrencyInfo = function(id) return { name = "Valorstones", iconFileID = 5868902, quality = 2, quantity = 40 } end },
+        { __index = saved.C_CurrencyInfo })
+    Q.db.feed.enabled = true
+    Q:LootFeedClear()
+    Q.LootFeedMoney() -- first reading
+    cash = 1500
+    Q.LootFeedMoney()
+    local cards = Q:LootFeedCards()
+    assert(#cards == 1 and cards[1].key == "money" and cards[1].amount == 500, "money gain")
+    Q.LootFeedCurrency(3008, 5)
+    assert(#cards == 2 and cards[1].name == "Valorstones" and cards[1].count == 5, "currency gain")
+    Q.LootFeedCurrency(3008, -5)
+    assert(#cards == 2, "a spent currency is not a gain")
+    Q.LootFeedChat("You receive loot: |Hitem:6948::|h[Hearthstone]|h.")
+    assert(#cards == 3 and cards[1].link and cards[1].count == 1, "item line read")
+    Q.db.feed.items = false
+    Q.LootFeedChat("You receive loot: |Hitem:6948::|h[Hearthstone]|h.")
+    assert(#cards == 3, "items switch")
+    Q.db.feed.items = true
+    now = 50 + Q.db.feed.duration + 1
+    Q:LootFeedTick()
+    assert(#cards == 0, "cards leave after their time")
+    assert(#Q:LootFeedSample() >= 1, "preview keeps the last real gains")
+    Q.db.feed.enabled = false; Q:ApplyLootFeed()
+    for _, k in ipairs(names) do rawset(env, k, saved[k]) end
+end)
+
 try("audit: live switches and idle timers", function()
     local S, TT, DT = ns.modules.Skins, ns.modules.Tooltip, ns.modules.DataTexts
     -- title / close / tabs restyle every dressed window live

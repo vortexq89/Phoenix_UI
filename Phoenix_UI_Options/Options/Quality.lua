@@ -2,6 +2,11 @@ local _, ns = ...
 
 local cvar = ns.Combat.CVarAccessors
 local function noFlight(m) return not m.db.flight.enabled end
+local function noFeed(m) return not m.db.feed.enabled end
+local FEED_QUALITY = {
+    { value = 0, label = "QUALITY_FEED_Q0" }, { value = 1, label = "QUALITY_FEED_Q1" }, { value = 2, label = "QUALITY_FEED_Q2" },
+    { value = 3, label = "QUALITY_FEED_Q3" }, { value = 4, label = "QUALITY_FEED_Q4" },
+}
 
 -- Curated account CVars that exist on both clients and are safe to flip at any time out of combat.
 -- item = { label, desc, keywords, min/max/step for ranges }
@@ -57,6 +62,22 @@ ns:RegisterOptions("Quality", {
     end },
     { type = "button", label = "QUALITY_FLIGHT_FORGET", desc = "QUALITY_FLIGHT_FORGET_DESC", button = "QUALITY_FLIGHT_FORGET_BUTTON",
       icon = "delete", func = function(m) m:ForgetFlights() end },
+
+    { type = "tab", label = "QUALITY_TAB_FEED" },
+    { type = "header", label = "QUALITY_FEED", icon = "items" },
+    { type = "toggle", key = "feed.enabled", label = "QUALITY_FEED_SHOW", desc = "QUALITY_FEED_DESC", gate = true,
+      keywords = "loot feed received items gold money currency toast list" },
+    { type = "toggle", key = "feed.items", label = "QUALITY_FEED_ITEMS", disabled = noFeed },
+    { type = "select", key = "feed.minQuality", label = "QUALITY_FEED_MIN", desc = "QUALITY_FEED_MIN_DESC", values = FEED_QUALITY,
+      disabled = function(m) return noFeed(m) or not m.db.feed.items end },
+    { type = "toggle", key = "feed.money", label = "QUALITY_FEED_MONEY", desc = "QUALITY_FEED_MONEY_DESC", disabled = noFeed },
+    { type = "toggle", key = "feed.currency", label = "QUALITY_FEED_CURRENCY", disabled = noFeed },
+    { type = "header", label = "QUALITY_FEED_LAYOUT", icon = "layout" },
+    { type = "range", key = "feed.duration", label = "QUALITY_FEED_DURATION", min = 2, max = 20, step = 1, disabled = noFeed },
+    { type = "range", key = "feed.rows", label = "QUALITY_FEED_ROWS", min = 1, max = 10, step = 1, disabled = noFeed },
+    { type = "range", key = "feed.width", label = "UF_WIDTH", min = 180, max = 400, step = 2, disabled = noFeed },
+    { type = "select", key = "feed.grow", label = "QUALITY_FEED_GROW", values = {
+        { value = "up", label = "GROW_UP" }, { value = "down", label = "GROW_DOWN" } }, disabled = noFeed },
 
     { type = "tab", label = "QUALITY_TAB_GAME" },
     { type = "header", label = "QUALITY_CAMERA", icon = "preview" },

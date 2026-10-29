@@ -20,6 +20,9 @@ local M = ns:NewModule("Quality", {
         combatAlert = false, combatSound = "", knownTint = true,
         -- flight timer (Flight.lua)
         flight = { enabled = true, mapTimes = true, land = true, width = 260, point = "TOP", x = 0, y = -170 },
+        -- loot feed (LootFeed.lua)
+        feed = { enabled = false, items = true, money = true, currency = true, minQuality = 0, duration = 6, rows = 6,
+            width = 240, grow = "up", point = "RIGHT", x = -320, y = -40 },
     },
     -- learned flight times per route and the learned flight speed (Flight.lua), shared by every character
     globalDefaults = { flight = { times = {} } },
@@ -200,6 +203,7 @@ function M:OnEnable()
         if self.db.achievementScreenshot then C_Timer.After(1, Screenshot) end
     end)
     self:SetupFlight() -- Flight.lua
+    self:SetupLootFeed() -- LootFeed.lua
     self:Refresh()
 end
 
@@ -208,6 +212,7 @@ function M:Refresh()
     self:ApplyMarkers()
     self:ApplyRing()
     if self.ApplyFlight then self:ApplyFlight() end
+    if self.ApplyLootFeed then self:ApplyLootFeed() end
 end
 
 function M:OnDisable()

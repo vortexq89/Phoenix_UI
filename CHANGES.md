@@ -3,6 +3,11 @@
 ## 2.0.0-beta1
 
 ### New
+- **Loot feed** (both clients, off by default): a short-lived stack of Phoenix item cards for what you gain:
+  looted, received and crafted items (real icon in its quality frame, count, item level and slot, how many you carry),
+  money (outside vendors, mail, trade and the auction house) and currencies; the same thing again adds to its card.
+  Read from your own loot lines with the client's localized formats (secret lines are skipped). Quality of Life >
+  Loot feed: lowest quality, seconds, rows, width, grow up or down; movable in Layout mode.
 - **Auto summon pet** (both clients, off by default): when the game takes your companion away (loading screen,
   death, flight, vehicle) Phoenix summons a random favourite or your last pet a moment later. A pet you put away
   yourself stays away until you summon one; never in combat, instances, pet battles, while mounted, stealthed or

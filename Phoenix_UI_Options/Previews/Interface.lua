@@ -602,10 +602,11 @@ P:Register("afk", {
 })
 
 ---------------------------------------------------------------- quality of life (S16)
--- Raid markers bar, the combat banner, the flight timer, the cursor ring and a merchant item tinted as already known.
+-- Raid markers bar, the combat banner, the flight timer, a loot feed card, the cursor ring and a merchant item tinted
+-- as already known.
 P:Register("quality", {
     module = "Quality",
-    height = 168,
+    height = 210,
     build = function(stage, m)
         local bar = CreateFrame("Frame", nil, stage)
         bar:SetSize(9 * 23 + 8, 28)
@@ -644,6 +645,10 @@ P:Register("quality", {
         flight.name:SetPoint("RIGHT", flight.time, "LEFT", -6, 0)
         flight.name:SetWordWrap(false)
         flight.caption = caption(stage, flight, L.QUALITY_FLIGHT)
+        -- a loot feed card at its real size: your last gain (or the game's coin card)
+        local feedCard = ns.modules.Skins.ReplaceCard(stage, 220, 40)
+        feedCard:SetPoint("TOPRIGHT", -24, -60)
+        feedCard.caption = caption(stage, feedCard, L.QUALITY_FEED)
         return function()
             local db = m.db
             local fd = db.flight
@@ -655,6 +660,8 @@ P:Register("quality", {
             flight.name:SetText(m:FlightLastName() or L.QUALITY_FLIGHT_SAMPLE)
             flight.time:SetText(m.FlightTimeText(83, true, 0))
             flight:SetAlpha(fd.enabled and 1 or 0.35)
+            m.LootFeedPaint(feedCard, m:LootFeedSample()[1], db.feed.enabled and 1 or 0.35)
+            feedCard:SetWidth(math.min(db.feed.width, 260))
             Skin:Panel(bar, "base", { border = "border.subtle" })
             bar:SetAlpha(db.markers and 1 or 0.35)
             Skin:Text(banner, "title", "state.danger", 18, "OUTLINE")
