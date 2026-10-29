@@ -9,6 +9,10 @@
   the character sheet show what diminishing returns cost and what the next 100 rating adds (Item Level page).
 - **Teleport prompt**: joining a premade group for a dungeon whose teleport you know offers it in a small popup with
   a secure spell button (Group Finder page).
+- **Process items** (retail): a Process chip on the bags (and a button on the Phoenix bag window) lists what you can
+  disenchant, mill, prospect or unlock; one click on an item casts the spell on it (secure buttons of ours).
+- **PUI Mount rules**: name a flyer, a ground mount and a swimmer and the smart mount macro picks by place.
+- **Quest progress**: sounds when an objective is done and when a quest is ready to turn in; optional party-chat steps.
 - Fixed: a saved scale of 0, a negative number or NaN can no longer reach `SetScale` (data texts, movers, bags,
   extra buttons, minimap button bin); a quick ring item entry without an item ID no longer errors.
 - **Unit Frames II, arena and resource bars** (plan v2 stage S18).
