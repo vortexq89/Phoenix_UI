@@ -161,6 +161,9 @@
   }
  },
  "files": {
+  "Interface\\CharacterFrame\\TempPortraitAlphaMask": {
+   "fileDataID": 130924
+  },
   "Interface\\Buttons\\LockButton-Locked-Up": {
    "fileDataID": 525906
   },

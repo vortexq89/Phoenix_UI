@@ -157,8 +157,8 @@ local function hybridMask()
     if mask and HybridMinimap and HybridMinimap.CircleMask then HybridMinimap.CircleMask:SetTexture(mask) end
 end
 
--- The game's own round mask, put back when the shape is switched to Round without a reload.
-M.ROUND_MASK = ns.flavor == "forever" and "Textures\\MinimapMask" or "Interface\\Masks\\CircleMaskScalable"
+-- A round mask, put back when the shape is switched to Round without a reload (the one Blizzard's HybridMinimap uses).
+M.ROUND_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
 local function applyShape(self)
     local shape = self:Shape()
