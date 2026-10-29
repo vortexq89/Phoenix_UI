@@ -107,6 +107,8 @@ ns:RegisterOptions("Quests", {
       keywords = "auto turn in complete hand in shift" },
     { type = "select", key = "reward", label = "QUESTS_REWARD", desc = "QUESTS_REWARD_DESC", values = REWARDS, disabled = autoOff,
       keywords = "reward choice vendor gold sim upgrade" },
+    { type = "toggle", key = "rewardMark", label = "QUESTS_REWARD_MARK", desc = "QUESTS_REWARD_MARK_DESC",
+      keywords = "reward value vendor price coin best gold" },
     { type = "toggle", key = "tooltip", label = "QUESTS_TOOLTIP", desc = "QUESTS_TOOLTIP_DESC",
       keywords = "tooltip progress objectives npc offers" },
     { type = "toggle", key = "progressSound", label = "QUESTS_PROGRESS_SOUND", desc = "QUESTS_PROGRESS_SOUND_DESC",

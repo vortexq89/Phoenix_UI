@@ -20,7 +20,7 @@ local M = ns:NewModule("Quests", {
         questLines = true, turnins = true, npcPins = true, minimap = true, pinSize = 18, hideTrivial = true,
         slices = { midnight = true, tww = true, forever = true },
         -- automation
-        autoAccept = false, autoTurnIn = false, reward = "off",
+        autoAccept = false, autoTurnIn = false, reward = "off", rewardMark = true,
         tooltip = true, contribute = false,
         progressSound = true, progressAnnounce = "off", -- Progress.lua
         -- NPC locations (NPCs.lua): giver spot in quest tooltips, townsfolk / rare pins, map search, /way
@@ -361,4 +361,5 @@ function M:Refresh()
     self:RefreshTracker()
     self:RefreshPins()
     self:RefreshArrow()
+    if self.MarkReward and QuestFrame and QuestFrame:IsShown() then self:MarkReward() end
 end

@@ -80,6 +80,11 @@ function M:PickReward()
         end
         if best and bestPct > 0 then return best end
     end
+    return M.BestVendorReward(n)
+end
+
+-- The choice worth the most at a vendor (price x count), or nil while any of them is not cached yet.
+function M.BestVendorReward(n)
     local best, bestValue = nil, -1
     for i = 1, n do
         local link = GetQuestItemLink("choice", i)
@@ -92,7 +97,45 @@ function M:PickReward()
     return best
 end
 
+---------------------------------------------------------------- reward value marker
+-- A small coin on the quest reward worth the most at a vendor (shown whenever there is a choice; works without
+-- auto turn-in). The reward buttons and their item icons stay Blizzard's; the coin is our own texture on top.
+local mark
+local function rewardButton(i)
+    local rf = QuestInfoRewardsFrame
+    local list = rf and rf.RewardButtons
+    return list and list[i] or _G["QuestInfoRewardsFrameQuestInfoItem" .. i]
+end
+
+function M:HideRewardMark() if mark then mark:Hide() end end
+
+function M:MarkReward()
+    self:HideRewardMark()
+    if not self.db.rewardMark then return end
+    local n = tonumber((GetNumQuestChoices())) or 0
+    if n < 2 then return end
+    local best = M.BestVendorReward(n)
+    local b = best and rewardButton(best)
+    if not b then return end
+    if not mark then
+        mark = CreateFrame("Frame")
+        mark:SetSize(18, 18)
+        mark.tex = mark:CreateTexture(nil, "OVERLAY")
+        mark.tex:SetAllPoints()
+        local atlas = C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo("bags-junkcoin")
+        if atlas then mark.tex:SetAtlas("bags-junkcoin") else
+            mark.tex:SetTexture("Interface\\MoneyFrame\\UI-GoldIcon") end
+    end
+    mark:SetParent(b)
+    mark:SetFrameLevel(b:GetFrameLevel() + 5)
+    mark:ClearAllPoints()
+    mark:SetPoint("TOPLEFT", b, "TOPLEFT", -4, 4)
+    mark:Show()
+    return b
+end
+
 local function onComplete()
+    M:MarkReward()
     if not M.db.autoTurnIn or paused() then return end
     local pick = M:PickReward()
     if pick == nil then return end
@@ -108,4 +151,8 @@ function M:EnableAuto()
     ns.Events:On("QUEST_DETAIL", self, onDetail)
     ns.Events:On("QUEST_PROGRESS", self, onProgress)
     ns.Events:On("QUEST_COMPLETE", self, onComplete)
+    ns.Events:On("QUEST_FINISHED", self, function() M:HideRewardMark() end)
+    ns.Events:On("GET_ITEM_INFO_RECEIVED", self, function()
+        if mark and QuestFrame and QuestFrame:IsShown() then M:MarkReward() end
+    end)
 end
