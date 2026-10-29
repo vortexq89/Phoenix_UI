@@ -2712,6 +2712,32 @@ try("phoenix calendar window", function()
     shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix vault window", function()
+    local frameName = "WeeklyRewardsFrame"
+    local names = { "WeeklyRewardsFrame", "C_WeeklyRewards" }
+    local S = ns.modules.Skins
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown = true
+    env[frameName] = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    rawset(env.Enum, "WeeklyRewardChestThresholdType", rawget(env.Enum, "WeeklyRewardChestThresholdType") or { Raid = 3, Activities = 1, World = 6 })
+    local pick = false
+    env.C_WeeklyRewards = { GetActivities = function() return { { index = 2, progress = 2, threshold = 4 }, { index = 1, progress = 1, threshold = 1, id = 9 } } end,
+        HasAvailableRewards = function() return pick end, GetExampleRewardItemHyperlinks = function() return nil end }
+    local slots = S.VaultSlots(1)
+    assert(slots[1].index == 1 and slots[2].progress == 2, "vault slots in order")
+    S.db.ownVault = true; S:SyncVault()
+    local r = S.VaultReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env[frameName]), "ownVault: window with Blizzard's tucked")
+    S.db.ownVault = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env[frameName]), "ownVault: switch off live")
+    S.db.ownVault = true; S:Refresh()
+    assert(r.win:IsShown(), "ownVault: on again")
+    pick = true; S:SyncVault()
+    assert(not r.win:IsShown(), "rewards to pick: Blizzard's vault")
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons

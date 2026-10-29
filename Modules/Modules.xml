@@ -33,6 +33,7 @@
     <Script file="Skins\FriendsWindow.lua"/>
     <Script file="Skins\AchievementsWindow.lua"/>
     <Script file="Skins\CalendarWindow.lua"/>
+    <Script file="Skins\VaultWindow.lua"/>
     <Script file="Skins\Merchant.lua"/>
     <Script file="Skins\Vault.lua"/>
     <Script file="Skins\Calendar.lua"/>
