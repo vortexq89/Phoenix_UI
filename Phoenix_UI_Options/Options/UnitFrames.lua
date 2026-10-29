@@ -318,7 +318,7 @@ ns:RegisterOptions("UnitFrames", {
     px({ type = "input", key = "units.@.tags.info", label = "UF_TAG_INFO", desc = "UF_TAGS_DESC" }),
     { type = "description", text = "UF_TAGS_HELP2", hidden = blizzard },
     { type = "header", label = "UF_TEXT", icon = "fonts" },
-    bz({ type = "toggle", key = "fonts", label = "UF_FONTS", desc = "UF_FONTS_DESC", reload = true }),
+    bz({ type = "toggle", key = "fonts", label = "UF_FONTS", desc = "UF_FONTS_DESC" }),
     text("units.@.name", "UF_NAME_FONT"),
     text("units.@.health", "UF_HEALTH_FONT"),
     text("units.@.power", "UF_POWER_FONT"),
@@ -507,7 +507,7 @@ ns:RegisterOptions("UnitFrames", {
     { type = "description", text = "UF_RES_NOTE" },
     ------------------------------------------------------------ Blizzard mode (the 2.0 skin)
     { type = "header", label = "UF_BLIZZARD_SKIN", icon = "skins" },
-    bz({ type = "toggle", key = "texture", label = "UF_TEXTURE", desc = "UF_TEXTURE_DESC", reload = true }),
+    bz({ type = "toggle", key = "texture", label = "UF_TEXTURE", desc = "UF_TEXTURE_DESC" }),
     bz({ type = "toggle", key = "classColor", label = "UF_CLASSCOLOR", desc = "UF_CLASSCOLOR_DESC", keywords = "class colour health" }),
     bz({ type = "toggle", key = "powerColor", label = "UF_POWERCOLOR", desc = "UF_POWERCOLOR_DESC" }),
     bz({ type = "toggle", key = "range.enabled", label = "UF_RANGE_FADE", desc = "UF_RANGE_FADE_DESC",

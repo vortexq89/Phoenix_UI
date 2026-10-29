@@ -26,20 +26,42 @@ local function barTexture(key)
     return u.texture ~= "" and Media:Bar(u.texture) or Theme:Bar()
 end
 
+-- Bar texture with a live switch back: Blizzard's own texture (atlas or file) is kept the first time ours goes on.
+local barOriginal = setmetatable({}, { __mode = "k" })
+local function texture(bar, key)
+    if M.db.texture then
+        if not barOriginal[bar] then
+            local t = bar:GetStatusBarTexture()
+            barOriginal[bar] = t and { atlas = t.GetAtlas and t:GetAtlas(), file = t:GetTexture() } or {}
+        end
+        bar:SetStatusBarTexture(barTexture(key))
+    elseif barOriginal[bar] then
+        local o = barOriginal[bar]
+        barOriginal[bar] = nil
+        if o.atlas then bar:SetStatusBarTexture(o.atlas) elseif o.file then bar:SetStatusBarTexture(o.file) end
+    end
+end
+
 function M:StyleHealthBar(bar, key)
-    if self.db.texture then bar:SetStatusBarTexture(barTexture(key)) end
+    texture(bar, key)
     local u = self:Unit(key)
     Skin:BorderSpec(bar, u.border, "border.black")
     Skin:Backdrop(bar, u.background, "bg.sunken")
 end
 
 function M:StylePowerBar(bar, key)
-    if self.db.texture then bar:SetStatusBarTexture(barTexture(key)) end
+    texture(bar, key)
 end
 
 -- texts: { name = fs, health = { fs, … }, power = { fs, … } }; Blizzard keeps placing them.
 function M:StyleTexts(texts, key)
-    if not self.db.fonts then return end
+    if not self.db.fonts then
+        -- live off: the game's fonts back on every text Phoenix restyled
+        if texts.name then Skin:Restore(texts.name) end
+        for _, fs in ipairs(texts.health or {}) do Skin:Restore(fs) end
+        for _, fs in ipairs(texts.power or {}) do Skin:Restore(fs) end
+        return
+    end
     local u = self:Unit(key)
     if texts.name then Skin:TextSpec(texts.name, u.name, "unit") end
     for _, fs in ipairs(texts.health or {}) do Skin:TextSpec(fs, u.health, "unit") end
