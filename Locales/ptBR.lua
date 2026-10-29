@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "Não é possível criar macros em combate.",
     AUTO_SKIP_CINEMATICS = "Pular cinemáticas",
     AUTO_SKIP_CINEMATICS_DESC = "Pula cinemáticas que você já viu. Segure Shift para assistir.",
+    AUTO_PET = "Mascote",
+    AUTO_PET_SUMMON = "Invocar mascote automaticamente",
+    AUTO_PET_SUMMON_DESC = "Quando o jogo tira o seu mascote (tela de carregamento, morte, voo, veículo), o Phoenix invoca outro logo depois. Um mascote que você mesmo guarda fica guardado até você invocar um. Nunca em combate, em instâncias, montado, furtivo ou lançando.",
+    AUTO_PET_MODE = "Qual mascote",
+    AUTO_PET_MODE_DESC = "Favorito aleatório: um mascote aleatório dos seus favoritos (qualquer um se você não tiver). Último mascote: o que você tinha antes.",
+    AUTO_PET_FAVORITE = "Favorito aleatório",
+    AUTO_PET_LAST = "Último mascote",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "Mítica+",
     MYTHICPLUS_DESC = "Cronômetro da corrida com limites de baú, tempos dos chefes e forças inimigas, além de ajudas para a pedra-chave.",

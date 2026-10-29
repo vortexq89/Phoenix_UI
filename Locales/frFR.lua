@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "Impossible d'écrire des macros en combat.",
     AUTO_SKIP_CINEMATICS = "Passer les cinématiques",
     AUTO_SKIP_CINEMATICS_DESC = "Passe les cinématiques déjà vues. Maintenez Maj pour les regarder.",
+    AUTO_PET = "Mascotte",
+    AUTO_PET_SUMMON = "Invoquer la mascotte automatiquement",
+    AUTO_PET_SUMMON_DESC = "Quand le jeu retire votre mascotte (écran de chargement, mort, vol, véhicule), Phoenix en invoque une à nouveau peu après. Une mascotte que vous renvoyez vous-même reste absente jusqu'à ce que vous en invoquiez une. Jamais en combat, en instance, sur une monture, camouflé ou pendant une incantation.",
+    AUTO_PET_MODE = "Quelle mascotte",
+    AUTO_PET_MODE_DESC = "Favorite au hasard : une mascotte au hasard parmi vos favorites (n'importe laquelle si vous n'en avez pas). Dernière mascotte : celle que vous aviez avant.",
+    AUTO_PET_FAVORITE = "Favorite au hasard",
+    AUTO_PET_LAST = "Dernière mascotte",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "Mythique+",
     MYTHICPLUS_DESC = "Minuteur de donjon avec limites de coffre, temps intermédiaires des boss et forces ennemies, plus des aides pour la clé.",

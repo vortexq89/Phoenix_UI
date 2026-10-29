@@ -50,4 +50,11 @@ ns:RegisterOptions("Automation", {
     { type = "toggle", key = "autoRelease", label = "AUTO_RELEASE", desc = "AUTO_RELEASE_DESC", keywords = "battleground spirit" },
     { type = "toggle", key = "skipCinematics", label = "AUTO_SKIP_CINEMATICS", desc = "AUTO_SKIP_CINEMATICS_DESC",
       keywords = "movie cutscene" },
+    { type = "header", label = "AUTO_PET", icon = "heart" },
+    { type = "toggle", key = "petSummon", label = "AUTO_PET_SUMMON", desc = "AUTO_PET_SUMMON_DESC",
+      keywords = "companion pet summon critter battle pet favourite favorite" },
+    { type = "select", key = "petMode", label = "AUTO_PET_MODE", desc = "AUTO_PET_MODE_DESC", values = {
+        { value = "favorite", label = "AUTO_PET_FAVORITE" },
+        { value = "last", label = "AUTO_PET_LAST" },
+    }, disabled = function(m) return not m.db.petSummon end },
 })

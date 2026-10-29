@@ -3465,6 +3465,63 @@ try("flight timer: learned and estimated routes, take-off to landing", function(
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
 
+try("auto summon pet: choice, blockers, put away by you", function()
+    local A = ns.modules.Automation
+    local yes = function() return true end
+    local how, arg = A.PetChoice("last", "BattlePet-1", yes, true)
+    assert(how == "guid" and arg == "BattlePet-1", "last pet when it can be summoned")
+    how, arg = A.PetChoice("last", "BattlePet-1", function() return false end, false)
+    assert(how == "random" and arg == false, "any random pet when the last one is gone and no favourites")
+    assert(select(2, A.PetChoice("favorite", nil, yes, true)) == true, "random favourite")
+    local names = { "C_PetJournal", "InCombatLockdown", "UnitAffectingCombat", "UnitIsDeadOrGhost", "IsMounted", "IsFlying",
+        "UnitOnTaxi", "UnitInVehicle", "IsStealthed", "IsInInstance", "UnitCastingInfo", "UnitChannelInfo", "C_PetBattles", "C_Timer" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local out, calls, mounted, inside = nil, {}, false, false
+    env.C_PetJournal = {
+        GetSummonedPetGUID = function() return out end,
+        PetIsSummonable = function() return true end,
+        HasFavoritePets = function() return true end,
+        SummonPetByGUID = function(g) calls[#calls + 1] = "g:" .. g; if out == g then out = nil else out = g end end,
+        SummonRandomPet = function(fav) calls[#calls + 1] = "r:" .. tostring(fav); out = "BattlePet-9" end,
+    }
+    local no = function() return false end
+    env.InCombatLockdown, env.UnitAffectingCombat, env.UnitIsDeadOrGhost, env.IsFlying = no, no, no, no
+    env.UnitOnTaxi, env.UnitInVehicle, env.IsStealthed = no, no, no
+    env.IsMounted = function() return mounted end
+    env.IsInInstance = function() return inside, inside and "party" or "none" end
+    env.UnitCastingInfo = function() return nil end
+    env.UnitChannelInfo = function() return nil end
+    env.C_PetBattles = { IsInBattle = no }
+    env.C_Timer = setmetatable({ After = function(_, fn) fn() end }, { __index = saved.C_Timer })
+    A.db.petSummon, A.db.petMode = true, "favorite"
+    A.petHooked = nil
+    A:SetupPetSummon()
+    A.global.pets = {}
+    assert(A.PetBlocked() == nil, "free to summon")
+    mounted = true
+    assert(A.PetBlocked() == "moving" and not A:SummonPet(), "never while mounted")
+    mounted, inside = false, true
+    assert(A.PetBlocked() == "instance", "never in a dungeon")
+    inside = false
+    assert(A:SummonPet() and calls[1] == "r:true", "random favourite summoned")
+    A.PetChanged()
+    assert(not A:SummonPet() and #calls == 1, "nothing while a pet is out")
+    -- you put it away through the journal: it stays away
+    env.C_PetJournal.SummonPetByGUID("BattlePet-9")
+    assert(not A:SummonPet() and #calls == 2, "a pet you put away stays away")
+    -- you summon one again: remembered as the last pet, and auto summon works again
+    env.C_PetJournal.SummonPetByGUID("BattlePet-4")
+    A.PetChanged()
+    out = nil
+    A.db.petMode = "last"
+    assert(A:SummonPet() and calls[#calls] == "g:BattlePet-4", "last pet back after it was taken")
+    A.db.petSummon, A.db.petMode = false, "favorite"
+    out = nil
+    assert(not A:SummonPet(), "switch off live")
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
+
 try("audit: live switches and idle timers", function()
     local S, TT, DT = ns.modules.Skins, ns.modules.Tooltip, ns.modules.DataTexts
     -- title / close / tabs restyle every dressed window live

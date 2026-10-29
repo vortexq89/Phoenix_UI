@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "戰鬥中無法寫入巨集。",
     AUTO_SKIP_CINEMATICS = "跳過過場動畫",
     AUTO_SKIP_CINEMATICS_DESC = "跳過已看過的過場動畫。按住 Shift 可觀看。",
+    AUTO_PET = "小寵物",
+    AUTO_PET_SUMMON = "自動召喚小寵物",
+    AUTO_PET_SUMMON_DESC = "當遊戲收回你的小寵物時（讀取畫面、死亡、飛行、載具），Phoenix 會在片刻後再次召喚。你自己收回的小寵物在你再次召喚前不會被召喚。戰鬥中、副本內、騎乘、潛行或施法時不會召喚。",
+    AUTO_PET_MODE = "哪隻寵物",
+    AUTO_PET_MODE_DESC = "隨機最愛：從你的最愛中隨機一隻（沒有最愛時任意一隻）。上一隻：你之前帶著的那隻。",
+    AUTO_PET_FAVORITE = "隨機最愛",
+    AUTO_PET_LAST = "上一隻",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "傳奇鑰石",
     MYTHICPLUS_DESC = "帶寶箱時限、首領分段和敵方部隊的計時器，以及鑰石輔助功能。",

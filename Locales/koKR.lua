@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "전투 중에는 매크로를 만들 수 없습니다.",
     AUTO_SKIP_CINEMATICS = "동영상 건너뛰기",
     AUTO_SKIP_CINEMATICS_DESC = "이미 본 동영상을 건너뜁니다. Shift를 누르고 있으면 시청합니다.",
+    AUTO_PET = "애완동물",
+    AUTO_PET_SUMMON = "애완동물 자동 소환",
+    AUTO_PET_SUMMON_DESC = "게임이 애완동물을 없애면(로딩 화면, 죽음, 비행, 탈것 장치) Phoenix가 잠시 후 다시 소환합니다. 직접 돌려보낸 애완동물은 다시 소환할 때까지 소환하지 않습니다. 전투 중, 인스턴스, 탈것 탑승, 은신, 시전 중에는 소환하지 않습니다.",
+    AUTO_PET_MODE = "어떤 애완동물",
+    AUTO_PET_MODE_DESC = "무작위 즐겨찾기: 즐겨찾기 중 무작위 애완동물(없으면 아무 애완동물). 마지막 애완동물: 이전에 데리고 있던 애완동물.",
+    AUTO_PET_FAVORITE = "무작위 즐겨찾기",
+    AUTO_PET_LAST = "마지막 애완동물",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "신화+",
     MYTHICPLUS_DESC = "상자 시간 제한, 우두머리 구간 기록, 적 병력을 표시하는 타이머와 쐐기돌 도우미.",

@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "Le macro non si possono scrivere in combattimento.",
     AUTO_SKIP_CINEMATICS = "Salta i filmati",
     AUTO_SKIP_CINEMATICS_DESC = "Salta i filmati già visti. Tieni premuto Maiusc per guardarli.",
+    AUTO_PET = "Mascotte",
+    AUTO_PET_SUMMON = "Evoca la mascotte automaticamente",
+    AUTO_PET_SUMMON_DESC = "Quando il gioco ti toglie la mascotte (schermata di caricamento, morte, volo, veicolo), Phoenix ne evoca di nuovo una poco dopo. Una mascotte che congedi tu resta via finché non ne evochi una. Mai in combattimento, nelle istanze, in sella, in furtività o mentre lanci.",
+    AUTO_PET_MODE = "Quale mascotte",
+    AUTO_PET_MODE_DESC = "Preferita a caso: una mascotte a caso tra le preferite (una qualsiasi se non ne hai). Ultima mascotte: quella che avevi prima.",
+    AUTO_PET_FAVORITE = "Preferita a caso",
+    AUTO_PET_LAST = "Ultima mascotte",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "Mitica+",
     MYTHICPLUS_DESC = "Timer della spedizione con limiti dei forzieri, tempi dei boss e forze nemiche, più aiuti per la chiave.",

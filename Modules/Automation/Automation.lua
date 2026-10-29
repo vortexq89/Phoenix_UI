@@ -17,7 +17,10 @@ local M = ns:NewModule("Automation", {
         fastLoot = false, confirmBoP = false, gossip = false, declinePetDuels = false, declineGuild = false,
         lowHealth = false, lowHealthSound = "AlertOnYou",
         mountFlyer = "", mountGround = "", mountSwimmer = "", -- PUI Mount rules (Macros.lua)
+        petSummon = false, petMode = "favorite", -- auto summon pet (PetSummon.lua)
     },
+    -- per character: the last companion pet and whether you put it away (PetSummon.lua)
+    globalDefaults = { pets = {} },
 })
 
 -- GetGuildBankWithdrawMoney returns -1 when the withdrawal limit is unlimited (guild master).
@@ -125,6 +128,7 @@ function M:OnEnable()
     self:SetupRareAlert() -- RareAlert.lua
     self:SetupAlreadyKnown() -- AlreadyKnown.lua
     self:SetupUndercut() -- Undercut.lua
+    self:SetupPetSummon() -- PetSummon.lua
     if not hooked then
         hooked = true
         hooksecurefunc("StaticPopup_Show", onPopup)

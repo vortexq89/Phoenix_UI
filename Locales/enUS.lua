@@ -620,6 +620,13 @@ ns.RegisterLocale("enUS", {
     AUTO_MACROS_COMBAT = "Macros cannot be written in combat.",
     AUTO_SKIP_CINEMATICS = "Skip cinematics",
     AUTO_SKIP_CINEMATICS_DESC = "Skip cinematics you've seen. Hold Shift to watch.",
+    AUTO_PET = "Companion pet",
+    AUTO_PET_SUMMON = "Auto summon pet",
+    AUTO_PET_SUMMON_DESC = "When the game takes your companion away (loading screen, death, flight, vehicle), Phoenix summons one again a moment later. A pet you put away yourself stays away until you summon one. Never in combat, in instances, while mounted, stealthed or casting.",
+    AUTO_PET_MODE = "Which pet",
+    AUTO_PET_MODE_DESC = "Random favourite: a random pet from your favourites (any pet while you have none). Last pet: the one you had out before.",
+    AUTO_PET_FAVORITE = "Random favourite",
+    AUTO_PET_LAST = "Last pet",
 
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "Mythic+",

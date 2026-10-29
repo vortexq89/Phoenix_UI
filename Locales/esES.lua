@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "No se pueden crear macros en combate.",
     AUTO_SKIP_CINEMATICS = "Saltar cinemáticas",
     AUTO_SKIP_CINEMATICS_DESC = "Salta las cinemáticas que ya has visto. Mantén Mayús para verlas.",
+    AUTO_PET = "Mascota de compañía",
+    AUTO_PET_SUMMON = "Invocar mascota automáticamente",
+    AUTO_PET_SUMMON_DESC = "Cuando el juego retira a tu mascota (pantalla de carga, muerte, vuelo, vehículo), Phoenix invoca otra poco después. Una mascota que guardas tú sigue guardada hasta que invoques una. Nunca en combate, en instancias, montado, en sigilo o lanzando hechizos.",
+    AUTO_PET_MODE = "Qué mascota",
+    AUTO_PET_MODE_DESC = "Favorita aleatoria: una mascota al azar de tus favoritas (cualquiera si no tienes). Última mascota: la que llevabas antes.",
+    AUTO_PET_FAVORITE = "Favorita aleatoria",
+    AUTO_PET_LAST = "Última mascota",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "Mítica+",
     MYTHICPLUS_DESC = "Temporizador de la incursión con límites de cofre, tiempos de jefes y fuerzas enemigas, además de ayudas para la piedra angular.",

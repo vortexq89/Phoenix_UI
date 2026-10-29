@@ -134,6 +134,7 @@
     <Script file="Automation\AlreadyKnown.lua"/>
     <Script file="Automation\Macros.lua"/>
     <Script file="Automation\Undercut.lua"/>
+    <Script file="Automation\PetSummon.lua"/>
     <Script file="Quests\Quests.lua"/>
     <Script file="Quests\Tracker.lua"/>
     <Script file="Quests\Pins.lua"/>

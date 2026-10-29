@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "战斗中无法写入宏。",
     AUTO_SKIP_CINEMATICS = "跳过过场动画",
     AUTO_SKIP_CINEMATICS_DESC = "跳过已看过的过场动画。按住 Shift 可观看。",
+    AUTO_PET = "小宠物",
+    AUTO_PET_SUMMON = "自动召唤小宠物",
+    AUTO_PET_SUMMON_DESC = "当游戏收回你的小宠物时（读取画面、死亡、飞行、载具），Phoenix 会在片刻后再次召唤。你自己收回的小宠物在你再次召唤前不会被召唤。战斗中、副本内、骑乘、潜行或施法时不会召唤。",
+    AUTO_PET_MODE = "哪只宠物",
+    AUTO_PET_MODE_DESC = "随机偏好：从你的偏好中随机一只（没有偏好时任意一只）。上一只：你之前带着的那只。",
+    AUTO_PET_FAVORITE = "随机偏好",
+    AUTO_PET_LAST = "上一只",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "史诗钥石",
     MYTHICPLUS_DESC = "带宝箱时限、首领分段和敌方部队的计时器，以及钥石辅助功能。",

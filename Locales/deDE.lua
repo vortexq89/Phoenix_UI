@@ -600,6 +600,13 @@ local T = {
     AUTO_MACROS_COMBAT = "Makros können im Kampf nicht geschrieben werden.",
     AUTO_SKIP_CINEMATICS = "Zwischensequenzen überspringen",
     AUTO_SKIP_CINEMATICS_DESC = "Überspringt bereits gesehene Zwischensequenzen. Halte Umschalt, um sie anzusehen.",
+    AUTO_PET = "Haustier",
+    AUTO_PET_SUMMON = "Haustier automatisch rufen",
+    AUTO_PET_SUMMON_DESC = "Wenn das Spiel dein Haustier entfernt (Ladebildschirm, Tod, Flug, Fahrzeug), ruft Phoenix kurz danach wieder eines. Ein Haustier, das du selbst wegschickst, bleibt weg, bis du wieder eines rufst. Nie im Kampf, in Instanzen, beritten, verstohlen oder beim Zaubern.",
+    AUTO_PET_MODE = "Welches Haustier",
+    AUTO_PET_MODE_DESC = "Zufälliger Favorit: ein zufälliges Haustier aus deinen Favoriten (irgendeines, solange du keine hast). Letztes Haustier: das, das du zuvor dabei hattest.",
+    AUTO_PET_FAVORITE = "Zufälliger Favorit",
+    AUTO_PET_LAST = "Letztes Haustier",
     ---------------------------------------------------------------- Mythic+
     MYTHICPLUS = "Mythisch+",
     MYTHICPLUS_DESC = "Lauf-Timer mit Truhenlimits, Boss-Zwischenzeiten und feindlichen Streitkräften, dazu Schlüsselstein-Helfer.",

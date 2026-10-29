@@ -3,6 +3,10 @@
 ## 2.0.0-beta1
 
 ### New
+- **Auto summon pet** (both clients, off by default): when the game takes your companion away (loading screen,
+  death, flight, vehicle) Phoenix summons a random favourite or your last pet a moment later. A pet you put away
+  yourself stays away until you summon one; never in combat, instances, pet battles, while mounted, stealthed or
+  casting. Automation > Companion pet.
 - **Flight timer** (both clients): while you ride a flight path a Phoenix bar shows the destination, a progress fill
   in the accent colour and the time left, with a Land button. Phoenix learns each route's time from your own landed
   flights (account-wide); routes not flown yet are estimated from their length and a speed learned from your flights
