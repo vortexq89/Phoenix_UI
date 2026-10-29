@@ -2617,6 +2617,37 @@ try("phoenix merchant window", function()
     shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix friends window", function()
+    local S = ns.modules.Skins
+    local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown, invited, tabN = true, nil, 1
+    env.FriendsFrame = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.PanelTemplates_GetSelectedTab = function() return tabN end
+    env.BNGetNumFriends = function() return 2, 1 end
+    env.C_BattleNet = { GetFriendAccountInfo = function(i)
+        return { accountName = "Acc" .. i, isAFK = i == 2, gameAccountInfo = { isOnline = i == 2, clientProgram = "WoW",
+            characterName = "Char", realmName = "Realm", areaName = "Dornogal" } } end }
+    env.C_FriendList = { GetNumFriends = function() return 1 end, GetFriendInfoByIndex = function()
+        return { name = "Wow", connected = false } end, AddFriend = function() end }
+    env.C_PartyInfo = { InviteUnit = function(n) invited = n end }
+    local list = S.FriendList()
+    assert(#list == 3 and list[1].name == "Acc2" and list[1].online, "online friends first")
+    assert(S.FriendStatusToken(list[1]) == "state.warning" and S.FriendStatusToken(list[3]) == "text.muted", "status colours")
+    S.db.ownFriends = true; S:SyncFriends()
+    local r = S.FriendsReplacement
+    assert(r.win and r.win:IsShown(), "friends window shown")
+    r.rows[1]:GetScript("OnClick")(r.rows[1])
+    r.invite.onClick()
+    assert(invited == "Char-Realm", "invite the picked friend's character")
+    tabN = 2; S:SyncFriends()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.FriendsFrame), "other tabs show Blizzard's window")
+    tabN = 1; S.db.ownFriends = false; S:Refresh()
+    assert(not r.win:IsShown(), "switch off live")
+    S.db.ownFriends = true; shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)
 try("game icons not mixed", function()
     local I = ns.Icons
