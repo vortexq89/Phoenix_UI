@@ -213,11 +213,15 @@ local function updateMinimap()
 end
 
 -- The minimap list is rebuilt on map or quest changes; positions follow the player every 0.2 s.
+-- The 0.2 s follower only runs while there are pins to follow (hiding the holder stops its OnUpdate).
+local function syncFollower()
+    if miniFrame then miniFrame:SetShown(M.miniList ~= nil and #M.miniList > 0) end
+end
 function M:RebuildMinimap()
     self.miniList = nil
-    if not (self:IsEnabled() and self.db.minimap) then return updateMinimap() end
+    if not (self:IsEnabled() and self.db.minimap) then syncFollower(); return updateMinimap() end
     local mapID = C_Map.GetBestMapForUnit("player")
-    if not mapID then return updateMinimap() end
+    if not mapID then syncFollower(); return updateMinimap() end
     local list = {}
     for _, p in ipairs(self:PinsFor(mapID)) do
         local cont, wx, wy = worldPos(mapID, p.x, p.y)
@@ -227,6 +231,7 @@ function M:RebuildMinimap()
         end
     end
     self.miniList = list
+    syncFollower()
     updateMinimap()
 end
 
@@ -257,6 +262,7 @@ function M:EnablePins()
 end
 
 function M:DisablePins()
+    if miniFrame then miniFrame:Hide() end
     for _, pin in ipairs(mapPins) do pin:Hide() end
     for _, pin in ipairs(miniPins) do pin:Hide() end
 end

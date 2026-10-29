@@ -100,6 +100,7 @@ local function area(key)
                 line.fs:SetAlpha(line.t > FADE_AT and math.max(0, 1 - (line.t - FADE_AT) / (DURATION - FADE_AT)) or 1)
             end
         end
+        if #self.active == 0 then self:Hide() end
     end)
     frames[key] = f
     placeArea(key)
@@ -138,6 +139,7 @@ local function add(key, color, prefix, amount, crit, mergeKey)
     -- alternate a little left and right so bursts stay readable
     local x = (#f.active % 2 == 0) and -18 or 18
     f.active[#f.active + 1] = { fs = fs, t = 0, x = x, key = mergeKey, n = 1, born = now }
+    f:Show() -- the mover runs only while a line is in flight
 end
 M.AddLine = add
 

@@ -532,16 +532,23 @@ function M:Update()
 end
 local function update() M:Update() end
 
--- Mouseover only: a panel stays faded out until the cursor is over it (checked 10 times a second).
-local function fader(o)
-    local elapsed = 0
-    o.frame:HookScript("OnUpdate", function(f, dt)
-        elapsed = elapsed + dt
-        if elapsed < 0.1 then return end
-        elapsed = 0
-        local want = (not M.db.mouseover or f:IsMouseOver()) and 1 or 0
-        if f:GetAlpha() ~= want then f:SetAlpha(want) end
-    end)
+-- Mouseover only: a panel stays faded out until the cursor is over it (checked 10 times a second, and only while
+-- "Mouseover only" is on and a panel is shown; off, nothing runs).
+local fadeTicker
+local function fadeTick()
+    for _, o in pairs(bars) do
+        local f = o.frame
+        if f:IsShown() then
+            local want = f:IsMouseOver() and 1 or 0
+            if f:GetAlpha() ~= want then f:SetAlpha(want) end
+        end
+    end
+end
+function M:SyncFader()
+    local want = self:IsEnabled() and self.db.mouseover and bars[1] ~= nil and bars[1].frame:IsShown()
+    if want and not fadeTicker then fadeTicker = C_Timer.NewTicker(0.1, fadeTick)
+    elseif not want and fadeTicker then fadeTicker:Cancel(); fadeTicker = nil end
+    return fadeTicker ~= nil
 end
 
 local function build(i)
@@ -550,7 +557,6 @@ local function build(i)
     local name = ns.title .. " – " .. (i == 1 and L.DATATEXTS or L.DT_PANEL2)
     ns.EditMode:Register(o.frame, { key = key, name = name,
         default = { point = "BOTTOM", x = 0, y = i == 1 and 4 or 34 } })
-    fader(o)
     bars[i] = o
     return o
 end
@@ -573,8 +579,8 @@ end
 function M:OnEnable()
     if not bars[1] then
         build(1)
-        bars[1].frame:HookScript("OnShow", startTicker)
-        bars[1].frame:HookScript("OnHide", stopTicker)
+        bars[1].frame:HookScript("OnShow", function() startTicker(); M:SyncFader() end)
+        bars[1].frame:HookScript("OnHide", function() stopTicker(); M:SyncFader() end)
     end
     bars[1].frame:Show()
     self:SaveGold()
@@ -617,6 +623,7 @@ function M:Refresh()
         o.frame:SetAlpha(self.db.mouseover and 0 or 1)
         self:StyleBar(o)
     end
+    self:SyncFader()
     update()
     if self.RefreshBar then self:RefreshBar() end
 end

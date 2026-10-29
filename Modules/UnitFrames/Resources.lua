@@ -305,8 +305,10 @@ local function placeBlock()
     block.activeSig = nil
     M:LayoutResources(block)
     M:UpdateResources(block)
+    if M.SyncRuneFollower then M.SyncRuneFollower() end
 end
 
+local OWNER_RUNES = {}
 local function spawnBlock()
     block = M:BuildResources(UIParent, { name = "PhoenixUI_Resources" })
     M.resourceBlock = block
@@ -322,14 +324,19 @@ local function spawnBlock()
         "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED", "PLAYER_ENTERING_WORLD" }) do
         E:On(ev, block, update)
     end
-    -- runes recharge without events
+    -- runes recharge without events: a 0.1 s follower, only while the class has runes (death knights)
     block.elapsed = 0
-    block:SetScript("OnUpdate", function(self, e)
+    local function runeTick(self, e)
         self.elapsed = self.elapsed + e
         if self.elapsed < 0.1 then return end
         self.elapsed = 0
-        if self.hasRunes then ns.SafeCall(M.UpdateClassPower, M, self) end
-    end)
+        if self.hasRunes then ns.SafeCall(M.UpdateClassPower, M, self) else self:SetScript("OnUpdate", nil) end
+    end
+    local function syncRunes() block:SetScript("OnUpdate", block.hasRunes and runeTick or nil) end
+    for _, ev in ipairs({ "RUNE_POWER_UPDATE", "PLAYER_SPECIALIZATION_CHANGED", "PLAYER_ENTERING_WORLD" }) do
+        E:On(ev, OWNER_RUNES, function() syncRunes() end)
+    end
+    M.SyncRuneFollower = syncRunes
     placeBlock()
 end
 
