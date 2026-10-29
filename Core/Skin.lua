@@ -501,12 +501,14 @@ end
 -- Puts a Blizzard window out of sight while a Phoenix replacement stands in for it: the window keeps its open
 -- state (so Escape, its events and Blizzard's checks like "is the bank open" still work), it only goes see-through,
 -- stops taking the mouse, and its child frames wait on a hidden holder of ours. Untuck puts every child back
--- on the window. Never used on a protected window, and never in combat (returns false then).
+-- on the window. Never used on a protected window, and never in combat (returns false then) unless anyTime is set:
+-- only for windows checked to hold no protected child at all (the loot window), where re-parenting plain frames
+-- in combat is allowed and a protected child would still be skipped below.
 local tucked = setmetatable({}, { __mode = "k" })
 local tuckHolder
-function Sk:Tuck(frame)
+function Sk:Tuck(frame, anyTime)
     if type(frame) ~= "table" or not frame.GetChildren or tucked[frame] then return tucked[frame] ~= nil end
-    if InCombatLockdown() or (frame.IsProtected and frame:IsProtected()) then return false end
+    if (InCombatLockdown() and not anyTime) or (frame.IsProtected and frame:IsProtected()) then return false end
     if not tuckHolder then tuckHolder = CreateFrame("Frame"); tuckHolder:Hide() end
     local rec = { mouse = frame.IsMouseEnabled and frame:IsMouseEnabled(), children = {} }
     for _, child in ipairs({ frame:GetChildren() }) do
@@ -521,9 +523,9 @@ function Sk:Tuck(frame)
     return true
 end
 
-function Sk:Untuck(frame)
+function Sk:Untuck(frame, anyTime)
     local rec = tucked[frame]
-    if not rec or InCombatLockdown() then return false end
+    if not rec or (InCombatLockdown() and not anyTime) then return false end
     tucked[frame] = nil
     for _, c in ipairs(rec.children) do c[1]:SetParent(frame); c[1]:SetFrameLevel(c[2]) end
     frame:SetAlpha(1)

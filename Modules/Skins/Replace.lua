@@ -8,7 +8,11 @@ local M = ns:GetModule("Skins")
     it see-through and parks its children on a hidden holder. Each replacement has its own Skins switch (off:
     the reskinned Blizzard window, live) and an arrow button for Blizzard's window for the rest of this visit.
     opts: key (db switch), frame (global name), title, width, height, build(r) (fills r.body), layout(r),
-    close() (how our close button closes the Blizzard window), ready() (optional: false = show Blizzard's). ]]
+    close() (how our close button closes the Blizzard window), ready() (optional: false = show Blizzard's),
+    isOpen() (optional: whether the visit is on, when the window's own shown state lags, e.g. a closing animation),
+    place(win) (optional: anchors our window on every open), strata (optional), mover (optional
+    Movers store, when the window keeps its own place), combat (optional: true = also stands in during
+    combat; only for windows with no protected child, see Skin:Tuck). ]]
 
 local PAD, HEAD = 10, 34
 
@@ -17,12 +21,16 @@ function M.Replacement(opts)
 
     function r.On() return M:IsEnabled() and M.db[opts.key] and true or false end
     function r.Blizzard() return _G[opts.frame] end
-    function r.Open() local f = r.Blizzard(); return f and f:IsShown() and true or false end
+    function r.Open()
+        local f = r.Blizzard()
+        if not (f and f:IsShown()) then return false end
+        return not opts.isOpen or opts.isOpen(f) and true or false
+    end
 
     local function build()
         local win = CreateFrame("Frame", "PhoenixUI_" .. opts.frame, UIParent)
         win:SetSize(opts.width, opts.height)
-        win:SetFrameStrata("MEDIUM")
+        win:SetFrameStrata(opts.strata or "MEDIUM")
         win:SetToplevel(true)
         win:SetClampedToScreen(true)
         win:EnableMouse(true)
@@ -48,7 +56,7 @@ function M.Replacement(opts)
             r:Layout()
         end)
         local movers = ns:GetModule("Movers")
-        if movers then movers:Register(opts.key, win, opts.title) end
+        if movers then movers:Register(opts.key, win, opts.title, opts.mover) end
     end
 
     function r:Layout()
@@ -66,13 +74,14 @@ function M.Replacement(opts)
         local want = r.On() and not r.visit and r.Open() and (not opts.ready or opts.ready())
         if want then
             if not r.win then build() end
-            if not Skin:Tuck(r.Blizzard()) then want = false end
+            if not Skin:Tuck(r.Blizzard(), opts.combat) then want = false end
         end
         if not want then
             if r.win then r.win:Hide() end
-            if r.Blizzard() then Skin:Untuck(r.Blizzard()) end
+            if r.Blizzard() then Skin:Untuck(r.Blizzard(), opts.combat) end
             return
         end
+        if opts.place and not r.win:IsShown() then opts.place(r.win) end
         r.win:Show()
         r:Layout()
     end

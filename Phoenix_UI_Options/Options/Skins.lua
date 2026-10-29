@@ -3,6 +3,8 @@ local Opt = ns.Opt
 
 local TITLE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = "minimal", label = "SKINS_TITLE_MINIMAL" },
     { value = "blizzard", label = "SKINS_TITLE_BLIZZARD" } }
+local LOOT_PLACE = { { value = "blizzard", label = "LOOTW_PLACE_BLIZZARD" }, { value = "own", label = "LOOTW_PLACE_OWN" } }
+local LOOT_SORT = { { value = "quality", label = "LOOTW_SORT_QUALITY" }, { value = "slot", label = "LOOTW_SORT_SLOT" } }
 local CLOSE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = "blizzard", label = "SKINS_TITLE_BLIZZARD" } }
 
 ns:RegisterOptions("Skins", {
@@ -41,6 +43,11 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "ownProfessions", label = "PROFW_OWN", desc = "PROFW_OWN_DESC",
         keywords = "professions recipes crafting tradeskill" },
     { type = "toggle", key = "ownQuestLog", label = "QLOGW_OWN", desc = "QLOGW_OWN_DESC", keywords = "quest log map objectives" },
+    { type = "toggle", key = "ownLoot", label = "LOOTW_OWN", desc = "LOOTW_OWN_DESC", keywords = "loot window corpse chest fishing own" },
+    { type = "select", key = "lootPlace", label = "LOOTW_PLACE", desc = "LOOTW_PLACE_DESC", values = LOOT_PLACE,
+      disabled = function(m) return not m.db.ownLoot end },
+    { type = "select", key = "lootSort", label = "LOOTW_SORT", desc = "LOOTW_SORT_DESC", values = LOOT_SORT,
+      disabled = function(m) return not m.db.ownLoot end },
     { type = "toggle", key = "mailAlts", label = "SKINS_MAIL_ALTS", desc = "SKINS_MAIL_ALTS_DESC",
       keywords = "mail alts characters recipient" },
     { type = "toggle", key = "merchant", label = "SKINS_MERCHANT", keywords = "vendor shop" },

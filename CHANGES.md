@@ -3,6 +3,10 @@
 ## 2.0.0-beta1
 
 ### New
+- **Phoenix loot window**: Phoenix's own loot window stands in for Blizzard's (also in combat): each item's real icon
+  framed in its quality colour, item level and slot for gear, quest tags, locked slots marked, gold first and best
+  quality next (or as dropped), Loot all. It opens where Blizzard's would (your Edit Mode spot or under the mouse) or
+  at its own place. Skins > Phoenix loot window off brings back Blizzard's loot window, live.
 - **Tabs on General and Skins**: General is split into Appearance (theme, scale, borders), Text, Colours and
   Behaviour (launcher, sound, accessibility); Skins into Blizzard windows, Appearance and Behaviour (moving windows).
 - **PvP scoreboard skin**: the battleground / arena scoreboard and match results in the Phoenix look (dense table,

@@ -2619,6 +2619,64 @@ try("phoenix merchant window", function()
     shown = false; r:Closed()
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix loot window", function()
+    local S = ns.modules.Skins
+    local names = { "LootFrame", "GetNumLootItems", "GetLootSlotInfo", "GetLootSlotLink", "LootSlotHasItem", "LootSlot", "CloseLoot",
+        "IsFishingLoot", "InCombatLockdown", "EditModeManagerFrame", "CurrencyContainerUtil" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown, looted, gone, combat, editing = true, {}, {}, false, false
+    env.LootFrame = setmetatable({ IsShown = function() return shown end, isOpen = true },
+        { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.EditModeManagerFrame = { IsEditModeActive = function() return editing end }
+    env.InCombatLockdown = function() return combat end
+    local slots = {
+        { 1, "Gold", 1, nil, 0, false, false, nil, false, true },
+        { 2, "Plain cloth", 3, nil, 1, true, false, nil, false, false },
+        { 3, "Epic helm", 1, nil, 4, false, false, nil, false, false },
+        { 4, "Odd letter", 1, nil, 1, false, true, 77, false, false },
+    }
+    env.GetNumLootItems = function() return #slots end
+    env.LootSlotHasItem = function(i) return not gone[i] end
+    env.GetLootSlotInfo = function(i) return unpack(slots[i]) end
+    env.GetLootSlotLink = function(i) return i == 3 and "|Hitem:3|h[Epic helm]|h" or nil end
+    env.LootSlot = function(i) looted[#looted + 1] = i end
+    env.CloseLoot = function() shown = false end
+    env.IsFishingLoot = function() return false end
+    local list = S.LootSlots()
+    assert(list[1].coin and list[2].slot == 3 and list[3].quality == 1, "gold first, then best quality")
+    assert(list[4].quest == "start" or list[3].quest == "start", "quest-start item tagged")
+    S.db.lootSort = "slot"
+    assert(S.LootSlots()[2].slot == 2, "as dropped keeps the game's order after gold")
+    S.db.lootSort = "quality"
+    S.db.ownLoot = true
+    combat = true
+    S:SyncLoot()
+    local r = S.LootReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.LootFrame), "loot window stands in, also in combat")
+    combat = false
+    assert(S:LootAll() == 3 and #looted == 3, "loot all takes every slot that is not locked")
+    for _, i in ipairs(looted) do assert(i ~= 2, "locked slot skipped") end
+    gone[1], gone[3] = true, true
+    r:Layout()
+    assert(r.list.rows[3] and not r.list.rows[3]:IsShown(), "emptied slots leave the list")
+    S.db.lootPlace = "own"; S:SyncLoot()
+    assert(r.win:IsShown(), "own place keeps the window")
+    S.db.lootPlace = "blizzard"
+    env.LootFrame.isOpen = false; r:Closed()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.LootFrame), "window goes as soon as looting ends")
+    env.LootFrame.isOpen = true; editing = true; r:Sync()
+    assert(not r.win:IsShown(), "Edit Mode's loot placeholder stays Blizzard's")
+    editing = false; r:Sync()
+    assert(r.win:IsShown(), "back after Edit Mode")
+    S.db.ownLoot = false; S:SyncLoot()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.LootFrame), "switch off live")
+    S.db.ownLoot = true; S:SyncLoot()
+    r.win.close.onClick()
+    assert(not shown, "our close button ends looting")
+    r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 try("phoenix friends window", function()
     local S = ns.modules.Skins
     local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab",
