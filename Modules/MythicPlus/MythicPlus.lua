@@ -15,6 +15,9 @@ local M = ns:NewModule("MythicPlus", {
         bar = { texture = "", reverse = false, smooth = true, shade = 0.2 },
         colors = { onTime = false, plus2 = false, plus3 = false, over = false },
         clock = ns.Style.Text(28), lines = ns.Style.Text(12), keysWindow = false,
+        -- interrupt tracker (Kicks.lua): off by default
+        kicks = { show = false, where = "dungeon", names = true, size = 26, spacing = 4, zoom = 0.08,
+                  point = "LEFT", x = 360, y = 120, text = ns.Style.Text(11) },
     },
     -- run: splits of the key in progress (survives /reload); best: fastest timed run per "mapID:level";
     -- bestSplits: that run's boss and forces splits, compared live on the timer.
@@ -51,6 +54,7 @@ end
 
 function M:OnEnable()
     self:EnableTimer()
+    self:EnableKicks()
     if self.db.partyKeys then self:EnableKeystones() end
     self:RefreshKeysWindow()
     ns.Events:On("CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN", self, insert)
@@ -78,6 +82,7 @@ end
 
 function M:Refresh()
     self:RefreshTimer()
+    self:EnableKicks()
     self:RefreshKeysWindow()
     if self.db.partyKeys then self:EnableKeystones() else self:DisableKeystones() end
 end

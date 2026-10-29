@@ -161,5 +161,6 @@
     <Script file="GroupFinder\Teleport.lua"/>
     <Script file="MythicPlus\MythicPlus.lua"/>
     <Script file="MythicPlus\Timer.lua"/>
+    <Script file="MythicPlus\Kicks.lua"/>
     <Script file="MythicPlus\Keystones.lua"/>
 </Ui>

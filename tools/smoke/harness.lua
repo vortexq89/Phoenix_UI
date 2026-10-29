@@ -7246,6 +7246,37 @@ try("group frames click casting", function()
     assert(n == M.CLICK_SLOTS, "binding rows: " .. n)
 end)
 
+try("interrupt tracker", function()
+    local M = ns.modules.MythicPlus
+    assert(M.KickFor("ROGUE") == 1766 and M.KickFor("DRUID", 102) == 78675 and M.KickFor("DRUID", 105) == nil
+        and M.KickFor("PRIEST") == nil and M.KickFor("PRIEST", 258) == 15487 and M.KickFor("HUNTER", 255) == 187707
+        and M.KickFor("PALADIN", 65) == nil and M.KickFor("PALADIN", 66) == 96231, "interrupt per class and spec")
+    for _, id in pairs(M.CLASS_KICK) do assert(M.KICK_CD[id], "cooldown for " .. id) end
+    for _, id in pairs(M.SPEC_KICK) do assert(id == false or M.KICK_CD[id], "spec interrupt cooldown") end
+    assert(M.KICK_CD[57994] == 12 and M.KICK_CD[2139] == 25 and M.KICK_CD[78675] == 60, "base cooldowns")
+    assert(M.KicksShownWhere("always", false) and not M.KicksShownWhere("group", false)
+        and M.KicksShownWhere("dungeon", true, "party") and not M.KicksShownWhere("dungeon", true, "raid"), "where")
+    if not M:IsEnabled() then return end -- Forever: no Mythic+ module
+    local k = M.db.kicks
+    local keep = k.show
+    k.show = true
+    M:EnableKicks()
+    M:TestKicks(true)
+    local st, spell = M:KickState("party2")
+    assert(spell == 57994 and st and st[2] == 12, "test icons, one cooling down")
+    local oldIs = ns.Secret.IsSecret
+    local SECRET = {}
+    ns.Secret.IsSecret = function(v) return v == SECRET end
+    assert(M.NoteKickCast("party1", SECRET) == false, "a secret spell ID is skipped")
+    ns.Secret.IsSecret = oldIs
+    assert(M.NoteKickCast("party1", 12345) == false and M.NoteKickCast("party1", 6552) == true, "only interrupts start it")
+    assert(M.NoteKickCast("raid7", 6552) == false, "untracked units")
+    M:TestKicks(false)
+    k.show = keep
+    M:EnableKicks()
+    assert(not M.kicksHolder:IsShown(), "hidden when off")
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

@@ -3,6 +3,10 @@ local Opt = ns.Opt
 
 local function noTimer(m) return not m.db.timer end
 local function timer(row) return Opt.With(row, { disabled = row.disabled or noTimer }) end
+local function noKicks(m) return not m.db.kicks.show end
+local function kicks(row) return Opt.With(row, { disabled = noKicks }) end
+local KICK_WHERE = { { value = "dungeon", label = "MPLUS_KICKS_DUNGEON" }, { value = "group", label = "MPLUS_KICKS_GROUP" },
+    { value = "always", label = "MPLUS_KICKS_ALWAYS" } }
 
 ns:RegisterOptions("MythicPlus", {
     { type = "preview", kind = "mplustimer" },
@@ -59,4 +63,16 @@ ns:RegisterOptions("MythicPlus", {
     { type = "button", label = "MPLUS_KEYS_REQUEST", desc = "MPLUS_KEYS_REQUEST_DESC", button = "MPLUS_KEYS_REFRESH",
       icon = "reload", hidden = function(m) return not m.db.partyKeys end,
       func = function(m) m.Keystones:Request() end },
+    ------------------------------------------------------------ interrupt tracker (Kicks.lua)
+    { type = "header", label = "MPLUS_KICKS", icon = "groupframes" },
+    { type = "toggle", key = "kicks.show", label = "MPLUS_KICKS_SHOW", desc = "MPLUS_KICKS_SHOW_DESC",
+      keywords = "interrupt kick tracker party cooldown counterspell wind shear rotation" },
+    kicks({ type = "select", key = "kicks.where", label = "MPLUS_KICKS_WHERE", values = KICK_WHERE }),
+    kicks({ type = "toggle", key = "kicks.names", label = "MPLUS_KICKS_NAMES" }),
+    kicks({ type = "range", key = "kicks.size", label = "ICON_SIZE", min = 16, max = 48, step = 1 }),
+    kicks({ type = "range", key = "kicks.spacing", label = "ICON_SPACING", min = 0, max = 12, step = 1 }),
+    kicks({ type = "range", key = "kicks.zoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01 }),
+    kicks(Opt.Text("kicks.text", "MPLUS_KICKS_FONT", { min = 8, max = 18 })),
+    kicks({ type = "button", label = "MPLUS_KICKS_TEST", desc = "MPLUS_KICKS_TEST_DESC", button = "MPLUS_KICKS_TEST_BUTTON",
+      icon = "test", func = function(m) m:TestKicks(not m.kicksTest) end }),
 })

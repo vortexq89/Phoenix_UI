@@ -233,3 +233,8 @@ runtime in game.
   The gap was a Phoenix-side binding list. That is now built: `Modules/GroupFrames/ClickCast.lua`, Group Frames > Click casting
   (6 bindings: modifier, mouse button 1-5, spell / macro / target / focus / assist / menu). It is off by default, writes nothing
   while Clique is loaded, and is written only out of combat (combat changes wait for combat end). Harness test "group frames click casting".
+- **Interrupt tracker built** (`Modules/MythicPlus/Kicks.lua`, Mythic+ > Interrupt tracker, off by default, retail).
+  One icon per member with an interrupt (class/spec table, 15 spells; base cooldowns from DB2 SpellCooldowns 12.1.5,
+  talent reductions not counted), the game's Cooldown swipe, no timer of ours. Source: UNIT_SPELLCAST_SUCCEEDED for player and party1-4.
+  **Limit:** when the game makes a party member's spell ID secret (keys, raids), that cast is skipped and the icon stays ready.
+  Whether 12.x hides party spell IDs in keys has not been checked in game. Party defensive/major cooldowns are not tracked yet.
