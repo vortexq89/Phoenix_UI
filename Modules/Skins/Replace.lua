@@ -180,3 +180,58 @@ function M.ReplaceTabs(parent, defs, width, onPick)
     end
     return t
 end
+
+--[[ A Phoenix panel standing in for one part of a Blizzard window that otherwise stays Blizzard's (a recipe list
+    beside Blizzard's crafting page, the quest list inside the world map). The Blizzard part is tucked; our
+    panel sits on its parent over the same rectangle, so the rest of the window lines up with it.
+    opts: key (db switch), host() (the Blizzard part, or nil while its addon is not loaded), build(o) (fills
+    o.panel), layout(o). Hooks the host's own show / hide; switch off or arrow: Blizzard's part, live. ]]
+function M.Overlay(opts)
+    local o = { opts = opts, visit = false }
+    function o.On() return M:IsEnabled() and M.db[opts.key] and true or false end
+    local function build(host)
+        local p = CreateFrame("Frame", nil, host:GetParent())
+        p:SetAllPoints(host)
+        p:SetFrameLevel(host:GetFrameLevel() + 5)
+        p:EnableMouse(true)
+        p:Hide()
+        p.blizz = W:IconButton(p, "link", 18, ns.L.SKINS_OWN_BLIZZARD)
+        p.blizz:SetPoint("TOPRIGHT", -2, -2)
+        p.blizz.onClick = function() o.visit = true; o:Sync() end
+        o.panel = p
+        opts.build(o)
+        Skin:Register(p, function(self) Skin:Panel(self, "base", { border = "border.subtle" }); o:Layout() end)
+    end
+    function o:Layout() if self.panel and self.panel:IsShown() then opts.layout(self) end end
+    local pending
+    function o:Soon()
+        if pending then return end
+        pending = true
+        C_Timer.After(0.05, function() pending = nil; o:Layout() end)
+    end
+    function o:Sync()
+        local host = opts.host()
+        local want = host and o.On() and not o.visit and host.IsVisible and host:IsVisible()
+        if want then
+            if not o.panel then build(host) end
+            if not Skin:Tuck(host) then want = false end
+        end
+        if not want then
+            if o.panel then o.panel:Hide() end
+            if host then Skin:Untuck(host) end
+            return
+        end
+        o.panel:Show()
+        o:Layout()
+    end
+    function o:Hook()
+        local host = opts.host()
+        if not host or o.hooked then return host ~= nil end
+        o.hooked = true
+        host:HookScript("OnShow", function() o.visit = false; C_Timer.After(0, function() o:Sync() end) end)
+        host:HookScript("OnHide", function() o.visit = false; o:Sync() end)
+        ns.Events:On("PLAYER_REGEN_ENABLED", o, function() o:Sync() end)
+        return true
+    end
+    return o
+end
