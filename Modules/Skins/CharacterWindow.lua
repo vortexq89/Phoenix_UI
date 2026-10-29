@@ -12,6 +12,7 @@ local M = ns:GetModule("Skins")
     Blizzard's (the arrow button). Skins > "Phoenix character window" off: Blizzard's panel, reskinned, live. ]]
 
 local SLOT, GAP, LIST_W, ROWS, ROW_H = 40, 6, 470, 12, 32
+local MODEL_W, TAB_W = 210, 104 -- the player model sits between the two slot columns, as in Blizzard's panel
 local LEFT = { "HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot", "WristSlot",
     "MainHandSlot" }
 local RIGHT = { "HandsSlot", "WaistSlot", "LegsSlot", "FeetSlot", "Finger0Slot", "Finger1Slot", "Trinket0Slot",
@@ -179,6 +180,9 @@ local function paintSlot(b)
     local tex = GetInventoryItemTexture("player", b.slot)
     b.icon:SetTexture(tex or b.empty)
     b.icon:SetDesaturated(tex == nil)
+    -- the game's empty-slot art is near black: drawn additively over the slot fill it reads as a clear outline
+    b.icon:SetBlendMode(tex and "BLEND" or "ADD")
+    b.icon:SetAlpha(tex and 1 or 0.7)
     local q = tex and GetInventoryItemQuality("player", b.slot)
     local color = type(q) == "number" and q >= 1 and ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[q]
     Skin:IconFrame(b, b.icon, color and { color = { r = color.r, g = color.g, b = color.b } } or {}, 0.08, "border.subtle")
@@ -189,12 +193,14 @@ end
 local function paintRows()
     if mode == "stats" then
         list.Set(M.CharacterStats(), function(b, s)
+            if b.icon then b.icon:SetTexture(nil) end -- rows are pooled: no icon left over from another tab
             b.title:SetText(s.label); b.sub:SetText(""); b.right:SetText(s.value)
         end)
         return
     end
     if mode == "titles" then
         list.Set(M.CharacterTitles(), function(b, t)
+            if b.icon then b.icon:SetTexture(nil) end
             b.title:SetText(t.name); b.sub:SetText(""); b.right:SetText("")
             if t.current then list.Mark(b, "accent.primary", 0.25); list.Bar(b, "accent.primary") end
         end)
@@ -235,6 +241,7 @@ end
 local function layout()
     r.tabs.Paint(mode)
     for _, b in ipairs(slots) do paintSlot(b) end
+    if r.model and r.model:IsVisible() then r.model:RefreshUnit() end
     r.search:SetShown(mode ~= "stats" and mode ~= "sets")
     local sets = mode == "sets"
     for _, w in ipairs(r.setTools) do w:SetShown(sets) end
@@ -253,8 +260,10 @@ local function slotButton(name, col, i)
     local id, empty = _G.GetInventorySlotInfo(name)
     local b = CreateFrame("Button", nil, r.body)
     b:SetSize(SLOT, SLOT)
-    b:SetPoint("TOPLEFT", (col - 1) * (SLOT + GAP), -30 - (i - 1) * (SLOT + GAP))
+    b:SetPoint("TOPLEFT", (col - 1) * (SLOT + GAP + MODEL_W), -30 - (i - 1) * (SLOT + GAP))
     b.slot, b.empty = id, empty
+    b.fill = b:CreateTexture(nil, "BACKGROUND"); b.fill:SetAllPoints()
+    W.Color(b.fill, "bg.raised")
     b.icon = b:CreateTexture(nil, "ARTWORK"); b.icon:SetAllPoints()
     b.level = W.Text(b, "small", "text.primary"); b.level:SetPoint("BOTTOMRIGHT", -2, 2)
     b:RegisterForClicks("LeftButtonUp")
@@ -297,7 +306,14 @@ local function build(rr)
     r = rr
     for i, name in ipairs(LEFT) do slotButton(name, 1, i) end
     for i, name in ipairs(RIGHT) do slotButton(name, 2, i) end
-    local x = 2 * (SLOT + GAP) + 10
+    -- the player in their current gear (a plain PlayerModel: not protected, refreshed when the gear changes)
+    r.model = CreateFrame("PlayerModel", nil, r.body)
+    r.model:SetPoint("TOPLEFT", SLOT + GAP, -30)
+    r.model:SetSize(MODEL_W - GAP, #LEFT * (SLOT + GAP) - GAP)
+    r.model:SetUnit("player")
+    r.model.bg = r.model:CreateTexture(nil, "BACKGROUND"); r.model.bg:SetAllPoints()
+    W.Color(r.model.bg, "bg.sunken")
+    local x = 2 * (SLOT + GAP) + MODEL_W + 10
     list = M.ReplaceList(r.body, ROWS, ROW_H, LIST_W, 22)
     list:SetPoint("TOPLEFT", x, -30)
     list.onClick = rowClick
@@ -309,7 +325,7 @@ local function build(rr)
     end
     local defs = {}
     for _, key in ipairs(TABS) do defs[#defs + 1] = { key = key, label = L["CHARW_" .. key:upper()] } end
-    r.tabs = M.ReplaceTabs(r.body, defs, 84, function(key) mode, list.offset, armed = key, 0, nil; r:Layout() end)
+    r.tabs = M.ReplaceTabs(r.body, defs, TAB_W, function(key) mode, list.offset, armed = key, 0, nil; r:Layout() end)
     r.search = W:Input(r.body, 120, SEARCH or "")
     r.search:SetPoint("TOPRIGHT", 0, 0)
     r.search.onTextChanged = function(_, text) search = text or ""; list.offset = 0; r:Layout() end
@@ -376,7 +392,7 @@ local function openedTab()
 end
 
 local char = M.Replacement({ key = "ownCharacter", frame = "CharacterFrame", title = L.CHARW_TITLE,
-    width = 2 * (SLOT + GAP) + 10 + LIST_W + 20, height = 34 + 30 + ROWS * ROW_H + 40, build = build, layout = layout,
+    width = 2 * (SLOT + GAP) + MODEL_W + 10 + LIST_W + 20, height = 34 + 30 + ROWS * ROW_H + 40, build = build, layout = layout,
     close = function() local f = _G.CharacterFrame; if f then HideUIPanel(f) end end })
 char.onOpen = openedTab
 M.CharacterReplacement = char

@@ -112,7 +112,7 @@ function W:Tabs(parent, items)
         W.Color(self.bg, "bg.sunken", 0.9)
         for _, b in ipairs(self.tabs) do
             local on = b.value == self.value
-            W.Color(b.fill, on and "accent.soft" or "bg.hover", on and 1 or (b.hover and 0.8 or 0))
+            if on then W.Color(b.fill, "accent.soft") else W.Color(b.fill, "bg.hover", b.hover and 0.8 or 0) end
             b.bar:SetShown(on)
             if on then
                 b.bar:SetVertexColor(1, 1, 1, 1)

@@ -155,6 +155,9 @@ function I:Apply(tex, name, size)
     s.name = name
     s.size = size or s.size or tex:GetWidth()
     if s.size <= 0 then s.size = 16 end
+    -- a texture held by one anchor and no size is drawn at the file's own size (the whole atlas sheet): the
+    -- "orange staircase" over the previews (t146 c). Give a single-anchored glyph its size.
+    if size and (tex:GetNumPoints() or 0) < 2 then tex:SetSize(size, size) end
     if I.game then
         local file, art = gameIcon(name)
         -- small icons (section headers, badges, chips) sit next to line glyphs: game art there is drawn as a

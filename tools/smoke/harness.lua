@@ -7529,6 +7529,46 @@ try("live bugs: game menu sort, PUI_ event bus, keystones, spell history font, p
     print("  live bugs: game menu, PUI bus, keystones, spell history font, preview scale all hold")
 end)
 
+-- A "*.soft" token is a tint with its own low alpha; forcing alpha on it paints a solid block (nav rail, t146 a)
+try("soft tokens keep their own alpha", function()
+    local bad = {}
+    for _, dir in ipairs({ "UI", "Phoenix_UI_Options", "Modules" }) do
+        local pipe = io.popen('grep -rnE "\\"[a-z]+\\.soft\\"[^)]*, *(on and )?[01]\\.?[0-9]*\\)" ' .. ROOT .. "/" .. dir .. " --include=*.lua")
+        for line in pipe:lines() do bad[#bad + 1] = line end
+        pipe:close()
+    end
+    assert(#bad == 0, "soft token with a forced alpha:\n" .. table.concat(bad, "\n"))
+    local Theme = ns.Theme
+    local _, _, _, a = Theme:Color("accent.soft")
+    assert(a and a < 0.5, "accent.soft is no longer a tint")
+end)
+
+-- t146 c: a single-anchored glyph must get a size, or the game draws the whole atlas sheet
+try("icon glyphs are sized", function()
+    local f = CreateFrame("Frame")
+    local tex = f:CreateTexture()
+    local w, h
+    tex.GetNumPoints = function() return 1 end
+    tex.SetSize = function(_, a, b) w, h = a, b end
+    ns.Icons:Apply(tex, "resize", 12)
+    assert(w == 12 and h == 12, "Icons:Apply left a one-anchor glyph unsized")
+end)
+
+-- t146 e: GameMenu buttons are ThreeSliceButtonTemplate (Left / Center / Right): every piece of the red atlas hides
+try("game menu hides the three-slice art", function()
+    local b = CreateFrame("Button")
+    for _, k in ipairs({ "Left", "Center", "Right" }) do
+        local t = b:CreateTexture(); local al = 1
+        t.SetAlpha = function(_, v) al = v end; t.GetAlpha = function() return al end
+        b[k] = t
+    end
+    b.GetText = function() return "Options" end
+    ns.modules.Skins.SkinMenuButton(b)
+    for _, k in ipairs({ "Left", "Center", "Right" }) do
+        assert(b[k]:GetAlpha() == 0, "game menu button " .. k .. " art still shows")
+    end
+end)
+
 fire("PLAYER_LOGOUT")
 
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels

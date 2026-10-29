@@ -240,7 +240,12 @@ local function railButton(parent, g)
     b.label:SetText(L[g.label] or g.label)
     function b:Paint()
         local on = Config.group == self.group.key
-        W.Color(self.bg, on and "accent.soft" or "bg.hover", on and 1 or (self.hover and 0.9 or 0))
+        -- the soft tokens carry their own alpha; forcing 1 painted a solid accent block over the (accent) icon
+        if on then
+            W.Color(self.bg, "accent.soft")
+        else
+            W.Color(self.bg, "bg.hover", (not self.hover) and 0 or nil)
+        end
         self.bar:SetShown(on)
         self.bar:SetVertexColor(1, 1, 1, 1)
         Skin:Gradient(self.bar, "VERTICAL", "accent.secondary", "accent.primary")

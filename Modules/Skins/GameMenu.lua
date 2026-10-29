@@ -11,7 +11,7 @@ local M = ns:GetModule("Skins")
     Blizzard's own secure-safe calls. Colours follow the live accent through Skin:Register. ]]
 
 local EMBLEM = "Interface\\AddOns\\Phoenix_UI\\Media\\Textures\\Emblem64"
-local BUTTON_ART = { "Left", "Middle", "Right" }
+local BUTTON_ART = { "Left", "Middle", "Center", "Right" } -- ThreeSliceButtonTemplate: Left, Center, Right
 local BUTTON_TEX = { "GetNormalTexture", "GetPushedTexture", "GetHighlightTexture", "GetDisabledTexture" }
 
 -- Button label (the game's own global strings) -> Phoenix glyph; nil = no glyph, the row still gets the look.
