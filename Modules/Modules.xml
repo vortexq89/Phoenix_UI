@@ -42,6 +42,7 @@
     <Script file="Skins\QuestLogWindow.lua"/>
     <Script file="Skins\LootWindow.lua"/>
     <Script file="Skins\GossipWindow.lua"/>
+    <Script file="Skins\QuestWindow.lua"/>
     <Script file="Skins\Merchant.lua"/>
     <Script file="Skins\Vault.lua"/>
     <Script file="Skins\Calendar.lua"/>

@@ -3,6 +3,11 @@
 ## 2.0.0-beta1
 
 ### New
+- **Phoenix quest window**: Phoenix's own window for all four quest pages: the NPC's quest list (in progress first),
+  offers with every reward (items and currencies with their real icons in quality frames, spells, gold, experience,
+  honor, title, renown), what you still need, and turn-in with reward cards to pick (the best vendor value carries
+  the Quests page's coin; a quest that costs gold asks for a second click). PvP-flagged offers keep Blizzard's window.
+  Skins > Phoenix quest window off brings back Blizzard's, live.
 - **Phoenix gossip window**: Phoenix's own NPC dialog: portrait (optional), greeting text that scrolls when long, then
   Available quests, Quests in progress (ready ones marked) and Options, each with the game's own icon; Goodbye. Opens
   on Blizzard's spot or its own place. Skins > Phoenix gossip window off brings back Blizzard's dialog, live.

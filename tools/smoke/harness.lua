@@ -2723,6 +2723,110 @@ try("phoenix gossip window", function()
     assert(not r.win:IsShown(), "closed with the dialog")
     for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
+try("phoenix quest window", function()
+    local S = ns.modules.Skins
+    local names = { "QuestFrame", "QuestFrameRewardPanel", "QuestFrameProgressPanel", "QuestFrameDetailPanel", "QuestFrameGreetingPanel",
+        "GetNumQuestChoices", "GetNumQuestRewards", "GetQuestItemInfo", "GetQuestItemLink", "GetQuestItemInfoLootType", "C_QuestOffer",
+        "C_QuestInfoSystem", "GetNumQuestItems", "GetNumQuestCurrencies", "GetRewardMoney", "GetRewardXP", "GetRewardHonor",
+        "GetRewardTitle", "GetQuestMoneyToGet", "GetQuestID", "GetQuestReward", "AcceptQuest", "AcknowledgeAutoAcceptQuest",
+        "QuestGetAutoAccept", "QuestFlagsPVP", "IsQuestCompletable", "CompleteQuest", "CloseQuest", "GetQuestText", "GetRewardText",
+        "GetProgressText", "GetGreetingText", "GetObjectiveText", "GetTitleText", "GetNumActiveQuests", "GetActiveTitle",
+        "GetActiveQuestID", "IsActiveQuestTrivial", "GetNumAvailableQuests", "GetAvailableTitle", "GetAvailableQuestInfo",
+        "SelectActiveQuest", "SelectAvailableQuest", "C_CurrencyInfo", "C_MajorFactions" }
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local page, shown, calls, cost, auto, pvp, completable = "detail", true, {}, 0, false, false, false
+    local function call(n) return function(...) calls[#calls + 1] = n .. table.concat({ ... }, ",") end end
+    env.QuestFrame = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    for key, name in pairs({ reward = "QuestFrameRewardPanel", progress = "QuestFrameProgressPanel", detail = "QuestFrameDetailPanel",
+        greeting = "QuestFrameGreetingPanel" }) do
+        env[name] = { IsShown = function() return shown and page == key end }
+    end
+    env.GetNumQuestChoices = function() return 3 end
+    env.GetNumQuestRewards = function() return 1 end
+    env.GetQuestItemInfo = function(kind, i) return kind .. i, 100 + i, i, 3, true end
+    env.GetQuestItemLink = function() return nil end
+    env.GetQuestItemInfoLootType = function(_, i) return i == 3 and 1 or 0 end
+    env.C_QuestOffer = { GetQuestRewardCurrencyInfo = function() return { name = "Crests", texture = 7, quality = 4, totalRewardAmount = 15 } end,
+        GetQuestRequiredCurrencyInfo = function() return { name = "Tokens", texture = 8, quality = 1, requiredAmount = 5 } end,
+        GetQuestOfferMajorFactionReputationRewards = function() return { { factionID = 1, rewardAmount = 250 } } end }
+    env.C_MajorFactions = { GetMajorFactionData = function() return { name = "Council" } end }
+    env.C_QuestInfoSystem = { GetQuestRewardCurrencies = function() return { { name = "Coins", texture = 9, quality = 1, totalRewardAmount = 2 } } end,
+        GetQuestRewardSpells = function() return { 555 } end,
+        GetQuestRewardSpellInfo = function() return { name = "Ride", texture = 10 } end }
+    env.GetNumQuestItems = function() return 1 end
+    env.GetNumQuestCurrencies = function() return 1 end
+    env.GetRewardMoney = function() return 12345 end
+    env.GetRewardXP = function() return 5000 end
+    env.GetRewardHonor = function() return 0 end
+    env.GetRewardTitle = function() return nil end
+    env.GetQuestMoneyToGet = function() return cost end
+    env.GetQuestID = function() return 42 end
+    env.GetQuestReward = call("reward")
+    env.AcceptQuest = call("accept")
+    env.AcknowledgeAutoAcceptQuest = call("ack")
+    env.QuestGetAutoAccept = function() return auto end
+    env.QuestFlagsPVP = function() return pvp end
+    env.IsQuestCompletable = function() return completable end
+    env.CompleteQuest = call("complete")
+    env.CloseQuest = function() shown = false end
+    for _, n in ipairs({ "GetQuestText", "GetRewardText", "GetProgressText", "GetGreetingText", "GetObjectiveText", "GetTitleText" }) do
+        env[n] = function() return n end
+    end
+    env.GetNumActiveQuests = function() return 1 end
+    env.GetActiveTitle = function() return "Done", true end
+    env.GetActiveQuestID = function() return 7 end
+    env.IsActiveQuestTrivial = function() return false end
+    env.GetNumAvailableQuests = function() return 1 end
+    env.GetAvailableTitle = function() return "New" end
+    env.GetAvailableQuestInfo = function() return false, 0, false, false, 8, false, false end
+    env.SelectActiveQuest = call("active")
+    env.SelectAvailableQuest = call("available")
+    env.C_CurrencyInfo = { GetCoinTextureString = function(v) return tostring(v) end }
+    local o = S.QuestOffer()
+    assert(#o.choices == 3 and o.choices[3].kind == "currency" and o.choices[3].count == 15, "choices with a currency choice")
+    assert(#o.rewards == 3 and o.rewards[2].kind == "currency" and o.rewards[3].kind == "spell", "item, currency and spell rewards")
+    assert(#o.required == 2 and o.money == 12345 and o.extras[1]:find("Council", 1, true), "required things, gold and renown")
+    assert(S.QuestChoice(0) == 0 and S.QuestChoice(1) == 1 and S.QuestChoice(3) == nil and S.QuestChoice(3, 2) == 2, "reward pick rules")
+    S.db.ownQuest = true
+    S:SetupQuestWindow()
+    local r = S.QuestReplacement
+    r:Opened(); r:Sync()
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.QuestFrame), "quest window with Blizzard's tucked")
+    S:QuestPrimary()
+    assert(calls[#calls] == "accept", "accept")
+    auto = true; r:Layout(); S:QuestPrimary()
+    assert(calls[#calls] == "ack" and not r.secondary:IsShown(), "auto-accept quests: acknowledge, no decline")
+    auto = false
+    page = "progress"; r:Layout(); S:QuestPrimary()
+    assert(calls[#calls] == "ack", "progress: nothing until the quest can be completed")
+    completable = true; r:Layout(); S:QuestPrimary()
+    assert(calls[#calls] == "complete", "progress: continue")
+    page = "reward"; r:Layout(); S:QuestPrimary()
+    assert(calls[#calls] == "complete", "reward: nothing until a reward is picked")
+    r.cards[2].data = o.choices[2]
+    r.cards[2]:GetScript("OnClick")(r.cards[2])
+    cost = 50; S:QuestPrimary()
+    assert(calls[#calls] == "complete", "a quest that costs gold asks for a second click")
+    S:QuestPrimary()
+    assert(calls[#calls] == "reward2", "second click takes the picked reward")
+    cost = 0
+    page = "greeting"; r:Layout()
+    local qa, qn = S.QuestGreetingRows()
+    assert(#qa == 1 and #qn == 1 and qa[1].done, "greeting lists in-progress and new quests")
+    r.cards[1]:GetScript("OnClick")(r.cards[1])
+    assert(calls[#calls] == "active1", "greeting row selects the quest")
+    page, pvp = "detail", true; r:Sync()
+    assert(not r.win:IsShown(), "PvP-flagged offers keep Blizzard's window")
+    pvp = false; r:Sync()
+    S.db.ownQuest = false; S:SyncQuest()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.QuestFrame), "switch off live")
+    S.db.ownQuest = true; S:SyncQuest()
+    r.secondary.onClick()
+    assert(not shown, "decline closes")
+    r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
 try("phoenix friends window", function()
     local S = ns.modules.Skins
     local names = { "FriendsFrame", "BNGetNumFriends", "C_BattleNet", "C_FriendList", "C_PartyInfo", "PanelTemplates_GetSelectedTab",
