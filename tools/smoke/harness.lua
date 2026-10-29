@@ -2871,7 +2871,103 @@ try("phoenix window extras", function()
     assert(#said == 0, "no answer without a pending invite")
     assert(#S.CalendarTypes() == 5, "event types")
     assert(B.BankFlagOn(5, 4) and not B.BankFlagOn(5, 2), "bank flags")
-    for _, n in ipairs(names) do env[n] = saved[n] or false end
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
+
+try("phoenix character window", function()
+    local names = { "CharacterFrame", "GetAverageItemLevel", "UnitHealthMax", "UnitStat", "UnitArmor", "GetCritChance", "GetHaste",
+        "GetMasteryEffect", "C_Reputation", "C_CurrencyInfo", "GetInventoryItemTexture", "GetInventoryItemQuality",
+        "GetInventorySlotInfo", "PanelTemplates_GetSelectedTab", "C_SpecializationInfo" }
+    local S = ns.modules.Skins
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown = true
+    env.CharacterFrame = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.GetAverageItemLevel = function() return 640, 636.4 end
+    env.UnitHealthMax = function() return 900000 end
+    env.UnitStat = function(_, i) return i * 1000 end
+    env.UnitArmor = function() return 5000 end
+    env.GetCritChance = function() return 21.5 end
+    env.GetHaste = function() return 30 end
+    env.GetMasteryEffect = function() return 40 end
+    env.C_SpecializationInfo = { GetSpecialization = function() return 1 end,
+        GetSpecializationInfo = function() return 62, "Arcane", "", 1, "DAMAGER", 4 end }
+    env.GetInventorySlotInfo = function() return 1, "empty" end
+    env.GetInventoryItemTexture = function() return 123 end
+    env.GetInventoryItemQuality = function() return 4 end
+    env.PanelTemplates_GetSelectedTab = function() return 2 end
+    local collapsed
+    env.C_Reputation = { GetNumFactions = function() return 2 end, IsMajorFaction = function() return false end,
+        GetFactionDataByIndex = function(i)
+            if i == 1 then return { name = "Head", isHeader = true, factionID = 1 } end
+            return { name = "Fac", factionID = 2, reaction = 5, currentStanding = 3000, currentReactionThreshold = 0,
+                nextReactionThreshold = 6000, isWatched = true }
+        end, CollapseFactionHeader = function(i) collapsed = i end, ExpandFactionHeader = function() end }
+    env.C_CurrencyInfo = setmetatable({ GetCurrencyListSize = function() return 1 end, ExpandCurrencyList = function() end,
+        GetCurrencyListInfo = function() return { name = "Coin", quantity = 5, maxQuantity = 10, iconFileID = 1 } end },
+        { __index = env.C_CurrencyInfo })
+    local stats = S.CharacterStats()
+    assert(stats[1].value == "636.4" and stats[3].value == 4000, "stats: item level and the spec's primary stat")
+    local rep = S.CharacterReputation()
+    assert(#rep == 2 and rep[2].progress == 0.5 and rep[2].count == "3000 / 6000", "reputation progress")
+    assert(S.CharacterCurrency()[1].max == 10, "currency")
+    S.db.ownCharacter = true; S:SyncCharacterWindow()
+    local r = S.CharacterReplacement
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.CharacterFrame), "ownCharacter: window with Blizzard's tucked")
+    r.onOpen()
+    assert(S.CharacterMode() == "reputation", "opens on Blizzard's selected tab")
+    r:Layout()
+    r.tabs.buttons.currency.onClick(); r.tabs.buttons.stats.onClick()
+    S.CharacterMode("reputation")
+    rep = S.CharacterReputation()
+    S.db.ownCharacter = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.CharacterFrame), "ownCharacter: switch off live")
+    S.db.ownCharacter = true; S:Refresh()
+    assert(r.win:IsShown(), "ownCharacter: on again")
+    assert(collapsed == nil, "no header change without a click")
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
+end)
+
+try("phoenix guild window", function()
+    local names = { "CommunitiesFrame", "GetNumGuildMembers", "GetGuildRosterInfo", "IsInGuild", "GetGuildInfo", "C_PartyInfo" }
+    local S = ns.modules.Skins
+    local saved = {}
+    for _, n in ipairs(names) do saved[n] = rawget(env, n) end
+    local shown, inGuild = true, false
+    env.CommunitiesFrame = setmetatable({ IsShown = function() return shown end }, { __index = CreateFrame("Frame", nil, env.UIParent) })
+    env.IsInGuild = function() return inGuild end
+    env.GetGuildInfo = function() return "Phoenix" end
+    env.GetNumGuildMembers = function() return 3, 2 end
+    local roster = { { "Ann-Realm", "GM", 0, 80, "Mage", "Dornogal", "", "", true, 0, "MAGE" },
+        { "Bob-Realm", "Member", 3, 70, "Rogue", "Zone", "alt", "", true, 0, "ROGUE" },
+        { "Cid-Realm", "Member", 3, 80, "Priest", "", "", "", false, 0, "PRIEST" } }
+    env.GetGuildRosterInfo = function(i) return unpack(roster[i]) end
+    local invited
+    env.C_PartyInfo = { InviteUnit = function(n) invited = n end }
+    S.db.ownGuild = true; S:SyncGuildWindow()
+    local r = S.GuildReplacement
+    assert(not (r.win and r.win:IsShown()), "not in a guild: Blizzard's communities window")
+    inGuild = true; S:SyncGuildWindow()
+    assert(r.win and r.win:IsShown() and ns.Skin:IsTucked(env.CommunitiesFrame), "ownGuild: window with Blizzard's tucked")
+    local list = S.GuildRoster()
+    assert(#list == 2 and list[1].short == "Ann", "online members, rank order")
+    S.GuildState("sort", "level"); S.GuildState("offline", true)
+    list = S.GuildRoster()
+    assert(#list == 3 and list[3].name == "Cid-Realm" and list[2].name == "Bob-Realm", "offline last, level order")
+    S.GuildState("search", "alt")
+    assert(#S.GuildRoster() == 1, "search matches notes")
+    S.GuildState("search", ""); S.GuildState("sort", "rank"); S.GuildState("offline", false)
+    r:Layout()
+    r.rows = nil
+    r.invite.onClick()
+    assert(invited == nil, "no invite without a pick")
+    r.tabs.buttons.info.onClick(); r.tabs.buttons.roster.onClick()
+    S.db.ownGuild = false; S:Refresh()
+    assert(not r.win:IsShown() and not ns.Skin:IsTucked(env.CommunitiesFrame), "ownGuild: switch off live")
+    S.db.ownGuild = true
+    shown = false; r:Closed()
+    for _, n in ipairs(names) do rawset(env, n, saved[n]) end
 end)
 
 -- game-icon mode: small icons are one-colour silhouettes, large ones full-colour art (defect #18)

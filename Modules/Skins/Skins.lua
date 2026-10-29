@@ -18,7 +18,7 @@ local M = ns:NewModule("Skins", {
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
         trade = true, dressUp = true, transmog = true, housing = true, pvpMatch = true, pgf = true, alerts = false,
         ownMail = true, ownMerchant = true, ownFriends = true, ownAchievements = true, ownCalendar = true,
-        ownVault = true, ownCollections = true, ownJournal = true,
+        ownVault = true, ownCollections = true, ownJournal = true, ownCharacter = true, ownGuild = true,
         backdrop = Style.Background({ alpha = 0.94 }), border = Style.Border({ shadow = "soft" }),
         titleStyle = "phoenix", closeStyle = "phoenix", tabs = true,
         moveWindows = false, movedWindows = {}, mailAlts = true, premadeSearches = {},
