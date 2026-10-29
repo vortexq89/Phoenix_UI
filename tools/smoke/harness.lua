@@ -1520,6 +1520,7 @@ try("presets", function()
     assert(pk and pk:IsShown(), "the picker did not open on a fresh install")
     pk.skip.onClick(pk.skip)
     assert(ui.stylePicked == "skip" and C:ShowStylePicker() == nil, "Skip did not stick")
+    pk:Hide()
     ns.DB.fresh, ui.stylePicked = fresh, picked
 end)
 -- 2.0 -> 2.1: flat size keys move into the per-element style tables
@@ -3838,6 +3839,42 @@ try("setup wizard", function()
     assert(ui.setupDone and not f:IsShown(), "finish did not close the wizard")
     assert(C:ShowSetupFinish() == nil, "the last step reopened after it was done")
     ns.DB:Set(gen, "scale.enabled", before)
+end)
+-- installer: nine steps, live choices, Back/Next/Skip, /pui install
+try("installer", function()
+    local C, ui, I = ns.Config, ns.DB.sv.global.ui, ns.Config.Installer
+    local gen, ab, ch, sk = ns.modules.General, ns.modules.ActionBars, ns.modules.Chat, ns.modules.Skins
+    local saved = { gen.db.theme.preset, gen.db.scale.enabled, ab.db.bars.bar2.enabled, ch.db.urls, sk.db.mail }
+    ui.setupDone = nil
+    local f = C:ShowInstaller()
+    assert(f and f:IsShown() and I.index == 1, "installer did not open on welcome")
+    assert(#I.STEPS == 9 and not f.back:IsShown(), "nine steps, no Back on the first")
+    for i = 2, #I.STEPS do
+        f.next.onClick()
+        assert(I.index == i and f.pages[i]:IsShown() and f.previews[i]:IsShown(), "step " .. i .. " did not show")
+        assert(f.back:IsShown(), "Back missing on step " .. i)
+        local rows = f.pages[i].rows
+        if I.STEPS[i].key == "accent" then rows[1].onChange(rows[1], "frost")
+            assert(gen.db.theme.preset == "frost", "accent not applied live") end
+        if I.STEPS[i].key == "scale" then rows[1].onChange(rows[1], "pixel")
+            assert(gen.db.scale.enabled, "scale not applied") end
+        if I.STEPS[i].key == "bars" then rows[3].toggle.onChange(rows[3].toggle, not saved[3])
+            assert(ab.db.bars.bar2.enabled == not saved[3], "bar toggle not applied") end
+        if I.STEPS[i].key == "chat" then rows[3].toggle.onChange(rows[3].toggle, not saved[4])
+            assert(ch.db.urls == not saved[4], "chat toggle not applied") end
+        if I.STEPS[i].key == "skins" then rows[5].toggle.onChange(rows[5].toggle, not saved[5])
+            assert(sk.db.mail == not saved[5], "skin toggle not applied") end
+    end
+    f.back.onClick(); assert(I.index == 8, "Back")
+    C:ShowInstaller(2); f.skip.onClick(); assert(I.index == 9, "Skip goes to the finish")
+    f.next.onClick()
+    assert(ui.setupDone and not f:IsShown(), "finish did not close the installer")
+    slashes.pui("install")
+    assert(f:IsShown() and I.index == 1, "/pui install reopens the installer")
+    f.close.onClick()
+    ns.DB:Set(gen, "theme.preset", saved[1]); ns.Theme:Apply(gen.db.theme)
+    ns.DB:Set(gen, "scale.enabled", saved[2]); ns.DB:Set(ab, "bars.bar2.enabled", saved[3])
+    ns.DB:Set(ch, "urls", saved[4]); ns.DB:Set(sk, "mail", saved[5])
 end)
 -- tab consistency: every tab of every module page has settings, no setting appears on two tabs
 try("tab consistency", function()

@@ -46,6 +46,7 @@ Config\Profiles.lua
 Config\Appearance.lua
 Config\Diagnostics.lua
 Config\Presets.lua
+Config\Installer.lua
 Config\About.lua
 Options\General.lua
 Options\Bugs.lua

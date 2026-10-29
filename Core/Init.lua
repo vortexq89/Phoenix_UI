@@ -34,6 +34,8 @@ local function slash(msg)
         -- Raised on the next frame so it reaches the global error handler like any real addon error.
         ns:Print(L.SLASH_TEST_ERROR)
         C_Timer.After(0, function() error(ns.TEST_ERROR, 0) end)
+    elseif cmd == "install" or cmd == "setup" then
+        ns.Config:RunSetupWizard()
     elseif cmd == "whatsnew" then
         Init.ShowWhatsNew()
     elseif cmd == "diag" then

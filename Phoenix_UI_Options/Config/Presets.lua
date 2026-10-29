@@ -150,6 +150,8 @@ local function lookCard(parent, p, width, onApply)
     return c
 end
 
+Config.LookCard = lookCard
+
 ---------------------------------------------------------------- page
 local page = { key = "presets", label = "PRESETS", desc = "PRESETS_DESC", icon = "presets", locked = true, db = {} }
 

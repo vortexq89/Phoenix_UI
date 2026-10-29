@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Installer** (both clients): one window with nine steps (welcome, look, UI scale, accent, action bars, unit
+  frames, chat, windows, finish), a step rail, a live preview, Back / Next / Skip. Choices apply at once; a module
+  that only switches at load makes Finish reload once. Replaces the three-popup wizard; reopen with /pui install.
 - **Junk window** (both clients): at a vendor a Phoenix window lists your grey items with real icons and value;
   Sell all, or click a row to sell it; away from a vendor two clicks on a row destroy it. Automation > Junk.
 - **Fishing helper** (both clients): effects volume up, auto loot on and (optionally) music and ambience muted while
