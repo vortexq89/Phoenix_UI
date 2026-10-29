@@ -15,6 +15,7 @@ local ROW = 34
 
 local inst
 local I = {}
+ns.Installer = I -- the dev self-test walks its steps
 Config.Installer = I
 
 local function mod(key) return ns.modules[key] end
@@ -145,7 +146,7 @@ step({ key = "look", label = "INST_LOOK", icon = "presets",
             for i, b in ipairs(self.bars) do
                 b:SetStatusBarTexture(tex); b:SetStatusBarColor(fills[i][1], fills[i][2], fills[i][3])
                 b:SetValue(({ 0.86, 0.6, 0.34 })[i])
-                b.bg:SetTexture(tex); b.bg:SetVertexColor(0.08, 0.08, 0.1, 0.85)
+                b.bg:SetTexture(tex); ns.Widgets.Color(b.bg, "bg.sunken", 0.85)
             end
             self.bars[1].text:SetText(UnitName("player") or "")
         end
@@ -276,7 +277,7 @@ step({ key = "frames", label = "INST_FRAMES", icon = "unitframes", module = "Uni
                 local r, g, bb = playerColor()
                 if by == "reaction" then r, g, bb = 0.24, 0.86, 0.59 end
                 b:SetStatusBarTexture(tex); b:SetStatusBarColor(r, g, bb); b:SetValue(i == 1 and 0.82 or 0.46)
-                b.bg:SetTexture(tex); b.bg:SetVertexColor(0.08, 0.08, 0.1, 0.85)
+                b.bg:SetTexture(tex); ns.Widgets.Color(b.bg, "bg.sunken", 0.85)
                 b.text:SetText(i == 1 and (UnitName("player") or "") or L.INST_TARGET)
                 local port = get(uf, "units." .. u .. ".portrait") ~= "hide"
                 b:ClearAllPoints(); b:SetPoint("TOPLEFT", port and 50 or 16, -56 - (i - 1) * 50); b:SetPoint("RIGHT", -16, 0)

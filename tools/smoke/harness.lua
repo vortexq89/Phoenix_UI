@@ -3825,6 +3825,7 @@ try("preview drag", function()
                 withPreview = withPreview + 1
                 assert(stage.puiGrips and stage.puiGrips.size and stage.puiGrips.move, key .. ": preview has no drag grips")
                 assert(not stage.puiGrips.size:GetScript("OnUpdate"), key .. ": grip uses OnUpdate")
+                assert(stage.puiGrips.size:IsShown() and stage.puiGrips.move:IsShown(), key .. ": grips hidden")
                 local pick = D.Pick(page, m)
                 if pick and (pick.w or pick.h or pick.s) then
                     sized = sized + 1
@@ -4174,6 +4175,8 @@ try("dev self-test", function()
     local n = 0
     for _, r in pairs(st.pages) do n = n + 1; assert(r.errors == 0, "step error: " .. tostring(r.issues[1] and r.issues[1].detail)) end
     assert(n > 10 and st.pages.movers, "pages not recorded")
+    assert(st.pages.installer and st.pages.profiles, "installer / share round trip steps missing")
+    assert(st.pages.ActionBars.steps >= 3, "preview drag step missing")
     fire("PLAYER_STARTED_MOVING")
     assert(not ST.running and st.stopReason:find("MOVING"), "moving did not stop it")
     GetTime = old

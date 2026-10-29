@@ -456,6 +456,29 @@ local function buildSteps()
             steps[#steps + 1] = { page = key, expand = true }
         end
     end
+    -- installer: every step opens and draws (no choice is made; the window is closed again)
+    if C.ShowInstaller and ns.Installer then
+        steps[#steps + 1] = { page = "installer", label = "installer steps", run = function()
+            local win = C:ShowInstaller(1)
+            if not win then return end
+            for i = 2, #(ns.Installer.STEPS or {}) do ns.Installer:Go(i) end
+            win:Hide()
+        end }
+    end
+    -- share strings: the current profile exports, decodes, checksums and diffs against itself without changes
+    local P = ns.Profiles
+    if P and P.Export and P.Decode then
+        steps[#steps + 1] = { page = "profiles", label = "share round trip", run = function()
+            local text, code = P:Export(nil, { title = "selftest" })
+            local payload, err = P:Decode(text)
+            assert(payload, "export did not decode: " .. tostring(err))
+            assert(payload.code == code, "short code changed in the round trip")
+            for _, key in ipairs(payload.modules or {}) do
+                local _, n = P:Changes(payload, key, 1)
+                assert((n or 0) == 0, key .. ": an export of this profile differs from it")
+            end
+        end }
+    end
     local mv = ns.modules and ns.modules.Movers
     if mv and mv.SetUnlocked then
         steps[#steps + 1] = { page = "movers", label = "movers on", run = function() mv:SetUnlocked(true) end }
@@ -476,6 +499,20 @@ local function expand(page, key)
     end
     for n = 1, #(page.tabList or {}) do tabs(n) end
     local card = page.pinned
+    -- preview drag: one step up and back on what the size grip drives (written through the rows, like a drag)
+    local D, m = ns.PreviewDrag, ns.modules and ns.modules[key]
+    if card and D and m then
+        out[#out + 1] = { page = key, label = key .. " preview drag", run = function()
+            local pick = D.Pick(page, m)
+            local it = pick and (pick.w or pick.s or pick.h)
+            if not it then return end
+            local v = tonumber(ns.Config.GetRowValue(page, m, it))
+            if not v then return end
+            local up = D.Snap(it, v + (it.step or 1))
+            ns.Config.SetRowValue(page, m, it, up)
+            ns.Config.SetRowValue(page, m, it, v)
+        end }
+    end
     if card and card.states and card.states.chips then
         for _, it in ipairs(card.states.chips) do if it:IsShown() then
             out[#out + 1] = { page = key, label = key .. " preview " .. tostring(it.value), run = function()
