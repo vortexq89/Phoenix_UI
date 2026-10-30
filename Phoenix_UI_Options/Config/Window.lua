@@ -22,7 +22,7 @@ ns.Config = Config
 Config.loaded = true
 Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
-local TOP_H, RAIL_W, LIST_W, FOOTER_H = 0, 236, 0, 40
+local TOP_H, RAIL_W, LIST_W, FOOTER_H = 0, 236, 0, 32
 local HEAD_H = 96 -- the rail head: brand and search
 local NAV_ROW, NAV_HEAD, NAV_GROUP, NAV_SUB, NAV_LINE = 28, 22, 34, 24, 16
 local DOCK_MIN, DOCK_MAX = 380, 460

@@ -184,12 +184,15 @@ Reserved Font Name; the family is renamed anyway, as the OFL expects of Modified
   PT Sans Narrow for ruRU. Until the owner approves, the in-game build is unchanged (Inter), and Barlow Semi
   Condensed stays the documented fallback.
 
-Colour roles: `text.primary` (92% white), `text.secondary` (68%), `text.muted` (48%), `accent.text`.
+Colour roles: `text.primary` #F4F5F8, `text.secondary` #B9BFCB, `text.muted` #8A90A0, `accent.text` (values from
+`Core/Theme.lua`, which is the source of truth).
 Minimum contrast: 4.5:1 for body text on its surface, and 3:1 for icons and borders that carry meaning.
 
 ## 4. Colour and surfaces
 
-- Surfaces: `bg.base` #15171B, `bg.raised` #1C1F24, `bg.sunken` #101215, `bg.hover` (white 6%).
+- Surfaces (`Core/Theme.lua`, approved in game; darker and opaque on purpose): `bg.base` #0B0C10, `bg.raised`
+  #15171D, `bg.sunken` #07080A, `bg.hover` #20232B, `bg.overlay` black at 60%. Borders: `border.subtle` #2B2F39,
+  `border.strong` #454B59, `border.black` #000000.
 - Accent (theme): `accent.primary`, `accent.secondary`, and `accent.soft` = accent at **10%** alpha.
   Soft tokens carry their own alpha and are never forced opaque. (A harness lint enforces this, after the nav
   rail bug.)
@@ -205,26 +208,28 @@ it applies. Its focus ring is a 1 px `accent.primary` outline plus a 2 px gap.
 - **Nav rail item** (icon 20, label `micro` below, 64×56):
   - default: icon `text.secondary`, no fill;
   - hover: `bg.hover` fill, icon `text.primary`;
-  - **selected**: `accent.soft` fill (10%), a 3 px accent bar on the left edge, icon `accent.primary`, label
+  - **selected**: `accent.soft` fill (10%), a 2 px accent bar on the left edge, icon `accent.primary`, label
     `text.primary`. The fill never hides the icon;
   - disabled: 40% opacity.
-- **Sub-nav list** (page list): rows of 32 px, icon 16 and `body`; selected = `accent.soft` fill plus a 2 px
+- **Sub-nav list** (page list): rows of 28 px, icon 15 and `body`; selected = `accent.soft` fill plus a 2 px
   bar plus `body.strong`. **Only shown when the group has 2 or more pages.** A one-page group opens its page
   directly, and the column collapses (this removes the empty "Home" column).
 - **Tabs** (page tabs): text `body`, 12 px horizontal padding, auto width (never a fixed width). Selected = a
-  2 px accent underline plus `text.primary`. They overflow into a "More ▾" menu, never truncate.
-- **Card**: `bg.raised`, radius 6, 16 padding, title row (icon 16 + `title` + optional actions on the right).
+  2 px accent underline plus `text.primary`. Every selection bar and underline is 2 px. They overflow into a "More ▾" menu, never truncate.
+- **Card**: `bg.raised`, radius 6, 16 padding, title row (icon 16 + an uppercase `heading` (14 Bold) title with a
+  count badge + optional actions on the right). The `title` role (21) is for the page header only.
 - **Setting row**: label (`body`) + optional description (`small`, `text.muted`, max 2 lines) on the left;
   the control on the right at a fixed 40% column. Below 420 px of card width, the control moves under the
   label. Badges (`RELOAD`, `NEW`, `BETA`) sit on their own line under the label, never inline.
-- **Toggle** 36×20, **slider** with a value field (number, editable), **select**, **color swatch**,
+- **Toggle** 38×20, **slider** with a value field (number, editable), **select**, **color swatch**,
   **media picker** (§9). All 28 high.
 - **Buttons**: primary (accent fill), secondary (raised + border), ghost, danger. Labels never truncate; the
   button grows.
 - **List row** (game windows): 32/44 px, icon 24 on the left, title + subtitle, value on the right, hover fill,
   selected bar.
-- **Window chrome**: a 36 px title bar (icon, title, actions, close), body, optional 32 px footer. Movable by
-  the title bar; position saved (§7).
+- **Window chrome**: no separate title bar; the settings window's 78 px sticky header carries the title, actions
+  and close, and the footer is 32 px. Movable by the header; position saved (§7). Fixed chrome (header, scope
+  chips, footer) stays at or under 20% of the window height.
 - **Empty / unknown slot**: the slot fill `bg.raised` plus a 1 px `border.subtle` border; the game's empty-slot
   art is drawn at 70%, additive, so it reads as an outline rather than a black square.
 
@@ -265,7 +270,7 @@ nothing changes.
 Each window shows a Phoenix **panel icon** in its top-left corner, in the round portrait slot of Blizzard's
 `PortraitFrameTemplate` / `ButtonFrameTemplate`. Each one says what the window is for. The ember glyph sits on
 an obsidian medallion with a gold rim and an inner ring (sheet `docs/screenshots/v3/panel_icons.png`, headers
-mockup `docs/screenshots/v3/panels_v3.png`). There are 28: character, bags, mail, collections, macro, friends,
+mockup `docs/screenshots/v3/panels_v3.png`). There are 27: character, bags, mail, collections, macro, friends,
 guild, group finder, settings, achievements, spellbook, talents, quests, map, calendar, professions, journal
 (Adventure Guide), PvP, shop, help, game menu, bank, merchant, auction house, trade, loot and communities.
 It is drawn at 60 px in the portrait slot (40 px in the Phoenix settings header) and lights up on hover like
@@ -391,7 +396,9 @@ page** (Action Bars › Bars, with its 109 real options from the harness dump), 
 B's "changed from default" count in the header. The rules:
 
 - **Window:** 1400 × 860 by default, resizable down to 1100 × 700. The group columns are 3 at 1280 px or wider,
-  2 at 900 px or wider, otherwise 1.
+  2 at 900 px or wider, otherwise 1. Column widths are whole pixels: the remainder goes one pixel each to the
+  first columns (for example 362 / 361 / 361), so the cards never sit between pixels. Rows inside a card are
+  contiguous (no gap between them); cards are 12 px apart.
 - **Rail (236 px):** Phoenix header, search (Ctrl K, all 1,875 settings), Home, then categories (Interface, Combat,
   Social, Utility, System).
   - Each module row has its chrome icon, label, and a status dot: green on, grey off.
@@ -401,13 +408,14 @@ B's "changed from default" count in the header. The rules:
   - Right side: Enabled switch (the module on/off of §10 plugins), Move on screen (Movers), Reset page.
   - Second line: scope chips for multi-instance modules; shift-click edits several scopes at once.
   - Live preview switch, shown only where §6 allows a preview.
-- **Preview strip:** at most 92 px tall, full width, and only on modules §6 marks with a preview (bars, frames,
-  cast bars, combat text, auras). Never on text-only pages. It can be hidden; the switch is remembered.
+- **Preview card:** full width at the top of the page, only on modules §6 marks with a preview (bars, frames,
+  cast bars, combat text, auras). Never on text-only pages. It can be folded, and by default it scrolls away
+  with the page; the lock button keeps it on screen while scrolling. Both choices are remembered.
 - **Groups:** one card per section header in the module's schema, with:
   - an accent bar and an uppercase title with a count badge
   - a collapse chevron; collapsed cards show summary chips of the current values
   - rows 28 px tall with zebra striping; the label on the left and the control on the right, in fixed control
-    widths (switch 30, slider 120 plus a 38 px value box, dropdown up to 150, input up to 170)
+    widths (switch 38, slider 120 plus a 38 px value box, dropdown up to 150, input up to 170)
   - packed by a **masonry** layout: each card goes into the shortest column, so there are no gaps
   Long descriptions become tooltips, and a "reload needed" note becomes a small badge, never inline text that
   crushes the label (fixes t146 b).

@@ -116,7 +116,7 @@ ns:RegisterOptions("General", {
     { type = "header", label = "SPECICON_HEADER", icon = "user", desc = "SPECICON_HEADER_DESC" },
     { type = "select", key = "specIconStyle", label = "SPECICON_STYLE", desc = "SPECICON_STYLE_DESC",
       values = ns.SpecIcon.Values(false), keywords = "spec icon round hex diamond shield glossy" },
-    { type = "custom", label = "SPECICON_SAMPLES", build = function(row) return ns.SpecIcon.Strip(row) end },
+    { type = "custom", label = "SPECICON_SAMPLES", height = 64, build = function(row) return ns.SpecIcon.Strip(row) end },
     { type = "tab", label = "UF_COLORS" },
     { type = "header", label = "GEN_CLASS_COLORS", icon = "palette", desc = "GEN_CLASS_COLORS_DESC" },
     Opt.With(classColors(1, 7), { label = "GEN_CLASS_COLORS_A" }),

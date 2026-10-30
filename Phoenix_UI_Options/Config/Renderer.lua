@@ -1098,7 +1098,22 @@ local function buildPreview(page, m, item)
     card.shade:Hide()
     card.fold = W:IconButton(card, "hide", 22, L.PREVIEW_FOLD, L.PREVIEW_FOLD_DESC)
     card.fold:SetPoint("TOPRIGHT", -10, -9)
-    card.tag:SetPoint("RIGHT", card.fold, "LEFT", -8, 0)
+    -- Keep on screen: by default the preview scrolls away with the page, so the fixed chrome (header, chips,
+    -- footer) stays within the 20% height budget (DESIGN_SYSTEM_V3 principle 2). Pinned, it sticks to the top.
+    card.keepBtn = W:IconButton(card, "lock", 22, L.PREVIEW_KEEP, L.PREVIEW_KEEP_DESC)
+    card.keepBtn:SetPoint("RIGHT", card.fold, "LEFT", -4, 0)
+    card.keep = previewStore()[m.key .. ":keep"] == true
+    local function paintKeep()
+        card.keepBtn:SetAlpha(card.keep and 1 or 0.45)
+    end
+    card.keepBtn.onClick = function()
+        card.keep = not card.keep
+        previewStore()[m.key .. ":keep"] = card.keep or nil
+        paintKeep()
+        page:Stick()
+    end
+    paintKeep()
+    card.tag:SetPoint("RIGHT", card.keepBtn, "LEFT", -8, 0)
     -- the obvious way to size and place the element: its width, height and offsets in one popover
     local sizeKey
     local function find(list, depth)
@@ -1536,7 +1551,18 @@ function Config.BuildSchemaPage(parent, m, schema)
             if not self.tabs or c.tab == self.tab then onPage = onPage + 1 end
         end
         local cols = columns(width, onPage)
-        local colW = math.floor((width - (cols - 1) * CARD_GAP) / cols)
+        -- whole-pixel columns: the remainder of (width - gaps) / cols goes to the first columns one pixel each,
+        -- so 1114 px at 3 columns is 362 / 361 / 361 (not 360.67 three times, which drifts off the pixel grid)
+        local avail = math.floor(width) - (cols - 1) * CARD_GAP
+        local colW = math.floor(avail / cols)
+        local extra = avail - colW * cols
+        local colX, colWs = {}, {}
+        local x = PAD
+        for i = 1, cols do
+            colWs[i] = colW + (i <= extra and 1 or 0)
+            colX[i] = x
+            x = x + colWs[i] + CARD_GAP
+        end
         local colY = {}
         for i = 1, cols do colY[i] = y end
         local function lowest() local v = y; for i = 1, cols do v = math.max(v, colY[i]) end; return v end
@@ -1551,6 +1577,7 @@ function Config.BuildSchemaPage(parent, m, schema)
         for _, c in ipairs(order) do
             local onTab = not self.tabs or c.tab == self.tab
             local spans = c.spans
+            -- a column card is sized for the narrowest column, then widened to its column once placed
             if onTab and layoutCard(c, spans and width or colW) then
                 c:Show()
                 c:ClearAllPoints()
@@ -1562,7 +1589,8 @@ function Config.BuildSchemaPage(parent, m, schema)
                     -- masonry: the shortest column takes the next card, so columns stay level and gap-free
                     local col = 1
                     for i = 2, cols do if colY[i] < colY[col] then col = i end end
-                    c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + (col - 1) * (colW + CARD_GAP), -colY[col])
+                    if colWs[col] ~= colW then layoutCard(c, colWs[col]) end
+                    c:SetPoint("TOPLEFT", child, "TOPLEFT", colX[col], -colY[col])
                     colY[col] = colY[col] + c:GetHeight() + CARD_GAP
                 end
             else
@@ -1585,6 +1613,13 @@ function Config.BuildSchemaPage(parent, m, schema)
         end
         local top = self.pinnedY - self.scroll:GetVerticalScroll()
         local stuck = top < STICK_TOP
+        -- not kept on screen: once its slot scrolls under the header the preview gets out of the way
+        pc:SetShown(not stuck or pc.keep)
+        if stuck and not pc.keep then
+            pc.shade:Hide()
+            self.stuck = false
+            return
+        end
         pc:ClearAllPoints()
         pc:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -((self.fixedTop or HEADER_H) + math.max(STICK_TOP, top)))
         pc.shade:SetShown(stuck)
