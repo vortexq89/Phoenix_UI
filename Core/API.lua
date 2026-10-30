@@ -18,6 +18,10 @@ function api:Supports(major, minor)
     return major == API_MAJOR and (minor or 0) <= API_MINOR
 end
 
+-- keys Phoenix keeps for its own plugins (current and planned)
+local RESERVED = { Raid = true, Cooldowns = true, Reminders = true, Toast = true, Quickdraw = true, Macros = true,
+    MythicPlus = true, Movers = true, General = true, Profiles = true }
+
 local function check(cond, msg) if not cond then error("PhoenixUI: " .. msg, 3) end end
 
 -- Register a plugin. key: unique "Vendor_Name" string. def: { label, desc, category ("system" | "interface" |
@@ -30,6 +34,9 @@ function api:RegisterPlugin(key, def)
     check(def.apiMajor == nil or def.apiMajor == API_MAJOR, ("plugin %s needs API %s, this Phoenix has %d"):format(key,
         tostring(def.apiMajor), API_MAJOR))
     check(not ns.modules[key], "plugin key already used: " .. key)
+    -- third-party keys are namespaced ("Vendor_Name"), so a later Phoenix plugin key can never be taken over
+    check(key:find("_", 2, true) and not key:find("^Phoenix") and not (ns.Plugins and ns.Plugins.byKey[key])
+        and not RESERVED[key], "plugin key must be Vendor_Name and not a Phoenix key: " .. key)
     def.thirdParty = true
     def.label, def.desc = def.label or key, def.desc or ""
     def.icon = def.icon or "general"
