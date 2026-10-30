@@ -455,10 +455,11 @@ local function segment(o, key)
     s.unit:SetPoint("LEFT", s.value, "RIGHT", 3, 0)
     if key == "bugs" and o.live then
         s.glow = W.Texture(s, "BACKGROUND", 0, ns.Media.textures.CIRCLE)
-        s.glow:SetSize(ICON_SIZE * 2.4, ICON_SIZE * 2.4)
+        -- t146: 2.4x the icon at 60 % read as a red blob spilling past the bar; a tighter, softer halo
+        s.glow:SetSize(ICON_SIZE * 1.6, ICON_SIZE * 1.6)
         s.glow:SetPoint("CENTER", s.icon)
         s.glow:SetAlpha(0)
-        Skin:Register(s.glow, function(self) W.Color(self, "state.danger", 0.6) end)
+        Skin:Register(s.glow, function(self) W.Color(self, "state.danger", 0.4) end)
         s:EnableMouse(true)
         s:SetScript("OnMouseUp", function() local b = bugsModule(); if b then b:OpenViewer() end end)
         s:SetScript("OnEnter", function(self)

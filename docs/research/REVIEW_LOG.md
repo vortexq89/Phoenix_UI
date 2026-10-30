@@ -144,3 +144,10 @@ that commit left:
 |---|---|---|
 | Level "90" printed over the soul shard segments | the info text ([level]) is anchored 10 px above the frame's top edge, where attached class power also goes | with class power attached above the frame, top-anchored info text is placed relative to the class power bar, so it sits above the segments |
 | Mana bar pure blue (0, 0, 1) | power colours default to Blizzard's PowerBarColor | Phoenix's own mana default, a softer azure (0.16, 0.50, 0.98); EllesmereUI also replaces Blizzard's mana blue with a lighter one; still pickable in General, Reset comes back to it |
+
+## 12. Data texts (shot 222322, bottom right)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| "2 bugs" segment shows a large red blob spilling past the bar | the new-error pulse halo is 2.4x the 12 px icon at 60 % alpha | a tighter (1.6x) and softer (40 %) halo that stays inside the bar |
+| FPS / ms / durability / clock segments | readable, aligned, icon + value + unit | no change |
