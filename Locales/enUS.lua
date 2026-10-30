@@ -4417,6 +4417,10 @@ ns.RegisterLocale("enUS", {
     UF_RES_TICK_COLOR = "Tick colour",
     ART_KIT = "Phoenix art",
     ART_KIT_DESC = "The phoenix behind the settings window, the fire logo on Home, and textured cards, buttons, toggles and sliders. All baked art, nothing animates. Off: the flat look.",
+    ART_PRESET = "Look",
+    ART_PRESET_DESC = "Phoenix wings: the v8.1 art on portraits, action and cast bars, nameplates, group frames, minimap, tooltip, chat, bags and the meter. Settings art: the phoenix only in the settings window. Accent themes stay selectable either way.",
+    ART_PRESET_WINGS = "Phoenix wings",
+    ART_PRESET_SETTINGS = "Settings art",
     DM_ART_BG = "Phoenix wing background",
     DM_ART_BG_DESC = "A darkened phoenix wing behind the rows (needs General > Phoenix art).",
 })

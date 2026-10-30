@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "Cor das marcas",
     ART_KIT = "Arte Phoenix",
     ART_KIT_DESC = "A fênix atrás da janela de configurações, o logotipo de fogo no Início e cartões, botões, chaves e controles deslizantes com textura. Tudo arte pronta, nada é animado. Desligado: o estilo plano.",
+    ART_PRESET = "Predefinição de arte",
+    ART_PRESET_DESC = "Asas da fênix: a arte v8.1 em retratos, barras de ação e de lançamento, placas de nome, quadros de grupo, minimapa, dica, bate-papo, bolsas e medidor. Arte das configurações: a fênix só na janela de configurações.",
+    ART_PRESET_WINGS = "Asas da fênix",
+    ART_PRESET_SETTINGS = "Arte das configurações",
     DM_ART_BG = "Fundo de asa de fênix",
     DM_ART_BG_DESC = "Uma asa de fênix escurecida atrás das linhas (requer Geral > Arte Phoenix).",
 }

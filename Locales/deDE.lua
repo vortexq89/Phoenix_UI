@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "Markierungsfarbe",
     ART_KIT = "Phoenix-Grafik",
     ART_KIT_DESC = "Der Phönix hinter dem Einstellungsfenster, das Feuerlogo auf der Startseite und texturierte Karten, Knöpfe, Schalter und Regler. Alles vorgefertigte Grafik, nichts ist animiert. Aus: der flache Stil.",
+    ART_PRESET = "Grafikvorlage",
+    ART_PRESET_DESC = "Phönixflügel: die v8.1-Grafik auf Porträts, Aktions- und Zauberleisten, Namensplaketten, Gruppenfenstern, Minikarte, Tooltip, Chat, Taschen und Messer. Einstellungsgrafik: der Phönix nur im Einstellungsfenster.",
+    ART_PRESET_WINGS = "Phönixflügel",
+    ART_PRESET_SETTINGS = "Einstellungsgrafik",
     DM_ART_BG = "Phönixflügel-Hintergrund",
     DM_ART_BG_DESC = "Ein abgedunkelter Phönixflügel hinter den Zeilen (benötigt Allgemein > Phoenix-Grafik).",
 }

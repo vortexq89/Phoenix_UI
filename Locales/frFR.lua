@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "Couleur des repères",
     ART_KIT = "Art Phoenix",
     ART_KIT_DESC = "Le phénix derrière la fenêtre des réglages, le logo de feu sur l'accueil et des cartes, boutons, interrupteurs et curseurs texturés. Tout est pré-dessiné, rien n'est animé. Désactivé : le style plat.",
+    ART_PRESET = "Préréglage graphique",
+    ART_PRESET_DESC = "Ailes du phénix : les graphismes v8.1 sur les portraits, barres d'action et d'incantation, barres de nom, cadres de groupe, minicarte, infobulle, discussion, sacs et compteur. Graphismes des options : le phénix seulement dans la fenêtre d'options.",
+    ART_PRESET_WINGS = "Ailes du phénix",
+    ART_PRESET_SETTINGS = "Graphismes des options",
     DM_ART_BG = "Fond d'aile de phénix",
     DM_ART_BG_DESC = "Une aile de phénix assombrie derrière les lignes (nécessite Général > Art Phoenix).",
 }

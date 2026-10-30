@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "Colore delle tacche",
     ART_KIT = "Grafica Phoenix",
     ART_KIT_DESC = "La fenice dietro la finestra delle impostazioni, il logo di fuoco nella Home e schede, pulsanti, interruttori e cursori con texture. Tutta grafica pronta, nulla è animato. Disattivato: lo stile piatto.",
+    ART_PRESET = "Preset grafico",
+    ART_PRESET_DESC = "Ali della fenice: la grafica v8.1 su ritratti, barre azione e lancio, targhette, riquadri di gruppo, minimappa, tooltip, chat, borse e misuratore. Grafica impostazioni: la fenice solo nella finestra delle impostazioni.",
+    ART_PRESET_WINGS = "Ali della fenice",
+    ART_PRESET_SETTINGS = "Grafica impostazioni",
     DM_ART_BG = "Sfondo ala di fenice",
     DM_ART_BG_DESC = "Un'ala di fenice scurita dietro le righe (richiede Generale > Grafica Phoenix).",
 }

@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "刻度颜色",
     ART_KIT = "Phoenix 美术",
     ART_KIT_DESC = "设置窗口后的凤凰、主页上的火焰标志，以及带纹理的卡片、按钮、开关和滑块。全部为预制美术，无动画。关闭：扁平风格。",
+    ART_PRESET = "美术预设",
+    ART_PRESET_DESC = "凤凰之翼：在头像、动作条与施法条、姓名板、团队框架、小地图、鼠标提示、聊天、背包和统计上使用 v8.1 美术。设置美术：仅在设置窗口显示凤凰。",
+    ART_PRESET_WINGS = "凤凰之翼",
+    ART_PRESET_SETTINGS = "设置美术",
     DM_ART_BG = "凤凰之翼背景",
     DM_ART_BG_DESC = "行后方的暗色凤凰之翼（需要 通用 > Phoenix 美术）。",
 }

@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "Color de las marcas",
     ART_KIT = "Arte de Phoenix",
     ART_KIT_DESC = "El fénix detrás de la ventana de ajustes, el logotipo de fuego en Inicio y tarjetas, botones, interruptores y deslizadores con textura. Todo arte prediseñado, nada se anima. Desactivado: el estilo plano.",
+    ART_PRESET = "Preajuste de arte",
+    ART_PRESET_DESC = "Alas de fénix: el arte v8.1 en retratos, barras de acción y de lanzamiento, placas de nombre, marcos de grupo, minimapa, descripción, chat, bolsas y medidor. Arte de ajustes: el fénix solo en la ventana de ajustes.",
+    ART_PRESET_WINGS = "Alas de fénix",
+    ART_PRESET_SETTINGS = "Arte de ajustes",
     DM_ART_BG = "Fondo de ala de fénix",
     DM_ART_BG_DESC = "Un ala de fénix oscurecida detrás de las filas (requiere General > Arte de Phoenix).",
 }

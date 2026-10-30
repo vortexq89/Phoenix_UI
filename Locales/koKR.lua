@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "눈금 색상",
     ART_KIT = "Phoenix 아트",
     ART_KIT_DESC = "설정 창 뒤의 불사조, 홈의 불꽃 로고, 질감 있는 카드·버튼·스위치·슬라이더입니다. 모두 미리 그린 그림이며 움직이지 않습니다. 끄면 평면 스타일입니다.",
+    ART_PRESET = "아트 프리셋",
+    ART_PRESET_DESC = "불사조 날개: 초상화, 행동 및 시전 바, 이름표, 파티 창, 미니맵, 툴팁, 채팅, 가방, 미터기에 v8.1 아트를 적용합니다. 설정 아트: 설정 창에만 불사조를 표시합니다.",
+    ART_PRESET_WINGS = "불사조 날개",
+    ART_PRESET_SETTINGS = "설정 아트",
     DM_ART_BG = "불사조 날개 배경",
     DM_ART_BG_DESC = "줄 뒤에 어둡게 처리한 불사조 날개(일반 > Phoenix 아트 필요).",
 }

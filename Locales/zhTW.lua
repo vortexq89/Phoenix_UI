@@ -4391,6 +4391,10 @@ local T = {
     UF_RES_TICK_COLOR = "刻度顏色",
     ART_KIT = "Phoenix 美術",
     ART_KIT_DESC = "設定視窗後的鳳凰、首頁上的火焰標誌，以及帶紋理的卡片、按鈕、開關和滑桿。全部為預製美術，無動畫。關閉：扁平風格。",
+    ART_PRESET = "美術預設",
+    ART_PRESET_DESC = "鳳凰之翼：在頭像、快捷列與施法條、名條、團隊框架、小地圖、滑鼠提示、聊天、背包和統計上使用 v8.1 美術。設定美術：只在設定視窗顯示鳳凰。",
+    ART_PRESET_WINGS = "鳳凰之翼",
+    ART_PRESET_SETTINGS = "設定美術",
     DM_ART_BG = "鳳凰之翼背景",
     DM_ART_BG_DESC = "列後方的暗色鳳凰之翼（需要 一般 > Phoenix 美術）。",
 }
