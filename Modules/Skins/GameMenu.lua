@@ -43,15 +43,20 @@ local rows = setmetatable({}, { __mode = "k" }) -- [blizzard button] = our overl
 local function paintRow(button)
     local o = rows[button]
     if not o then return end
-    local hover = o.hover
-    W.Color(o.bg, hover and "accent.primary" or "bg.raised", hover and 0.16 or 1)
+    -- t156: Blizzard disables Log Out / Exit while the logout or quit popup is up, and the store and add-ons in
+    -- kiosk mode (MainMenuFrameMixin:AddButton, SetEnabled + SetMotionScriptsWhileDisabled). A disabled row is
+    -- muted and takes no hover accent, instead of looking like a live button.
+    local off = button.IsEnabled and not button:IsEnabled()
+    local hover = o.hover and not off
+    W.Color(o.bg, hover and "accent.primary" or "bg.raised", hover and 0.16 or (off and 0.6 or 1))
     Skin:SetBorderColor(o, hover and "accent.primary" or "border.subtle")
     W.Color(o.bar, "accent.primary", hover and 1 or 0)
-    if o.icon then ns.Icons:Tint(o.icon, hover and "accent.primary" or "text.secondary") end
+    if o.icon then ns.Icons:Tint(o.icon, hover and "accent.primary" or (off and "text.muted" or "text.secondary"), off and 0.6 or 1) end
     local fs = button.GetFontString and button:GetFontString()
-    if fs then Skin:Text(fs, "body", hover and "accent.text" or "text.primary") end
+    if fs then Skin:Text(fs, "body", hover and "accent.text" or (off and "text.muted" or "text.primary")) end
 end
 M.PaintMenuRow = paintRow
+M._MenuRow = function(button) return rows[button] end
 
 function M.SkinMenuButton(button)
     if not button then return end
@@ -66,8 +71,13 @@ function M.SkinMenuButton(button)
         o.bar:SetPoint("TOPLEFT", 1, -1); o.bar:SetPoint("BOTTOMLEFT", 1, 1); o.bar:SetWidth(2)
         Skin:Border(o, "border.subtle")
         rows[button] = o
-        button:HookScript("OnEnter", function(self) rows[self].hover = true; paintRow(self) end)
-        button:HookScript("OnLeave", function(self) rows[self].hover = false; paintRow(self) end)
+    end
+    -- AddButton gives a disabled button with a reason its own OnEnter / OnLeave via SetScript, which drops our
+    -- hooks; the button goes back to the pool, so hook again whenever the script is not the one we hooked.
+    if button.GetScript and (button:GetScript("OnEnter") ~= o.enterScript or not o.enterScript) then
+        button:HookScript("OnEnter", function(self) if rows[self] then rows[self].hover = true; paintRow(self) end end)
+        button:HookScript("OnLeave", function(self) if rows[self] then rows[self].hover = false; paintRow(self) end end)
+        o.enterScript = button:GetScript("OnEnter")
     end
     o.hidden = {}
     for _, k in ipairs(BUTTON_ART) do if button[k] then o.hidden[#o.hidden + 1] = button[k] end end

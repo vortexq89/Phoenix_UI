@@ -2214,6 +2214,25 @@ try("calendar week start and weekday names", function()
     rawset(env, "CALENDAR_FIRST_WEEKDAY", had)
     assert(w == 2 and (had ~= nil or S.CalendarWeekStart() == 1), "week start from Blizzard")
 end)
+-- t156: game menu rows: disabled rows muted without hover; hover hooks come back after Blizzard's SetScript
+try("game menu disabled rows and re-hooked hover", function()
+    local S = ns.modules.Skins
+    local b = CreateFrame("Button", nil, UIParent)
+    local enabled = true
+    b.IsEnabled = function() return enabled end
+    S.SkinMenuButton(b)
+    local first = b:GetScript("OnEnter")
+    assert(first, "hover hooked")
+    b:SetScript("OnEnter", function() end) -- what AddButton does for a disabled button with a reason
+    S.SkinMenuButton(b)
+    b:GetScript("OnEnter")(b)
+    assert(S._MenuRow(b).hover == true, "hover tracked again after Blizzard's SetScript")
+    b:GetScript("OnLeave")(b)
+    assert(S._MenuRow(b).hover == false, "leave tracked")
+    enabled = false
+    S.PaintMenuRow(b)
+    S.UnskinMenuButton(b)
+end)
 -- bag chrome (plan window 4): title tick, close glyph, search field, bank tab rail with warband accent
 try("bag chrome skin", function()
     local B = ns.modules.Bags

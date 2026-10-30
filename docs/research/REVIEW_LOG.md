@@ -228,3 +228,11 @@ Sweep of other Phoenix item buttons: Character and Journal already insert chat l
 Evidence (Blizzard live source, Blizzard_Calendar/Localization.lua and Mainline/Blizzard_Calendar.lua lines 654-662 and 1303): Blizzard starts the week on `CALENDAR_FIRST_WEEKDAY`, which is Monday for deDE, enGB, esES, frFR, itIT and ruRU (Sunday for enUS and esMX), and offsets the grid by it. Phoenix always started on Sunday, so on those clients the Phoenix and Blizzard calendars put the same day in different columns. The weekday headers were cut with byte-wise `:sub(1, 3)`, which splits multi-byte characters and shows garbled text in ruRU, koKR, zhCN and zhTW.
 
 Fix: the grid and headers start on Blizzard's week start. Headers are cut by characters (UTF-8 safe). Harness test covers Sunday and Monday starts, header days and the UTF-8 cut.
+
+## 23. Game menu (Esc)
+
+Evidence (Blizzard live source, Blizzard_SharedXML/Shared/Frame/MainMenuFrameTemplates.lua, MainMenuFrameMixin:AddButton; Blizzard_GameMenu/Shared/GameMenuFrame.lua InitButtons):
+- Buttons come from a pool on every open. A disabled button (Log Out / Exit while the logout or quit popup is up; store, add-ons and others in kiosk mode) gets `SetEnabled(false)` with `SetMotionScriptsWhileDisabled(true)`. Phoenix painted it, hover accent included, exactly like a live row.
+- For a disabled button with a reason, AddButton calls `SetScript("OnEnter"/"OnLeave")`, which discards our HookScript hover hooks. Hooks were only added the first time a pooled button was skinned, so a reused button lost the Phoenix hover for the rest of the session.
+
+Fix: disabled rows are muted (text, glyph, background) and take no hover accent. Hover hooks are added again whenever the button's OnEnter is no longer the one we hooked. Harness test.
