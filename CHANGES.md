@@ -3,6 +3,13 @@
 ## 2.0.0-beta1
 
 ### New
+- **Phoenix damage meter** (both clients, t158): Phoenix's own meter windows, read from Blizzard's damage meter data
+  (C_DamageMeter, the same source EllesmereUI uses), replacing Blizzard's window while on. Up to three windows, each
+  a Layout-mode mover with its own mode (damage, DPS, healing, HPS, absorbs, interrupts, dispels, deaths, damage
+  taken, avoidable, enemy) and segment (current, overall, any recorded fight); a click on a player opens their
+  spells. Rank, spec icon, class colour, your row outlined, fight clock, out-of-combat fade, visibility rules; every
+  setting live. Combat values stay secret and only reach the bars and text. Damage Meter > Meter
+  (docs/DAMAGE_METER.md). The plugin now also switches on and off without a reload.
 - **Map reveal** (WoW Forever): zone maps also show the parts you have not explored yet, tinted in the accent colour
   (switch and opacity on Minimap > World map). The pieces are the client's own map overlays, generated from its
   WorldMapOverlay tables by tools/mapreveal/build.py; explored parts stay Blizzard's.

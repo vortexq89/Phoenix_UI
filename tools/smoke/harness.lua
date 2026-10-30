@@ -8025,6 +8025,82 @@ try("phoenix font and expressway", function()
     assert(not M.FontLoads("") and not M.FontLoads(nil), "the font probe accepts an empty path")
 end)
 
+-- Phoenix damage meter (docs/DAMAGE_METER.md): rows from C_DamageMeter, secret amounts and names only reach sinks
+try("phoenix damage meter", function()
+    local DM = ns.modules.DamageMeter
+    ns.Util.MergeDefaults(DM.db, DM.defaults) -- PLAYER_LOGOUT above stripped the saved settings
+    local function bad(what) return function() error("secret meter value " .. what) end end
+    local SECRET = setmetatable({}, { __tostring = function() return "<secret>" end, __lt = bad("compared"),
+        __le = bad("compared"), __add = bad("added"), __sub = bad("subtracted"), __div = bad("divided"),
+        __mul = bad("multiplied"), __concat = bad("concatenated"), __len = bad("measured") })
+    local saved = { C_DamageMeter = rawget(env, "C_DamageMeter"), issecretvalue = rawget(env, "issecretvalue"),
+        AbbreviateNumbers = rawget(env, "AbbreviateNumbers") }
+    local oldIs = ns.Secret.IsSecret
+    rawset(env, "issecretvalue", function(v) return v == SECRET end)
+    ns.Secret.IsSecret = env.issecretvalue
+    rawset(env, "AbbreviateNumbers", function(v) return v == SECRET and SECRET or tostring(v) end)
+    local secretMode, resets = false, 0
+    local function src(i)
+        if secretMode then
+            return { name = SECRET, sourceGUID = SECRET, totalAmount = SECRET, amountPerSecond = SECRET, classFilename = "MAGE",
+                specIconID = 135932, isLocalPlayer = i == 1 }
+        end
+        return { name = "P" .. i, sourceGUID = "Player-1-" .. i, totalAmount = 1000 / i, amountPerSecond = 100 / i,
+            classFilename = "WARRIOR", specIconID = 0, isLocalPlayer = false }
+    end
+    rawset(env, "C_DamageMeter", {
+        GetCombatSessionFromType = function(_, t)
+            assert(type(t) == "number", "meter type")
+            return { combatSources = { src(1), src(2), src(3) }, maxAmount = secretMode and SECRET or 1000 }
+        end,
+        GetCombatSessionFromID = function() return { combatSources = { src(1) }, maxAmount = 1 } end,
+        GetCombatSessionSourceFromType = function(_, _, guid)
+            assert(not secretMode and type(guid) == "string", "breakdown asked with a secret GUID")
+            return { combatSpells = { { spellID = 133, totalAmount = 600, amountPerSecond = 60 } }, maxAmount = 600 }
+        end,
+        GetAvailableCombatSessions = function() return { { sessionID = 4, name = "Boss", durationSeconds = 95 } } end,
+        GetSessionDurationSeconds = function() return 75 end,
+        ResetAllCombatSessions = function() resets = resets + 1 end,
+    })
+    local db = DM.db
+    local keep = { db.engine, db.meter.windows }
+    db.engine, db.meter.windows = "phoenix", 3
+    DM:SetupMeter()
+    local w = DM.meterWindows[1]
+    assert(w and w:IsShown() and DM.meterWindows[3]:IsShown(), "meter windows not shown")
+    assert(w.rows[1]:IsShown() and w.rows[3]:IsShown() and not (w.rows[4] and w.rows[4]:IsShown()), "rows")
+    assert(DM.Clock(75) == "1:15" and DM.Clock(SECRET) == nil, "clock")
+    -- breakdown out of combat, then back
+    DM:OpenBreakdown(w, 2)
+    assert(w.focus and w.focus.name == "P2" and w.rows[1]:IsShown() and not w.rows[2]:IsShown(), "breakdown")
+    DM:Back(w)
+    assert(not w.focus, "back")
+    -- in combat: every value is secret; painting must only pass them on, and a breakdown must not open
+    secretMode = true
+    for _, fmt in ipairs({ "both", "total", "rate" }) do db.meter.valueFormat = fmt; DM:RefreshMeter() end
+    for id = 0, 10 do db.meter.win1.type = id; DM:RefreshMeter() end
+    DM:OpenBreakdown(w, 1)
+    assert(not w.focus, "a secret GUID opened a breakdown")
+    secretMode = false
+    db.meter.win1.type, db.meter.valueFormat = 0, "both"
+    -- live settings: fewer windows and rows, then the plugin off and on again
+    db.meter.windows, db.meter.rows = 1, 2
+    DM:Refresh()
+    assert(not DM.meterWindows[2]:IsShown() and not w.rows[3]:IsShown(), "live window/row count")
+    DM:ResetData()
+    assert(resets == 1, "reset")
+    db.engine = "blizzard"; DM:Refresh()
+    assert(not w:IsShown(), "blizzard engine still shows Phoenix windows")
+    db.engine = "phoenix"; DM:Refresh()
+    assert(w:IsShown(), "phoenix engine back")
+    DM:StopMeter()
+    assert(not w:IsShown(), "stop")
+    db.engine, db.meter.windows, db.meter.rows = keep[1], keep[2], 8
+    DM:Refresh()
+    for k, v in pairs(saved) do rawset(env, k, v) end
+    ns.Secret.IsSecret = oldIs
+end)
+
 -- PUI_DEPTH_OUT=<file>: settings each page has now, one "page count" line each (the gap matrix NOW column uses it)
 if os.getenv("PUI_DEPTH_OUT") and ns.Config then
     local out = assert(io.open(os.getenv("PUI_DEPTH_OUT"), "w"))

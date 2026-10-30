@@ -11,10 +11,66 @@ local function skinned(row) return Opt.With(row, { disabled = row.disabled or un
 -- meter's Edit Mode settings: one button opens them (the skin never calls the meter's own setters).
 local function openEditMode() ns.Config.frame:Hide(); ns.EditMode:Open() end
 
-ns:RegisterOptions("DamageMeter", {
+local function blizzard(m) return m.db.engine ~= "phoenix" end
+local function notPhoenix(m) return m.db.engine ~= "phoenix" end
+local function meter(row) return Opt.With(row, { disabled = row.disabled or notPhoenix }) end
+local MODE_VALUES = {}
+for _, g in ipairs(ns.modules.DamageMeter.MODES) do
+    for _, md in ipairs(g) do MODE_VALUES[#MODE_VALUES + 1] = { value = md.id, label = md.label } end
+end
+local function windowRows(i, head)
+    local base = "meter.win" .. i
+    local function off(m) return notPhoenix(m) or m.db.meter.windows < i end
+    return {
+        head,
+        { type = "select", key = base .. ".type", label = "DM_WIN_MODE", desc = "DM_WIN_MODE_DESC", values = MODE_VALUES,
+          disabled = off, keywords = "damage healing dps hps interrupts dispels deaths taken" },
+        { type = "toggle", key = base .. ".overall", label = "DM_WIN_OVERALL", desc = "DM_WIN_OVERALL_DESC", disabled = off },
+    }
+end
+
+local rows = {
     { type = "preview", kind = "damagemeter" },
+    { type = "header", label = "DM_ENGINE", icon = "damagemeter" },
+    { type = "select", key = "engine", label = "DM_ENGINE", desc = "DM_ENGINE_DESC", values = {
+        { value = "phoenix", label = "DM_ENGINE_PHOENIX" }, { value = "blizzard", label = "DM_ENGINE_BLIZZARD" },
+    }, keywords = "dps meter details skada recount" },
+    { type = "header", label = "DM_WINDOWS", icon = "skins" },
+    meter({ type = "range", key = "meter.windows", label = "DM_WINDOW_COUNT", desc = "DM_WINDOW_COUNT_DESC", min = 1, max = 3, step = 1 }),
+    meter({ type = "range", key = "meter.width", label = "UF_WIDTH", min = 160, max = 520, step = 1 }),
+    meter({ type = "range", key = "meter.rows", label = "DM_ROWS", min = 3, max = 25, step = 1 }),
+    meter({ type = "range", key = "meter.rowHeight", label = "DM_ROW_HEIGHT", min = 12, max = 32, step = 1 }),
+    meter({ type = "range", key = "meter.spacing", label = "DM_ROW_SPACING", min = 0, max = 8, step = 1 }),
+    { type = "header", label = "DM_ROWS_LOOK", icon = "damagemeter" },
+    meter({ type = "toggle", key = "meter.classColor", label = "DM_CLASS_COLOR", desc = "DM_CLASS_COLOR_DESC" }),
+    meter({ type = "toggle", key = "meter.specIcon", label = "DM_SPEC_ICON" }),
+    meter({ type = "toggle", key = "meter.rank", label = "DM_RANK" }),
+    meter({ type = "select", key = "meter.valueFormat", label = "DM_VALUE_FORMAT", desc = "DM_VALUE_FORMAT_DESC", values = {
+        { value = "both", label = "DM_FMT_BOTH" }, { value = "total", label = "DM_FMT_TOTAL" }, { value = "rate", label = "DM_FMT_RATE" },
+    } }),
+    meter({ type = "toggle", key = "meter.clock", label = "DM_CLOCK", desc = "DM_CLOCK_DESC" }),
+    { type = "header", label = "DM_BEHAVIOUR", icon = "general" },
+    meter({ type = "select", key = "meter.visibility", label = "DM_VISIBILITY", values = {
+        { value = "always", label = "DM_VIS_ALWAYS" }, { value = "combat", label = "DM_VIS_COMBAT" },
+        { value = "group", label = "DM_VIS_GROUP" },
+    } }),
+    meter({ type = "range", key = "meter.idleAlpha", label = "DM_IDLE_ALPHA", desc = "DM_IDLE_ALPHA_DESC",
+      min = 0.1, max = 1, step = 0.05 }),
+    meter({ type = "range", key = "meter.rate", label = "DM_RATE", desc = "DM_RATE_DESC",
+      min = 0.1, max = 2, step = 0.1 }),
+    meter({ type = "button", label = "DM_RESET_ALL", desc = "DM_RESET_ALL_DESC", button = "DM_RESET",
+      func = function(m) m:ResetData() end }),
+}
+local heads = {
+    { type = "header", label = "DM_WIN_1", icon = "damagemeter" },
+    { type = "header", label = "DM_WIN_2", icon = "damagemeter" },
+    { type = "header", label = "DM_WIN_3", icon = "damagemeter" },
+}
+for i = 1, 3 do for _, r in ipairs(windowRows(i, heads[i])) do rows[#rows + 1] = r end end
+for _, r in ipairs({
     { type = "header", label = "BLIZZARD_FEATURES", icon = "general" },
-    { type = "toggle", label = "DM_ENABLE", desc = "DM_ENABLE_DESC", get = dmGet, set = dmSet, combat = true, keywords = "dps meter" },
+    { type = "toggle", label = "DM_ENABLE", desc = "DM_ENABLE_DESC", get = dmGet, set = dmSet, combat = true, keywords = "dps meter",
+      disabled = function(m) return not blizzard(m) end },
     { type = "header", label = "DM_STYLE", icon = "theme" },
     { type = "toggle", key = "skin", label = "DM_SKIN", desc = "DM_SKIN_DESC" },
     { type = "header", label = "DM_BARS", icon = "damagemeter" },
@@ -51,4 +107,6 @@ ns:RegisterOptions("DamageMeter", {
           local ok, count = m:ApplyDetails()
           ns.Config:SetStatus(ok and L.DM_DETAILS_DONE:format(count) or L.DM_DETAILS_MISSING, ok and "state.success" or "state.danger")
       end },
-})
+}) do rows[#rows + 1] = r end
+
+ns:RegisterOptions("DamageMeter", rows)

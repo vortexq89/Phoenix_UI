@@ -10,9 +10,19 @@ local Theme, Skin, Media, Style = ns.Theme, ns.Skin, ns.Media, ns.Style
     meter's own setters from addon code would taint the frames that later handle secret values, so those
     stay Blizzard's (DamageMeter.lua, EditModeSettingDisplayInfo.lua). ]]
 local M = ns:NewModule("DamageMeter", {
-    label = "DAMAGEMETER", desc = "DAMAGEMETER_DESC", category = "combat", order = 30, reloadOnToggle = true,
+    label = "DAMAGEMETER", desc = "DAMAGEMETER_DESC", category = "combat", order = 30,
     defaults = {
         skin = true,
+        -- "phoenix": Phoenix's own meter windows (Meter.lua, docs/DAMAGE_METER.md); "blizzard": Blizzard's window, skinned
+        engine = "phoenix",
+        meter = {
+            windows = 1, width = 280, rows = 8, rowHeight = 18, spacing = 2,
+            classColor = true, specIcon = true, rank = true, valueFormat = "both", clock = true,
+            visibility = "always", idleAlpha = 1, rate = 0.3,
+            win1 = { type = 0, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -16, y = 220 },
+            win2 = { type = 2, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -306, y = 220 },
+            win3 = { type = 7, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -16, y = 420 },
+        },
         bar = { texture = "", reverse = false, shade = 0.2 },
         bg = Style.Background({ show = true, alpha = 0.92, color = false, style = "solid" }),
         border = Style.Border({ style = "solid", color = false }),
@@ -169,14 +179,24 @@ end
 
 function M:OnEnable()
     self:SetupThreat() -- Threat.lua (Forever)
+    ns.SafeCall(self.SetupMeter, self) -- Meter.lua
     if not DamageMeter then return end
+    if self.blizzardHooked then return self:Refresh() end
+    self.blizzardHooked = true
     hooksecurefunc(DamageMeter, "SetupSessionWindow", function() DamageMeter:ForEachSessionWindow(styleWindow) end)
     DamageMeter:ForEachSessionWindow(styleWindow)
 end
 
 -- Settings changes restyle every skinned window and entry (Skin:Register keeps the painters).
+function M:OnDisable()
+    self:Unskin()
+    if self.StopMeter then ns.SafeCall(self.StopMeter, self) end
+    if self.ThreatWindow and self:ThreatWindow() then self:ThreatWindow():Hide() end
+end
+
 function M:Refresh()
     if self.UpdateThreat then ns.SafeCall(self.UpdateThreat, self) end
+    if self.RefreshMeter then ns.SafeCall(self.ApplyEngine, self); ns.SafeCall(self.RefreshMeter, self) end
     if not self.db.skin then return self:Unskin() end
     if DamageMeter and DamageMeter.ForEachSessionWindow then DamageMeter:ForEachSessionWindow(styleWindow) end
     for window in pairs(windows) do ns.SafeCall(paintWindow, window) end

@@ -124,6 +124,7 @@
     <Script file="CombatText\Scroll.lua"/>
     <Script file="DamageMeter\DamageMeter.lua"/>
     <Script file="DamageMeter\Threat.lua"/>
+    <Script file="DamageMeter\Meter.lua"/>
     <Script file="SpellHistory\SpellHistory.lua"/>
     <Script file="PvP\PvP.lua"/>
     <!-- social -->

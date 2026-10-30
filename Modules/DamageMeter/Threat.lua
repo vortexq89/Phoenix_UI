@@ -83,9 +83,11 @@ local function read(u)
     return UnitDetailedThreatSituation(u, "target")
 end
 
+function M:ThreatWindow() return win end
+
 function M:UpdateThreat()
     local t = self.db.threat
-    if not (t.enabled and ns:Supports("threatMeter")) then if win then win:Hide() end return end
+    if not (t.enabled and M:IsEnabled() and ns:Supports("threatMeter")) then if win then win:Hide() end return end
     if not win then build() end
     local want = UnitExists("target") and UnitCanAttack("player", "target") and (not t.combatOnly or InCombatLockdown()
         or UnitAffectingCombat("player"))
