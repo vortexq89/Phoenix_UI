@@ -17,8 +17,20 @@ repository:
 Fonts without Cyrillic are hidden from the pickers on Russian clients, and text set in them falls back to
 Roboto. Korean and Chinese clients use the game font throughout, since none of these fonts cover CJK.
 
+## Default font: Phoenix Font
+
+**Phoenix Font** (Regular, SemiBold, Bold; `PhoenixFont-*.ttf`) is the default for every UI text role. It is an
+SIL OFL 1.1 derivative of Barlow Semi Condensed (Bold, ExtraBold and Black masters), re-proportioned for UI
+text (taller x-height, wider capitals and figures, open tracking) by `tools/media/phoenix_font/build.py`, and
+renamed as the OFL requires; the licence is `Licenses/OFL-PhoenixFont.txt`. It has no Cyrillic: on Russian clients
+text set in it uses PT Sans Narrow (Regular, or Bold for the heavier weights).
+
+When another addon on the PC already provides **Expressway** (ElvUI, EllesmereUI or a LibSharedMedia pack),
+Phoenix UI prefers it at run time (General > "Use Expressway when installed"); Expressway itself is never shipped.
+
 | Family | Weights | Group | Cyrillic | Shipped | Licence | Size |
 |---|---|---|---|---|---|---|
+| Phoenix Font | Regular, SemiBold, Bold | core | no | modified (OFL) | SIL OFL 1.1 — Licenses/OFL-PhoenixFont.txt | 259 KB |
 | Roboto | Regular, Medium, Bold | core | yes | as published | Apache 2.0 — Licenses/LICENSE-Roboto.txt | 429 KB |
 | Roboto Condensed | Regular, Medium, SemiBold, Bold | core | yes | as published | Apache 2.0 — Licenses/LICENSE-Roboto.txt | 571 KB |
 | Inter | Regular, Medium, SemiBold, Bold | sans | yes | subset | SIL OFL 1.1 — Licenses/OFL-Inter.txt | 484 KB |

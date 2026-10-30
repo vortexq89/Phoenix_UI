@@ -2,73 +2,56 @@ local _, ns = ...
 local L = ns.L
 local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
 local Config = ns.Config
-
---[[ Home: hero banner with the look presets, live stats, this week (Great Vault and Mythic+ season) and
-    the module grid, filtered by rail group, each card with its on/off switch and how deep its options go
-    against the plan. The side panel (health checks, quick actions, what's new) sits in the preview dock on a
-    wide window and under the stats on a narrow one. ]]
-local PAD, GAP, CARD_MIN_W, CARD_H, WEEK_H = 24, 12, 236, 124, 132
+--[[ Home v4 "Flow" (DESIGN_SYSTEM_V3 §11): the hero banner with the look presets, live stats, then cards packed
+    into 3 / 2 / 1 columns with no gaps: one card per rail group listing its modules (on/off switch and how many
+    settings each has), this week (Great Vault and Mythic+ season), health (including which font is in use),
+    quick actions and what's new. The group filter narrows the module rows. ]]
+local PAD, GAP, ROW_H, WEEK_H, HERO_H = 20, 12, 30, 132, 150
+local THREE_AT, TWO_AT = 980, 640
 local PRESETS = { "ember", "frost", "fel", "arcane", "class" }
 
+-- One module row in a group card: tile, name, settings count, the on/off switch; click opens the page.
 local function moduleCard(parent, m)
     local c = CreateFrame("Button", nil, parent)
-    c:SetHeight(CARD_H)
+    c:SetHeight(ROW_H)
     c.module = m
+    c.bg = W.Texture(c, "BACKGROUND", 0)
+    c.bg:SetPoint("TOPLEFT", 6, 0); c.bg:SetPoint("BOTTOMRIGHT", -6, 0)
     c.iconBg = W.Texture(c, "ARTWORK", 0, Media.textures.ROUNDED)
-    c.iconBg:SetSize(34, 34)
-    c.iconBg:SetPoint("TOPLEFT", 14, -14)
-    c.icon = W.Icon(c, m.icon, 18)
+    c.iconBg:SetSize(22, 22)
+    c.iconBg:SetPoint("LEFT", 14, 0)
+    c.icon = W.Icon(c, m.icon, 13)
     c.icon:SetPoint("CENTER", c.iconBg)
     c.label = W.Text(c, "body", "text.primary")
-    c.label:SetPoint("TOPLEFT", c.iconBg, "TOPRIGHT", 10, -2)
-    c.label:SetPoint("RIGHT", -60, 0)
+    c.label:SetPoint("LEFT", c.iconBg, "RIGHT", 10, 0)
     c.label:SetText(L[m.label])
-    c.cat = W.Text(c, "small", "text.muted")
-    c.cat:SetPoint("TOPLEFT", c.label, "BOTTOMLEFT", 0, -3)
-    local group = Config:GroupOf(m.key)
-    c.cat:SetText((group and L[group.label] or L["CAT_" .. m.category:upper()]):upper())
-    c.desc = W.Text(c, "desc", "text.secondary")
-    c.desc:SetWordWrap(true)
-    c.desc:SetMaxLines(2)
-    c.desc:SetJustifyV("TOP")
-    c.desc:SetPoint("TOPLEFT", c.iconBg, "BOTTOMLEFT", 0, -10)
-    c.desc:SetPoint("BOTTOMRIGHT", -14, 26)
-    c.desc:SetText(L[m.desc])
-    -- depth: settings now against the plan v2 target (Groups.lua Config.DEPTH)
+    c.label:SetWordWrap(false)
     c.now, c.target = Config:Depth(m.key)
-    c.meterBg = W.Texture(c, "ARTWORK", 0, Media.textures.PILL)
-    c.meterBg:SetHeight(4)
-    c.meterBg:SetPoint("BOTTOMLEFT", 14, 14)
-    c.meterBg:SetPoint("BOTTOMRIGHT", -64, 14)
-    c.meter = W.Texture(c, "ARTWORK", 1, Media.textures.PILL)
-    c.meter:SetHeight(4)
-    c.meter:SetPoint("LEFT", c.meterBg, "LEFT")
-    c.depth = W.Text(c, "small", "text.muted", "RIGHT")
-    c.depth:SetPoint("BOTTOMRIGHT", -14, 10)
     -- players see how many settings a module has; the plan-v2 depth target is a developer metric only
-    c.depth:SetText(L.SETTINGS_COUNT:format(c.now or 0))
-    c.meterBg:Hide(); c.meter:Hide()
+    c.depth = W.Text(c, "small", "text.muted", "RIGHT")
+    c.depth:SetText(tostring(c.now or 0))
     if not m.locked then
         c.toggle = W:Toggle(c)
-        c.toggle:SetPoint("TOPRIGHT", -14, -16)
+        c.toggle:SetPoint("RIGHT", -14, 0)
         c.toggle.onChange = function(_, v) ns:SetModuleEnabled(m.key, v) end
+        c.depth:SetPoint("RIGHT", c.toggle, "LEFT", -10, 0)
+    else
+        c.depth:SetPoint("RIGHT", -14, 0)
     end
-    c.dot = W:Dot(c, 6)
+    c.label:SetPoint("RIGHT", c.depth, "LEFT", -8, 0)
+    c.dot = W:Dot(c, 5)
     c.dot:SetPoint("TOPRIGHT", c.iconBg, "TOPRIGHT", 2, 2)
+    c.sep = W:Separator(c)
+    c.sep:SetPoint("TOPLEFT", 14, 0); c.sep:SetPoint("TOPRIGHT", -14, 0)
 
     function c:Paint()
-        Skin:Panel(self, "raised", { border = self.hover and "accent.primary" or "border.subtle", sheen = 24 })
         local on = m:IsEnabled()
+        W.Color(self.bg, "bg.hover", self.hover and 0.9 or 0)
         W.TileColor(self.iconBg, self.icon, on and "accent.soft" or "bg.sunken", (not on) and 0.95 or nil)
         W.Color(self.icon, on and "accent.primary" or "text.muted")
-        Skin:Text(self.label, "body", "text.primary")
-        Skin:Text(self.cat, "small", "text.muted")
-        Skin:Text(self.desc, "desc", "text.secondary")
+        Skin:Text(self.label, "body", on and "text.primary" or "text.secondary")
         Skin:Text(self.depth, "small", "text.muted")
-        W.Color(self.meterBg, "bg.sunken")
-        local full = not self.target or self.now >= self.target
-        W.Color(self.meter, full and "state.success" or "accent.primary", on and 0.9 or 0.4)
-        local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning") or (on and "state.success")
+        local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning")
         if token and not m.locked then W.Color(self.dot, token); self.dot:Show() else self.dot:Hide() end
         if self.toggle then self.toggle:SetValue(m.db.enabled) end
     end
@@ -76,14 +59,14 @@ local function moduleCard(parent, m)
     c:SetScript("OnEnter", function(self)
         self.hover = true
         self:Paint()
-        if self.target then W.ShowTooltip(self, L[m.label], L.DEPTH_TIP:format(self.now, self.target)) end
+        W.ShowTooltip(self, L[m.label], L[m.desc] .. "\n\n" .. L.SETTINGS_COUNT:format(self.now or 0))
     end)
     c:SetScript("OnLeave", function(self) self.hover = false; self:Paint(); W.HideTooltip() end)
     c:SetScript("OnClick", function() PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON); Config:Show(m.key) end)
     return c
 end
 
----------------------------------------------------------------- side panel (dock on wide windows)
+---------------------------------------------------------------- side cards (health, quick actions, news)
 local function sideLine(parent, icon)
     local r = CreateFrame("Frame", nil, parent)
     r:SetHeight(22)
@@ -114,7 +97,7 @@ local function buildSide(parent)
     local sd = CreateFrame("Frame", nil, parent)
     sd.health = W:Card(sd, L.HOME_HEALTH, "success")
     sd.health.lines = { sideLine(sd.health, "success"), sideLine(sd.health, "reload"), sideLine(sd.health, "bugs"),
-        sideLine(sd.health, "lock") }
+        sideLine(sd.health, "lock"), sideLine(sd.health, "fonts") }
     sd.actions = W:Card(sd, L.HOME_QUICK, "presets")
     sd.actions.buttons = {
         quickAction(sd.actions, L.LAYOUT_MODE, "layout", function() Config.frame.header.layout.onClick() end),
@@ -150,11 +133,16 @@ local function buildSide(parent)
         else h[3]:Set(L.HOME_HEALTH_NO_BUGS, "state.success") end
         if InCombatLockdown() then h[4]:Set(L.STATUS_COMBAT, "state.warning")
         else h[4]:Set(L.HOME_HEALTH_COMBAT_OK, "state.success") end
+        -- which font the UI uses: Expressway found on this PC, Phoenix Font, or the Cyrillic / game fallback
+        local src, from = Media:DefaultFontSource()
+        local name = (src == "expressway" and L.FONT_SRC_EXPRESSWAY:format(from or "?")) or (src == "cyrillic" and L.FONT_SRC_CYRILLIC)
+            or (src == "game" and L.FONT_SRC_GAME) or L.FONT_SRC_PHOENIX
+        h[5]:Set(L.HOME_HEALTH_FONT:format(name), "accent.primary")
     end
 
-    -- lays the three cards out top to bottom in `width`; returns the height used
+
+    -- lays each card out for `width` (the column width) and sets its height
     function sd:Arrange(width)
-        local y = 0
         local inner = width - 32
         local hy = 40
         for _, line in ipairs(self.health.lines) do
@@ -162,10 +150,7 @@ local function buildSide(parent)
             line:SetPoint("TOPLEFT", 16, -hy); line:SetPoint("TOPRIGHT", -16, -hy)
             hy = hy + 24
         end
-        self.health:ClearAllPoints()
-        self.health:SetPoint("TOPLEFT", 0, -y); self.health:SetPoint("TOPRIGHT", 0, -y)
         self.health:SetHeight(hy + 10)
-        y = y + hy + 10 + GAP
         local bw = (inner - 8) / 2
         for i, b in ipairs(self.actions.buttons) do
             local col, row = (i - 1) % 2, math.floor((i - 1) / 2)
@@ -173,11 +158,7 @@ local function buildSide(parent)
             b:SetPoint("TOPLEFT", 16 + col * (bw + 8), -(40 + row * 36))
             b:SetWidth(bw)
         end
-        self.actions:ClearAllPoints()
-        self.actions:SetPoint("TOPLEFT", 0, -y); self.actions:SetPoint("TOPRIGHT", 0, -y)
-        local ah = 40 + math.ceil(#self.actions.buttons / 2) * 36 + 8
-        self.actions:SetHeight(ah)
-        y = y + ah + GAP
+        self.actions:SetHeight(40 + math.ceil(#self.actions.buttons / 2) * 36 + 8)
         local ny = 40
         for _, fs in ipairs(self.news.lines) do
             fs:ClearAllPoints()
@@ -185,15 +166,11 @@ local function buildSide(parent)
             fs:SetWidth(inner)
             ny = ny + math.max(16, fs:GetStringHeight()) + 8
         end
-        self.news:ClearAllPoints()
-        self.news:SetPoint("TOPLEFT", 0, -y); self.news:SetPoint("TOPRIGHT", 0, -y)
         self.news:SetHeight(ny + 6)
-        y = y + ny + 6
-        self:SetHeight(y)
-        return y
     end
     return sd
 end
+
 
 local function statChip(parent, icon)
     local s = CreateFrame("Frame", nil, parent)
@@ -242,23 +219,23 @@ end
 
 local function buildHero(parent)
     local h = CreateFrame("Frame", nil, parent)
-    h:SetHeight(168)
+    h:SetHeight(HERO_H)
     h.glow = W.Texture(h, "BACKGROUND", 1)
     h.glow:SetAllPoints()
     h.emblem = W.Texture(h, "BORDER", 0)
-    h.emblem:SetSize(220, 220)
+    h.emblem:SetSize(200, 200)
     h.emblem:SetPoint("RIGHT", 40, -10)
-    ns.Icons:Brand(h.emblem, "emblem", 220)
-    ns.EmblemFX:Attach(h.emblem, 220)
+    ns.Icons:Brand(h.emblem, "emblem", 200)
+    ns.EmblemFX:Attach(h.emblem, 200)
     h.logo = W.Texture(h, "ARTWORK", 0)
-    h.logo:SetSize(336, 84)
-    ns.Icons:Brand(h.logo, "logo", 336)
+    h.logo:SetSize(300, 75)
+    ns.Icons:Brand(h.logo, "logo", 300)
     h.logo:SetPoint("TOPLEFT", 14, -12)
     h.tagline = W.Text(h, "desc", "text.secondary")
-    h.tagline:SetPoint("TOPLEFT", 28, -96)
+    h.tagline:SetPoint("TOPLEFT", 26, -86)
     h.tagline:SetText(L.TAGLINE)
     h.accentLabel = W.Text(h, "heading", "text.muted")
-    h.accentLabel:SetPoint("BOTTOMLEFT", 28, 22)
+    h.accentLabel:SetPoint("BOTTOMLEFT", 26, 20)
     h.accentLabel:SetText(L.ACCENT:upper())
     local prev
     h.swatches = {}
@@ -372,6 +349,7 @@ local function weekCard(parent)
     return c
 end
 
+
 local function build(parent)
     local page = CreateFrame("Frame", nil, parent)
     page.scroll = W:Scroll(page)
@@ -382,33 +360,50 @@ local function build(parent)
     page.hero = buildHero(child)
     page.hero:SetPoint("TOPLEFT", PAD, -PAD)
     page.hero:SetPoint("TOPRIGHT", -PAD, -PAD)
-    page.stats = { statChip(child, "addon"), statChip(child, "profiles"), statChip(child, "theme") }
-    -- Great Vault and Mythic+ only exist on retail (ns.FEATURES); elsewhere the module grid moves up.
+    page.stats = { statChip(child, "addon"), statChip(child, "profiles"), statChip(child, "theme"), statChip(child, "fonts") }
+    -- Great Vault and Mythic+ only exist on retail (ns.FEATURES)
     if ns:Supports("vault") then
         page.week = weekCard(child)
         local function weekly() if page:IsVisible() then page.week:Update() end end
         ns.Events:On("WEEKLY_REWARDS_UPDATE", page.week, weekly)
         ns.Events:On("CHALLENGE_MODE_MAPS_UPDATE", page.week, weekly)
     end
-
     page.side = buildSide(child)
+    page.side:SetSize(1, 1)
+    page.side:SetPoint("TOPLEFT")
+    for _, k in ipairs({ "health", "actions", "news" }) do page.side[k]:SetParent(child) end
 
-    page.gridTitle = W.Text(child, "heading", "text.muted")
-    page.gridTitle:SetText(L.MODULES:upper())
-    Skin:Register(page.gridTitle, function(fs) Skin:Text(fs, "heading", "text.muted") end)
-    page.cards = {}
-    for _, m in ipairs(ns.moduleList) do
-        if not m.hidden and not m.locked then page.cards[#page.cards + 1] = moduleCard(child, m) end
-    end
-    -- filter: every rail group that has a module card, plus "Off" (modules switched off)
-    local filters, has = { { value = "all", label = L.FILTER_ALL } }, {}
-    for _, c in ipairs(page.cards) do
-        local g = Config:GroupOf(c.module.key)
-        c.group = g and g.key
-        if c.group then has[c.group] = true end
-    end
+    -- one card per rail group, its module rows inside
+    page.groupCards, page.cards = {}, {}
     for _, g in ipairs(Config:Groups()) do
-        if has[g.key] then filters[#filters + 1] = { value = g.key, label = L[g.label], icon = g.icon } end
+        local gc
+        for _, key in ipairs(g.entries) do
+            local m = ns.modules[key]
+            if m and not m.hidden and not m.locked then
+                if not gc then
+                    gc = W:Card(child, L[g.label] or g.label, g.icon)
+                    gc.group, gc.rows = g.key, {}
+                    gc.count = W:Badge(gc, "", "text.muted")
+                    gc.count:SetPoint("LEFT", gc.header, "RIGHT", 8, 0)
+                    gc.open = W:IconButton(gc, "chevron-right", 20, L[g.label] or g.label, L.HOME_OPEN_GROUP)
+                    gc.open:SetPoint("TOPRIGHT", -10, -10)
+                    local gk = g.key
+                    gc.open.onClick = function() Config:OpenGroup(gk) end
+                    page.groupCards[#page.groupCards + 1] = gc
+                end
+                local c = moduleCard(gc, m)
+                c.group = g.key
+                gc.rows[#gc.rows + 1] = c
+                page.cards[#page.cards + 1] = c
+            end
+        end
+    end
+    -- filter: every rail group that has a module, plus "Off" (modules switched off)
+    local filters = { { value = "all", label = L.FILTER_ALL } }
+    for _, gc in ipairs(page.groupCards) do
+        for _, g in ipairs(Config:Groups()) do
+            if g.key == gc.group then filters[#filters + 1] = { value = g.key, label = L[g.label], icon = g.icon } end
+        end
     end
     filters[#filters + 1] = { value = "off", label = L.FILTER_OFF }
     page.filter = W:Chips(child, filters)
@@ -421,88 +416,68 @@ local function build(parent)
         return f == "all" or c.group == f
     end
 
-    function page:SetDocked(dock)
-        self.docked = dock ~= nil
-        self.side:SetParent(dock or child)
-        self.side:ClearAllPoints()
-        if dock then
-            self.side:SetFrameLevel(dock:GetFrameLevel() + 10)
-            self.side:SetPoint("TOPLEFT", dock, "TOPLEFT", 14, -14)
-            self.side:SetPoint("TOPRIGHT", dock, "TOPRIGHT", -14, -14)
-            self.side:Arrange((dock:GetWidth() or 380) - 28)
-        end
-        self:Layout()
-    end
+    -- v4 has no dock: the side cards are part of the columns
+    function page:SetDocked() self.docked = false; self:Layout() end
 
     function page:Layout()
         local w = self.scroll:GetWidth() - PAD * 2
         if w <= 0 then return end
-        local y = PAD + 168 + GAP
-        local sw = (w - GAP * 2) / 3
+        local y = PAD + HERO_H + GAP
+        local n = #self.stats
+        local sw = (w - GAP * (n - 1)) / n
         for i, s in ipairs(self.stats) do
             s:ClearAllPoints()
             s:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + (i - 1) * (sw + GAP), -y)
             s:SetWidth(sw)
         end
-        y = y + 54 + GAP
-        if not self.docked then
-            self.side:ClearAllPoints()
-            self.side:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
-            self.side:SetPoint("TOPRIGHT", child, "TOPRIGHT", -PAD, -y)
-            y = y + self.side:Arrange(w) + GAP
-        end
-        if self.week then
-            self.week:ClearAllPoints()
-            self.week:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
-            self.week:SetWidth(w)
-            y = y + WEEK_H + GAP
-        end
-        y = y + 22 - GAP
-        self.gridTitle:ClearAllPoints()
-        self.gridTitle:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
-        y = y + 22
+        y = y + 54 + GAP + 4
         self.filter:ClearAllPoints()
         self.filter:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
         self.filter:SetWidth(w)
         self.filter:Arrange()
         y = y + self.filter:GetHeight() + GAP
-        local cols = math.max(2, math.floor((w + GAP) / (CARD_MIN_W + GAP)))
-        local cw = (w - (cols - 1) * GAP) / cols
-        -- cards grouped under their rail group (Bars, Frames, Interface …) with a heading each, in rail order
-        self.groupHeads = self.groupHeads or {}
-        for _, h in pairs(self.groupHeads) do h:Hide() end
-        for _, g in ipairs(Config:Groups()) do
-            local n = 0
-            for _, c in ipairs(self.cards) do
-                if c.group == g.key and passes(c) then
-                    if n == 0 then
-                        local h = self.groupHeads[g.key]
-                        if not h then
-                            h = W.Text(child, "heading", "text.secondary")
-                            Skin:Register(h, function(fs) Skin:Text(fs, "heading", "text.secondary") end)
-                            self.groupHeads[g.key] = h
-                        end
-                        h:SetText((L[g.label] or g.label):upper())
-                        h:ClearAllPoints()
-                        h:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
-                        h:Show()
-                        y = y + 22
-                    end
-                    local col, row = n % cols, math.floor(n / cols)
+        local cols = w >= THREE_AT and 3 or (w >= TWO_AT and 2 or 1)
+        local cw = math.floor((w - (cols - 1) * GAP) / cols)
+        self.side:Arrange(cw)
+        -- the cards, in order; each goes into the shortest column (masonry: no gaps under short cards)
+        local blocks = {}
+        if self.week then blocks[#blocks + 1] = self.week end
+        blocks[#blocks + 1] = self.side.health
+        for _, gc in ipairs(self.groupCards) do
+            local ry, k = 40, 0
+            for _, c in ipairs(gc.rows) do
+                if passes(c) then
                     c:ClearAllPoints()
-                    c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + col * (cw + GAP), -(y + row * (CARD_H + GAP)))
-                    c:SetWidth(cw)
+                    c:SetPoint("TOPLEFT", gc, "TOPLEFT", 0, -ry)
+                    c:SetPoint("TOPRIGHT", gc, "TOPRIGHT", 0, -ry)
+                    c.sep:SetShown(k > 0)
                     c:Show()
-                    c.placed = true
-                    n = n + 1
+                    ry, k = ry + ROW_H, k + 1
+                else
+                    c:Hide()
                 end
             end
-            if n > 0 then y = y + math.ceil(n / cols) * (CARD_H + GAP) + 8 end
+            gc.count:Set(tostring(#gc.rows), "text.muted")
+            gc:SetHeight(ry + 8)
+            gc:SetShown(k > 0)
+            if k > 0 then blocks[#blocks + 1] = gc end
         end
-        for _, c in ipairs(self.cards) do
-            if not (c.group and passes(c)) then c:Hide() end
+        blocks[#blocks + 1] = self.side.actions
+        blocks[#blocks + 1] = self.side.news
+        local colY = {}
+        for i = 1, cols do colY[i] = y end
+        for _, b in ipairs(blocks) do
+            local col = 1
+            for i = 2, cols do if colY[i] < colY[col] then col = i end end
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + (col - 1) * (cw + GAP), -colY[col])
+            b:SetWidth(cw)
+            b:Show()
+            colY[col] = colY[col] + b:GetHeight() + GAP
         end
-        child:SetHeight(y + PAD)
+        local bottom = y
+        for i = 1, cols do bottom = math.max(bottom, colY[i]) end
+        child:SetHeight(bottom - GAP + PAD)
         self.scroll:UpdateBar()
     end
 
@@ -517,6 +492,9 @@ local function build(parent)
         self.stats[1]:Set(L.MODULES_ON_COUNT:format(on, total), L.MODULES_ENABLED)
         self.stats[2]:Set(ns.DB:GetProfileName(), L.ACTIVE_PROFILE)
         self.stats[3]:Set(L["THEME_" .. Theme.settings.preset:upper()], L.THEME)
+        local src = Media:DefaultFontSource()
+        self.stats[4]:Set(src == "expressway" and "Expressway" or (src == "phoenix" and "Phoenix Font")
+            or (src == "cyrillic" and "PT Sans Narrow") or L.FONT_SRC_GAME, L.HOME_FONT_STAT)
         for _, c in ipairs(self.cards) do c:Paint() end
         if self.week then
             ns.Weekly:Request()
@@ -524,9 +502,10 @@ local function build(parent)
         end
         for _, s in ipairs(self.hero.swatches) do s:Paint() end
         self.side:Refresh()
-        if self.docked then self.side:Arrange(self.side:GetWidth()) end
+        self:Layout()
     end
     ns.Events:Listen("PUI_THEME_CHANGED", page, function() if page:IsShown() then page:Refresh() end end)
+    page.scroll:HookScript("OnSizeChanged", function() page:Layout() end)
     return page
 end
 

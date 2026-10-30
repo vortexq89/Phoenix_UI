@@ -18,11 +18,17 @@ local U = ns.Util
     Keys may contain "@": it stands for the element picked in the page's chips; such rows get a ⇄ button
     that copies their value to every element.
 
-    Layout: cards in one or two columns; inside a card, rows without a description pair up two per line
-    (label above control) once the card is wide enough, and rows with one keep a full line. ]]
-local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT = 24, 16, 36, 52, 760
+    Layout v4 "Flow" (DESIGN_SYSTEM_V3 §11): a header that stays put (module tile, breadcrumb, title, summary,
+    changed-from-default count, Reset page, Move on screen, the Enabled switch, Live preview) with the element chips
+    under it; the page's sub-pages are listed in the window's rail, not as tabs. Cards pack into 3 / 2 / 1 columns
+    by width (each goes into the shortest column, so there are no gaps); every card folds to its header, and a
+    folded card shows summary chips of its current values. Inside a card, rows keep one line: label left,
+    control right; rows without a description pair up two per line only in a card wide enough for it. ]]
+local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT, THREE_COLUMNS_AT = 20, 12, 32, 48, 640, 980
 Config.CARD_GAP_MAX = CARD_GAP + 8 -- the page-spacing smoke test: more than this between two cards is an empty band
-local CELL_H, TOGGLE_CELL_H, PAIR_AT, HEADER_H = 60, 38, 400, 96
+local CELL_H, TOGGLE_CELL_H, PAIR_AT, HEADER_H = 60, 34, 560, 78
+local CARD_HEAD, CHIP_MAX = 36, 5
+Config.HEADER_H = HEADER_H
 local POPOVER_W = 400
 -- rows that can share a line: no description, a control that fits half a card
 local COMPACT = { toggle = true, range = true, select = true, font = true, texture = true, sound = true, style = true,
@@ -32,6 +38,7 @@ local STRETCH = { range = true, select = true, font = true, texture = true, soun
 
 local function text(key) return key and (L[key] or key) or "" end
 local rowTip -- defined after the reset helpers
+local needWidth -- defined before the page builder
 
 ---------------------------------------------------------------- values (scope aware)
 local function resolve(page, key)
@@ -508,10 +515,15 @@ function buildRow(card, page, m, item)
     end
 
     -- a full line (or a toggle cell): label and description left, the control right
+    local function controlWidth(r, width)
+        return math.min(r.controlW, math.max(112, math.floor((width or 400) * 0.42)))
+    end
+
     local function arrangeLine(self, c, icons, mode, indent, width)
         if c then
             c:ClearAllPoints()
-            if STRETCH[item.type] then c:SetWidth(row.controlW) end
+            -- a narrow card (3 columns) gives the control about two fifths of the row, so the label keeps its words
+            if STRETCH[item.type] then c:SetWidth(controlWidth(row, width)) end
         end
         if c and item.fullWidth then
             c:SetPoint("TOPLEFT", 16, hasDesc and -48 or -32)
@@ -715,68 +727,111 @@ local function resetModule(page, m)
 end
 
 ---------------------------------------------------------------- page header
---[[ Title, the one line that says how the module works, its setting count and state, then Reset module and
-    the enable switch on the right. ]]
+--[[ v4 "Flow" header, outside the scroll so it stays put: module tile, breadcrumb (group > page > sub-page), title
+    with the one-line summary beside it; on the right "N changed" (settings away from their defaults), Reset page,
+    Move on screen and the Enabled switch; under them the Live preview switch on pages with a preview. ]]
+local function changedCount(page)
+    local n = 0
+    for _, row in ipairs(page.rows or {}) do
+        if row.IsModified and row.item.key ~= "enabled" and row:IsModified() then n = n + 1 end
+    end
+    return n
+end
+Config.ChangedCount = changedCount
+
 local function buildPageHeader(page, m, schema)
-    local h = CreateFrame("Frame", nil, page.scroll.child)
+    local h = CreateFrame("Frame", nil, page)
     h:SetHeight(HEADER_H)
+    h:SetFrameLevel(page:GetFrameLevel() + 20)
+    h.bg = W.Texture(h, "BACKGROUND", 0)
+    h.bg:SetAllPoints()
     h.iconBg = W.Texture(h, "ARTWORK", 0, Media.textures.ROUNDED)
-    h.iconBg:SetSize(44, 44)
-    h.iconBg:SetPoint("TOPLEFT", PAD, -22)
-    h.icon = W.Icon(h, m.icon, 22, "accent.primary")
+    h.iconBg:SetSize(52, 52)
+    h.iconBg:SetPoint("TOPLEFT", PAD, -14)
+    h.icon = W.Icon(h, m.icon, 26, "accent.primary")
     h.icon:SetPoint("CENTER", h.iconBg)
+    h.crumb = W.Text(h, "small", "text.muted")
+    h.crumb:SetPoint("TOPLEFT", h.iconBg, "TOPRIGHT", 14, -2)
+    h.crumb:SetWordWrap(false)
     h.title = W.Text(h, "title", "text.primary")
-    h.title:SetPoint("TOPLEFT", h.iconBg, "TOPRIGHT", 14, -1)
+    h.title:SetPoint("TOPLEFT", h.crumb, "BOTTOMLEFT", 0, -4)
     h.title:SetText(text(m.label))
     h.desc = W.Text(h, "desc", "text.secondary")
-    h.desc:SetPoint("TOPLEFT", h.title, "BOTTOMLEFT", 0, -5)
-    h.desc:SetPoint("RIGHT", -250, 0)
+    h.desc:SetPoint("BOTTOMLEFT", h.title, "BOTTOMRIGHT", 12, 2)
+    h.desc:SetWordWrap(false)
     h.desc:SetText(text(m.desc))
-    -- a quiet line under the description, not chips: the title leads (defect #16)
-    h.count = W.Text(h, "small", "text.muted")
-    h.count:SetPoint("TOPLEFT", h.desc, "BOTTOMLEFT", 0, -7)
     page.settingCount = Config.CountSettings(schema)
+    -- "N settings" now lives in the tooltip of the title; the line under the title is the summary
+    h.count = W.Text(h, "small", "text.muted")
     h.count:SetText(L.SETTINGS_COUNT:format(page.settingCount))
-    h.count:SetShown(page.settingCount > 0)
+    h.count:Hide()
     h.state = W:Badge(h, "", "state.success")
-    h.state:SetPoint("LEFT", h.count, "RIGHT", 10, 0)
+    h.state:SetPoint("LEFT", h.crumb, "RIGHT", 10, 0)
     h.state:Hide()
+    local anchor
     if not m.locked then
         h.toggle = W:Toggle(h)
-        h.toggle:SetPoint("TOPRIGHT", -PAD, -30)
+        h.toggle:SetPoint("TOPRIGHT", -56, -20)
         h.toggle.onChange = function(_, v) ns:SetModuleEnabled(m.key, v) end
         h.toggleLabel = W.Text(h, "small", "text.secondary", "RIGHT")
         h.toggleLabel:SetPoint("RIGHT", h.toggle, "LEFT", -8, 0)
+        anchor = h.toggleLabel
     end
+    h.move = W:Button(h, L.LAYOUT_MODE, "secondary", "movers")
+    h.move:SetHeight(28)
+    h.move.onClick = function()
+        local f = Config.frame
+        if f and f.footer and f.footer.layout then f.footer.layout.onClick() end
+    end
+    W.AttachTooltip(h.move, L.LAYOUT_MODE, L.LAYOUT_MODE_DESC)
+    if anchor then h.move:SetPoint("RIGHT", anchor, "LEFT", -18, 0) else h.move:SetPoint("TOPRIGHT", -56, -20) end
+    anchor = h.move
     if hasDefaults(m) then
         h.reset = W:Button(h, L.RESET_MODULE, "ghost", "reset")
-        h.reset:SetHeight(26)
+        h.reset:SetHeight(28)
         W.AttachTooltip(h.reset, L.RESET_MODULE, L.RESET_MODULE_DESC)
-        if h.toggle then h.reset:SetPoint("RIGHT", h.toggleLabel, "LEFT", -14, 0)
-        else h.reset:SetPoint("TOPRIGHT", -PAD, -27) end
+        h.reset:SetPoint("RIGHT", anchor, "LEFT", -8, 0)
         armReset(h.reset, L.RESET_MODULE_CONFIRM:format(text(m.label)), function() resetModule(page, m) end)
+        anchor = h.reset
     end
+    h.changed = W:Badge(h, "", "accent.primary")
+    h.changed:SetPoint("RIGHT", anchor, "LEFT", -10, 0)
+    h.changed:Hide()
+    W.AttachTooltip(h.changed, L.CHANGED_TITLE, L.CHANGED_DESC)
+    h.desc:SetPoint("RIGHT", h.changed, "LEFT", -16, 0)
     h.line = W.Texture(h, "BORDER")
     h.line:SetHeight(1)
     h.line:SetPoint("BOTTOMLEFT", PAD, 0); h.line:SetPoint("BOTTOMRIGHT", -PAD, 0)
     Skin:Register(h, function(self)
+        W.Color(self.bg, "bg.base")
         W.TileColor(self.iconBg, self.icon, "accent.soft")
         W.Color(self.icon, "accent.primary")
-        Skin:Text(self.title, "title", "text.primary", 20)
+        Skin:Text(self.crumb, "small", "text.muted")
+        Skin:Text(self.title, "title", "text.primary")
         Skin:Text(self.desc, "desc", "text.secondary")
         if self.toggleLabel then Skin:Text(self.toggleLabel, "small", "text.secondary") end
         Skin:Text(self.count, "small", "text.muted")
         W.Color(self.line, "border.subtle", 0.7)
     end)
+    function h:Crumb()
+        local g = Config.GroupOf and Config:GroupOf(m.key)
+        local parts = { g and (L[g.label] or g.label) or nil, text(m.label) }
+        local tl = page.tabList and page.tabList[page.tab or 1]
+        if tl and #page.tabList > 1 then parts[#parts + 1] = tl.label end
+        self.crumb:SetText(table.concat(parts, "  \226\128\186  "))
+    end
+    function h:Changed()
+        local n = changedCount(page)
+        if n > 0 then self.changed:Set(L.CHANGED_COUNT:format(n), "accent.primary"); self.changed:Show() else self.changed:Hide() end
+    end
     function h:Refresh()
         local state, token
         if m.state == "errored" then state, token = L.STATE_ERROR, "state.danger"
         elseif m.needsReload then state, token = L.BADGE_RELOAD, "state.warning"
-        end -- "on" is already said by the toggle; the badge only appears when something needs attention
+        end -- "on" is already said by the switch; the badge only appears when something needs attention
         if state then self.state:Set(state, token); self.state:Show() else self.state:Hide() end
-        if self.state:IsShown() and not self.count:IsShown() then
-            self.state:ClearAllPoints(); self.state:SetPoint("TOPLEFT", self.desc, "BOTTOMLEFT", 0, -7)
-        end
+        self:Crumb()
+        self:Changed()
         if not self.toggle then return end
         self.toggle:SetValue(m.db.enabled)
         self.toggleLabel:SetText((m.db.enabled and L.ENABLED or L.DISABLED):upper())
@@ -795,8 +850,10 @@ local function buildScope(page, m, item)
     page.scope = { unit = values[1].value, mode = "this", multi = {}, root = item.key, values = values }
     local scope = page.scope
 
-    local bar = CreateFrame("Frame", nil, page.scroll.child)
+    -- v4: the chips sit in the fixed header area, under the title (the page scrolls under them)
+    local bar = CreateFrame("Frame", nil, page)
     scope.bar = bar
+    bar.inHeader = true
     bar:SetHeight(64)
     bar.title = W.Text(bar, "heading", "text.muted")
     bar.title:SetPoint("TOPLEFT", 0, -2)
@@ -1116,25 +1173,42 @@ function Config.BuildModulePage(parent, key)
     return Config.BuildSchemaPage(parent, ns.modules[key], ns.options[key])
 end
 
+-- the hairline above a row and the zebra shade: every other line a shade lighter, so a long card reads across
+local function lineLook(r, first, n)
+    if not r.sep then
+        r.sep = W:Separator(r)
+        r.sep:SetPoint("TOPLEFT", 16, 0); r.sep:SetPoint("TOPRIGHT", -16, 0)
+    end
+    r.sep:SetShown(not first)
+    if r.hl then W.Color(r.hl, "bg.hover", n % 2 == 1 and 0.22 or 0) end
+    r.zebra = n % 2 == 1
+end
+
+local function placeGate(c, row)
+    row:Show()
+    row:Arrange("gate", 0)
+    row:ClearAllPoints()
+    row:SetPoint("TOPRIGHT", c, "TOPRIGHT", -62, -4)
+end
+
+local function hiddenIn(c, row) return row.hiddenState or c.collapsed end
+
 -- Rows of one card, laid out: paired rows two per line when the card is wide enough. Returns the height.
 local function layoutRows(c, width)
-    local cy = c.hasHeader and 42 or 8
+    local cy = c.hasHeader and CARD_HEAD or 6
     local pair = width >= PAIR_AT
     local cellW = math.floor((width - 2) / 2)
     local visible = {}
     for _, row in ipairs(c.rows) do
         if row == c.gateRow then
-            row:Show()
-            row:Arrange("gate", 0)
-            row:ClearAllPoints()
-            row:SetPoint("TOPRIGHT", c, "TOPRIGHT", c.reset and -38 or -12, -7)
-        elseif row.hiddenState then
+            placeGate(c, row)
+        elseif hiddenIn(c, row) then
             row:Hide()
         else
             visible[#visible + 1] = row
         end
     end
-    local i, first = 1, true
+    local i, first, n = 1, true, 0
     while i <= #visible do
         local row, nextRow = visible[i], visible[i + 1]
         local kind = row.compact and (row.item.type == "toggle" and "toggle" or "control")
@@ -1150,33 +1224,182 @@ local function layoutRows(c, width)
             r:Arrange(together and "cell" or "line", w)
             r:Measure()
             r:SetPoint("TOPLEFT", c, "TOPLEFT", 1 + (j - 1) * cellW, -cy)
-            if not r.sep then
-                r.sep = W:Separator(r)
-                r.sep:SetPoint("TOPLEFT", 16, 0); r.sep:SetPoint("TOPRIGHT", -16, 0)
-            end
-            r.sep:SetShown(not first)
+            lineLook(r, first, n)
             h = math.max(h, r:GetHeight())
         end
         if together then for _, r in ipairs(rows) do r:SetHeight(h) end end
         first = false
+        n = n + 1
         cy = cy + h
         i = i + #rows
     end
-    return cy, #visible > 0 or c.gateRow ~= nil
+    return cy, #visible > 0 or c.gateRow ~= nil or c.collapsed
 end
 
 -- m: a module or a module-like table { key, label, desc, icon, locked = true, db = {}, singleColumn = bool }.
--- A tab shows its first section's icon.
+-- A sub-page shows its first section's icon (in the rail).
 local function tabIcon(page, tab, item)
     local tl = item.type == "header" and tab and page.tabList[tab]
     if tl and not tl.icon then tl.icon = item.icon end
+end
+
+-- Folded cards: where each card's state is kept (per module and card title, account-wide like the window).
+local function foldStore()
+    local ui = ns.DB.sv.global.ui
+    if type(ui.folded) ~= "table" then ui.folded = {} end
+    return ui.folded
+end
+
+-- Summary chips of a folded card: the current value of its first compact rows ("Bottom", "Scale 1.00", a switch
+-- that is on by its name). Returns up to CHIP_MAX strings.
+local function summaryOf(page, m, card)
+    local out = {}
+    for _, row in ipairs(card.rows) do
+        if #out >= CHIP_MAX then break end
+        local item = row.item
+        if row.compact ~= nil and row ~= card.gateRow and not row.hiddenState and (item.key or item.get) then
+            local v = getValue(page, m, item)
+            local label = text(item.label)
+            if #label > 18 then label = label:sub(1, 17) .. "\226\128\166" end
+            if item.type == "toggle" then
+                if v then out[#out + 1] = label end
+            else
+                local d = describe(item, m, v)
+                if d and d ~= "" then out[#out + 1] = item.type == "range" and (label .. " " .. d) or d end
+            end
+        end
+    end
+    return out
+end
+
+local function chip(card, i)
+    card.chips = card.chips or {}
+    local c = card.chips[i]
+    if c then return c end
+    c = CreateFrame("Frame", nil, card)
+    c:SetHeight(18)
+    c.bg = W.Texture(c, "BACKGROUND", 0, Media.textures.PILL)
+    c.bg:SetAllPoints()
+    c.text = W.Text(c, "small", "text.secondary", "CENTER")
+    c.text:SetPoint("CENTER")
+    Skin:Register(c, function(self) W.Color(self.bg, "bg.sunken"); Skin:Text(self.text, "small", "text.secondary", 11) end)
+    card.chips[i] = c
+    return c
+end
+
+-- the card header: title, setting count, fold chevron; folded, the summary chips fill the rest of the line
+local function decorateCard(page, m, card)
+    card.count = W:Badge(card, tostring(0), "text.muted")
+    card.count:SetPoint("LEFT", card.header, "RIGHT", 8, 0)
+    card.chev = W.Icon(card, "chevron-down", 12, "text.muted")
+    card.chev:SetPoint("TOPRIGHT", -14, -12)
+    card.fold = CreateFrame("Button", nil, card)
+    card.fold:SetPoint("TOPLEFT", 0, 0); card.fold:SetPoint("TOPRIGHT", -36, 0); card.fold:SetHeight(CARD_HEAD - 2)
+    card.fold:SetFrameLevel(card:GetFrameLevel() + 1)
+    card.foldKey = m.key .. "/" .. (card.title or "")
+    card.collapsed = foldStore()[card.foldKey] == true
+    card.fold:SetScript("OnClick", function()
+        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+        card.collapsed = not card.collapsed
+        foldStore()[card.foldKey] = card.collapsed or nil
+        page:Layout()
+    end)
+    card.fold:SetScript("OnEnter", function() W.Color(card.chev, "text.primary") end)
+    card.fold:SetScript("OnLeave", function() W.Color(card.chev, "text.muted") end)
+    W.AttachTooltip(card.fold, card.title or "", L.CARD_FOLD_TIP)
+    if card.reset then card.reset:ClearAllPoints(); card.reset:SetPoint("TOPRIGHT", -32, -6) end
+    function card:Chips()
+        for _, c in ipairs(self.chips or {}) do c:Hide() end
+        if not self.collapsed then return end
+        local x = 32 + self.header:GetStringWidth() + 8 + (self.count:IsShown() and self.count:GetWidth() + 10 or 0)
+        local limit = (self:GetWidth() or 300) - 70
+        for i, s in ipairs(summaryOf(page, m, self)) do
+            local c = chip(self, i)
+            c.text:SetText(s)
+            local w = math.floor(c.text:GetStringWidth() + 16)
+            if x + w > limit then break end
+            c:SetWidth(w)
+            c:ClearAllPoints()
+            c:SetPoint("TOPLEFT", self, "TOPLEFT", x, -9)
+            c:Show()
+            x = x + w + 6
+        end
+    end
+end
+
+-- the narrowest card a row of fixed-width controls (a name box and its button) still fits in
+function needWidth(c)
+    if c.needW then return c.needW end
+    local need = 0
+    for _, row in ipairs(c.rows or {}) do
+        local ctrl = row.control
+        if ctrl and row.item.type == "custom" and not row.item.fullWidth then
+            local w = ctrl:GetWidth() or 0
+            if w > 0 then need = math.max(need, w + (row.icon and 38 or 16) + 32 + 160) end
+        end
+    end
+    c.needW = need
+    return need
+end
+
+local function newCard(page, m, child, item, tab)
+    local isHead = item.type == "header"
+    local card = W:Card(child, isHead and text(item.label) or nil, isHead and item.icon or nil)
+    card.header:ClearAllPoints()
+    card.header:SetPoint("TOPLEFT", item.icon and isHead and 36 or 32, -12)
+    card.rows = {}
+    card.tab = tab or 1
+    card.wide = isHead and item.wide
+    card.title = isHead and text(item.label) or text(m.label)
+    if isHead then
+        card.reset = W:IconButton(card, "reset", 22, L.RESET_CARD, L.RESET_CARD_DESC)
+        card.reset:SetPoint("TOPRIGHT", -32, -6)
+        card.reset:Hide()
+        armReset(card.reset, L.RESET_CARD_CONFIRM:format(card.title), function() resetCard(page, m, card) end)
+        decorateCard(page, m, card)
+    end
+    return card
+end
+
+local function countCards(page)
+    for _, c in ipairs(page.cards) do
+        if c.count then
+            local n = 0
+            for _, row in ipairs(c.rows) do if row.compact ~= nil and row ~= c.gateRow then n = n + 1 end end
+            c.count:Set(tostring(n), "text.muted")
+            c.count:SetShown(n > 0)
+        end
+    end
+end
+
+local function makeRouter(page, key)
+    -- sub-pages: listed in the window's rail under the open module (Window.lua); this router keeps the old
+    -- tabs API (SetValue / onChange) that search, links and the smoke tests use
+    if #page.tabList > 1 then
+        page.tabs = { value = 1 }
+        function page.tabs:SetValue(v) self.value = v; page.tab = v end
+        function page.tabs:GetValue() return self.value end
+        page.tabs.onChange = function(_, v)
+            page.tabs.value = v
+            page.tab = v
+            W.HidePopover()
+            page:Layout()
+            page.scroll:SetVerticalScroll(0)
+            page.scroll:UpdateBar()
+            page.header:Crumb()
+            if Config.LayoutSidebar and Config.current == key then Config:LayoutSidebar() end
+        end
+    end
+    function page:SetTab(v)
+        if self.tabs then self.tabs:SetValue(v); self.tabs.onChange(self.tabs, v) end
+    end
 end
 
 function Config.BuildSchemaPage(parent, m, schema)
     local key = m.key
     local page = CreateFrame("Frame", nil, parent)
     page.scroll = W:Scroll(page)
-    page.scroll:SetPoint("TOPLEFT", 0, 0)
+    page.scroll:SetPoint("TOPLEFT", 0, -HEADER_H)
     page.scroll:SetPoint("BOTTOMRIGHT", -10, 0)
     local child = page.scroll.child
     schema = schema or {}
@@ -1199,18 +1422,7 @@ function Config.BuildSchemaPage(parent, m, schema)
         else
             tabIcon(page, tab, item)
             if t == "header" or not card then
-                card = W:Card(child, t == "header" and text(item.label) or nil, t == "header" and item.icon or nil)
-                card.rows = {}
-                card.tab = tab or 1
-                card.wide = t == "header" and item.wide
-                card.title = t == "header" and text(item.label) or text(m.label)
-                if t == "header" then
-                    local thisCard = card
-                    card.reset = W:IconButton(card, "reset", 22, L.RESET_CARD, L.RESET_CARD_DESC)
-                    card.reset:SetPoint("TOPRIGHT", -10, -9)
-                    card.reset:Hide()
-                    armReset(card.reset, L.RESET_CARD_CONFIRM:format(card.title), function() resetCard(page, m, thisCard) end)
-                end
+                card = newCard(page, m, child, item, tab)
                 page.cards[#page.cards + 1] = card
             end
             if t ~= "header" then
@@ -1229,21 +1441,18 @@ function Config.BuildSchemaPage(parent, m, schema)
         card.tab = 1
         page.cards[1] = card
     end
-    if #page.tabList > 1 then
-        page.tabs = W:Tabs(child, page.tabList)
-        page.tab = 1
-        page.tabs.onChange = function(_, v)
-            page.tab = v
-            W.HidePopover()
-            page:Layout()
-            page.scroll:SetVerticalScroll(0)
-            page.scroll:UpdateBar()
-        end
-    end
+    page.tab = 1
+    countCards(page)
+    makeRouter(page, key)
 
     local function layoutCard(c, width)
+        c:SetWidth(width)
         local cy, any = layoutRows(c, width)
-        c:SetSize(width, cy + 8)
+        c:SetHeight(c.collapsed and CARD_HEAD or (cy + 6))
+        if c.chev then
+            ns.Icons:Apply(c.chev, c.collapsed and "chevron-right" or "chevron-down", 12)
+            c:Chips()
+        end
         if c.reset then
             local modified = false
             for _, row in ipairs(c.rows) do
@@ -1254,15 +1463,33 @@ function Config.BuildSchemaPage(parent, m, schema)
         return any
     end
 
+    -- columns by width: 3 from THREE_COLUMNS_AT, 2 from TWO_COLUMNS_AT
+    local function columns(width, onPage)
+        if m.singleColumn or onPage < 2 then return 1 end
+        if width >= THREE_COLUMNS_AT and onPage > 2 then return 3 end
+        if width >= TWO_COLUMNS_AT then return 2 end
+        return 1
+    end
+    Config.Columns = Config.Columns or columns
+
     function page:Layout()
         local width = math.max(320, child:GetWidth() - 2 * PAD)
-        local y = HEADER_H + 14
-        if self.tabs then
-            self.tabs:ClearAllPoints()
-            self.tabs:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y + 6)
-            self.tabs:SetPoint("TOPRIGHT", child, "TOPRIGHT", -PAD, -y + 6)
-            y = y + 34 + 14
+        -- the fixed area: header, then the element chips; the scroll starts under them
+        local top = HEADER_H
+        for _, t in ipairs(self.tops) do
+            t:ClearAllPoints()
+            t:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -(top + 10))
+            if t.Arrange then t:Arrange(width) else t:SetWidth(width) end
+            top = top + 10 + t:GetHeight()
         end
+        if #self.tops > 0 then top = top + 6 end
+        if self.fixedTop ~= top then
+            self.fixedTop = top
+            self.scroll:ClearAllPoints()
+            self.scroll:SetPoint("TOPLEFT", 0, -top)
+            self.scroll:SetPoint("BOTTOMRIGHT", -10, 0)
+        end
+        local y = 14
         if self.pinned and not self.docked then
             local pc = self.pinned
             pc:SetWidth(width)
@@ -1270,32 +1497,37 @@ function Config.BuildSchemaPage(parent, m, schema)
             self.pinnedY = y
             y = y + pc:GetHeight() + CARD_GAP
         end
-        for _, top in ipairs(self.tops) do
-            top:ClearAllPoints()
-            top:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -y)
-            if top.Arrange then top:Arrange(width) else top:SetWidth(width) end
-            y = y + top:GetHeight() + CARD_GAP
-        end
         local onPage = 0
         for _, c in ipairs(self.cards) do
             if not self.tabs or c.tab == self.tab then onPage = onPage + 1 end
         end
-        -- a lone card spans the page instead of leaving an empty column beside it
-        local cols = (not m.singleColumn and width >= TWO_COLUMNS_AT and onPage > 1) and 2 or 1
+        local cols = columns(width, onPage)
         local colW = math.floor((width - (cols - 1) * CARD_GAP) / cols)
-        local colY = { y, y }
+        local colY = {}
+        for i = 1, cols do colY[i] = y end
+        local function lowest() local v = y; for i = 1, cols do v = math.max(v, colY[i]) end; return v end
+        -- cards that span the page (wide ones, and ones whose controls need more room than a column) go first,
+        -- so the columns under them end level and nothing leaves a gap
+        local order = {}
         for _, c in ipairs(self.cards) do
+            c.spans = cols == 1 or c.wide or needWidth(c) > colW
+            if c.spans then order[#order + 1] = c end
+        end
+        for _, c in ipairs(self.cards) do if not c.spans then order[#order + 1] = c end end
+        for _, c in ipairs(order) do
             local onTab = not self.tabs or c.tab == self.tab
-            if onTab and layoutCard(c, (cols == 1 or c.wide) and width or colW) then
+            local spans = c.spans
+            if onTab and layoutCard(c, spans and width or colW) then
                 c:Show()
                 c:ClearAllPoints()
-                if cols == 1 or c.wide then
-                    local top = math.max(colY[1], colY[2])
-                    c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -top)
-                    colY[1] = top + c:GetHeight() + CARD_GAP
-                    colY[2] = colY[1]
+                if spans then
+                    local t = lowest()
+                    c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD, -t)
+                    for i = 1, cols do colY[i] = t + c:GetHeight() + CARD_GAP end
                 else
-                    local col = colY[2] < colY[1] and 2 or 1
+                    -- masonry: the shortest column takes the next card, so columns stay level and gap-free
+                    local col = 1
+                    for i = 2, cols do if colY[i] < colY[col] then col = i end end
                     c:SetPoint("TOPLEFT", child, "TOPLEFT", PAD + (col - 1) * (colW + CARD_GAP), -colY[col])
                     colY[col] = colY[col] + c:GetHeight() + CARD_GAP
                 end
@@ -1303,13 +1535,14 @@ function Config.BuildSchemaPage(parent, m, schema)
                 c:Hide()
             end
         end
-        child:SetHeight(math.max(colY[1], colY[2]) + PAD - CARD_GAP)
+        child:SetHeight(lowest() + PAD - CARD_GAP)
         self.scroll:UpdateBar()
+        self.header:Changed()
         self:Stick()
     end
 
     -- keeps the pinned preview card in its slot, or at the top once its slot scrolls past (not when docked)
-    local STICK_TOP = 10
+    local STICK_TOP = 6
     function page:Stick()
         local pc = self.pinned
         if not pc or not self.pinnedY or self.docked then
@@ -1319,7 +1552,7 @@ function Config.BuildSchemaPage(parent, m, schema)
         local top = self.pinnedY - self.scroll:GetVerticalScroll()
         local stuck = top < STICK_TOP
         pc:ClearAllPoints()
-        pc:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -math.max(STICK_TOP, top))
+        pc:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -((self.fixedTop or HEADER_H) + math.max(STICK_TOP, top)))
         pc.shade:SetShown(stuck)
         self.stuck = stuck
     end
@@ -1367,9 +1600,16 @@ function Config.BuildSchemaPage(parent, m, schema)
                 if self.tabs and row.card.tab ~= self.tab then
                     self.tab = row.card.tab
                     self.tabs:SetValue(self.tab)
-                    self:Layout()
+                    self.header:Crumb()
+                    if Config.current == key then Config:LayoutSidebar() end
                 end
-                local clear = (self.pinned and not self.docked) and (self.pinned:GetHeight() + 30) or 80
+                -- a folded card opens to show the row
+                if row.card.collapsed then
+                    row.card.collapsed = false
+                    foldStore()[row.card.foldKey] = nil
+                end
+                self:Layout()
+                local clear = (self.pinned and not self.docked) and (self.pinned:GetHeight() + 30) or 40
                 local top = child:GetTop() - row:GetTop() - clear
                 self.scroll:SetVerticalScroll(math.max(0, math.min(self.scroll:GetVerticalScrollRange(), top)))
                 self.scroll:UpdateBar()

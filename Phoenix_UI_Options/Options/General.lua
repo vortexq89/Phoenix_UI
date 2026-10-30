@@ -103,6 +103,8 @@ ns:RegisterOptions("General", {
       reset = true, token = "accent.glow", keywords = "ember highlight" },
     { type = "tab", label = "TAB_TEXT" },
     { type = "header", label = "TYPOGRAPHY", icon = "fonts" },
+    { type = "toggle", key = "theme.expressway", label = "GEN_EXPRESSWAY", desc = "GEN_EXPRESSWAY_DESC",
+      keywords = "font expressway elvui ellesmere phoenix" },
     { type = "font", key = "theme.uiFont", label = "UI_FONT", desc = "UI_FONT_DESC", allowDefault = true },
     { type = "font", key = "theme.unitFont", label = "UNIT_FONT", desc = "UNIT_FONT_DESC", allowDefault = true },
     { type = "range", key = "theme.fontScale", label = "FONT_SCALE", desc = "FONT_SCALE_DESC", min = 0.8, max = 1.4, step = 0.05,

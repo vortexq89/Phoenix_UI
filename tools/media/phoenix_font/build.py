@@ -10,7 +10,7 @@ import os, sys, unicodedata
 from fontTools.ttLib import TTFont
 from fontTools.ttLib.tables._g_l_y_f import GlyphCoordinates
 SRC = os.path.join(os.path.dirname(__file__), '..', '..', 'design', 'fonts')
-OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), 'build')
+OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), '..', '..', '..', 'Media', 'Fonts')
 WEIGHTS = [('Regular', 'Bold', 400), ('SemiBold', 'ExtraBold', 600), ('Bold', 'Black', 700)]
 XH_GAIN, TRACK, SQ = 1.065, 4, 0.03
 SX = {'lower': 1.004, 'upper': 1.067, 'digit': 1.126, 'other': 1.02}

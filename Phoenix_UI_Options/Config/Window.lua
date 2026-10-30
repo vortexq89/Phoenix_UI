@@ -2,29 +2,35 @@ local _, ns = ...
 local L = ns.L
 local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
 
---[[ The Phoenix UI settings window v2 (S6; ARCHITECTURE §9, docs/plan_v2/PLAN_V2.md §4).
+--[[ The Phoenix UI settings window v4 "Flow" (DESIGN_SYSTEM_V3 §11, concept A).
 
-      ┌ top bar: brand · search ······· profile · Layout · Test frames · close ──────────────────────┐
-      │ rail │ module list │ page (header · tabs · element chips · cards)        │ preview dock (380+) │
-      └ footer: auto-saved · status line · pixel-perfect scale · window scale · reload when needed ────┘
+      ┌ rail (236) ─────────┬ page: header that stays put (tile · crumb · title · N changed · Reset · Move · on/off) ┐
+      │ brand · search      │       element chips                                                                │
+      │ ▾ Bars              │       cards packed into 3 / 2 / 1 columns, each folds to a line of summary chips    │
+      │   Action Bars       │                                                                    (close, top right)│
+      │     › Layout …      │                                                                                     │
+      │ ▸ Frames  Unit …    │                                                                                     │
+      └ footer: profile · Layout · Test frames · auto-saved · status ······ pixel-perfect · window scale · reload ─┘
 
-    The rail holds the seven groups of Config.GROUPS (Groups.lua); the list shows the picked group's pages
-    with their depth meters and on/off dots. Pages are built lazily: one per module key, plus the built-in
-    pages registered with Config:RegisterPage (home, fonts, textures, sounds, presets, profiles,
-    diagnostics, about). A page's live preview (or its side panel, on Home) sits in the dock when the window
-    is at least DOCK_AT wide, and pins to the top of the page when it is narrower. ]]
+    The rail holds the seven groups of Config.GROUPS (Groups.lua) as heads: the open group lists its pages (with
+    their on/off dots) and the open page lists its sub-pages under it; a closed group names its pages on one line.
+    Pages are built lazily: one per module key, plus the built-in pages registered with Config:RegisterPage
+    (home, fonts, textures, sounds, presets, profiles, diagnostics, about). The window is resizable (its size is
+    kept); a page's live preview sits at the top of the page and stays there while the settings scroll. ]]
 local Config = ns.Config or {} -- the front door from Phoenix_UI/UI/Launcher.lua; its methods are replaced here
 ns.Config = Config
 Config.loaded = true
 Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
-local TOP_H, RAIL_W, LIST_W, FOOTER_H = 52, 64, 204, 34
-local NAV_ROW, NAV_HEAD, NAV_GROUP = 28, 22, 40
-local DOCK_MIN, DOCK_MAX, DOCK_AT = 380, 460, 1100
+local TOP_H, RAIL_W, LIST_W, FOOTER_H = 0, 236, 0, 40
+local HEAD_H = 96 -- the rail head: brand and search
+local NAV_ROW, NAV_HEAD, NAV_GROUP, NAV_SUB, NAV_LINE = 28, 22, 34, 24, 16
+local DOCK_MIN, DOCK_MAX = 380, 460
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
-local DEFAULT_W, DEFAULT_H = 1180, 740
+local DEFAULT_W, DEFAULT_H = 1400, 860
+local MIN_W, MIN_H = 1100, 700
 local SCREEN_W, SCREEN_H = 0.8, 0.85 -- the window never covers more of the screen than this
-local RAIL_BTN = 52
+Config.RAIL_W, Config.MIN_W, Config.MIN_H = RAIL_W, MIN_W, MIN_H
 
 -- info = { label = L key, icon = name, object = module-like page table, schema = table or function } names the
 -- page in the list and lets search index its rows.
@@ -53,16 +59,23 @@ local function readable()
     if e <= 0 then return 1 end
     return math.max(1, math.min(1.6, 0.71 / e))
 end
--- The window has one fixed, readable size (DEFAULT_W x DEFAULT_H): it never follows page content and is not
--- resizable, so every page is laid out for the same room. Small screens get a lower scale instead of a
--- smaller window, keeping it within SCREEN_W x SCREEN_H of the screen.
+-- The window keeps the size the player gave it (DEFAULT_W x DEFAULT_H at first, never under MIN_W x MIN_H); it
+-- never follows page content. Small screens get a lower scale instead of a cramped window, keeping it within
+-- SCREEN_W x SCREEN_H of the screen.
+local function wanted()
+    local s = uiStore()
+    local w = math.max(MIN_W, math.floor(tonumber(s.w) or DEFAULT_W))
+    local h = math.max(MIN_H, math.floor(tonumber(s.h) or DEFAULT_H))
+    return w, h
+end
 local function fitToScreen(f)
     local uw, uh = UIParent:GetWidth(), UIParent:GetHeight()
     if type(uw) ~= "number" or uw <= 0 or type(uh) ~= "number" or uh <= 0 then return end
-    if f:GetWidth() ~= DEFAULT_W or f:GetHeight() ~= DEFAULT_H then f:SetSize(DEFAULT_W, DEFAULT_H) end
+    local w, h = wanted()
+    if f:GetWidth() ~= w or f:GetHeight() ~= h then f:SetSize(w, h) end
     local scale = f:GetScale() or 1
-    if uw * SCREEN_W / scale < DEFAULT_W or uh * SCREEN_H / scale < DEFAULT_H then
-        f:SetScale(math.max(0.5, math.min(scale, uw * SCREEN_W / DEFAULT_W, uh * SCREEN_H / DEFAULT_H)))
+    if uw * SCREEN_W / scale < w or uh * SCREEN_H / scale < h then
+        f:SetScale(math.max(0.5, math.min(scale, uw * SCREEN_W / w, uh * SCREEN_H / h)))
     end
 end
 Config.FitToScreen = fitToScreen
@@ -131,9 +144,12 @@ local function layoutMode(f)
     if movers and movers:IsEnabled() and movers.SetUnlocked then movers:SetUnlocked(true) else ns.EditMode:Open() end
 end
 
+
+---------------------------------------------------------------- rail head (brand, search) and close
 local function buildTopBar(f)
     local h = CreateFrame("Frame", nil, f)
-    h:SetPoint("TOPLEFT"); h:SetPoint("TOPRIGHT"); h:SetHeight(TOP_H)
+    h:SetPoint("TOPLEFT"); h:SetSize(RAIL_W, HEAD_H)
+    h:SetFrameLevel(f:GetFrameLevel() + 10)
     h:EnableMouse(true)
     h:RegisterForDrag("LeftButton")
     h:SetScript("OnDragStart", function() f:StartMoving() end)
@@ -141,43 +157,29 @@ local function buildTopBar(f)
     f.header = h
 
     h.emblem = h:CreateTexture(nil, "ARTWORK")
-    h.emblem:SetSize(28, 28)
-    ns.Icons:Brand(h.emblem, "emblem", 28)
-    ns.EmblemFX:Attach(h.emblem, 28)
-    h.emblem:SetPoint("LEFT", 18, 0)
+    h.emblem:SetSize(26, 26)
+    ns.Icons:Brand(h.emblem, "emblem", 26)
+    ns.EmblemFX:Attach(h.emblem, 26)
+    h.emblem:SetPoint("TOPLEFT", 16, -16)
     h.brand = W.Text(h, "brand", "text.primary")
-    h.brand:SetPoint("LEFT", h.emblem, "RIGHT", 9, 1)
+    h.brand:SetPoint("LEFT", h.emblem, "RIGHT", 8, 1)
     h.brand:SetText("PHOENIX")
     h.brandUI = W.Text(h, "heading", "accent.primary")
     h.brandUI:SetPoint("LEFT", h.brand, "RIGHT", 5, -1)
     h.brandUI:SetText("UI")
     h.version = W:Badge(h, "v" .. ns.version, "accent.primary")
-    h.version:SetPoint("LEFT", h.brandUI, "RIGHT", 10, 0)
+    h.version:SetPoint("LEFT", h.brandUI, "RIGHT", 8, 0)
 
-    h.close = W:IconButton(h, "close", 30, L.CLOSE)
+    -- close: the window's top-right corner, over the page header
+    h.close = W:IconButton(f, "close", 28, L.CLOSE)
     h.close.danger = true
-    h.close:SetPoint("RIGHT", -12, 0)
+    h.close:SetPoint("TOPRIGHT", -12, -12)
+    h.close:SetFrameLevel(f:GetFrameLevel() + 60)
     h.close.onClick = function() f:Hide() end
-    h.test = W:Button(h, L.TEST_FRAMES, "secondary", "test")
-    h.test:SetHeight(28)
-    h.test:SetPoint("RIGHT", h.close, "LEFT", -10, 0)
-    h.test.onClick = toggleTestFrames
-    W.AttachTooltip(h.test, L.TEST_FRAMES, L.TEST_FRAMES_DESC)
-    h.layout = W:Button(h, L.LAYOUT_MODE, "secondary", "layout")
-    h.layout:SetHeight(28)
-    h.layout:SetPoint("RIGHT", h.test, "LEFT", -6, 0)
-    h.layout.onClick = function() layoutMode(f) end
-    W.AttachTooltip(h.layout, L.LAYOUT_MODE, L.LAYOUT_MODE_DESC)
-    h.editmode = h.layout -- older callers (and the slash help) know it by this name
-    h.profile = W:Dropdown(h, profileItems, nil, 176)
-    h.profile:SetPoint("RIGHT", h.layout, "LEFT", -10, 0)
-    h.profile:SetHeight(28)
-    h.profile.onChange = function(d, name) ns.DB:SetProfile(name); d:SetValue(name) end
-    h.profile:SetValue(ns.DB:GetProfileName())
-    W.AttachTooltip(h.profile, L.PROFILE, L.PROFILE_SWITCH_DESC)
 
-    h.search = W:Input(h, 320, L.SEARCH_PLACEHOLDER)
+    h.search = W:Input(h, RAIL_W - 28, L.SEARCH_PLACEHOLDER)
     h.search:SetHeight(30)
+    h.search:SetPoint("TOPLEFT", 14, -54)
     h.search:SetTextInsets(32, 12, 0, 0)
     h.search.placeholder:ClearAllPoints()
     h.search.placeholder:SetPoint("LEFT", 32, 0)
@@ -186,114 +188,109 @@ local function buildTopBar(f)
     h.search.onTextChanged = function(_, text) Config:Search(text) end
     h.search:HookScript("OnEscapePressed", function(self) self:SetValue(""); Config:Search("") end)
 
-    h.line = W.Texture(h, "ARTWORK", 2)
-    h.line:SetPoint("BOTTOMLEFT"); h.line:SetPoint("BOTTOMRIGHT")
-    h.line:SetHeight(1)
-    h.glow = W.Texture(h, "ARTWORK", 1, Media.textures.FADE_V)
-    h.glow:SetPoint("BOTTOMLEFT", 0, 1); h.glow:SetPoint("BOTTOMRIGHT", 0, 1)
-    h.glow:SetHeight(14)
-    h.glow:SetTexCoord(0, 1, 1, 0)
-
-    -- the search box centres between the brand and the tools; it narrows before it overlaps either
-    function h:Arrange()
-        local width = self:GetWidth() or DEFAULT_W
-        local left = 18 + 28 + 9 + self.brand:GetStringWidth() + 5 + self.brandUI:GetStringWidth() + 10 + self.version:GetWidth() + 24
-        local right = 12 + 30 + 10 + self.test:GetWidth() + 6 + self.layout:GetWidth() + 10 + self.profile:GetWidth() + 24
-        local room = width - left - right
-        local w = math.max(160, math.min(360, room))
-        self.search:SetWidth(w)
-        self.search:ClearAllPoints()
-        self.search:SetPoint("LEFT", self, "LEFT", left + math.max(0, (room - w) / 2), 0)
-    end
-    h:SetScript("OnSizeChanged", function(self) self:Arrange() end)
-
+    function h:Arrange() self.search:SetWidth(RAIL_W - 28) end
     Skin:Register(h, function(self)
-        Skin:Panel(self, "raised", { border = false })
-        Skin:Text(self.brand, "brand", "text.primary", 17)
+        Skin:Text(self.brand, "brand", "text.primary", 16)
         Skin:Text(self.brandUI, "heading", "accent.primary")
-        self.line:SetVertexColor(1, 1, 1, 1)
-        local r2, g2, b2 = Theme:Color("accent.secondary")
-        self.line:SetGradient("HORIZONTAL", Theme:ColorObj("accent.primary"), CreateColor(r2, g2, b2, 0))
-        self.glow:SetVertexColor(1, 1, 1, 1)
-        local r, g, b = Theme:Color("accent.primary")
-        self.glow:SetGradient("HORIZONTAL", CreateColor(r, g, b, 0.08), CreateColor(r, g, b, 0))
         W.Color(self.searchIcon, "text.muted")
     end)
 end
 
----------------------------------------------------------------- icon rail
-local function railButton(parent, g)
+---------------------------------------------------------------- rail: group heads, pages, sub-pages
+-- A group head: icon, name, the number of pages; closed, a muted line under it names the pages.
+local function groupHead(parent, g)
     local b = CreateFrame("Button", nil, parent)
-    b:SetSize(RAIL_BTN, RAIL_BTN)
+    b:SetHeight(NAV_GROUP)
     b.group = g
-    b.bg = W.Texture(b, "BACKGROUND", 0, Media.textures.ROUNDED)
-    b.bg:SetAllPoints()
-    b.bar = W.Texture(b, "ARTWORK", 1)
-    b.bar:SetSize(2, 22)
-    b.bar:SetPoint("LEFT", parent, "LEFT", 0, 0)
-    b.bar:SetPoint("TOP", b, "TOP", 0, -15)
-    b.icon = W.Icon(b, g.icon, 18)
-    b.icon:SetPoint("TOP", 0, -10)
-    b.label = W.Text(b, "small", "text.muted", "CENTER")
-    b.label:SetPoint("BOTTOM", 0, 7)
-    b.label:SetPoint("LEFT", 2, 0); b.label:SetPoint("RIGHT", -2, 0)
+    b.bg = W.Texture(b, "BACKGROUND", 0)
+    b.bg:SetPoint("TOPLEFT", 6, -1); b.bg:SetPoint("BOTTOMRIGHT", -6, 1)
+    b.icon = W.Icon(b, g.icon, 16)
+    b.icon:SetPoint("TOPLEFT", 14, -9)
+    b.label = W.Text(b, "heading", "text.secondary")
+    b.label:SetPoint("LEFT", b.icon, "RIGHT", 9, 0)
     b.label:SetText(L[g.label] or g.label)
+    b.chev = W.Icon(b, "chevron-right", 11, "text.muted")
+    b.chev:SetPoint("TOPRIGHT", -14, -12)
+    b.count = W.Text(b, "small", "text.muted", "RIGHT")
+    b.count:SetPoint("RIGHT", b.chev, "LEFT", -6, 0)
+    b.line = W.Text(b, "small", "text.muted")
+    b.line:SetPoint("TOPLEFT", b.label, "BOTTOMLEFT", 0, -3)
+    b.line:SetPoint("RIGHT", -14, 0)
+    b.line:SetWordWrap(false)
+    b.line:SetJustifyH("LEFT")
     function b:Paint()
-        local on = Config.group == self.group.key
-        -- the soft tokens carry their own alpha; forcing 1 painted a solid accent block over the (accent) icon
-        if on then
-            W.Color(self.bg, "accent.soft")
-        else
-            W.Color(self.bg, "bg.hover", (not self.hover) and 0 or nil)
-        end
-        self.bar:SetShown(on)
-        self.bar:SetVertexColor(1, 1, 1, 1)
-        Skin:Gradient(self.bar, "VERTICAL", "accent.secondary", "accent.primary")
-        W.Color(self.icon, on and "accent.primary" or (self.hover and "text.primary" or "text.secondary"))
-        Skin:Text(self.label, "small", on and "text.primary" or (self.hover and "text.secondary" or "text.muted"), 9)
+        local open = Config.group == self.group.key
+        W.Color(self.bg, "bg.hover", self.hover and 0.9 or 0)
+        W.Color(self.icon, open and "accent.primary" or (self.hover and "text.primary" or "text.secondary"))
+        Skin:Text(self.label, "heading", open and "text.primary" or (self.hover and "text.primary" or "text.secondary"))
+        Skin:Text(self.count, "small", "text.muted")
+        Skin:Text(self.line, "small", "text.muted", 11)
+        ns.Icons:Apply(self.chev, open and "chevron-down" or "chevron-right", 11)
+        W.Color(self.chev, "text.muted")
     end
     b:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
     b:SetScript("OnLeave", function(self) self.hover = false; self:Paint() end)
     b:SetScript("OnClick", function(self)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-        Config:OpenGroup(self.group.key)
+        if Config.group == self.group.key and Config:GroupOf(Config.current) == self.group then
+            -- the open group's head folds it (the page stays open)
+            Config.group = nil
+            Config:LayoutSidebar()
+        else
+            Config:OpenGroup(self.group.key)
+        end
     end)
     Skin:Register(b, function(self) self:Paint() end)
     return b
 end
 
-local function buildRail(f)
-    local r = CreateFrame("Frame", nil, f)
-    r:SetPoint("TOPLEFT", 0, -TOP_H)
-    r:SetPoint("BOTTOMLEFT", 0, FOOTER_H)
-    r:SetWidth(RAIL_W)
-    r.edge = W.Texture(r, "BORDER")
-    r.edge:SetPoint("TOPRIGHT"); r.edge:SetPoint("BOTTOMRIGHT")
-    r.edge:SetWidth(1)
-    r.buttons = {}
-    Skin:Register(r, function(self)
-        Skin:Panel(self, "base", { border = false })
-        Skin:SetPanelColor(self, "bg.sunken")
-        W.Color(self.edge, "border.subtle")
+-- A sub-page row under the open page: a short tick, its name; the current one in the accent.
+local function subRow(parent)
+    local r = CreateFrame("Button", nil, parent)
+    r:SetHeight(NAV_SUB)
+    r.tick = W.Texture(r, "ARTWORK")
+    r.tick:SetSize(6, 1)
+    r.tick:SetPoint("LEFT", 40, 0)
+    r.label = W.Text(r, "desc", "text.muted")
+    r.label:SetPoint("LEFT", r.tick, "RIGHT", 8, 0)
+    r.label:SetPoint("RIGHT", -14, 0)
+    r.label:SetWordWrap(false)
+    function r:Paint()
+        local on = self.page and self.page.tab == self.tab
+        W.Color(self.tick, on and "accent.primary" or "border.strong")
+        Skin:Text(self.label, "desc", on and "accent.primary" or (self.hover and "text.primary" or "text.muted"))
+    end
+    r:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
+    r:SetScript("OnLeave", function(self) self.hover = false; self:Paint() end)
+    r:SetScript("OnClick", function(self)
+        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+        if self.page and self.page.SetTab then self.page:SetTab(self.tab) end
     end)
+    Skin:Register(r, function(self) self:Paint() end)
+    return r
+end
+
+local function buildRail(f)
+    -- kept for callers that know the v2 rail; the group heads live in the list now
+    local r = CreateFrame("Frame", nil, f)
+    r:SetSize(1, 1)
+    r:SetPoint("TOPLEFT")
+    r.buttons = {}
     f.rail = r
 end
 
 function Config:BuildRail()
     local r = self.frame.rail
+    local c = self.frame.sidebar.scroll.child
     for _, b in ipairs(r.buttons) do b:Hide() end
     wipe(r.buttons)
-    local y = 10
     for _, g in ipairs(self:Groups()) do
-        local b = railButton(r, g)
-        b:SetPoint("TOP", r, "TOP", 0, -y)
-        y = y + RAIL_BTN + 6
-        r.buttons[#r.buttons + 1] = b
+        if not (#g.entries == 1 and g.entries[1] == g.key) then r.buttons[#r.buttons + 1] = groupHead(c, g) end
     end
 end
 
----------------------------------------------------------------- module list
--- One page row: icon, name, a depth meter (settings now against the plan v2 target) and the on/off dot.
+---------------------------------------------------------------- page rows
+-- One page row: icon, name and the on/off dot.
 local function navRow(parent, key)
     local label, icon = Config:EntryInfo(key)
     local r = CreateFrame("Button", nil, parent)
@@ -304,21 +301,15 @@ local function navRow(parent, key)
     r.bar = W.Texture(r, "ARTWORK")
     r.bar:SetPoint("TOPLEFT", r.bg, "TOPLEFT"); r.bar:SetPoint("BOTTOMLEFT", r.bg, "BOTTOMLEFT")
     r.bar:SetWidth(2)
-    r.icon = W.Icon(r, icon, 16)
-    r.icon:SetPoint("LEFT", 14, 0)
+    r.icon = W.Icon(r, icon, 15)
+    r.icon:SetPoint("LEFT", 16, 0)
     r.label = W.Text(r, "body", "text.secondary")
-    r.label:SetPoint("LEFT", r.icon, "RIGHT", 8, 0)
+    r.label:SetPoint("LEFT", r.icon, "RIGHT", 9, 0)
     r.label:SetPoint("RIGHT", -28, 0)
     r.label:SetText(label)
     r.label:SetWordWrap(false)
-    r.meter = W.Texture(r, "ARTWORK", 0, Media.textures.PILL)
-    r.meter:SetSize(32, 3)
-    r.meter:SetPoint("RIGHT", -26, 0)
-    r.fill = W.Texture(r, "ARTWORK", 1, Media.textures.PILL)
-    r.fill:SetHeight(3)
-    r.fill:SetPoint("LEFT", r.meter, "LEFT")
     r.dot = W:Dot(r, 6)
-    r.dot:SetPoint("RIGHT", -14, 0)
+    r.dot:SetPoint("RIGHT", -16, 0)
     function r:Paint()
         local m = ns.modules[self.key]
         if self.active then
@@ -334,18 +325,7 @@ local function navRow(parent, key)
             W.Color(self.icon, self.hover and "text.primary" or "text.muted")
             Skin:Text(self.label, "body", self.hover and "text.primary" or "text.secondary")
         end
-        local now, target = Config:Depth(self.key)
-        self.now, self.target = now, target
-        -- the plan-v2 depth target is a developer metric; players never see it (it read as "117 / 112")
-        local show = false
-        self.meter:SetShown(show)
-        self.fill:SetShown(show and now > 0)
-        if show then
-            W.Color(self.meter, "border.subtle")
-            self.fill:SetVertexColor(1, 1, 1, 1)
-            Skin:Gradient(self.fill, "HORIZONTAL", "accent.primary", "accent.secondary")
-            self.fill:SetWidth(math.max(2, 32 * math.min(1, now / target)))
-        end
+        self.now, self.target = Config:Depth(self.key)
         if m and not m.locked then
             local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning")
                 or (m:IsEnabled() and "state.success") or "text.muted"
@@ -355,11 +335,7 @@ local function navRow(parent, key)
             self.dot:Hide()
         end
     end
-    r:SetScript("OnEnter", function(self)
-        self.hover = true
-        self:Paint()
-        if self.target then W.ShowTooltip(self, self.label:GetText(), L.DEPTH_TIP:format(self.now, self.target)) end
-    end)
+    r:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
     r:SetScript("OnLeave", function(self) self.hover = false; self:Paint(); W.HideTooltip() end)
     r:SetScript("OnClick", function(self)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
@@ -369,43 +345,22 @@ local function navRow(parent, key)
     return r
 end
 
--- Section heading: small caps label with a hairline running to the edge, so groups read as blocks.
+-- Section heading inside the open group: small caps label with a hairline running to the edge.
 local function heading(parent)
     local fs = W.Text(parent, "small", "text.muted")
     fs.line = W.Texture(parent, "ARTWORK")
     fs.line:SetHeight(1)
     fs.line:SetPoint("LEFT", fs, "RIGHT", 8, 0)
-    fs.line:SetPoint("RIGHT", parent, "RIGHT", -12, 0)
-    Skin:Register(fs, function(t) Skin:Text(t, "small", "text.muted"); W.Color(t.line, "border.subtle") end)
+    fs.line:SetPoint("RIGHT", parent, "RIGHT", -14, 0)
+    Skin:Register(fs, function(t) Skin:Text(t, "small", "text.muted", 10); W.Color(t.line, "border.subtle", 0.6) end)
     return fs
-end
-
--- The open group's title over the list: its icon, name and how many pages it holds.
-local function groupTitle(sb)
-    local t = CreateFrame("Frame", nil, sb)
-    t:SetPoint("TOPLEFT", 0, 0); t:SetPoint("TOPRIGHT", 0, 0); t:SetHeight(NAV_GROUP)
-    t.icon = W.Icon(t, "home", 16)
-    t.icon:SetPoint("LEFT", 14, 0)
-    t.label = W.Text(t, "heading", "text.primary")
-    t.label:SetPoint("LEFT", t.icon, "RIGHT", 8, 0)
-    t.count = W.Text(t, "small", "text.muted", "RIGHT")
-    t.count:SetPoint("RIGHT", -14, 0)
-    t.line = W.Texture(t, "ARTWORK")
-    t.line:SetPoint("BOTTOMLEFT", 10, 0); t.line:SetPoint("BOTTOMRIGHT", -10, 0); t.line:SetHeight(1)
-    Skin:Register(t, function(self)
-        W.Color(self.icon, "accent.primary")
-        Skin:Text(self.label, "heading", "text.primary")
-        Skin:Text(self.count, "small", "text.muted")
-        W.Color(self.line, "border.subtle")
-    end)
-    return t
 end
 
 local function buildList(f)
     local sb = CreateFrame("Frame", nil, f)
-    sb:SetPoint("TOPLEFT", RAIL_W, -TOP_H)
-    sb:SetPoint("BOTTOMLEFT", RAIL_W, FOOTER_H)
-    sb:SetWidth(LIST_W)
+    sb:SetPoint("TOPLEFT", 0, 0)
+    sb:SetPoint("BOTTOMLEFT", 0, FOOTER_H)
+    sb:SetWidth(RAIL_W)
     f.sidebar = sb
     sb.edge = W.Texture(sb, "BORDER")
     sb.edge:SetPoint("TOPRIGHT"); sb.edge:SetPoint("BOTTOMRIGHT")
@@ -415,15 +370,14 @@ local function buildList(f)
         Skin:SetPanelColor(self, "bg.sunken")
         W.Color(self.edge, "border.subtle")
     end)
-    sb.title = groupTitle(sb)
     local scroll = W:Scroll(sb)
-    scroll:SetPoint("TOPLEFT", 0, -(NAV_GROUP + 4))
-    scroll:SetPoint("BOTTOMRIGHT", -8, 10)
+    scroll:SetPoint("TOPLEFT", 0, -HEAD_H)
+    scroll:SetPoint("BOTTOMRIGHT", -6, 8)
     sb.scroll = scroll
-    sb.headings = {}
+    sb.headings, sb.subs = {}, {}
 end
 
--- Rows of every page, made once; LayoutSidebar shows the open group's.
+-- Rows of every page, made once; LayoutSidebar places them.
 function Config:BuildList()
     local c = self.frame.sidebar.scroll.child
     for _, g in ipairs(self:Groups()) do
@@ -439,49 +393,83 @@ function Config:LayoutSidebar()
     local c = sb.scroll.child
     for _, row in pairs(self.navRows) do row:Hide() end
     for _, fs in ipairs(sb.headings) do fs:Hide(); fs.line:Hide() end
-    local g
-    for _, group in ipairs(self:Groups()) do if group.key == self.group then g = group end end
-    local y, n = 0, 0
+    for _, r in ipairs(sb.subs) do r:Hide() end
+    local heads = {}
+    for _, b in ipairs(self.frame.rail.buttons) do heads[b.group.key] = b; b:Hide() end
+    local y, n, ns_ = 4, 0, 0
+    local function place(frame, h, x)
+        frame:ClearAllPoints()
+        frame:SetPoint("TOPLEFT", c, "TOPLEFT", x or 0, -y)
+        frame:SetPoint("TOPRIGHT", c, "TOPRIGHT", 0, -y)
+        frame:Show()
+        y = y + h
+    end
     local function head(textKey)
         n = n + 1
         local fs = sb.headings[n] or heading(c)
         sb.headings[n] = fs
         fs:ClearAllPoints()
-        fs:SetPoint("TOPLEFT", c, "TOPLEFT", 14, -(y + 6))
+        fs:SetPoint("TOPLEFT", c, "TOPLEFT", 40, -(y + 6))
         fs:SetText((L[textKey] or textKey):upper())
         fs:Show(); fs.line:Show()
         y = y + NAV_HEAD
     end
-    if g then
-        local pages = 0
-        for _, section in ipairs(g.sections) do pages = pages + #section.entries end
-        ns.Icons:Apply(sb.title.icon, g.icon)
-        sb.title.label:SetText(L[g.label] or g.label)
-        sb.title.count:SetText(tostring(pages))
-        local single = #g.sections == 1
-        for i, section in ipairs(g.sections) do
-            if i > 1 then y = y + 6 end
-            if single and not section.heading then y = y + 4 else head(section.heading or g.label) end
-            for _, key in ipairs(section.entries) do
+    local function subs(key)
+        local page = self.pages[key]
+        if key ~= self.current or not (page and page.tabs and page.tabList) then return end
+        for i, t in ipairs(page.tabList) do
+            ns_ = ns_ + 1
+            local r = sb.subs[ns_] or subRow(c)
+            sb.subs[ns_] = r
+            r.page, r.tab = page, i
+            r.label:SetText(t.label)
+            place(r, NAV_SUB)
+            r:Paint()
+        end
+        y = y + 4
+    end
+    for _, g in ipairs(self:Groups()) do
+        local b = heads[g.key]
+        if not b then
+            -- Home: a plain page row at the top
+            for _, key in ipairs(g.entries) do
                 local row = self.navRows[key]
-                if row then
-                    row.active = key == self.current
-                    row:ClearAllPoints()
-                    row:SetPoint("TOPLEFT", c, "TOPLEFT", 0, -y)
-                    row:SetPoint("TOPRIGHT", c, "TOPRIGHT", 0, -y)
-                    row:Show()
-                    row:Paint()
-                    y = y + NAV_ROW
+                if row then row.active = key == self.current; place(row, NAV_ROW + 4); row:Paint() end
+            end
+            y = y + 6
+        else
+            local open = self.group == g.key
+            local names = {}
+            for _, key in ipairs(g.entries) do names[#names + 1] = (self:EntryInfo(key)) end
+            b.count:SetText(tostring(#g.entries))
+            b.line:SetText(table.concat(names, " \194\183 "))
+            b.line:SetShown(not open)
+            place(b, open and NAV_GROUP or (NAV_GROUP + NAV_LINE - 4))
+            b:Paint()
+            if open then
+                local single = #g.sections == 1
+                for i, section in ipairs(g.sections) do
+                    if i > 1 then y = y + 2 end
+                    if not single and section.heading then head(section.heading) end
+                    for _, key in ipairs(section.entries) do
+                        local row = self.navRows[key]
+                        if row then
+                            row.active = key == self.current
+                            place(row, NAV_ROW, 14)
+                            row:Paint()
+                            subs(key)
+                        end
+                    end
                 end
+                y = y + 8
             end
         end
     end
     c:SetHeight(y + 8)
     sb.scroll:UpdateBar()
-    for _, b in ipairs(self.frame.rail.buttons) do b:Paint() end
 end
 
--- The rail: pick a group (its last page opens, or its first).
+-- A group head: open the group (its last page, or its first).
 function Config:OpenGroup(key)
     local g
     for _, group in ipairs(self:Groups()) do if group.key == key then g = group end end
@@ -492,13 +480,13 @@ function Config:OpenGroup(key)
     self:Show(target)
 end
 
--- Kept for callers from the 13-group layout: "expand" a group = open it on the rail.
+-- Kept for callers from the 13-group layout: "expand" a group = open it.
 function Config:ToggleGroup(key, expand)
     if expand == false then return end
     self:OpenGroup(key)
 end
 
--- Selects the group that holds key (used when a page is shown from search, a link or /pui).
+-- Opens the group that holds key (used when a page is shown from search, a link or /pui).
 function Config:RevealEntry(key)
     local g = self:GroupOf(key)
     self.group = g and g.key or self.group
@@ -506,50 +494,60 @@ function Config:RevealEntry(key)
 end
 
 ---------------------------------------------------------------- preview dock
+-- v4 has no dock: previews sit at the top of the page, and Home's side cards are part of its columns. The frame
+-- stays (hidden) for callers that ask about it.
 local function buildDock(f)
     local d = CreateFrame("Frame", nil, f)
-    d:SetPoint("TOPRIGHT", 0, -TOP_H)
+    d:SetPoint("TOPRIGHT", 0, 0)
     d:SetPoint("BOTTOMRIGHT", 0, FOOTER_H)
     d:SetWidth(DOCK_MIN)
-    d.edge = W.Texture(d, "BORDER")
-    d.edge:SetPoint("TOPLEFT"); d.edge:SetPoint("BOTTOMLEFT")
-    d.edge:SetWidth(1)
-    Skin:Register(d, function(self)
-        Skin:Panel(self, "base", { border = false })
-        Skin:SetPanelColor(self, "bg.sunken")
-        W.Color(self.edge, "border.subtle")
-    end)
-    d:EnableMouse(true)
     d:Hide()
     f.dock = d
 end
 
--- Puts the current page's side panel in the dock when the window is wide enough. Live previews are not docked
--- (t123u): they sit at the top of the page under the element chips, full content width so they can show the
--- element at its real size, and stick there while the settings scroll (the EllesmereUI-style content header).
 function Config:LayoutShell()
     local f = self.frame
     if not f then return end
-    local width = f:GetWidth() or DEFAULT_W
     local page = self.current and self.pages[self.current]
-    local side = page and not page.pinned and page.side or nil
-    local docked = side ~= nil and width >= DOCK_AT
-    local dockW = math.floor(math.max(DOCK_MIN, math.min(DOCK_MAX, width * 0.3)))
-    f.dock:SetWidth(dockW)
-    f.dock:SetShown(docked)
+    f.dock:Hide()
+    f.dock:SetWidth(DOCK_MIN + 0 * DOCK_MAX)
     f.content:ClearAllPoints()
     f.content:SetPoint("TOPLEFT", RAIL_W + LIST_W, -TOP_H)
-    if docked then f.content:SetPoint("BOTTOMRIGHT", f.dock, "BOTTOMLEFT", 0, 0)
-    else f.content:SetPoint("BOTTOMRIGHT", 0, FOOTER_H) end
-    if page and page.SetDocked then page:SetDocked(docked and f.dock or nil) end
+    f.content:SetPoint("BOTTOMRIGHT", 0, FOOTER_H)
+    if page and page.SetDocked and page.docked then page:SetDocked(nil) end
 end
 
 ---------------------------------------------------------------- footer
 local function buildFooter(f)
     local ft = CreateFrame("Frame", nil, f)
     ft:SetPoint("BOTTOMLEFT"); ft:SetPoint("BOTTOMRIGHT"); ft:SetHeight(FOOTER_H)
+    ft:EnableMouse(true)
+    ft:RegisterForDrag("LeftButton")
+    ft:SetScript("OnDragStart", function() f:StartMoving() end)
+    ft:SetScript("OnDragStop", function() f:StopMovingOrSizing(); savePosition(f) end)
+    local h = f.header
+    -- the tools: profile, Layout mode, Test frames (the header fields stay for callers)
+    ft.profileDD = W:Dropdown(ft, profileItems, nil, 172)
+    ft.profileDD:SetPoint("LEFT", 14, 0)
+    ft.profileDD:SetHeight(26)
+    ft.profileDD.onChange = function(d, name) ns.DB:SetProfile(name); d:SetValue(name) end
+    ft.profileDD:SetValue(ns.DB:GetProfileName())
+    W.AttachTooltip(ft.profileDD, L.PROFILE, L.PROFILE_SWITCH_DESC)
+    ft.layout = W:Button(ft, L.LAYOUT_MODE, "secondary", "layout")
+    ft.layout:SetHeight(26)
+    ft.layout:SetPoint("LEFT", ft.profileDD, "RIGHT", 8, 0)
+    ft.layout.onClick = function() layoutMode(f) end
+    W.AttachTooltip(ft.layout, L.LAYOUT_MODE, L.LAYOUT_MODE_DESC)
+    ft.test = W:Button(ft, L.TEST_FRAMES, "secondary", "test")
+    ft.test:SetHeight(26)
+    ft.test:SetPoint("LEFT", ft.layout, "RIGHT", 6, 0)
+    ft.test.onClick = toggleTestFrames
+    W.AttachTooltip(ft.test, L.TEST_FRAMES, L.TEST_FRAMES_DESC)
+    h.profile, h.layout, h.test = ft.profileDD, ft.layout, ft.test
+    h.editmode = ft.layout -- older callers (and the slash help) know it by this name
+
     ft.savedIcon = W.Icon(ft, "success", 12, "state.success")
-    ft.savedIcon:SetPoint("LEFT", 16, 0)
+    ft.savedIcon:SetPoint("LEFT", ft.test, "RIGHT", 18, 0)
     ft.saved = W.Text(ft, "small", "text.secondary")
     ft.saved:SetPoint("LEFT", ft.savedIcon, "RIGHT", 6, 0)
     ft.saved:SetText(L.AUTO_SAVED)
@@ -557,17 +555,17 @@ local function buildFooter(f)
     ft.statusIcon:SetPoint("LEFT", ft.saved, "RIGHT", 14, 0)
     ft.status = W.Text(ft, "small", "text.muted")
     ft.status:SetPoint("LEFT", ft.statusIcon, "RIGHT", 6, 0)
-    -- profile and module count live in the top bar and on Home now; the old fields stay for callers
+    ft.status:SetWordWrap(false)
     ft.profile = ft.saved
     ft.reload = W:Button(ft, L.RELOAD_UI, "primary", "reload")
     ft.reload:SetHeight(24)
-    ft.reload:SetPoint("RIGHT", -26, 0)
+    ft.reload:SetPoint("RIGHT", -30, 0)
     ft.reload.onClick = function() C_UI.Reload() end
     ft.reload:Hide()
     -- Window scale: applied when the drag ends, so the slider does not move away under the cursor.
     ft.scale = W:Slider(ft, MIN_SCALE, MAX_SCALE, 0.05, true)
-    ft.scale:SetWidth(132)
-    ft.scale:SetPoint("RIGHT", -26, 0)
+    ft.scale:SetWidth(120)
+    ft.scale:SetPoint("RIGHT", -30, 0)
     ft.scale:SetValue(uiStore().scale or 1)
     ft.scale.onChange = function(_, v)
         uiStore().scale = v
@@ -580,10 +578,27 @@ local function buildFooter(f)
     ft.pixel = W.Text(ft, "small", "text.muted", "RIGHT")
     ft.pixel:SetPoint("RIGHT", ft.scaleLabel, "LEFT", -18, 0)
     ft.status:SetPoint("RIGHT", ft.pixel, "LEFT", -16, 0)
+    -- resize grip, bottom-right corner
+    ft.grip = CreateFrame("Button", nil, ft)
+    ft.grip:SetSize(16, 16)
+    ft.grip:SetPoint("BOTTOMRIGHT", -3, 3)
+    ft.grip.icon = W.Icon(ft.grip, "resize", 12, "text.muted")
+    ft.grip.icon:SetPoint("CENTER")
+    ft.grip:SetScript("OnMouseDown", function() f:StartSizing("BOTTOMRIGHT") end)
+    ft.grip:SetScript("OnMouseUp", function()
+        f:StopMovingOrSizing()
+        local w, hh = f:GetSize()
+        local s = uiStore()
+        s.w, s.h = math.max(MIN_W, math.floor(w + 0.5)), math.max(MIN_H, math.floor(hh + 0.5))
+        fitToScreen(f)
+        savePosition(f)
+    end)
+    ft.grip:SetScript("OnEnter", function(self) W.Color(self.icon, "text.primary") end)
+    ft.grip:SetScript("OnLeave", function(self) W.Color(self.icon, "text.muted") end)
     function ft:Arrange()
         local reload = self.reload:IsShown()
         self.scale:ClearAllPoints()
-        if reload then self.scale:SetPoint("RIGHT", self.reload, "LEFT", -16, 0) else self.scale:SetPoint("RIGHT", -26, 0) end
+        if reload then self.scale:SetPoint("RIGHT", self.reload, "LEFT", -16, 0) else self.scale:SetPoint("RIGHT", -30, 0) end
         local pp = pixelPerfect()
         self.pixel:SetText(pp and L.PIXEL_PERFECT:format(pp) or "")
     end
@@ -596,8 +611,10 @@ local function buildFooter(f)
         W.Color(self.statusIcon, self.statusToken or "text.muted")
         Skin:Text(self.scaleLabel, "small", "text.muted")
         Skin:Text(self.pixel, "small", "text.muted")
+        W.Color(self.grip.icon, "text.muted")
     end)
 end
+
 
 local STATUS_ICON = {
     ["state.success"] = "success", ["state.warning"] = "warning", ["state.danger"] = "error", ["state.info"] = "about",
@@ -640,10 +657,11 @@ function Config:Build()
     f:SetClampedToScreen(true)
     f:EnableMouse(true)
     local s = uiStore()
-    -- windows saved by the 13-group layout (1100 x 720) grow once to the v2 default
-    -- v3: the 1280 x 800 default covered most of a 1440p screen with the readable scale; start smaller once
-    if s.v ~= 3 then s.w, s.h, s.v = nil, nil, 3 end
-    f:SetSize(DEFAULT_W, DEFAULT_H)
+    -- v4: the window is resizable; sizes kept by the fixed v3 window start again from the Flow default
+    if s.v ~= 4 then s.w, s.h, s.v = nil, nil, 4 end
+    f:SetResizable(true)
+    if f.SetResizeBounds then f:SetResizeBounds(MIN_W, MIN_H) end
+    f:SetSize(wanted())
     f:SetPoint(s.point or "CENTER", UIParent, s.rel or "CENTER", s.x or 0, s.y or 0)
     setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
     Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.strong", shadow = 18 }) end)
@@ -652,9 +670,9 @@ function Config:Build()
         ns.Events:On(ev, f, function() setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(uiStore().scale) or 1))) end)
     end
 
+    buildList(f)
     buildTopBar(f)
     buildRail(f)
-    buildList(f)
     buildDock(f)
     buildFooter(f)
 
@@ -688,6 +706,8 @@ function Config:Build()
     f:SetScript("OnSizeChanged", function()
         f.header:Arrange()
         self:LayoutShell()
+        local page = self.current and self.pages[self.current]
+        if page and page.Layout and f:IsShown() then page:Layout() end
     end)
 
     ns.Events:Listen("PUI_MODULE_STATE", self, function(_, _, key)
@@ -717,6 +737,7 @@ function Config:ResetPosition()
     f:ClearAllPoints()
     f:SetPoint("CENTER")
     f:SetSize(DEFAULT_W, DEFAULT_H)
+    uiStore().v = 4
     setScale(f, 1)
     f.footer.scale:SetValue(1)
 end

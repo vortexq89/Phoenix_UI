@@ -42,26 +42,27 @@ T.presets = {
 }
 
 -- No role below 12: smaller sizes turn into blurry, blocky glyphs once the UI scale goes under 0.7.
--- ONE family for all Phoenix text (DESIGN_SYSTEM_V3 §3): Inter (SIL OFL), chosen against Noto Sans, Source Sans 3,
--- Roboto, Fira Sans and Lato at 10-14 px for its tall x-height and distinct Il1 / rn-m shapes. Weights carry the
--- hierarchy: title 20 Bold > heading 13 Bold > body 14 Medium > desc 12 Regular. Only the brand wordmark is Cinzel.
+-- ONE family for all Phoenix text (DESIGN_SYSTEM_V3 §3, §3a, §3b): Phoenix Font (OFL, a tuned Barlow Semi Condensed),
+-- drawn with Expressway instead when another installed addon provides it (Media:ResolveExternal). Russian clients use
+-- PT Sans Narrow. Weights carry the hierarchy: title 21 Bold > heading 14 Bold > body 15 > desc 13. Only the brand
+-- wordmark is Cinzel.
 T.fontRoles = {
-    brand   = { font = "CinzelBold",    size = 20, flags = "" },
-    title   = { font = "InterBold",     size = 20, flags = "" },
-    heading = { font = "InterBold",     size = 13, flags = "" },
-    body    = { font = "InterMedium",   size = 14, flags = "" },
-    desc    = { font = "InterRegular",  size = 12, flags = "" },
-    number  = { font = "InterSemiBold", size = 13, flags = "" },
-    small   = { font = "InterMedium",   size = 12, flags = "" },
-    unit    = { font = "InterSemiBold", size = 12, flags = "" },
-    combat  = { font = "InterBold",     size = 16, flags = "OUTLINE" },
+    brand   = { font = "CinzelBold",          size = 20, flags = "" },
+    title   = { font = "PhoenixFontBold",     size = 21, flags = "" },
+    heading = { font = "PhoenixFontBold",     size = 14, flags = "" },
+    body    = { font = "PhoenixFont",         size = 15, flags = "" },
+    desc    = { font = "PhoenixFont",         size = 13, flags = "" },
+    number  = { font = "PhoenixFontSemiBold", size = 14, flags = "" },
+    small   = { font = "PhoenixFont",         size = 13, flags = "" },
+    unit    = { font = "PhoenixFontSemiBold", size = 13, flags = "OUTLINE" },
+    combat  = { font = "PhoenixFontBold",     size = 18, flags = "OUTLINE" },
 }
 
 local tokens = {}
 T.tokens = tokens
 T.settings = {
     preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
-    uiFont = "", unitFont = "", barTexture = "Satin", reduceMotion = false, emblemFX = true,
+    uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true,
     borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
     surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = {},
     powerColors = {}, dispelColors = {},

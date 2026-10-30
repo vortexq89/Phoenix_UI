@@ -13,7 +13,7 @@ local PRESETS = {
       general = { preset = "ember", barTexture = "Satin", uiFont = "", unitFont = "" },
       border = "shadow" },
     { key = "clean", label = "PRESET_CLEAN", desc = "PRESET_CLEAN_DESC",
-      general = { preset = "frost", barTexture = "Flat", uiFont = "InterMedium", unitFont = "InterSemiBold" },
+      general = { preset = "frost", barTexture = "Flat", uiFont = "PhoenixFont", unitFont = "PhoenixFontSemiBold" },
       border = "solid" },
     { key = "vivid", label = "PRESET_VIVID", desc = "PRESET_VIVID_DESC",
       general = { preset = "arcane", barTexture = "Gloss", uiFont = "BarlowSemiCondSemiBold", unitFont = "BarlowCondBold" },

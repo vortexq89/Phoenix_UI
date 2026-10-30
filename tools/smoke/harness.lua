@@ -108,6 +108,10 @@ frameMethods.GetSize = function(self) return self:GetWidth(), self:GetHeight() e
 -- anchors, scales and parents are recorded for the geometry tests (tools/smoke/geometry.lua)
 local Geo = dofile((arg and arg[1] or ".") .. "/tools/smoke/geometry.lua")
 Geo.Install(frameMethods)
+-- PUI_SHOT_OUT=<dir>: in-game-equivalent screenshots of the settings window (tools/smoke/shot.lua), then exit
+local SHOT = os.getenv("PUI_SHOT_OUT")
+local Shot = SHOT and dofile((arg and arg[1] or ".") .. "/tools/smoke/shot.lua")
+if Shot then Shot.Install({ frameMethods = frameMethods, regionMethods = regionMethods, Geo = Geo, newRegion = newRegion }) end
 local mt = {}
 mt.__index = function(self, k)
     if regions[self] and FRAME_ONLY[k] then return nil end
@@ -141,9 +145,10 @@ mt.__le = function() return false end
 mt.__len = function() return 0 end
 magic = setmetatable({}, mt)
 
-local function CreateFrame(_, name, parent)
+local function CreateFrame(kind, name, parent)
     local f = newMagic()
     owned[f] = true
+    if SHOT then rawset(f, "__type", tostring(kind)) end
     if type(parent) == "table" then Geo.parent[f] = parent end
     frames[#frames + 1] = f
     if name then _G[name] = f end
@@ -385,6 +390,11 @@ end
 fire("ADDON_LOADED", NAME)
 fire("PLAYER_LOGIN")
 fire("PLAYER_ENTERING_WORLD", true, false)
+if Shot then
+    Shot.Run({ ns = ns, Geo = Geo, frames = frames, regions = regions, scripts = scripts, env = env, slashes = slashes, out = SHOT })
+    for _, e in ipairs(errors) do print("  error: " .. e) end
+    os.exit(0)
+end
 
 -- PUI_ONLY=<text>: run only the tests whose label contains it (quick iteration; check_flavors runs them all)
 local ONLY = os.getenv("PUI_ONLY")
@@ -3344,12 +3354,11 @@ try("settings quality pass", function()
         for _, label in ipairs(tabs) do if tostring(label):find("_LOOK$") then problems[#problems + 1] = key .. ": " .. label end end
     end
     assert(#problems == 0, table.concat(problems, "; "))
-    -- fixed, readable window: not resizable, always the default size, scale changes re-measure borders
+    -- v4 Flow window: resizable with a floor, the size it was given (1400 x 860 at first), scale changes re-measure borders
     local C = ns.Config
     local f = C:Build()
-    assert(not f:IsResizable(), "the settings window has a fixed size")
     local w, h = f:GetSize()
-    assert(w == 1180 and h == 740, "fixed window size " .. tostring(w) .. "x" .. tostring(h))
+    assert(w >= C.MIN_W and h >= C.MIN_H, "window under its minimum size " .. tostring(w) .. "x" .. tostring(h))
     assert(type(ns.Skin.Reapply) == "function" and type(C.SnapPosition) == "function", "pixel helpers")
     ns.Skin:Reapply(); ns.Skin:Reapply()
     -- row labels stay on one line
@@ -3975,6 +3984,63 @@ try("minimap shape live", function()
     assert(env.GetMinimapShape() == "SQUARE" and masks[#masks] ~= m.ROUND_MASK, "Square did not apply live")
     rawset(map, "SetMaskTexture", old)
 end)
+-- v4 Flow: three columns on a wide page, folded cards show chips, the header counts changed settings, sub-pages in the rail
+try("settings flow", function()
+    local C = ns.Config
+    local page = C:Show("ActionBars")
+    assert(page.header.changed and page.header.crumb and page.header.move, "the Flow header lacks its parts")
+    rawset(page.scroll.child, "GetWidth", function() return 1160 end)
+    page:Layout()
+    local xs = {}
+    for _, c in ipairs(page.cards) do
+        if c:IsShown() and not c.spans then
+            local pt = Geo.points[c] and Geo.points[c][1]
+            if pt then xs[tostring(pt.x)] = true end
+        end
+    end
+    local n = 0
+    for _ in pairs(xs) do n = n + 1 end
+    local spans = 0
+    for _, c in ipairs(page.cards) do if c:IsShown() and c.spans then spans = spans + 1 end end
+    assert(n == 3, ("a 1160 px page does not pack its cards into 3 columns (%d columns, %d spanning)"):format(n, spans))
+    local card
+    for _, c in ipairs(page.cards) do if c:IsShown() and c.fold then card = c; break end end
+    assert(card, "no foldable card")
+    card.fold:GetScript("OnClick")(card.fold)
+    assert(card.collapsed and card:GetHeight() <= 40, "a folded card kept its rows")
+    local chips = 0
+    for _, ch in ipairs(card.chips or {}) do if ch:IsShown() then chips = chips + 1 end end
+    assert(chips > 0, "a folded card shows no summary chips")
+    card.fold:GetScript("OnClick")(card.fold)
+    assert(not card.collapsed, "the card did not unfold")
+    local AB = ns.modules.ActionBars
+    local before = C.ChangedCount(page)
+    local key
+    for _, r in ipairs(page.rows) do
+        local k = r.item.key
+        if r.item.type == "toggle" and k and not k:find("@", 1, true) and k ~= "enabled" and not r.item.get and r.IsModified and not r:IsModified() then
+            key = k; break
+        end
+    end
+    assert(key, "no plain toggle row on Action Bars")
+    local U = ns.Util
+    local old = U.GetPath(AB.db, key)
+    ns.DB:Set(AB, key, not old)
+    page:Layout()
+    assert(C.ChangedCount(page) == before + 1 and page.header.changed:IsShown(), "the changed-from-default count did not move (" .. key .. ")")
+    ns.DB:Set(AB, key, old)
+    rawset(page.scroll.child, "GetWidth", nil)
+    -- sub-pages are listed under the open page in the rail
+    if page.tabList and #page.tabList > 1 then
+        local subs = 0
+        for _, r in ipairs(C.frame.sidebar.subs) do if r:IsShown() then subs = subs + 1 end end
+        assert(subs == #page.tabList, "the rail lists " .. subs .. " sub-pages, the page has " .. #page.tabList)
+        C.frame.sidebar.subs[2]:GetScript("OnClick")(C.frame.sidebar.subs[2])
+        assert(page.tab == 2, "a sub-page row did not switch the page")
+        page:SetTab(1)
+    end
+end)
+
 -- spacing: on every page and tab the visible cards never overlap and leave no empty band between them, and the
 -- rows inside a card never overlap (tools/smoke/geometry.lua)
 try("page spacing", function()
@@ -4502,7 +4568,7 @@ try("dock", function()
     rawset(f, "GetWidth", function() return 1280 end)
     local home = C:Show("home")
     C:LayoutShell()
-    assert(home.docked and home.side, "Home's side panel did not dock")
+    assert(not home.docked and home.side and not f.dock:IsShown(), "v4 Flow: Home's side cards are part of its columns, not docked")
     rawset(f, "GetWidth", nil)
     C:LayoutShell()
     -- stages wider than the dock scale down instead of clipping
@@ -7689,6 +7755,45 @@ try("media", function()
     local d = ns.Widgets:Dropdown(env.CreateFrame("Frame"), function() return M:List("statusbar") end, "bar")
     d:SetValue("Aurora")
     scripts[d].OnClick(d)
+end)
+
+-- Phoenix Font is the default; Expressway is used by reference when another addon provides it (§3a); ruRU falls
+-- back to PT Sans Narrow
+try("phoenix font and expressway", function()
+    local M, T = ns.Media, ns.Theme
+    local own = M:Font("PhoenixFont")
+    assert(own:find("PhoenixFont%-Regular%.ttf$"), "Phoenix Font is not bundled: " .. tostring(own))
+    assert(M:Font(T.fontRoles and T.fontRoles.body and T.fontRoles.body.font or "PhoenixFont"):find("Phoenix"), "body role")
+    for _, k in ipairs({ "title", "heading", "body", "desc", "number", "small", "unit" }) do
+        local r = T.fontRoles and T.fontRoles[k]
+        if r then assert(tostring(r.font or r[1]):find("^PhoenixFont"), k .. " role does not use Phoenix Font") end
+    end
+    local lsm = env.LibStub("LibSharedMedia-3.0")
+    local path = "Interface\\AddOns\\SharedMediaX\\Expressway.ttf"
+    lsm:Register("font", "Expressway", path)
+    M.FontLoads("x") -- makes the probe; the stub font strings report one fixed font, so report what was set
+    local probe = M._probe
+    local set
+    rawset(probe, "SetFont", function(_, p) set = p; return true end)
+    rawset(probe, "GetFont", function() return set end)
+    M:ResolveExternal()
+    assert(M.external and M.external.source == "LibSharedMedia", "Expressway from LibSharedMedia was not picked up")
+    assert(M:Font("PhoenixFont") == path and M:Font("PhoenixFontBold") == path, "Phoenix Font keys do not prefer Expressway")
+    assert(M:DefaultFontSource() == "expressway", "font source")
+    T.settings.expressway = false
+    assert(M:Font("PhoenixFont") == own, "the Expressway switch does not turn it off")
+    T.settings.expressway = true
+    M.needsCyrillic = true
+    assert(M:Font("PhoenixFontBold"):find("PTSansNarrow%-Bold") and M:Font("PhoenixFont"):find("PTSansNarrow%-Regular"),
+        "ruRU does not fall back to PT Sans Narrow")
+    assert(M:DefaultFontSource() == "cyrillic", "cyrillic source")
+    M.needsCyrillic = false
+    local mt = (lsm.MediaTable or lsm.media or {}).font
+    if mt then mt.Expressway = nil end
+    rawset(probe, "SetFont", nil); rawset(probe, "GetFont", nil)
+    M:ResolveExternal()
+    assert(not M.external and M:Font("PhoenixFont") == own, "Expressway stayed after it went away")
+    assert(not M.FontLoads("") and not M.FontLoads(nil), "the font probe accepts an empty path")
 end)
 
 -- PUI_DEPTH_OUT=<file>: settings each page has now, one "page count" line each (the gap matrix NOW column uses it)
