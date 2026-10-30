@@ -1,9 +1,35 @@
 package-as: Phoenix_UI
 
-# The settings window and the quest data are load-on-demand addons shipped next to Phoenix_UI in the same zip.
+# The settings window, the quest data and the plugins are load-on-demand addons shipped next to Phoenix_UI in the same zip.
 move-folders:
   Phoenix_UI/Phoenix_UI_Options: Phoenix_UI_Options
   Phoenix_UI/Phoenix_UI_Data: Phoenix_UI_Data
+  # plugins (docs/PLUGIN_SPLIT.md): one load-on-demand folder per system
+  Phoenix_UI/Phoenix_UI_AFK: Phoenix_UI_AFK
+  Phoenix_UI/Phoenix_UI_ActionBars: Phoenix_UI_ActionBars
+  Phoenix_UI/Phoenix_UI_Auras: Phoenix_UI_Auras
+  Phoenix_UI/Phoenix_UI_Automation: Phoenix_UI_Automation
+  Phoenix_UI/Phoenix_UI_Bags: Phoenix_UI_Bags
+  Phoenix_UI/Phoenix_UI_CastBars: Phoenix_UI_CastBars
+  Phoenix_UI/Phoenix_UI_Chat: Phoenix_UI_Chat
+  Phoenix_UI/Phoenix_UI_CooldownText: Phoenix_UI_CooldownText
+  Phoenix_UI/Phoenix_UI_DamageMeter: Phoenix_UI_DamageMeter
+  Phoenix_UI/Phoenix_UI_DataTexts: Phoenix_UI_DataTexts
+  Phoenix_UI/Phoenix_UI_Encounters: Phoenix_UI_Encounters
+  Phoenix_UI/Phoenix_UI_GroupFinder: Phoenix_UI_GroupFinder
+  Phoenix_UI/Phoenix_UI_GroupFrames: Phoenix_UI_GroupFrames
+  Phoenix_UI/Phoenix_UI_ItemLevel: Phoenix_UI_ItemLevel
+  Phoenix_UI/Phoenix_UI_Minimap: Phoenix_UI_Minimap
+  Phoenix_UI/Phoenix_UI_MythicPlus: Phoenix_UI_MythicPlus
+  Phoenix_UI/Phoenix_UI_NamePlates: Phoenix_UI_NamePlates
+  Phoenix_UI/Phoenix_UI_PvP: Phoenix_UI_PvP
+  Phoenix_UI/Phoenix_UI_Quests: Phoenix_UI_Quests
+  Phoenix_UI/Phoenix_UI_Sim: Phoenix_UI_Sim
+  Phoenix_UI/Phoenix_UI_Skins: Phoenix_UI_Skins
+  Phoenix_UI/Phoenix_UI_SpellHistory: Phoenix_UI_SpellHistory
+  Phoenix_UI/Phoenix_UI_Tooltip: Phoenix_UI_Tooltip
+  Phoenix_UI/Phoenix_UI_Tracker: Phoenix_UI_Tracker
+  Phoenix_UI/Phoenix_UI_UnitFrames: Phoenix_UI_UnitFrames
 
 manual-changelog:
   filename: CHANGES.md

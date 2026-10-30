@@ -10,7 +10,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC = [p for d in ("Core", "UI", "Modules", "Phoenix_UI_Options") for p in (ROOT / d).rglob("*.lua")]
+SRC = [p for d in ("Core", "UI", "Modules", "Phoenix_UI_Options") + tuple(x.name for x in ROOT.glob("Phoenix_UI_*") if x.is_dir() and x.name != "Phoenix_UI_Data") for p in (ROOT / d).rglob("*.lua")]
 KEY = r"[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*"
 USE_PATTERNS = [
     re.compile(r"\bL\.(" + KEY + r")\b"),

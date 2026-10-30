@@ -46,6 +46,7 @@ step "check_api retail" python3 tools/check_api.py
 step "check_ids retail" python3 tools/check_ids.py
 step "check_locales" python3 tools/check_locales.py
 step "harness retail" harness
+step "harness core alone (no plugin folders)" env PUI_NOPLUGINS=1 lua5.1 tools/smoke/harness.lua .
 step "luacheck forever (1.60.1 std)" luacheck . --std lua51+wowf --formatter plain
 step "check_api forever" env PUI_FLAVOR=forever python3 tools/check_api.py
 step "check_ids forever" env PUI_FLAVOR=forever python3 tools/check_ids.py

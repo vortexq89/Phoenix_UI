@@ -1,0 +1,23 @@
+## Interface: 120105
+## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r Bags
+## Notes: Phoenix UI plugin: Bags. Turn it on or off in /pui > Plugins.
+## Author: VortexQ8
+#@debug@
+## Version: 2.0.0-beta1
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
+## Category: User Interface
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
+## Dependencies: Phoenix_UI
+## LoadOnDemand: 1
+## X-License: MIT
+## X-Website: https://github.com/vortexq89/Phoenix_UI
+
+Bridge.lua
+Bags.lua
+Window.lua
+Bank.lua
+Chrome.lua
+Process.lua

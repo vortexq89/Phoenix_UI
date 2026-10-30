@@ -1,0 +1,67 @@
+## Interface: 120105
+## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r Skins
+## Notes: Phoenix UI plugin: Skins. Turn it on or off in /pui > Plugins.
+## Author: VortexQ8
+#@debug@
+## Version: 2.0.0-beta1
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
+## Category: User Interface
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
+## Dependencies: Phoenix_UI
+## LoadOnDemand: 1
+## X-License: MIT
+## X-Website: https://github.com/vortexq89/Phoenix_UI
+
+Bridge.lua
+Skins.lua
+Move.lua
+MailAlts.lua
+Wardrobe.lua
+GameMenu.lua
+MicroMenu.lua
+WorldMap.lua
+Character.lua
+CharacterLists.lua
+Popups.lua
+Kit.lua
+GroupFinder.lua
+Talents.lua
+Loot.lua
+Auction.lua
+Professions.lua
+Friends.lua
+Guild.lua
+Journal.lua
+Achievements.lua
+Collections.lua
+Transmog.lua
+Mail.lua
+MailWindow.lua
+Replace.lua
+MerchantWindow.lua
+FriendsWindow.lua
+AchievementsWindow.lua
+CalendarWindow.lua
+VaultWindow.lua
+CollectionsWindow.lua
+JournalWindow.lua
+CharacterWindow.lua
+GuildWindow.lua
+ProfessionsWindow.lua
+QuestLogWindow.lua
+LootWindow.lua
+GossipWindow.lua
+QuestWindow.lua
+InspectWindow.lua
+Merchant.lua
+Vault.lua
+Calendar.lua
+Inspect.lua
+Gossip.lua
+Trade.lua
+PvPMatch.lua
+Settings.lua
+Housing.lua

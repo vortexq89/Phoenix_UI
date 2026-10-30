@@ -37,7 +37,7 @@ function ns:NewModule(key, def)
     if m.descWithout and not ns:Supports(m.descWithout.feature) then m.desc = m.descWithout.desc end
     ns.modules[key] = m
     if not old then ns.moduleList[#ns.moduleList + 1] = m end
-    if old and ns.DB.profile then ns.DB:BindModule(m) end
+    if ns.DB.profile then ns.DB:BindModule(m) end -- a plugin loaded after the profile (Core/Plugins.lua)
     return m
 end
 

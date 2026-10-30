@@ -635,7 +635,7 @@ P:Register("quality", {
         flight.name:SetWordWrap(false)
         flight.caption = caption(stage, flight, L.QUALITY_FLIGHT)
         -- a loot feed card at its real size: your last gain (or the game's coin card)
-        local feedCard = ns.modules.Skins.ReplaceCard(stage, 220, 40)
+        local feedCard = W.ItemCard(stage, 220, 40)
         feedCard:SetPoint("TOPRIGHT", -24, -60)
         feedCard.caption = caption(stage, feedCard, L.QUALITY_FEED)
         return function()

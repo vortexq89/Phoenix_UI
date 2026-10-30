@@ -113,8 +113,7 @@ local function onEnter(card)
 end
 
 local function card(i)
-    local S = ns.modules.Skins
-    local c = S.ReplaceCard(feed, M.db.feed.width, ROW_H)
+    local c = ns.Widgets.ItemCard(feed, M.db.feed.width, ROW_H)
     c:SetScript("OnEnter", onEnter)
     c:SetScript("OnLeave", function() GameTooltip:Hide() end)
     c:SetScript("OnClick", function(self)
@@ -156,10 +155,9 @@ end
 function M:LootFeedSample() return sample() end
 
 function M.LootFeedPaint(c, e, alpha)
-    local S = ns.modules.Skins
     local d = { texture = e.texture, count = e.count, quality = e.quality, sub = e.sub,
         name = e.key == "money" and C_CurrencyInfo.GetCoinTextureString(e.amount or 0) or e.name }
-    S.PaintCard(c, d)
+    ns.Widgets.PaintItemCard(c, d)
     c.entry = e
     c:SetAlpha(alpha)
 end

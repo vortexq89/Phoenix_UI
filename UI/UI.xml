@@ -12,6 +12,7 @@
     <Script file="Widgets\Input.lua"/>
     <Script file="Widgets\Scroll.lua"/>
     <Script file="Widgets\Section.lua"/>
+    <Script file="Widgets\ItemCard.lua"/>
     <Script file="Widgets\Controls.lua"/>
     <Script file="Widgets\Chips.lua"/>
     <Script file="Widgets\StylePicker.lua"/>

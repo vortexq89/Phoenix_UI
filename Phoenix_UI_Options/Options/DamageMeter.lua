@@ -14,10 +14,17 @@ local function openEditMode() ns.Config.frame:Hide(); ns.EditMode:Open() end
 local function blizzard(m) return m.db.engine ~= "phoenix" end
 local function notPhoenix(m) return m.db.engine ~= "phoenix" end
 local function meter(row) return Opt.With(row, { disabled = row.disabled or notPhoenix }) end
+-- The meter's modes come from the plugin's code, which may load after this file (Phoenix > Plugins).
 local MODE_VALUES = {}
-for _, g in ipairs(ns.modules.DamageMeter.MODES) do
-    for _, md in ipairs(g) do MODE_VALUES[#MODE_VALUES + 1] = { value = md.id, label = md.label } end
+local function fillModes()
+    local dm = ns:Loaded("DamageMeter")
+    if #MODE_VALUES > 0 or not (dm and dm.MODES) then return end
+    for _, g in ipairs(dm.MODES) do
+        for _, md in ipairs(g) do MODE_VALUES[#MODE_VALUES + 1] = { value = md.id, label = md.label } end
+    end
 end
+fillModes()
+ns.Events:Listen("PUI_MODULE_STATE", MODE_VALUES, fillModes)
 local function windowRows(i, head)
     local base = "meter.win" .. i
     local function off(m) return notPhoenix(m) or m.db.meter.windows < i end

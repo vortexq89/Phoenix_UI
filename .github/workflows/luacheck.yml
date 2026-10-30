@@ -35,6 +35,9 @@ jobs:
       - name: Offline load test
         run: lua5.1 tools/smoke/harness.lua .
 
+      - name: Offline load test, core alone (no plugin folders)
+        run: PUI_NOPLUGINS=1 lua5.1 tools/smoke/harness.lua .
+
       # WoW Forever 1.60.1 (Phoenix_UI_Forever.toc): the same checks against that client's generated data
       - name: luacheck (Forever 1.60.1 std)
         run: luacheck . --std lua51+wowf --formatter plain

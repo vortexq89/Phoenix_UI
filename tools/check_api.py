@@ -55,7 +55,9 @@ FORBIDDEN = [
     (re.compile(r"\b_G\s*\[[^\]]+\]\s*=(?!=)"), "no global writes"),
 ]
 
-CODE_DIRS = ("Core", "UI", "Modules", "Locales", "Phoenix_UI_Options", "Phoenix_UI_Data")
+PLUGIN_DIRS = tuple(sorted(d.name for d in ROOT.glob("Phoenix_UI_*") if d.is_dir()
+                           and d.name not in ("Phoenix_UI_Options", "Phoenix_UI_Data")))
+CODE_DIRS = ("Core", "UI", "Modules", "Locales", "Phoenix_UI_Options", "Phoenix_UI_Data") + PLUGIN_DIRS
 sources = sorted(p for d in CODE_DIRS for p in (ROOT / d).rglob("*.lua"))
 problems = []
 
@@ -138,7 +140,8 @@ def walk_xml(xml):
 toc = ROOT / "Phoenix_UI.toc"
 OPTIONS_TOC = ROOT / "Phoenix_UI_Options" / "Phoenix_UI_Options.toc"
 DATA_TOC = ROOT / "Phoenix_UI_Data" / "Phoenix_UI_Data.toc"
-for t in (toc, OPTIONS_TOC, DATA_TOC):
+PLUGIN_TOCS = [ROOT / d / (d + ".toc") for d in PLUGIN_DIRS]
+for t in [toc, OPTIONS_TOC, DATA_TOC] + PLUGIN_TOCS:
     for line in t.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
@@ -151,7 +154,14 @@ for t in (toc, OPTIONS_TOC, DATA_TOC):
         else:
             loaded.append(target)
 opt_text = OPTIONS_TOC.read_text(encoding="utf-8")
-for lod in (OPTIONS_TOC, DATA_TOC):
+plugins_lua = (ROOT / "Core" / "Plugins.lua").read_text(encoding="utf-8")
+for d in PLUGIN_DIRS:
+    if f'add("{d[len("Phoenix_UI_"):]}"' not in plugins_lua:
+        problems.append(f"{d}: not in the plugin manifest (Core/Plugins.lua)")
+    first = toc_first = [l for l in (ROOT / d / (d + ".toc")).read_text(encoding="utf-8").splitlines() if l.strip() and not l.startswith("#")]
+    if not first or first[0] != "Bridge.lua":
+        problems.append(f"{d}.toc: Bridge.lua must load first")
+for lod in [OPTIONS_TOC, DATA_TOC] + PLUGIN_TOCS:
     for need in ("## LoadOnDemand: 1", "## Dependencies: Phoenix_UI"):
         if need not in lod.read_text(encoding="utf-8"):
             problems.append(f"{lod.name}: needs '{need}'")
@@ -171,7 +181,7 @@ def toc_files(path):
     return [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip() and not l.strip().startswith("#")]
 
 
-for t in (toc, OPTIONS_TOC, DATA_TOC):
+for t in [toc, OPTIONS_TOC, DATA_TOC] + PLUGIN_TOCS:
     ft = t.with_name(t.stem + "_Forever.toc")
     if not ft.exists():
         problems.append(f"{ft.relative_to(ROOT)}: missing (run python3 tools/gen_tocs.py)")
@@ -180,7 +190,7 @@ for t in (toc, OPTIONS_TOC, DATA_TOC):
     elif not re.search(r"^## Interface:\s*16\d{3}\s*$", ft.read_text(encoding="utf-8"), re.M):
         problems.append(f"{ft.relative_to(ROOT)}: ## Interface must be the WoW Forever one (16xxx)")
 pkg = (ROOT / ".pkgmeta").read_text(encoding="utf-8")
-for folder in ("Phoenix_UI_Options", "Phoenix_UI_Data"):
+for folder in ("Phoenix_UI_Options", "Phoenix_UI_Data") + PLUGIN_DIRS:
     if f"Phoenix_UI/{folder}: {folder}" not in pkg:
         problems.append(f".pkgmeta: move-folders must ship {folder} as its own addon folder")
 

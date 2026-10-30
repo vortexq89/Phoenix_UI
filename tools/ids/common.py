@@ -24,7 +24,7 @@ def snapshot_path(flavor=None):
     flavor = flavor or os.environ.get("PUI_FLAVOR", "retail")
     return pathlib.Path(__file__).resolve().parent / SNAPSHOTS[flavor]
 
-DIRS = ("Core", "UI", "Modules", "Phoenix_UI_Options")
+DIRS = ("Core", "UI", "Modules", "Phoenix_UI_Options") + tuple(sorted(d.name for d in ROOT.glob("Phoenix_UI_*") if d.is_dir() and d.name not in ("Phoenix_UI_Options", "Phoenix_UI_Data")))
 TABLE_PREFIX = {"GAME_ART": "Interface\\Icons\\"}
 ENUM_ROWS = {"Core/Weekly.lua": "WeeklyRewardChestThresholdType"}
 

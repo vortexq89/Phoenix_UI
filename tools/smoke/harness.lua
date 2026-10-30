@@ -358,6 +358,11 @@ end
 -- client does it (each its own private table, files run in TOC order) when Phoenix_UI calls C_AddOns.LoadAddOn.
 local OPTIONS = "Phoenix_UI_Options"
 local LOD = { Phoenix_UI_Options = 0, Phoenix_UI_Data = 0 }
+-- plugin folders (Core/Plugins.lua); PUI_NOPLUGINS=1 boots Phoenix_UI as if none were installed
+local NOPLUGINS = os.getenv("PUI_NOPLUGINS") == "1"
+for _, p in ipairs(ns.Plugins and ns.Plugins.list or {}) do
+    if not NOPLUGINS then LOD[p.addon] = 0 end
+end
 local function loadLod(addon)
     LOD[addon] = LOD[addon] + 1
     local private = {}
@@ -399,6 +404,29 @@ if Shot then
     Shot.Run({ ns = ns, Geo = Geo, frames = frames, regions = regions, scripts = scripts, env = env, slashes = slashes, out = SHOT })
     for _, e in ipairs(errors) do print("  error: " .. e) end
     os.exit(0)
+end
+
+-- Core alone (no plugin folders): every plugin is a placeholder, and every page and the plugin manager still open.
+if NOPLUGINS then
+    local function chk(label, fn, ...)
+        local ok, e = pcall(fn, ...)
+        if not ok then errors[#errors + 1] = label .. ": " .. tostring(e) end
+    end
+    chk("core alone", function()
+        for _, p in ipairs(ns.Plugins.list) do
+            local m = ns.modules[p.key]
+            assert(m and m.placeholder and not m:IsEnabled(), p.key .. " is not a placeholder")
+            assert(ns.Plugins:State(p) == "missing", p.key .. " should read Not installed")
+        end
+        slashes.pui("")
+        for _, key in ipairs({ "home", "plugins", "profiles", "about" }) do ns.Config:Show(key) end
+        for _, m in ipairs(ns.moduleList) do ns.Config:Show(m.key) end
+        ns:SetModuleEnabled("DamageMeter", true) -- missing folder: stays a placeholder, no error
+        assert(ns.modules.DamageMeter.placeholder, "a missing plugin turned into a module")
+    end)
+    print(("smoke (core alone): %d files loaded, %d modules, %d errors"):format(loaded, #ns.moduleList, #errors))
+    for _, e in ipairs(errors) do print("  " .. e) end
+    os.exit(#errors == 0 and 0 or 1)
 end
 
 -- PUI_ONLY=<text>: run only the tests whose label contains it (quick iteration; check_flavors runs them all)
@@ -2701,7 +2729,7 @@ try("shop launcher only", function()
     local found = false
     for _, e in ipairs(ns.modules.Skins.MICRO or {}) do if e[1] == "StoreMicroButton" then found = true end end
     for _, f in ipairs({ "MicroMenu", "GameMenu", "Settings", "Housing", "Skins" }) do
-        local h = io.open("Modules/Skins/" .. f .. ".lua"); local src = h and h:read("*a") or ""; if h then h:close() end
+        local h = io.open("Phoenix_UI_Skins/" .. f .. ".lua"); local src = h and h:read("*a") or ""; if h then h:close() end
         assert(not src:find("StoreFrame", 1, true), f .. " touches StoreFrame")
     end
     assert(found, "shop tile missing")
@@ -7755,7 +7783,9 @@ end)
 -- A "*.soft" token is a tint with its own low alpha; forcing alpha on it paints a solid block (nav rail, t146 a)
 try("soft tokens keep their own alpha", function()
     local bad = {}
-    for _, dir in ipairs({ "UI", "Phoenix_UI_Options", "Modules" }) do
+    local dirs = { "UI", "Phoenix_UI_Options", "Modules" }
+    for _, p in ipairs(ns.Plugins.list) do dirs[#dirs + 1] = p.addon end
+    for _, dir in ipairs(dirs) do
         local pipe = io.popen('grep -rnE "\\"[a-z]+\\.soft\\"[^)]*, *(on and )?[01]\\.?[0-9]*\\)" ' .. ROOT .. "/" .. dir .. " --include=*.lua")
         for line in pipe:lines() do bad[#bad + 1] = line end
         pipe:close()
@@ -7788,7 +7818,7 @@ try("group finder hides the cross-faction tip under the panel", function()
     assert(hidden == nil, "tip hidden without the Phoenix panel")
     rawset(env, "HelpTip", saved[1]); rawset(env, "CROSS_FACTION_GROUP_FINDER_HELPTIP", saved[2])
     assert(not acked, "tutorial acknowledged (it must only be hidden)")
-    local src = io.open("Modules/Skins/GroupFinder.lua"):read("*a")
+    local src = io.open("Phoenix_UI_Skins/GroupFinder.lua"):read("*a")
     for _, k in ipairs({ "SignUpButton", "BackButton" }) do assert(src:find(k, 1, true), k .. " not skinned (t146)") end
 end)
 try("bag bar skinned with the micro menu", function()

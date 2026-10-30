@@ -209,7 +209,7 @@ local function auditButton(def, b, h, i)
 end
 
 local function auditBars()
-    local AB = ns:GetModule("ActionBars")
+    local AB = ns:Loaded("ActionBars")
     if not (AB and AB:IsEnabled() and AB.IsPhoenix and AB:IsPhoenix() and AB.BARS) then return end
     for _, def in ipairs(AB.BARS) do
         local b = AB.db.bars[def.key]
@@ -260,7 +260,7 @@ local function auditState()
     end
     for _, t in ipairs(taint) do issue(1, "taint", t.what, t.detail) end
     -- window skins: lists / frames a skin looked for inside a loaded window and did not find (stay unstyled)
-    local Skins = ns.modules.Skins
+    local Skins = ns:Loaded("Skins")
     if Skins and Skins.MissingSkinFrames then
         for _, path in ipairs(Skins.MissingSkinFrames()) do issue(3, "skin-missing", path, "not found; stays unstyled") end
     end
