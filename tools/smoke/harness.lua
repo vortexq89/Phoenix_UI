@@ -7637,6 +7637,22 @@ try("icon glyphs are sized", function()
 end)
 
 -- t146 e: GameMenu buttons are ThreeSliceButtonTemplate (Left / Center / Right): every piece of the red atlas hides
+try("bag bar skinned with the micro menu", function()
+    local Sk = ns.modules.Skins
+    local b = CreateFrame("Button")
+    b.icon = b:CreateTexture()
+    local masks = 1
+    b.CircleMask = {}
+    b.icon.RemoveMaskTexture = function() masks = masks - 1 end
+    b.icon.AddMaskTexture = function() masks = masks + 1 end
+    local n = b:CreateTexture(); local al = 1
+    n.SetAlpha = function(_, v) al = v end; n.GetAlpha = function() return al end
+    b.GetNormalTexture = function() return n end
+    Sk.SkinBagButton(b, true); Sk.SkinBagButton(b, true)
+    assert(al == 0 and masks == 0, "bag ring art or circle mask left on (t146)")
+    Sk.SkinBagButton(b, false)
+    assert(al == 1 and masks == 1, "bag bar not restored with the skin off")
+end)
 try("game menu hides the three-slice art", function()
     local b = CreateFrame("Button")
     for _, k in ipairs({ "Left", "Center", "Right" }) do

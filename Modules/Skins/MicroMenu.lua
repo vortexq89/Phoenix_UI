@@ -68,8 +68,41 @@ function M.SkinMicroButton(button, glyph)
     return t
 end
 
+-- t146: the bag bar beside the micro menu kept Blizzard's gold rings and round-masked icons. Skinned with the
+-- micro menu: each bag becomes a square, flat-bordered tile like the Phoenix bag window's slots. Art is faded
+-- by alpha and the circle mask taken off the icon; both come back with the switch off. Clicks, drags and the
+-- bag tooltips stay Blizzard's.
+local BAG_BUTTONS = { "MainMenuBarBackpackButton", "CharacterBag0Slot", "CharacterBag1Slot", "CharacterBag2Slot",
+    "CharacterBag3Slot", "CharacterReagentBag0Slot" }
+local bagSkinned = setmetatable({}, { __mode = "k" })
+function M.SkinBagButton(b, on)
+    local icon = b and (b.icon or b.Icon)
+    if not icon then return end
+    if on then
+        for _, g in ipairs(ART) do
+            local tex = b[g] and b[g](b)
+            if tex then Skin:HideRegion(tex) end
+        end
+        if b.IconBorder then Skin:HideRegion(b.IconBorder) end
+        if b.CircleMask and not bagSkinned[b] then icon:RemoveMaskTexture(b.CircleMask) end
+        bagSkinned[b] = true
+        Skin:IconFrame(b, icon, {}, 0.08, "border.subtle")
+    elseif bagSkinned[b] then
+        bagSkinned[b] = nil
+        for _, g in ipairs(ART) do
+            local tex = b[g] and b[g](b)
+            if tex then Skin:Restore(tex) end
+        end
+        if b.IconBorder then Skin:Restore(b.IconBorder) end
+        if b.CircleMask then icon:AddMaskTexture(b.CircleMask) end
+        Skin:HideIconFrame(icon)
+    end
+end
+M.BAG_BUTTONS = BAG_BUTTONS
+
 function M:SkinMicroMenu()
     local on = self:IsEnabled() and self.db.microMenu and true or false
+    for _, name in ipairs(BAG_BUTTONS) do M.SkinBagButton(_G[name], on) end
     for _, entry in ipairs(self.MICRO) do
         local b = _G[entry[1]]
         if b then

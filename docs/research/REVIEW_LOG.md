@@ -170,4 +170,11 @@ None of these appear in the t146 shots, so the comparison is code against Ellesm
 
 | Defect seen | Cause | Fix |
 |---|---|---|
-| Blizzard tab art, edit box border and window chrome | "Style chat windows" and "Style the edit box" defaulted off, so a new install showed Blizzard's chat | both default on (EllesmereUI and ElvUI style chat out of the box); a player who switched them off keeps that |
+| Blizzard tab art, edit box border and window chrome | "Style chat windows" and "Style the edit box" defaulted off, so a new install showed Blizzard's chat | both default on (EllesmereUI and ElvUI style chat out of the box). Correction: saved values equal to the old default (off) are stripped at logout, so a player who had switched them off also gets them on and has to switch them off again |
+
+## 15. Bag bar (shot 222322, bottom right)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| Backpack and bag slots keep Blizzard's gold rings and round icons beside the Phoenix micro menu | only the micro buttons were skinned | with the micro menu skin, each bag button (backpack, four bags, reagent bag) is a square, flat-bordered tile: ring art faded, circle mask off; all restored with the switch off; harness test |
+| Micro buttons show Blizzard art in the shot although the micro menu skin defaults on | not reproducible offline (the skin passes its harness test) | unverified; check in game |
