@@ -20,3 +20,4 @@ Tracker.lua
 Viewers.lua
 Custom.lua
 Reminders.lua
+AuraBars.lua

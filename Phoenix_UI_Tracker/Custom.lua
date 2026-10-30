@@ -460,6 +460,7 @@ function M:DrawTest()
         end
     end
     self:DrawReminderTest() -- Reminders.lua
+    self:DrawAuraBarTest() -- AuraBars.lua
 end
 
 function M:HideTest()
@@ -470,6 +471,7 @@ function M:HideTest()
         end
     end
     if self.HideReminderTest then self:HideReminderTest() end
+    if self.HideAuraBarTest then self:HideAuraBarTest() end
     if self:IsEnabled() then
         for key in pairs(self.viewerFrames) do self:QueueLayout(key) end
         self:RefreshCustom()

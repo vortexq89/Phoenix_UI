@@ -5599,6 +5599,32 @@ try("cooldown manager picker and bars", function()
     end
 end)
 
+try("aura reminders and aura bars", function()
+    local T = ns.modules.Tracker
+    local list = T.ParseCustomReminders("1459:MAGE, 25771:tank; junk, 6673")
+    assert(#list == 3 and list[1].class == "MAGE" and list[2].role == "TANK" and not list[3].class, "custom rules parse")
+    assert(type(T:CustomMissing({ custom = "1459" })) == "table", "custom check is safe")
+    assert(type(T:GroupBuffsMissing()) == "table" and T.GroupClasses(), "group buff check is safe")
+    local tex, label = T.ReminderIconAndLabel("group:MAGE")
+    assert(tex and label, "group reminder has an icon and label")
+    assert(T.ReminderIconAndLabel("custom:1459"), "custom reminder has an icon")
+    T.db.reminders.style = "banner"
+    T:DrawReminderTest()
+    T.db.reminders.style = "icons"
+    T:DrawReminderTest()
+    T:HideReminderTest()
+    local ids = T.ParseAuraBarList("1459, 1126 x")
+    assert(#ids == 2 and ids[2] == 1126, "aura bar list parses")
+    T.db.auraBars.enabled = true
+    T.db.auraBars.list = "1459"
+    assert(type(T:ActiveAuraBars()) == "table", "aura bar scan is safe")
+    T:RefreshAuraBars()
+    T:DrawAuraBarTest()
+    T:HideAuraBarTest()
+    T.db.auraBars.enabled = false
+    T:RefreshAuraBars()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

@@ -78,6 +78,11 @@ local M = ns:NewModule("Tracker", {
             enabled = true, instancesOnly = true, flask = true, food = true, rune = false, oil = true, raidBuff = true,
             pet = true, healthstone = true, readyMana = true, manaPercent = 90, sound = "",
             size = 36, point = "TOP", x = 0, y = -180,
+            custom = "", groupBuffs = false, style = "icons",
+        },
+        auraBars = {
+            enabled = false, list = "", width = 200, height = 18, spacing = 2, grow = "DOWN",
+            point = "CENTER", x = 0, y = -220,
         },
     },
 })
@@ -261,6 +266,7 @@ function M:OnEnable()
     self:EnableViewers() -- Viewers.lua
     self:EnableCustom()  -- Custom.lua
     self:EnableReminders() -- Reminders.lua
+    self:EnableAuraBars() -- AuraBars.lua
     for _, ev in ipairs({ "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD", "PLAYER_TARGET_CHANGED",
         "PLAYER_MOUNT_DISPLAY_CHANGED", "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "PLAYER_SPECIALIZATION_CHANGED" }) do
         self:On(ev, onState)
@@ -278,12 +284,14 @@ function M:OnDisable()
     self:DisableViewers()
     self:DisableCustom()
     self:DisableReminders()
+    self:DisableAuraBars()
 end
 
 function M:Refresh()
     self:RefreshViewers()
     self:RefreshCustom()
     self:RefreshReminders()
+    self:RefreshAuraBars()
     self:ApplyVisibility()
     if self.testShown then self:DrawTest() end
 end

@@ -134,6 +134,72 @@ local CHECKS = {
     readyMana = lowMana,
 }
 
+---------------------------------------------------------------- custom rules and group buffs
+-- "ID[:CLASS|ROLE], ..." -> { { id, class, role } }. Class tokens are upper case (MAGE), roles TANK/HEALER/DAMAGER.
+local ROLES = { TANK = true, HEALER = true, DAMAGER = true }
+function M.ParseCustomReminders(text)
+    local out = {}
+    for part in tostring(text or ""):gmatch("[^,;%s]+") do
+        local id, rule = part:match("^(%d+):?(%a*)$")
+        id = tonumber(id)
+        if id then
+            rule = rule:upper()
+            out[#out + 1] = { id = id, class = rule ~= "" and not ROLES[rule] and rule or nil,
+                role = ROLES[rule] and rule or nil }
+        end
+    end
+    return out
+end
+
+local function playerRole()
+    local api = C_SpecializationInfo
+    local spec = api and api.GetSpecialization and api.GetSpecialization()
+    local role = type(spec) == "number" and GetSpecializationRole and GetSpecializationRole(spec)
+    return plain(role) and role or nil
+end
+
+local function ruleApplies(e, class, role)
+    if e.class and e.class ~= class then return false end
+    if e.role and e.role ~= role then return false end
+    return true
+end
+
+function M:CustomMissing(r)
+    local out = {}
+    local _, class = UnitClass("player")
+    local role = playerRole()
+    for _, e in ipairs(M.ParseCustomReminders(r.custom)) do
+        if ruleApplies(e, class, role) and not hasAura(e.id) then out[#out + 1] = "custom:" .. e.id end
+    end
+    return out
+end
+
+-- Classes in the group (class tokens are plain); the player is always included.
+local function groupClasses()
+    local seen = {}
+    local _, me = UnitClass("player")
+    if me then seen[me] = true end
+    local n = tonumber(GetNumGroupMembers and GetNumGroupMembers()) or 0
+    local prefix = IsInRaid and IsInRaid() and "raid" or "party"
+    for i = 1, n do
+        local _, c = UnitClass(prefix .. i)
+        if plain(c) and c then seen[c] = true end
+    end
+    return seen
+end
+M.GroupClasses = groupClasses
+
+-- Buffs a group member's class brings that you do not have (one entry per providing class).
+function M:GroupBuffsMissing()
+    local out = {}
+    for class in pairs(groupClasses()) do
+        local ids = RAID_BUFF[class]
+        if ids and not hasAny(ids) then out[#out + 1] = "group:" .. class end
+    end
+    table.sort(out)
+    return out
+end
+
 -- Which reminders apply right now (pure of frames: the smoke test calls it).
 function M:MissingReminders()
     local r, out = self.db.reminders, {}
@@ -147,6 +213,14 @@ function M:MissingReminders()
             local ok, missing = pcall(CHECKS[name], r)
             if ok and missing then out[#out + 1] = name end
         end
+    end
+    if ns:Supports("cdmReminders") then
+        if r.groupBuffs then
+            local ok, list = pcall(self.GroupBuffsMissing, self)
+            if ok then for _, n in ipairs(list) do out[#out + 1] = n end end
+        end
+        local ok, list = pcall(self.CustomMissing, self, r)
+        if ok then for _, n in ipairs(list) do out[#out + 1] = n end end
     end
     return out
 end
@@ -198,6 +272,42 @@ local LABELS = { flask = "TRACKER_R_FLASK", food = "TRACKER_R_FOOD", rune = "TRA
     readyMana = "TRACKER_R_MANA" }
 M.REMINDER_LABELS = LABELS
 
+local function iconAndLabel(name)
+    local id = tonumber(name:match("^custom:(%d+)$") or "")
+    if id then
+        local tex = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(id)
+        local nm = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(id)
+        return tex or 134400, nm or tostring(id)
+    end
+    local class = name:match("^group:(%u+)$")
+    if class then
+        local sid = RAID_BUFF[class] and RAID_BUFF[class][1]
+        local tex = sid and C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(sid)
+        local nm = sid and C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(sid)
+        return tex or M.REMINDER_ICONS.raidBuff, nm or L.TRACKER_R_GROUPBUFF
+    end
+    return M.REMINDER_ICONS[name], L[LABELS[name]]
+end
+M.ReminderIconAndLabel = iconAndLabel
+
+-- Banner style: the v9 reminder banner behind the row, each icon in the reminder_icon frame.
+local function dressBanner(r, w, size)
+    local A = ns.Art
+    if not (A and A.DressSlot) then return end
+    if r.style == "banner" then
+        holder.banner = holder.banner or CreateFrame("Frame", nil, holder)
+        holder.banner:ClearAllPoints()
+        holder.banner:SetPoint("CENTER")
+        holder.banner:SetSize(w + size * 1.5, size * 1.6)
+        holder.banner:SetFrameLevel(math.max(0, holder:GetFrameLevel() - 1))
+        A:DressSlot(holder.banner, "Reminders.banner")
+        holder.banner:Show()
+    elseif holder.banner then
+        if A.Undress then A:Undress(holder.banner) end
+        holder.banner:Hide()
+    end
+end
+
 local function draw(list)
     ensureHolder()
     local r = M.db.reminders
@@ -210,13 +320,19 @@ local function draw(list)
         f:SetSize(size, size)
         f:ClearAllPoints()
         f:SetPoint("LEFT", holder, "LEFT", (i - 1) * (size + gap), 0)
-        f.Icon:SetTexture(M.REMINDER_ICONS[name])
+        local tex, label = iconAndLabel(name)
+        f.Icon:SetTexture(tex)
         M:StyleIcon("essential", f.Icon, f.holder)
+        local A = ns.Art
+        if A and A.DressSlot then
+            if r.style == "banner" then A:DressSlot(f.holder, "Reminders.icon") elseif A.Undress then A:Undress(f.holder) end
+        end
         Skin:TextSpec(f.Label, { size = 10, outline = "OUTLINE" }, "small", "text.primary")
-        f.Label:SetText(L[LABELS[name]])
+        f.Label:SetText(label or "")
         f:Show()
     end
     for i = #list + 1, #icons do icons[i]:Hide() end
+    dressBanner(r, #list * (size + gap), size)
     holder:SetShown(#list > 0)
 end
 
@@ -234,7 +350,7 @@ end
 
 function M:DrawReminderTest()
     self.reminderTest = true
-    draw({ "flask", "food", "oil", "raidBuff" })
+    draw({ "flask", "food", "oil", "raidBuff", "group:MAGE", "custom:1459" })
 end
 
 function M:HideReminderTest()
