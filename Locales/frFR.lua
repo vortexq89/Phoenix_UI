@@ -4138,6 +4138,8 @@ local T = {
     GEN_EXPRESSWAY = "Utiliser Expressway s’il est installé",
     GEN_EXPRESSWAY_DESC = "Phoenix Font est la police par défaut. Si un autre addon (ElvUI, EllesmereUI ou un pack shared-media) fournit déjà Expressway, Phoenix UI l’utilise. Phoenix UI ne distribue jamais Expressway.",
     NAV_SWITCH_TIP = "cliquez pour activer ou désactiver le module",
+    UF_OOC_KEEP = "Afficher si actif",
+    UF_OOC_KEEP_DESC = "Hors combat, le cadre reste visible quand vous avez une cible, lancez un sort ou le survolez.",
 }
 
 ns.RegisterLocale("frFR", T)

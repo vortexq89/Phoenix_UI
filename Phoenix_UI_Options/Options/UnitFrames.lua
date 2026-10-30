@@ -218,7 +218,8 @@ ns:RegisterOptions("UnitFrames", {
     px({ type = "range", key = "units.@.stealthAlpha", label = "UF_STEALTH_ALPHA", desc = "UF_STEALTH_ALPHA_DESC", min = 0.1, max = 1,
       step = 0.05, percent = true, hidden = notArena, feature = "arena", keywords = "stealth unseen fade" }),
     px({ type = "toggle", key = "units.@.oocFade", label = "UF_OOC_FADE", desc = "UF_OOC_FADE_DESC",
-      cog = { { type = "range", key = "units.@.oocAlpha", label = "UF_OOC_ALPHA", min = 0, max = 1, step = 0.05, percent = true } } }),
+      cog = { { type = "range", key = "units.@.oocAlpha", label = "UF_OOC_ALPHA", min = 0, max = 1, step = 0.05, percent = true },
+              { type = "toggle", key = "units.@.oocKeep", label = "UF_OOC_KEEP", desc = "UF_OOC_KEEP_DESC" } } }),
     ------------------------------------------------------------ health
     { type = "tab", label = "UF_TAB_HEALTH" },
     { type = "header", label = "UF_HEALTH_BAR", icon = "heart" },

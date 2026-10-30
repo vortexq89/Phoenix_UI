@@ -4138,6 +4138,8 @@ local T = {
     GEN_EXPRESSWAY = "설치된 경우 Expressway 사용",
     GEN_EXPRESSWAY_DESC = "기본값은 Phoenix Font입니다. 다른 애드온(ElvUI, EllesmereUI 또는 shared-media 팩)에 Expressway가 있으면 그것을 사용합니다. Phoenix UI는 Expressway를 배포하지 않습니다.",
     NAV_SWITCH_TIP = "클릭하여 모듈을 켜거나 끕니다",
+    UF_OOC_KEEP = "활동 중 표시",
+    UF_OOC_KEEP_DESC = "비전투 중에도 대상이 있거나 시전 중이거나 마우스를 올리면 프레임이 완전히 보입니다.",
 }
 
 ns.RegisterLocale("koKR", T)

@@ -4138,6 +4138,8 @@ local T = {
     GEN_EXPRESSWAY = "已安裝時使用 Expressway",
     GEN_EXPRESSWAY_DESC = "預設使用 Phoenix Font。如果其他插件（ElvUI、EllesmereUI 或共享媒體包）已帶有 Expressway，Phoenix UI 會改用它。Phoenix UI 從不附帶 Expressway。",
     NAV_SWITCH_TIP = "點擊開啟或關閉此模組",
+    UF_OOC_KEEP = "活動時顯示",
+    UF_OOC_KEEP_DESC = "脫戰時，有目標、施法或滑鼠懸停時框架仍完全顯示。",
 }
 
 ns.RegisterLocale("zhTW", T)

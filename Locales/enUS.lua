@@ -4164,4 +4164,6 @@ ns.RegisterLocale("enUS", {
     GEN_EXPRESSWAY = "Use Expressway when installed",
     GEN_EXPRESSWAY_DESC = "Phoenix Font is the default. If another addon on this PC (ElvUI, EllesmereUI or a shared-media pack) already has Expressway, Phoenix UI uses that instead. Phoenix UI never ships Expressway.",
     NAV_SWITCH_TIP = "click to switch the module on or off",
+    UF_OOC_KEEP = "Show while active",
+    UF_OOC_KEEP_DESC = "Out of combat the frame still shows fully while you have a target, cast or hover it.",
 })

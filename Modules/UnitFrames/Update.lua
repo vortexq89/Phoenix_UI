@@ -1,6 +1,7 @@
 local _, ns = ...
 local L, Theme, Skin = ns.L, ns.Theme, ns.Skin
 local M = ns.modules.UnitFrames
+local active -- out-of-combat fade exceptions, defined with the fading
 
 --[[ Element updates. Each one reads its facts from a source: Live (the game, through secret-safe calls) or Sample
     (plain numbers for the preview and Test frames). The same update code draws both, so the preview cannot drift
@@ -701,10 +702,17 @@ function M:UpdateIndicators(f, src)
 end
 
 ---------------------------------------------------------------- range and fading
+-- Out of combat the faded frames come back while you are doing something with them, as ElvUI's combat fader and
+-- EllesmereUI's visibility rules do: a target, a cast or channel of your own, or the mouse over the frame.
+function active(f)
+    if UnitExists("target") then return true end
+    if UnitCastingInfo("player") ~= nil or UnitChannelInfo("player") ~= nil then return true end
+    return f:IsMouseOver() and true or false
+end
 function M:UpdateRange(f, src)
     local u = self:Unit(f.unitKey)
     local alpha = 1
-    if u.oocFade and not f.sample and not InCombatLockdown() then alpha = u.oocAlpha end
+    if u.oocFade and not f.sample and not InCombatLockdown() and not (u.oocKeep ~= false and active(f)) then alpha = u.oocAlpha end
     if f.Trinket then alpha = self:ArenaAlpha(f, alpha) end
     if not u.rangeFade then f:SetAlpha(alpha); return end
     local inRange = src:InRange(f)

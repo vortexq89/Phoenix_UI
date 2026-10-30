@@ -4138,6 +4138,8 @@ local T = {
     GEN_EXPRESSWAY = "Использовать Expressway, если установлен",
     GEN_EXPRESSWAY_DESC = "По умолчанию используется Phoenix Font. Если другой аддон (ElvUI, EllesmereUI или пакет shared-media) уже содержит Expressway, Phoenix UI использует его. Phoenix UI никогда не распространяет Expressway.",
     NAV_SWITCH_TIP = "нажмите, чтобы включить или выключить модуль",
+    UF_OOC_KEEP = "Показывать при действии",
+    UF_OOC_KEEP_DESC = "Вне боя рамка видна полностью, если есть цель, вы произносите заклинание или наводите курсор.",
 }
 
 ns.RegisterLocale("ruRU", T)

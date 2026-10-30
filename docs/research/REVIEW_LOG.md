@@ -26,3 +26,21 @@ no live preview, fixed fonts, a search box since 13.x, per-module enable toggles
 
 Open (later passes): search hits could also be highlighted on the page while typing (EUI does this); keyboard
 focus of the search with Ctrl+F.
+
+## 2. Unit frames
+
+Reference: EllesmereUI Unit Frames (visibility rules per frame: combat, target, mouseover, casting; portraits
+2D/3D/class; absorbs, heal prediction, class power, castbar on the frame, range fade, dispel highlight) and ElvUI
+(oUF-based: tags, combat fader with "show on target / casting / hover / health", aura bars, portraits). The PC
+was offline for this pass, so the comparison uses both addons' documented features, not a fresh read of the code.
+
+| Area | Phoenix | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Indicators | leader, raid marker, combat, resting, ready check, resurrection, role, PvP, elite, threat | parity with both | complete | none |
+| Health | class / reaction / gradient colours, absorbs, heal prediction, tags | parity | complete | none |
+| Class power | runes, combo points etc, fade when empty | parity | complete | none |
+| Range | range fade with its own alpha, arena stealth alpha | parity | complete | none |
+| Out-of-combat fade | fades whenever out of combat | ElvUI fader and EUI visibility rules show the frame again while you target, cast or hover | a faded player frame stayed faded while casting or targeting out of combat | new "Show while active" (on by default, in the fade cog): full alpha with a target, while casting or channelling, or under the mouse; evaluated on the existing range tick |
+| Settings depth | 371 settings across 7 sub-pages | EUI ~250, ElvUI ~400 | at the deep end | none |
+
+Open (later passes): per-frame visibility rules beyond fading (hide in pet battles / vehicles) as EUI offers.

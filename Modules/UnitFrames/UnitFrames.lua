@@ -50,7 +50,7 @@ local function unit(o)
         background = Style.Background({ alpha = 0.8 }),
         highlight = true, targetBorder = o.targetBorder or false,
         rangeFade = o.range or false, rangeAlpha = 0.5, rangeSpell = "",
-        oocFade = false, oocAlpha = 0.35,
+        oocFade = false, oocAlpha = 0.35, oocKeep = true,
         tooltip = "always",
         bar = {
             color = o.color or "class", fixed = false, dark = false, gradient = 0.2, smooth = true,
