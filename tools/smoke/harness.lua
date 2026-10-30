@@ -2224,6 +2224,45 @@ try("micro menu ember bevel", function()
     assert(not e.panel.shown, "medallion hidden with the switch off")
     S.db.panelIcons = true; S.PanelFor = hadFor
 end)
+-- t169: Ember Bevel across Phoenix chrome: attach over a flat glyph, the global flat switch, macro controls, medallions
+try("ember bevel chrome wiring", function()
+    local CB, G, S = ns.ChromeBevel, ns.modules.General, ns.modules.Skins
+    local f = CreateFrame("Frame")
+    local flat, fa = f:CreateTexture(), 1
+    flat.SetAlpha = function(_, v) fa = v end; flat.GetAlpha = function() return fa end
+    local ic = CB:Attach(flat, "nav-bars", 18)
+    assert(ic and ic.shown and flat:GetAlpha() == 0, "attached bevel shows, flat glyph fades")
+    assert(not CB:Attach(flat, "no-such-glyph", 18), "unknown glyph keeps the flat one")
+    CB:State(ic, "hover")
+    local was = G.db.chromeStyle
+    G.db.chromeStyle = "flat"; CB:Refresh()
+    assert(not ic.shown and flat:GetAlpha() == 1, "flat style brings the glyph back")
+    G.db.chromeStyle = was; CB:Refresh()
+    assert(ic.shown, "bevel back")
+    for _, w in ipairs({ "nav-bars", "nav-frames", "nav-combat", "win-close", "tab-text", "tab-layout" }) do
+        assert(CB.Has(w), "missing " .. w)
+    end
+    assert(ns.Config == nil or ns.Config.TabGlyph == nil or ns.Config.TabGlyph("Text") == "tab-text", "tab glyph by name")
+    -- macro window controls
+    local mf = CreateFrame("Frame", "MacroFrame", UIParent)
+    rawset(env, "MacroFrame", mf)
+    local nb = CreateFrame("Button", "MacroNewButton", mf)
+    rawset(env, "MacroNewButton", nb)
+    S:SetupMacro()
+    rawset(env, "MacroFrame", nil); rawset(env, "MacroNewButton", nil)
+    -- medallions on windows outside the skin list
+    local bags = CreateFrame("Frame")
+    local hadOn = rawget(S, "IsEnabled")
+    S.IsEnabled = function() return true end
+    S.db.panelIcons = true
+    S:Medallion(bags, "panel-bags")
+    S.db.panelIcons = false; S:Medallion(bags, "panel-bags")
+    S.db.panelIcons = true; S.IsEnabled = hadOn
+    local glyphs = {}
+    for _, e in ipairs(S.MEDALLIONS) do glyphs[e[2]] = true; assert(ns.ChromeBevelData.panels[e[2]], e[2]) end
+    for _, g in ipairs({ "panel-bags", "panel-map", "panel-quests", "panel-macro", "panel-guild", "panel-talents",
+        "panel-help", "panel-bank" }) do assert(glyphs[g], "no medallion site for " .. g) end
+end)
 -- t156: Blizzard's OnLeave / SetNormal put the micro art back; the skin fades it again, and off restores it
 try("micro menu art stays faded after Blizzard updates", function()
     local S = ns.modules.Skins

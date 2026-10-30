@@ -4361,6 +4361,8 @@ local T = {
     SKINS_MICRO_FLAT = "Plano",
     SKINS_PANEL_ICONS = "Medallones de ventana",
     SKINS_PANEL_ICONS_DESC = "Un medallón de ascuas de Phoenix en la esquina superior izquierda de cada ventana, que muestra para qué sirve.",
+    CHROME_STYLE = "Iconos de la interfaz",
+    CHROME_STYLE_DESC = "Los iconos propios de Phoenix en la barra de ajustes, las casillas de página, las subpáginas, los controles de ventana y la ventana de macros. Bisel de ascuas: enmarcados y con el tema. Plano: glifos simples.",
 }
 
 ns.RegisterLocale("esES", T)

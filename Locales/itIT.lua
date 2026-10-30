@@ -4361,6 +4361,8 @@ local T = {
     SKINS_MICRO_FLAT = "Piatto",
     SKINS_PANEL_ICONS = "Medaglioni delle finestre",
     SKINS_PANEL_ICONS_DESC = "Un medaglione di brace Phoenix nell'angolo in alto a sinistra di ogni finestra, che mostra a cosa serve.",
+    CHROME_STYLE = "Icone dell'interfaccia",
+    CHROME_STYLE_DESC = "Le icone di Phoenix nella barra delle impostazioni, nelle tessere di pagina, nelle sottopagine, nei controlli delle finestre e nella finestra delle macro. Smusso di brace: incorniciate e a tema. Piatto: glifi semplici.",
 }
 
 ns.RegisterLocale("itIT", T)

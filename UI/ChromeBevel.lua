@@ -129,10 +129,49 @@ function CB:Flash(ic, paint)
     end)
 end
 
--- live theme swap: every icon repaints in the new family
+-- General > Chrome icons: Ember Bevel everywhere Phoenix draws chrome, or the flat glyphs
+function CB.Enabled()
+    local g = ns.modules and ns.modules.General
+    return not (g and g.db and g.db.chromeStyle == "flat")
+end
+
+-- Puts a bevel icon over a flat glyph texture (rail rows, headers, buttons); the flat one is faded out while
+-- the bevel shows and comes back with "flat". px: the frame size to show. Returns the icon, or nil when the
+-- glyph has no cell (the flat glyph simply stays).
+function CB:Attach(flat, name, px, layer)
+    if not (flat and name and CB.Has(name)) then return nil end
+    local ic = self:Create(flat:GetParent(), layer or "ARTWORK", 3)
+    ic.flat, ic.attached = flat, true
+    ic.tex:SetPoint("CENTER", flat, "CENTER")
+    self:SetSize(ic, CB.CellFor(px))
+    ic.name, ic.state, ic.drawPx = name, "normal", px
+    self:Sync(ic)
+    return ic
+end
+
+function CB:Sync(ic)
+    local on = CB.Enabled()
+    if ic.flat then ic.flat:SetAlpha(on and 0 or 1) end
+    self:SetShown(ic, on)
+    if on then self:Set(ic, ic.name, ic.state, ic.drawPx) end
+    if ic.onSync then ic.onSync(on) end
+end
+
+-- For attached icons: change the state ("normal" | "hover" | "pressed" | "disabled") from a Paint function.
+function CB:State(ic, state)
+    if not ic then return end
+    ic.state = state
+    if ic.shown and not ic.flashing then self:Set(ic, ic.name, state, ic.drawPx) end
+end
+
+-- live theme / style swap: every icon repaints in the new family
 function CB:Refresh()
     for ic in pairs(live) do
-        if ic.name and not ic.flashing then self:Set(ic, ic.name, ic.state, ic.drawPx) end
+        if ic.attached then
+            self:Sync(ic)
+        elseif ic.name and not ic.flashing then
+            self:Set(ic, ic.name, ic.state, ic.drawPx)
+        end
     end
 end
 if ns.Events then ns.Events:Listen("PUI_THEME_CHANGED", CB, function() CB:Refresh() end) end

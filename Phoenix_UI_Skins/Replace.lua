@@ -42,6 +42,13 @@ function M.Replacement(opts)
         win.close = W:IconButton(win, "close", 22, CLOSE)
         win.close:SetPoint("TOPRIGHT", -PAD + 4, -PAD + 4)
         win.close.onClick = function() opts.close() end
+        win.close.bevel = ns.ChromeBevel and ns.ChromeBevel:Attach(win.close.icon, "win-close", 16)
+        -- the window's medallion (Skins > Window medallions)
+        for _, entry in ipairs(M.MEDALLIONS or {}) do
+            if entry[1] == "PhoenixUI_" .. opts.frame then
+                win:HookScript("OnShow", function(self) M:Medallion(self, entry[2]) end)
+            end
+        end
         win.blizz = W:IconButton(win, "link", 22, ns.L.SKINS_OWN_BLIZZARD)
         win.blizz:SetPoint("RIGHT", win.close, "LEFT", -4, 0)
         win.blizz.onClick = function() r.visit = true; r:Sync() end

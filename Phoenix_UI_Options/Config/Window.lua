@@ -176,6 +176,14 @@ local function buildTopBar(f)
     h.close:SetPoint("TOPRIGHT", -12, -12)
     h.close:SetFrameLevel(f:GetFrameLevel() + 60)
     h.close.onClick = function() f:Hide() end
+    h.close.bevel = ns.ChromeBevel and ns.ChromeBevel:Attach(h.close.icon, "win-close", 22)
+    if h.close.bevel then
+        h.close:HookScript("OnEnter", function(b) ns.ChromeBevel:State(b.bevel, "hover") end)
+        h.close:HookScript("OnLeave", function(b) ns.ChromeBevel:State(b.bevel, "normal") end)
+        h.close:HookScript("OnMouseDown", function(b)
+            ns.ChromeBevel:Flash(b.bevel, function() ns.ChromeBevel:State(b.bevel, "normal") end)
+        end)
+    end
 
     h.search = W:Input(h, RAIL_W - 28, L.SEARCH_PLACEHOLDER)
     h.search:SetHeight(30)
@@ -206,6 +214,7 @@ local function groupHead(parent, g)
     b.bg:SetPoint("TOPLEFT", 6, -1); b.bg:SetPoint("BOTTOMRIGHT", -6, 1)
     b.icon = W.Icon(b, g.icon, 16)
     b.icon:SetPoint("TOPLEFT", 14, -9)
+    b.bevel = ns.ChromeBevel and ns.ChromeBevel:Attach(b.icon, "nav-" .. g.key, 18)
     b.label = W.Text(b, "heading", "text.secondary")
     b.label:SetPoint("LEFT", b.icon, "RIGHT", 9, 0)
     b.label:SetText(L[g.label] or g.label)
@@ -222,6 +231,7 @@ local function groupHead(parent, g)
         local open = Config.group == self.group.key
         W.Color(self.bg, "bg.hover", self.hover and 0.9 or 0)
         W.Color(self.icon, open and "accent.primary" or (self.hover and "text.primary" or "text.secondary"))
+        if self.bevel then ns.ChromeBevel:State(self.bevel, (open or self.hover) and "hover" or "normal") end
         Skin:Text(self.label, "heading", open and "text.primary" or (self.hover and "text.primary" or "text.secondary"))
         Skin:Text(self.count, "small", "text.muted")
         Skin:Text(self.line, "small", "text.muted", 11)
@@ -244,6 +254,20 @@ local function groupHead(parent, g)
     return b
 end
 
+-- The Ember Bevel tab glyph for a sub-page, by what its name says (the tick stays when nothing fits).
+local TAB_WORDS = {
+    { "tab-text", { "text", "font", "label", "name" } }, { "tab-colours", { "colo" } },
+    { "tab-layout", { "layout", "position", "size", "bars", "buttons", "frames", "grid", "anchor" } },
+    { "tab-behaviour", { "behav", "visib", "fade", "auto", "rule", "filter", "alert", "when" } },
+    { "tab-appearance", { "look", "appear", "style", "skin", "icon", "texture", "glow", "border", "extra" } },
+}
+function Config.TabGlyph(label)
+    local l = tostring(label or ""):lower()
+    for _, e in ipairs(TAB_WORDS) do
+        for _, w in ipairs(e[2]) do if l:find(w, 1, true) then return e[1] end end
+    end
+end
+
 -- A sub-page row under the open page: a short tick, its name; the current one in the accent.
 local function subRow(parent)
     local r = CreateFrame("Button", nil, parent)
@@ -258,6 +282,7 @@ local function subRow(parent)
     function r:Paint()
         local on = self.page and self.page.tab == self.tab
         W.Color(self.tick, on and "accent.primary" or "border.strong")
+        if self.bevel then ns.ChromeBevel:State(self.bevel, (on or self.hover) and "hover" or "normal") end
         Skin:Text(self.label, "desc", on and "accent.primary" or (self.hover and "text.primary" or "text.muted"))
     end
     r:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
@@ -302,6 +327,7 @@ local function navRow(parent, key)
     r.bar:SetPoint("TOPLEFT", r.bg, "TOPLEFT"); r.bar:SetPoint("BOTTOMLEFT", r.bg, "BOTTOMLEFT")
     r.bar:SetWidth(2)
     r.icon = W.Icon(r, icon, 15)
+    r.bevel = ns.ChromeBevel and ns.ChromeBevel:Attach(r.icon, "module-" .. tostring(key):lower(), 17)
     r.icon:SetPoint("LEFT", 16, 0)
     r.label = W.Text(r, "body", "text.secondary")
     r.label:SetPoint("LEFT", r.icon, "RIGHT", 9, 0)
@@ -334,11 +360,13 @@ local function navRow(parent, key)
             Skin:Gradient(self.bar, "VERTICAL", "accent.secondary", "accent.primary")
             self.bar:Show()
             W.Color(self.icon, "accent.primary")
+            if self.bevel then ns.ChromeBevel:State(self.bevel, "hover") end
             Skin:Text(self.label, "body", "text.primary")
         else
             W.Color(self.bg, "bg.hover", self.hover and 0.9 or 0)
             self.bar:Hide()
             W.Color(self.icon, self.hover and "text.primary" or "text.muted")
+            if self.bevel then ns.ChromeBevel:State(self.bevel, self.hover and "hover" or "normal") end
             Skin:Text(self.label, "body", self.hover and "text.primary" or "text.secondary")
         end
         self.now, self.target = Config:Depth(self.key)
@@ -439,6 +467,12 @@ function Config:LayoutSidebar()
             sb.subs[ns_] = r
             r.page, r.tab = page, i
             r.label:SetText(t.label)
+            local glyph = ns.ChromeBevel and Config.TabGlyph(t.label)
+            if glyph and not r.bevel then r.bevel = ns.ChromeBevel:Attach(r.tick, glyph, 14) end
+            if r.bevel then
+                r.bevel.name = glyph or r.bevel.name
+                if glyph then ns.ChromeBevel:Sync(r.bevel) else ns.ChromeBevel:SetShown(r.bevel, false); r.tick:SetAlpha(1) end
+            end
             place(r, NAV_SUB)
             r:Paint()
         end

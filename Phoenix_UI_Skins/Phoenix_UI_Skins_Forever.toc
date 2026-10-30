@@ -66,3 +66,4 @@ Trade.lua
 PvPMatch.lua
 Settings.lua
 Housing.lua
+Macro.lua

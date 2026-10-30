@@ -762,6 +762,13 @@ local function buildPageHeader(page, m, schema)
     h.iconBg:SetPoint("TOPLEFT", PAD, -14)
     h.icon = W.Icon(h, m.icon, 26, "accent.primary")
     h.icon:SetPoint("CENTER", h.iconBg)
+    -- the module tile in Ember Bevel: the framed module icon fills the 52 px tile (the flat tile and glyph fade)
+    h.bevel = ns.ChromeBevel and ns.ChromeBevel:Attach(h.icon, "module-" .. tostring(m.key):lower(), 52)
+    if h.bevel then
+        local function tile() h.iconBg:SetAlpha(ns.ChromeBevel.Enabled() and 0 or 1) end
+        tile()
+        h.bevel.onSync = tile
+    end
     h.crumb = W.Text(h, "small", "text.muted")
     h.crumb:SetPoint("TOPLEFT", h.iconBg, "TOPRIGHT", 14, -2)
     h.crumb:SetWordWrap(false)

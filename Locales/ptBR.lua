@@ -4361,6 +4361,8 @@ local T = {
     SKINS_MICRO_FLAT = "Plano",
     SKINS_PANEL_ICONS = "Medalhões de janela",
     SKINS_PANEL_ICONS_DESC = "Um medalhão de brasa do Phoenix no canto superior esquerdo de cada janela, mostrando para que ela serve.",
+    CHROME_STYLE = "Ícones da interface",
+    CHROME_STYLE_DESC = "Os ícones do Phoenix na barra de configurações, nos blocos de página, nas subpáginas, nos controles de janela e na janela de macros. Bisel de brasa: emoldurados e no tema. Plano: glifos simples.",
 }
 
 ns.RegisterLocale("ptBR", T)

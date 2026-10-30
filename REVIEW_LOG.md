@@ -77,3 +77,8 @@ checked against the shipping code (Phoenix Font, the merged 78 px header) before
   each theme, or made grey for neutral.
 - The sources (the approved theme folders) stay outside the repo; `gen_chrome_bevel.py` reads them through
   `PUI_CHROME_ART`.
+
+## 6. t169 — Ember Bevel wired through Phoenix chrome
+- Settings rail (group heads + module rows), sub-page tabs, page header tile, window close buttons and the macro window controls show Ember Bevel icons over the flat glyphs; General > Chrome icons (bevel / flat) switches live.
+- Medallions on bags, bank, map, help, macro, talents and the Phoenix replacement windows (quests, guild, …). The shop is skipped: its frame is Blizzard's secure store UI.
+- Hover / pressed states are drawn in game; only normal per theme + a shared disabled set ship (about 13 MB).

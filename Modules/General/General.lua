@@ -28,6 +28,7 @@ local M = ns:NewModule("General", {
             powerColors = POWER_DEFAULTS, dispelColors = DISPEL_DEFAULTS,
         },
         blizzardFonts = true, mute = "",
+        chromeStyle = "bevel", -- Phoenix chrome icons: "bevel" (Ember Bevel, UI/ChromeBevel.lua) or "flat"
         specIconStyle = "zoomed", -- the shared spec icon look (UI/SpecIcon.lua); sites may override it
         -- Phoenix's UI scale (UIParent), below the game's 64 % floor too. Off: the game's own setting rules.
         scale = { enabled = false, auto = true, value = 0.71 },
@@ -133,6 +134,7 @@ end
 
 function M:OnSettingChanged(path)
     if path == "specIconStyle" then return ns.Events:Fire("PUI_SPECICON_STYLE") end
+    if path == "chromeStyle" and ns.ChromeBevel then return ns.ChromeBevel:Refresh() end
     self:Refresh()
 end
 

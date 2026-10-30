@@ -105,9 +105,14 @@ local function closeButton(button)
     holder:SetFrameLevel(button:GetFrameLevel() + 1)
     local glyph = W.Icon(holder, "close", 12, "text.secondary")
     glyph:SetPoint("CENTER")
-    extras[button] = { holder = holder, glyph = glyph }
-    button:HookScript("OnEnter", function() ns.Icons:Tint(glyph, "accent.primary") end)
-    button:HookScript("OnLeave", function() ns.Icons:Tint(glyph, "text.secondary") end)
+    local bevel = ns.ChromeBevel and ns.ChromeBevel:Attach(glyph, "win-close", 18, "OVERLAY")
+    extras[button] = { holder = holder, glyph = glyph, bevel = bevel }
+    button:HookScript("OnEnter", function()
+        ns.Icons:Tint(glyph, "accent.primary"); if bevel then ns.ChromeBevel:State(bevel, "hover") end
+    end)
+    button:HookScript("OnLeave", function()
+        ns.Icons:Tint(glyph, "text.secondary"); if bevel then ns.ChromeBevel:State(bevel, "normal") end
+    end)
 end
 
 local function tabsOf(frame)
@@ -198,6 +203,46 @@ local function paintPanel(frame, e, dialog)
     end
 end
 M._PaintPanel = paintPanel
+
+-- Medallions on windows outside the skin list (Phoenix's own bags and bank, the map, the macro and talent
+-- windows, help): { global frame name, glyph, load-on-demand addon }. The shop is left alone: its frame is
+-- Blizzard's secure store UI.
+M.MEDALLIONS = {
+    { "PhoenixUI_Bags", "panel-bags" }, { "ContainerFrameCombinedBags", "panel-bags" },
+    { "PhoenixUI_Bank", "panel-bank" }, { "BankFrame", "panel-bank" },
+    { "WorldMapFrame", "panel-map" }, { "HelpFrame", "panel-help" },
+    { "MacroFrame", "panel-macro", "Blizzard_MacroUI" }, { "PlayerSpellsFrame", "panel-talents", "Blizzard_PlayerSpells" },
+    -- Phoenix's own replacement windows (Replace.lua names them PhoenixUI_<Blizzard frame>)
+    { "PhoenixUI_QuestFrame", "panel-quests" }, { "PhoenixUI_CommunitiesFrame", "panel-guild" },
+    { "PhoenixUI_CharacterFrame", "panel-character" }, { "PhoenixUI_AchievementFrame", "panel-achievements" },
+    { "PhoenixUI_CollectionsJournal", "panel-collections" }, { "PhoenixUI_LootFrame", "panel-loot" },
+    { "PhoenixUI_FriendsFrame", "panel-friends" }, { "PhoenixUI_CalendarFrame", "panel-calendar" },
+    { "PhoenixUI_EncounterJournal", "panel-journal" }, { "PhoenixUI_MerchantFrame", "panel-merchant" },
+    { "PhoenixUI_WeeklyRewardsFrame", "panel-vault" }, { "PhoenixUI_MailFrame", "panel-mail" },
+}
+local medal = setmetatable({}, { __mode = "k" }) -- [frame] = extras for its medallion
+function M:Medallion(frame, glyph)
+    if not (frame and glyph and frame.CreateTexture) then return end
+    local e = medal[frame] or {}
+    medal[frame] = e
+    local on = self:IsEnabled() and self.db.panelIcons and true or false
+    local CB = ns.ChromeBevel
+    if on and not e.panel and CB then
+        e.panel = CB:Create(frame, "OVERLAY", 5)
+        CB:SetSize(e.panel, M.PANEL_SIZE)
+        e.panel.tex:SetPoint("TOPLEFT", -14, 14)
+    end
+    if e.panel then
+        CB:SetShown(e.panel, on)
+        if on then CB:Set(e.panel, glyph, "normal", M.PANEL_SIZE) end
+    end
+end
+function M:ApplyMedallions()
+    for _, entry in ipairs(self.MEDALLIONS) do
+        local f = rawget(_G, entry[1])
+        if f then self:Medallion(f, entry[2]) end
+    end
+end
 
 local function window(frame, dialog)
     if not frame or winOn[frame] then return end
@@ -296,6 +341,7 @@ function M:Redress()
 end
 function M:OnSettingChanged(path)
     if path == "titleStyle" or path == "closeStyle" or path == "tabs" or path == "panelIcons" then self:Redress() end
+    if path == "panelIcons" then self:ApplyMedallions() end
     self:Refresh()
 end
 function M.IsWindowOn(frame) return winOn[frame] and true or false end
@@ -368,7 +414,7 @@ function M:OnEnable()
     ns.Events:On("ADDON_LOADED", self, function(_, _, name)
         local entry = byAddon[name]
         if entry then byAddon[name] = nil; apply(entry) end
-        if name:find("^Blizzard_") then M:RunSetups() end
+        if name:find("^Blizzard_") then M:RunSetups(); M:ApplyMedallions() end
         local mv = moveByAddon[name]
         if mv then for _, f in ipairs(mv.frames) do M:HookMovable(f) end end
     end)
@@ -382,4 +428,10 @@ function M:OnEnable()
     if self.SetupMoving then self:SetupMoving() end
     if self.RefreshMailAlts then self:RefreshMailAlts() end
     hookTabs()
+    self:ApplyMedallions()
+    -- windows Phoenix builds on first open (bags, bank, the replacement windows) get theirs when shown
+    if not self._medalPEW then
+        self._medalPEW = true
+        ns.Events:On("PLAYER_ENTERING_WORLD", self, function() M:ApplyMedallions() end)
+    end
 end

@@ -4361,6 +4361,8 @@ local T = {
     SKINS_MICRO_FLAT = "평면",
     SKINS_PANEL_ICONS = "창 메달",
     SKINS_PANEL_ICONS_DESC = "스킨이 적용된 각 창의 왼쪽 위에 창의 용도를 보여 주는 Phoenix 불씨 메달을 표시합니다.",
+    CHROME_STYLE = "인터페이스 아이콘",
+    CHROME_STYLE_DESC = "설정 목록, 페이지 타일, 하위 페이지, 창 버튼, 매크로 창의 Phoenix 아이콘입니다. 엠버 베벨: 테두리와 테마 색상. 평면: 단순한 글리프.",
 }
 
 ns.RegisterLocale("koKR", T)

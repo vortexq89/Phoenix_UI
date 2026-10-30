@@ -4361,6 +4361,8 @@ local T = {
     SKINS_MICRO_FLAT = "Plat",
     SKINS_PANEL_ICONS = "Médaillons de fenêtre",
     SKINS_PANEL_ICONS_DESC = "Un médaillon de braise Phoenix dans le coin supérieur gauche de chaque fenêtre habillée, qui indique son rôle.",
+    CHROME_STYLE = "Icônes d'interface",
+    CHROME_STYLE_DESC = "Les icônes de Phoenix dans la barre des réglages, les tuiles de page, les sous-pages, les contrôles de fenêtre et la fenêtre des macros. Biseau de braise : encadrées et aux couleurs du thème. Plat : glyphes simples.",
 }
 
 ns.RegisterLocale("frFR", T)

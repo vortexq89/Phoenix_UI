@@ -4361,6 +4361,8 @@ local T = {
     SKINS_MICRO_FLAT = "Flach",
     SKINS_PANEL_ICONS = "Fenstermedaillons",
     SKINS_PANEL_ICONS_DESC = "Ein Phoenix-Glutmedaillon oben links in jedem gestalteten Fenster, das zeigt, wofür das Fenster da ist.",
+    CHROME_STYLE = "Oberflächen-Symbole",
+    CHROME_STYLE_DESC = "Phoenix' eigene Symbole in der Einstellungsleiste, den Seitenkacheln, Unterseiten, Fenstersteuerungen und im Makrofenster. Glutfassung: gerahmt und im Farbschema. Flach: schlichte Glyphen.",
 }
 
 ns.RegisterLocale("deDE", T)

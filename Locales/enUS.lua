@@ -4387,4 +4387,6 @@ ns.RegisterLocale("enUS", {
     SKINS_MICRO_FLAT = "Flat",
     SKINS_PANEL_ICONS = "Window medallions",
     SKINS_PANEL_ICONS_DESC = "A Phoenix ember medallion in the top-left corner of each skinned window, showing what the window is for.",
+    CHROME_STYLE = "Chrome icons",
+    CHROME_STYLE_DESC = "Phoenix's own icons in the settings rail, page tiles, sub-pages, window controls and the macro window. Ember Bevel: framed and themed. Flat: plain glyphs.",
 })

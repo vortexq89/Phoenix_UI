@@ -4361,6 +4361,8 @@ local T = {
     SKINS_MICRO_FLAT = "平面",
     SKINS_PANEL_ICONS = "視窗徽章",
     SKINS_PANEL_ICONS_DESC = "在每個美化視窗的左上角顯示 Phoenix 餘燼徽章，標示視窗用途。",
+    CHROME_STYLE = "介面圖示",
+    CHROME_STYLE_DESC = "設定欄、頁面圖塊、子頁面、視窗按鈕和巨集視窗中的 Phoenix 圖示。餘燼斜面：帶框並隨主題變色。平面：簡單字形。",
 }
 
 ns.RegisterLocale("zhTW", T)

@@ -294,6 +294,11 @@ M.IconButton = iconButton
 
 local function build()
     win = CreateFrame("Frame", "PhoenixUI_Bags", UIParent)
+    -- the Ember Bevel medallion in the corner (Skins > Window medallions), when Skins is loaded
+    win:HookScript("OnShow", function(self)
+        local S = ns:Loaded("Skins")
+        if S and S.Medallion then S:Medallion(self, "panel-bags") end
+    end)
     win:SetFrameStrata("MEDIUM")
     win:SetToplevel(true)
     win:SetClampedToScreen(true)
