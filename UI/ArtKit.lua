@@ -9,6 +9,7 @@ local A = ns.Art
     Media/Art/PhoenixUI_Portraits  portrait rings by classification     Media/Art/PhoenixUI_Actions  action / stance / cast
     Media/Art/PhoenixUI_Bars       health / power frames, caps, gems    Media/Art/PhoenixUI_Frames   plates, party, raid
     Media/Art/PhoenixUI_Panels     minimap ring, tooltip, chat, bags    PhoenixBarFill / PhoenixCastFill  greyscale fills
+    Media/Art/PhoenixUI_V9         v9.1 pieces (loot, rolls, queue pop, ready check, talents, map, XP, debuff marks ...)
     Media/Art/PhoenixUI_Modules    v8.1 module pieces: meter, gallery, plugins, indicators, resources, upcoming modules
 
     A:Dress(frame, sheet, piece[, opts]) puts the piece over (or under) a frame on its own child frame and returns the
@@ -34,6 +35,7 @@ KIT.portraits = {
   ring_elite             = { w = 231, h = 248, coords = { 0.761719, 0.987305, 0.007812, 0.492188 }, holeX = 0.5001, holeY = 0.6619, holeR = 0.2045 },
   ring_rare              = { w = 229, h = 248, coords = { 0.012695, 0.236328, 0.507812, 0.992188 }, holeX = 0.5005, holeY = 0.6559, holeR = 0.208 },
   ring_rareelite         = { w = 231, h = 248, coords = { 0.261719, 0.487305, 0.507812, 0.992188 }, holeX = 0.5, holeY = 0.6665, holeR = 0.1973 },
+  ring_boss_s            = { w = 99, h = 124, coords = { 0.515625, 0.612305, 0.515625, 0.757812 }, holeX = 0.5032, holeY = 0.6417, holeR = 0.2357 },
 }
 
 -- PhoenixUI_Actions: 1024x512 RGBA, pad 4px. © 2026 VortexQ8 - Phoenix UI - All rights reserved
@@ -150,6 +152,48 @@ KIT.modules = {
   row_sep                = { w = 256, h = 10, coords = { 0.136719, 0.386719, 0.937500, 0.957031 }, left = 8, right = 8, top = 0, bottom = 0 },
 }
 
+-- PhoenixUI_V9: 1024x512 RGBA, 37 pieces. © 2026 VortexQ8 - Phoenix UI - All rights reserved
+KIT.v9 = {
+  file = ROOT .. "PhoenixUI_V9",
+  arena_ring             = { w = 47, h = 48, coords = { 0.902344, 0.948242, 0.246094, 0.339844 } },
+  codex                  = { w = 224, h = 316, coords = { 0.222656, 0.441406, 0.007812, 0.625000 }, left = 28, right = 20, top = 44, bottom = 20 },
+  codex_tab              = { w = 128, h = 44, coords = { 0.839844, 0.964844, 0.007812, 0.093750 }, left = 44, right = 12, top = 10, bottom = 10 },
+  debuff_bleed           = { w = 32, h = 32, coords = { 0.902344, 0.933594, 0.433594, 0.496094 } },
+  debuff_buff            = { w = 32, h = 32, coords = { 0.582031, 0.613281, 0.847656, 0.910156 } },
+  debuff_curse           = { w = 32, h = 32, coords = { 0.957031, 0.988281, 0.324219, 0.386719 } },
+  debuff_disease         = { w = 32, h = 32, coords = { 0.941406, 0.972656, 0.402344, 0.464844 } },
+  debuff_magic           = { w = 32, h = 32, coords = { 0.957031, 0.988281, 0.246094, 0.308594 } },
+  debuff_poison          = { w = 32, h = 32, coords = { 0.902344, 0.933594, 0.355469, 0.417969 } },
+  extra_action           = { w = 192, h = 98, coords = { 0.003906, 0.191406, 0.728516, 0.919922 } },
+  loot_panel             = { w = 150, h = 292, coords = { 0.449219, 0.595703, 0.007812, 0.578125 }, left = 18, right = 18, top = 44, bottom = 18 },
+  loot_row               = { w = 256, h = 52, coords = { 0.644531, 0.894531, 0.847656, 0.949219 }, left = 12, right = 12, top = 12, bottom = 12 },
+  map_border             = { w = 216, h = 360, coords = { 0.003906, 0.214844, 0.007812, 0.710938 }, left = 40, right = 40, top = 64, bottom = 24 },
+  mark_bleed             = { w = 10, h = 16, coords = { 0.499023, 0.508789, 0.593750, 0.625000 } },
+  mark_buff              = { w = 14, h = 16, coords = { 0.981445, 0.995117, 0.402344, 0.433594 } },
+  mark_curse             = { w = 16, h = 15, coords = { 0.621094, 0.636719, 0.847656, 0.876953 } },
+  mark_disease           = { w = 16, h = 16, coords = { 0.472656, 0.488281, 0.593750, 0.625000 } },
+  mark_magic             = { w = 13, h = 16, coords = { 0.981445, 0.994141, 0.449219, 0.480469 } },
+  mark_poison            = { w = 10, h = 16, coords = { 0.452148, 0.461914, 0.593750, 0.625000 } },
+  micro_hover            = { w = 32, h = 31, coords = { 0.642578, 0.673828, 0.511719, 0.572266 } },
+  micro_normal           = { w = 31, h = 32, coords = { 0.603516, 0.633789, 0.511719, 0.574219 } },
+  micro_pressed          = { w = 31, h = 32, coords = { 0.681641, 0.711914, 0.511719, 0.574219 } },
+  obj_bullet             = { w = 24, h = 18, coords = { 0.972656, 0.996094, 0.195312, 0.230469 } },
+  quest_campaign         = { w = 20, h = 24, coords = { 0.974609, 0.994141, 0.007812, 0.054688 } },
+  quest_daily            = { w = 23, h = 24, coords = { 0.972656, 0.995117, 0.070312, 0.117188 } },
+  quest_world            = { w = 24, h = 24, coords = { 0.972656, 0.996094, 0.132812, 0.179688 } },
+  queue_pop              = { w = 360, h = 137, coords = { 0.222656, 0.574219, 0.642578, 0.910156 } },
+  ready_check            = { w = 256, h = 120, coords = { 0.582031, 0.832031, 0.595703, 0.830078 } },
+  roll_greed             = { w = 32, h = 32, coords = { 0.759766, 0.791016, 0.511719, 0.574219 } },
+  roll_need              = { w = 32, h = 32, coords = { 0.720703, 0.751953, 0.511719, 0.574219 } },
+  roll_pass              = { w = 32, h = 32, coords = { 0.798828, 0.830078, 0.085938, 0.148438 } },
+  roll_transmog          = { w = 31, h = 32, coords = { 0.798828, 0.829102, 0.007812, 0.070312 } },
+  talent_node            = { w = 48, h = 49, coords = { 0.839844, 0.886719, 0.234375, 0.330078 } },
+  talent_node_sel        = { w = 52, h = 54, coords = { 0.839844, 0.890625, 0.111328, 0.216797 } },
+  talent_square          = { w = 64, h = 62, coords = { 0.902344, 0.964844, 0.109375, 0.230469 }, left = 8, right = 8, top = 8, bottom = 8 },
+  trinket_socket         = { w = 24, h = 23, coords = { 0.003906, 0.027344, 0.937500, 0.982422 } },
+  xp_bar                 = { w = 448, h = 30, coords = { 0.199219, 0.636719, 0.929688, 0.988281 }, left = 40, right = 40, top = 10, bottom = 10 },
+}
+
 A.FILL = ROOT .. "PhoenixBarFill"
 A.CAST_FILL = ROOT .. "PhoenixCastFill"
 A.DEFAULTS["cast.capScale"] = 1.4
@@ -197,6 +241,18 @@ end
 
 local dressed = setmetatable({}, { __mode = "k" }) -- frame -> { [slot] = texture }
 
+-- MODULES_SPEC shared rule: the painted glass is translucent, so a #0E0B0A 92% fill sits under it, inset 3
+local function backdrop(t, on)
+    if not on then if t.backdrop then t.backdrop:Hide() end return end
+    local bd = t.backdrop
+    if not bd then bd = t.holder:CreateTexture(nil, "BACKGROUND", nil, -8); t.backdrop = bd end
+    bd:SetColorTexture(0x0E / 255, 0x0B / 255, 0x0A / 255, 0.92)
+    bd:ClearAllPoints()
+    bd:SetPoint("TOPLEFT", t, "TOPLEFT", 3, -3)
+    bd:SetPoint("BOTTOMRIGHT", t, "BOTTOMRIGHT", -3, 3)
+    bd:Show()
+end
+
 -- opts: slot (default piece), out (outset px, or { l, r, t, b }), layer, level (+/- frame levels), scale, alpha
 function A:Dress(frame, sheet, key, opts)
     if not frame then return nil end
@@ -205,6 +261,13 @@ function A:Dress(frame, sheet, key, opts)
     local set = dressed[frame]
     if not set then set = {}; dressed[frame] = set end
     local t = set[slot]
+    if not t and InCombatLockdown and InCombatLockdown() and frame.IsProtected and frame:IsProtected() then
+        -- QA-05: a new holder on a secure button or header waits for the end of combat (existing ones only swap coords)
+        if ns.Combat and ns.Combat.Run then
+            ns.Combat:Run("art." .. tostring(frame) .. "." .. slot, function() A:Dress(frame, sheet, key, opts) end)
+        end
+        return nil
+    end
     if not t then
         local holder = CreateFrame("Frame", nil, frame)
         holder:SetFrameLevel(math.max(0, frame:GetFrameLevel() + (opts.level or 1)))
@@ -212,7 +275,7 @@ function A:Dress(frame, sheet, key, opts)
         t.holder = holder
         set[slot] = t
     end
-    t.sheet, t.key, t.opts = sheet, key, opts
+    t.sheet, t.key, t.opts, t.undressed = sheet, key, opts, nil
     local on = A.GameArt() and self:PaintKit(t, sheet, key, opts.scale)
     t.holder:SetShown(on and true or false)
     if not on then return t end
@@ -229,31 +292,20 @@ function A:Dress(frame, sheet, key, opts)
     end
     t:SetVertexColor(1, 1, 1, opts.alpha or 1)
     t:SetBlendMode(opts.blend or "BLEND")
-    if opts.backdrop then
-        -- MODULES_SPEC shared rule: the painted glass is translucent, so a #0E0B0A 92% fill sits under it, inset 3
-        local bd = t.backdrop
-        if not bd then bd = t.holder:CreateTexture(nil, "BACKGROUND", nil, -8); t.backdrop = bd end
-        bd:SetColorTexture(0x0E / 255, 0x0B / 255, 0x0A / 255, 0.92)
-        bd:ClearAllPoints()
-        bd:SetPoint("TOPLEFT", t, "TOPLEFT", 3, -3)
-        bd:SetPoint("BOTTOMRIGHT", t, "BOTTOMRIGHT", -3, 3)
-        bd:Show()
-    elseif t.backdrop then
-        t.backdrop:Hide()
-    end
+    backdrop(t, opts.backdrop)
     return t
 end
 
 function A:Undress(frame, slot)
     local set = dressed[frame]
     if not set then return end
-    for k, t in pairs(set) do if not slot or k == slot then t.holder:Hide() end end
+    for k, t in pairs(set) do if not slot or k == slot then t.holder:Hide(); t.undressed = true end end
 end
 
 -- every dressed frame again (theme / look change, a plugin override)
 function A:Redress()
     for frame, set in pairs(dressed) do
-        for _, t in pairs(set) do self:Dress(frame, t.sheet, t.key, t.opts) end
+        for _, t in pairs(set) do if not t.undressed then self:Dress(frame, t.sheet, t.key, t.opts) end end
     end
 end
 
@@ -269,9 +321,12 @@ function A.Classification(unit)
     return "normal"
 end
 
-function A.RingFor(unitKey, unit)
+-- size: the portrait width; boss frames (54 px) take the compact boss ring below 64 px (v9.1)
+function A.RingFor(unitKey, unit, size)
     if unitKey == "player" then return "ring_player" end
-    return A.RING[A.Classification(unit)] or "ring_target"
+    local r = A.RING[A.Classification(unit)] or "ring_target"
+    if r == "ring_boss" and size and size < 64 then return "ring_boss_s" end
+    return r
 end
 
 -- unit frame: health and power frames with caps, portrait ring by classification
@@ -286,7 +341,7 @@ function A:DressUnit(f, unit)
     end
     if f.PortraitHolder and f.PortraitHolder:IsShown() then
         local w = f.PortraitHolder:GetWidth() or 0
-        self:Dress(f.PortraitHolder, "portraits", A.RingFor(f.unitKey, unit), { slot = "ring", out = math.floor(w * 0.45 + 0.5) })
+        self:Dress(f.PortraitHolder, "portraits", A.RingFor(f.unitKey, unit, w), { slot = "ring", out = math.floor(w * 0.45 + 0.5) })
     elseif f.PortraitHolder then
         self:Undress(f.PortraitHolder)
     end

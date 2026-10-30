@@ -204,4 +204,8 @@ ns.FontData = {
       family = "Chivo Mono", weight = "Medium", category = "mono", cyrillic = false },
     { key = "ChivoMonoBold", name = "Phoenix Chivo Mono Bold", file = "ChivoMono-Bold.ttf",
       family = "Chivo Mono", weight = "Bold", category = "mono", cyrillic = false },
+    { key = "GrenzeBlack", name = "Phoenix Grenze Black", file = "Grenze-Black.ttf",
+      family = "Grenze", weight = "Black", category = "serif", cyrillic = false },
+    { key = "MetamorphousRegular", name = "Phoenix Metamorphous Regular", file = "Metamorphous-Regular.ttf",
+      family = "Metamorphous", weight = "Regular", category = "serif", cyrillic = false },
 }

@@ -22,7 +22,7 @@ SRC = sys.argv[1] if len(sys.argv) > 1 else "/tmp/gfonts"
 OUT = "Media/Fonts"
 LICENSES = f"{OUT}/Licenses"
 DATA = "Core/FontData.lua"
-WEIGHTS = {"Regular": 400, "Medium": 500, "SemiBold": 600, "Bold": 700}
+WEIGHTS = {"Regular": 400, "Medium": 500, "SemiBold": 600, "Bold": 700, "Black": 900}
 
 # (key prefix, display family, google/fonts dir, file stem, source, weights, extra axes, licence file, category)
 # source "var" = <stem>[axes].ttf, "static" = <stem>-<Weight>.ttf
@@ -69,6 +69,9 @@ FAMILIES = [
     ("CinzelDeco", "Cinzel Decorative", "ofl/cinzeldecorative", "CinzelDecorative", "static", ["Regular", "Bold"], {}, "OFL.txt", "serif"),
     ("FiraCode", "Fira Code", "ofl/firacode", "FiraCode", "FiraCode[wght].ttf", ["Medium", "Bold"], {}, "OFL.txt", "mono"),
     ("ChivoMono", "Chivo Mono", "ofl/chivomono", "ChivoMono", "ChivoMono[wght].ttf", ["Medium", "Bold"], {}, "OFL.txt", "mono"),
+    # v9.1 combat text faces (figma bro's kit): Grenze Black for crits, Metamorphous (Reserved Font Name: shipped unmodified)
+    ("Grenze", "Grenze", "ofl/grenze", "Grenze", "Grenze[wght].ttf", ["Black"], {}, "OFL.txt", "serif"),
+    ("Metamorphous", "Metamorphous", "ofl/metamorphous", "Metamorphous", "static", ["Regular"], {}, "OFL.txt", "serif"),
 ]
 
 UNICODES = (

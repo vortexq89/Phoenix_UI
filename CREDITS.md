@@ -43,3 +43,14 @@ third-party font, texture or sound listed above keeps its own licence.
 Media/Art/PhoenixUI_{Portraits,Actions,Bars,Frames,Panels,Modules}.blp, PhoenixBarFill.blp and PhoenixCastFill.blp are original
 Phoenix UI art, © 2026 VortexQ8 (ABDULRAHMAN ALYOUSEF), all rights reserved (Media/LICENSE.md). Baked textures only; they frame
 class, spec and ability icons but never replace them.
+
+## Phoenix art kit v9.1
+Media/Art/PhoenixUI_V9.blp (loot and roll icons with the gold-coin greed roll, queue pop, ready check, talents, map border,
+XP bar, debuff marks ...) and the v9.1 PhoenixUI_Portraits.blp (adds the compact boss ring) are original Phoenix UI art,
+© 2026 VortexQ8 (ABDULRAHMAN ALYOUSEF), all rights reserved (Media/LICENSE.md).
+
+## Combat text fonts (v9.1)
+- Grenze Black (Media/Fonts/Grenze-Black.ttf): © 2019 The Grenze Project Authors, SIL OFL 1.1, no Reserved Font Name;
+  a static wght 900 instance, subset by tools/media/gen_fonts.py. Licence: Media/Fonts/Licenses/OFL-Grenze.txt.
+- Metamorphous (Media/Fonts/Metamorphous-Regular.ttf): © 2011-2012 Sorkin Type Co, SIL OFL 1.1 with the Reserved Font
+  Name "Metamorphous"; shipped unmodified. Licence: Media/Fonts/Licenses/OFL-Metamorphous.txt.

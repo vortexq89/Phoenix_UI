@@ -24,6 +24,17 @@ local function lootRow(row, isOn)
     M.KitRow(row, isOn, { alpha = 0.6, bar = color ~= nil, barColor = color })
 end
 
+-- v9.1 roll icons over Blizzard's dice (an overlay, so turning the look off gives the dice back); greed is the gold coin
+local ROLLS = { NeedButton = "roll_need", GreedButton = "roll_greed", TransmogButton = "roll_transmog", PassButton = "roll_pass" }
+function M.RollArt(f)
+    local A = ns.Art
+    if not (A and A.Dress) then return end
+    for field, piece in pairs(ROLLS) do
+        local b = f[field]
+        if b then A:Dress(b, "v9", piece, { slot = "roll", level = 2 }) end
+    end
+end
+
 function M:SkinLoot()
     local isOn = on()
     local lf = _G.LootFrame
@@ -37,6 +48,7 @@ function M:SkinLoot()
                 local c = M.QualityBar(quality)
                 if c then Skin:SetBorderColor(card, c.r, c.g, c.b, 1) end
             end
+            M.RollArt(f)
         end
     end
 end

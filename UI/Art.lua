@@ -129,7 +129,7 @@ function A.Valid(path, v)
     if type(path) ~= "string" then return false end
     if path:find("^effects%.") or path:find("^ash%.") or path:find("^wings%.") then return false end
     if path:find("^atlas%.") then
-        return type(v) == "table" and (path:find("^atlas%.%a+$") ~= nil or (type(v.file) == "string" and type(v.coords) == "table"))
+        return type(v) == "table" and (path:find("^atlas%.%w+$") ~= nil or (type(v.file) == "string" and type(v.coords) == "table"))
     end
     if path:find("^panel%.alpha%.") then return type(v) == "number" and v >= 0.5 and v <= 1 end
     local want = KIND[path] or type(A.DEFAULTS[path] or "")
