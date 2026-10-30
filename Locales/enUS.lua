@@ -4377,4 +4377,8 @@ ns.RegisterLocale("enUS", {
     SPECICON_EMBER = "Ember frame",
     SPECICON_MONO = "Monochrome",
     SPECICON_TINTED = "Class tint",
+    DM_VALUE_FADE = "Value backing",
+    DM_VALUE_FADE_DESC = "A soft dark fade behind the value, so it stays readable over the end of the bar.",
+    PREVIEW_KEEP = "Keep on screen",
+    PREVIEW_KEEP_DESC = "Keep the preview at the top while you scroll. Off: it scrolls away with the page, leaving more room for settings.",
 })

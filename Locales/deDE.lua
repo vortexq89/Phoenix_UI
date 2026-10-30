@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "Glutrahmen",
     SPECICON_MONO = "Graustufen",
     SPECICON_TINTED = "Klassentönung",
+    DM_VALUE_FADE = "Werte-Hintergrund",
+    DM_VALUE_FADE_DESC = "Ein weicher dunkler Verlauf hinter dem Wert, damit er über dem Balkenende lesbar bleibt.",
+    PREVIEW_KEEP = "Im Blick behalten",
+    PREVIEW_KEEP_DESC = "Die Vorschau beim Scrollen oben halten. Aus: Sie scrollt mit der Seite weg und lässt mehr Platz für Einstellungen.",
 }
 
 ns.RegisterLocale("deDE", T)

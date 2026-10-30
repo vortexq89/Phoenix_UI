@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "Moldura de brasa",
     SPECICON_MONO = "Monocromático",
     SPECICON_TINTED = "Tom de classe",
+    DM_VALUE_FADE = "Fundo do valor",
+    DM_VALUE_FADE_DESC = "Um degradê escuro suave atrás do valor, para que fique legível sobre o fim da barra.",
+    PREVIEW_KEEP = "Manter na tela",
+    PREVIEW_KEEP_DESC = "Mantém a prévia no topo ao rolar. Desligado: ela rola com a página e deixa mais espaço para as configurações.",
 }
 
 ns.RegisterLocale("ptBR", T)

@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "餘燼邊框",
     SPECICON_MONO = "單色",
     SPECICON_TINTED = "職業著色",
+    DM_VALUE_FADE = "數值底襯",
+    DM_VALUE_FADE_DESC = "在數值後方加一層柔和的暗色漸層，使其在計量條末端上方依然清晰。",
+    PREVIEW_KEEP = "保持顯示",
+    PREVIEW_KEEP_DESC = "捲動時將預覽固定在頂部。關閉時預覽隨頁面捲走，為設定留出更多空間。",
 }
 
 ns.RegisterLocale("zhTW", T)

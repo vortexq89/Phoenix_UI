@@ -21,7 +21,7 @@ local M = ns:NewModule("DamageMeter", {
             sheen = true, nameClassColor = false, valueClassColor = false,
             specIcon = true, rank = true, valueFormat = "both", clock = true, hideReset = false,
             visibility = "always", idleAlpha = 1, rate = 0.3, tooltip = true, pinSelf = true, filter = "all",
-            ilvl = "name", nameX = 0, nameY = 0, valueX = 0, valueY = 0, iconBorder = "none", iconStyle = "global",
+            ilvl = "name", nameX = 0, nameY = 0, valueX = 0, valueY = 0, valueFade = true, iconBorder = "none", iconStyle = "global",
             headerColor = "theme", headerCustom = { r = 0.2, g = 0.22, b = 0.28 }, headerAlpha = 0,
             bigTimer = { enabled = false, combatOnly = true, label = true, point = "TOP", x = 0, y = -150 },
             lock = false, reportLines = 5, reportChannel = "AUTO", toggleKey = "", resetKey = "", preset = "solo",

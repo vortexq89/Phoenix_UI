@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "잉걸불 테두리",
     SPECICON_MONO = "흑백",
     SPECICON_TINTED = "직업 색조",
+    DM_VALUE_FADE = "수치 배경",
+    DM_VALUE_FADE_DESC = "수치 뒤에 은은한 어두운 그라데이션을 깔아 바 끝 위에서도 읽기 쉽게 합니다.",
+    PREVIEW_KEEP = "화면에 고정",
+    PREVIEW_KEEP_DESC = "스크롤할 때 미리보기를 위쪽에 고정합니다. 끄면 페이지와 함께 스크롤되어 설정 공간이 넓어집니다.",
 }
 
 ns.RegisterLocale("koKR", T)

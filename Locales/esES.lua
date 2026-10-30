@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "Marco de brasas",
     SPECICON_MONO = "Monocromo",
     SPECICON_TINTED = "Tinte de clase",
+    DM_VALUE_FADE = "Fondo del valor",
+    DM_VALUE_FADE_DESC = "Un degradado oscuro suave tras el valor, para que se lea sobre el final de la barra.",
+    PREVIEW_KEEP = "Mantener en pantalla",
+    PREVIEW_KEEP_DESC = "Mantiene la vista previa arriba al desplazarte. Desactivado: se desplaza con la página y deja más espacio a los ajustes.",
 }
 
 ns.RegisterLocale("esES", T)

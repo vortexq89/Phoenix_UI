@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "Cadre de braise",
     SPECICON_MONO = "Monochrome",
     SPECICON_TINTED = "Teinte de classe",
+    DM_VALUE_FADE = "Fond de la valeur",
+    DM_VALUE_FADE_DESC = "Un léger dégradé sombre derrière la valeur, pour qu'elle reste lisible au bout de la barre.",
+    PREVIEW_KEEP = "Garder à l'écran",
+    PREVIEW_KEEP_DESC = "Garde l'aperçu en haut pendant le défilement. Désactivé : il défile avec la page et laisse plus de place aux réglages.",
 }
 
 ns.RegisterLocale("frFR", T)

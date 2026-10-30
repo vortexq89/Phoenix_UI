@@ -85,7 +85,7 @@ local rows = {
     meter({ type = "toggle", key = "meter.specIcon", label = "DM_SPEC_ICON" }),
     meter({ type = "select", key = "meter.iconStyle", label = "SPECICON_STYLE", desc = "DM_ICON_STYLE_DESC",
       values = ns.SpecIcon.Values(true), disabled = function(m) return not m.db.meter.specIcon end }),
-    meter({ type = "custom", label = "SPECICON_SAMPLES", build = function(row)
+    meter({ type = "custom", label = "SPECICON_SAMPLES", height = 64, build = function(row)
         local dm = ns.modules.DamageMeter
         return ns.SpecIcon.Strip(row, function() return ns.SpecIcon.Resolve(dm.db.meter.iconStyle) end,
             function(v) ns.DB:Set(dm, "meter.iconStyle", v); dm:Refresh() end)
@@ -100,6 +100,7 @@ local rows = {
     } }),
     meter({ type = "range", key = "meter.nameX", label = "DM_NAME_X", min = -20, max = 40, step = 1 }),
     meter({ type = "range", key = "meter.nameY", label = "DM_NAME_Y", min = -10, max = 10, step = 1 }),
+    meter({ type = "toggle", key = "meter.valueFade", label = "DM_VALUE_FADE", desc = "DM_VALUE_FADE_DESC" }),
     meter({ type = "range", key = "meter.valueX", label = "DM_VALUE_X", min = -40, max = 20, step = 1 }),
     meter({ type = "range", key = "meter.valueY", label = "DM_VALUE_Y", min = -10, max = 10, step = 1 }),
     meter({ type = "toggle", key = "meter.rank", label = "DM_RANK" }),

@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "余烬边框",
     SPECICON_MONO = "单色",
     SPECICON_TINTED = "职业着色",
+    DM_VALUE_FADE = "数值底衬",
+    DM_VALUE_FADE_DESC = "在数值后方加一层柔和的暗色渐变，使其在计量条末端上方依然清晰。",
+    PREVIEW_KEEP = "保持显示",
+    PREVIEW_KEEP_DESC = "滚动时将预览固定在顶部。关闭时预览随页面滚走，为设置留出更多空间。",
 }
 
 ns.RegisterLocale("zhCN", T)

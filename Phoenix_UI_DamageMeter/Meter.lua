@@ -185,6 +185,11 @@ local function makeRow(win, i)
     r.rank = W.Text(r, "small", "text.secondary", "RIGHT")
     r.name = W.Text(r, "small", "text.primary", "LEFT")
     r.value = W.Text(r, "small", "text.primary", "RIGHT")
+    -- a soft dark fade behind the value column, so the value stays readable where it sits over the bar's end
+    -- (the values are secret, so the bar can't be stopped short of the text)
+    r.valueFade = r:CreateTexture(nil, "ARTWORK", nil, 7)
+    r.valueFade:SetPoint("TOPRIGHT"); r.valueFade:SetPoint("BOTTOMRIGHT")
+    r.valueFade:SetColorTexture(1, 1, 1, 1)
     r.ilvl = W.Text(r, "small", "text.muted", "RIGHT") -- item level after the name (Rows: item level)
     r.mine = CreateFrame("Frame", nil, r)
     r.mine:SetAllPoints()
@@ -363,6 +368,15 @@ function M:StyleRow(r, y, width)
     r.name:ClearAllPoints(); r.value:ClearAllPoints(); r.ilvl:ClearAllPoints()
     r.name:SetPoint("LEFT", left + db.nameX, db.nameY)
     r.value:SetPoint("RIGHT", -4 + db.valueX, db.valueY)
+    r.valueFade:SetShown(db.valueFade)
+    if db.valueFade then
+        r.valueFade:SetWidth(math.max(24, 84 - db.valueX))
+        if r.valueFade.SetGradient and CreateColor then
+            r.valueFade:SetGradient("HORIZONTAL", CreateColor(0, 0, 0, 0), CreateColor(0, 0, 0, 0.55))
+        else
+            r.valueFade:SetVertexColor(0, 0, 0, 0.35)
+        end
+    end
     r.ilvl:SetPoint("RIGHT", r.value, "LEFT", -6, 0)
     r.ilvl:SetText("")
     r.name:SetPoint("RIGHT", db.ilvl == "name" and r.ilvl or r.value, "LEFT", -6, 0)

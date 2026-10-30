@@ -4351,6 +4351,10 @@ local T = {
     SPECICON_EMBER = "Cornice di brace",
     SPECICON_MONO = "Monocromatico",
     SPECICON_TINTED = "Tinta classe",
+    DM_VALUE_FADE = "Sfondo del valore",
+    DM_VALUE_FADE_DESC = "Una leggera sfumatura scura dietro il valore, così resta leggibile sulla fine della barra.",
+    PREVIEW_KEEP = "Tieni sullo schermo",
+    PREVIEW_KEEP_DESC = "Tiene l'anteprima in alto mentre scorri. Disattivato: scorre via con la pagina, lasciando più spazio alle impostazioni.",
 }
 
 ns.RegisterLocale("itIT", T)
