@@ -1444,6 +1444,22 @@ local function makeRouter(page, key)
     end
 end
 
+-- Whole-pixel columns: the remainder of (width - gaps) / cols goes to the first columns one pixel each, so 1114 px
+-- at 3 columns is 362 / 361 / 361 (not 360.67 three times, which drifts off the pixel grid). Returns the narrowest
+-- width and each column's x and width.
+local function pixelColumns(width, cols)
+    local avail = math.floor(width) - (cols - 1) * CARD_GAP
+    local colW = math.floor(avail / cols)
+    local extra = avail - colW * cols
+    local colX, colWs, x = {}, {}, PAD
+    for i = 1, cols do
+        colWs[i] = colW + (i <= extra and 1 or 0)
+        colX[i] = x
+        x = x + colWs[i] + CARD_GAP
+    end
+    return colW, colX, colWs
+end
+
 function Config.BuildSchemaPage(parent, m, schema)
     local key = m.key
     local page = CreateFrame("Frame", nil, parent)
@@ -1551,18 +1567,7 @@ function Config.BuildSchemaPage(parent, m, schema)
             if not self.tabs or c.tab == self.tab then onPage = onPage + 1 end
         end
         local cols = columns(width, onPage)
-        -- whole-pixel columns: the remainder of (width - gaps) / cols goes to the first columns one pixel each,
-        -- so 1114 px at 3 columns is 362 / 361 / 361 (not 360.67 three times, which drifts off the pixel grid)
-        local avail = math.floor(width) - (cols - 1) * CARD_GAP
-        local colW = math.floor(avail / cols)
-        local extra = avail - colW * cols
-        local colX, colWs = {}, {}
-        local x = PAD
-        for i = 1, cols do
-            colWs[i] = colW + (i <= extra and 1 or 0)
-            colX[i] = x
-            x = x + colWs[i] + CARD_GAP
-        end
+        local colW, colX, colWs = pixelColumns(width, cols)
         local colY = {}
         for i = 1, cols do colY[i] = y end
         local function lowest() local v = y; for i = 1, cols do v = math.max(v, colY[i]) end; return v end
