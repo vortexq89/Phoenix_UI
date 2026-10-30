@@ -199,3 +199,9 @@ None of these appear in the t146 shots, so the comparison is code against Ellesm
 Evidence: the t146 shot shows Blizzard's full-colour micro icons, while the skin is on by default and runs at enable. Blizzard_MicroMenu (Mainline/MainMenuBarMicroButtons.lua) puts its art back on its own: `OnLeave` sets the normal texture to alpha 1, `SetPushed` / `SetNormal` reset the highlight alpha (0.5 / 1) and swap the highlight atlas, and textureKit updates call SetNormalAtlas / SetPushedAtlas. Our one-time alpha fade held only until the first hover or window toggle. So the cause was Blizzard re-applying its art, not load order.
 
 Fix: the art is faded again after OnEnter, OnLeave, SetPushed, SetNormal, SetButtonState and the Set*Atlas calls while the skin is on. Switching the skin off now restores Blizzard's art (before, the buttons went blank until a reload). The skin runs again on PLAYER_ENTERING_WORLD for buttons built late. Harness test covers fade, re-fade after Blizzard's updates, and off/on.
+
+## 19. Character window (Phoenix replacement), stat list
+
+Evidence (Blizzard live source, Blizzard_UIPanels_Game/Mainline/PaperDollFrame.lua, PAPERDOLL_STATCATEGORIES): every enhancement has `hideAt = 0`; dodge and parry are tank-only, block needs a shield (`C_PaperDollInfo.OffhandHasShield`). Phoenix listed lifesteal, avoidance and speed for everyone, so most characters had three "0.00%" rows, and tanks had no avoidance rows at all.
+
+Fix: retail rows follow those rules (Forever's own list unchanged). Hooks check: every Blizzard function the skins and group finder hook (PaperDollItemSlotButton_Update, InboxFrame_Update, MerchantFrame_Update, the LFGList hooks, QuestLogQuests_Update, PanelTemplates_SelectTab, UpdateUIPanelPositions) still exists in the live source. Slot skin: fades by alpha and repaints from the Blizzard update hook, so Blizzard's own Show calls do not bring the art back (unlike the micro menu, §18).

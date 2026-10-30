@@ -75,14 +75,23 @@ function M.CharacterStats()
     if tonumber(primary) then add(_G["SPELL_STAT" .. primary .. "_NAME"], (UnitStat("player", primary))) end
     add(_G.SPELL_STAT3_NAME, (UnitStat("player", 3)))
     add(STAT_ARMOR, (UnitArmor("player")))
-    add(STAT_CRITICAL_STRIKE, pct(GetCritChance()))
-    add(STAT_HASTE, pct(GetHaste()))
-    add(STAT_MASTERY, pct((GetMasteryEffect())))
+    -- t156: Blizzard's PAPERDOLL_STATCATEGORIES rules: each enhancement hides at 0 (no rows of "0.00%"
+    -- lifesteal / avoidance / speed on most characters), dodge and parry for tanks, block with a shield.
+    local function rate(label, v) v = tonumber(v); if v and v > 0 then add(label, pct(v)) end end
+    rate(STAT_CRITICAL_STRIKE, GetCritChance())
+    rate(STAT_HASTE, GetHaste())
+    rate(STAT_MASTERY, (GetMasteryEffect()))
     local vers = _G.CR_VERSATILITY_DAMAGE_DONE
-    if vers then add(STAT_VERSATILITY, pct((tonumber(GetCombatRatingBonus(vers)) or 0) + (tonumber(GetVersatilityBonus(vers)) or 0))) end
-    if GetLifesteal then add(STAT_LIFESTEAL, pct(GetLifesteal())) end
-    if GetAvoidance then add(STAT_AVOIDANCE, pct(GetAvoidance())) end
-    if GetSpeed then add(STAT_SPEED, pct(GetSpeed())) end
+    if vers then rate(STAT_VERSATILITY, (tonumber(GetCombatRatingBonus(vers)) or 0) + (tonumber(GetVersatilityBonus(vers)) or 0)) end
+    if GetLifesteal then rate(STAT_LIFESTEAL, GetLifesteal()) end
+    if GetAvoidance then rate(STAT_AVOIDANCE, GetAvoidance()) end
+    if GetSpeed then rate(STAT_SPEED, GetSpeed()) end
+    local getRole = SI.GetSpecializationRole or _G.GetSpecializationRole
+    local tank = spec and getRole and getRole(spec) == "TANK"
+    if tank and GetDodgeChance then add(_G.STAT_DODGE, pct(GetDodgeChance())) end
+    if tank and GetParryChance then rate(_G.STAT_PARRY, GetParryChance()) end
+    local PD = _G.C_PaperDollInfo
+    if PD and PD.OffhandHasShield and PD.OffhandHasShield() and GetBlockChance then rate(_G.STAT_BLOCK, GetBlockChance()) end
     return out
 end
 
