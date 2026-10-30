@@ -2137,6 +2137,32 @@ try("micro menu skin", function()
     S.PaintMicro(b)
     _G.CharacterMicroButton = nil
 end)
+-- t156: Blizzard's OnLeave / SetNormal put the micro art back; the skin fades it again, and off restores it
+try("micro menu art stays faded after Blizzard updates", function()
+    local S = ns.modules.Skins
+    local b = CreateFrame("Button", "HelpMicroButton", UIParent)
+    local hadBtn = rawget(env, "HelpMicroButton")
+    rawset(env, "HelpMicroButton", b)
+    local tex = b:CreateTexture()
+    local a = 1
+    tex.SetAlpha = function(_, v) a = v end; tex.GetAlpha = function() return a end
+    b.GetNormalTexture = function() return tex end
+    b.SetNormal = function() tex:SetAlpha(1) end
+    local hadEnabled = rawget(S, "IsEnabled")
+    S.IsEnabled = function() return true end
+    S.db.microMenu = true; S:SkinMicroMenu()
+    assert(a == 0, "faded on skin")
+    b:SetNormal()
+    assert(a == 0, "faded again after SetNormal, got " .. tostring(a))
+    tex:SetAlpha(1); local fn = b:GetScript("OnLeave"); if fn then fn(b) end
+    assert(a == 0, "faded again after OnLeave")
+    S.db.microMenu = false; S:SkinMicroMenu()
+    assert(a == 1, "art back with the skin off")
+    S.db.microMenu = true; S:SkinMicroMenu()
+    assert(a == 0, "faded again on")
+    S.IsEnabled = hadEnabled
+    rawset(env, "HelpMicroButton", hadBtn)
+end)
 -- bag chrome (plan window 4): title tick, close glyph, search field, bank tab rail with warband accent
 try("bag chrome skin", function()
     local B = ns.modules.Bags

@@ -193,3 +193,9 @@ None of these appear in the t146 shots, so the comparison is code against Ellesm
 |---|---|---|
 | Gold chevron poking into the Phoenix filters panel, "...are now" text showing through | Blizzard's cross-faction HelpTip (LFGListSearchPanel_EvaluateTutorial, anchored at the search panel's right edge) sat under the panel | hidden while the Phoenix panel is shown, again after Blizzard re-evaluates it; hidden, not acknowledged, so tutorial flags are untouched; harness test |
 | Back / Sign Up (and the other premade-group buttons) keep Blizzard's red and grey art | not in the skin list | Sign Up, Find a Group, List Group primary; Back, Back to Group, Start a Group, Cancel, Browse, Edit, Delist secondary (Phoenix popup button skin, restored with the skin off) |
+
+## 18. Micro menu skin "not applying"
+
+Evidence: the t146 shot shows Blizzard's full-colour micro icons, while the skin is on by default and runs at enable. Blizzard_MicroMenu (Mainline/MainMenuBarMicroButtons.lua) puts its art back on its own: `OnLeave` sets the normal texture to alpha 1, `SetPushed` / `SetNormal` reset the highlight alpha (0.5 / 1) and swap the highlight atlas, and textureKit updates call SetNormalAtlas / SetPushedAtlas. Our one-time alpha fade held only until the first hover or window toggle. So the cause was Blizzard re-applying its art, not load order.
+
+Fix: the art is faded again after OnEnter, OnLeave, SetPushed, SetNormal, SetButtonState and the Set*Atlas calls while the skin is on. Switching the skin off now restores Blizzard's art (before, the buttons went blank until a reload). The skin runs again on PLAYER_ENTERING_WORLD for buttons built late. Harness test covers fade, re-fade after Blizzard's updates, and off/on.

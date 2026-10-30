@@ -41,16 +41,36 @@ local function paintTile(button)
 end
 M.PaintMicro = paintTile
 
-function M.SkinMicroButton(button, glyph)
-    if not button or tiles[button] then return tiles[button] end
+-- t156: Blizzard puts its art back on its own: OnLeave sets the normal texture to alpha 1, SetPushed / SetNormal
+-- reset the highlight alpha and SetHighlightAtlas / SetNormalAtlas swap the atlas. A one-time fade lasted until
+-- the first hover or window toggle, so the art is faded again after each of those while the skin is on.
+local live = setmetatable({}, { __mode = "k" }) -- [micro button] = true while skinned
+local function artOf(button)
+    local out = {}
     for _, g in ipairs(ART) do
         local tex = button[g] and button[g](button)
-        if tex then Skin:HideRegion(tex) end
+        if tex then out[#out + 1] = tex end
     end
     for _, k in ipairs(REGIONS) do
         local r = button[k]
-        if type(r) == "table" and r.SetAlpha then Skin:HideRegion(r) end
+        if type(r) == "table" and r.SetAlpha then out[#out + 1] = r end
     end
+    return out
+end
+local function fade(button)
+    if not live[button] then return end
+    for _, r in ipairs(artOf(button)) do Skin:HideRegion(r) end
+end
+M._MicroFade = fade
+local REFADE = { "SetPushed", "SetNormal", "SetHighlightAtlas", "SetNormalAtlas", "SetPushedAtlas", "SetButtonState" }
+
+function M.SkinMicroButton(button, glyph)
+    if not button or tiles[button] then
+        if button then live[button] = true; fade(button) end
+        return button and tiles[button]
+    end
+    live[button] = true
+    fade(button)
     local t = CreateFrame("Frame", nil, button)
     t:SetPoint("TOPLEFT", 1, -1); t:SetPoint("BOTTOMRIGHT", -1, 1)
     t:SetFrameLevel(math.max(0, button:GetFrameLevel() - 1))
@@ -60,9 +80,11 @@ function M.SkinMicroButton(button, glyph)
     t.glyph = W.Icon(t, glyph, 16, "text.secondary", "ARTWORK")
     t.glyph:SetPoint("CENTER")
     tiles[button] = t
-    button:HookScript("OnEnter", function(self) tiles[self].hover = true; paintTile(self) end)
-    button:HookScript("OnLeave", function(self) tiles[self].hover = false; paintTile(self) end)
-    if button.SetButtonState then hooksecurefunc(button, "SetButtonState", paintTile) end
+    button:HookScript("OnEnter", function(self) tiles[self].hover = true; fade(self); paintTile(self) end)
+    button:HookScript("OnLeave", function(self) tiles[self].hover = false; fade(self); paintTile(self) end)
+    for _, fn in ipairs(REFADE) do
+        if type(button[fn]) == "function" then hooksecurefunc(button, fn, function(self) fade(self); paintTile(self) end) end
+    end
     Skin:Register(button, paintTile)
     paintTile(button)
     return t
@@ -106,8 +128,18 @@ function M:SkinMicroMenu()
     for _, entry in ipairs(self.MICRO) do
         local b = _G[entry[1]]
         if b then
-            if on then M.SkinMicroButton(b, entry[2]) end
+            if on then
+                M.SkinMicroButton(b, entry[2])
+            elseif live[b] then
+                live[b] = nil -- switched off: Blizzard's art back, not blank buttons until a reload
+                for _, r in ipairs(artOf(b)) do Skin:Restore(r) end
+            end
             if tiles[b] then tiles[b]:SetShown(on) end
         end
+    end
+    -- buttons Blizzard builds later in the login (housing, store) are picked up once the world is in
+    if not self._microPEW then
+        self._microPEW = true
+        ns.Events:On("PLAYER_ENTERING_WORLD", self, function() M:SkinMicroMenu() end)
     end
 end
