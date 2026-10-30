@@ -205,3 +205,12 @@ Fix: the art is faded again after OnEnter, OnLeave, SetPushed, SetNormal, SetBut
 Evidence (Blizzard live source, Blizzard_UIPanels_Game/Mainline/PaperDollFrame.lua, PAPERDOLL_STATCATEGORIES): every enhancement has `hideAt = 0`; dodge and parry are tank-only, block needs a shield (`C_PaperDollInfo.OffhandHasShield`). Phoenix listed lifesteal, avoidance and speed for everyone, so most characters had three "0.00%" rows, and tanks had no avoidance rows at all.
 
 Fix: retail rows follow those rules (Forever's own list unchanged). Hooks check: every Blizzard function the skins and group finder hook (PaperDollItemSlotButton_Update, InboxFrame_Update, MerchantFrame_Update, the LFGList hooks, QuestLogQuests_Update, PanelTemplates_SelectTab, UpdateUIPanelPositions) still exists in the live source. Slot skin: fades by alpha and repaints from the Blizzard update hook, so Blizzard's own Show calls do not bring the art back (unlike the micro menu, §18).
+
+## 20. Merchant window (Phoenix replacement)
+
+Evidence (Blizzard live source, MerchantFrame.lua):
+- Item buttons pass modified clicks to `HandleModifiedItemClick` first (merchant items line 674, buyback line 706). Phoenix bought on every click, so shift-click with chat open bought a full stack instead of linking the item, and ctrl-click bought instead of previewing it.
+- Names are coloured by item quality (line 217); Phoenix showed every name in the theme's text colour.
+- Unusable items get a red icon tint (0.9, 0, 0, line 383); Phoenix greyed them out, which reads like "sold out".
+
+Fix: modified clicks go to Blizzard's handler first (chat link, dress-up, expand), on buy and buyback cards. Names take the quality colour from the item link, falling back to the theme's text colour. Unusable items get the red tint. Harness test. Kept by design: plain click buys one (with a confirm click for items paid in currencies), and shift-click with no chat open buys a stack.

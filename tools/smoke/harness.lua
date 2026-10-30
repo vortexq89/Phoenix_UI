@@ -2163,6 +2163,26 @@ try("micro menu art stays faded after Blizzard updates", function()
     S.IsEnabled = hadEnabled
     rawset(env, "HelpMicroButton", hadBtn)
 end)
+-- t156: merchant modified clicks link / preview instead of buying; quality colour from the link
+try("merchant modified clicks and quality names", function()
+    local S = ns.modules.Skins
+    local keys, saved = { "HandleModifiedItemClick", "IsModifiedClick", "GetMerchantItemLink", "ITEM_QUALITY_COLORS", "C_Item" }, {}
+    for i, k in ipairs(keys) do saved[i] = rawget(env, k) end
+    local handled
+    local ok, err = pcall(function()
+    rawset(env, "GetMerchantItemLink", function(i) return "|Hitem:" .. i .. "|h" end)
+    rawset(env, "HandleModifiedItemClick", function(link) handled = link; return true end)
+    rawset(env, "IsModifiedClick", function() return false end)
+    assert(S.MerchantModifiedClick("buy", 3) == false and handled == nil, "plain click buys")
+    rawset(env, "IsModifiedClick", function(k) return k == "CHATLINK" end)
+    assert(S.MerchantModifiedClick("buy", 3) == true and handled == "|Hitem:3|h", "shift links")
+    rawset(env, "ITEM_QUALITY_COLORS", { [4] = { r = 0.6, g = 0.2, b = 0.9 } })
+    rawset(env, "C_Item", { GetItemQualityByID = function() return 4 end })
+    assert(S.MerchantQualityColor("x").r == 0.6 and S.MerchantQualityColor(nil) == nil, "quality colour")
+    end)
+    for i, k in ipairs(keys) do rawset(env, k, saved[i]) end
+    assert(ok, err)
+end)
 -- bag chrome (plan window 4): title tick, close glyph, search field, bank tab rail with warband accent
 try("bag chrome skin", function()
     local B = ns.modules.Bags

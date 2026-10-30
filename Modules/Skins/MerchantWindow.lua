@@ -81,6 +81,7 @@ local function card(i)
     c.count = c:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
     c.count:SetPoint("BOTTOMRIGHT", c.icon, "BOTTOMRIGHT", -1, 1)
     c:SetScript("OnClick", function(self)
+        if M.MerchantModifiedClick(tab, self.index) then return end
         if tab == "buyback" then BuybackItem(self.index) else M:MerchantBuy(self.index, IsShiftKeyDown()) end
     end)
     c:SetScript("OnEnter", function(self)
@@ -97,11 +98,36 @@ local function card(i)
     return c
 end
 
+-- t156: Blizzard's merchant buttons hand modified clicks to HandleModifiedItemClick first (MerchantFrame.lua):
+-- shift with chat open links the item, ctrl previews it. Before, those clicks bought (shift: a full stack).
+function M.MerchantModifiedClick(which, index)
+    local handle = _G.HandleModifiedItemClick
+    if not (index and handle and IsModifiedClick) then return false end
+    if not (IsModifiedClick("CHATLINK") or IsModifiedClick("DRESSUP") or IsModifiedClick("EXPANDITEM")) then return false end
+    local link = which == "buyback" and GetBuybackItemLink and GetBuybackItemLink(index)
+        or which ~= "buyback" and GetMerchantItemLink and GetMerchantItemLink(index)
+    return link and handle(link) and true or false
+end
+
+-- Name colour from the item's quality, as Blizzard's list shows it (nil = the theme's text colour).
+function M.MerchantQualityColor(link)
+    local CI = _G.C_Item
+    local q = link and CI and CI.GetItemQualityByID and CI.GetItemQualityByID(link)
+    local c = type(q) == "number" and ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[q]
+    return c and c.r and c or nil
+end
+
 local function paintCard(c, index, name, texture, costText, stack, usable)
     c.index = index
     c.icon:SetTexture(texture)
-    c.icon:SetDesaturated(not usable)
+    -- unusable: Blizzard's red icon tint rather than a grey one, so it reads as "can't use", not "sold out"
+    c.icon:SetDesaturated(false)
+    if usable then c.icon:SetVertexColor(1, 1, 1) else c.icon:SetVertexColor(0.9, 0, 0) end
     c.name:SetText(name)
+    local link = tab == "buyback" and GetBuybackItemLink and GetBuybackItemLink(index)
+        or tab ~= "buyback" and GetMerchantItemLink and GetMerchantItemLink(index)
+    local qc = M.MerchantQualityColor(link)
+    if qc then c.name:SetTextColor(qc.r, qc.g, qc.b) else W.Color(c.name, "text.primary") end
     c.cost:SetText(costText)
     c.count:SetText((stack or 1) > 1 and stack or "")
     Skin:Panel(c, "raised", { border = armed == index and tab == "buy" and "state.danger" or "border.subtle" })
