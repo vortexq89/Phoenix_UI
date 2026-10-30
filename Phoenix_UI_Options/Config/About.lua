@@ -3,7 +3,7 @@ local L = ns.L
 local W, Skin = ns.Widgets, ns.Skin
 local Config = ns.Config
 
---[[ About: identity, links, slash commands, credits and the maintained standalone addons that replace
+--[[ About: identity, links, tools (every slash shortcut as a control), credits and the maintained standalone addons that replace
     features removed in 2.0 (ARCHITECTURE §2, decision 1). ]]
 local page = { key = "about", label = "ABOUT", desc = "ABOUT_DESC", icon = "about", locked = true, db = {} }
 
@@ -43,8 +43,27 @@ for _, link in ipairs(LINKS) do
     schema[#schema + 1] = { type = "custom", label = link.label, build = function(row) return linkBox(row, link) end }
 end
 local tail = {
-    { type = "header", label = "SLASH_COMMANDS", icon = "terminal" },
-    { type = "description", text = function() return L.SLASH_HELP_TEXT .. "\n" .. L.SLASH_HELP_MORE end },
+    -- every slash shortcut has its control here or on its own page (standing rule: nothing needs a typed command)
+    { type = "header", label = "ABOUT_TOOLS", icon = "terminal" },
+    { type = "button", label = "ABOUT_EDIT_MODE", button = "ABOUT_OPEN", icon = "editmode", func = function() ns.EditMode:Open() end },
+    { type = "button", label = "ABOUT_SETUP", desc = "ABOUT_SETUP_DESC", button = "ABOUT_OPEN", icon = "presets",
+      func = function() Config:RunSetupWizard() end },
+    { type = "button", label = "ABOUT_WHATS_NEW", button = "ABOUT_OPEN", icon = "bell", func = function() ns.ShowWhatsNew() end },
+    { type = "button", label = "ABOUT_GAME_SETTINGS", desc = "ABOUT_GAME_SETTINGS_DESC", button = "ABOUT_OPEN", icon = "addon",
+      func = function() Config:OpenBlizzardSettings() end },
+    { type = "button", label = "ABOUT_DIAG", desc = "ABOUT_DIAG_DESC", button = "ABOUT_RUN", icon = "test",
+      func = function() ns.Diag:Run(false) end },
+    { type = "button", label = "ABOUT_RESET_WINDOW", button = "RESET", icon = "reset",
+      func = function() Config:ResetPosition(); ns:Print(L.SLASH_RESET_DONE) end },
+    { type = "toggle", label = "ABOUT_DEBUG", desc = "ABOUT_DEBUG_DESC",
+      get = function() return ns.debug and true or false end, set = function(_, v) ns.SetDebug(v) end },
+    { type = "header", label = "ABOUT_DEV", icon = "terminal" },
+    { type = "toggle", label = "ABOUT_DEV_ON", desc = "ABOUT_DEV_ON_DESC",
+      get = function() return ns.DevDiag and ns.DevDiag:IsEnabled() and true or false end,
+      set = function(_, v) ns.DevDiag:Slash(v and "on" or "off") end },
+    { type = "button", label = "ABOUT_DEV_AUDIT", button = "ABOUT_RUN", icon = "test", func = function() ns.DevDiag:Slash("audit") end },
+    { type = "button", label = "ABOUT_DEV_PAGES", button = "ABOUT_RUN", icon = "test", func = function() ns.DevDiag:Slash("pages") end },
+    { type = "button", label = "ABOUT_DEV_CLEAR", button = "RESET", icon = "delete", func = function() ns.DevDiag:Slash("clear") end },
     { type = "header", label = "RECOMMENDED", icon = "addon" },
     { type = "description", text = "RECOMMENDED_TEXT" },
     { type = "header", label = "CREDITS", icon = "heart" },

@@ -44,12 +44,12 @@ Mode cannot reach.
 | | **Combat Text** | Every floating combat text option in one page, the damage-number font, plus Phoenix scroll areas (incoming, target, notifications) with font, merge of rapid hits, crit style, position, height and direction |
 | | **Damage Meter** | Skin for Blizzard's built-in meter: bar texture, reverse fill, shading, name and value fonts, window background and border from the style library (bar size, class colours, value format and the second window stay in Edit Mode, linked); optional one-click Details! style |
 | | **Spell History** | A strip of your recent casts with icon border and zoom, interrupted and failed casts marked, movable in Edit Mode |
-| | **PvP** | Safe queue pop with a styled countdown and a queue sound, TAB targets players in PvP, `/gg` to surrender an arena, an arena Shadowsight timer (retail); links to arena frames, objective movers and auto release |
+| | **PvP** | Safe queue pop with a styled countdown and a queue sound, TAB targets players in PvP, a quick arena surrender (button or the optional `/gg`), an arena Shadowsight timer (retail); links to arena frames, objective movers and auto release |
 | Social | **Chat** | Styled windows (background, border), fading, lines kept, hide in combat, side buttons, jump-to-bottom; tabs that glow in the accent colour, whisper-coloured, fading and a selected-tab colour; the game's timestamps, class-coloured names and whisper mode in one place; short channel names, item levels and icons on links, role icons, keyword highlight with a sound, spam filter; edit box above the window and styled, history length; a chat bar (channels, roll, ready check, pull) and a raid-marker picker; clickable URLs, copy chat and Shift/Ctrl wheel scrolling. Restricted chat (encounters, M+, PvP) is passed through untouched |
 | | **AFK Screen** | A calm full-screen view of your character while away: model (spin), guild, a stats line (item level, Mythic+ rating, vault), dimming, timer font, off in instances |
 | Utility | **Quality of Life** | Hide talking heads, zone text and boss banners, quiet errors in combat, achievement screenshots, a raid markers bar, cursor ring, combat enter/leave alert, known-item tint at merchants; camera and a curated list of safe game CVars |
 | | **Automation** | Repair, sell junk, fill "DELETE", decline duels, pet-battle duels and guild invites, accept friend invites and resurrections, release in BGs, skip seen cinematics, faster auto loot, confirm bind-on-pickup when solo, single gossip options, a low-health sound |
-| | **Quests** | NPC locations (quest givers, vendors, trainers, rares) for search, `/way`, tooltips and map pins; an opt-in local NPC position recorder; restyled objective tracker (fonts, colours by difficulty, level tags, bar texture, width, height, collapse in instances, fade in combat); a waypoint arrow with distance and ETA; Phoenix pins on the world map and minimap for quests you can take now, quest lines and turn-ins, filtered by expansion, from the load-on-demand **Phoenix_UI_Data** addon (AllTheThings facts, MIT); quest tooltips; auto accept/turn-in with Shift to pause and a reward picker (vendor value or Sim) |
+| | **Quests** | NPC locations (quest givers, vendors, trainers, rares) for search, waypoints, tooltips and map pins; an opt-in local NPC position recorder; restyled objective tracker (fonts, colours by difficulty, level tags, bar texture, width, height, collapse in instances, fade in combat); a waypoint arrow with distance and ETA; Phoenix pins on the world map and minimap for quests you can take now, quest lines and turn-ins, filtered by expansion, from the load-on-demand **Phoenix_UI_Data** addon (AllTheThings facts, MIT); quest tooltips; auto accept/turn-in with Shift to pause and a reward picker (vendor value or Sim) |
 | | **Group Finder** | Filter panel beside the premade group list: presets, difficulty and role filters, leader score and best key, age, item level, PvP rating, friends, voice, bosses defeated, Bloodlust / battle res, a Phoenix filter expression with a live count; non-matching groups dimmed, matches outlined and listed by fit, score or age; leader score, best key and class colours on entries and applicants; click-again and Enter sign-up, a role-check accept key (retail) |
 | | **Mythic+** | Run timer with chest thresholds, enemy forces, boss splits, deaths and personal bests; ahead/behind against your best run, the current pull on the forces line (when the game allows it); party keystones over LibKeystone (works with BigWigs and DBM users); auto-insert your keystone, report your new key; +2/+3 chest timers, affix icons, a deaths-by-player list, timer bar look and colours, a party keystones window beside the dungeon list |
 
@@ -113,7 +113,7 @@ Install from CurseForge or Wago, or download a release and extract **every** fol
 all `Phoenix_UI_*` folders) into `World of Warcraft/_retail_/Interface/AddOns/` (WoW Forever: the same folders into
 the Forever client's `Interface/AddOns`; Battle.net → *World of Warcraft: Forever* → cog → *Show in Explorer*).
 `Phoenix_UI_Options` is the settings window and each other `Phoenix_UI_<System>` folder is one plugin (action bars,
-unit frames, damage meter ...). They are load-on-demand: a plugin loads only while it is on in `/pui` → *Plugins*,
+unit frames, damage meter ...). They are load-on-demand: a plugin loads only while it is on in the settings → *Plugins*,
 and a folder you leave out shows as "Not installed". Keep them all enabled in the AddOns list. Third-party plugins:
 [docs/PLUGIN_API.md](docs/PLUGIN_API.md).
 
@@ -122,44 +122,36 @@ From a clone on Windows: `powershell -File tools\pc\install.ps1` copies `Phoenix
 
 ## Usage
 
-| Command | Action |
-|---|---|
-| `/pui` or `/phoenix` | Open or close the settings window |
-| `/pui edit` | Open Edit Mode |
-| `/pui bugs` | Open the bug viewer (`/pui bugs clear`, `/pui bugs options`) |
-| `/pui movers` | Unlock or lock the movers |
-| `/pui profile [name]` | Show or switch the profile |
-| `/pui reset` | Reset the settings window position |
-| `/pui <module>` | Jump to a module, e.g. `/pui tooltip` |
-| `/pui settings` | Open the Phoenix page in Blizzard's settings |
-| `/pui help` | List every command in chat |
-| `/pui diag` | Check that textures, icons and fonts load (Phoenix → Diagnostics shows the result) |
-| `/pui bugs share on\|off` | Allow or stop error reports to the author |
-| `/pui debug` | Toggle debug output |
-| `/gg` | Surrender an arena match (PvP module, asks first) |
+Everything is in the settings window; nothing needs a chat command. Open it from any of:
 
-You can also open the settings from the Addon Compartment (the button by the minimap) or from
-*Options → AddOns → Phoenix UI*.
+- the **Phoenix UI** entry in the Esc game menu,
+- the minimap button (left-click; right-click unlocks the movers),
+- the game's AddOns list: *Options → AddOns → Phoenix UI*, or the Addon Compartment by the minimap.
+
+Edit Mode, the setup wizard, What's new, the texture and font check, the window reset, debug output and the
+developer diagnostics are under **About → Tools**. Profiles, bug reports (including report sharing), waypoints
+and arena surrender each have their controls on their own page. `/pui` and the other slash commands still work
+as optional shortcuts.
 
 ### Bug reports
 
 The Bugs module records every Lua error, blocked action and Lua warning, from load time on, without taking over
 Blizzard's error window or BugSack (it hands every error on to them). Repeats are counted instead of stored twice.
-Open the viewer from the data bar, the minimap bug button, a right-click on the Addon Compartment entry or
-`/pui bugs`, and use **Copy** to paste a report anywhere.
+Open the viewer from the data bar, the minimap bug button, a right-click on the Addon Compartment entry or the
+Bugs page, and use **Copy** to paste a report anywhere.
 
 Reports are saved to `WTF\Account\<account>\SavedVariables\Phoenix_UI.lua` when you log out or reload. To share
 them with the author, run the **Phoenix Uploader** app for Windows from
 [vq8s.com/phoenix-ui](https://vq8s.com/phoenix-ui): it sends new reports to VQ8S.com. Nothing leaves your PC
 otherwise. **Send error reports to the author** (Bugs page, on by default) decides whether the uploader may send
-this account's reports; turn it off there or with `/pui bugs share off`. What is sent: the error text, call stack,
+this account's reports; turn it off there. What is sent: the error text, call stack,
 locals, addon and game version and client language. Character names, realms, GUIDs, BattleTags, chat text and
 account or Windows user names are removed first. The file format is documented in
 [docs/BUG_REPORTS.md](docs/BUG_REPORTS.md).
 
 ### Sim
 
-The Sim page (Tooltips & Items, or `/pui sim`) runs [SimulationCraft](https://www.simulationcraft.org) for your
+The Sim page (Tooltips & Items) runs [SimulationCraft](https://www.simulationcraft.org) for your
 character through the **Phoenix Uploader** app (1.2.0 or newer, Windows). Addons cannot start programs, so a sim
 takes two reloads: tick the bag items to try, choose the mode and fight, press **Prepare sim** and **Reload to
 send**; the app picks the request up from your saved variables within seconds and runs the sim; after the next
@@ -173,7 +165,7 @@ about you is uploaded; sims run on your PC. Details and every option: [uploader/
 
 ### Movers
 
-Edit Mode places the minimap and most of the HUD. Phoenix action bars, unit frames, cast bars and aura blocks (the defaults) move in **Layout** mode instead: the button in the settings top bar, on the Action Bars page or on the Unit Frames page. `/pui movers` unlocks the frames it does
+Edit Mode places the minimap and most of the HUD. Phoenix action bars, unit frames, cast bars and aura blocks (the defaults) move in **Layout** mode instead: the button in the settings top bar, on the Action Bars page or on the Unit Frames page. The Movers page unlocks the frames it does
 not cover: drag to move, mouse wheel to scale (Shift: opacity), arrow keys to nudge, right-click to reset, with an
 optional snap grid. Positions are saved per profile. Movers never touches an Edit Mode frame and locks itself in
 combat.
@@ -190,7 +182,7 @@ The same release runs on WoW Forever (interface 16001): the client picks `Phoeni
 Forever does not have are left out instead of shown broken: Mythic+, Sim, the Great Vault card, Mythic+ rating and
 enemy forces, and the boss timeline and warnings on the Encounters page (pull and break timers, their bars and the
 countdown voice stay). Profiles move between the games as they are. The Phoenix app does not watch the Forever
-client yet, so copy errors from `/pui bugs` by hand there.
+client yet, so copy errors from the bug viewer by hand there.
 
 ### Upgrading from Phoenix UI 11.x
 
@@ -205,7 +197,7 @@ follows that. It skins and configures the Blizzard features and no longer bundle
 
 | Old Phoenix feature | Use instead |
 |---|---|
-| Frame mover (MoveAny) | Blizzard **Edit Mode** (`/pui edit`) + Phoenix **Movers** (`/pui movers`) |
+| Frame mover (MoveAny) | Blizzard **Edit Mode** + Phoenix **Movers** (both from the settings window) |
 | Scrolling combat text (MikScrollingBattleText) | Phoenix **Combat Text** page (Blizzard floating combat text), or [MikScrollingBattleText](https://www.curseforge.com/wow/addons/mikscrollingbattletext) (the 12.x rewrite) |
 | Group finder filters (Premade Groups Filter) | [Premade Groups Filter](https://www.curseforge.com/wow/addons/premade-groups-filter) |
 | Buff overlays on raid frames (BuffOverlay) | Blizzard raid frame aura settings. BuffOverlay does not work in 12.x, where aura data is secret in restricted content |

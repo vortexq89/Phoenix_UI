@@ -114,11 +114,29 @@ local function addMenuButton(menu)
     end)
 end
 
+-- A client whose Game Menu has no InitButtons / AddButton (older menu code) gets a plain button under the menu.
+local function fallbackMenuButton(menu)
+    if Launcher.menuButton then return end
+    local W = ns.Widgets
+    local b = W:Button(menu, L.LAUNCHER_TITLE, "primary", nil, 160)
+    b:SetPoint("TOP", menu, "BOTTOM", 0, -6)
+    b.onClick = function()
+        HideUIPanel(GameMenuFrame)
+        ns.Config:Show()
+    end
+    Launcher.menuButton = b
+end
+Launcher.FallbackMenuButton = fallbackMenuButton
+
 local function hookGameMenu()
     local menu = GameMenuFrame
-    if type(menu) ~= "table" or type(menu.InitButtons) ~= "function" or Launcher.menuHooked then return end
+    if type(menu) ~= "table" or Launcher.menuHooked then return end
     Launcher.menuHooked = true
-    hooksecurefunc(menu, "InitButtons", addMenuButton)
+    if type(menu.InitButtons) == "function" and type(menu.AddButton) == "function" then
+        hooksecurefunc(menu, "InitButtons", addMenuButton)
+    else
+        fallbackMenuButton(menu)
+    end
 end
 
 ns.Events:On("PLAYER_LOGIN", owner, function()

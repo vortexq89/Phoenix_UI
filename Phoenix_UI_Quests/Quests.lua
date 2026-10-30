@@ -24,7 +24,7 @@ local M = ns:NewModule("Quests", {
         tooltip = true, contribute = false,
         progressSound = true, progressAnnounce = "off", -- Progress.lua
         -- NPC locations (NPCs.lua): giver spot in quest tooltips, townsfolk / rare pins, map search, /way
-        npcLocation = true, townsfolk = false, rares = false, mapSearch = true, waySlash = true,
+        npcLocation = true, townsfolk = false, rares = false, mapSearch = true, waySlash = true, wayText = "",
     },
     -- local collector recordings (Collector.lua): this install only, never uploaded
     globalDefaults = { collected = {}, vignettes = {} },

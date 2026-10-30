@@ -58,6 +58,8 @@ ns:RegisterOptions("Bugs", {
     { type = "custom", label = "BUGS_INSTALL_ID", desc = "BUGS_INSTALL_ID_DESC",
       get = function() return Errors:GetInstallId() end,
       build = function(row) return W:CopyField(row, Errors:GetInstallId(), "fingerprint", L.BUGS_COPY_ID) end },
+    { type = "button", label = "BUGS_TEST_ERROR", desc = "BUGS_TEST_ERROR_DESC", button = "ABOUT_RUN", icon = "test",
+      keywords = "test error catcher try", func = function() ns.RaiseTestError() end },
     { type = "header", label = "BUGS_DATA", icon = "delete" },
     { type = "button", label = "BUGS_CLEAR_ALL", desc = "BUGS_CLEAR_ALL_DESC", button = "BUGS_CLEAR", icon = "delete",
       variant = "danger", func = function(m) Errors:Clear("all"); m:Refresh(); ns.Config:SetStatus(L.BUGS_CLEARED, "state.success") end },

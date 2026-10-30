@@ -8,6 +8,19 @@ local Init = {}
 -- Fixed English text (not localised) so reports are easy to find and delete on the dashboard.
 ns.TEST_ERROR = "PHOENIX TEST ERROR - safe to delete (/phoenix testerror)"
 
+-- Actions the slash shortcuts share with their settings controls (no feature needs a typed command).
+-- A harmless, clearly labelled Lua error to try the bug catcher and the uploader end to end; raised on the next
+-- frame so it reaches the global error handler like any real addon error.
+function ns.RaiseTestError()
+    ns:Print(L.SLASH_TEST_ERROR)
+    C_Timer.After(0, function() error(ns.TEST_ERROR, 0) end)
+end
+
+function ns.SetDebug(on)
+    ns.debug = on and true or false
+    ns:Print(L.SLASH_DEBUG, ns.debug and L.ENABLED or L.DISABLED)
+end
+
 local function slash(msg)
     local cmd, rest = strtrim(msg or ""):match("^(%S*)%s*(.-)$")
     cmd = (cmd or ""):lower()
@@ -30,10 +43,7 @@ local function slash(msg)
         ns.Config:ResetPosition()
         ns:Print(L.SLASH_RESET_DONE)
     elseif cmd == "testerror" then
-        -- Hidden: a harmless, clearly labelled Lua error to try the bug catcher and the uploader end to end.
-        -- Raised on the next frame so it reaches the global error handler like any real addon error.
-        ns:Print(L.SLASH_TEST_ERROR)
-        C_Timer.After(0, function() error(ns.TEST_ERROR, 0) end)
+        ns.RaiseTestError()
     elseif cmd == "install" or cmd == "setup" then
         ns.Config:RunSetupWizard()
     elseif cmd == "whatsnew" then
@@ -43,8 +53,7 @@ local function slash(msg)
     elseif cmd == "dev" then
         ns.DevDiag:Slash(rest) -- developer diagnostics (opt-in), see Core/DevDiag.lua
     elseif cmd == "debug" then
-        ns.debug = not ns.debug
-        ns:Print(L.SLASH_DEBUG, ns.debug and L.ENABLED or L.DISABLED)
+        ns.SetDebug(not ns.debug)
     elseif cmd == "help" or cmd == "?" then
         for line in (L.SLASH_HELP_TEXT .. "\n" .. L.SLASH_HELP_MORE):gmatch("[^\n]+") do ns:Print(line) end
     else
@@ -62,7 +71,8 @@ end
 --[[ "What's new" after an update: once per version, a few lines on what changed (L.WHATS_NEW_BODY), shown a
     few seconds after login, never in combat and never on a first install. /pui whatsnew opens it again. ]]
 local whatsNew
-function Init.ShowWhatsNew()
+function Init.ShowWhatsNew() return ns.ShowWhatsNew() end
+function ns.ShowWhatsNew()
     local W = ns.Widgets
     if not whatsNew then
         whatsNew = W:Popup(L.WHATS_NEW_TITLE:format(ns.version), 460, 250, "bell")

@@ -91,6 +91,8 @@ local function surrender()
     end
 end
 
+M.Surrender = surrender -- the settings button and /gg share it
+
 ---------------------------------------------------------------- Shadowsight (arena)
 local ENGAGED = Enum and Enum.PvPMatchState and Enum.PvPMatchState.Engaged or 3
 

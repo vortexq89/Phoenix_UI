@@ -5701,6 +5701,15 @@ try("quickdraw: hold mode, cursor and ring art", function()
     AB:RefreshRing()
 end)
 
+try("no feature needs a slash command (t191)", function()
+    assert(ns.RaiseTestError and ns.SetDebug and ns.ShowWhatsNew, "shared actions exist")
+    ns.SetDebug(true); assert(ns.debug, "debug on from the GUI"); ns.SetDebug(false)
+    assert(ns.modules.PvP == nil or ns.modules.PvP.Surrender, "surrender button action")
+    local Q = ns.modules.Quests
+    assert(Q == nil or Q.db.wayText == "", "waypoint box default")
+    assert(ns.Launcher and ns.Launcher.FallbackMenuButton, "game menu fallback for older menus")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")
