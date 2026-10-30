@@ -214,3 +214,11 @@ Evidence (Blizzard live source, MerchantFrame.lua):
 - Unusable items get a red icon tint (0.9, 0, 0, line 383); Phoenix greyed them out, which reads like "sold out".
 
 Fix: modified clicks go to Blizzard's handler first (chat link, dress-up, expand), on buy and buyback cards. Names take the quality colour from the item link, falling back to the theme's text colour. Unusable items get the red tint. Harness test. Kept by design: plain click buys one (with a confirm click for items paid in currencies), and shift-click with no chat open buys a stack.
+
+## 21. Mail window (Phoenix replacement)
+
+Evidence (Blizzard live source, Blizzard_MailFrame/MailFrame.xml lines 253-254): the attachment button sends any modified click to `HandleModifiedItemClick(GetInboxItemLink(...))` and takes the item only on a plain click. Phoenix took the attachment on every click, so shift-click to link an attachment took it out of the letter instead.
+
+Fix: a modified click on an attachment goes to Blizzard's handler (chat link, dress-up) and never takes the item. Harness test. Checked and kept: Open all skips COD letters and stops when bags are full; taking a COD item needs a second click that names the price.
+
+Sweep of other Phoenix item buttons: Character and Journal already insert chat links. Small leftover, not changed: ctrl-click on a character-window slot picks the item up rather than previewing it.

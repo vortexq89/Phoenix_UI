@@ -98,9 +98,22 @@ local function attachmentButton(i)
         GameTooltip:Show()
     end)
     b:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    b:SetScript("OnClick", function(self) M:MailTake(selected, self.slot) end)
+    b:SetScript("OnClick", function(self)
+        if M.MailModifiedClick(selected, self.slot) then return end
+        M:MailTake(selected, self.slot)
+    end)
     win.attach[i] = b
     return b
+end
+
+-- t156: Blizzard's attachment buttons (MailFrame.xml) hand any modified click to HandleModifiedItemClick and
+-- take the item only on a plain click. Before, shift-click to link an attachment took it instead.
+function M.MailModifiedClick(index, slot)
+    local handle = _G.HandleModifiedItemClick
+    if not (index and slot and handle and IsModifiedClick and IsModifiedClick()) then return false end
+    local link = GetInboxItemLink and GetInboxItemLink(index, slot)
+    if link then handle(link) end
+    return true -- a modified click never takes, as in Blizzard's mailbox
 end
 
 -- Takes one attachment (slot) or the gold (slot nil). COD needs a second click on the same thing.

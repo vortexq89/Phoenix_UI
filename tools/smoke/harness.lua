@@ -2183,6 +2183,23 @@ try("merchant modified clicks and quality names", function()
     for i, k in ipairs(keys) do rawset(env, k, saved[i]) end
     assert(ok, err)
 end)
+-- t156: a modified click on a mail attachment links it and never takes it
+try("mail attachment modified click", function()
+    local S = ns.modules.Skins
+    local keys, saved = { "HandleModifiedItemClick", "IsModifiedClick", "GetInboxItemLink" }, {}
+    for i, k in ipairs(keys) do saved[i] = rawget(env, k) end
+    local handled
+    local ok, err = pcall(function()
+        rawset(env, "GetInboxItemLink", function(i, s) return i .. ":" .. s end)
+        rawset(env, "HandleModifiedItemClick", function(link) handled = link; return true end)
+        rawset(env, "IsModifiedClick", function() return false end)
+        assert(S.MailModifiedClick(2, 1) == false, "plain click takes")
+        rawset(env, "IsModifiedClick", function() return true end)
+        assert(S.MailModifiedClick(2, 1) == true and handled == "2:1", "modified click links")
+    end)
+    for i, k in ipairs(keys) do rawset(env, k, saved[i]) end
+    assert(ok, err)
+end)
 -- bag chrome (plan window 4): title tick, close glyph, search field, bank tab rail with warband accent
 try("bag chrome skin", function()
     local B = ns.modules.Bags
