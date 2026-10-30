@@ -77,7 +77,15 @@ local function loadOne(key, seen)
     seen[key] = true
     local p = Plugins.byKey[key]
     if not p or p.loaded then return end
-    for _, dep in ipairs(p.needs or {}) do loadOne(dep, seen) end
+    for _, dep in ipairs(p.needs or {}) do
+        loadOne(dep, seen)
+        local d = Plugins.byKey[dep]
+        -- a required plugin that did not load: skip this one too (it would hit nil paths at runtime)
+        if d and not d.loaded then
+            p.missing, p.reason, p.loadedNow, p.loaded = true, "needs " .. dep, false, false
+            return
+        end
+    end
     local ok, loaded, why = pcall(C_AddOns.LoadAddOn, p.addon)
     local m = ns.modules[key]
     p.loaded = ok and loaded and m and not m.placeholder or false
