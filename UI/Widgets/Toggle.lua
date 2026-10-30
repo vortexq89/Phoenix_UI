@@ -18,6 +18,12 @@ function W:Toggle(parent)
     t.mark:SetPoint("CENTER", t.knob, "CENTER", 0, 0)
     t.value = false
     t.knobX = 3
+    -- v7.1 art kit: one baked toggle image (on / off) in place of the drawn pill; swaps instantly, nothing animates
+    t.art = W.Texture(t, "ARTWORK", 4)
+    t.art:SetSize(36, 24)
+    t.art:SetPoint("CENTER")
+    t.art:Hide()
+    local drawn = { t.track, t.edge, t.glow, t.knob }
 
     local function place(x)
         t.knobX = x
@@ -27,6 +33,11 @@ function W:Toggle(parent)
 
     local function paint(self, animate)
         local on = self.value
+        local Art = ns.Art
+        local art = Art and Art.Enabled() and Art:Paint(self.art, on and "toggle_on" or "toggle_off")
+        self.art:SetShown(art and true or false)
+        for _, r in ipairs(drawn) do r:SetAlpha(art and 0 or 1) end
+        if art then self.mark:Hide(); return end
         if on then
             self.track:SetVertexColor(1, 1, 1, 1)
             Skin:Gradient(self.track, "HORIZONTAL", "accent.primary", "accent.secondary")

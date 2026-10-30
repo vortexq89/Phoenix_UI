@@ -17,6 +17,7 @@ local all = setmetatable({}, { __mode = "k" }) -- fx frame -> true
 local function wanted()
     local s = ns.Theme and ns.Theme.settings or {}
     if s.emblemFX == false or s.reduceMotion then return false end
+    if ns.Art and ns.Art.Enabled() then return false end -- the v7.1 art kit: baked art, zero runtime effects
     return not InCombatLockdown()
 end
 

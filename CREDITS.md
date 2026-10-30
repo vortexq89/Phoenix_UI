@@ -31,3 +31,10 @@ icon set is used: none of the WoW class/spec icon sets we found is CC0 or permis
 licence), generated procedurally by `tools/media/gen_chrome_bevel.py` and `tools/media/ember_bevel.py` from
 Phoenix's own 24-grid glyphs. Nothing is traced, copied or recoloured from Blizzard or any addon. They are used
 for Phoenix's UI chrome only, never for class, spec, ability, spell, item, mount, pet or toy icons.
+
+## Phoenix art kit v7.1 (t169)
+`Media/Art/` (PhoenixWingsBG, PhoenixMeterBG, PhoenixUILogo, PhoenixUI_Atlas, PhoenixMeterBar, PhoenixUI_Icons; BLP2,
+converted with `tools/media/to_blp.py`) is **original Phoenix art**: Copyright (c) 2026 VortexQ8 (ABDULRAHMAN
+ALYOUSEF), all rights reserved, under `Media/LICENSE.md`. That licence covers Phoenix's original art only. Phoenix
+Font stays under the SIL Open Font License 1.1 (its own licence file in `Media/Fonts/Licenses/`), and every
+third-party font, texture or sound listed above keeps its own licence.

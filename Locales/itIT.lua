@@ -4389,6 +4389,10 @@ local T = {
     UF_RES_TICKS = "Tacche della risorsa",
     UF_RES_TICKS_DESC = "Linee sottili sulla barra della risorsa a questi valori, es. 40, 80 (fino a cinque). Vuoto: nessuna.",
     UF_RES_TICK_COLOR = "Colore delle tacche",
+    ART_KIT = "Grafica Phoenix",
+    ART_KIT_DESC = "La fenice dietro la finestra delle impostazioni, il logo di fuoco nella Home e schede, pulsanti, interruttori e cursori con texture. Tutta grafica pronta, nulla è animato. Disattivato: lo stile piatto.",
+    DM_ART_BG = "Sfondo ala di fenice",
+    DM_ART_BG_DESC = "Un'ala di fenice scurita dietro le righe (richiede Generale > Grafica Phoenix).",
 }
 
 ns.RegisterLocale("itIT", T)

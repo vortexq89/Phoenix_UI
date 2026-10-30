@@ -59,6 +59,28 @@ function W:Slider(parent, min, max, step, isPercent)
         Skin:Gradient(self.fill, "HORIZONTAL", "accent.primary", "accent.secondary")
         self.thumb:SetVertexColor(1, 1, 1, 1)
         W.Color(self.glow, "accent.glow", self.dragging and 0.7 or 0)
+        -- v7.1 art kit: baked track, fill and thumb (the fill is 9-sliced, so its width follows the value)
+        local Art = ns.Art
+        local art = Art and Art.Enabled() and Art:Paint(self.track, "slider_track")
+        if art then
+            Art:Paint(self.fill, "slider_fill")
+            Art:Paint(self.thumb, "slider_thumb")
+            self.glow:SetAlpha(0)
+        else
+            for _, t in ipairs({ self.track, self.fill, self.thumb }) do
+                t:SetTexCoord(0, 1, 0, 1)
+                if t.ClearTextureSlice then t:ClearTextureSlice() end
+            end
+            self.track:SetTexture(Media.textures.PILL); self.fill:SetTexture(Media.textures.PILL)
+            self.thumb:SetTexture(Media.textures.CIRCLE)
+            W.Color(self.track, "border.subtle")
+            self.fill:SetVertexColor(1, 1, 1, 1)
+            Skin:Gradient(self.fill, "HORIZONTAL", "accent.primary", "accent.secondary")
+            self.thumb:SetVertexColor(1, 1, 1, 1)
+            self.glow:SetAlpha(1)
+        end
+        self.track:SetHeight(art and 6 or 4); self.fill:SetHeight(art and 6 or 4)
+        self.thumb:SetSize(art and 16 or 14, art and 16 or 14)
         Skin:Panel(self.box, "sunken", { border = "border.subtle" })
         self.box:SetFont(Theme:Font("number"))
         self.box:SetTextColor(Theme:Color("text.primary"))

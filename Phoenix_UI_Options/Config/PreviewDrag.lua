@@ -166,7 +166,7 @@ local function grip(parent, icon, title, desc, size)
     b.bg = b:CreateTexture(nil, "BACKGROUND")
     b.bg:SetAllPoints()
     Skin:Register(b, function(self)
-        W.Color(self.bg, "bg.raised", 0.85)
+        W.Color(self.bg, "bg.raised", ns.Art and ns.Art.Enabled() and ns.Art:Token("panel.alpha.preview") or 0.85)
         W.Color(self.icon, "accent.text", 1)
     end)
     b.tipTitle, b.tipDesc = title, desc

@@ -18,7 +18,7 @@ local M = ns:NewModule("DamageMeter", {
         meter = {
             windows = 1, width = 280, rows = 8, rowHeight = 18, spacing = 2, headerHeight = 22,
             barColor = "class", customColor = { r = 0.35, g = 0.55, b = 0.8 }, barAlpha = 0.85, trackAlpha = 0.35,
-            sheen = true, nameClassColor = false, valueClassColor = false,
+            sheen = true, nameClassColor = false, valueClassColor = false, artBG = false,
             specIcon = true, rank = true, valueFormat = "both", clock = true, hideReset = false,
             visibility = "always", idleAlpha = 1, rate = 0.3, tooltip = true, pinSelf = true, filter = "all",
             ilvl = "name", nameX = 0, nameY = 0, valueX = 0, valueY = 0, valueFade = true, iconBorder = "none", iconStyle = "global",
@@ -44,8 +44,13 @@ local windows = setmetatable({}, { __mode = "k" })
 local entries = setmetatable({}, { __mode = "k" })
 local shades = setmetatable({}, { __mode = "k" })
 
+-- v7.1: the theme's default bar is the greyscale art bar (Media/Art/PhoenixMeterBar), tinted by class colour x
+-- meter.barTintScale so names and values on it stay at 4.5:1 or better
+function M.ArtBar() return ns.Art and ns.Art.Enabled() and M.db and M.db.bar.texture == "" end
+
 function M:BarTexture()
     local key = self.db.bar.texture
+    if key == "" and self.ArtBar() then return ns.Art.ROOT .. "PhoenixMeterBar" end
     return key ~= "" and Media:Bar(key) or Theme:Bar()
 end
 

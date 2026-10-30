@@ -4415,4 +4415,8 @@ ns.RegisterLocale("enUS", {
     UF_RES_TICKS = "Power ticks",
     UF_RES_TICKS_DESC = "Thin lines on the power bar at these amounts, e.g. 40, 80 (up to five). Empty: none.",
     UF_RES_TICK_COLOR = "Tick colour",
+    ART_KIT = "Phoenix art",
+    ART_KIT_DESC = "The phoenix behind the settings window, the fire logo on Home, and textured cards, buttons, toggles and sliders. All baked art, nothing animates. Off: the flat look.",
+    DM_ART_BG = "Phoenix wing background",
+    DM_ART_BG_DESC = "A darkened phoenix wing behind the rows (needs General > Phoenix art).",
 })

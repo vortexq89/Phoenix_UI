@@ -4389,6 +4389,10 @@ local T = {
     UF_RES_TICKS = "Marcas de recurso",
     UF_RES_TICKS_DESC = "Líneas finas en la barra de recurso en estas cantidades, p. ej. 40, 80 (hasta cinco). Vacío: ninguna.",
     UF_RES_TICK_COLOR = "Color de las marcas",
+    ART_KIT = "Arte de Phoenix",
+    ART_KIT_DESC = "El fénix detrás de la ventana de ajustes, el logotipo de fuego en Inicio y tarjetas, botones, interruptores y deslizadores con textura. Todo arte prediseñado, nada se anima. Desactivado: el estilo plano.",
+    DM_ART_BG = "Fondo de ala de fénix",
+    DM_ART_BG_DESC = "Un ala de fénix oscurecida detrás de las filas (requiere General > Arte de Phoenix).",
 }
 
 ns.RegisterLocale("esES", T)

@@ -82,3 +82,12 @@ checked against the shipping code (Phoenix Font, the merged 78 px header) before
 - Settings rail (group heads + module rows), sub-page tabs, page header tile, window close buttons and the macro window controls show Ember Bevel icons over the flat glyphs; General > Chrome icons (bevel / flat) switches live.
 - Medallions on bags, bank, map, help, macro, talents and the Phoenix replacement windows (quests, guild, …). The shop is skipped: its frame is Blizzard's secure store UI.
 - Hover / pressed states are drawn in game; only normal per theme + a shared disabled set ship (about 13 MB).
+
+## 7. t169: Phoenix art kit v7.1
+- Baked art only, with no runtime effects. EmblemFX stays off while the kit is on. Shipped as BLP2: the background and meter background are DXT1, the logo is DXT5, and the atlas, icon set and meter bar are uncompressed. 3.7 MB in total, converted with tools/media/to_blp.py.
+- The settings window has the phoenix behind it (cover-fit, released while the window is hidden). Panels are translucent: rail 86%, header 80%, preview strip 76%, footer 90%, cards 86% (the 9-slice card has a 94% fill baked in, so the vertex alpha is 0.86/0.94).
+- Muted text is raised to #A7ACBA while the kit is on. The worst pixel under a card measures 4.74:1; the flat #8A90A0 would only reach 3.37:1.
+- The v7.1 ember icons are used in the rail, the Home module rows and the status marks (flame, ash, warning, error, info). Ember Bevel stays on the micro menu, macro window, window controls, tabs and medallions. Chrome icons "flat" brings back the plain glyphs.
+- Atlas widgets: cards, primary/secondary buttons (normal, hover, pressed and disabled states swap on mouse events), toggles (instant on/off), sliders and the selected rail row. There is no checkbox widget in Phoenix, so check_on/off is not wired yet.
+- The meter uses the greyscale bar tinted by class colour × 0.46, an optional wing background and an info icon in the empty state. Home shows the fire logo.
+- Plugin API 1.1: OverrideArt (priority layers; effect tokens and unsafe panel alphas are refused), ArtToken, RegisterIcon, SetModuleIcon, PaintArt, PaintIcon.

@@ -23,6 +23,25 @@ function W:Button(parent, text, variant, icon, width)
     b.label:SetText(text or "")
     if not width and text then b:SetWidth(math.max(72, b.label:GetStringWidth() + (icon and 46 or 28))) end
 
+    -- v7.1 art kit: primary and secondary buttons use the baked 9-slice states (coords swap on mouse events)
+    b.art = W.Texture(b, "BACKGROUND", 3)
+    b.art:SetAllPoints()
+    b.art:Hide()
+    local ART = { primary = { normal = "btn_pri_normal", hover = "btn_pri_hover", pressed = "btn_pri_pressed",
+                              disabled = "btn_pri_disabled" },
+                  secondary = { normal = "btn_sec_normal", hover = "btn_sec_hover", pressed = "btn_sec_hover",
+                                disabled = "btn_sec_normal" } }
+    local function artState(self, state)
+        local set, Art = ART[self.variant], ns.Art
+        local on = set and Art and Art.Enabled() and Art:Paint(self.art, set[self.disabled and "disabled" or state])
+        self.art:SetShown(on and true or false)
+        self.fill:SetAlpha(on and 0 or 1)
+        self.shine:SetAlpha(on and 0 or 1)
+        if on then Skin:SetBorderColor(self, 0, 0, 0, 0) end
+        return on
+    end
+    b.ArtState = artState
+
     local function idle(self)
         local v = self.variant
         self.shine:SetVertexColor(1, 1, 1, v == "primary" and 0.18 or 0.04)
@@ -53,6 +72,7 @@ function W:Button(parent, text, variant, icon, width)
                 Icons:Tint(self.icon, v == "danger" and "state.danger" or "text.secondary")
             end
         end
+        artState(self, "normal")
     end
     Skin:Border(b, "border.strong")
     Skin:Register(b, idle)
@@ -65,13 +85,18 @@ function W:Button(parent, text, variant, icon, width)
             if self.icon then Icons:SetState(self.icon, self.variant == "danger" and "danger" or "active") end
             Skin:SetBorderColor(self, self.variant == "danger" and "state.danger" or "accent.primary")
         end
+        artState(self, "hover")
     end)
     b:SetScript("OnLeave", idle)
     b:SetScript("OnMouseDown", function(self)
-        if not self.disabled and not self.pressed then self.pressed = true; self.label:AdjustPointsOffset(0, -1) end
+        if not self.disabled and not self.pressed then
+            self.pressed = true; self.label:AdjustPointsOffset(0, -1); artState(self, "pressed")
+        end
     end)
     b:SetScript("OnMouseUp", function(self)
-        if self.pressed then self.pressed = false; self.label:AdjustPointsOffset(0, 1) end
+        if self.pressed then
+            self.pressed = false; self.label:AdjustPointsOffset(0, 1); artState(self, self:IsMouseOver() and "hover" or "normal")
+        end
     end)
     b:SetScript("OnClick", function(self, ...)
         if self.disabled then return end

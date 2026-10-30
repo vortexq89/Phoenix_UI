@@ -22,6 +22,7 @@ local function moduleCard(parent, m)
     c.iconBg:SetPoint("LEFT", 14, 0)
     c.icon = W.Icon(c, m.icon, 13)
     c.icon:SetPoint("CENTER", c.iconBg)
+    c.art = ns.Art and ns.Art:AttachModuleIcon(c.icon, m.key, 16) -- v7.1 module icon art
     c.label = W.Text(c, "body", "text.primary")
     c.label:SetPoint("LEFT", c.iconBg, "RIGHT", 10, 0)
     c.label:SetText(L[m.label])
@@ -41,6 +42,10 @@ local function moduleCard(parent, m)
     c.label:SetPoint("RIGHT", c.depth, "LEFT", -8, 0)
     c.dot = W:Dot(c, 5)
     c.dot:SetPoint("TOPRIGHT", c.iconBg, "TOPRIGHT", 2, 2)
+    c.status = W.Texture(c, "OVERLAY", 2) -- v7.1 status icon (flame / ash / warning / error)
+    c.status:SetSize(16, 16)
+    c.status:SetPoint("RIGHT", c.label, "LEFT", -6, 0)
+    c.status:Hide()
     c.sep = W:Separator(c)
     c.sep:SetPoint("TOPLEFT", 14, 0); c.sep:SetPoint("TOPRIGHT", -14, 0)
 
@@ -48,11 +53,16 @@ local function moduleCard(parent, m)
         local on = m:IsEnabled()
         W.Color(self.bg, "bg.hover", self.hover and 0.9 or 0)
         W.TileColor(self.iconBg, self.icon, on and "accent.soft" or "bg.sunken", (not on) and 0.95 or nil)
+        local Art = ns.Art
+        if Art then Art:SyncModuleIcon(self.art) end
+        self.iconBg:SetShown(not (self.art and self.art:IsShown()))
         W.Color(self.icon, on and "accent.primary" or "text.muted")
         Skin:Text(self.label, "body", on and "text.primary" or "text.secondary")
         Skin:Text(self.depth, "small", "text.muted")
         local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning")
-        if token and not m.locked then W.Color(self.dot, token); self.dot:Show() else self.dot:Hide() end
+        local art = not m.locked and Art and Art.IconsEnabled() and Art:Icon(self.status, Art:StatusKey(m))
+        self.status:SetShown(art and true or false)
+        if token and not m.locked and not art then W.Color(self.dot, token); self.dot:Show() else self.dot:Hide() end
         if self.toggle then self.toggle:SetValue(m.db.enabled) end
     end
     Skin:Register(c, c.Paint)
@@ -182,7 +192,7 @@ local function statChip(parent, icon)
     s.label = W.Text(s, "small", "text.muted")
     s.label:SetPoint("TOPLEFT", s.value, "BOTTOMLEFT", 0, -3)
     Skin:Register(s, function(self)
-        Skin:Panel(self, "raised", { border = "border.subtle" })
+        Skin:Panel(self, "raised", { border = "border.subtle", art = "card", alpha = "card" })
         W.Color(self.icon, "accent.primary")
         Skin:Text(self.value, "number", "text.primary", 16)
         Skin:Text(self.label, "small", "text.muted")
@@ -231,6 +241,10 @@ local function buildHero(parent)
     h.logo:SetSize(300, 75)
     ns.Icons:Brand(h.logo, "logo", 300)
     h.logo:SetPoint("TOPLEFT", 14, -12)
+    h.fireLogo = W.Texture(h, "ARTWORK", 1) -- v7.1 fire logo (PhoenixUILogo, cropped to the lettering)
+    h.fireLogo:SetSize(300, 86)
+    h.fireLogo:SetPoint("TOPLEFT", 14, -8)
+    h.fireLogo:Hide()
     h.tagline = W.Text(h, "desc", "text.secondary")
     h.tagline:SetPoint("TOPLEFT", 26, -86)
     h.tagline:SetText(L.TAGLINE)
@@ -251,7 +265,17 @@ local function buildHero(parent)
     h.profiles:SetPoint("RIGHT", h.edit, "LEFT", -8, 0)
     h.profiles.onClick = function() Config:Show("profiles") end
     Skin:Register(h, function(self)
-        Skin:Panel(self, "raised", { border = "border.subtle" })
+        Skin:Panel(self, "raised", { border = "border.subtle", art = "card", alpha = "card" })
+        -- v7.1: the fire logo (baked) in place of the flat wordmark; flat look keeps the wordmark
+        local Art = ns.Art
+        local fire = Art and Art.Enabled() and Art:Token("logo.enabled")
+        if fire then
+            self.fireLogo:SetTexture(Art:Token("logo.image"))
+            self.fireLogo:SetTexCoord(0.03, 0.97, 0.27, 0.81)
+            self.fireLogo:SetVertexColor(1, 1, 1, Art:Token("logo.alpha"))
+        end
+        self.fireLogo:SetShown(fire and true or false)
+        self.logo:SetAlpha(fire and 0 or 1)
         local r, g, b = Theme:Color("accent.primary")
         self.glow:SetVertexColor(1, 1, 1, 1)
         self.glow:SetGradient("HORIZONTAL", CreateColor(r, g, b, 0.16), CreateColor(r, g, b, 0.02))
@@ -506,6 +530,19 @@ local function build(parent)
     end
     ns.Events:Listen("PUI_THEME_CHANGED", page, function() if page:IsShown() then page:Refresh() end end)
     page.scroll:HookScript("OnSizeChanged", function() page:Layout() end)
+    -- v7.1: the fire logo in the dark band below the phoenix's wings, behind everything on the page (baked art)
+    page.logoBack = W.Texture(page, "BACKGROUND", -6)
+    page.logoBack:SetPoint("BOTTOM", 0, 24)
+    Skin:Register(page, function(self)
+        local Art = ns.Art
+        local on = Art and Art.Enabled() and Art:Token("logo.enabled")
+        if on then
+            self.logoBack:SetTexture(Art:Token("logo.image"))
+            self.logoBack:SetSize(520, 260)
+            self.logoBack:SetVertexColor(1, 1, 1, Art:Token("logo.alpha"))
+        end
+        self.logoBack:SetShown(on and true or false)
+    end)
     return page
 end
 

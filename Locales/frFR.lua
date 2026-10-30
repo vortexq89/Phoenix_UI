@@ -4389,6 +4389,10 @@ local T = {
     UF_RES_TICKS = "Repères de ressource",
     UF_RES_TICKS_DESC = "Fines lignes sur la barre de ressource à ces valeurs, ex. 40, 80 (jusqu'à cinq). Vide : aucune.",
     UF_RES_TICK_COLOR = "Couleur des repères",
+    ART_KIT = "Art Phoenix",
+    ART_KIT_DESC = "Le phénix derrière la fenêtre des réglages, le logo de feu sur l'accueil et des cartes, boutons, interrupteurs et curseurs texturés. Tout est pré-dessiné, rien n'est animé. Désactivé : le style plat.",
+    DM_ART_BG = "Fond d'aile de phénix",
+    DM_ART_BG_DESC = "Une aile de phénix assombrie derrière les lignes (nécessite Général > Art Phoenix).",
 }
 
 ns.RegisterLocale("frFR", T)

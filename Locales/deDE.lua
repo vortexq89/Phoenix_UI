@@ -4389,6 +4389,10 @@ local T = {
     UF_RES_TICKS = "Ressourcen-Markierungen",
     UF_RES_TICKS_DESC = "Dünne Linien auf der Ressourcenleiste bei diesen Werten, z. B. 40, 80 (bis zu fünf). Leer: keine.",
     UF_RES_TICK_COLOR = "Markierungsfarbe",
+    ART_KIT = "Phoenix-Grafik",
+    ART_KIT_DESC = "Der Phönix hinter dem Einstellungsfenster, das Feuerlogo auf der Startseite und texturierte Karten, Knöpfe, Schalter und Regler. Alles vorgefertigte Grafik, nichts ist animiert. Aus: der flache Stil.",
+    DM_ART_BG = "Phönixflügel-Hintergrund",
+    DM_ART_BG_DESC = "Ein abgedunkelter Phönixflügel hinter den Zeilen (benötigt Allgemein > Phoenix-Grafik).",
 }
 
 ns.RegisterLocale("deDE", T)

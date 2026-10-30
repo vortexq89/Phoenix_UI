@@ -151,7 +151,13 @@ function T:Rebuild()
     end
 end
 
+-- v7.1 art kit: muted text is raised to #A7ACBA over the translucent panels (worst measured pixel under an 86%
+-- card on the phoenix: 4.74:1; the flat #8A90A0 would fall to 3.37:1)
+local ART_MUTED = c("A7ACBA", 1)
 function T:Color(token)
+    if token == "text.muted" and ns.Art and ns.Art.Enabled() then
+        return ART_MUTED[1], ART_MUTED[2], ART_MUTED[3], ART_MUTED[4]
+    end
     local v = tokens[token] or tokens["text.primary"]
     return v[1], v[2], v[3], v[4]
 end

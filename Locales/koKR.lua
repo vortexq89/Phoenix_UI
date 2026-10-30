@@ -4389,6 +4389,10 @@ local T = {
     UF_RES_TICKS = "자원 눈금",
     UF_RES_TICKS_DESC = "이 수치에 자원 바 위 가는 선을 그립니다(예: 40, 80, 최대 5개). 비우면 없음.",
     UF_RES_TICK_COLOR = "눈금 색상",
+    ART_KIT = "Phoenix 아트",
+    ART_KIT_DESC = "설정 창 뒤의 불사조, 홈의 불꽃 로고, 질감 있는 카드·버튼·스위치·슬라이더입니다. 모두 미리 그린 그림이며 움직이지 않습니다. 끄면 평면 스타일입니다.",
+    DM_ART_BG = "불사조 날개 배경",
+    DM_ART_BG_DESC = "줄 뒤에 어둡게 처리한 불사조 날개(일반 > Phoenix 아트 필요).",
 }
 
 ns.RegisterLocale("koKR", T)

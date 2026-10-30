@@ -20,7 +20,8 @@ function W:Card(parent, title, icon)
         c.tick:SetShown(c.hasHeader)
     end
     Skin:Register(c, function(self)
-        Skin:Panel(self, "raised", { border = "border.subtle", sheen = 28 })
+        local art = ns.Art and ns.Art.Enabled()
+        Skin:Panel(self, "raised", { border = "border.subtle", sheen = not art and 28 or nil, art = "card", alpha = "card" })
         Skin:Text(self.header, "heading", "text.secondary")
         if self.tick then
             self.tick:SetVertexColor(1, 1, 1, 1)

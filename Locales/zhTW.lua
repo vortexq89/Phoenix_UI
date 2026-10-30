@@ -4389,6 +4389,10 @@ local T = {
     UF_RES_TICKS = "能量刻度",
     UF_RES_TICKS_DESC = "在能量條上這些數值處畫細線，例如 40, 80（最多五個）。留空：無。",
     UF_RES_TICK_COLOR = "刻度顏色",
+    ART_KIT = "Phoenix 美術",
+    ART_KIT_DESC = "設定視窗後的鳳凰、首頁上的火焰標誌，以及帶紋理的卡片、按鈕、開關和滑桿。全部為預製美術，無動畫。關閉：扁平風格。",
+    DM_ART_BG = "鳳凰之翼背景",
+    DM_ART_BG_DESC = "列後方的暗色鳳凰之翼（需要 一般 > Phoenix 美術）。",
 }
 
 ns.RegisterLocale("zhTW", T)

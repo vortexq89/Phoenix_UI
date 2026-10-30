@@ -4389,6 +4389,10 @@ local T = {
     UF_RES_TICKS = "能量刻度",
     UF_RES_TICKS_DESC = "在能量条上这些数值处画细线，例如 40, 80（最多五个）。留空：无。",
     UF_RES_TICK_COLOR = "刻度颜色",
+    ART_KIT = "Phoenix 美术",
+    ART_KIT_DESC = "设置窗口后的凤凰、主页上的火焰标志，以及带纹理的卡片、按钮、开关和滑块。全部为预制美术，无动画。关闭：扁平风格。",
+    DM_ART_BG = "凤凰之翼背景",
+    DM_ART_BG_DESC = "行后方的暗色凤凰之翼（需要 通用 > Phoenix 美术）。",
 }
 
 ns.RegisterLocale("zhCN", T)

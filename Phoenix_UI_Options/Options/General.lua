@@ -114,6 +114,8 @@ ns:RegisterOptions("General", {
     { type = "toggle", key = "blizzardFonts", label = "GEN_BLIZZARD_FONTS", desc = "GEN_BLIZZARD_FONTS_DESC",
       keywords = "replace blizzard game fonts names world" },
     { type = "header", label = "SPECICON_HEADER", icon = "user", desc = "SPECICON_HEADER_DESC" },
+    { type = "toggle", key = "artKit", label = "ART_KIT", desc = "ART_KIT_DESC",
+      keywords = "phoenix art background logo wings textured cards" },
     { type = "select", key = "chromeStyle", label = "CHROME_STYLE", desc = "CHROME_STYLE_DESC",
       values = { { value = "bevel", label = "SKINS_MICRO_BEVEL" }, { value = "flat", label = "SKINS_MICRO_FLAT" } },
       keywords = "ember bevel icons chrome rail tabs window close" },

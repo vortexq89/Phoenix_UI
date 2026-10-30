@@ -303,7 +303,11 @@ local function build(i, parent)
     win.body = CreateFrame("Frame", nil, win)
     win.body:SetPoint("BOTTOMRIGHT", -2, 2)
     win.empty = W.Text(win.body, "small", "text.secondary", "CENTER")
-    win.empty:SetPoint("CENTER")
+    win.empty:SetPoint("CENTER", 9, 0)
+    win.emptyIcon = win.body:CreateTexture(nil, "OVERLAY") -- v7.1: the info icon beside "No data yet"
+    win.emptyIcon:SetSize(16, 16)
+    win.emptyIcon:SetPoint("RIGHT", win.empty, "LEFT", -4, 0)
+    win.emptyIcon:Hide()
     win.bars = {} -- graph columns
     if not win.preview then
         win.mode:SetScript("OnClick", function(_, button)
@@ -314,7 +318,17 @@ local function build(i, parent)
         win.more:SetScript("OnClick", function() windowMenu(win) end)
     end
     Skin:Register(win, function(self)
-        Skin:Panel(self, "base", { border = "border.subtle" })
+        Skin:Panel(self, "base", { border = "border.subtle", alpha = M.db.meter.artBG and "meter" or nil })
+        -- v7.1: the wing crop behind the rows (General > Phoenix art on and this window's option on)
+        local Art = ns.Art
+        local bgOn = M.db.meter.artBG and Art and Art.Enabled()
+        if bgOn then
+            self.artBG = self.artBG or self:CreateTexture(nil, "BACKGROUND", nil, -7)
+            self.artBG:SetAllPoints()
+            self.artBG:SetTexture(Art:Token("texture.meterBG"))
+            self.artBG:SetTexCoord(Art.CoverCoords(self:GetWidth(), self:GetHeight(), 2, "TOP"))
+        end
+        if self.artBG then self.artBG:SetShown(bgOn and true or false) end
         M.PaintHeader(self)
         for _, c in ipairs({ self.mode, self.segment, self.reset, self.more }) do W.Color(c.bg, "bg.raised", 0.18) end
         M.styleGen = (M.styleGen or 0) + 1
@@ -391,10 +405,21 @@ function M:StyleRow(r, y, width)
     r.alt:Hide()
 end
 
+-- the empty state: "No data yet" with the v7.1 info icon (flat look: the text alone, centred)
+function M.ShowEmpty(win, on)
+    win.empty:SetShown(on)
+    local Art = ns.Art
+    local art = on and Art and Art.IconsEnabled() and Art:Icon(win.emptyIcon, Art:Token("icon.status.info"))
+    win.emptyIcon:SetShown(art and true or false)
+    win.empty:ClearAllPoints()
+    win.empty:SetPoint("CENTER", art and 10 or 0, 0)
+end
+
 local function barColor(class)
     local db = M.db.meter
     if db.barColor == "class" and class then
         local c = RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+        if c and M.ArtBar() then return ns.Art:MeterTint(c.r, c.g, c.b) end
         if c then return c.r, c.g, c.b end
     elseif db.barColor == "custom" then
         local c = db.customColor
@@ -572,7 +597,7 @@ local function paintGraph(win, width, height)
         end
     end
     win.empty:SetText(inCombat() and L.DM_AFTER_COMBAT or L.DM_EMPTY)
-    win.empty:SetShown(n == 0)
+    M.ShowEmpty(win, n == 0)
 end
 
 local function visible(db)
@@ -672,7 +697,7 @@ function M:PaintWindow(win)
     end
     win.locked = db.lock
     hideRows(win, shown + 1)
-    win.empty:SetShown(shown == 0)
+    M.ShowEmpty(win, shown == 0)
 end
 
 function M:RefreshMeter()
@@ -901,7 +926,7 @@ function M:BuildPreview(parent)
         db.rows = keepRows
         win.segment:SetLabel(L.DM_SEG_CURRENT)
         win.clock:SetText(db.clock and "2:41" or "")
-        win.empty:Hide()
+        M.ShowEmpty(win, false)
         local mode = M.Mode(0)
         for i, s in ipairs(SAMPLE) do
             local r = win.rows[i] or makeRow(win, i)

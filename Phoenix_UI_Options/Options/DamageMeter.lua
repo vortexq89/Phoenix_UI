@@ -78,6 +78,8 @@ local rows = {
     meter({ type = "range", key = "meter.barAlpha", label = "DM_BAR_ALPHA", min = 0.2, max = 1, step = 0.05 }),
     meter({ type = "range", key = "meter.trackAlpha", label = "DM_TRACK_ALPHA", min = 0, max = 1, step = 0.05 }),
     meter({ type = "toggle", key = "meter.sheen", label = "DM_SHEEN" }),
+    meter({ type = "toggle", key = "meter.artBG", label = "DM_ART_BG", desc = "DM_ART_BG_DESC",
+      keywords = "phoenix wing background art" }),
     Opt.Text("name", "DM_NAME_FONT", { min = 8, max = 24 }),
     Opt.Text("value", "DM_VALUE_FONT", { min = 8, max = 24 }),
     meter({ type = "toggle", key = "meter.nameClassColor", label = "DM_NAME_CLASS" }),

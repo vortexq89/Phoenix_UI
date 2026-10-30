@@ -315,6 +315,18 @@ function Config:BuildRail()
 end
 
 ---------------------------------------------------------------- page rows
+-- the row's on/off mark: the v7.1 status icon (flame / ash / warning / error), or the dot in the flat look
+local function paintStatus(self, m)
+    if not (m and not m.locked) then self.dot:Hide(); self.status:Hide(); return end
+    local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning")
+        or (m:IsEnabled() and "state.success") or "text.muted"
+    W.Color(self.dot, token, m:IsEnabled() and 1 or 0.5)
+    local Art = ns.Art
+    local art = Art and Art.IconsEnabled() and Art:Icon(self.status, Art:StatusKey(m))
+    self.status:SetShown(art and true or false)
+    self.dot:SetShown(not art)
+end
+
 -- One page row: icon, name and the on/off dot.
 local function navRow(parent, key)
     local label, icon = Config:EntryInfo(key)
@@ -327,7 +339,12 @@ local function navRow(parent, key)
     r.bar:SetPoint("TOPLEFT", r.bg, "TOPLEFT"); r.bar:SetPoint("BOTTOMLEFT", r.bg, "BOTTOMLEFT")
     r.bar:SetWidth(2)
     r.icon = W.Icon(r, icon, 15)
-    r.bevel = ns.ChromeBevel and ns.ChromeBevel:Attach(r.icon, "module-" .. tostring(key):lower(), 17)
+    -- v7.1 module icon art (UI/Art.lua); modules without one keep their Ember Bevel icon
+    r.art = ns.Art and ns.Art:AttachModuleIcon(r.icon, key, 18)
+    r.bevel = not r.art and ns.ChromeBevel and ns.ChromeBevel:Attach(r.icon, "module-" .. tostring(key):lower(), 17) or nil
+    r.hl = W.Texture(r, "BACKGROUND", 1)
+    r.hl:SetPoint("TOPLEFT", r.bg); r.hl:SetPoint("BOTTOMRIGHT", r.bg)
+    r.hl:Hide()
     r.icon:SetPoint("LEFT", 16, 0)
     r.label = W.Text(r, "body", "text.secondary")
     r.label:SetPoint("LEFT", r.icon, "RIGHT", 9, 0)
@@ -336,6 +353,10 @@ local function navRow(parent, key)
     r.label:SetWordWrap(false)
     r.dot = W:Dot(r, 6)
     r.dot:SetPoint("RIGHT", -16, 0)
+    r.status = W.Texture(r, "OVERLAY", 2) -- v7.1 status icon (flame / ash / warning / error) in place of the dot
+    r.status:SetSize(16, 16)
+    r.status:SetPoint("CENTER", r.dot, "CENTER")
+    r.status:Hide()
     -- the dot is the module's switch, as EllesmereUI's sidebar toggles: click turns the module on or off
     local m0 = ns.modules[key]
     if m0 and not m0.locked then
@@ -354,8 +375,12 @@ local function navRow(parent, key)
     end
     function r:Paint()
         local m = ns.modules[self.key]
+        local Art = ns.Art
+        local hl = self.active and Art and Art.Enabled() and Art:Paint(self.hl, "rail_selected")
+        self.hl:SetShown(hl and true or false)
+        if Art then Art:SyncModuleIcon(self.art) end
         if self.active then
-            W.Color(self.bg, "accent.soft")
+            W.Color(self.bg, "accent.soft", hl and 0 or nil)
             self.bar:SetVertexColor(1, 1, 1, 1)
             Skin:Gradient(self.bar, "VERTICAL", "accent.secondary", "accent.primary")
             self.bar:Show()
@@ -370,14 +395,7 @@ local function navRow(parent, key)
             Skin:Text(self.label, "body", self.hover and "text.primary" or "text.secondary")
         end
         self.now, self.target = Config:Depth(self.key)
-        if m and not m.locked then
-            local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning")
-                or (m:IsEnabled() and "state.success") or "text.muted"
-            W.Color(self.dot, token, m:IsEnabled() and 1 or 0.5)
-            self.dot:Show()
-        else
-            self.dot:Hide()
-        end
+        paintStatus(self, m)
     end
     r:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
     r:SetScript("OnLeave", function(self) self.hover = false; self:Paint(); W.HideTooltip() end)
@@ -411,7 +429,7 @@ local function buildList(f)
     sb.edge:SetWidth(1)
     Skin:Register(sb, function(self)
         Skin:Panel(self, "base", { border = false })
-        Skin:SetPanelColor(self, "bg.sunken")
+        Skin:SetPanelColor(self, "bg.sunken", "rail")
         W.Color(self.edge, "border.subtle")
     end)
     local scroll = W:Scroll(sb)
@@ -598,11 +616,19 @@ local function buildFooter(f)
 
     ft.savedIcon = W.Icon(ft, "success", 12, "state.success")
     ft.savedIcon:SetPoint("LEFT", ft.test, "RIGHT", 18, 0)
+    ft.savedArt = W.Texture(ft, "OVERLAY", 2) -- v7.1 status art over the flat glyphs (flame, warning, error, info)
+    ft.savedArt:SetSize(14, 14)
+    ft.savedArt:SetPoint("CENTER", ft.savedIcon, "CENTER")
+    ft.savedArt:Hide()
     ft.saved = W.Text(ft, "small", "text.secondary")
     ft.saved:SetPoint("LEFT", ft.savedIcon, "RIGHT", 6, 0)
     ft.saved:SetText(L.AUTO_SAVED)
     ft.statusIcon = W.Icon(ft, "preview", 12, "text.muted")
     ft.statusIcon:SetPoint("LEFT", ft.saved, "RIGHT", 14, 0)
+    ft.statusArt = W.Texture(ft, "OVERLAY", 2)
+    ft.statusArt:SetSize(14, 14)
+    ft.statusArt:SetPoint("CENTER", ft.statusIcon, "CENTER")
+    ft.statusArt:Hide()
     ft.status = W.Text(ft, "small", "text.muted")
     ft.status:SetPoint("LEFT", ft.statusIcon, "RIGHT", 6, 0)
     ft.status:SetWordWrap(false)
@@ -654,8 +680,11 @@ local function buildFooter(f)
     end
     f.footer = ft
     Skin:Register(ft, function(self)
-        Skin:Panel(self, "sunken", { border = "border.subtle" })
+        Skin:Panel(self, "sunken", { border = "border.subtle", alpha = "footer" })
         W.Color(self.savedIcon, "state.success")
+        local art = ns.Art and ns.Art.IconsEnabled() and ns.Art:Icon(self.savedArt, "status_enabled")
+        self.savedArt:SetShown(art and true or false)
+        self.savedIcon:SetAlpha(art and 0 or 1)
         Skin:Text(self.saved, "small", "text.secondary")
         Skin:Text(self.status, "small", self.statusToken or "text.muted")
         W.Color(self.statusIcon, self.statusToken or "text.muted")
@@ -666,6 +695,9 @@ local function buildFooter(f)
 end
 
 
+-- v7.1: the footer status line's art icon by token (icon.status.* tokens)
+local ART_STATUS = { ["state.success"] = "enabled", ["state.warning"] = "warning", ["state.danger"] = "error",
+    ["state.info"] = "info" }
 local STATUS_ICON = {
     ["state.success"] = "success", ["state.warning"] = "warning", ["state.danger"] = "error", ["state.info"] = "about",
 }
@@ -679,6 +711,10 @@ function Config:SetStatus(text, token, icon)
     ft.status:SetTextColor(Theme:Color(ft.statusToken))
     ns.Icons:Apply(ft.statusIcon, icon or STATUS_ICON[ft.statusToken] or "preview", 12)
     W.Color(ft.statusIcon, ft.statusToken)
+    local artKey = ns.Art and ns.Art.IconsEnabled() and ART_STATUS[ft.statusToken]
+    local art = artKey and (text or "") ~= "" and ns.Art:Icon(ft.statusArt, ns.Art:Token("icon.status." .. artKey))
+    ft.statusArt:SetShown(art and true or false)
+    ft.statusIcon:SetAlpha(art and 0 or 1)
     ft.statusIcon:SetShown((text or "") ~= "")
     if text == L.STATUS_RELOAD then
         ft.reload:Show()
@@ -714,7 +750,10 @@ function Config:Build()
     f:SetSize(wanted())
     f:SetPoint(s.point or "CENTER", UIParent, s.rel or "CENTER", s.x or 0, s.y or 0)
     setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
-    Skin:Register(f, function(self) Skin:Panel(self, "base", { border = "border.strong", shadow = 18 }) end)
+    Skin:Register(f, function(self)
+        Skin:Panel(self, "base", { border = "border.strong", shadow = 18 })
+        if ns.Art then ns.Art:Background(self) end -- v7.1: the phoenix behind the window (cover-fit, released when hidden)
+    end)
     self.frame = f
     for _, ev in ipairs({ "DISPLAY_SIZE_CHANGED", "UI_SCALE_CHANGED" }) do
         ns.Events:On(ev, f, function() setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(uiStore().scale) or 1))) end)

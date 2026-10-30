@@ -6,7 +6,7 @@ local _, ns = ...
     Plugins are ordinary Phoenix modules: they get saved settings in the active profile, live on/off from the
     module list, a settings page in the v4 Flow layout, Layout-mode movers and the theme. ]]
 
-local API_MAJOR, API_MINOR = 1, 0
+local API_MAJOR, API_MINOR = 1, 1 -- 1.1 (t169): the art kit theme API (OverrideArt, RegisterIcon, ArtToken …)
 local api = {}
 
 api.API_MAJOR, api.API_MINOR = API_MAJOR, API_MINOR
@@ -81,6 +81,24 @@ function api:StylePanel(frame, style) -- style: "base" | "raised" | "sunken"
 end
 -- Run fn(frame) now and on every theme or font change.
 function api:OnTheme(frame, fn) ns.Skin:Register(frame, fn) end
+
+---------------------------------------------------------------- art kit (1.1, THEME_API §7.0 / 7.00 / 7.01)
+-- Swap Phoenix's baked art through tokens: "background.image" / ".fit" / ".anchor" / ".tint" / ".alpha",
+-- "logo.*", "panel.alpha.<card|rail|header|preview|footer|meter>" (0.5-1: text keeps 4.5:1), "atlas.ui" or
+-- "atlas.ui.<piece>" ({ file, coords = { l, r, t, b }, inset }), "atlas.icons" or "atlas.icons.<key>",
+-- "icon.status.<enabled|disabled|warning|error|info>", "texture.meterBG", "meter.barTintScale". Effect tokens
+-- (effects.*, ash.*, wings.*) and wrong types are dropped. Returns a handle: h:Set(path, v), h:Clear(path), h:Remove().
+function api:OverrideArt(owner, tokens, priority)
+    check(type(owner) == "string" and type(tokens) == "table", "OverrideArt(owner, tokens [, priority])")
+    return ns.Art:Override(owner, tokens, priority)
+end
+function api:ArtToken(path) return ns.Art:Token(path) end
+-- Your own module icon (rail, Home, status rows): entry = { file = texture path, coords = { l, r, t, b } }.
+function api:RegisterIcon(key, entry) return ns.Art:RegisterIcon(key, entry) end
+function api:SetModuleIcon(moduleKey, iconKey) ns.Art:SetModuleIcon(moduleKey, iconKey) end
+-- Paint a texture with an atlas piece ("card", "btn_pri_normal" …) or an icon ("status_enabled", "mod_chat" …).
+function api:PaintArt(tex, piece) return ns.Art:Paint(tex, piece) end
+function api:PaintIcon(tex, key) return ns.Art:Icon(tex, key) end
 
 ---------------------------------------------------------------- events
 -- Game events and Phoenix messages ("PUI_THEME_CHANGED", "PUI_PROFILE_CHANGED", "PUI_MODULE_STATE",
