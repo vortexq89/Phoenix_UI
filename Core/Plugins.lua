@@ -81,7 +81,8 @@ local function loadOne(key, seen)
         loadOne(dep, seen)
         local d = Plugins.byKey[dep]
         -- a required plugin that did not load: skip this one too (it would hit nil paths at runtime)
-        if d and not d.loaded then
+        local dm = ns.modules[dep]
+        if d and d.missing and not (dm and not dm.placeholder) then
             p.missing, p.reason, p.loadedNow, p.loaded = true, "needs " .. dep, false, false
             return
         end
