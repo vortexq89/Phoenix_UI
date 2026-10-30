@@ -482,7 +482,7 @@ ns.RegisterLocale("enUS", {
 
     ---------------------------------------------------------------- Damage meter
     DAMAGEMETER = "Damage Meter",
-    DAMAGEMETER_DESC = "Phoenix skin for Blizzard's damage meter, plus an optional Details! style.",
+    DAMAGEMETER_DESC = "Phoenix's own damage meter on Blizzard's meter data: windows, breakdowns, targets, compare, reports and graphs; or Blizzard's meter, skinned.",
     DM_ENABLE = "Damage meter",
     DM_ENABLE_DESC = "Turn on Blizzard's built-in damage meter.",
     DM_STYLE = "Style",

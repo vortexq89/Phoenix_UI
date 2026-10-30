@@ -371,6 +371,8 @@ function S.Run(ctx)
     shoot("ActionBars", "actionbars")
     shoot("UnitFrames", "unitframes")
     shoot("home", "home")
+    -- PUI_SHOT_PAGES="DamageMeter,Chat": extra pages, one scene each (named after the page key, lower case)
+    for key in (os.getenv("PUI_SHOT_PAGES") or ""):gmatch("[^,%s]+") do shoot(key, key:lower()) end
 end
 
 return S

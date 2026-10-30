@@ -468,7 +468,7 @@ local T = {
     FCT_REP_DESC = "Affiche les changements de réputation.",
     ---------------------------------------------------------------- Damage meter
     DAMAGEMETER = "Compteur de dégâts",
-    DAMAGEMETER_DESC = "Apparence Phoenix pour le compteur de dégâts de Blizzard, avec un style Details! en option.",
+    DAMAGEMETER_DESC = "Le compteur de dégâts de Phoenix sur les données de Blizzard : fenêtres, détails, cibles, comparaison, annonces et graphiques ; ou le compteur de Blizzard stylisé.",
     DM_ENABLE = "Compteur de dégâts",
     DM_ENABLE_DESC = "Active le compteur de dégâts intégré de Blizzard.",
     DM_STYLE = "Style",

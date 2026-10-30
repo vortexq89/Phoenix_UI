@@ -468,7 +468,7 @@ local T = {
     FCT_REP_DESC = "顯示聲望變化。",
     ---------------------------------------------------------------- Damage meter
     DAMAGEMETER = "傷害統計",
-    DAMAGEMETER_DESC = "為暴雪傷害統計套用 Phoenix 外觀，並可選用 Details! 風格。",
+    DAMAGEMETER_DESC = "基於暴雪統計資料的 Phoenix 傷害統計：視窗、詳情、目標、比較、報告和圖表；或美化後的暴雪統計。",
     DM_ENABLE = "傷害統計",
     DM_ENABLE_DESC = "開啟暴雪內建的傷害統計。",
     DM_STYLE = "樣式",

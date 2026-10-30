@@ -468,7 +468,7 @@ local T = {
     FCT_REP_DESC = "평판 변화를 표시합니다.",
     ---------------------------------------------------------------- Damage meter
     DAMAGEMETER = "피해 미터기",
-    DAMAGEMETER_DESC = "블리자드 피해 미터기용 Phoenix 스킨과 선택 사항인 Details! 스타일.",
+    DAMAGEMETER_DESC = "블리자드 미터 데이터를 쓰는 Phoenix 자체 피해 미터: 창, 상세, 대상, 비교, 보고, 그래프. 또는 스타일 적용 블리자드 미터.",
     DM_ENABLE = "피해 미터기",
     DM_ENABLE_DESC = "블리자드 내장 피해 미터기를 켭니다.",
     DM_STYLE = "스타일",

@@ -212,6 +212,11 @@ local api = {
     issecretvalue = function() return false end, canaccessvalue = function() return true end,
     TooltipDataProcessor = { AddTooltipPostCall = function(_, fn) postCalls[#postCalls + 1] = fn end },
     issecure = function() return false end, InCombatLockdown = function() return false end,
+    AbbreviateNumbers = function(v) -- client: 2.4M / 988K; secret-aware there, plain here
+        v = tonumber(v) or 0
+        if v >= 1e6 then return ("%.1fM"):format(v / 1e6) elseif v >= 1e3 then return ("%.0fK"):format(v / 1e3) end
+        return tostring(math.floor(v))
+    end,
     GetLocale = function() return "enUS" end, GetTime = function() return os.clock() end,
     GetBuildInfo = RETAIL and function() return "12.1.5", "70448", "Oct 2026", 120105 end
         or function() return "1.60.1", "70532", "Oct 2026", 16001 end,

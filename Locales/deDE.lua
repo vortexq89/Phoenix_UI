@@ -468,7 +468,7 @@ local T = {
     FCT_REP_DESC = "Zeigt Rufänderungen.",
     ---------------------------------------------------------------- Damage meter
     DAMAGEMETER = "Schadensanzeige",
-    DAMAGEMETER_DESC = "Phoenix-Skin für Blizzards Schadensanzeige, optional auch im Details!-Stil.",
+    DAMAGEMETER_DESC = "Phoenix' eigenes Schadensmeter auf Blizzards Meterdaten: Fenster, Aufschlüsselungen, Ziele, Vergleiche, Berichte und Grafiken; oder Blizzards Meter mit Stil.",
     DM_ENABLE = "Schadensanzeige",
     DM_ENABLE_DESC = "Schaltet Blizzards integrierte Schadensanzeige ein.",
     DM_STYLE = "Stil",

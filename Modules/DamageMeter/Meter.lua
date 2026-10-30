@@ -357,7 +357,7 @@ function M:StyleRow(r, y, width)
         r.styleGen = self.styleGen
         Skin:TextSpec(r.name, self.db.name, "unit", "text.primary")
         Skin:TextSpec(r.value, self.db.value, "number", "text.primary")
-        Skin:TextSpec(r.rank, self.db.value, "number", "text.secondary")
+        Skin:TextSpec(r.rank, self.db.value, "number", "text.primary")
     end
     r.alt:Hide()
 end
@@ -835,9 +835,12 @@ end
 
 ---------------------------------------------------------------- settings preview (the real row code, sample data)
 local SAMPLE = {
-    { "PREVIEW_PARTY_DPS1", 1, "MAGE", 2410000, 26800 }, { "PREVIEW_UNIT_PLAYER", 0.86, "PALADIN", 2070000, 23000, true },
-    { "PREVIEW_PARTY_DPS2", 0.74, "HUNTER", 1780000, 19800 }, { "PREVIEW_PARTY_TANK", 0.41, "WARRIOR", 988000, 11000 },
-    { "PREVIEW_PARTY_HEALER", 0.12, "PRIEST", 290000, 3200 },
+    -- name, -, class, total, per second, you, spec icon (file ids: Fire, Retribution, Beast Mastery, Protection, Holy)
+    { "PREVIEW_PARTY_DPS1", 1, "MAGE", 2410000, 26800, false, 135810 },
+    { "PREVIEW_UNIT_PLAYER", 0.86, "PALADIN", 2070000, 23000, true, 135873 },
+    { "PREVIEW_PARTY_DPS2", 0.74, "HUNTER", 1780000, 19800, false, 461112 },
+    { "PREVIEW_PARTY_TANK", 0.41, "WARRIOR", 988000, 11000, false, 132341 },
+    { "PREVIEW_PARTY_HEALER", 0.12, "PRIEST", 290000, 3200, false, 237542 },
 }
 function M:BuildPreview(parent)
     local win = build(1, parent)
@@ -857,7 +860,7 @@ function M:BuildPreview(parent)
             r:Show()
             self:StyleRow(r, (i - 1) * (db.rowHeight + db.spacing), width)
             self:PaintSource(r, mode, { name = L[s[1]], classFilename = s[3], totalAmount = s[4], amountPerSecond = s[5],
-                isLocalPlayer = s[6] or false, specIconID = 0 }, SAMPLE[1][4], i)
+                isLocalPlayer = s[6], specIconID = s[7] }, SAMPLE[1][4], i)
         end
     end
 end

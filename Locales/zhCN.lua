@@ -468,7 +468,7 @@ local T = {
     FCT_REP_DESC = "显示声望变化。",
     ---------------------------------------------------------------- Damage meter
     DAMAGEMETER = "伤害统计",
-    DAMAGEMETER_DESC = "为暴雪伤害统计套用 Phoenix 皮肤，并可选用 Details! 风格。",
+    DAMAGEMETER_DESC = "基于暴雪统计数据的 Phoenix 伤害统计：窗口、详情、目标、比较、报告和图表；或美化后的暴雪统计。",
     DM_ENABLE = "伤害统计",
     DM_ENABLE_DESC = "开启暴雪内置的伤害统计。",
     DM_STYLE = "样式",

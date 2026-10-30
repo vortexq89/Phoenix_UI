@@ -468,7 +468,7 @@ local T = {
     FCT_REP_DESC = "Показывает изменения репутации.",
     ---------------------------------------------------------------- Damage meter
     DAMAGEMETER = "Измеритель урона",
-    DAMAGEMETER_DESC = "Обложка Phoenix для измерителя урона Blizzard и, по желанию, стиль для Details!.",
+    DAMAGEMETER_DESC = "Собственный счётчик урона Phoenix на данных Blizzard: окна, разборы, цели, сравнение, отчёты и графики; или счётчик Blizzard в стиле Phoenix.",
     DM_ENABLE = "Измеритель урона",
     DM_ENABLE_DESC = "Включает встроенный измеритель урона Blizzard.",
     DM_STYLE = "Стиль",
