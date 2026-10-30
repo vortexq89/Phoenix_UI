@@ -12,7 +12,7 @@ ns.ChromeBevel = CB
 
 local I = "Interface\\AddOns\\Phoenix_UI\\Media\\Icons\\"
 -- every atlas named in full, so the media checks can see each one is used
-local ATLAS = {
+local SHEETS = {
     [64] = { normal = I .. "Bevel64_normal",
         hover = I .. "Bevel64_hover",
         pressed = I .. "Bevel64_pressed",
@@ -42,14 +42,14 @@ function CB:Apply(tex, name, state, drawPx)
     local panel = d.panels[name]
     if panel and (drawPx or 64) > 48 then
         local col, row = panel % 8, math.floor(panel / 8)
-        tex:SetTexture(ATLAS.panel[state])
+        tex:SetTexture(SHEETS.panel[state])
         tex:SetTexCoord(col / 8, (col + 1) / 8, row / 4, (row + 1) / 4)
         return true
     end
     local i = d.cells[name]
     if not i then return false end
     local col, row = i % 16, math.floor(i / 16)
-    tex:SetTexture(ATLAS[(drawPx or 64) <= 20 and 16 or 64][state])
+    tex:SetTexture(SHEETS[(drawPx or 64) <= 20 and 16 or 64][state])
     tex:SetTexCoord(col / 16, (col + 1) / 16, row / 8, (row + 1) / 8)
     return true
 end
