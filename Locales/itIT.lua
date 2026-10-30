@@ -4380,6 +4380,15 @@ local T = {
     GF_IND_GROW = "Crescita",
     GF_IND_STYLE = "Aspetto",
     GF_IND_COLOR = "Colore del quadrato",
+    UF_RES_ORDER = "Ordine delle righe",
+    UF_RES_ORDER_DESC = "Quale barra sta in cima al blocco.",
+    UF_RES_ORDER_DEFAULT = "Salute, risorsa, classe, specializzazione",
+    UF_RES_ORDER_CLASS = "Risorsa di classe in cima",
+    UF_RES_ORDER_POWER = "Risorsa in cima",
+    UF_RES_ORDER_HEALTH_LAST = "Classe, risorsa, salute in fondo",
+    UF_RES_TICKS = "Tacche della risorsa",
+    UF_RES_TICKS_DESC = "Linee sottili sulla barra della risorsa a questi valori, es. 40, 80 (fino a cinque). Vuoto: nessuna.",
+    UF_RES_TICK_COLOR = "Colore delle tacche",
 }
 
 ns.RegisterLocale("itIT", T)

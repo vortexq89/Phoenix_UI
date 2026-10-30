@@ -4380,6 +4380,15 @@ local T = {
     GF_IND_GROW = "Croissance",
     GF_IND_STYLE = "Apparence",
     GF_IND_COLOR = "Couleur du carré",
+    UF_RES_ORDER = "Ordre des lignes",
+    UF_RES_ORDER_DESC = "Quelle barre se trouve en haut du bloc.",
+    UF_RES_ORDER_DEFAULT = "Vie, ressource, classe, spécialisation",
+    UF_RES_ORDER_CLASS = "Ressource de classe en haut",
+    UF_RES_ORDER_POWER = "Ressource en haut",
+    UF_RES_ORDER_HEALTH_LAST = "Classe, ressource, vie en dernier",
+    UF_RES_TICKS = "Repères de ressource",
+    UF_RES_TICKS_DESC = "Fines lignes sur la barre de ressource à ces valeurs, ex. 40, 80 (jusqu'à cinq). Vide : aucune.",
+    UF_RES_TICK_COLOR = "Couleur des repères",
 }
 
 ns.RegisterLocale("frFR", T)

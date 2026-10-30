@@ -4380,6 +4380,15 @@ local T = {
     GF_IND_GROW = "Cresce para",
     GF_IND_STYLE = "Aparência",
     GF_IND_COLOR = "Cor do quadrado",
+    UF_RES_ORDER = "Ordem das linhas",
+    UF_RES_ORDER_DESC = "Qual barra fica no topo do bloco.",
+    UF_RES_ORDER_DEFAULT = "Vida, recurso, classe, especialização",
+    UF_RES_ORDER_CLASS = "Recurso de classe no topo",
+    UF_RES_ORDER_POWER = "Recurso no topo",
+    UF_RES_ORDER_HEALTH_LAST = "Classe, recurso, vida por último",
+    UF_RES_TICKS = "Marcas de recurso",
+    UF_RES_TICKS_DESC = "Linhas finas na barra de recurso nesses valores, ex. 40, 80 (até cinco). Vazio: nenhuma.",
+    UF_RES_TICK_COLOR = "Cor das marcas",
 }
 
 ns.RegisterLocale("ptBR", T)

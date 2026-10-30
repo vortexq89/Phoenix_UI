@@ -50,9 +50,16 @@ M.PlayerSpecID = playerSpec
 --[[ Which rows a block shows, top to bottom, and where: { { key, y, h }, … }, total height. `active` says which rows
     have something to draw now; a row that has nothing collapses when `collapse` is on, else it keeps its room. ]]
 M.RESOURCE_ROWS = { "health", "power", "mana", "class", "spec" }
+-- row orders (t169): the class resource or the power bar on top, for a block that sits under the character
+M.RESOURCE_ORDERS = {
+    default = M.RESOURCE_ROWS,
+    classTop = { "class", "spec", "health", "power", "mana" },
+    powerTop = { "power", "mana", "class", "spec", "health" },
+    noHealthTop = { "class", "power", "mana", "spec", "health" },
+}
 function M.ResourceRows(r, active)
     local out, y = {}, 0
-    for _, key in ipairs(M.RESOURCE_ROWS) do
+    for _, key in ipairs(M.RESOURCE_ORDERS[r.order or "default"] or M.RESOURCE_ROWS) do
         local cfg = key == "mana" and r.power or r[key]
         local on = cfg and cfg.show and (key ~= "mana" or r.power.mana)
         if on and (active[key] or not r.collapse) then
@@ -135,6 +142,67 @@ function M.ResourceSample(classFile)
         s.specBar = { value = 0.6, label = type(name) == "string" and name or "" }
     end
     return s
+end
+
+-- Power ticks (t169): "50, 80" -> { 50, 80 } (plain numbers the user typed; up to 5, positive only)
+function M.ParseTicks(text)
+    local out = {}
+    for n in tostring(text or ""):gmatch("[%d%.]+") do
+        local v = tonumber(n)
+        if v and v > 0 and #out < 5 then out[#out + 1] = v end
+    end
+    return out
+end
+
+-- where each tick sits across a bar of width w for a power max (nil when the max is not a plain number)
+function M.TickOffsets(ticks, max, w)
+    if not (plain(max) and type(max) == "number" and max > 0) then return nil end
+    local out = {}
+    for _, v in ipairs(ticks) do
+        if v < max then out[#out + 1] = math.floor(w * v / max + 0.5) end
+    end
+    return out
+end
+
+local function drawTicks(f, b, r, max)
+    b.ticks = b.ticks or {}
+    local offs = M.TickOffsets(M.ParseTicks(r.power.ticks), max, r.width)
+    if not offs then return end -- a secret max: the ticks stay where they were
+    local c = r.power.tickColor
+    for i, x in ipairs(offs) do
+        local t = b.ticks[i] or b:CreateTexture(nil, "OVERLAY", nil, 2)
+        b.ticks[i] = t
+        t:SetTexture(Media.textures.WHITE)
+        t:SetVertexColor(c.r, c.g, c.b, c.a or 0.8)
+        t:ClearAllPoints()
+        t:SetPoint("TOPLEFT", b, "TOPLEFT", x, 0)
+        t:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", x, 0)
+        t:SetWidth(1)
+        t:Show()
+    end
+    for i = #offs + 1, #b.ticks do b.ticks[i]:Hide() end
+    f.tickSig = r.power.ticks
+end
+M.DrawResourceTicks = drawTicks
+
+local SMOOTH = Enum_.StatusBarInterpolation and Enum_.StatusBarInterpolation.ExponentialEaseOut
+local function setValue(b, v, smooth)
+    if smooth and SMOOTH then b:SetValue(v, SMOOTH) else b:SetValue(v) end
+end
+
+-- health row colour: class / fixed / theme accent
+local function healthColor(r, classFile)
+    local mode = r.health.color
+    if mode == "fixed" then local c = r.health.fixed; return c.r, c.g, c.b end
+    if mode == "theme" then return Theme:Color("accent.primary") end
+    return ns.Util.ClassColor(classFile)
+end
+-- power row colour: power type / class / fixed
+local function powerColor(r, token, kind, classFile)
+    local mode = r.power.color
+    if mode == "fixed" then local c = r.power.fixed; return c.r, c.g, c.b end
+    if mode == "class" then return ns.Util.ClassColor(classFile) end
+    return M.PowerColor(token, kind)
 end
 
 local function texture(r)
@@ -240,17 +308,19 @@ function M:UpdateResources(f)
     local h, p, m = f.rows.health, f.rows.power, f.rows.mana
     if h:IsShown() then
         h:SetMinMaxValues(0, src:HealthMax(f))
-        h:SetValue(src:Health(f))
-        local cr, cg, cb = ns.Util.ClassColor(src:ClassFile(f) or select(2, UnitClass("player")))
+        setValue(h, src:Health(f), r.smooth and not f.sample)
+        local cr, cg, cb = healthColor(r, src:ClassFile(f) or select(2, UnitClass("player")))
         h:SetStatusBarColor(cr, cg, cb)
         h.bg:SetVertexColor(cr * 0.2, cg * 0.2, cb * 0.2, 0.9)
         M.ApplyTags(h.text, f.compiledHealth, f, src)
     end
     if p:IsShown() then
         local kind, token = src:PowerType(f)
-        p:SetMinMaxValues(0, src:PowerMax(f))
-        p:SetValue(src:Power(f))
-        local pr, pg, pb = M.PowerColor(token, kind)
+        local max = src:PowerMax(f)
+        p:SetMinMaxValues(0, max)
+        setValue(p, src:Power(f), r.smooth and not f.sample)
+        local pr, pg, pb = powerColor(r, token, kind, src:ClassFile(f) or select(2, UnitClass("player")))
+        drawTicks(f, p, r, max)
         p:SetStatusBarColor(pr, pg, pb)
         p.bg:SetVertexColor(pr * 0.2, pg * 0.2, pb * 0.2, 0.9)
         M.ApplyTags(p.text, f.compiledPower, f, src)

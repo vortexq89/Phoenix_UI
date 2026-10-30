@@ -4380,6 +4380,15 @@ local T = {
     GF_IND_GROW = "확장 방향",
     GF_IND_STYLE = "모양",
     GF_IND_COLOR = "사각형 색상",
+    UF_RES_ORDER = "줄 순서",
+    UF_RES_ORDER_DESC = "블록 맨 위에 올 바입니다.",
+    UF_RES_ORDER_DEFAULT = "생명력, 자원, 직업, 전문화",
+    UF_RES_ORDER_CLASS = "직업 자원 위",
+    UF_RES_ORDER_POWER = "자원 위",
+    UF_RES_ORDER_HEALTH_LAST = "직업, 자원, 생명력 마지막",
+    UF_RES_TICKS = "자원 눈금",
+    UF_RES_TICKS_DESC = "이 수치에 자원 바 위 가는 선을 그립니다(예: 40, 80, 최대 5개). 비우면 없음.",
+    UF_RES_TICK_COLOR = "눈금 색상",
 }
 
 ns.RegisterLocale("koKR", T)

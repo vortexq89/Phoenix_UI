@@ -13,6 +13,12 @@ local function notArenaPet(_, unit) return unit ~= "arenapet" end
 local function notArenaAny(_, unit) return unit ~= "arena" and unit ~= "arenapet" end
 local function drOff(m) return not m.db.units.arena.dr.show end
 local function resOff(m) return not m.db.resources.enabled end
+local RES_ORDER = { { value = "default", label = "UF_RES_ORDER_DEFAULT" }, { value = "classTop", label = "UF_RES_ORDER_CLASS" },
+    { value = "powerTop", label = "UF_RES_ORDER_POWER" }, { value = "noHealthTop", label = "UF_RES_ORDER_HEALTH_LAST" } }
+local RES_HEALTH_COLOR = { { value = "class", label = "UF_COLOR_CLASS" }, { value = "fixed", label = "UF_COLOR_FIXED" },
+    { value = "theme", label = "UF_COLOR_THEME" } }
+local RES_POWER_COLOR = { { value = "type", label = "UF_COLOR_POWER" }, { value = "class", label = "UF_COLOR_CLASS" },
+    { value = "fixed", label = "UF_COLOR_FIXED" } }
 local function totemsOff(m) return m.db.totems.style ~= "phoenix" end
 local function imbuesOff(m) return not m.db.imbues.show end
 local function stripOff(m, unit) return not m.db.units[unit or "player"].strip.show end
@@ -476,18 +482,28 @@ ns:RegisterOptions("UnitFrames", {
     px({ type = "texture", key = "resources.texture", label = "BAR_TEXTURE", allowDefault = true, disabled = resOff }),
     px(Opt.With(Opt.Border("resources.border", "UF_BORDER"), { disabled = resOff })),
     px(Opt.With(Opt.Background("resources.background"), { disabled = resOff })),
+    px({ type = "select", key = "resources.order", label = "UF_RES_ORDER", desc = "UF_RES_ORDER_DESC", values = RES_ORDER,
+      disabled = resOff }),
+    px({ type = "toggle", key = "resources.smooth", label = "UF_SMOOTH", desc = "UF_SMOOTH_DESC", disabled = resOff }),
     px({ type = "toggle", key = "resources.collapse", label = "UF_RES_COLLAPSE", desc = "UF_RES_COLLAPSE_DESC", disabled = resOff }),
     px({ type = "toggle", key = "resources.combatOnly", label = "UF_RES_COMBAT", desc = "UF_RES_COMBAT_DESC", disabled = resOff,
       cog = { { type = "range", key = "resources.oocAlpha", label = "UF_OOC_ALPHA", min = 0, max = 1, step = 0.05, percent = true } } }),
     { type = "header", label = "UF_RES_ROWS", icon = "layout" },
     px({ type = "toggle", key = "resources.health.show", label = "UF_RES_HEALTH", disabled = resOff,
       cog = { { type = "range", key = "resources.health.height", label = "UF_HEIGHT", min = 4, max = 40, step = 1 },
-              { type = "input", key = "resources.health.tag", label = "UF_TAG_HEALTH", desc = "UF_TAGS_DESC" } } }),
+              { type = "input", key = "resources.health.tag", label = "UF_TAG_HEALTH", desc = "UF_TAGS_DESC" },
+              { type = "select", key = "resources.health.color", label = "UF_HEALTH_COLOR", values = RES_HEALTH_COLOR },
+              { type = "color", key = "resources.health.fixed", label = "UF_FIXED_COLOR" } } }),
     px(Opt.Text("resources.health.text", "UF_HEALTH_FONT", { place = true, max = 24, row = { disabled = resOff } })),
     px({ type = "toggle", key = "resources.power.show", label = "UF_RES_POWER", disabled = resOff,
       cog = { { type = "range", key = "resources.power.height", label = "UF_HEIGHT", min = 2, max = 30, step = 1 },
               { type = "input", key = "resources.power.tag", label = "UF_TAG_POWER", desc = "UF_TAGS_DESC" },
-              { type = "toggle", key = "resources.power.mana", label = "UF_RES_MANA", desc = "UF_RES_MANA_DESC" } } }),
+              { type = "toggle", key = "resources.power.mana", label = "UF_RES_MANA", desc = "UF_RES_MANA_DESC" },
+              { type = "select", key = "resources.power.color", label = "UF_POWER_COLOR", values = RES_POWER_COLOR },
+              { type = "color", key = "resources.power.fixed", label = "UF_FIXED_COLOR" } } }),
+    px({ type = "input", key = "resources.power.ticks", label = "UF_RES_TICKS", desc = "UF_RES_TICKS_DESC", disabled = resOff,
+      keywords = "tick marker threshold energy rage line",
+      cog = { { type = "color", key = "resources.power.tickColor", label = "UF_RES_TICK_COLOR", hasAlpha = true } } }),
     px(Opt.Text("resources.power.text", "UF_POWER_FONT", { place = true, max = 24, row = { disabled = resOff } })),
     px({ type = "toggle", key = "resources.class.show", label = "UF_RES_CLASS", desc = "UF_RES_CLASS_DESC", disabled = resOff,
       cog = { { type = "range", key = "resources.class.height", label = "UF_HEIGHT", min = 2, max = 24, step = 1 } } }),

@@ -4380,6 +4380,15 @@ local T = {
     GF_IND_GROW = "Рост",
     GF_IND_STYLE = "Вид",
     GF_IND_COLOR = "Цвет квадрата",
+    UF_RES_ORDER = "Порядок строк",
+    UF_RES_ORDER_DESC = "Какая полоса сверху блока.",
+    UF_RES_ORDER_DEFAULT = "Здоровье, ресурс, класс, спек",
+    UF_RES_ORDER_CLASS = "Ресурс класса сверху",
+    UF_RES_ORDER_POWER = "Ресурс сверху",
+    UF_RES_ORDER_HEALTH_LAST = "Класс, ресурс, здоровье внизу",
+    UF_RES_TICKS = "Отметки ресурса",
+    UF_RES_TICKS_DESC = "Тонкие линии на полосе ресурса на этих значениях, напр. 40, 80 (до пяти). Пусто — нет.",
+    UF_RES_TICK_COLOR = "Цвет отметок",
 }
 
 ns.RegisterLocale("ruRU", T)

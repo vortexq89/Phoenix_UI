@@ -153,9 +153,11 @@ local DEFAULTS = {
     resources = {
         enabled = false, point = "CENTER", x = 0, y = -170, width = 220, spacing = 2, strata = "MEDIUM", scale = 1,
         texture = "", border = Style.Border({ style = "pixel" }), background = Style.Background({ alpha = 0.8 }),
-        health = { show = true, height = 12, tag = "[health:percent]",
+        order = "default", smooth = true,
+        health = { show = true, height = 12, tag = "[health:percent]", color = "class", fixed = { r = 0.2, g = 0.8, b = 0.3 },
                    text = Style.Text(10, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) },
-        power = { show = true, height = 8, tag = "[power:current]", mana = true,
+        power = { show = true, height = 8, tag = "[power:current]", mana = true, color = "type",
+                  fixed = { r = 0.3, g = 0.5, b = 1 }, ticks = "", tickColor = { r = 1, g = 1, b = 1, a = 0.8 },
                   text = Style.Text(9, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) },
         class = { show = true, height = 8 },
         spec = { show = true, height = 6 },

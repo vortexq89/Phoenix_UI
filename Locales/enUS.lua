@@ -4406,4 +4406,13 @@ ns.RegisterLocale("enUS", {
     GF_IND_GROW = "Grows",
     GF_IND_STYLE = "Look",
     GF_IND_COLOR = "Square colour",
+    UF_RES_ORDER = "Row order",
+    UF_RES_ORDER_DESC = "Which bar sits on top of the block.",
+    UF_RES_ORDER_DEFAULT = "Health, power, class, spec",
+    UF_RES_ORDER_CLASS = "Class resource on top",
+    UF_RES_ORDER_POWER = "Power on top",
+    UF_RES_ORDER_HEALTH_LAST = "Class, power, health last",
+    UF_RES_TICKS = "Power ticks",
+    UF_RES_TICKS_DESC = "Thin lines on the power bar at these amounts, e.g. 40, 80 (up to five). Empty: none.",
+    UF_RES_TICK_COLOR = "Tick colour",
 })

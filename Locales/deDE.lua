@@ -4380,6 +4380,15 @@ local T = {
     GF_IND_GROW = "Wächst",
     GF_IND_STYLE = "Aussehen",
     GF_IND_COLOR = "Quadratfarbe",
+    UF_RES_ORDER = "Reihenfolge",
+    UF_RES_ORDER_DESC = "Welche Leiste oben im Block sitzt.",
+    UF_RES_ORDER_DEFAULT = "Leben, Ressource, Klasse, Spez.",
+    UF_RES_ORDER_CLASS = "Klassenressource oben",
+    UF_RES_ORDER_POWER = "Ressource oben",
+    UF_RES_ORDER_HEALTH_LAST = "Klasse, Ressource, Leben zuletzt",
+    UF_RES_TICKS = "Ressourcen-Markierungen",
+    UF_RES_TICKS_DESC = "Dünne Linien auf der Ressourcenleiste bei diesen Werten, z. B. 40, 80 (bis zu fünf). Leer: keine.",
+    UF_RES_TICK_COLOR = "Markierungsfarbe",
 }
 
 ns.RegisterLocale("deDE", T)

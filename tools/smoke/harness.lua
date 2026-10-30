@@ -5564,6 +5564,24 @@ try("group frames aura indicators", function()
     assert(opts == nil or found == 6, "six indicator rows on the page, got " .. found)
     for i = 1, 3 do p.indicators[i] = M.NewIndicator() end
 end)
+-- t169: resource bars: row orders, power ticks (plain max only), colour modes
+try("resource bars order ticks colours", function()
+    local UF = ns.modules.UnitFrames
+    local r = UF.db.resources
+    local rows = UF.ResourceRows(setmetatable({ order = "classTop" }, { __index = r }), { health = true, power = true, class = true })
+    assert(rows[1].key == "class", "class resource on top")
+    local t = UF.ParseTicks("40, 80 ,x, 0, 120, 1, 2, 3")
+    assert(#t == 5 and t[1] == 40 and t[2] == 80 and t[3] == 120, "ticks parse")
+    local o = UF.TickOffsets({ 40, 80, 120 }, 100, 200)
+    assert(#o == 2 and o[1] == 80 and o[2] == 160, "ticks over the max drop")
+    assert(UF.TickOffsets({ 40 }, nil, 200) == nil, "no max, no ticks")
+    for _, k in ipairs({ "default", "classTop", "powerTop", "noHealthTop" }) do assert(#UF.RESOURCE_ORDERS[k] == 5, k) end
+    r.power.ticks, r.health.color, r.power.color = "50", "fixed", "class"
+    local f = UF:BuildResources(env.UIParent, { sample = UF.ResourceSample("ROGUE") })
+    UF:LayoutResources(f); UF:UpdateResources(f)
+    assert(f.rows.power.ticks and f.rows.power.ticks[1]:IsShown(), "a tick at 50 energy")
+    r.power.ticks, r.health.color, r.power.color = "", "class", "type"
+end)
 try("group frames blizzard fallback", function()
     local M = ns.modules.GroupFrames
     M.db.mode = "blizzard"

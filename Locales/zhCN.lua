@@ -4380,6 +4380,15 @@ local T = {
     GF_IND_GROW = "增长方向",
     GF_IND_STYLE = "外观",
     GF_IND_COLOR = "方块颜色",
+    UF_RES_ORDER = "行顺序",
+    UF_RES_ORDER_DESC = "哪个条位于块的顶部。",
+    UF_RES_ORDER_DEFAULT = "生命、能量、职业、专精",
+    UF_RES_ORDER_CLASS = "职业资源在上",
+    UF_RES_ORDER_POWER = "能量在上",
+    UF_RES_ORDER_HEALTH_LAST = "职业、能量、生命在最后",
+    UF_RES_TICKS = "能量刻度",
+    UF_RES_TICKS_DESC = "在能量条上这些数值处画细线，例如 40, 80（最多五个）。留空：无。",
+    UF_RES_TICK_COLOR = "刻度颜色",
 }
 
 ns.RegisterLocale("zhCN", T)
