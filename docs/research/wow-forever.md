@@ -56,3 +56,9 @@ Spell 6603 is "Attack" on Forever ("Auto Attack" on retail); the ID is the same.
   against Forever data, smoke harness booted as a 16001 client).
 - Not yet: the Phoenix app only scans `_retail_` (Forever's launch folder is unannounced); Forever-only extras
   (classic talents/spellbook skins, swing timer, hardcore/self-found badges) are candidates for a later stage.
+
+## TOC selection (H2, checked 2026-10-30)
+warcraft.wiki.gg TOC_format, "Naming": the client first looks for a TOC whose suffix matches its game type or an alias, then
+its family, then the bare `AddOnName.toc`. Forever's game type is `camelot` with the alias `forever`, so `X_Forever.toc` (and
+`X_Camelot.toc`) is picked on Forever and ignored on retail (`standard`); the current Forever interface is 16001. The 28
+`_Forever.toc` files therefore stay. Fallback if that ever changes: one TOC per folder with `## Interface: 120105, 16001`.
