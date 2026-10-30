@@ -4147,6 +4147,8 @@ local T = {
     NP_CV_BOTTOM_INSET_DESC = "Distanza dal bordo inferiore a cui si fermano le barre.",
     CHAT_LINK_HOVER = "Tooltip dei link al passaggio",
     CHAT_LINK_HOVER_DESC = "Passa sopra un link di oggetto, incantesimo o impresa per vederne il tooltip.",
+    QUESTS_AVOID_BARS = "Fermati sopra le barre",
+    QUESTS_AVOID_BARS_DESC = "Il tracker finisce sopra le barre azioni Phoenix invece di passarci sotto.",
 }
 
 ns.RegisterLocale("itIT", T)

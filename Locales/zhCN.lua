@@ -4147,6 +4147,8 @@ local T = {
     NP_CV_BOTTOM_INSET_DESC = "姓名板在屏幕底部停下的距离。",
     CHAT_LINK_HOVER = "悬停显示链接提示",
     CHAT_LINK_HOVER_DESC = "鼠标悬停物品、法术或成就链接时显示其提示。",
+    QUESTS_AVOID_BARS = "止于动作条上方",
+    QUESTS_AVOID_BARS_DESC = "任务追踪在旁边的 Phoenix 动作条上方结束，不再延伸到其下方。",
 }
 
 ns.RegisterLocale("zhCN", T)

@@ -130,3 +130,10 @@ that commit left:
 | "1" on shirt, tabard and cosmetic slots reads as a stack count | the slot shows the item level, and those items are level 1 | levels of 1 or less are not drawn |
 | Tab label cut to "Reputati..." | ReplaceTabs gives every tab a fixed width (104 in the character window) | each tab grows to fit its label (never below the given width); every replaced window that uses ReplaceTabs gets it, and longer locales no longer clip |
 | Mounts, group finder, friends | skinned, readable, no overlap in the shots | no change |
+
+### 11d. Quest tracker (shots 221147-222340, right edge)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| Four icons with keybinds (Z, S-M3) cover the objective text | not tracker buttons: Phoenix bar4 / bar5 default to vertical 12-button bars centred on the right edge, and a long quest list runs under them | new "Stop above action bars" (on by default): out of combat, the tracker's height ends 8 px above the highest shown Phoenix bar it overlaps sideways (only when that leaves at least 120 px); Blizzard's tracker then lists fewer blocks rather than drawing under the bars; its own height comes back when nothing caps it; harness test |
+| Still reads as Blizzard's tracker (gold "All Objectives" ornament, secondary header bars) | the restyle changed fonts, colours and bars but kept Blizzard's header art | restyled, the container and module header art is hidden and a 1 px accent line sits under each header (EllesmereUI's tracker does the same: strip the header art, draw a 1 px divider); restored live when the restyle is off |

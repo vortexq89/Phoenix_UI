@@ -4173,4 +4173,6 @@ ns.RegisterLocale("enUS", {
     NP_CV_BOTTOM_INSET_DESC = "How far above the bottom of the screen plates stop.",
     CHAT_LINK_HOVER = "Link tooltips on hover",
     CHAT_LINK_HOVER_DESC = "Hover an item, spell or achievement link to see its tooltip without clicking.",
+    QUESTS_AVOID_BARS = "Stop above action bars",
+    QUESTS_AVOID_BARS_DESC = "The tracker ends above any Phoenix action bar beside it instead of running underneath.",
 })

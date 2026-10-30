@@ -105,9 +105,36 @@ local function headerTick(module, on)
 end
 M.HeaderTick = headerTick
 
+-- t146: the headers kept Blizzard's gold header art ("All Objectives" ornament, the secondary header bars),
+-- so the restyled tracker still read as Blizzard's. Restyled, that art goes and a 1 px accent line sits under
+-- each header instead (EllesmereUI's tracker does the same); switched off, Blizzard's art comes back.
+local rules = setmetatable({}, { __mode = "k" })
+local function headerArt(h, on)
+    if not (h and h.CreateTexture) then return end
+    if h.Background then
+        if on then Skin:HideRegion(h.Background) else Skin:Restore(h.Background) end
+    end
+    local t = rules[h]
+    if not on then if t then t:Hide() end; return end
+    if not t then
+        t = h:CreateTexture(nil, "ARTWORK", nil, 1)
+        t:SetTexture(Media.textures.WHITE)
+        t:SetPoint("BOTTOMLEFT", 0, 1)
+        t:SetPoint("BOTTOMRIGHT", 0, 1)
+        rules[h] = t
+    end
+    t:SetHeight(PixelUtil.ConvertPixelsToUIForRegion(1, t)) -- one physical pixel
+    t:SetVertexColor(Theme:Color("accent.primary"))
+    t:SetAlpha(0.45)
+    t:Show()
+end
+M.HeaderArt = headerArt
+
 local function dressModule(module)
     local on = M:IsEnabled() and M.db.restyle
     headerTick(module, on)
+    headerArt(module.Header, on)
+    if ObjectiveTrackerFrame then headerArt(ObjectiveTrackerFrame.Header, on) end
     if not on then return end
     if module.Header and module.Header.Text then Skin:TextSpec(module.Header.Text, M.db.header, "heading", "accent.primary") end
     if module.EnumerateActiveBlocks then
@@ -122,6 +149,34 @@ local function onHeaderClick(_, block, button)
 end
 
 local blizzardWidth -- the tracker's own width, restored when the width option goes back to 0
+local blizzardHeight -- likewise its height, restored when nothing caps it any more
+
+-- t146: Phoenix's right-edge bars (bar4 / bar5, vertical, centred) sat on top of a long quest list. The room
+-- from the tracker's top down to the highest shown Phoenix bar it overlaps sideways, in tracker units, or nil.
+-- Blizzard's tracker stops adding blocks when it runs out of height, so a shorter tracker just lists less.
+function M.RoomAboveBars(f)
+    local AB = ns.modules.ActionBars
+    if not (AB and AB.GetHeader and AB:IsEnabled() and AB:IsPhoenix()) then return end
+    local fs, l, r, top = f:GetEffectiveScale(), f:GetLeft(), f:GetRight(), f:GetTop()
+    if not (l and r and top) then return end
+    l, r, top = l * fs, r * fs, top * fs
+    local room
+    for key in pairs(AB.db and AB.db.bars or {}) do
+        local h = AB.GetHeader(key)
+        if h and h:IsVisible() then
+            local hs, hl, hr, ht = h:GetEffectiveScale(), h:GetLeft(), h:GetRight(), h:GetTop()
+            if hl and hr and ht then
+                hl, hr, ht = hl * hs, hr * hs, ht * hs
+                if hl < r and hr > l and ht < top then
+                    local gap = (top - ht) / fs - 8
+                    if gap >= 120 and (not room or gap < room) then room = gap end
+                end
+            end
+        end
+    end
+    return room
+end
+
 local function applySize()
     local f = ObjectiveTrackerFrame
     if not f or InCombatLockdown() then return end
@@ -133,8 +188,18 @@ local function applySize()
         f:SetWidth(blizzardWidth)
         blizzardWidth = nil
     end
-    if db.restyle and db.maxHeight > 0 and f:GetHeight() > db.maxHeight then f:SetHeight(db.maxHeight) end
+    local cap = db.restyle and db.maxHeight > 0 and db.maxHeight or nil
+    local room = db.restyle and db.avoidBars ~= false and M.RoomAboveBars(f)
+    if room and (not cap or room < cap) then cap = room end
+    if cap and f:GetHeight() > cap then
+        blizzardHeight = blizzardHeight or f:GetHeight()
+        f:SetHeight(cap)
+    elseif not cap and blizzardHeight then
+        f:SetHeight(blizzardHeight)
+        blizzardHeight = nil
+    end
 end
+M.ApplySize = applySize
 
 -- Collapse in instances (out of combat), fade in combat (alpha only, so nothing secure moves).
 function M:ApplyCollapse()

@@ -4147,6 +4147,8 @@ local T = {
     NP_CV_BOTTOM_INSET_DESC = "Distancia sobre el borde inferior donde se detienen las placas.",
     CHAT_LINK_HOVER = "Descripción de enlaces al pasar",
     CHAT_LINK_HOVER_DESC = "Pasa el ratón sobre un enlace de objeto, hechizo o logro para ver su descripción.",
+    QUESTS_AVOID_BARS = "Parar sobre las barras",
+    QUESTS_AVOID_BARS_DESC = "El rastreador termina sobre las barras de acción de Phoenix en vez de pasar por debajo.",
 }
 
 ns.RegisterLocale("esES", T)

@@ -11,7 +11,7 @@ local M = ns:NewModule("Quests", {
     label = "QUESTS", desc = "QUESTS_DESC", category = "utility", order = 25, icon = "maps", reloadOnToggle = true,
     defaults = {
         -- objective tracker
-        restyle = true, width = 0, maxHeight = 0,
+        restyle = true, width = 0, maxHeight = 0, avoidBars = true,
         header = Style.Text(14), objective = Style.Text(12),
         bar = "", difficulty = true, collapse = "off", level = true, superTrack = true,
         -- waypoint arrow

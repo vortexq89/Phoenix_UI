@@ -45,6 +45,8 @@ ns:RegisterOptions("Quests", {
       disabled = restyleOff, keywords = "size wide" },
     { type = "range", key = "maxHeight", label = "QUESTS_MAX_HEIGHT", desc = "QUESTS_MAX_HEIGHT_DESC", min = 0, max = 1200, step = 20,
       disabled = restyleOff, keywords = "size tall limit" },
+    { type = "toggle", key = "avoidBars", label = "QUESTS_AVOID_BARS", desc = "QUESTS_AVOID_BARS_DESC",
+      disabled = restyleOff, keywords = "overlap action bars right side covered" },
     Opt.With(Opt.Text("header", "QUESTS_HEADER_FONT", { token = "accent.primary" }), { disabled = restyleOff }),
     Opt.With(Opt.Text("objective", "QUESTS_OBJECTIVE_FONT"), { disabled = restyleOff }),
     { type = "texture", key = "bar", label = "QUESTS_BAR", desc = "QUESTS_BAR_DESC", allowDefault = true, disabled = restyleOff },

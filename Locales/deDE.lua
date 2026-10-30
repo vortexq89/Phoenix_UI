@@ -4147,6 +4147,8 @@ local T = {
     NP_CV_BOTTOM_INSET_DESC = "Wie weit über dem unteren Rand Plaketten anhalten.",
     CHAT_LINK_HOVER = "Link-Tooltips beim Überfahren",
     CHAT_LINK_HOVER_DESC = "Zeigt den Tooltip eines Gegenstands-, Zauber- oder Erfolgslinks beim Überfahren.",
+    QUESTS_AVOID_BARS = "Über Aktionsleisten enden",
+    QUESTS_AVOID_BARS_DESC = "Der Tracker endet über Phoenix-Aktionsleisten daneben, statt darunter weiterzulaufen.",
 }
 
 ns.RegisterLocale("deDE", T)

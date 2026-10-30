@@ -7703,6 +7703,39 @@ fire("PLAYER_LOGOUT")
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels
 for name in pairs(ns.Icons and ns.Icons.missing or {}) do errors[#errors + 1] = "unknown icon: " .. name end
 -- tooltip post-calls run for every tooltip in the game: non-GameTooltips, forbidden ones and secret data are skipped
+try("quest tracker stops above the right bars", function()
+    local Q, AB = ns.modules.Quests, ns.modules.ActionBars
+    local function rect(l, r, top, shown)
+        return { GetEffectiveScale = function() return 1 end, GetLeft = function() return l end,
+            GetRight = function() return r end, GetTop = function() return top end,
+            IsVisible = function() return shown end }
+    end
+    local f = rect(2290, 2560, 1200)
+    local saved, savedOn, savedPh = AB.GetHeader, AB.IsEnabled, AB.IsPhoenix
+    local bars = { bar4 = rect(2510, 2554, 972, true), bar5 = rect(2466, 2510, 972, true), bar1 = rect(1000, 1500, 100, true) }
+    AB.GetHeader = function(key) return bars[key] end
+    local savedDb = rawget(AB, "db")
+    rawset(AB, "db", { bars = { bar1 = {}, bar4 = {}, bar5 = {} } })
+    AB.IsEnabled = function() return true end
+    AB.IsPhoenix = function() return true end
+    local room = Q.RoomAboveBars(f)
+    assert(room and math.abs(room - (1200 - 972 - 8)) < 0.01, "tracker not capped above the right-edge bars (t146): " .. tostring(room))
+    bars.bar4 = rect(2510, 2554, 972, false); bars.bar5 = rect(2466, 2510, 972, false)
+    assert(Q.RoomAboveBars(f) == nil, "hidden bars still cap the tracker")
+    bars.bar4 = rect(2510, 2554, 1150, true)
+    assert(Q.RoomAboveBars(f) == nil, "a bar right under the header leaves no useful room: no cap")
+    AB.GetHeader, AB.IsEnabled, AB.IsPhoenix = saved, savedOn, savedPh
+    rawset(AB, "db", savedDb)
+    -- header art: Blizzard's background hidden and an accent line, both undone with the restyle off
+    local h = CreateFrame("Frame", nil, UIParent)
+    h.Background = h:CreateTexture()
+    local al = 1
+    h.Background.SetAlpha = function(_, v) al = v end; h.Background.GetAlpha = function() return al end
+    Q.HeaderArt(h, true)
+    assert(h.Background:GetAlpha() == 0, "Blizzard's header art still drawn")
+    Q.HeaderArt(h, false)
+    assert(h.Background:GetAlpha() == 1, "Blizzard's header art not back")
+end)
 try("tooltip health bar sits flush", function()
     local T = ns.modules.Tooltip
     local tt = CreateFrame("Frame", nil, UIParent)

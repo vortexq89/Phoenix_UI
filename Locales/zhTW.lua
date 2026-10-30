@@ -4147,6 +4147,8 @@ local T = {
     NP_CV_BOTTOM_INSET_DESC = "名條在螢幕底部停下的距離。",
     CHAT_LINK_HOVER = "懸停顯示連結提示",
     CHAT_LINK_HOVER_DESC = "滑鼠懸停物品、法術或成就連結時顯示其提示。",
+    QUESTS_AVOID_BARS = "止於快捷列上方",
+    QUESTS_AVOID_BARS_DESC = "任務追蹤在旁邊的 Phoenix 快捷列上方結束，不再延伸到其下方。",
 }
 
 ns.RegisterLocale("zhTW", T)

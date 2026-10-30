@@ -4147,6 +4147,8 @@ local T = {
     NP_CV_BOTTOM_INSET_DESC = "Distance au-dessus du bas de l'écran où les barres s'arrêtent.",
     CHAT_LINK_HOVER = "Infobulles des liens au survol",
     CHAT_LINK_HOVER_DESC = "Survolez un lien d'objet, de sort ou de haut fait pour voir son infobulle.",
+    QUESTS_AVOID_BARS = "S'arrêter au-dessus des barres",
+    QUESTS_AVOID_BARS_DESC = "Le suivi s'arrête au-dessus des barres d'action Phoenix au lieu de passer dessous.",
 }
 
 ns.RegisterLocale("frFR", T)
