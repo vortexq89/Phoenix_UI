@@ -313,6 +313,38 @@ function M:OnEnable()
     self:ApplyScale()
 end
 
+-- Blizzard anchors the bar 2 px in from each side and 1 px below the tooltip; with the Phoenix border that
+-- read as a narrower bar hanging under the box (t146 screenshot). Skinned, it sits flush under the tooltip
+-- at its full width so the two borders meet (WindTools' layout), coloured by class or reaction (EllesmereUI).
+local function placeBar(bar, phoenix)
+    local tt = bar:GetParent()
+    local inset, gap = phoenix and 0 or 2, phoenix and 0 or -1
+    bar:ClearAllPoints()
+    bar:SetPoint("TOPLEFT", tt, "BOTTOMLEFT", inset, gap)
+    bar:SetPoint("TOPRIGHT", tt, "BOTTOMRIGHT", -inset, gap)
+end
+M._placeBar = placeBar
+
+local function secret(v) return Secret.IsSecret and Secret.IsSecret(v) end
+function M:BarColor(unit)
+    if type(unit) ~= "string" or secret(unit) or not UnitExists(unit) then return end
+    if UnitIsPlayer(unit) then
+        local _, class = UnitClass(unit)
+        local c = class and not secret(class) and RAID_CLASS_COLORS[class]
+        if c then return c.r, c.g, c.b end
+        return
+    end
+    local reaction = UnitReaction(unit, "player")
+    if reaction == nil or secret(reaction) then return end
+    return Theme:Color(reaction <= 3 and "state.danger" or reaction == 4 and "state.warning" or "state.success")
+end
+local function recolor(bar)
+    if not (M.hbOn and bar == GameTooltip.StatusBar) then return end
+    local _, unit = GameTooltip:GetUnit()
+    local r, g, b = M:BarColor(unit)
+    if r then bar:SetStatusBarColor(r, g, b) end
+end
+
 -- The unit tooltip's health bar in the Phoenix look; switching it off hands Blizzard's bar back, live.
 function M:SyncHealthBar()
     local bar = GameTooltip.StatusBar
@@ -325,10 +357,16 @@ function M:SyncHealthBar()
                 Skin:StatusBar(b, { border = true })
                 M:StyleHealthBar(b)
             end)
+            if not self.hbHooked and HealthBar_OnValueChanged then
+                self.hbHooked = true -- stays for the session; recolor checks hbOn
+                hooksecurefunc("HealthBar_OnValueChanged", recolor)
+            end
         end
+        placeBar(bar, true)
     elseif self.hbOn then
         self.hbOn = nil
         Skin:Restore(bar)
+        placeBar(bar, false)
         if self.hbHeight then bar:SetHeight(self.hbHeight) end
     end
 end

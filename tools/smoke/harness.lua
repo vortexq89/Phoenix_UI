@@ -7703,6 +7703,21 @@ fire("PLAYER_LOGOUT")
 -- icon system: every name the UI asked for must exist, and tier selection must follow physical pixels
 for name in pairs(ns.Icons and ns.Icons.missing or {}) do errors[#errors + 1] = "unknown icon: " .. name end
 -- tooltip post-calls run for every tooltip in the game: non-GameTooltips, forbidden ones and secret data are skipped
+try("tooltip health bar sits flush", function()
+    local T = ns.modules.Tooltip
+    local tt = CreateFrame("Frame", nil, UIParent)
+    local bar = CreateFrame("StatusBar", nil, tt); bar.GetParent = function() return tt end
+    T._placeBar(bar, true)
+    local pts = Geo.points[bar]
+    assert(pts and #pts == 2, "health bar not anchored on both sides")
+    for _, p in ipairs(pts) do
+        assert(p.rel == tt and p.x == 0 and p.y == 0, "health bar inset or gapped under the tooltip (t146)")
+    end
+    T._placeBar(bar, false)
+    local back = Geo.points[bar]
+    assert(back[1].x == 2 and back[1].y == -1 and back[2].x == -2, "Blizzard's bar anchors not restored")
+    assert(T:BarColor(nil) == nil and T:BarColor(123) == nil, "bar colour from a missing unit")
+end)
 try("tooltip hooks", function()
     assert(#postCalls >= 3, "tooltip post-calls not registered (" .. #postCalls .. ")")
     local faults = {}

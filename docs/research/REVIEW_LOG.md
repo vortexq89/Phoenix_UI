@@ -112,3 +112,10 @@ so each is rechecked against those shots and EllesmereUI's source (read-only, re
 |---|---|---|
 | Blizzard's Combined Backpack (title, lock icons, gold) drawn behind the Phoenix window | Blizzard parents ContainerFrame1..N and ContainerFrameCombinedBags to UIParent (or the fullscreen panel), not to ContainerFrameContainer, so tucking the holder hid nothing | every bag frame is tucked on its own and again after ContainerFrame_SetFullScreenFrame / ClearFullScreenFrame; restored on switching back; harness covers both |
 | Empty slots show Blizzard's wing art | an empty item button's icon is its emptyBackgroundAtlas (bags-item-slot64) | skinned empty slots hide the icon, leaving the flat sunken slot with its border (EllesmereUI style); restored with the skin off |
+
+### 11b. Tooltips (shots 221219, 222340)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| Health bar hangs under the box with a gap and a narrower width | Blizzard anchors GameTooltipStatusBar 2 px in and 1 px below; Phoenix skinned it but never moved it, and its border sits outside | skinned, the bar is anchored flush under the tooltip at full width so the borders meet (WindTools' layout); Blizzard's anchors come back with the bar option off; harness test |
+| Raw saturated green bar on every unit | Blizzard's HealthBar_OnValueChanged colours by health | post-hook recolours the tooltip bar by class for players (EllesmereUI does the same) and by reaction for NPCs with the theme's danger / warning / success; secret units, classes and reactions are skipped |
