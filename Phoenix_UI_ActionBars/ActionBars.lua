@@ -79,7 +79,7 @@ local DEFAULTS = {
     extra = { skin = true, scale = 1, hideArt = false },
     vehicle = { enabled = true, size = 36 },
     micro = "bar", bags = "bar",
-    ring = { enabled = false, key = "", list = "", size = 40, radius = 90 }, -- quick ring (Ring.lua)
+    ring = { enabled = false, key = "", list = "", size = 40, radius = 90, mode = "toggle", atCursor = false }, -- quick ring (Ring.lua)
     uprank = true, -- WoW Forever: a newly learned rank replaces the old one on your bars (Uprank.lua)
     items = { quest = true, list = "", hotkey = "" }, -- hotkey: uses the first item (e.g. "SHIFT-E")
 }

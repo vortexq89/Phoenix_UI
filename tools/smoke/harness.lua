@@ -5687,6 +5687,20 @@ try("datatexts v9.1 strip, caps, dividers and section icons", function()
     assert(D.SegmentArt("clock", s) and not D.SegmentArt("fps", s), "time icon painted, fps keeps its glyph")
 end)
 
+try("quickdraw: hold mode, cursor and ring art", function()
+    local AB = ns.modules.ActionBars
+    local r = AB.db.ring
+    assert(r.mode == "toggle" and r.atCursor == false, "quickdraw defaults")
+    r.enabled, r.list, r.key, r.mode, r.atCursor = true, "133, item:5512", "F", "hold", true
+    AB:RefreshRing()
+    assert(_G.PhoenixUI_RingToggle and AB.ringHold and AB.ringCursor and AB.ringCount == 2, "hold mode at the cursor")
+    r.mode, r.atCursor = "toggle", false
+    AB:RefreshRing()
+    assert(not AB.ringHold and not AB.ringCursor, "back to press, live")
+    r.enabled, r.list, r.key = false, "", ""
+    AB:RefreshRing()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

@@ -44,7 +44,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | QoL auto logging | 10 | Automation AutoLog | A | done: M+, raid, dungeon picks; only stops logs it started; live |
 | QoL cursor | 1 | cursor ring present | E | |
 | QoL raid tools | — | ready check / countdown partial | E | |
-| Quickdraw (hold-key action menu) | 45 | ✗ | B | |
+| Quickdraw (hold-key action menu) | 45 | ActionBars Ring | A | done: hold and release, open at cursor, v9 quick_ring art; verify the secure release pick in game |
 | Macro model / macros | 104 + 6 | macro window skin | B | |
 | Upgrade calculator | 9 | crest info partial | B | |
 | Loot council | 5 | ✗ | B | |

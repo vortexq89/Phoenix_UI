@@ -198,4 +198,9 @@ ns:RegisterOptions("ActionBars", {
       disabled = function(m) return not m.db.ring.enabled end },
     { type = "input", key = "ring.list", label = "AB_RING_LIST", desc = "AB_RING_LIST_DESC", combat = true,
       disabled = function(m) return not m.db.ring.enabled end },
+    { type = "select", key = "ring.mode", label = "AB_RING_MODE", desc = "AB_RING_MODE_DESC", combat = true,
+      keywords = "hold release quickdraw", disabled = function(m) return not m.db.ring.enabled end,
+      values = { { value = "toggle", label = "AB_RING_MODE_TOGGLE" }, { value = "hold", label = "AB_RING_MODE_HOLD" } } },
+    { type = "toggle", key = "ring.atCursor", label = "AB_RING_CURSOR", desc = "AB_RING_CURSOR_DESC", combat = true,
+      keywords = "mouse pointer", disabled = function(m) return not m.db.ring.enabled end },
 })
