@@ -11,7 +11,7 @@ local plugin = P:RegisterPlugin("Hello_Sample", {
             panel = CreateFrame("Frame", "PhoenixUIHelloPanel", UIParent, "BackdropTemplate")
             panel:SetPoint("CENTER", 0, 200)
             P:StylePanel(panel, "raised")
-            text = P:CreateText(panel, "body", "text", "CENTER")
+            text = P:CreateText(panel, "body", "text.primary", "CENTER")
             text:SetPoint("CENTER")
             P:RegisterMover("Hello_Sample", panel, "Hello")
         end
