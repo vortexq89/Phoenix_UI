@@ -4773,6 +4773,10 @@ try("action bars drivers", function()
     assert(M.BarsEngine.PageMacro(-1):find("^/changeactionbar %[bar:1%] 6; "), "page down wraps to 6")
     local v = { alpha = 1, fade = true, oocAlpha = 0.4, mouseover = false }
     assert(M.TargetAlpha(v, {}) == 0.4 and M.TargetAlpha(v, { combat = true }) == 1, "fade out of combat")
+    assert(M.TargetAlpha(v, { active = true }) == 1, "a target or a cast does not bring a faded bar back")
+    v.keepActive = false
+    assert(M.TargetAlpha(v, { active = true }) == 0.4, "Show while active off still brings the bar back")
+    v.keepActive = nil
     v.mouseover = true
     assert(M.TargetAlpha(v, { combat = true }) == 0 and M.TargetAlpha(v, { hover = true }) == 1, "mouseover")
     assert(M.TargetAlpha(v, { reveal = true }) == 1, "dragging a spell reveals the bars")

@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "clicca per attivare o disattivare il modulo",
     UF_OOC_KEEP = "Mostra se attivo",
     UF_OOC_KEEP_DESC = "Fuori combattimento il riquadro resta visibile se hai un bersaglio, lanci o ci passi sopra.",
+    AB_VIS_KEEP_DESC = "Fuori combattimento la barra resta visibile se hai un bersaglio o lanci.",
 }
 
 ns.RegisterLocale("itIT", T)

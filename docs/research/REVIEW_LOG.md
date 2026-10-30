@@ -44,3 +44,18 @@ was offline for this pass, so the comparison uses both addons' documented featur
 | Settings depth | 371 settings across 7 sub-pages | EUI ~250, ElvUI ~400 | at the deep end | none |
 
 Open (later passes): per-frame visibility rules beyond fading (hide in pet battles / vehicles) as EUI offers.
+
+## 3. Action bars
+
+Reference: EllesmereUI Action Bars (per-bar visibility rules incl. mouseover / combat / target, paging, shapes,
+glows, range and power feedback) and ElvUI (per-bar mouseover, combat fader "show on target / casting",
+paging string, backdrops, flyout direction, key-down casting, cooldown text). Documented features (PC offline).
+
+| Area | Phoenix | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Layout | buttons, rows, width/height, square, spacing, grow, wrap, order, empty slots, click-through, strata, scale, backdrop | parity, more than EUI (order, wrap) | complete | none |
+| Visibility | combat / out of combat, fade, mouseover, linked mouseover groups, reveal while dragging or spellbook open, hide in vehicle, custom macro, pet battles always hidden | parity | faded bars stayed dim while targeting or casting out of combat | new "Show while active" in the fade cog (on by default): full alpha with a target or your own cast/channel; tested in the harness |
+| Feedback | range tint, power, unusable, target, pushed, highlight, checked, proc glow, assist, GCD, bling, swipe alpha, desaturate on cooldown | parity | complete | none |
+| Text | hotkeys (short labels), macro text, counts, cooldown size / charges | parity | complete | none |
+| Extras | extra action / zone ability skin, vehicle exit, micro menu, bags bar, quest item bar, quick ring | more than both (quest item bar, ring) | complete | none |
+| Key-down casting | follows Blizzard's own setting | ElvUI exposes it | the game already offers it in its options | none (no duplicate) |

@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "haz clic para activar o desactivar el módulo",
     UF_OOC_KEEP = "Mostrar si activo",
     UF_OOC_KEEP_DESC = "Fuera de combate el marco se muestra entero si tienes objetivo, lanzas un hechizo o pasas el ratón.",
+    AB_VIS_KEEP_DESC = "Fuera de combate la barra se muestra entera si tienes objetivo o lanzas un hechizo.",
 }
 
 ns.RegisterLocale("esES", T)

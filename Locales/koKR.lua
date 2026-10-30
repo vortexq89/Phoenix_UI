@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "클릭하여 모듈을 켜거나 끕니다",
     UF_OOC_KEEP = "활동 중 표시",
     UF_OOC_KEEP_DESC = "비전투 중에도 대상이 있거나 시전 중이거나 마우스를 올리면 프레임이 완전히 보입니다.",
+    AB_VIS_KEEP_DESC = "비전투 중에도 대상이 있거나 시전 중이면 바가 완전히 보입니다.",
 }
 
 ns.RegisterLocale("koKR", T)

@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "点击开启或关闭此模块",
     UF_OOC_KEEP = "活动时显示",
     UF_OOC_KEEP_DESC = "脱战时，有目标、施法或鼠标悬停时框体仍完全显示。",
+    AB_VIS_KEEP_DESC = "脱战时，有目标或施法时动作条仍完全显示。",
 }
 
 ns.RegisterLocale("zhCN", T)

@@ -328,6 +328,8 @@ function B.State(h, linkedHover)
         combat = InCombatLockdown() or UnitAffectingCombat("player"),
         hover = linkedHover or hovered(h),
         reveal = (b.vis.drag and cursorReveals()) or (b.vis.spellbook and spellbook) or M.keybindMode or false,
+        -- out of combat but busy: a target, or a cast or channel of your own
+        active = UnitExists("target") or UnitCastingInfo("player") ~= nil or UnitChannelInfo("player") ~= nil,
     }
 end
 

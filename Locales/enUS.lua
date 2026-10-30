@@ -4166,4 +4166,5 @@ ns.RegisterLocale("enUS", {
     NAV_SWITCH_TIP = "click to switch the module on or off",
     UF_OOC_KEEP = "Show while active",
     UF_OOC_KEEP_DESC = "Out of combat the frame still shows fully while you have a target, cast or hover it.",
+    AB_VIS_KEEP_DESC = "Out of combat the bar still shows fully while you have a target or cast.",
 })

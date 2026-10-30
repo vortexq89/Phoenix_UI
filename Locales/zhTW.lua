@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "點擊開啟或關閉此模組",
     UF_OOC_KEEP = "活動時顯示",
     UF_OOC_KEEP_DESC = "脫戰時，有目標、施法或滑鼠懸停時框架仍完全顯示。",
+    AB_VIS_KEEP_DESC = "脫戰時，有目標或施法時快捷列仍完全顯示。",
 }
 
 ns.RegisterLocale("zhTW", T)

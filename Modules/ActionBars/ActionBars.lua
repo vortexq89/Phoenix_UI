@@ -25,7 +25,7 @@ local function bar(point, x, y, extra)
         point = point, x = x, y = y, strata = "MEDIUM", scale = 1,
         backdrop = { show = false, alpha = 0.5, color = false, style = "solid", padding = 3 },
         border = Style.Border({ style = "none" }),
-        vis = { combat = true, ooc = true, fade = false, oocAlpha = 0.4, mouseover = false, hideVehicle = true,
+        vis = { combat = true, ooc = true, fade = false, oocAlpha = 0.4, keepActive = true, mouseover = false, hideVehicle = true,
                 macro = "", drag = true, spellbook = true, linked = false, alpha = 1 },
     }
     for k, v in pairs(extra or {}) do b[k] = v end
@@ -204,7 +204,7 @@ function M.PageDriver(p, sky)
     return table.concat(parts, "; ")
 end
 
---[[ Alpha a bar should have. s = { combat, hover, reveal }: reveal (dragging a spell, spellbook open) and hover
+--[[ Alpha a bar should have. s = { combat, hover, reveal, active }: reveal (dragging a spell, spellbook open) and hover
     show the bar fully; mouseover bars are invisible otherwise; faded bars dim out of combat. ]]
 function M.TargetAlpha(vis, s)
     local a = vis.alpha
@@ -212,7 +212,8 @@ function M.TargetAlpha(vis, s)
     -- linked bars are one mouseover group: hidden until any bar of the group is hovered (with fade on they
     -- fade instead of hiding)
     if vis.mouseover or (vis.linked and not vis.fade) then return 0 end
-    if vis.fade and not s.combat then return a * vis.oocAlpha end
+    -- faded bars come back while you target or cast out of combat (ElvUI's fader and EllesmereUI's visibility rules)
+    if vis.fade and not s.combat and not (s.active and vis.keepActive ~= false) then return a * vis.oocAlpha end
     return a
 end
 

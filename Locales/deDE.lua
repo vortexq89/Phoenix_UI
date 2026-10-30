@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "Klicken, um das Modul ein- oder auszuschalten",
     UF_OOC_KEEP = "Bei Aktivität zeigen",
     UF_OOC_KEEP_DESC = "Außerhalb des Kampfes bleibt der Rahmen voll sichtbar, solange du ein Ziel hast, zauberst oder darüber fährst.",
+    AB_VIS_KEEP_DESC = "Außerhalb des Kampfes bleibt die Leiste voll sichtbar, solange du ein Ziel hast oder zauberst.",
 }
 
 ns.RegisterLocale("deDE", T)

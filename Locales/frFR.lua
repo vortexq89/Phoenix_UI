@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "cliquez pour activer ou désactiver le module",
     UF_OOC_KEEP = "Afficher si actif",
     UF_OOC_KEEP_DESC = "Hors combat, le cadre reste visible quand vous avez une cible, lancez un sort ou le survolez.",
+    AB_VIS_KEEP_DESC = "Hors combat, la barre reste visible quand vous avez une cible ou lancez un sort.",
 }
 
 ns.RegisterLocale("frFR", T)

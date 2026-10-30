@@ -4140,6 +4140,7 @@ local T = {
     NAV_SWITCH_TIP = "clique para ligar ou desligar o módulo",
     UF_OOC_KEEP = "Mostrar quando ativo",
     UF_OOC_KEEP_DESC = "Fora de combate o quadro aparece inteiro se você tiver um alvo, lançar ou passar o mouse.",
+    AB_VIS_KEEP_DESC = "Fora de combate a barra aparece inteira se você tiver um alvo ou lançar.",
 }
 
 ns.RegisterLocale("ptBR", T)
