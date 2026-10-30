@@ -244,3 +244,9 @@ Evidence (Blizzard live source, Blizzard_SharedXML/Mainline/SharedUIPanelTemplat
 - Blizzard also switches tabs on its own through SetDisplayMode (SetChecked on each tab), so even a working click hook would miss those changes.
 
 Fix: the outline follows each tab's SetChecked, which covers clicks and Blizzard's own changes. Harness test, including a stub tab whose OnClick hook raises an error. Checked: the header pool names (campaign, campaignMinimal, header, covenantCallings) and the side-tab keys match the live source.
+
+## 25. Talents and spellbook
+
+Evidence (Blizzard live source, Blizzard_SharedTalentUI/Blizzard_SharedTalentFrame.lua lines 281-285 and 1442-1473; Blizzard_PlayerSpells/ClassTalents/Blizzard_ClassTalentsFrame.lua line 135): talent node buttons are built in `LoadTalentTree`, run from the talents frame's own OnShow and again on a spec or loadout change (ReleaseAllTalentButtons, then buttons from the pool). Phoenix re-skinned only on PlayerSpellsFrame OnShow and on trait events. Opening the window on the Spellbook tab and then switching to Talents left the nodes without rings until a trait event.
+
+Fix: also re-skin (next frame) after the talents frame's OnShow and after LoadTalentTreeInternal. No new harness test: the hook-once flag is module-local and set by an earlier test; existing talents tests pass on both flavours. Checked and kept: the spellbook category tabs and the loadout bar card.

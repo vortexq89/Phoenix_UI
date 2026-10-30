@@ -83,6 +83,14 @@ function M:SetupTalents()
     talentsHooked = true
     psf:HookScript("OnShow", function() M:SkinTalents() end)
     local function later() if psf:IsShown() and C_Timer then C_Timer.After(0, function() M:SkinTalents() end) end end
+    -- t156: Blizzard builds the node buttons in TalentFrameBaseMixin:LoadTalentTree, run from the talents
+    -- frame's own OnShow (switching from the spellbook tab does not show PlayerSpellsFrame again) and on a spec
+    -- or loadout change, from a button pool. Re-skin after both so every node has its ring.
+    local tf = psf.TalentsFrame
+    if tf then
+        tf:HookScript("OnShow", later)
+        if type(tf.LoadTalentTreeInternal) == "function" then hooksecurefunc(tf, "LoadTalentTreeInternal", later) end
+    end
     ns.Events:On("TRAIT_CONFIG_UPDATED", self, later)
     ns.Events:On("TRAIT_NODE_CHANGED", self, later)
     ns.Events:Listen("PUI_THEME_CHANGED", rings, function() if psf:IsShown() then M:SkinTalents() end end)
