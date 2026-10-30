@@ -281,7 +281,7 @@ local function makeControl(row, page, m, item)
     elseif t == "input" then
         c = W:Input(row, item.width)
     elseif t == "custom" then
-        return item.build(row, m)
+        return item.build(row, m, page)
     elseif t == "button" then
         c = W:Button(row, text(item.button or item.label), item.variant or "secondary", item.icon)
         c.onClick = function() item.func(m, page) end

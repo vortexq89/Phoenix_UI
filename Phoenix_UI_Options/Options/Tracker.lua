@@ -23,6 +23,118 @@ local function editmode(m, key) return not ns.modules.Tracker.IsCustom(key) and 
 local function remOff(m) return not m.db.reminders.enabled end
 local function customOff(m, key) return isCustom(m, key) and not v(m, key).enabled end
 
+local function notCustomBars(m, key) return notCustom(m, key) or v(m, key).display ~= "bars" end
+local DISPLAY = { { value = "icons", label = "TRACKER_DISPLAY_ICONS" }, { value = "bars", label = "TRACKER_DISPLAY_BARS" } }
+
+--[[ Spell picker (EllesmereUI parity): your spellbook's active spells as icons, filtered by a search box; a click
+    adds the spell to the custom bar's list or takes it out. Talent conditions ("?ID" / "!ID") typed in the list stay. ]]
+local W = ns.Widgets
+local PICK_COLS, PICK_ROWS, PICK_SIZE = 12, 2, 26
+function ns.Opt.SpellbookSpells()
+    local out, api = {}, C_SpellBook
+    if not (api and api.GetNumSpellBookSkillLines and api.GetSpellBookSkillLineInfo and api.GetSpellBookItemInfo) then return out end
+    local bank = Enum.SpellBookSpellBank and Enum.SpellBookSpellBank.Player or 0
+    local seen = {}
+    local okN, lines = pcall(api.GetNumSpellBookSkillLines)
+    for line = 1, okN and tonumber(lines) or 0 do
+        local info = api.GetSpellBookSkillLineInfo(line)
+        local isT = type(info) == "table"
+        local first = isT and tonumber(info.itemIndexOffset)
+        local count = isT and tonumber(info.numSpellBookItems)
+        if first and count and not info.shouldHide then
+            for i = first + 1, first + count do
+                local s = api.GetSpellBookItemInfo(i, bank)
+                s = type(s) == "table" and s or nil
+                local id = s and s.spellID
+                if id and not s.isPassive and not s.isOffSpec and not seen[id] and type(s.name) == "string" then
+                    seen[id] = true
+                    out[#out + 1] = { id = id, name = s.name, icon = s.iconID }
+                end
+            end
+        end
+    end
+    return out
+end
+
+-- the list without / with one spell id (other entries and their talent conditions are kept as typed)
+function ns.Opt.ToggleListSpell(list, id)
+    local parts, found = {}, false
+    for part in tostring(list or ""):gmatch("[^,;\n]+") do
+        local p = part:gsub("^%s+", ""):gsub("%s+$", "")
+        local pid = tonumber(p:match("^(%d+)"))
+        if pid == id then found = true elseif p ~= "" then parts[#parts + 1] = p end
+    end
+    if not found then parts[#parts + 1] = tostring(id) end
+    return table.concat(parts, ", "), not found
+end
+
+local function inList(list, id)
+    for part in tostring(list or ""):gmatch("[^,;\n]+") do
+        if tonumber(part:match("^%s*(%d+)")) == id then return true end
+    end
+    return false
+end
+
+local function spellPicker(row, m, page)
+    local h = CreateFrame("Frame", nil, row)
+    h:SetSize(PICK_COLS * (PICK_SIZE + 4), 26 + PICK_ROWS * (PICK_SIZE + 4))
+    h.search = W:Input(h, 200, ns.L.TRACKER_PICK_SEARCH)
+    h.search:SetPoint("TOPLEFT")
+    h.cells = {}
+    for i = 1, PICK_COLS * PICK_ROWS do
+        local b = CreateFrame("Button", nil, h)
+        b:SetSize(PICK_SIZE, PICK_SIZE)
+        b:SetPoint("TOPLEFT", ((i - 1) % PICK_COLS) * (PICK_SIZE + 4), -26 - math.floor((i - 1) / PICK_COLS) * (PICK_SIZE + 4))
+        b.icon = b:CreateTexture(nil, "ARTWORK")
+        b.icon:SetAllPoints()
+        b.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+        b.mark = CreateFrame("Frame", nil, b)
+        b.mark:SetPoint("TOPLEFT", -2, 2); b.mark:SetPoint("BOTTOMRIGHT", 2, -2)
+        ns.Skin:Border(b.mark, "accent.primary", 2)
+        if ns.Art and ns.Art.DressSlot then
+            ns.Art:DressSlot(b, "IconGallery.cell", { out = 3, scale = 0.5, layer = "BACKGROUND", level = 0 })
+        end
+        b:SetScript("OnClick", function(self)
+            local key = page and page.scope and page.scope.unit
+            if not (key and self.id) then return end
+            local list = ns.Opt.ToggleListSpell(m:Viewer(key).list, self.id)
+            ns.DB:Set(m, "viewers." .. key .. ".list", list)
+            if m.RefreshCustom then m:RefreshCustom() end
+            h:SetValue()
+        end)
+        b:SetScript("OnEnter", function(self)
+            if not self.id then return end
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetSpellByID(self.id)
+            GameTooltip:Show()
+        end)
+        b:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        h.cells[i] = b
+    end
+    function h:SetValue()
+        local key = page and page.scope and page.scope.unit
+        local list = key and m.IsCustom(key) and m:Viewer(key).list or ""
+        local q = (self.search:GetText() or ""):lower()
+        local shown = 0
+        for _, s in ipairs(ns.Opt.SpellbookSpells()) do
+            if shown >= #self.cells then break end
+            if q == "" or s.name:lower():find(q, 1, true) then
+                shown = shown + 1
+                local b = self.cells[shown]
+                b.id = s.id
+                b.icon:SetTexture(s.icon)
+                b.mark:SetShown(inList(list, s.id))
+                b:Show()
+            end
+        end
+        for i = shown + 1, #self.cells do self.cells[i].id = nil; self.cells[i]:Hide() end
+    end
+    h.search.onTextChanged = function() h:SetValue() end
+    ns.Events:Listen("PUI_SETTING_CHANGED", h, function(_, _, key) if key == "Tracker" then h:SetValue() end end)
+    h:SetValue()
+    return h
+end
+
 local SCOPE = {
     { value = "essential", label = "TRACKER_ESSENTIAL" }, { value = "utility", label = "TRACKER_UTILITY" },
     { value = "buffs", label = "TRACKER_BUFFS" }, { value = "bars", label = "TRACKER_BARS" },
@@ -109,6 +221,14 @@ ns:RegisterOptions("Tracker", {
       hidden = notCustom },
     { type = "input", key = "viewers.@.list", label = "TRACKER_CUSTOM_LIST", desc = "TRACKER_CUSTOM_LIST_DESC", hidden = notCustom,
       disabled = customOff, width = 320, keywords = "spell id item trinket list custom" },
+    { type = "custom", label = "TRACKER_PICK", desc = "TRACKER_PICK_DESC", height = 92, hidden = notCustom, disabled = customOff,
+      build = spellPicker, keywords = "spell picker spellbook choose add" },
+    { type = "select", key = "viewers.@.display", label = "TRACKER_DISPLAY", desc = "TRACKER_DISPLAY_DESC", values = DISPLAY,
+      hidden = notCustom, disabled = customOff, keywords = "bars buff bars cooldown bars icons" },
+    { type = "range", key = "viewers.@.barWidth", label = "TRACKER_BAR_WIDTH", min = 60, max = 400, step = 1,
+      hidden = notCustomBars, disabled = customOff },
+    { type = "color", key = "viewers.@.barColor", label = "TRACKER_BAR_COLOR", reset = true, token = "accent.primary",
+      hidden = notCustomBars, disabled = customOff },
     { type = "button", label = "TRACKER_MOBILITY", desc = "TRACKER_MOBILITY_DESC", button = "TRACKER_MOBILITY_BUTTON",
       icon = "speed", hidden = notCustom, disabled = customOff, keywords = "movement mobility blink dash sprint",
       func = function(m, page)

@@ -5583,6 +5583,22 @@ try("resource bars order ticks colours", function()
     r.power.ticks, r.health.color, r.power.color = "", "class", "type"
 end)
 -- t169: the v7.1 art kit (baked textures, override layers, cover fit, icons, switches)
+try("cooldown manager picker and bars", function()
+    local O = ns.Opt
+    assert(O.ToggleListSpell("100, 200?300", 200) == "100", "a click takes a spell out (with its condition)")
+    local l, added = O.ToggleListSpell("100", 6544)
+    assert(l == "100, 6544" and added, "a click adds a spell")
+    assert(type(O.SpellbookSpells()) == "table", "spellbook list is safe without the API")
+    local T = ns.modules.Tracker
+    assert(T:Viewer("custom1").display == "icons" and T:Viewer("custom1").barWidth == 180, "custom bar display defaults")
+    if T.CustomBarPart then
+        local f = CreateFrame("Frame", nil, UIParent)
+        local b = T.CustomBarPart(f)
+        T.FillCustomBar(f, nil)
+        assert(b and f.Bar == b, "bar part builds and fills without a duration")
+    end
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

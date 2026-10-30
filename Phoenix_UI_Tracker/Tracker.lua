@@ -49,6 +49,9 @@ local function custom(n)
     local y = 232 + (n - 1) * 44
     return viewer(14, 36, y, {
         enabled = n == 1, list = "", trinkets = n == 1, show = "always", charges = true, tooltips = true,
+        -- "bars": each entry is an icon plus a bar draining with its cooldown (EllesmereUI's buff/cooldown bars)
+        display = "icons", barWidth = 180, texture = "", barColor = false, gradient = "none",
+        background = Style.Background({ alpha = 0.7 }), name = Style.Text(12, { shadow = true }),
         position = place("mover", y, "BOTTOM"), readyGlow = "none",
     })
 end

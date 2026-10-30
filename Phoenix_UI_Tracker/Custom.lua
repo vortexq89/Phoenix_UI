@@ -45,6 +45,57 @@ local function newIcon(parent)
     return f
 end
 
+-- bar display: a StatusBar to the right of the icon. Spells drain through StatusBar:SetTimerDuration (the
+-- duration object stays secret-safe); items get a plain start / duration; without the API the bar stays full.
+local function barPart(f)
+    if f.Bar then return f.Bar end
+    local b = CreateFrame("StatusBar", nil, f)
+    b:SetMinMaxValues(0, 1)
+    b:SetValue(1)
+    b.name = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    b.name:SetPoint("LEFT", 4, 0)
+    b.name:SetJustifyH("LEFT")
+    b.track = b:CreateTexture(nil, "BACKGROUND", nil, -6)
+    b.track:SetPoint("TOPLEFT", -2, 2)
+    b.track:SetPoint("BOTTOMRIGHT", 2, -2)
+    f.Bar = b
+    return b
+end
+M.CustomBarPart = barPart
+
+local function layoutBar(key, f, e, size)
+    local v = M:Viewer(key)
+    if v.display ~= "bars" then if f.Bar then f.Bar:Hide() end return 0 end
+    local b = barPart(f)
+    b:ClearAllPoints()
+    b:SetPoint("TOPLEFT", f, "TOPRIGHT", 4, 0)
+    b:SetSize(v.barWidth or 180, size)
+    M:StyleBar(key, b, b.name)
+    -- v8.1 track (THEME_API §7.04 MythicPlus.forces / DamageMeter.row.track); the flat look keeps the backdrop
+    local A = ns.Art
+    local art = A and A.PaintSlot and A:PaintSlot(b.track, "DamageMeter.row.track", 0.5)
+    b.track:SetShown(art and true or false)
+    if art then ns.Art.OutlineText(b.name) end
+    local name = e.kind == "spell" and C_Spell.GetSpellName and C_Spell.GetSpellName(e.id)
+        or (C_Item.GetItemNameByID and C_Item.GetItemNameByID(e.id))
+    b.name:SetText(name or "")
+    b:Show()
+    return (v.barWidth or 180) + 4
+end
+
+local function fillBar(f, d)
+    local b = f.Bar
+    if not (b and b:IsShown()) then return end
+    if d and b.SetTimerDuration then
+        local ok = pcall(b.SetTimerDuration, b, d, Enum.StatusBarInterpolation and Enum.StatusBarInterpolation.Immediate,
+            Enum.StatusBarTimerDirection and Enum.StatusBarTimerDirection.RemainingTime)
+        if ok then return end
+    end
+    b:SetMinMaxValues(0, 1)
+    b:SetValue(1)
+end
+M.FillCustomBar = fillBar
+
 local function styleIcon(key, f)
     local v = M:Viewer(key)
     M:StyleIcon(key, f.Icon, f.holder, nil, f.Count, f.Keybind)
@@ -168,6 +219,7 @@ local function updateSpell(key, f, id)
         local ok, d = pcall(C_Spell.GetSpellCooldownDuration, id)
         if ok and d then
             pcall(f.Cooldown.SetCooldownFromDurationObject, f.Cooldown, d)
+            fillBar(f, d)
             local okZ, z = pcall(d.IsZero, d)
             if okZ then zero, known = z, true end
         end
@@ -189,7 +241,12 @@ end
 local function updateItem(key, f, id)
     local start, duration, enable = C_Item.GetItemCooldown(id)
     pcall(CooldownFrame_Set, f.Cooldown, start, duration, enable)
-    local plain = not Secret.IsSecret(duration)
+    local plain = not Secret.IsSecret(duration) and not Secret.IsSecret(start)
+    if f.Bar and f.Bar:IsShown() and plain then -- item cooldowns are plain: fraction left, set on each poll
+        local left = (tonumber(duration) or 0) > 1.5 and math.max(0, (start + duration - GetTime()) / duration) or 0
+        f.Bar:SetMinMaxValues(0, 1)
+        f.Bar:SetValue(1 - left)
+    end
     local zero = plain and (tonumber(duration) or 0) <= 1.5
     local n = itemCount(id)
     f.Count:SetText(n > 1 and n or "")
@@ -236,8 +293,10 @@ function M:BuildCustom(key)
     local Lk = {}
     for name, val in pairs(v.layout) do Lk[name] = val end
     Lk.size, Lk.spacing, Lk.overflow = math.floor(v.layout.size * k + 0.5), math.floor(v.layout.spacing * k + 0.5), "row"
+    local barsMode = v.display == "bars"
+    if barsMode then Lk.perRow, Lk.growth, Lk.wrap = 1, "RIGHT", Lk.wrap == "UP" and "UP" or "DOWN"; Lk.rowDelta = 0 end
     local pos, w, h = M.Grid(#entries, Lk)
-    local a = self:PlaceAnchor(key, w, h)
+    local a = self:PlaceAnchor(key, w + (barsMode and (v.barWidth or 180) + 4 or 0), h)
     for i, e in ipairs(entries) do
         local f = b.icons[i] or newIcon(a)
         b.icons[i] = f
@@ -247,6 +306,7 @@ function M:BuildCustom(key)
         f:SetPoint("TOPLEFT", a, "TOPLEFT", pos[i].x, -pos[i].y)
         f.Icon:SetTexture(texture(e))
         styleIcon(key, f)
+        layoutBar(key, f, e, pos[i].size)
         local text = v.keybinds and e.kind == "spell" and M.KeyForSpell(e.id) or nil
         f.Keybind:SetText(text or "")
         f:Show()

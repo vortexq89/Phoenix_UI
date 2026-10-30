@@ -45,6 +45,17 @@ function M:StyleIcon(key, icon, holder, timer, count, keybind)
     local v = self:Viewer(key)
     Skin:IconZoom(icon, v.square and v.zoom or 0)
     Skin:BorderSpec(holder, v.square and v.border or { style = "none" }, "border.black")
+    -- v8.1 Cooldowns.icon frame (cdm_icon, 40 px around a 32 px icon) on square icons; the icon itself is untouched
+    local A = ns.Art
+    if A and A.DressSlot and holder then
+        if v.square then
+            local w = holder:GetWidth() or 0
+            if w < 8 then w = 32 end
+            A:DressSlot(holder, "Cooldowns.icon", { out = math.floor(w / 8 + 0.5), scale = math.max(0.25, w / 48), level = 3 })
+        else
+            A:Undress(holder, "Cooldowns.icon")
+        end
+    end
     if timer then Skin:TextSpec(timer, v.timer, "number", "text.primary") end
     if count then Skin:TextSpec(count, v.count, "number", "text.primary") end
     if keybind then

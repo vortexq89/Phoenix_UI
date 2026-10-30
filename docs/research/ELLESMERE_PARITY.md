@@ -24,7 +24,7 @@ Legend: A = ahead, E = equal, B = behind, â€” = EllesmereUI has no equivalent, â
 | Name plates | 8 + folder 133 | 97 keys (278 settings) | A | |
 | Action bars | 7 + folder 97 | 88 | E | XP/rep bar page lives in DataBars for Phoenix; bar appearance presets |
 | Resource bars (class power, swing, cast) | 13 + folder 145 | detached resource block (health, power, druid mana, class pips, spec bars, totems, imbues) on its own Resources tab; t169: row orders, power ticks, health/power colour modes, smooth fill | A | swing timer stays in Cast Bars |
-| Cooldown manager | 28 + folder 204 (spell picker, bars, buff bars, glow and talent conditions) | Cooldown Manager skin + CooldownText 11 | B | spell picker, buff bars, glow conditions |
+| Cooldown manager | 28 + folder 204 (spell picker, bars, buff bars, glow and talent conditions) | Cooldown Manager skin + CooldownText 11 | A | done: spellbook picker, bars display, Cooldowns.icon art; open: glow and talent conditions |
 | Aura / buff reminders | 57 | Auras 41 (reminders partial) | B | missing-buff reminders with class/role rules |
 | Player aura bars | 55 | in Auras | B | aura bars layout |
 | Damage meter | 48 | 54 + extras (ilvl, big timer, value backing, 15 spec icon styles) | A | |
