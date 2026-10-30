@@ -187,7 +187,8 @@ local function paintSlot(b)
     local color = type(q) == "number" and q >= 1 and ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[q]
     Skin:IconFrame(b, b.icon, color and { color = { r = color.r, g = color.g, b = color.b } } or {}, 0.08, "border.subtle")
     local ilvl = tex and ItemLocation and C_Item.GetCurrentItemLevel(ItemLocation:CreateFromEquipmentSlot(b.slot))
-    b.level:SetText(tonumber(ilvl) and tostring(ilvl) or "")
+    -- shirts, tabards and cosmetics are item level 1: drawn on the slot it read as a stack count (t146)
+    b.level:SetText(tonumber(ilvl) and ilvl > 1 and tostring(ilvl) or "")
 end
 
 local function paintRows()

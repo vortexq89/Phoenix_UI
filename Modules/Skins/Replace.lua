@@ -268,6 +268,8 @@ function M.ReplaceTabs(parent, defs, width, onPick)
     for _, d in ipairs(defs) do
         local b = W:Button(parent, d.label, "secondary", nil, width)
         b:SetHeight(22)
+        -- never cut a label ("Reputati..." in the t146 character window; longer still in other locales)
+        b:SetWidth(math.max(width or 0, math.ceil(b.label:GetStringWidth() + 20)))
         if prev then b:SetPoint("LEFT", prev, "RIGHT", 4, 0) else b:SetPoint("TOPLEFT", 0, 0) end
         b.onClick = function() onPick(d.key) end
         t.buttons[d.key], prev = b, b

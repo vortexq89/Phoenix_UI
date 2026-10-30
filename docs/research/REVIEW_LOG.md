@@ -119,3 +119,14 @@ so each is rechecked against those shots and EllesmereUI's source (read-only, re
 |---|---|---|
 | Health bar hangs under the box with a gap and a narrower width | Blizzard anchors GameTooltipStatusBar 2 px in and 1 px below; Phoenix skinned it but never moved it, and its border sits outside | skinned, the bar is anchored flush under the tooltip at full width so the borders meet (WindTools' layout); Blizzard's anchors come back with the bar option off; harness test |
 | Raw saturated green bar on every unit | Blizzard's HealthBar_OnValueChanged colours by health | post-hook recolours the tooltip bar by class for players (EllesmereUI does the same) and by reaction for NPCs with the theme's danger / warning / success; secret units, classes and reactions are skipped |
+
+### 11c. Skins (shots 221353 character, 221400 mounts, 222209 group finder, 222322 friends)
+
+The t146 build was before da2e259 (readable character window with model, game menu, nav tint). Rechecked what
+that commit left:
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| "1" on shirt, tabard and cosmetic slots reads as a stack count | the slot shows the item level, and those items are level 1 | levels of 1 or less are not drawn |
+| Tab label cut to "Reputati..." | ReplaceTabs gives every tab a fixed width (104 in the character window) | each tab grows to fit its label (never below the given width); every replaced window that uses ReplaceTabs gets it, and longer locales no longer clip |
+| Mounts, group finder, friends | skinned, readable, no overlap in the shots | no change |
