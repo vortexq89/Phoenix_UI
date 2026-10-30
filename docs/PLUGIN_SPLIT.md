@@ -1,6 +1,11 @@
 # Plugin split (t161 B) - spec
 
-Status: spec only, not built. Owner ask (t161u): EllesmereUI-style split, each settings system its own load-on-demand
+Status: built (t163). Loader `Core/Plugins.lua`, manager `Phoenix_UI_Options/Config/Plugins.lua`, installer
+`tools/pc/install.ps1`. Deviations: CombatText stays in core (it is a locked, always-on module, so loading it on demand
+saves nothing); the shared namespace uses the existing `PhoenixUI_Bridge` (set only during LoadAddOn, as for the
+settings addon) instead of a new permanent global; plugins whose files capture another plugin at load time declare
+`needs` (UnitFrames ↔ CastBars, GroupFrames → UnitFrames, NamePlates → UnitFrames + CastBars) and the loader loads
+those first; the loot-feed item card moved to core (`UI/Widgets/ItemCard.lua`) so Quality works without Skins. Owner ask (t161u): EllesmereUI-style split, each settings system its own load-on-demand
 addon folder `Phoenix_UI_<System>`, chosen in a plugin manager, loaded only when enabled; install and package them all.
 
 ## 1. Today

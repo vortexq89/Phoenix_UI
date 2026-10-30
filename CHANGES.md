@@ -3,6 +3,11 @@
 ## 2.0.0-beta1
 
 ### New
+- **Plugins** (t163): every optional system (25 of them: bars, frames, nameplates, skins, meter, chat, bags ...) is now its own
+  load-on-demand addon folder, `Phoenix_UI_<System>`, loaded only while it is on. New Phoenix > Plugins page: state
+  (Loaded / Off / Not installed / Needs reload), memory, switches, Enable all and Minimal. A plugin turned on loads
+  live (systems that take over Blizzard frames at login ask for a reload); off is live too, and its code leaves memory
+  at the next reload. Install every folder in the zip; a missing one simply shows as Not installed.
 - **Public plugin API** (t162): global read-only `PhoenixUI` table, versioned (API 1.0) — register plugins with
   settings pages, Layout-mode movers, theme/font access, events and after-combat queueing. Guide and a sample
   plugin in docs/PLUGIN_API.md and docs/samples/Phoenix_UI_Hello.

@@ -109,10 +109,16 @@ so it stays sharp from 1080p up to 4K at a UI scale of about 1.15.
 
 ## Installation
 
-Install from CurseForge or Wago, or download a release and extract **both** folders, `Phoenix_UI` and
-`Phoenix_UI_Options`, into `World of Warcraft/_retail_/Interface/AddOns/` (WoW Forever: the same two folders into
-the Forever client's `Interface/AddOns`; Battle.net → *World of Warcraft: Forever* → cog → *Show in Explorer*). `Phoenix_UI_Options` is the settings
-window; it is load-on-demand, so it costs no memory until you type `/pui`. Keep both enabled in the AddOns list.
+Install from CurseForge or Wago, or download a release and extract **every** folder in the zip (`Phoenix_UI` and
+all `Phoenix_UI_*` folders) into `World of Warcraft/_retail_/Interface/AddOns/` (WoW Forever: the same folders into
+the Forever client's `Interface/AddOns`; Battle.net → *World of Warcraft: Forever* → cog → *Show in Explorer*).
+`Phoenix_UI_Options` is the settings window and each other `Phoenix_UI_<System>` folder is one plugin (action bars,
+unit frames, damage meter ...). They are load-on-demand: a plugin loads only while it is on in `/pui` → *Plugins*,
+and a folder you leave out shows as "Not installed". Keep them all enabled in the AddOns list. Third-party plugins:
+[docs/PLUGIN_API.md](docs/PLUGIN_API.md).
+
+From a clone on Windows: `powershell -File tools\pc\install.ps1` copies `Phoenix_UI` and every `Phoenix_UI_*` folder
+(game closed).
 
 ## Usage
 
