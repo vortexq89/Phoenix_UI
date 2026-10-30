@@ -33,14 +33,18 @@ local function ensureTimer()
     timer.icon = ns.Icons:Create(timer, "clock", 14, "accent.primary", "OVERLAY")
     timer.icon:SetPoint("RIGHT", timer.text, "LEFT", -5, 0)
     M:StyleTimer()
-    timer:SetScript("OnUpdate", function(self, elapsed)
-        self.acc = (self.acc or 0) + elapsed
-        if self.acc < 0.2 then return end
-        self.acc = 0
+    -- the queue-pop countdown: a 5 Hz C_Timer ticker while the ready dialog shows (stops with it)
+    local function tick()
         local index = PVPReadyDialog.activeIndex
         local left = index and GetBattlefieldPortExpiration(index)
-        if left and left > 0 then self.text:SetFormattedText(L.PVP_TIME_LEFT, left) else self.text:SetText("") end
+        if left and left > 0 then timer.text:SetFormattedText(L.PVP_TIME_LEFT, left) else timer.text:SetText("") end
+    end
+    timer:SetScript("OnShow", function(self)
+        if self.ticker then self.ticker:Cancel() end
+        self.ticker = C_Timer.NewTicker(0.2, tick); tick()
     end)
+    timer:SetScript("OnHide", function(self) if self.ticker then self.ticker:Cancel(); self.ticker = nil end end)
+    if timer:IsVisible() then timer.ticker = C_Timer.NewTicker(0.2, tick); tick() end
     return timer
 end
 
@@ -114,10 +118,16 @@ local function sightStore()
     }
 end
 
-local function sightTick(self, elapsed)
-    self.acc = (self.acc or 0) + elapsed
-    if self.acc < 0.2 then return end
-    self.acc = 0
+-- 5 Hz C_Timer ticker, running only while the frame shows and it is an arena (or the mover sample is up)
+local sightTicker
+local function inArena() return IsActiveBattlefieldArena and IsActiveBattlefieldArena() and true or false end
+local function sightTick()
+    local self = sight
+    if not (self and self:IsShown() and (self.sample or inArena())) then
+        if sightTicker then sightTicker:Cancel(); sightTicker = nil end
+        if self then self.text:SetText(""); self.icon:SetShown(false) end
+        return
+    end
     local c = M.db.shadowsight
     local text
     if self.sample then
@@ -130,6 +140,14 @@ local function sightTick(self, elapsed)
     self.icon:SetShown(text ~= nil)
 end
 
+function M:UpdateShadowsightTicker()
+    if sightTicker or not sight then return end
+    if sight:IsShown() and (sight.sample or inArena()) then
+        sightTicker = C_Timer.NewTicker(0.2, sightTick)
+        sightTick()
+    end
+end
+
 function M:PlaceShadowsight()
     if not sight then return end
     local c = self.db.shadowsight
@@ -137,6 +155,7 @@ function M:PlaceShadowsight()
     sight:SetPoint(c.point, UIParent, c.point, c.x, c.y)
     Skin:TextSpec(sight.text, c.text, "number", "accent.primary")
     sight:SetShown(c.enabled and ns:Supports("arena"))
+    self:UpdateShadowsightTicker()
 end
 
 local function buildShadowsight()
@@ -146,7 +165,7 @@ local function buildShadowsight()
     sight.text:SetPoint("CENTER", 10, 0)
     sight.icon = ns.Icons:Create(sight, "preview", 16, "accent.primary", "OVERLAY")
     sight.icon:SetPoint("RIGHT", sight.text, "LEFT", -5, 0)
-    sight:SetScript("OnUpdate", sightTick)
+    sight:SetScript("OnShow", function() M:UpdateShadowsightTicker() end)
     M.shadowsightFrame = sight
     local movers = ns:GetModule("Movers")
     if movers then movers:Register("pvp.shadowsight", sight, L.PVP_SHADOWSIGHT, sightStore()) end
@@ -159,7 +178,8 @@ function M:OnEnable()
     RegisterNewSlashCommand(surrender, "gg", "pvpgg")
     local function deferTab() ns.Combat:Run("pvp.tab", applyTab) end
     ns.Events:On("PLAYER_ENTERING_WORLD", self, deferTab)
-    ns.Events:On("ZONE_CHANGED_NEW_AREA", self, deferTab)
+    ns.Events:On("ZONE_CHANGED_NEW_AREA", self, function() deferTab(); M:UpdateShadowsightTicker() end)
+    ns.Events:On("PVP_MATCH_STATE_CHANGED", self, function() M:UpdateShadowsightTicker() end)
     if ns:Supports("arena") then buildShadowsight() end
 end
 
