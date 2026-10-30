@@ -139,6 +139,7 @@ local function paint(f, ready)
         end
     end
     local ni = f.notInterruptible
+    if ns.Art and ns.Art.CastLock then ns.Art:CastLock(f.Bar, ni) end
     if plain(ni) then
         if ni then setColor(f, M:StateColor(key, "locked")) else setColor(f, base:GetRGBA()) end
         f.Shield:SetShown(ni and f.showShield or false)

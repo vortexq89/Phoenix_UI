@@ -172,12 +172,14 @@ local function drawTicks(f, b, r, max)
     for i, x in ipairs(offs) do
         local t = b.ticks[i] or b:CreateTexture(nil, "OVERLAY", nil, 2)
         b.ticks[i] = t
-        t:SetTexture(Media.textures.WHITE)
+        -- the v8.1 tick piece (2 px, tinted) on the phoenix-wings look; else a 1 px line
+        local art = ns.Art and ns.Art.PaintSlot and ns.Art:PaintSlot(t, "Resources.tick")
+        if not art then t:SetTexture(Media.textures.WHITE); t:SetTexCoord(0, 1, 0, 1) end
         t:SetVertexColor(c.r, c.g, c.b, c.a or 0.8)
         t:ClearAllPoints()
-        t:SetPoint("TOPLEFT", b, "TOPLEFT", x, 0)
-        t:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", x, 0)
-        t:SetWidth(1)
+        t:SetPoint("TOPLEFT", b, "TOPLEFT", x - (art and 1 or 0), 0)
+        t:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", x - (art and 1 or 0), 0)
+        t:SetWidth(art and 2 or 1)
         t:Show()
     end
     for i = #offs + 1, #b.ticks do b.ticks[i]:Hide() end

@@ -125,6 +125,7 @@ function M:StyleWindow(cf)
         s.bg:SetFrameLevel(math.max(0, cf:GetFrameLevel() - 1))
         Skin:Backdrop(s.bg, db.background, "bg.sunken")
         Skin:BorderSpec(s.bg, db.border, "border.default")
+        if ns.Art and ns.Art.DressChat then ns.Art:DressChat(s.bg) end -- phoenix-wings panel (UI/ArtKit.lua)
         s.bg:Show()
         windowTextures(cf, false)
     else

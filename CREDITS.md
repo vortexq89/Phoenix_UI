@@ -38,3 +38,8 @@ converted with `tools/media/to_blp.py`) is **original Phoenix art**: Copyright (
 ALYOUSEF), all rights reserved, under `Media/LICENSE.md`. That licence covers Phoenix's original art only. Phoenix
 Font stays under the SIL Open Font License 1.1 (its own licence file in `Media/Fonts/Licenses/`), and every
 third-party font, texture or sound listed above keeps its own licence.
+
+## Phoenix art kit v8.1 ("phoenix-wings" look)
+Media/Art/PhoenixUI_{Portraits,Actions,Bars,Frames,Panels,Modules}.blp, PhoenixBarFill.blp and PhoenixCastFill.blp are original
+Phoenix UI art, © 2026 VortexQ8 (ABDULRAHMAN ALYOUSEF), all rights reserved (Media/LICENSE.md). Baked textures only; they frame
+class, spec and ability icons but never replace them.

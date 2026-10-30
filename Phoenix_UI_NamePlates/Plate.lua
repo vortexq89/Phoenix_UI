@@ -286,5 +286,15 @@ function M:LayoutPlate(p, kind)
     cp:SetSize(s.width, 4)
     cp:SetPoint("TOP", p.Health, "BOTTOM", 0, g.cast - (s.cast.enabled and s.cast.height + 2 or 0))
     layoutAuras(p, s, g)
+    p.artHeight = s.height
+    M.DressArt(p)
     p.layoutDone = true
+end
+
+-- phoenix-wings look (UI/ArtKit.lua): plate frame, notch and the classification crest; none on name-only plates
+function M.DressArt(p)
+    local A = ns.Art
+    if not (A and A.DressPlate) then return end
+    if p.nameOnly then return A:Undress(p.Health) end
+    A:DressPlate(p, p.artHeight or 10, p.unit)
 end

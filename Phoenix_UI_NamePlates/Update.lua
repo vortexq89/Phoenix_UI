@@ -408,7 +408,7 @@ local function onAdded(_, _, unit)
     p.unit = unit
     active[unit] = p
     local kind = M.KindOf(unit)
-    if kind ~= p.kind or not p.layoutDone then M:LayoutPlate(p, kind) end
+    if kind ~= p.kind or not p.layoutDone then M:LayoutPlate(p, kind) else M.DressArt(p) end
     local uf = blizzardFrame(base)
     if uf then uf:SetAlpha(0) end
     watch(unit)

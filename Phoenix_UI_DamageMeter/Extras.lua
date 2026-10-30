@@ -126,6 +126,10 @@ local function buildTimer()
     timer.text:SetPoint("CENTER")
     timer.label = W.Text(timer, "small", "text.secondary", "CENTER")
     timer.label:SetPoint("TOP", timer.text, "BOTTOM", 0, -2)
+    if ns.Art and ns.Art.DressSlot then
+        ns.Art:DressSlot(timer, "DamageMeter.timer", { out = { 24, 24, 16, 16 }, layer = "BACKGROUND", level = 0 })
+    end
+    if ns.Art and ns.Art.OutlineText then ns.Art.OutlineText(timer.text) end
     local movers = ns:GetModule("Movers")
     if movers then
         local function cfg() return M.db.meter.bigTimer end

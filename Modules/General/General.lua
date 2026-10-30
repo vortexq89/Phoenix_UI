@@ -28,6 +28,7 @@ local M = ns:NewModule("General", {
             powerColors = POWER_DEFAULTS, dispelColors = DISPEL_DEFAULTS,
         },
         blizzardFonts = true, mute = "",
+        artPreset = "phoenix-wings", -- look: "phoenix-wings" (v8.1 game-frame art) or "settings" (v7.1 settings art only)
         artKit = true, -- Phoenix art kit v7.1 (UI/Art.lua): background, logo, textured cards and controls
         chromeStyle = "bevel", -- Phoenix chrome icons: "bevel" (Ember Bevel, UI/ChromeBevel.lua) or "flat"
         specIconStyle = "zoomed", -- the shared spec icon look (UI/SpecIcon.lua); sites may override it
@@ -135,7 +136,7 @@ end
 
 function M:OnSettingChanged(path)
     if path == "specIconStyle" then return ns.Events:Fire("PUI_SPECICON_STYLE") end
-    if path == "chromeStyle" or path == "artKit" then
+    if path == "chromeStyle" or path == "artKit" or path == "artPreset" then
         if ns.ChromeBevel then ns.ChromeBevel:Refresh() end
         if ns.EmblemFX then ns.EmblemFX:UpdateAll() end
         return ns.Events:Fire("PUI_THEME_CHANGED")

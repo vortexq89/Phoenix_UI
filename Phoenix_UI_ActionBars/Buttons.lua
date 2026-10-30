@@ -116,7 +116,28 @@ function M:Dress(frame, icon, cooldown, extra)
             cooldown:SetUseCircularEdge(false)
         end
     end
+    M.ArtBorder(frame, not shape.mask)
     return p
+end
+
+-- phoenix-wings look (UI/ArtKit.lua): the ember frame on square buttons, stance / pet buttons get the small set.
+-- States swap the art once on the event (pressed on mouse down, proc while the alert shows); the icon is never touched.
+local function small(frame)
+    local n = frame.GetName and frame:GetName()
+    n = type(n) == "string" and n or ""
+    return n:find("Stance") ~= nil or n:find("PetAction") ~= nil
+end
+function M.ArtBorder(frame, on, state)
+    local A = ns.Art
+    if not (A and A.DressAction) then return end
+    if not on then return A:Undress(frame, "border") end
+    frame.puiArtState = state or frame.puiArtState or "normal"
+    A:DressAction(frame, frame.puiArtState, small(frame))
+    if not frame.puiArtHooked and frame.HookScript then
+        frame.puiArtHooked = true
+        frame:HookScript("OnMouseDown", function(b) if b.puiArtState then A:DressAction(b, "pressed", small(b)) end end)
+        frame:HookScript("OnMouseUp", function(b) if b.puiArtState then A:DressAction(b, b.puiArtState, small(b)) end end)
+    end
 end
 
 -- The 2.0 entry point, kept for the preview: art plus texts.
@@ -277,6 +298,7 @@ local function onAlert(_, button)
             alert:SetSize((tonumber((button:GetWidth())) or 45) * 1.4, (tonumber((button:GetHeight())) or 45) * 1.4)
         end
     end
+    if button.puiArtState then M.ArtBorder(button, true, has and "proc" or "normal") end
     if has and style ~= "blizzard" and style ~= "none" then
         ns.Glow:Show(button, style, glowColor(M.db.feedback.procColor, "accent.glow"))
     else

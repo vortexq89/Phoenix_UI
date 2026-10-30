@@ -146,9 +146,13 @@ M.Holder = function() return holder end
 
 local function styleBorder()
     local h = band()
+    local A = ns.Art
     if M:Shape() == "ROUND" then
         Skin:BorderSpec(h, { style = "none", shadow = "none" })
+        -- phoenix-wings look: the ember ring around a round map (UI/ArtKit.lua)
+        if A and A.DressMinimap then A:DressMinimap(h, Minimap:GetWidth() or 140) end
     else
+        if A and A.Undress then A:Undress(h, "ring") end
         Skin:BorderSpec(h, M.db.border, "border.black")
     end
 end

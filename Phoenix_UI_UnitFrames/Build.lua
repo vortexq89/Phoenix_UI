@@ -682,7 +682,19 @@ function M:Layout(f)
     layoutAuras(f, u, f.Buffs, u.auras.buffs, u.auras.debuffs)
     layoutAuras(f, u, f.Debuffs, u.auras.debuffs, u.auras.buffs)
     layoutExtras(self, f, u, g, key)
+    M.DressArt(f)
     f.layoutDone = true
+end
+
+-- phoenix-wings look (UI/ArtKit.lua): bar frames and the portrait ring, or the party / raid frame for group buttons
+function M.DressArt(f)
+    local A = ns.Art
+    if not (A and A.DressUnit) then return end
+    if f.headerChild then
+        A:DressGroup(f, tostring(f.unitKey or ""):find("raid") ~= nil)
+    else
+        A:DressUnit(f, f.unit)
+    end
 end
 
 -- Where S9's cast bar goes: under or over the frame, sized to it (none = no anchor in use).

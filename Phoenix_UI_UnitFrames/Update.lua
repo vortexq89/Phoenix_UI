@@ -1085,6 +1085,7 @@ local function drawPips(cp, info)
         local value = pipValue(info, i, order, now)
         p:SetValue(value)
         p:SetAlpha(value >= 1 and 1 or (value > 0 and 0.6 or db.emptyAlpha))
+        if ns.Art and ns.Art.DressPip then ns.Art:DressPip(p, info.kind, value >= 1, r, g, b) end
         p:Show()
     end
     for i = n + 1, #cp.pips do cp.pips[i]:Hide() end

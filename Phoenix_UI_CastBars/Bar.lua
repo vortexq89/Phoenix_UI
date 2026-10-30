@@ -121,7 +121,8 @@ function M:LayoutBar(f, w, h)
     bar:SetPoint("TOPLEFT", f, "TOPLEFT", g.bar[1], -g.bar[2])
     bar:SetSize(g.bar[3], g.bar[4])
     f.barW, f.barH = g.bar[3], g.bar[4]
-    bar:SetStatusBarTexture(b.texture ~= "" and Media:Bar(b.texture) or Theme:Bar())
+    local artFill = b.texture == "" and ns.Art and ns.Art.BarFill and ns.Art.BarFill(true)
+    bar:SetStatusBarTexture(b.texture ~= "" and Media:Bar(b.texture) or artFill or Theme:Bar())
     bar:SetReverseFill(b.reverse and true or false)
     Skin:Backdrop(bar, b.background, "bg.sunken")
     Skin:BorderSpec(bar, b.border, "border.black")
@@ -157,6 +158,8 @@ function M:LayoutBar(f, w, h)
     Skin:BorderSpec(f.Glow.targeted, { style = "pixel", size = 1, color = false }, "state.danger")
     for _, t in ipairs(f.Ticks) do t:Hide() end
     for _, t in ipairs(f.Stages) do t:Hide() end
+    -- phoenix-wings look: the cast frame, and the ember / steel cap at 1.4x bar height (UI/ArtKit.lua)
+    if ns.Art and ns.Art.DressCast then ns.Art:DressCast(f, bar, g.bar[4]) end
     f.layoutDone = true
 end
 

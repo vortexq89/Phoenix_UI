@@ -281,7 +281,11 @@ local function eachFrame(fn)
 end
 
 local function updateAll() eachFrame(function(f) if f:IsVisible() then M:UpdateAll(f) end end) end
-local function updateKey(key) for _, f in ipairs(frames[key] or {}) do if f:IsVisible() then M:UpdateAll(f) end end end
+local function updateKey(key)
+    for _, f in ipairs(frames[key] or {}) do
+        if f:IsVisible() then M:UpdateAll(f); if key ~= "targettarget" and key ~= "focustarget" then M.DressArt(f) end end
+    end
+end
 
 -- the player frame shows the vehicle while the player drives one (the pet frame then shows the player)
 local function vehicleSwap()

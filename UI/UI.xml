@@ -1,5 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Art.lua"/>
+    <Script file="ArtKit.lua"/>
     <Script file="Anim.lua"/>
     <Script file="Glow.lua"/>
     <Script file="EmblemFX.lua"/>

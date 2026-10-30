@@ -65,9 +65,22 @@ function M:LayoutIndicators(b, p)
             local pt, x, y = M.IndicatorOffset(ind, k)
             btn:SetPoint(pt, c, pt, x, y)
             UF.StyleAuraButton(btn, a)
+            M.IndicatorArt(btn, i, ind)
         end
         for k = n + 1, #(c.buttons or {}) do c.buttons[k]:Hide() end
         c.max = n
+    end
+end
+
+-- v8.1 slot frames (THEME_API §7.04, GroupFrames.indicator1..6) around icon indicators; squares and dispel
+-- colour keep the plain look (their colour is the message, and a custom colour is the colour-blind fallback)
+function M.IndicatorArt(btn, i, ind)
+    local Art = ns.Art
+    if not (Art and Art.DressSlot) then return end
+    if ind.style == "icon" or ind.style == nil then
+        Art:DressSlot(btn, "GroupFrames.indicator" .. math.min(6, i), { slot = "frame", out = 2, scale = 0.75, level = 2 })
+    else
+        Art:Undress(btn, "frame")
     end
 end
 
@@ -81,11 +94,14 @@ local function paint(btn, ind)
         btn.Dispel:SetPoint("TOPLEFT", -1, 1)
         btn.Dispel:SetPoint("BOTTOMRIGHT", 1, -1)
         if ind.style == "square" then
-            btn.Icon:SetTexture(Media.textures.WHITE)
+            -- the greyscale aura_tint chip on the phoenix-wings look, else a flat square; tinted by the chosen colour
+            btn.artTint = ns.Art and ns.Art.PaintSlot and ns.Art:PaintSlot(btn.Icon, "GroupFrames.indicator.tint")
+            if not btn.artTint then btn.Icon:SetTexture(Media.textures.WHITE) end
             local c = ind.color
             btn.Icon:SetVertexColor(c.r, c.g, c.b, c.a or 1)
             btn.Dispel:Hide()
         else
+            if btn.artTint then btn.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92); btn.artTint = nil end
             btn.Icon:SetVertexColor(1, 1, 1, 1)
         end
         btn.Icon:SetAlpha(1)

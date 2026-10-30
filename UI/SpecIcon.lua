@@ -163,6 +163,10 @@ function SI.Strip(row, getStyle, setStyle)
         b.class, b.key = sample[2], s.key
         b.mark = CreateFrame("Frame", nil, b)
         b.mark:SetPoint("TOPLEFT", -3, 3); b.mark:SetPoint("BOTTOMRIGHT", 3, -3)
+        if ns.Art and ns.Art.DressSlot then -- v8.1 gallery frames (THEME_API §7.04): the icon itself is never touched
+            ns.Art:DressSlot(b, "IconGallery.cell", { out = 3, scale = 0.5, layer = "BACKGROUND", level = 0 })
+            ns.Art:DressSlot(b.mark, "IconGallery.selected", { out = { 6, 6, 9, 5 }, scale = 0.5 })
+        end
         b:SetScript("OnClick", function() setStyle(s.key); h:SetValue() end)
         b:SetScript("OnEnter", function(self) W.ShowTooltip(self, ns.L[s.label]) end)
         b:SetScript("OnLeave", function() W.HideTooltip() end)
@@ -172,7 +176,14 @@ function SI.Strip(row, getStyle, setStyle)
         local cur = getStyle()
         for _, b in ipairs(self.cells) do
             SI:Apply(b.icon, b.key, b.class)
-            if b.key == cur then Skin:Border(b.mark, "accent.primary", 2); b.mark:Show() else b.mark:Hide() end
+            local art = ns.Art and ns.Art.GameArt and ns.Art.GameArt()
+            if b.key == cur then
+                Skin:Border(b.mark, "accent.primary", 2)
+                if art then Skin:SetBorderColor(b.mark, 0, 0, 0, 0) end -- the selected frame art replaces the line
+                b.mark:Show()
+            else
+                b.mark:Hide()
+            end
         end
     end
     ns.Events:Listen("PUI_SPECICON_STYLE", h, function() h:SetValue() end)

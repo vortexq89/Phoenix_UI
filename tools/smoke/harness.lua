@@ -5583,6 +5583,29 @@ try("resource bars order ticks colours", function()
     r.power.ticks, r.health.color, r.power.color = "", "class", "type"
 end)
 -- t169: the v7.1 art kit (baked textures, override layers, cover fit, icons, switches)
+try("art kit v8.1 phoenix-wings", function()
+    local A = ns.Art
+    assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")
+    assert(A.GameArt(), "phoenix-wings is the default look")
+    local f = CreateFrame("Frame", nil, UIParent)
+    local t = A:DressSlot(f, "DamageMeter.window", { backdrop = true })
+    assert(t and t.holder:IsShown() and t.backdrop, "a module slot dresses with its backdrop")
+    assert(A.BarFill() == A.FILL and A.BarFill(true) == A.CAST_FILL, "greyscale fills")
+    assert(A.RingFor("player") == "ring_player", "player ring")
+    local g = ns.modules.General.db
+    g.artPreset = "settings"
+    assert(not A.GameArt() and A.BarFill() == nil, "settings look: no game-frame art")
+    A:Redress()
+    assert(not t.holder:IsShown(), "redress hides the art")
+    g.artPreset = "phoenix-wings"
+    A:Redress()
+    assert(t.holder:IsShown(), "and shows it again live")
+    local h = A:Override("T8", { ["atlas.modules.dm_window"] = { file = "x/y", coords = { 0, 1, 0, 1 } } })
+    local p = A:KitPiece("modules", "dm_window")
+    assert(p.file == "x/y", "a plugin swaps a v8.1 piece")
+    h:Remove()
+end)
+
 try("art kit v7.1", function()
     local A = ns.Art
     assert(A and A.Enabled() and A.IconsEnabled(), "art kit on by default")

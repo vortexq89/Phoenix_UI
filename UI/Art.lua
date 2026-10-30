@@ -102,6 +102,8 @@ local function resolve(path)
     return nil
 end
 
+A.ResolveToken = function(path) return (resolve(path)) end
+
 function A:Token(path)
     local v = resolve(path)
     if v ~= nil then return v end

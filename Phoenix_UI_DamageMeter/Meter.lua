@@ -193,6 +193,7 @@ local function makeRow(win, i)
     r.ilvl = W.Text(r, "small", "text.muted", "RIGHT") -- item level after the name (Rows: item level)
     r.mine = CreateFrame("Frame", nil, r)
     r.mine:SetAllPoints()
+    if ns.Art and ns.Art.DressSlot then ns.Art:DressSlot(r.mine, "DamageMeter.row.self", { out = 1, scale = 0.5 }) end
     r.slot = i
     if not win.preview then
         r:EnableMouse(true)
@@ -364,7 +365,7 @@ function M:StyleRow(r, y, width)
     r:SetSize(width, h)
     r:SetStatusBarTexture(self:BarTexture())
     local tr, tg, tb = Theme:Color("bg.sunken")
-    r.track:SetColorTexture(tr, tg, tb, db.trackAlpha)
+    M.PaintTrack(r.track, tr, tg, tb, db.trackAlpha)
     r.sheen:SetHeight(math.max(1, math.floor(h / 2)))
     r.sheen:SetColorTexture(1, 1, 1, db.sheen and 0.06 or 0)
     r.icon:SetSize(h - 2, h - 2)
@@ -399,10 +400,25 @@ function M:StyleRow(r, y, width)
         r.styleGen = self.styleGen
         Skin:TextSpec(r.name, self.db.name, "unit", "text.primary")
         Skin:TextSpec(r.value, self.db.value, "number", "text.primary")
+        if ns.Art and ns.Art.OutlineText then ns.Art.OutlineText(r.value); ns.Art.OutlineText(r.name) end
         Skin:TextSpec(r.rank, self.db.value, "number", "text.primary")
         Skin:TextSpec(r.ilvl, self.db.value, "number", "text.muted")
     end
     r.alt:Hide()
+end
+
+-- the row track: the v8.1 dm_track piece on the phoenix-wings look, else the flat sunken colour
+function M.PaintTrack(t, r, g, b, a)
+    local Art = ns.Art
+    if Art and Art.PaintSlot and Art:PaintSlot(t, "DamageMeter.row.track", 0.5) then
+        t:SetVertexColor(1, 1, 1, math.max(0.6, a or 1))
+        return true
+    end
+    if t.ClearTextureSlice then t:ClearTextureSlice() end
+    t:SetTexCoord(0, 1, 0, 1)
+    t:SetColorTexture(r, g, b, a)
+    t:SetVertexColor(1, 1, 1, 1)
+    return false
 end
 
 -- the empty state: "No data yet" with the v7.1 info icon (flat look: the text alone, centred)
@@ -622,6 +638,11 @@ function M:LayoutWindow(win)
     win.clock:SetPoint("RIGHT", db.hideReset and win.more or win.reset, "LEFT", -6, 0)
     win.body:SetPoint("TOPLEFT", 2, -hh - 2)
     M.PaintHeader(win)
+    local Art = ns.Art
+    if Art and Art.DressSlot then -- v8.1 window glass over a #0E0B0A 92% backdrop, and the header strip
+        Art:DressSlot(win, "DamageMeter.window", { out = 4, scale = 0.5, layer = "BACKGROUND", level = 0, backdrop = true })
+        Art:DressSlot(win.header, "DamageMeter.header", { scale = 0.8, layer = "BACKGROUND", level = 0 })
+    end
     return db.width - 4, rowsH
 end
 

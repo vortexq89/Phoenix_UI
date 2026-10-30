@@ -190,7 +190,9 @@ function T:Font(role, sizeOverride)
 end
 
 function T:Bar()
-    return ns.Media:Bar(self.settings.barTexture)
+    -- the phoenix-wings look: the greyscale v8.1 fill whenever the bar texture is the theme's default
+    local art = ns.Art and ns.Art.BarFill and (self.settings.barTexture or "Satin") == "Satin" and ns.Art.BarFill()
+    return art or ns.Media:Bar(self.settings.barTexture)
 end
 
 function T:Apply(settings)

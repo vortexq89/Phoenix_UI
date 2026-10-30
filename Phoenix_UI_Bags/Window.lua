@@ -272,6 +272,7 @@ function M:StyleWindow()
     win:SetScale(ns.Util.SafeScale(db.scale))
     Skin:Backdrop(win, db.backdrop, "bg.base")
     Skin:BorderSpec(win, db.border, "border.strong")
+    if ns.Art and ns.Art.DressBags then ns.Art:DressBags(win) end -- phoenix-wings panel and clasp
     Skin:TextSpec(win.title, db.title, "heading", "accent.primary")
     win.search:SetShown(db.search)
     win.sort:SetShown(db.sortButton)

@@ -29,6 +29,18 @@ local function setOn(p, on)
     if m and not m.locked and (m.db.enabled ~= false) ~= on then ns:SetModuleEnabled(p.key, on) end
 end
 
+local BADGE = { loaded = "Plugins.badge.enabled", missing = "Plugins.badge.error", reload = "Plugins.badge.loading" }
+function Config.PaintPluginArt(h, state, kb)
+    local Art = ns.Art
+    local on = Art and Art.PaintSlot and Art:PaintSlot(h.state, BADGE[state] or "Plugins.badge.disabled")
+    h.state:SetShown(on and true or false)
+    -- "needs reload" waits on the user, so the reticle stays still (MODULES_SPEC §3 allows static)
+    if Art and Art.SpinBadge then Art:SpinBadge(h.state, false) end
+    local pill = Art and type(kb) == "number" and Art:PaintSlot(h.memBack, "Plugins.memory", 0.5)
+    if pill then h.memBack:SetVertexColor(1, 0xAA / 255, 0x5A / 255, 1) end
+    h.memBack:SetShown(pill and true or false)
+end
+
 local function pluginRow(row, p)
     local h = CreateFrame("Frame", nil, row)
     h:SetSize(W.CONTROL_WIDTH, 28)
@@ -38,11 +50,23 @@ local function pluginRow(row, p)
     h.badge = W:Badge(h, "", "text.muted")
     h.badge:SetPoint("RIGHT", h.toggle, "LEFT", -10, 0)
     h.mem = W.Text(h, "small", "text.muted", "RIGHT")
-    h.mem:SetPoint("RIGHT", h.badge, "LEFT", -8, 0)
+    h.mem:SetPoint("RIGHT", h.badge, "LEFT", -12, 0)
+    -- v8.1 module art (THEME_API §7.04): the row card, a state badge and the memory pill; the flat look keeps the chip
+    h.state = h:CreateTexture(nil, "ARTWORK")
+    h.state:SetSize(22, 22)
+    h.state:SetPoint("LEFT", 2, 0)
+    h.memBack = h:CreateTexture(nil, "BACKGROUND", nil, 1)
+    h.memBack:SetPoint("TOPLEFT", h.mem, "TOPLEFT", -8, 4)
+    h.memBack:SetPoint("BOTTOMRIGHT", h.mem, "BOTTOMRIGHT", 8, -4)
+    if ns.Art and ns.Art.DressSlot then
+        ns.Art:DressSlot(h, "Plugins.card", { out = { 6, 6, 2, 2 }, scale = 0.5, layer = "BACKGROUND", level = 0, backdrop = true })
+    end
     function h:SetValue()
-        self.badge:Set(chip(P:State(p)))
+        local state = P:State(p)
+        self.badge:Set(chip(state))
         local kb = P:Memory(p)
         self.mem:SetText(type(kb) == "number" and ("%.0f KB"):format(kb) or "")
+        Config.PaintPluginArt(self, state, kb)
         local m = ns.modules[p.key]
         self.toggle:SetValue(m and m.db and m.db.enabled ~= false)
         W.SetEnabledState(self.toggle, not p.missing)
