@@ -11,6 +11,9 @@ for _, cf in ipairs(ns.Theme.CLASSES) do CLASS_DEFAULTS[cf] = false end
 -- false = the game's colour for that power type / dispel type (S17)
 local POWER_DEFAULTS, DISPEL_DEFAULTS = {}, {}
 for _, p in ipairs(ns.Theme.POWERS) do POWER_DEFAULTS[p] = false end
+-- t146: Blizzard's mana is pure blue (0, 0, 1), the harshest bar on screen; Phoenix's default is a softer azure
+-- (any power colour can still be picked, and Reset comes back here)
+POWER_DEFAULTS.MANA = { r = 0.16, g = 0.50, b = 0.98 }
 for _, d in ipairs(ns.Theme.DISPELS) do DISPEL_DEFAULTS[d] = false end
 
 local M = ns:NewModule("General", {

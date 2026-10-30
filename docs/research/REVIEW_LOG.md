@@ -137,3 +137,10 @@ that commit left:
 |---|---|---|
 | Four icons with keybinds (Z, S-M3) cover the objective text | not tracker buttons: Phoenix bar4 / bar5 default to vertical 12-button bars centred on the right edge, and a long quest list runs under them | new "Stop above action bars" (on by default): out of combat, the tracker's height ends 8 px above the highest shown Phoenix bar it overlaps sideways (only when that leaves at least 120 px); Blizzard's tracker then lists fewer blocks rather than drawing under the bars; its own height comes back when nothing caps it; harness test |
 | Still reads as Blizzard's tracker (gold "All Objectives" ornament, secondary header bars) | the restyle changed fonts, colours and bars but kept Blizzard's header art | restyled, the container and module header art is hidden and a 1 px accent line sits under each header (EllesmereUI's tracker does the same: strip the header art, draw a 1 px divider); restored live when the restyle is off |
+
+### 11e. Unit frames, round 2 (shot 222322, player frame)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| Level "90" printed over the soul shard segments | the info text ([level]) is anchored 10 px above the frame's top edge, where attached class power also goes | with class power attached above the frame, top-anchored info text is placed relative to the class power bar, so it sits above the segments |
+| Mana bar pure blue (0, 0, 1) | power colours default to Blizzard's PowerBarColor | Phoenix's own mana default, a softer azure (0.16, 0.50, 0.98); EllesmereUI also replaces Blizzard's mana blue with a lighter one; still pickable in General, Reset comes back to it |

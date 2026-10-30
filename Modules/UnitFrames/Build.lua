@@ -540,7 +540,13 @@ local function layoutTexts(self, f, u, g)
     text(f.NameText, u.name, f.Health)
     text(f.HealthText, u.health, f.Health)
     text(f.PowerText, u.power, g.power and f.Power or f.Health)
-    text(f.InfoText, u.info, f.Health)
+    -- t146: the level ([level], anchored above the bar's top edge) sat on the attached class power segments;
+    -- with class power attached above the frame, text placed above the top edge goes above the segments
+    local cp, infoTo = g.classPower, f.Health
+    if cp and cp[2] < 0 and f.ClassPower and tostring(u.info.anchor or ""):find("^TOP") and (u.info.y or 0) > 0 then
+        infoTo = f.ClassPower
+    end
+    text(f.InfoText, u.info, infoTo)
     -- the name never runs under the health text: it may use what the bar has left
     local share = (u.tags.health ~= "" and u.health.show ~= false) and 0.62 or 0.95
     f.NameText:SetWidth(math.max(20, g.health[3] * share))
