@@ -5741,6 +5741,17 @@ try("loot council: drops, wants, window", function()
     for k in pairs(A.lcDrops) do A.lcDrops[k] = nil end; A:RefreshLootCouncil()
 end)
 
+try("loadouts: per content talents and gear", function()
+    local A = ns.modules.Automation
+    A:SetLoadout("raid", "talent", 77); A:SetLoadout("raid", "gear", 3)
+    local e = A:LoadoutFor("raid")
+    assert(e and e.talent == 77 and e.gear == 3, "stored per spec " .. tostring(e and e.talent) .. " " .. tostring(e and e.gear))
+    A:SetLoadout("raid", "talent", 0); A:SetLoadout("raid", "gear", 0)
+    assert(A:LoadoutFor("raid") == nil, "cleared")
+    assert(A.LoadoutContext() and #A.TalentChoices() >= 1 and #A.GearChoices() >= 1, "choices")
+    assert(A:OfferLoadout("raid", { talent = 1 }), "offer window")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

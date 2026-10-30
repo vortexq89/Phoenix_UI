@@ -27,3 +27,4 @@ Fishing.lua
 Junk.lua
 AutoLog.lua
 LootCouncil.lua
+Loadouts.lua
