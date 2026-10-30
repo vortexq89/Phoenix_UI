@@ -35,6 +35,8 @@ ns:RegisterOptions("MythicPlus", {
       icon = "editmode", combat = true, func = function() ns.EditMode:Open() end },
     { type = "header", label = "MPLUS_TIMER_LOOK", icon = "theme" },
     timer({ type = "range", key = "width", label = "MPLUS_TIMER_WIDTH", min = 200, max = 400, step = 4, keywords = "size wide" }),
+    timer({ type = "select", key = "clockAlign", label = "MPLUS_CLOCK_ALIGN", keywords = "center clock layout",
+        values = { { value = "LEFT", label = "MPLUS_ALIGN_LEFT" }, { value = "CENTER", label = "MPLUS_ALIGN_CENTER" } } }),
     timer({ type = "texture", key = "bar.texture", label = "MPLUS_TIMER_BAR", allowDefault = true, keywords = "bar texture" }),
     timer({ type = "toggle", key = "bar.reverse", label = "CB_REVERSE", desc = "MPLUS_TIMER_REVERSE_DESC", keywords = "fill direction" }),
     timer({ type = "toggle", key = "bar.smooth", label = "UF_SMOOTH", desc = "MPLUS_TIMER_SMOOTH_DESC" }),

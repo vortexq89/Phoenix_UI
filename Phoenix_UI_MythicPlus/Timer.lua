@@ -182,6 +182,7 @@ local function affixButton(f, i)
     b:SetScript("OnEnter", function(self) if self.info then W.ShowTooltip(self, self.info.name, self.info.desc) end end)
     b:SetScript("OnLeave", function() W.HideTooltip() end)
     f.affixIcons[i] = b
+    if ns.Art and ns.Art.DressSlot then ns.Art:DressSlot(b, "MythicPlus.affix") end
     return b
 end
 
@@ -285,6 +286,30 @@ function M:StyleTimer(f)
     end
     styleLine(f.forces)
     for _, r in ipairs(f.bosses) do styleLine(r) end
+    M.TimerArt(f)
+end
+
+-- v9 art (THEME_API §7.04 MythicPlus.*): the bar frame, chest marks, the skull, affix frames and the forces track.
+-- With the flat look every piece is hidden again and the skull goes back to its icon.
+function M.TimerArt(f)
+    local A = ns.Art
+    if not (A and A.DressSlot) then return end
+    A:DressSlot(f.bar, "MythicPlus.bar")
+    if not A:PaintSlot(f.skull, "MythicPlus.deaths", 0.4) then ns.Icons:Apply(f.skull, "deaths", 14) end
+    f.chestArt = f.chestArt or {}
+    for i, fs in ipairs(f.chests) do
+        local t = f.chestArt[i] or f:CreateTexture(nil, "ARTWORK")
+        f.chestArt[i] = t
+        t:ClearAllPoints()
+        t:SetPoint("TOP", fs, "BOTTOM", 0, -2)
+        local ok = A:PaintSlot(t, "MythicPlus.chest" .. i, 0.6)
+        t:SetShown(ok and M.db.timerChests and true or false)
+    end
+    f.forcesTrack = f.forcesTrack or f.forcesBar:CreateTexture(nil, "BACKGROUND", nil, -6)
+    f.forcesTrack:SetPoint("TOPLEFT", -2, 2)
+    f.forcesTrack:SetPoint("BOTTOMRIGHT", 2, -2)
+    f.forcesTrack:SetShown(A:PaintSlot(f.forcesTrack, "MythicPlus.forces", 0.5) and true or false)
+    for _, b in ipairs(f.affixIcons) do A:DressSlot(b, "MythicPlus.affix") end
 end
 
 local function bossLine(f, i)
@@ -350,7 +375,13 @@ local function renderHeader(f, state)
     f.deathLog:SetText(log)
     local below = log ~= "" and f.deathLog or anchor
     f.clock:ClearAllPoints()
-    f.clock:SetPoint("TOPLEFT", below, "BOTTOMLEFT", 0, -8)
+    if M.db.clockAlign == "CENTER" then
+        local inner = M.db.width - 2 * PAD
+        local w = (tonumber(f.clock:GetStringWidth()) or 0) + (tonumber(f.limit:GetStringWidth()) or 0) + 6
+        f.clock:SetPoint("TOPLEFT", below, "BOTTOMLEFT", math.max(0, (inner - w) / 2), -8)
+    else
+        f.clock:SetPoint("TOPLEFT", below, "BOTTOMLEFT", 0, -8)
+    end
     return h + (log ~= "" and (4 + f.deathLog:GetStringHeight()) or 0)
 end
 

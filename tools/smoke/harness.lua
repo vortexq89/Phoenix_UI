@@ -5625,6 +5625,16 @@ try("aura reminders and aura bars", function()
     T:RefreshAuraBars()
 end)
 
+try("mythic+ timer art and clock layout", function()
+    local MP = ns.modules.MythicPlus
+    assert(MP.TimerArt and MP.db.clockAlign == "LEFT", "timer art and align default")
+    MP.db.clockAlign = "CENTER"
+    local f, paint = MP:BuildTimerPreview(CreateFrame("Frame"))
+    paint()
+    assert(f.chestArt and #f.chestArt == 3 and f.forcesTrack, "chest marks and forces track built")
+    MP.db.clockAlign = "LEFT"
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

@@ -11,7 +11,7 @@ local M = ns:NewModule("MythicPlus", {
         timer = true, timerForces = true, timerBosses = true, timerDeaths = true, timerBest = true,
         timerSplits = true, timerPull = true, partyKeys = true,
         -- S16: look of the timer and its extras
-        timerChests = true, timerAffixIcons = true, timerDeathLog = false, width = 256,
+        timerChests = true, timerAffixIcons = true, timerDeathLog = false, width = 256, clockAlign = "LEFT",
         bar = { texture = "", reverse = false, smooth = true, shade = 0.2 },
         colors = { onTime = false, plus2 = false, plus3 = false, over = false },
         clock = ns.Style.Text(28), lines = ns.Style.Text(12), keysWindow = false,
