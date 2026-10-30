@@ -2233,6 +2233,31 @@ try("game menu disabled rows and re-hooked hover", function()
     S.PaintMenuRow(b)
     S.UnskinMenuButton(b)
 end)
+-- t156: quest-log side tabs are Frames; the outline follows SetChecked (clicks and SetDisplayMode)
+try("world map side tabs follow SetChecked", function()
+    local S = ns.modules.Skins
+    local had = rawget(env, "QuestMapFrame")
+    local qm = CreateFrame("Frame", nil, UIParent)
+    local tab = CreateFrame("Frame", nil, qm)
+    tab.HookScript = function(_, name) if name == "OnClick" then error("Frame doesn't have a OnClick script") end end
+    local shown = false
+    tab.SelectedTexture = { IsShown = function() return shown end }
+    tab.SetChecked = function(_, v) shown = v and true or false end
+    qm.QuestsTab = tab
+    rawset(env, "QuestMapFrame", qm)
+    local ok, err = pcall(function()
+        local wasOn, wasEnabled = S.db.worldMap, rawget(S, "IsEnabled")
+        S.IsEnabled = function() return true end
+        S.db.worldMap = true
+        S.PaintSideTabs()
+        tab:SetChecked(true)
+        assert(S.SideTabSelected(tab), "selected after SetChecked")
+        S.db.worldMap = false; S.PaintSideTabs()
+        S.db.worldMap, S.IsEnabled = wasOn, wasEnabled
+    end)
+    rawset(env, "QuestMapFrame", had)
+    assert(ok, err)
+end)
 -- bag chrome (plan window 4): title tick, close glyph, search field, bank tab rail with warband accent
 try("bag chrome skin", function()
     local B = ns.modules.Bags

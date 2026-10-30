@@ -31,7 +31,12 @@ local function paintSideTabs(on)
                 o:SetAllPoints()
                 Skin:Border(o, "border.subtle")
                 outlines[tab] = o
-                tab:HookScript("OnClick", function() M:SkinWorldMap() end)
+                -- t156: these tabs are Frames (SidePanelTabButtonMixin, OnMouseUp), so HookScript("OnClick") raised an
+                -- error and stopped the map skin there. SetChecked runs on a click and on Blizzard's own
+                -- QuestMapFrame:SetDisplayMode (the map opened on a quest or the legend), so the outline follows both.
+                if type(tab.SetChecked) == "function" then
+                    hooksecurefunc(tab, "SetChecked", function() M.PaintSideTabs() end)
+                end
             end
             if o then
                 o:SetShown(on and true or false)
@@ -40,6 +45,8 @@ local function paintSideTabs(on)
         end
     end
 end
+
+function M.PaintSideTabs() paintSideTabs(M:IsEnabled() and M.db.worldMap and true or false) end
 
 function M:SkinWorldMap()
     local map = _G.WorldMapFrame

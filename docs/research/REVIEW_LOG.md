@@ -236,3 +236,11 @@ Evidence (Blizzard live source, Blizzard_SharedXML/Shared/Frame/MainMenuFrameTem
 - For a disabled button with a reason, AddButton calls `SetScript("OnEnter"/"OnLeave")`, which discards our HookScript hover hooks. Hooks were only added the first time a pooled button was skinned, so a reused button lost the Phoenix hover for the rest of the session.
 
 Fix: disabled rows are muted (text, glyph, background) and take no hover accent. Hover hooks are added again whenever the button's OnEnter is no longer the one we hooked. Harness test.
+
+## 24. World map / quest log
+
+Evidence (Blizzard live source, Blizzard_SharedXML/Mainline/SharedUIPanelTemplates.xml line 981 and .lua lines 303-333; Blizzard_UIPanels_Game/Mainline/QuestMapFrame.lua, QuestLogMixin:SetDisplayMode):
+- The quest-log side tabs (Quests / Events / Legend) are Frames with SidePanelTabButtonMixin (OnMouseDown / OnMouseUp), not Buttons. Phoenix called `tab:HookScript("OnClick")`, which raises an error on a Frame. That stopped the map skin partway through, so the side-tab outlines and the quest-log header cards were not applied.
+- Blizzard also switches tabs on its own through SetDisplayMode (SetChecked on each tab), so even a working click hook would miss those changes.
+
+Fix: the outline follows each tab's SetChecked, which covers clicks and Blizzard's own changes. Harness test, including a stub tab whose OnClick hook raises an error. Checked: the header pool names (campaign, campaignMinimal, header, covenantCallings) and the side-tab keys match the live source.
