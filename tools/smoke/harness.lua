@@ -2588,16 +2588,28 @@ try("bags view switches live", function()
     holder = setmetatable({ SetParent = function(_, p) parent = p end, GetParent = function() return parent end },
         { __index = holder })
     env.ContainerFrameContainer = holder
+    -- t146: the combined backpack is parented to UIParent, not the holder, and showed behind the Phoenix window
+    local hadCombined = env.ContainerFrameCombinedBags
+    local cparent = env.UIParent
+    local combined = setmetatable({ SetParent = function(_, p) cparent = p end, GetParent = function() return cparent end },
+        { __index = CreateFrame("Frame", nil, UIParent) })
+    env.ContainerFrameCombinedBags = combined
     local old = B.db.view
     B.db.view = "blizzard"; B:Refresh()
     local home = holder:GetParent()
     B.db.view = "categories"; B:Refresh()
     assert(holder:GetParent() ~= home, "Blizzard bags not tucked in the Phoenix view")
+    assert(cparent ~= env.UIParent, "combined backpack still drawn behind the Phoenix bag window")
+    cparent = env.UIParent -- Blizzard's fullscreen re-parent
+    B._TuckBags()
+    assert(cparent ~= env.UIParent, "combined backpack not tucked again after Blizzard re-parented it")
     B.db.view = "blizzard"; B:Refresh()
     assert(holder:GetParent() == home, "Blizzard bags not back after switching live")
+    assert(cparent == env.UIParent, "combined backpack not back after switching live")
     assert(not B:GetWindow() or not B:GetWindow():IsShown(), "Phoenix bag window still shown")
     B.db.view = old; B:Refresh()
     env.ContainerFrameContainer = had
+    env.ContainerFrameCombinedBags = hadCombined
 end)
 try("phoenix bank window", function()
     local B = ns.modules.Bags

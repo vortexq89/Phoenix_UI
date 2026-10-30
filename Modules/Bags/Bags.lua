@@ -176,7 +176,12 @@ local function styleButton(button, location, own)
         for k, v in pairs(db.slotBorder) do spec[k] = v end
         local color = db.quality and type(quality) == "number" and quality >= QUALITY_MIN and ITEM_QUALITY_COLORS[quality]
         if color then spec.color = { r = color.r, g = color.g, b = color.b } end
-        if button.icon then Skin:IconFrame(button, button.icon, spec, 0.08, "border.black") end
+        if button.icon then
+            Skin:IconFrame(button, button.icon, spec, 0.08, "border.black")
+            -- an empty slot's icon is Blizzard's emptyBackgroundAtlas (bags-item-slot64, the wing art); the
+            -- skinned slot is the flat sunken square instead (t146 screenshot)
+            button.icon:SetAlpha(exists and 1 or 0)
+        end
         if button.Count then
             Skin:TextSpec(button.Count, db.count, "number")
             if own then Skin:Place(button.Count, button, db.count) end
@@ -186,7 +191,7 @@ local function styleButton(button, location, own)
         d.bg:Hide()
         Skin:Restore(button:GetNormalTexture())
         Skin:Restore(button.IconBorder)
-        if button.icon then Skin:HideIconFrame(button.icon) end
+        if button.icon then Skin:HideIconFrame(button.icon); button.icon:SetAlpha(1) end
         if button.Count then Skin:Restore(button.Count) end
     end
     marks(button, d, s, own)

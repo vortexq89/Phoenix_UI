@@ -99,3 +99,16 @@ Compared against EllesmereUI's documented feature set and ElvUI's (PC offline, s
 | Minimap | round / square / rectangle, zone text, clock, coordinates, calendar, tracking, mail, crafting orders, difficulty, expansion button, compartment, wheel / auto zoom, button bin, ping names, world map coords / scale, zone levels, map reveal; size via Edit Mode | parity; no change |
 | Skins | 40+ Blizzard windows, own replacements for many, title / close styles, tabs, movable windows | parity with ElvUI skins; no change |
 | Combat text | scroll areas with anim / direction / alignment / duration / scale / colour / icons / position, merge, throttle, combat only, crits with scale / area / sound, damage font | more than both (ElvUI has none; EUI has damage font only); no change |
+
+## 11. Round 2: recheck against the t146 in-game screenshots
+
+Round 1 called bags, tooltips, skins and the quest list "parity" from feature lists alone. The owner's t146
+screenshots (Screenshots\WoWScrnShot_102926_2211..2223, 10:11-10:23 PM Kuwait) show they were visually broken,
+so each is rechecked against those shots and EllesmereUI's source (read-only, reference only).
+
+### 11a. Bags (shot 221353)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| Blizzard's Combined Backpack (title, lock icons, gold) drawn behind the Phoenix window | Blizzard parents ContainerFrame1..N and ContainerFrameCombinedBags to UIParent (or the fullscreen panel), not to ContainerFrameContainer, so tucking the holder hid nothing | every bag frame is tucked on its own and again after ContainerFrame_SetFullScreenFrame / ClearFullScreenFrame; restored on switching back; harness covers both |
+| Empty slots show Blizzard's wing art | an empty item button's icon is its emptyBackgroundAtlas (bags-item-slot64) | skinned empty slots hide the icon, leaving the flat sunken slot with its border (EllesmereUI style); restored with the skin off |

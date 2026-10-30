@@ -9,8 +9,8 @@ local L, W, Skin = ns.L, ns.Widgets, ns.Skin
 
     Safety: item buttons are ours, built from Blizzard's ContainerFrameItemButtonTemplate on frames that carry
     the bag ID, so clicks, drags, tooltips and item use run Blizzard's own item-button code. Blizzard's bag
-    frames are tucked away by parenting ContainerFrameContainer (an unprotected holder) to a hidden frame
-    of ours; they are never moved, hidden or written to, and the switch back to Blizzard's view is a reload.
+    frames (each ContainerFrame, the combined backpack and their holder) are tucked away by parenting them to
+    a hidden frame of ours; they are never moved, hidden or written to, and the switch back to Blizzard's view is a reload.
     Sorting is C_Container.SortBags; categories only change where buttons are drawn, never where items sit.
     S17: an optional bag bar beside the title shows the equipped bags (icon, the game's item tooltip); hovering
     one dims every slot of the other bags. It only reads the bag slots, it never equips or moves a bag. ]]
@@ -433,27 +433,55 @@ local function soonLayout()
     C_Timer.After(0.05, function() pending = nil; M:Layout() end)
 end
 
-local tuckParent, homeParent
+local tuckParent
+local homes = {} -- frame -> the parent Blizzard gave it
+-- Blizzard parents every bag frame (ContainerFrame1..N and ContainerFrameCombinedBags) to UIParent, or to the
+-- fullscreen panel of the moment (ContainerFrame_SetFullScreenFrame), not to ContainerFrameContainer, so
+-- each frame is tucked on its own and again after Blizzard moves them (t146: the combined backpack showed
+-- behind the Phoenix window). They still open, close and report IsShown; they just draw nowhere.
+local function bagFrames()
+    local list = {}
+    for i = 1, NUM_CONTAINER_FRAMES or 0 do
+        local f = _G["ContainerFrame" .. i]
+        if f then list[#list + 1] = f end
+    end
+    if ContainerFrameCombinedBags then list[#list + 1] = ContainerFrameCombinedBags end
+    if ContainerFrameContainer then list[#list + 1] = ContainerFrameContainer end
+    return list
+end
+local tucked
+local function tuck()
+    if not tucked then return end
+    for _, f in ipairs(bagFrames()) do
+        local parent = f:GetParent()
+        if parent ~= tuckParent then
+            homes[f] = parent
+            f:SetParent(tuckParent)
+        end
+    end
+end
+M._TuckBags = tuck
 function M:UsesWindow() return self.db.view == "combined" or self.db.view == "categories" end
 
 local hooked
 function M:EnableWindow()
     if not self:UsesWindow() then return end
     if not win then build() end
-    -- Blizzard's bag frames stay alive (they still open and close) but draw nowhere.
-    if ContainerFrameContainer and not tuckParent then
+    if not tuckParent then
         tuckParent = CreateFrame("Frame")
         tuckParent:Hide()
     end
-    if ContainerFrameContainer and ContainerFrameContainer:GetParent() ~= tuckParent then
-        homeParent = ContainerFrameContainer:GetParent()
-        ContainerFrameContainer:SetParent(tuckParent)
-    end
+    tucked = true
+    tuck()
     if not hooked then
         hooked = true
         for _, name in ipairs({ "OpenAllBags", "CloseAllBags", "ToggleAllBags", "OpenBackpack", "CloseBackpack",
             "ToggleBackpack", "OpenBag", "CloseBag", "ToggleBag" }) do
             if _G[name] then hooksecurefunc(name, soonSync) end
+        end
+        -- Blizzard re-parents the bag frames when a fullscreen panel opens or closes
+        for _, name in ipairs({ "ContainerFrame_SetFullScreenFrame", "ContainerFrame_ClearFullScreenFrame" }) do
+            if _G[name] then hooksecurefunc(name, tuck) end
         end
     end
     for _, event in ipairs({ "BAG_UPDATE_DELAYED", "BAG_CONTAINER_UPDATE", "BAG_NEW_ITEMS_UPDATED", "QUEST_ACCEPTED",
@@ -466,10 +494,12 @@ function M:EnableWindow()
     sync()
 end
 
--- Back to Blizzard's bag windows, live: the holder returns to its parent, our window hides and stops listening.
+-- Back to Blizzard's bag windows, live: every frame returns to its parent, our window hides and stops listening.
 function M:DisableWindow()
-    if ContainerFrameContainer and tuckParent and ContainerFrameContainer:GetParent() == tuckParent then
-        ContainerFrameContainer:SetParent(homeParent or UIParent)
+    tucked = false
+    for f, parent in pairs(homes) do
+        if f:GetParent() == tuckParent then f:SetParent(parent or UIParent) end
+        homes[f] = nil
     end
     if not win then return end
     ns.Events:OffAll(win)
