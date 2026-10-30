@@ -18,8 +18,32 @@ local pickDay, pickEvent, panel = nil, nil, "day"
 local pending -- { day, index, answer } waiting for CALENDAR_OPEN_EVENT
 local invites = {}
 
--- Grid position (1..42) of day d for a month starting on weekday first (1 = Sunday).
-function M.CalendarCell(first, d) return (tonumber(first) or 1) - 1 + d end
+-- t156: the week starts where Blizzard's calendar starts it: CALENDAR_FIRST_WEEKDAY, set per locale by
+-- Blizzard_Calendar (Monday for deDE / enGB / esES / frFR / itIT / ruRU, Sunday for enUS). 1 = Sunday.
+function M.CalendarWeekStart()
+    local w = tonumber(_G.CALENDAR_FIRST_WEEKDAY)
+    return (w and w >= 1 and w <= 7) and math.floor(w) or 1
+end
+
+-- Grid position (1..42) of day d for a month whose day 1 falls on weekday first (1 = Sunday), in a week
+-- that starts on weekStart (default Sunday).
+function M.CalendarCell(first, d, weekStart)
+    return ((tonumber(first) or 1) - (tonumber(weekStart) or 1)) % 7 + d
+end
+
+-- Weekday shown in header column i (1..7) for a week starting on weekStart.
+function M.CalendarColumnDay(i, weekStart) return (i - 1 + (tonumber(weekStart) or 1) - 1) % 7 + 1 end
+
+-- First n characters of s, UTF-8 safe (ruRU / koKR / zhCN weekday names are multi-byte; :sub cut them).
+function M.Utf8Head(s, n)
+    local out, count = {}, 0
+    for ch in tostring(s or ""):gmatch("[%z\1-\127\194-\244][\128-\191]*") do
+        count = count + 1
+        if count > n then break end
+        out[count] = ch
+    end
+    return table.concat(out)
+end
 
 local function events(day)
     local out = {}
@@ -40,7 +64,7 @@ end
 
 local function drawGrid(info, now, thisMonth, days)
     for i, c in ipairs(cells) do
-        local d = i - (tonumber(info.firstWeekday) or 1) + 1
+        local d = i - M.CalendarCell(info.firstWeekday, 1, M.CalendarWeekStart()) + 1
         if d >= 1 and d <= days then
             c.day = d
             c.num:SetText(d)
@@ -203,7 +227,8 @@ local function build(rr)
         local fs = W.Text(r.body, "small", "text.muted")
         fs:SetPoint("TOPLEFT", (i - 1) * (CELL + GAP) + 4, -30)
         local names = CALENDAR_WEEKDAY_NAMES
-        fs:SetText(type(names) == "table" and names[i] and tostring(names[i]):sub(1, 3) or tostring(i))
+        local wd = M.CalendarColumnDay(i, M.CalendarWeekStart())
+        fs:SetText(type(names) == "table" and names[wd] and M.Utf8Head(names[wd], 3) or tostring(wd))
     end
     for i = 1, 42 do
         local c = CreateFrame("Button", nil, r.body)

@@ -222,3 +222,9 @@ Evidence (Blizzard live source, Blizzard_MailFrame/MailFrame.xml lines 253-254):
 Fix: a modified click on an attachment goes to Blizzard's handler (chat link, dress-up) and never takes the item. Harness test. Checked and kept: Open all skips COD letters and stops when bags are full; taking a COD item needs a second click that names the price.
 
 Sweep of other Phoenix item buttons: Character and Journal already insert chat links. Small leftover, not changed: ctrl-click on a character-window slot picks the item up rather than previewing it.
+
+## 22. Calendar window (Phoenix replacement)
+
+Evidence (Blizzard live source, Blizzard_Calendar/Localization.lua and Mainline/Blizzard_Calendar.lua lines 654-662 and 1303): Blizzard starts the week on `CALENDAR_FIRST_WEEKDAY`, which is Monday for deDE, enGB, esES, frFR, itIT and ruRU (Sunday for enUS and esMX), and offsets the grid by it. Phoenix always started on Sunday, so on those clients the Phoenix and Blizzard calendars put the same day in different columns. The weekday headers were cut with byte-wise `:sub(1, 3)`, which splits multi-byte characters and shows garbled text in ruRU, koKR, zhCN and zhTW.
+
+Fix: the grid and headers start on Blizzard's week start. Headers are cut by characters (UTF-8 safe). Harness test covers Sunday and Monday starts, header days and the UTF-8 cut.

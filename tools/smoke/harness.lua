@@ -2200,6 +2200,20 @@ try("mail attachment modified click", function()
     for i, k in ipairs(keys) do rawset(env, k, saved[i]) end
     assert(ok, err)
 end)
+-- t156: calendar week start follows CALENDAR_FIRST_WEEKDAY; weekday names cut by characters, not bytes
+try("calendar week start and weekday names", function()
+    local S = ns.modules.Skins
+    assert(S.CalendarCell(1, 1) == 1 and S.CalendarCell(4, 1) == 4, "Sunday start (old behaviour)")
+    -- month starting Sunday, Monday-first week: day 1 sits in the last column
+    assert(S.CalendarCell(1, 1, 2) == 7 and S.CalendarCell(2, 1, 2) == 1 and S.CalendarCell(4, 10, 2) == 12, "Monday start")
+    assert(S.CalendarColumnDay(1, 2) == 2 and S.CalendarColumnDay(7, 2) == 1 and S.CalendarColumnDay(1, 1) == 1, "header days")
+    assert(S.Utf8Head("\208\159\208\190\208\189\208\181", 3) == "\208\159\208\190\208\189", "UTF-8 safe")
+    assert(S.Utf8Head("Monday", 3) == "Mon", "ASCII")
+    local had = rawget(env, "CALENDAR_FIRST_WEEKDAY")
+    rawset(env, "CALENDAR_FIRST_WEEKDAY", 2); local w = S.CalendarWeekStart()
+    rawset(env, "CALENDAR_FIRST_WEEKDAY", had)
+    assert(w == 2 and (had ~= nil or S.CalendarWeekStart() == 1), "week start from Blizzard")
+end)
 -- bag chrome (plan window 4): title tick, close glyph, search field, bank tab rail with warband accent
 try("bag chrome skin", function()
     local B = ns.modules.Bags
