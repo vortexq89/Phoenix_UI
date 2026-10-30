@@ -178,3 +178,11 @@ None of these appear in the t146 shots, so the comparison is code against Ellesm
 |---|---|---|
 | Backpack and bag slots keep Blizzard's gold rings and round icons beside the Phoenix micro menu | only the micro buttons were skinned | with the micro menu skin, each bag button (backpack, four bags, reagent bag) is a square, flat-bordered tile: ring art faded, circle mask off; all restored with the switch off; harness test |
 | Micro buttons show Blizzard art in the shot although the micro menu skin defaults on | not reproducible offline (the skin passes its harness test) | unverified; check in game |
+
+## 16. Group finder (shot 222209)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| Every "Best matches" row reads "Mythic+" | rows showed the activity's shortName, which is generic for keystones | keystone rows show the dungeon (full activity name without its "(Mythic Keystone)" suffix); other activities keep their short name, or the full name with its difficulty |
+| Blizzard text faintly visible through the Phoenix filters panel | panel background at 94 % | opaque by default (still adjustable) |
+| Back / Sign Up keep Blizzard's red and grey buttons; Blizzard's gold flyout chevron pokes into the panel's edge | not skinned / Blizzard's filter flyout | not changed this round: logged for the group finder skin pass |

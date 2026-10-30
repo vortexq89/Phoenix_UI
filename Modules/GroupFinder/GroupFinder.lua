@@ -23,7 +23,7 @@ local M = ns:NewModule("GroupFinder", {
     feature = "lfgList", reloadOnToggle = true,
     defaults = {
         -- filter panel
-        panel = true, panelBackground = Style.Background({ alpha = 0.94 }), panelBorder = Style.Border({ style = "ember" }),
+        panel = true, panelBackground = Style.Background({ alpha = 1 }), panelBorder = Style.Border({ style = "ember" }),
         -- the game's own filters (Blizzard's advanced filter; only written when changed here)
         diffNormal = false, diffHeroic = false, diffMythic = false, diffMythicPlus = false,
         needsMyRole = false, hasTank = false, hasHealer = false, minRating = 0,

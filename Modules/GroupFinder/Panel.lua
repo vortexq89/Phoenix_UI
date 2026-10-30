@@ -221,7 +221,16 @@ local function fillRow(row, r)
     local info = C_LFGList.GetSearchResultInfo(r.id)
     local a = M.Activity(r.activityID)
     row.title = type(info) == "table" and info.name or nil
-    row.name:SetText(a and a.shortName ~= "" and a.shortName or (a and a.fullName) or "")
+    -- t146: every keystone row read "Mythic+" (the activity's shortName); for keystones the full name without
+    -- its "(Mythic Keystone)" suffix is the dungeon, which is what tells two rows apart
+    local full = a and type(a.fullName) == "string" and a.fullName or ""
+    local short = a and type(a.shortName) == "string" and a.shortName or ""
+    if r.mythicplus then
+        full = full:gsub("%s*%b()%s*$", "")
+        row.name:SetText(full ~= "" and full or short)
+    else
+        row.name:SetText(short ~= "" and short or full) -- raids keep their difficulty, e.g. "The Voidspire (Heroic)"
+    end
     if r.pvpactivity and r.pvp > 0 then
         row.score:SetText(r.pvp)
         row.scoreRGB = nil
