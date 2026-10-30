@@ -79,8 +79,9 @@ Audit of EllesmereUI Damage Meters 9.6.1 (defaults table and window code), with 
 | Keybinds (toggle, reset) | yes | yes (override bindings, out of combat) |
 | Blizzard / classic look | yes | "Blizzard" engine keeps the skinned Blizzard meter |
 | Spell history | yes (own strip) | Phoenix's separate Spell History module |
-| Standalone big combat timer | yes | not built (the header clock covers the fight time) |
-| Text offsets, icon borders, header colours | yes | not built (theme tokens drive them) |
+| Standalone big combat timer | yes | yes (t163: movable, combat-only option, Phoenix Font text spec) |
+| Text offsets, icon borders, header colours | yes | yes (t163: name / value X-Y offsets, icon border none / theme / class, header accent / class / custom / none with fill) |
+| Item level per player | no | yes (t163: after the name or tooltip only; inspected out of combat, cached by GUID) |
 | **Extras beyond EllesmereUI** | | |
 | Report to chat (auto / party / raid / instance / guild / only me) | no | yes |
 | Compare two players spell by spell | no | yes (ctrl-click two) |

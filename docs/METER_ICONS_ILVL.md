@@ -1,6 +1,6 @@
 # Damage meter: item level and spec icon styles (t161 A) - spec
 
-Status: spec only, not built.
+Status: §1 item level built (t163, Phoenix_UI_DamageMeter/Extras.lua). §2 spec icon styles approved by the owner; in progress.
 
 ## 1. Item level per player
 * Source: `C_PaperDollInfo.GetInspectItemLevel(unit)` after `NotifyInspect(unit)` / `INSPECT_READY`, and

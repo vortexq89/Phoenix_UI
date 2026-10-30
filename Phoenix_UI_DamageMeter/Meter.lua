@@ -100,6 +100,9 @@ local function duration(cfg)
     end
 end
 
+-- Fight length of window i's segment (the big timer follows window 1).
+function M.Duration(i) return duration(cfgOf(i)) end
+
 -- Value text: AbbreviateNumbers and SetFormattedText accept secret values. Formats: both "1.2M (8.1K)",
 -- pipe "1.2M | 8.1K", total, rate.
 M.FORMATS = { "both", "pipe", "total", "rate" }
@@ -177,11 +180,12 @@ local function makeRow(win, i)
     r.sheen:SetPoint("TOPLEFT"); r.sheen:SetPoint("TOPRIGHT")
     r.icon = r:CreateTexture(nil, "OVERLAY")
     r.icon:SetPoint("LEFT", 2, 0)
+    r.iconFrame = CreateFrame("Frame", nil, r) -- the icon border (Rows: icon border)
+    r.iconFrame:SetAllPoints(r.icon)
     r.rank = W.Text(r, "small", "text.secondary", "RIGHT")
     r.name = W.Text(r, "small", "text.primary", "LEFT")
     r.value = W.Text(r, "small", "text.primary", "RIGHT")
-    r.value:SetPoint("RIGHT", -4, 0)
-    r.name:SetPoint("RIGHT", r.value, "LEFT", -6, 0)
+    r.ilvl = W.Text(r, "small", "text.muted", "RIGHT") -- item level after the name (Rows: item level)
     r.mine = CreateFrame("Frame", nil, r)
     r.mine:SetAllPoints()
     r.slot = i
@@ -275,6 +279,8 @@ local function build(i, parent)
     win:SetClampedToScreen(true)
     win.header = CreateFrame("Frame", nil, win)
     win.header:SetPoint("TOPLEFT"); win.header:SetPoint("TOPRIGHT")
+    win.headerBg = win.header:CreateTexture(nil, "BACKGROUND", nil, 1) -- header colour (Windows: header colour)
+    win.headerBg:SetAllPoints()
     win.line = win.header:CreateTexture(nil, "ARTWORK")
     win.line:SetPoint("BOTTOMLEFT"); win.line:SetPoint("BOTTOMRIGHT")
     win.line:SetHeight(1)
@@ -304,7 +310,7 @@ local function build(i, parent)
     end
     Skin:Register(win, function(self)
         Skin:Panel(self, "base", { border = "border.subtle" })
-        Skin:Gradient(self.line, "HORIZONTAL", "accent.primary", "accent.primary", 0.9, 0)
+        M.PaintHeader(self)
         for _, c in ipairs({ self.mode, self.segment, self.reset, self.more }) do W.Color(c.bg, "bg.raised", 0.18) end
         M.styleGen = (M.styleGen or 0) + 1
     end)
@@ -352,12 +358,20 @@ function M:StyleRow(r, y, width)
         r.rank:SetWidth(20)
         left = left + 22
     end
-    r.name:SetPoint("LEFT", left, 0)
+    -- text offsets (Rows: name / value offset) and the item level between them
+    r.name:ClearAllPoints(); r.value:ClearAllPoints(); r.ilvl:ClearAllPoints()
+    r.name:SetPoint("LEFT", left + db.nameX, db.nameY)
+    r.value:SetPoint("RIGHT", -4 + db.valueX, db.valueY)
+    r.ilvl:SetPoint("RIGHT", r.value, "LEFT", -6, 0)
+    r.ilvl:SetText("")
+    r.name:SetPoint("RIGHT", db.ilvl == "name" and r.ilvl or r.value, "LEFT", -6, 0)
+    r.iconFrame:SetShown(db.specIcon and db.iconBorder ~= "none")
     if r.styleGen ~= self.styleGen then
         r.styleGen = self.styleGen
         Skin:TextSpec(r.name, self.db.name, "unit", "text.primary")
         Skin:TextSpec(r.value, self.db.value, "number", "text.primary")
         Skin:TextSpec(r.rank, self.db.value, "number", "text.primary")
+        Skin:TextSpec(r.ilvl, self.db.value, "number", "text.muted")
     end
     r.alt:Hide()
 end
@@ -391,6 +405,12 @@ function M:PaintSource(r, mode, src, maxAmount, rank)
     if db.specIcon then
         if src.specIconID and src.specIconID ~= 0 then r.icon:SetTexture(src.specIconID); r.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
         else r.icon:SetTexture(nil) end
+    end
+    if db.specIcon and db.iconBorder ~= "none" then M.PaintIconBorder(r.iconFrame, db.iconBorder, class) end
+    if db.ilvl == "name" then
+        local il = M:ItemLevelOf(src)
+        r.ilvl:SetText(il and tostring(il) or "")
+        if il then r.ilvl:SetTextColor(M.ItemLevelColor(il)) end
     end
     r.rank:SetText(rank .. ".")
     r.name:SetText(src.name)
@@ -556,6 +576,7 @@ function M:LayoutWindow(win)
     win.clock:ClearAllPoints()
     win.clock:SetPoint("RIGHT", db.hideReset and win.more or win.reset, "LEFT", -6, 0)
     win.body:SetPoint("TOPLEFT", 2, -hh - 2)
+    M.PaintHeader(win)
     return db.width - 4, rowsH
 end
 
@@ -645,6 +666,7 @@ function M:RefreshMeter()
             if want and visible(db) then ns.SafeCall(self.PaintWindow, self, win); win:Show() else win:Hide() end
         end
     end
+    self:UpdateBigTimer()
     self:UpdateClockTicker()
     self:ApplyKeys()
 end
@@ -657,12 +679,14 @@ function M:QueueMeter()
 end
 
 function M:UpdateClockTicker()
-    local want = self:UsesPhoenixMeter() and self.db.meter.clock and inCombat()
+    local db = self.db.meter
+    local want = self:UsesPhoenixMeter() and (db.clock or db.bigTimer.enabled) and inCombat()
     if want and not self.clockTicker then
         self.clockTicker = C_Timer.NewTicker(1, function()
             for i, win in pairs(wins) do
-                if win:IsShown() then win.clock:SetText(M.Clock(duration(cfgOf(i))) or "") end
+                if win:IsShown() and M.db.meter.clock then win.clock:SetText(M.Clock(duration(cfgOf(i))) or "") end
             end
+            M:PaintBigTimer()
         end)
     elseif not want and self.clockTicker then
         self.clockTicker:Cancel()
@@ -727,6 +751,10 @@ function M:RowTooltip(win, r)
     end
     GameTooltip:SetText(r.name:GetText())
     local src = r.src
+    if src and not win.view and self.db.meter.ilvl ~= "off" then
+        local il = M:ItemLevelOf(src)
+        if il then GameTooltip:AddLine(L.DM_ILVL_TIP:format(il), M.ItemLevelColor(il)) end
+    end
     if src and not win.view then
         local mode = M.Mode(cfgOf(win.id).type)
         if mode.deaths then
@@ -896,6 +924,7 @@ function M:SetupMeter()
         end
     end
     self:ApplyEngine()
+    self:SetupExtras()
     self:RefreshMeter()
 end
 
@@ -903,6 +932,7 @@ end
 function M:StopMeter()
     for _, win in pairs(wins) do win:Hide() end
     if self.clockTicker then self.clockTicker:Cancel(); self.clockTicker = nil end
+    self:StopExtras()
     self:ApplyKeys(true)
     self:ApplyEngine(true)
 end

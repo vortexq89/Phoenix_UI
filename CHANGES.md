@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Damage meter, round 3** (t163): item level per player (after the name or in the tooltip; read from the game's inspect
+  data out of combat), a standalone big fight timer (movable, combat-only option), name and value text offsets, icon
+  borders (theme or class colour) and header colours (accent, class, custom or none, with a fill strength).
 - **Plugins** (t163): every optional system (25 of them: bars, frames, nameplates, skins, meter, chat, bags ...) is now its own
   load-on-demand addon folder, `Phoenix_UI_<System>`, loaded only while it is on. New Phoenix > Plugins page: state
   (Loaded / Off / Not installed / Needs reload), memory, switches, Enable all and Minimal. A plugin turned on loads

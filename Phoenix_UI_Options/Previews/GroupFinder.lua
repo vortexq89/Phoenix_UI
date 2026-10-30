@@ -147,6 +147,7 @@ P:Register("groupfinder", {
         end
         return function()
             local db = m.db
+            if not m.BuildFilter then return end -- the plugin is not loaded (Phoenix > Plugins)
             m:BuildFilter()
             local active = m.expressionFn ~= nil or m:HasFilters()
             drawPanel(db, drawRows(db, active))

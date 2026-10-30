@@ -21,6 +21,9 @@ local M = ns:NewModule("DamageMeter", {
             sheen = true, nameClassColor = false, valueClassColor = false,
             specIcon = true, rank = true, valueFormat = "both", clock = true, hideReset = false,
             visibility = "always", idleAlpha = 1, rate = 0.3, tooltip = true, pinSelf = true, filter = "all",
+            ilvl = "name", nameX = 0, nameY = 0, valueX = 0, valueY = 0, iconBorder = "none",
+            headerColor = "theme", headerCustom = { r = 0.2, g = 0.22, b = 0.28 }, headerAlpha = 0,
+            bigTimer = { enabled = false, combatOnly = true, label = true, point = "TOP", x = 0, y = -150 },
             lock = false, reportLines = 5, reportChannel = "AUTO", toggleKey = "", resetKey = "", preset = "solo",
             win1 = { type = 0, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -16, y = 220 },
             win2 = { type = 2, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -306, y = 220 },
@@ -31,6 +34,7 @@ local M = ns:NewModule("DamageMeter", {
         border = Style.Border({ style = "solid", color = false }),
         name = Style.Text(12),
         value = Style.Text(12),
+        bigTimerText = Style.Text(30),
         -- threat meter (Threat.lua, WoW Forever)
         threat = { enabled = true, combatOnly = true, rows = 5, width = 200, point = "RIGHT", x = -260, y = -120 },
     },

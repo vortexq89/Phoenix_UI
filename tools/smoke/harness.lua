@@ -484,7 +484,8 @@ local function scopeUnits(list)
     return { "player" }
 end
 for _, m in ipairs(ns.moduleList or {}) do
-  for _, unit in ipairs(scopeUnits(ns.options[m.key])) do
+  -- a plugin this client lacks is a placeholder (Core/Plugins.lua): its options are never shown here
+  for _, unit in ipairs(m.placeholder and {} or scopeUnits(ns.options[m.key])) do
     eachItem(ns.options[m.key], function(item, parent)
         local owner = (parent and parent.hidden) and parent or item
         local hiddenHere = owner.hidden and item.key and item.key:find("@", 1, true) and owner.hidden(m, unit)
@@ -1139,11 +1140,13 @@ try("previews", function()
     local n = 0
     for kind, def in pairs(ns.Previews.kinds) do
         local m = assert(ns.modules[def.module], kind .. " preview names no module")
-        local stage = ns.Previews:Create(kind, env.CreateFrame("Frame"), m, { scope = { unit = "target" } })
-        stage:Redraw()
-        for _, st in ipairs(ns.Previews:States(kind) or {}) do stage.states[st.key] = true end
-        stage:Redraw()
-        n = n + 1
+        if not m.placeholder then
+            local stage = ns.Previews:Create(kind, env.CreateFrame("Frame"), m, { scope = { unit = "target" } })
+            stage:Redraw()
+            for _, st in ipairs(ns.Previews:States(kind) or {}) do stage.states[st.key] = true end
+            stage:Redraw()
+            n = n + 1
+        end
     end
     assert(n >= 19, "expected a preview for every visual module, have " .. n)
     -- every visual module's page carries one
@@ -6234,6 +6237,10 @@ end)
 -- filters, sort and presets, the game's advanced filter, entry/tooltip/applicant decoration, the panel and its
 -- best matches, the secure sign-up helpers (never a sign-up call of ours), preview, depth; Forever: gated off
 try("group finder expression (S15)", function()
+    if ns.modules.GroupFinder.placeholder then -- Forever: the plugin is not loaded at all
+        assert(not RETAIL and ns.modules.GroupFinder.unavailable, "group finder plugin missing on retail")
+        return
+    end
     local X = ns.GroupFinderExpression
     local W = { tanks = 1, score = 1, age = 1, myrole = 1, voice = 1, heals = 1 }
     local function ev(text, r)
@@ -7810,6 +7817,7 @@ end)
 -- t146 e: GameMenu buttons are ThreeSliceButtonTemplate (Left / Center / Right): every piece of the red atlas hides
 try("group finder hides the cross-faction tip under the panel", function()
     local G = ns.modules.GroupFinder
+    if G.placeholder then return end -- Forever: not loaded
     local saved = { rawget(env, "HelpTip"), rawget(env, "CROSS_FACTION_GROUP_FINDER_HELPTIP") }
     local hidden, acked
     rawset(env, "HelpTip", { Hide = function(_, parent, text) hidden = text end, Acknowledge = function() acked = true end })
@@ -8224,6 +8232,42 @@ try("phoenix damage meter", function()
     secretMode = false
     db.meter.win1.type, db.meter.valueFormat, db.meter.barColor = 0, "both", "class"
     db.meter.nameClassColor, db.meter.valueClassColor = false, false
+    -- extras: item level (cached by plain GUID, yours always), offsets, icon border, header colours, big timer
+    local inspectedUnits = {}
+    local keepIl = { rawget(env, "GetAverageItemLevel"), rawget(env, "NotifyInspect"), rawget(env, "CanInspect"),
+        rawget(env, "GetNumGroupMembers"), rawget(env, "UnitGUID"), rawget(env, "UnitIsPlayer"), rawget(env, "IsInRaid"), rawget(env, "InspectFrame") }
+    rawset(env, "IsInRaid", function() return false end)
+    rawset(env, "InspectFrame", { IsShown = function() return false end })
+    rawset(env, "GetAverageItemLevel", function() return 650, 648.6 end)
+    rawset(env, "NotifyInspect", function(u) inspectedUnits[#inspectedUnits + 1] = u end)
+    rawset(env, "CanInspect", function() return true end)
+    rawset(env, "GetNumGroupMembers", function() return 3 end)
+    rawset(env, "UnitGUID", function(u) return u == "party1" and "Player-1-2" or u == "party2" and "Player-1-3" or "Player-1-12" end)
+    rawset(env, "UnitIsPlayer", function() return true end)
+    for k in pairs(DM.ilvlCache) do DM.ilvlCache[k] = nil end -- earlier tests inspected someone
+    DM:ScanItemLevels()
+    DM.InspectStep(); DM.InspectStep()
+    assert(inspectedUnits[1] == "party1" and inspectedUnits[2] == "party2", "inspect queue " .. table.concat(inspectedUnits, ","))
+    local keepPD = rawget(env, "C_PaperDollInfo")
+    rawset(env, "C_PaperDollInfo", { GetInspectItemLevel = function(u) return u == "party1" and 639.7 or 0 end })
+    DM.OnInspectReady(nil, nil, "Player-1-2"); DM.OnInspectReady(nil, nil, "Player-1-3")
+    rawset(env, "C_PaperDollInfo", keepPD)
+    db.meter.ilvl = "name"; DM:RefreshMeter()
+    assert(rawget(w.rows[8].ilvl, "__text") == "648", "your item level on your row")
+    assert(rawget(w.rows[2].ilvl, "__text") == "639" and rawget(w.rows[3].ilvl, "__text") == "", "inspected item levels")
+    db.meter.nameX, db.meter.valueY, db.meter.iconBorder = 6, 2, "class"; DM:RefreshMeter()
+    for _, hc in ipairs({ "theme", "class", "custom", "none" }) do db.meter.headerColor = hc; DM:RefreshMeter() end
+    db.meter.bigTimer.enabled, db.meter.bigTimer.combatOnly = true, false; DM:RefreshMeter()
+    local bt = DM.bigTimerFrame
+    assert(bt and bt:IsShown() and rawget(bt.text, "__text") == "1:15", "big timer")
+    secretMode = true; DM:RefreshMeter(); secretMode = false -- secret GUIDs: no item level lookup, no error
+    db.meter.bigTimer.enabled, db.meter.ilvl, db.meter.nameX, db.meter.valueY = false, "name", 0, 0
+    db.meter.iconBorder, db.meter.headerColor = "none", "theme"
+    DM:RefreshMeter()
+    assert(not bt:IsShown(), "big timer off")
+    rawset(env, "GetAverageItemLevel", keepIl[1]); rawset(env, "NotifyInspect", keepIl[2]); rawset(env, "CanInspect", keepIl[3])
+    rawset(env, "GetNumGroupMembers", keepIl[4]); rawset(env, "UnitGUID", keepIl[5]); rawset(env, "UnitIsPlayer", keepIl[6])
+    rawset(env, "IsInRaid", keepIl[7]); rawset(env, "InspectFrame", keepIl[8])
     -- role filter: no sample spec maps to a role, so a filter leaves the window empty
     db.meter.filter = "HEALER"; DM:RefreshMeter()
     assert(not w.rows[1]:IsShown() and w.empty:IsShown(), "role filter")
