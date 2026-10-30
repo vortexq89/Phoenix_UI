@@ -2173,6 +2173,42 @@ try("micro menu skin", function()
     S.PaintMicro(b)
     _G.CharacterMicroButton = nil
 end)
+-- t169: Ember Bevel micro icons: every micro button has a bevel cell; bevel shows the framed icon, flat the tile
+try("micro menu ember bevel", function()
+    local S, CB = ns.modules.Skins, ns.ChromeBevel
+    assert(CB and ns.ChromeBevelData, "ChromeBevel not loaded")
+    for _, e in ipairs(S.MICRO) do assert(CB.Has(e[3]), "no bevel cell for " .. tostring(e[3])) end
+    assert(CB.CellFor(56) == 64 and CB.FrameIn(64) == 56, "4 px glow margin at 64")
+    local tex = CreateFrame("Frame"):CreateTexture()
+    local path
+    tex.SetTexture = function(_, p) path = p end
+    assert(CB:Apply(tex, "micro-character", "hover", 16) and path:find("Bevel16_hover"), "16 px uses the simplified cell")
+    assert(CB:Apply(tex, "micro-character", "pressed", 28) and path:find("Bevel64_pressed"), "28 px uses the 64 cell")
+    assert(CB:Apply(tex, "panel-bags", "normal", 60) and path:find("Panel128_normal"), "panel at 60 px uses 128")
+    assert(not CB:Apply(tex, "not-a-glyph"), "unknown glyph refused")
+    local b = CreateFrame("Button", "GuildMicroButton", UIParent)
+    b:SetSize(32, 40)
+    local t = S.SkinMicroButton(b, "guild", "micro-guild")
+    local was = S.db.microStyle
+    S.db.microStyle = "bevel"; S.PaintMicro(b)
+    assert(t.bevel:IsShown() and not t.glyph:IsShown(), "bevel style shows the framed icon")
+    S.db.microStyle = "flat"; S.PaintMicro(b)
+    assert(not t.bevel:IsShown() and t.glyph:IsShown(), "flat style shows the tile glyph")
+    S.db.microStyle = was
+    -- every panel the Skins map names has a medallion cell, and the vault is the 28th
+    for key, glyph in pairs(S.PANEL_FOR) do assert(ns.ChromeBevelData.panels[glyph], key .. ": no medallion " .. glyph) end
+    local n = 0
+    for _ in pairs(ns.ChromeBevelData.panels) do n = n + 1 end
+    assert(n == 28 and ns.ChromeBevelData.panels["panel-vault"], "28 panel medallions, vault included")
+    local f, e = CreateFrame("Frame"), {}
+    local hadFor = S.PanelFor
+    S.PanelFor = function() return "panel-mail" end
+    S.db.panelIcons = true; S._PaintPanel(f, e, false)
+    assert(e.panel and e.panel:IsShown(), "medallion shown")
+    S.db.panelIcons = false; S._PaintPanel(f, e, false)
+    assert(not e.panel:IsShown(), "medallion hidden with the switch off")
+    S.db.panelIcons = true; S.PanelFor = hadFor
+end)
 -- t156: Blizzard's OnLeave / SetNormal put the micro art back; the skin fades it again, and off restores it
 try("micro menu art stays faded after Blizzard updates", function()
     local S = ns.modules.Skins

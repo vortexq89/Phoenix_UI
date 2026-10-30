@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "수치 뒤에 은은한 어두운 그라데이션을 깔아 바 끝 위에서도 읽기 쉽게 합니다.",
     PREVIEW_KEEP = "화면에 고정",
     PREVIEW_KEEP_DESC = "스크롤할 때 미리보기를 위쪽에 고정합니다. 끄면 페이지와 함께 스크롤되어 설정 공간이 넓어집니다.",
+    SKINS_MICRO_STYLE = "마이크로 메뉴 스타일",
+    SKINS_MICRO_STYLE_DESC = "엠버 베벨: 테두리가 있는 Phoenix 불씨 아이콘으로, 마우스를 올리면 빛나고 클릭하면 섬광이 터집니다. 평면: 단순한 테두리 타일.",
+    SKINS_MICRO_BEVEL = "엠버 베벨",
+    SKINS_MICRO_FLAT = "평면",
+    SKINS_PANEL_ICONS = "창 메달",
+    SKINS_PANEL_ICONS_DESC = "스킨이 적용된 각 창의 왼쪽 위에 창의 용도를 보여 주는 Phoenix 불씨 메달을 표시합니다.",
 }
 
 ns.RegisterLocale("koKR", T)

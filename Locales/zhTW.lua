@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "在數值後方加一層柔和的暗色漸層，使其在計量條末端上方依然清晰。",
     PREVIEW_KEEP = "保持顯示",
     PREVIEW_KEEP_DESC = "捲動時將預覽固定在頂部。關閉時預覽隨頁面捲走，為設定留出更多空間。",
+    SKINS_MICRO_STYLE = "微型選單樣式",
+    SKINS_MICRO_STYLE_DESC = "餘燼斜面：Phoenix 的帶框餘燼圖示，懸停時發光，點擊時閃光。平面：簡單的描邊方塊。",
+    SKINS_MICRO_BEVEL = "餘燼斜面",
+    SKINS_MICRO_FLAT = "平面",
+    SKINS_PANEL_ICONS = "視窗徽章",
+    SKINS_PANEL_ICONS_DESC = "在每個美化視窗的左上角顯示 Phoenix 餘燼徽章，標示視窗用途。",
 }
 
 ns.RegisterLocale("zhTW", T)

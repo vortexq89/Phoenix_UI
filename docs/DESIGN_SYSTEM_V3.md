@@ -269,10 +269,10 @@ nothing changes.
 
 Each window shows a Phoenix **panel icon** in its top-left corner, in the round portrait slot of Blizzard's
 `PortraitFrameTemplate` / `ButtonFrameTemplate`. Each one says what the window is for. The ember glyph sits on
-an obsidian medallion with a gold rim and an inner ring (sheet `docs/screenshots/v3/panel_icons.png`, headers
-mockup `docs/screenshots/v3/panels_v3.png`). There are 27: character, bags, mail, collections, macro, friends,
+an obsidian medallion with a gold rim and an inner ring (t169: the Ember Bevel round medallions, `Media/Icons/Panel128_*.tga`, shown by Skins › Window medallions; sheet `docs/screenshots/v3/panel_icons.png`, headers
+mockup `docs/screenshots/v3/panels_v3.png`). There are 28: character, bags, mail, collections, macro, friends,
 guild, group finder, settings, achievements, spellbook, talents, quests, map, calendar, professions, journal
-(Adventure Guide), PvP, shop, help, game menu, bank, merchant, auction house, trade, loot and communities.
+(Adventure Guide), PvP, shop, help, game menu, bank, merchant, auction house, trade, loot, communities and the Great Vault (the 28th, from `Phoenix_UI_Skins/Vault.lua`).
 It is drawn at 60 px in the portrait slot (40 px in the Phoenix settings header) and lights up on hover like
 the chrome icons. The player's portrait is still shown on unit frames. On the Character window it moves to a
 small inset, an option under Windows › Character.

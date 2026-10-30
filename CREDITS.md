@@ -25,3 +25,9 @@ The spec icon styles (UI/SpecIcon.lua) use the game's own spec icons as the clie
 redistributed. Every mask, ring, frame and effect on top (diamond, shield, octagon, squircle masks and rings, gloss,
 inner shade, ember frame) is Phoenix's own, procedurally drawn by tools/media/gen_spec_icons.py (MIT). No third-party
 icon set is used: none of the WoW class/spec icon sets we found is CC0 or permissively licensed.
+
+## Ember Bevel chrome icons (t169)
+`Media/Icons/Bevel64_*.tga`, `Bevel16_*.tga` and `Panel128_*.tga` (and their sources in `tools/media/chrome_bevel/`) are **original Phoenix art** (Phoenix UI
+licence), generated procedurally by `tools/media/gen_chrome_bevel.py` and `tools/media/ember_bevel.py` from
+Phoenix's own 24-grid glyphs. Nothing is traced, copied or recoloured from Blizzard or any addon. They are used
+for Phoenix's UI chrome only, never for class, spec, ability, spell, item, mount, pet or toy icons.

@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "在数值后方加一层柔和的暗色渐变，使其在计量条末端上方依然清晰。",
     PREVIEW_KEEP = "保持显示",
     PREVIEW_KEEP_DESC = "滚动时将预览固定在顶部。关闭时预览随页面滚走，为设置留出更多空间。",
+    SKINS_MICRO_STYLE = "微型菜单样式",
+    SKINS_MICRO_STYLE_DESC = "余烬斜面：Phoenix 的带框余烬图标，悬停时发光，点击时闪光。平面：简单的描边方块。",
+    SKINS_MICRO_BEVEL = "余烬斜面",
+    SKINS_MICRO_FLAT = "平面",
+    SKINS_PANEL_ICONS = "窗口徽章",
+    SKINS_PANEL_ICONS_DESC = "在每个美化窗口的左上角显示 Phoenix 余烬徽章，标示窗口用途。",
 }
 
 ns.RegisterLocale("zhCN", T)

@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "Um degradê escuro suave atrás do valor, para que fique legível sobre o fim da barra.",
     PREVIEW_KEEP = "Manter na tela",
     PREVIEW_KEEP_DESC = "Mantém a prévia no topo ao rolar. Desligado: ela rola com a página e deixa mais espaço para as configurações.",
+    SKINS_MICRO_STYLE = "Estilo do micromenu",
+    SKINS_MICRO_STYLE_DESC = "Bisel de brasa: os ícones emoldurados do Phoenix, com brilho ao passar o mouse e um clarão ao clicar. Plano: os blocos simples com borda.",
+    SKINS_MICRO_BEVEL = "Bisel de brasa",
+    SKINS_MICRO_FLAT = "Plano",
+    SKINS_PANEL_ICONS = "Medalhões de janela",
+    SKINS_PANEL_ICONS_DESC = "Um medalhão de brasa do Phoenix no canto superior esquerdo de cada janela, mostrando para que ela serve.",
 }
 
 ns.RegisterLocale("ptBR", T)

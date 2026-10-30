@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "Ein weicher dunkler Verlauf hinter dem Wert, damit er über dem Balkenende lesbar bleibt.",
     PREVIEW_KEEP = "Im Blick behalten",
     PREVIEW_KEEP_DESC = "Die Vorschau beim Scrollen oben halten. Aus: Sie scrollt mit der Seite weg und lässt mehr Platz für Einstellungen.",
+    SKINS_MICRO_STYLE = "Mikromenü-Stil",
+    SKINS_MICRO_STYLE_DESC = "Glutfassung: Phoenix' gerahmte Glut-Symbole mit Leuchten beim Überfahren und Lichtblitz beim Klick. Flach: die schlichten umrandeten Kacheln.",
+    SKINS_MICRO_BEVEL = "Glutfassung",
+    SKINS_MICRO_FLAT = "Flach",
+    SKINS_PANEL_ICONS = "Fenstermedaillons",
+    SKINS_PANEL_ICONS_DESC = "Ein Phoenix-Glutmedaillon oben links in jedem gestalteten Fenster, das zeigt, wofür das Fenster da ist.",
 }
 
 ns.RegisterLocale("deDE", T)

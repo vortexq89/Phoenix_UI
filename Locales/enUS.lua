@@ -4381,4 +4381,10 @@ ns.RegisterLocale("enUS", {
     DM_VALUE_FADE_DESC = "A soft dark fade behind the value, so it stays readable over the end of the bar.",
     PREVIEW_KEEP = "Keep on screen",
     PREVIEW_KEEP_DESC = "Keep the preview at the top while you scroll. Off: it scrolls away with the page, leaving more room for settings.",
+    SKINS_MICRO_STYLE = "Micro menu style",
+    SKINS_MICRO_STYLE_DESC = "Ember Bevel: Phoenix's framed ember icons, with a glow on hover and a light burst on click. Flat: the plain bordered tiles.",
+    SKINS_MICRO_BEVEL = "Ember Bevel",
+    SKINS_MICRO_FLAT = "Flat",
+    SKINS_PANEL_ICONS = "Window medallions",
+    SKINS_PANEL_ICONS_DESC = "A Phoenix ember medallion in the top-left corner of each skinned window, showing what the window is for.",
 })

@@ -21,7 +21,7 @@ Changed:
   at 16–20 px.
 - **Gallery.** The gap between cells is 4 px (it was 6).
 - **Docs.** `DESIGN_SYSTEM_V3.md` §3/§4 now give the surface, border and text values from `Core/Theme.lua`
-  (approved in game). §5b says 27 panel icons, matching its list.
+  (approved in game). §5b now lists 28 panel icons: the 28th is the Great Vault, which the code skins (`Phoenix_UI_Skins/Vault.lua`).
 
 Left for later: the PROPOSAL colours and the texture-needs list are input for the media library; they were not
 adopted here.
@@ -48,3 +48,18 @@ checked against the shipping code (Phoenix Font, the merged 78 px header) before
   shadow.
 - Figma meter sizes and colours (260×22 rows, track = `bg.sunken`) are proposals. The current defaults stay;
   they were not clearly better.
+
+## 4. Ember Bevel chrome icons (t169, approved style)
+- 76 chrome icons (micro menu, settings nav, tabs, module tiles, macro window, window controls) in 4 states (normal,
+  hover, pressed with the light burst, disabled), packed into `Media/Icons/Bevel64_*` (64 px cells, 4 px glow
+  margin) and `Bevel16_*`, the simplified small variant (3 px bevel, no rivets). Draws of 20 px or less use it.
+- 28 round panel medallions (`Panel128_*`). The 28th is the Great Vault, checked against the code
+  (`Phoenix_UI_Skins/Vault.lua`, Skins key `vault`).
+- Look-alike pairs re-drawn: module-actionbars (one button with a cooldown sweep) vs tab-layout,
+  module-groupframes (stacked health bars) vs nav-bars, and panel-collections (a paw) vs the micro menu's cube.
+- Wired: the micro menu (Skins › Micro menu style: Ember Bevel / Flat, live). Each button's texture is the full
+  cell, so the 4 px glow margin sits inside the button. The pressed burst plays as a 0.25 s flash. Window
+  medallions sit in the top-left corner of every skinned window (Skins › Window medallions, live).
+- Not wired yet: the settings rail, tabs and module tiles, the macro window and the window controls still use the
+  flat glyphs. The atlases and `ns.ChromeBevel:Apply` are in place for them.
+- Credited as original Phoenix art in CREDITS.md. Class, spec and ability icons are never touched.

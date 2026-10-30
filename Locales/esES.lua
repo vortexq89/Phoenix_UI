@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "Un degradado oscuro suave tras el valor, para que se lea sobre el final de la barra.",
     PREVIEW_KEEP = "Mantener en pantalla",
     PREVIEW_KEEP_DESC = "Mantiene la vista previa arriba al desplazarte. Desactivado: se desplaza con la página y deja más espacio a los ajustes.",
+    SKINS_MICRO_STYLE = "Estilo del micromenú",
+    SKINS_MICRO_STYLE_DESC = "Bisel de ascuas: los iconos enmarcados de Phoenix, con brillo al pasar el ratón y un destello al hacer clic. Plano: las casillas simples con borde.",
+    SKINS_MICRO_BEVEL = "Bisel de ascuas",
+    SKINS_MICRO_FLAT = "Plano",
+    SKINS_PANEL_ICONS = "Medallones de ventana",
+    SKINS_PANEL_ICONS_DESC = "Un medallón de ascuas de Phoenix en la esquina superior izquierda de cada ventana, que muestra para qué sirve.",
 }
 
 ns.RegisterLocale("esES", T)

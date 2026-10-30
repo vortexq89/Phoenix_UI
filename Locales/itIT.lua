@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "Una leggera sfumatura scura dietro il valore, così resta leggibile sulla fine della barra.",
     PREVIEW_KEEP = "Tieni sullo schermo",
     PREVIEW_KEEP_DESC = "Tiene l'anteprima in alto mentre scorri. Disattivato: scorre via con la pagina, lasciando più spazio alle impostazioni.",
+    SKINS_MICRO_STYLE = "Stile del micromenu",
+    SKINS_MICRO_STYLE_DESC = "Smusso di brace: le icone incorniciate di Phoenix, con bagliore al passaggio e un lampo al clic. Piatto: le semplici tessere bordate.",
+    SKINS_MICRO_BEVEL = "Smusso di brace",
+    SKINS_MICRO_FLAT = "Piatto",
+    SKINS_PANEL_ICONS = "Medaglioni delle finestre",
+    SKINS_PANEL_ICONS_DESC = "Un medaglione di brace Phoenix nell'angolo in alto a sinistra di ogni finestra, che mostra a cosa serve.",
 }
 
 ns.RegisterLocale("itIT", T)

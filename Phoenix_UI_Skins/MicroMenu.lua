@@ -11,12 +11,15 @@ local M = ns:GetModule("Skins")
 
 -- global button name -> Phoenix glyph
 M.MICRO = {
-    { "CharacterMicroButton", "user" }, { "ProfessionMicroButton", "items" }, { "PlayerSpellsMicroButton", "spec" },
-    { "SpellbookMicroButton", "spec" }, { "TalentMicroButton", "spec" },
-    { "AchievementMicroButton", "success" }, { "QuestLogMicroButton", "tracker" }, { "HousingMicroButton", "home" },
-    { "GuildMicroButton", "guild" }, { "LFDMicroButton", "friends" }, { "CollectionsMicroButton", "palette" },
-    { "EJMicroButton", "encounters" }, { "StoreMicroButton", "gold" }, { "MainMenuMicroButton", "cog" },
-    { "HelpMicroButton", "question" },
+    -- { button, flat glyph, Ember Bevel glyph }
+    { "CharacterMicroButton", "user", "micro-character" }, { "ProfessionMicroButton", "items", "micro-professions" },
+    { "PlayerSpellsMicroButton", "spec", "micro-spells" }, { "SpellbookMicroButton", "spec", "micro-spells" },
+    { "TalentMicroButton", "spec", "micro-talents" }, { "AchievementMicroButton", "success", "micro-achievements" },
+    { "QuestLogMicroButton", "tracker", "micro-quests" }, { "HousingMicroButton", "home", "micro-housing" },
+    { "GuildMicroButton", "guild", "micro-guild" }, { "LFDMicroButton", "friends", "micro-groupfinder" },
+    { "CollectionsMicroButton", "palette", "micro-collections" }, { "EJMicroButton", "encounters", "micro-journal" },
+    { "StoreMicroButton", "gold", "micro-shop" }, { "MainMenuMicroButton", "cog", "micro-menu" },
+    { "HelpMicroButton", "question", "micro-help" },
 }
 local ART = { "GetNormalTexture", "GetPushedTexture", "GetDisabledTexture", "GetHighlightTexture" }
 local REGIONS = { "Background", "PushedBackground", "Portrait", "PortraitMask", "Shadow", "PushedShadow" }
@@ -35,6 +38,20 @@ local function paintTile(button)
     local t = tiles[button]
     if not t then return end
     local s = M.MicroState(button, t.hover)
+    -- Ember Bevel (Skins > Micro menu style): the framed ember icon fills the button, glow margin included
+    local bevel = M.db and M.db.microStyle ~= "flat" and t.bevelName and ns.ChromeBevel
+    t.bevel:SetShown(bevel and true or false)
+    t.bg:SetShown(not bevel)
+    t.glyph:SetShown(not bevel)
+    if bevel then
+        local w, h = button:GetWidth() or 32, button:GetHeight() or 40
+        local cell = math.min(w, h)
+        t.bevel:SetSize(cell, cell)
+        local state = s == "disabled" and "disabled" or ((s == "hover" or s == "active") and "hover" or "normal")
+        if not t.flashing then ns.ChromeBevel:Apply(t.bevel, t.bevelName, state, ns.ChromeBevel.FrameIn(cell)) end
+        Skin:SetBorderColor(t, 0, 0, 0, 0) -- the bevel is the border
+        return
+    end
     W.Color(t.bg, s == "active" and "accent.primary" or "bg.raised", s == "active" and 0.22 or (s == "hover" and 1 or 0.92))
     Skin:SetBorderColor(t, (s == "hover" or s == "active") and "accent.primary" or "border.subtle")
     ns.Icons:Tint(t.glyph, (s == "hover" or s == "active") and "accent.primary" or "text.secondary", s == "disabled" and 0.4 or 1)
@@ -64,7 +81,7 @@ end
 M._MicroFade = fade
 local REFADE = { "SetPushed", "SetNormal", "SetHighlightAtlas", "SetNormalAtlas", "SetPushedAtlas", "SetButtonState" }
 
-function M.SkinMicroButton(button, glyph)
+function M.SkinMicroButton(button, glyph, bevelName)
     if not button or tiles[button] then
         if button then live[button] = true; fade(button) end
         return button and tiles[button]
@@ -79,6 +96,19 @@ function M.SkinMicroButton(button, glyph)
     Skin:Border(t, "border.subtle")
     t.glyph = W.Icon(t, glyph, 16, "text.secondary", "ARTWORK")
     t.glyph:SetPoint("CENTER")
+    t.bevelName = bevelName and ns.ChromeBevel and ns.ChromeBevel.Has(bevelName) and bevelName or nil
+    t.bevel = t:CreateTexture(nil, "ARTWORK", nil, 1)
+    t.bevel:SetPoint("CENTER")
+    t.bevel:Hide()
+    -- pressed: the Ember Bevel light burst as a 0.25 s flash
+    button:HookScript("OnMouseDown", function(self)
+        local tt = tiles[self]
+        if tt and tt.bevel:IsShown() then
+            tt.flashing = true
+            ns.ChromeBevel:Flash(tt.bevel, tt.bevelName, ns.ChromeBevel.FrameIn(tt.bevel:GetWidth() or 32),
+                function() tt.flashing = nil; paintTile(self) end)
+        end
+    end)
     tiles[button] = t
     button:HookScript("OnEnter", function(self) tiles[self].hover = true; fade(self); paintTile(self) end)
     button:HookScript("OnLeave", function(self) tiles[self].hover = false; fade(self); paintTile(self) end)
@@ -129,7 +159,8 @@ function M:SkinMicroMenu()
         local b = _G[entry[1]]
         if b then
             if on then
-                M.SkinMicroButton(b, entry[2])
+                M.SkinMicroButton(b, entry[2], entry[3])
+                M.PaintMicro(b)
             elseif live[b] then
                 live[b] = nil -- switched off: Blizzard's art back, not blank buttons until a reload
                 for _, r in ipairs(artOf(b)) do Skin:Restore(r) end

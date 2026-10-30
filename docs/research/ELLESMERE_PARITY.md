@@ -51,6 +51,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | Loadout manager | 7 | ✗ | B | |
 | Party mode | 10 | ✗ | B | |
 | Friends | 1 | Friends skin | E | |
+| Chrome icons (micro menu, window medallions) | flat micro buttons | Ember Bevel set: 76 icons + 28 medallions, 4 states, 16 px variant (t169) | A | wire the rail, tabs, macro and window controls next |
 | Colours / fonts / textures / glows / style | 21 + 6 + 6 + 2 | Appearance page, Theme presets, media library, Phoenix Font | A | |
 | What's new | 1 | ✗ | B | in-game changelog page |
 | Gamepad | 1 | ✗ | B | |

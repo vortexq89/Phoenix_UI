@@ -4355,6 +4355,12 @@ local T = {
     DM_VALUE_FADE_DESC = "Un léger dégradé sombre derrière la valeur, pour qu'elle reste lisible au bout de la barre.",
     PREVIEW_KEEP = "Garder à l'écran",
     PREVIEW_KEEP_DESC = "Garde l'aperçu en haut pendant le défilement. Désactivé : il défile avec la page et laisse plus de place aux réglages.",
+    SKINS_MICRO_STYLE = "Style du micro-menu",
+    SKINS_MICRO_STYLE_DESC = "Biseau de braise : les icônes encadrées de Phoenix, avec une lueur au survol et un éclat au clic. Plat : les tuiles simples bordées.",
+    SKINS_MICRO_BEVEL = "Biseau de braise",
+    SKINS_MICRO_FLAT = "Plat",
+    SKINS_PANEL_ICONS = "Médaillons de fenêtre",
+    SKINS_PANEL_ICONS_DESC = "Un médaillon de braise Phoenix dans le coin supérieur gauche de chaque fenêtre habillée, qui indique son rôle.",
 }
 
 ns.RegisterLocale("frFR", T)

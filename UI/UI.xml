@@ -14,6 +14,8 @@
     <Script file="Widgets\Section.lua"/>
     <Script file="Widgets\ItemCard.lua"/>
     <Script file="SpecIcon.lua"/>
+    <Script file="ChromeBevelData.lua"/>
+    <Script file="ChromeBevel.lua"/>
     <Script file="Widgets\Controls.lua"/>
     <Script file="Widgets\Chips.lua"/>
     <Script file="Widgets\StylePicker.lua"/>

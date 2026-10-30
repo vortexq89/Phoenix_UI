@@ -12,7 +12,7 @@ local Skin, Style, W = ns.Skin, ns.Style, ns.Widgets
 local M = ns:NewModule("Skins", {
     label = "SKINS", desc = "SKINS_DESC", category = "interface", order = 5, reloadOnToggle = true,
     defaults = {
-        gameMenu = true, microMenu = true, worldMap = true, popups = true, readyCheck = true,
+        gameMenu = true, microMenu = true, microStyle = "bevel", panelIcons = true, worldMap = true, popups = true, readyCheck = true,
         character = true, inspect = true, spellbook = true, groupFinder = true, collections = true, professions = true,
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
@@ -169,6 +169,34 @@ end
 -- One window or dialog. dialog: a centred panel without a title strip.
 local winOn, winSeen = setmetatable({}, { __mode = "k" }), setmetatable({}, { __mode = "k" })
 local winDialog = setmetatable({}, { __mode = "k" })
+-- Ember Bevel panel medallions (DESIGN_SYSTEM_V3 §5b): one per window, in its top-left corner. Skins key -> glyph.
+M.PANEL_FOR = { character = "panel-character", achievements = "panel-achievements", auction = "panel-auction",
+    calendar = "panel-calendar", collections = "panel-collections", communities = "panel-communities",
+    friends = "panel-friends", gameMenu = "panel-gamemenu", groupFinder = "panel-groupfinder", journal = "panel-journal",
+    loot = "panel-loot", mail = "panel-mail", merchant = "panel-merchant", professions = "panel-professions",
+    settings = "panel-settings", spellbook = "panel-spellbook", trade = "panel-trade", vault = "panel-vault",
+    pvpMatch = "panel-pvp" }
+M.PANEL_SIZE = 60 -- the medallion's drawn size (its 4 px glow margin included)
+function M.PanelFor(frame)
+    for _, entry in ipairs(M.WINDOWS or {}) do
+        for _, name in ipairs(entry.frames or {}) do
+            if rawget(_G, name) == frame then return M.PANEL_FOR[entry.key] end
+        end
+    end
+end
+local function paintPanel(frame, e, dialog)
+    local glyph = not dialog and M.db.panelIcons and M.PanelFor(frame)
+    if glyph and not e.panel then
+        e.panel = frame:CreateTexture(nil, "OVERLAY", nil, 6)
+        e.panel:SetSize(M.PANEL_SIZE, M.PANEL_SIZE)
+        e.panel:SetPoint("TOPLEFT", -14, 14)
+    end
+    if e.panel then
+        e.panel:SetShown(glyph and ns.ChromeBevel and ns.ChromeBevel:Apply(e.panel, glyph, "normal", M.PANEL_SIZE) or false)
+    end
+end
+M._PaintPanel = paintPanel
+
 local function window(frame, dialog)
     if not frame or winOn[frame] then return end
     if Skin:IsSkinned(frame) and not winSeen[frame] then return end -- dressed by another Phoenix module
@@ -194,6 +222,7 @@ local function window(frame, dialog)
         e.strip:SetHeight(22)
     end
     if e.strip then e.strip:SetShown(not dialog and db.titleStyle == "phoenix") end
+    paintPanel(frame, e, dialog)
     if db.closeStyle == "phoenix" then closeButton(frame.CloseButton or frame.ClosePanelButton) end
     Skin:Register(frame, function(self)
         local now = M.db
@@ -224,6 +253,7 @@ local function unwindow(frame)
     end
     local e = extras[frame]
     if e and e.strip then e.strip:Hide() end
+    if e and e.panel then e.panel:Hide() end
     local close = frame.CloseButton or frame.ClosePanelButton
     if close and extras[close] then
         for _, getter in ipairs(CLOSE_ART) do
@@ -263,7 +293,7 @@ function M:Redress()
     return #list
 end
 function M:OnSettingChanged(path)
-    if path == "titleStyle" or path == "closeStyle" or path == "tabs" then self:Redress() end
+    if path == "titleStyle" or path == "closeStyle" or path == "tabs" or path == "panelIcons" then self:Redress() end
     self:Refresh()
 end
 function M.IsWindowOn(frame) return winOn[frame] and true or false end
