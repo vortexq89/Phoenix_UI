@@ -246,7 +246,11 @@ local ASIAN = { koKR = true, zhCN = true, zhTW = true }
 -- A number for display: "short" (12.3K), "full" (12,345) or "asian" (万/億). Never compared or added.
 function M:Number(n)
     local mode = self.db.numbers
-    if mode == "full" then return BreakUpLargeNumbers(n) end
+    if mode == "full" then
+        -- BreakUpLargeNumbers is Lua (string ops): a secret goes through the C-side AbbreviateNumbers instead
+        if ns.Secret.IsSecret(n) then return AbbreviateNumbers(n, M.AbbrevOptions(self.db.decimals)) end
+        return BreakUpLargeNumbers(n)
+    end
     if mode == "asian" then
         return AbbreviateNumbers(n, { locale = ASIAN[GetLocale()] and GetLocale() or "zhCN" })
     end
