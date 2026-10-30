@@ -23,6 +23,14 @@ local function lists()
     return out
 end
 
+M.LFG_BUTTONS = {
+    { { "SearchPanel", "SignUpButton" }, "primary" }, { { "SearchPanel", "BackButton" }, "secondary" },
+    { { "SearchPanel", "BackToGroupButton" }, "secondary" },
+    { { "CategorySelection", "FindGroupButton" }, "primary" }, { { "CategorySelection", "StartGroupButton" }, "secondary" },
+    { { "EntryCreation", "ListGroupButton" }, "primary" }, { { "EntryCreation", "CancelButton" }, "secondary" },
+    { { "ApplicationViewer", "BrowseGroupsButton" }, "secondary" }, { { "ApplicationViewer", "EditButton" }, "secondary" },
+    { { "ApplicationViewer", "RemoveEntryButton" }, "secondary" },
+}
 function M:SkinGroupFinder()
     local isOn = on()
     for _, box in pairs(lists()) do M.KitScrollBox(box, on, function(row, o) M.KitRow(row, o) end) end
@@ -34,6 +42,12 @@ function M:SkinGroupFinder()
     end
     M.SkinPopupButton(_G.LFDQueueFrameFindGroupButton, "primary", isOn)
     M.SkinPopupButton(_G.RaidFinderFrameFindRaidButton, "primary", isOn)
+    -- t146: the premade group pages kept Blizzard's red / grey buttons (Back, Sign Up, ...)
+    local lfg = _G.LFGListFrame
+    for _, spec in ipairs(M.LFG_BUTTONS) do
+        local b = lfg and M.FramePath(lfg, spec[1])
+        if b then M.SkinPopupButton(b, spec[2], isOn) end
+    end
     local pvp = _G.HonorFrame
     if pvp then M.SkinPopupButton(pvp.QueueButton, "primary", isOn) end
     local conq = _G.ConquestFrame

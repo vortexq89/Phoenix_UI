@@ -280,12 +280,24 @@ local function anchor()
     panel:SetPoint("TOPLEFT", PVEFrame, "TOPRIGHT", 6, 0)
 end
 
+-- t146: Blizzard's cross-faction tutorial (a gold HelpTip arrow at the search panel's right edge) sat under the
+-- Phoenix panel, its chevron poking out and its text showing through. While the panel is up it is hidden,
+-- not acknowledged, so the player's tutorial flags stay as they were.
+local function hideTip()
+    local search = LFGListFrame and LFGListFrame.SearchPanel
+    if not (panel and panel:IsShown() and search and HelpTip and HelpTip.Hide) then return end
+    local text = rawget(_G, "CROSS_FACTION_GROUP_FINDER_HELPTIP")
+    if text then HelpTip:Hide(search, text) end
+end
+M._HideTip = hideTip
+
 function M:ShowPanel(show)
     if show and not self.db.panel then show = false end
     if show then
         if not panel then build(); self:StylePanel() end
         anchor()
         panel:Show()
+        hideTip()
         self:Evaluate()
         self:RefreshPanel()
     elseif panel then
@@ -301,6 +313,7 @@ function M:EnablePanel()
         hooked = true
         search:HookScript("OnShow", function() if M:IsEnabled() then M:ShowPanel(true) end end)
         search:HookScript("OnHide", function() M:ShowPanel(false) end)
+        if LFGListSearchPanel_EvaluateTutorial then hooksecurefunc("LFGListSearchPanel_EvaluateTutorial", hideTip) end
         if search:IsVisible() then M:ShowPanel(true) end
     end
     attach()

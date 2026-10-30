@@ -7637,6 +7637,19 @@ try("icon glyphs are sized", function()
 end)
 
 -- t146 e: GameMenu buttons are ThreeSliceButtonTemplate (Left / Center / Right): every piece of the red atlas hides
+try("group finder hides the cross-faction tip under the panel", function()
+    local G = ns.modules.GroupFinder
+    local saved = { rawget(env, "HelpTip"), rawget(env, "CROSS_FACTION_GROUP_FINDER_HELPTIP") }
+    local hidden, acked
+    rawset(env, "HelpTip", { Hide = function(_, parent, text) hidden = text end, Acknowledge = function() acked = true end })
+    rawset(env, "CROSS_FACTION_GROUP_FINDER_HELPTIP", "tip")
+    G._HideTip() -- no panel yet: nothing happens
+    assert(hidden == nil, "tip hidden without the Phoenix panel")
+    rawset(env, "HelpTip", saved[1]); rawset(env, "CROSS_FACTION_GROUP_FINDER_HELPTIP", saved[2])
+    assert(not acked, "tutorial acknowledged (it must only be hidden)")
+    local src = io.open("Modules/Skins/GroupFinder.lua"):read("*a")
+    for _, k in ipairs({ "SignUpButton", "BackButton" }) do assert(src:find(k, 1, true), k .. " not skinned (t146)") end
+end)
 try("bag bar skinned with the micro menu", function()
     local Sk = ns.modules.Skins
     local b = CreateFrame("Button")

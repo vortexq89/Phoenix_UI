@@ -186,3 +186,10 @@ None of these appear in the t146 shots, so the comparison is code against Ellesm
 | Every "Best matches" row reads "Mythic+" | rows showed the activity's shortName, which is generic for keystones | keystone rows show the dungeon (full activity name without its "(Mythic Keystone)" suffix); other activities keep their short name, or the full name with its difficulty |
 | Blizzard text faintly visible through the Phoenix filters panel | panel background at 94 % | opaque by default (still adjustable) |
 | Back / Sign Up keep Blizzard's red and grey buttons; Blizzard's gold flyout chevron pokes into the panel's edge | not skinned / Blizzard's filter flyout | not changed this round: logged for the group finder skin pass |
+
+## 17. Group finder, open items from section 16
+
+| Item | Cause | Fix |
+|---|---|---|
+| Gold chevron poking into the Phoenix filters panel, "...are now" text showing through | Blizzard's cross-faction HelpTip (LFGListSearchPanel_EvaluateTutorial, anchored at the search panel's right edge) sat under the panel | hidden while the Phoenix panel is shown, again after Blizzard re-evaluates it; hidden, not acknowledged, so tutorial flags are untouched; harness test |
+| Back / Sign Up (and the other premade-group buttons) keep Blizzard's red and grey art | not in the skin list | Sign Up, Find a Group, List Group primary; Back, Back to Group, Start a Group, Cancel, Browse, Edit, Delist secondary (Phoenix popup button skin, restored with the skin off) |
