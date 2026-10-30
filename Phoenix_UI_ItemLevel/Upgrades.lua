@@ -4,7 +4,7 @@ local W, Secret = ns.Widgets, ns.Secret
 local M = ns:GetModule("ItemLevel")
 
 --[[ Upgrade planner: every equipped item's upgrade track and level ("Hero 3/6") read from the game's own tooltip
-    line, the steps left per item and per track. /pui itemlevel upgrades or the button on the Item Level page. ]]
+    line, the steps left per item and per track. the button on the Item Level page. ]]
 local SLOTS = { 1, 2, 3, 15, 5, 9, 10, 6, 7, 8, 11, 12, 13, 14, 16, 17 }
 
 -- Lua pattern from the game's format "Upgrade Level: %s %d/%d" -> captures track, level, max.
@@ -45,7 +45,22 @@ function M:UpgradeRows()
     return rows, left
 end
 
+-- Calculator: steps left per track -> crests needed and the average item level gained over all slots.
+function M.UpgradeCalc(left, crestCost, stepIlvl)
+    crestCost, stepIlvl = tonumber(crestCost) or 15, tonumber(stepIlvl) or 3
+    local out = { tracks = {}, steps = 0, crests = 0, gain = 0 }
+    for track, n in pairs(left or {}) do
+        out.tracks[#out.tracks + 1] = { track = track, steps = n, crests = n * crestCost }
+        out.steps = out.steps + n
+    end
+    table.sort(out.tracks, function(a, b) return a.track < b.track end)
+    out.crests = out.steps * crestCost
+    out.gain = math.floor(out.steps * stepIlvl / 16 * 10 + 0.5) / 10
+    return out
+end
+
 local win
+function M:RefreshUpgrades() if win and win:IsShown() then self:ShowUpgrades() end end
 function M:ShowUpgrades()
     if not win then
         win = W:Popup(L.ITEMLEVEL_UPGRADES, 420, 420, "itemlevel")
@@ -61,7 +76,15 @@ function M:ShowUpgrades()
     end
     if #lines == 0 then lines[1] = L.ITEMLEVEL_UPGRADES_NONE end
     lines[#lines + 1] = " "
-    for track, n in pairs(left) do lines[#lines + 1] = L.ITEMLEVEL_UPGRADES_LEFT:format(track, n) end
+    local calc = M.UpgradeCalc(left, self.db and self.db.crestCost, self.db and self.db.stepIlvl)
+    for _, t in ipairs(calc.tracks) do
+        lines[#lines + 1] = L.ITEMLEVEL_UPGRADES_LEFT:format(t.track, t.steps)
+            .. "  " .. L.ITEMLEVEL_UPGRADES_CRESTS:format(t.crests)
+    end
+    if calc.steps > 0 then
+        lines[#lines + 1] = " "
+        lines[#lines + 1] = L.ITEMLEVEL_UPGRADES_TOTAL:format(calc.steps, calc.crests, calc.gain)
+    end
     win.text:SetText(table.concat(lines, "\n"))
     win:Show()
     return win, rows

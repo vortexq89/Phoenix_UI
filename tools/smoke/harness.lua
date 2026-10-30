@@ -5710,6 +5710,16 @@ try("no feature needs a slash command (t191)", function()
     assert(ns.Launcher and ns.Launcher.FallbackMenuButton, "game menu fallback for older menus")
 end)
 
+try("upgrade calculator: crests and average gain", function()
+    local IL = ns.modules.ItemLevel
+    local c = IL.UpgradeCalc({ Hero = 4, Myth = 2 }, 15, 4)
+    assert(c.steps == 6 and c.crests == 90 and c.tracks[1].track == "Hero" and c.tracks[1].crests == 60, "calc totals")
+    assert(c.gain == 1.5, "average gain over 16 slots")
+    assert(IL.UpgradeCalc(nil).steps == 0, "empty")
+    local A = ns.modules.Automation
+    assert(A.PickupSmartMacro and A.OpenMacroWindow, "macro pick up and window buttons")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

@@ -14,7 +14,7 @@ local M = ns:NewModule("ItemLevel", {
         enabled = true, character = true, bags = true, inspect = true, flyout = true, loot = true, merchant = true,
         qualityColor = true, size = 12,
         text = Style.Text(12, { anchor = "TOPRIGHT", x = -1, y = -2, outline = "OUTLINE", shadow = false }),
-        track = false, enchant = false, gems = true, decimals = 1, statsPanel = false, statDR = true,
+        track = false, enchant = false, gems = true, decimals = 1, statsPanel = false, statDR = true, crestCost = 15, stepIlvl = 3,
     },
 })
 
@@ -307,6 +307,7 @@ local hooked
 function M:OnEnable()
     ns.Events:Listen("PUI_THEME_CHANGED", self, self.Refresh)
     ns.Events:On("ADDON_LOADED", self, hookInspect) -- Blizzard_InspectUI loads on demand
+    ns.Events:On("PLAYER_EQUIPMENT_CHANGED", self, function() if M.RefreshUpgrades then M:RefreshUpgrades() end end)
     if hooked then self:Refresh(); return end
     hooked = true
     hooksecurefunc("PaperDollItemSlotButton_Update", onSlotUpdate)
@@ -326,4 +327,5 @@ function M:Refresh()
     end
     eachBag(function(frame) if frame:IsShown() then onBagUpdate(frame) end end)
     if MerchantFrame and MerchantFrame:IsShown() then onMerchant() end
+    if M.RefreshUpgrades then M:RefreshUpgrades() end
 end
