@@ -151,3 +151,17 @@ that commit left:
 |---|---|---|
 | "2 bugs" segment shows a large red blob spilling past the bar | the new-error pulse halo is 2.4x the 12 px icon at 60 % alpha | a tighter (1.6x) and softer (40 %) halo that stays inside the bar |
 | FPS / ms / durability / clock segments | readable, aligned, icon + value + unit | no change |
+
+## 13. Group frames, cast bars, auras, cooldown text, damage meter, M+ (audit against EllesmereUI source)
+
+None of these appear in the t146 shots, so the comparison is code against EllesmereUI's source on the PC
+(read-only), not a side-by-side render.
+
+| System | EllesmereUI (source) | Phoenix | Finding |
+|---|---|---|---|
+| Group / raid frames | EUI_RaidFrames_*: per-role power, heal / heal-absorb / absorb bars, dispel overlay + border + icon, defensives / externals, leader / role / ready / summon / rez / ping icons, target and hover borders, party targets, pets, sort and group order | Unit Frames' build code + group parts: dispel highlight (border, overlay, gradient), defensives, externals, CC, private auras, role / leader / phase / ready / summon / rez / ping, heal prediction and absorbs (UnitFrames Update), target / focus highlight, tanks and assists, pets, sort / grouping order, markers, click casting | feature parity; no change. EUI's party "portrait" variants and top name bar are styles Phoenix does not offer (logged, not added: they are looks, not missing function) |
+| Cast bars | castbar colours (class, interrupt ready, mid-cast), kick tick, important glow, icon on portrait, hide when inactive | per-bar size / position / texture / spark / icon / shield / important fill + colour / kick colour / kick-ready tick / targeted / hold / flash / time format, GCD, latency, swing, empower stages, ticks, "on me" bars | parity, more than EUI (swing, GCD, empower, on-me); no change |
+| Auras | EUIAuraBuffReminders (reminders) and unit-frame aura rows | own headers: layout, sort, separate own, private auras, enchants, type border, swipe, duration format, colour by time; reminders live in Tracker | parity; no change |
+| Cooldown text | CooldownManager styling | font, size, colour by remaining, expiring, decimals, min duration, hide on auras | parity; no change |
+| Damage meter | its own meter windows (EUI_DamageMeters_Window.lua): bar height / spacing, class colours, icons, fonts, per-context hide, combat timer, window count | skins Blizzard's built-in meter: texture, fill, shade, backdrop, border, fonts; bar height, spacing, class colours, icons, visibility and extra windows stay in Edit Mode because calling the meter's own setters taints frames that handle secret values | gap by design: matching EUI means writing a Phoenix meter (a feature, not polish). Left for the owner to decide |
+| Mythic+ | EUIMythicTimer (present, not opened in detail this round) | timer with forces, bosses, deaths, best, splits, pull, chests, affix icons, death log; key insert, party keys, keys window, kick tracker | parity; no change |
