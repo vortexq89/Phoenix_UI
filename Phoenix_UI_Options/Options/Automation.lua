@@ -66,4 +66,10 @@ ns:RegisterOptions("Automation", {
     { type = "toggle", key = "junkWindow", label = "JUNK_WINDOW", desc = "JUNK_WINDOW_DESC",
       keywords = "junk grey gray poor sell destroy vendor trash" },
     { type = "button", label = "JUNK_OPEN", button = "JUNK_OPEN_BUTTON", icon = "gold", func = function(m) m:ShowJunk() end },
+    { type = "header", label = "AUTO_LOG", icon = "test" },
+    { type = "toggle", key = "autoLog", label = "AUTO_LOG_ON_LABEL", desc = "AUTO_LOG_DESC",
+      keywords = "combat log combatlog logging warcraftlogs" },
+    { type = "toggle", key = "autoLogMplus", label = "AUTO_LOG_MPLUS", disabled = function(m) return not m.db.autoLog end },
+    { type = "toggle", key = "autoLogRaid", label = "AUTO_LOG_RAID", disabled = function(m) return not m.db.autoLog end },
+    { type = "toggle", key = "autoLogDungeon", label = "AUTO_LOG_DUNGEON", disabled = function(m) return not m.db.autoLog end },
 })

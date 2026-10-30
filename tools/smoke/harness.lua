@@ -5645,6 +5645,18 @@ try("minimap button bin bar mode", function()
     MM:Refresh()
 end)
 
+try("auto combat logging", function()
+    local A = ns.modules.Automation
+    assert(A.db.autoLog == false and A.UpdateAutoLog, "auto log is off by default")
+    assert(not A:WantsLog("raid"), "off: never wants a log")
+    A.db.autoLog = true
+    assert(A:WantsLog("mplus") and A:WantsLog("raid") and not A:WantsLog("dungeon") and not A:WantsLog(nil), "content picks")
+    A:UpdateAutoLog()
+    A:OnSettingChanged("autoLog", true)
+    A.db.autoLog = false
+    A:UpdateAutoLog()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

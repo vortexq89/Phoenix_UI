@@ -41,7 +41,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | QoL movement alert | 27 | ✗ | B | |
 | QoL battle res | 7 | brez tracking present | E | |
 | QoL alerts | 14 | partial (Encounters 28) | E | |
-| QoL auto logging | 10 | ✗ | B | auto combat log in M+/raid |
+| QoL auto logging | 10 | Automation AutoLog | A | done: M+, raid, dungeon picks; only stops logs it started; live |
 | QoL cursor | 1 | cursor ring present | E | |
 | QoL raid tools | — | ready check / countdown partial | E | |
 | Quickdraw (hold-key action menu) | 45 | ✗ | B | |
