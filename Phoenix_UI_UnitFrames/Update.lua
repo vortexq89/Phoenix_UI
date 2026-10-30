@@ -1324,7 +1324,10 @@ function M:UpdateArena(f)
             f.Trinket.Icon:SetTexture(f.sample.trinketIcon or M.SAMPLE_ICONS.watch)
             if f.sample.trinketUsed then f.Trinket.Cooldown:SetCooldown(GetTime() - f.sample.trinketUsed, 120) end
         end
-        if u.spec then f.Spec.Icon:SetTexture(f.sample.specIcon or M.SAMPLE_ICONS.sentry) end
+        if u.spec then
+            f.Spec.Icon:SetTexture(f.sample.specIcon or M.SAMPLE_ICONS.sentry)
+            ns.SpecIcon:Apply(f.Spec.Icon, "global", f.sample.class)
+        end
         M.DrawSampleDR(f, u)
         return
     end
@@ -1344,7 +1347,10 @@ function M:UpdateArena(f)
         local specID = M.ArenaSpecID(f.unit)
         if specID then
             local _, _, _, icon = GetSpecializationInfoByID(specID)
-            if icon then f.Spec.Icon:SetTexture(icon) end
+            if icon then
+                f.Spec.Icon:SetTexture(icon)
+                ns.SpecIcon:Apply(f.Spec.Icon, "global", select(2, UnitClass(f.unit)))
+            end
         end
     end
 end

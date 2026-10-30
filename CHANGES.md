@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Spec icon styles** (t163): 15 looks for every spec icon Phoenix draws (damage meter, arena frames, group finder
+  applicants): Blizzard, zoomed, bordered, class outline, round, round with ring, hexagon, diamond, shield, octagon,
+  squircle, glossy 3D, ember frame, monochrome, class tint. Pick one in General (live gallery) or per meter.
 - **Damage meter, round 3** (t163): item level per player (after the name or in the tooltip; read from the game's inspect
   data out of combat), a standalone big fight timer (movable, combat-only option), name and value text offsets, icon
   borders (theme or class colour) and header colours (accent, class, custom or none, with a fill strength).

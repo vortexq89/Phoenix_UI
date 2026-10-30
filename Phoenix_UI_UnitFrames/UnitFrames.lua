@@ -563,6 +563,7 @@ end
 
 ---------------------------------------------------------------- lifecycle
 function M:OnEnable()
+    ns.Events:Listen("PUI_SPECICON_STYLE", self, function() self:Refresh() end) -- arena spec icons (UI/SpecIcon.lua)
     if self:IsPhoenix() then
         self:EnablePhoenix()  -- Spawn.lua
     else

@@ -18,3 +18,10 @@ folders named).
 ## Icons and media
 
 - Phosphor icons (MIT) - `Media/Icons/LICENSE`.
+
+## Spec icon styles (t163)
+
+The spec icon styles (UI/SpecIcon.lua) use the game's own spec icons as the client draws them; nothing is
+redistributed. Every mask, ring, frame and effect on top (diamond, shield, octagon, squircle masks and rings, gloss,
+inner shade, ember frame) is Phoenix's own, procedurally drawn by tools/media/gen_spec_icons.py (MIT). No third-party
+icon set is used: none of the WoW class/spec icon sets we found is CC0 or permissively licensed.

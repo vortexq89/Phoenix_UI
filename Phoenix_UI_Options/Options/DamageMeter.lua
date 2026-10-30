@@ -83,6 +83,13 @@ local rows = {
     meter({ type = "toggle", key = "meter.nameClassColor", label = "DM_NAME_CLASS" }),
     meter({ type = "toggle", key = "meter.valueClassColor", label = "DM_VALUE_CLASS" }),
     meter({ type = "toggle", key = "meter.specIcon", label = "DM_SPEC_ICON" }),
+    meter({ type = "select", key = "meter.iconStyle", label = "SPECICON_STYLE", desc = "DM_ICON_STYLE_DESC",
+      values = ns.SpecIcon.Values(true), disabled = function(m) return not m.db.meter.specIcon end }),
+    meter({ type = "custom", label = "SPECICON_SAMPLES", build = function(row)
+        local dm = ns.modules.DamageMeter
+        return ns.SpecIcon.Strip(row, function() return ns.SpecIcon.Resolve(dm.db.meter.iconStyle) end,
+            function(v) ns.DB:Set(dm, "meter.iconStyle", v); dm:Refresh() end)
+    end }),
     meter({ type = "select", key = "meter.iconBorder", label = "DM_ICON_BORDER", values = {
         { value = "none", label = "DM_BORDER_NONE" }, { value = "theme", label = "DM_BORDER_THEME" },
         { value = "class", label = "DM_COLOR_CLASS" },

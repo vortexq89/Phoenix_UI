@@ -1,6 +1,6 @@
 # Damage meter: item level and spec icon styles (t161 A) - spec
 
-Status: §1 item level built (t163, Phoenix_UI_DamageMeter/Extras.lua). §2 spec icon styles approved by the owner; in progress.
+Status: §1 item level built (t163, Phoenix_UI_DamageMeter/Extras.lua). §2 spec icon styles built (t163, UI/SpecIcon.lua): 15 styles (Blizzard + 14 Phoenix-made), a shared picker in General with a live gallery, and a per-meter override; also used by arena spec icons and group finder applicants.
 
 ## 1. Item level per player
 * Source: `C_PaperDollInfo.GetInspectItemLevel(unit)` after `NotifyInspect(unit)` / `INSPECT_READY`, and

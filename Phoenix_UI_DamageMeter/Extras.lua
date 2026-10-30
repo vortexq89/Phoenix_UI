@@ -171,6 +171,7 @@ end
 ---------------------------------------------------------------- lifecycle
 function M:SetupExtras()
     ns.Events:On("INSPECT_READY", OWNER, inspected)
+    ns.Events:Listen("PUI_SPECICON_STYLE", OWNER, function() M:RefreshMeter() end)
     for _, e in ipairs({ "GROUP_ROSTER_UPDATE", "PLAYER_REGEN_ENABLED" }) do
         ns.Events:On(e, OWNER, function() M:ScanItemLevels() end)
     end

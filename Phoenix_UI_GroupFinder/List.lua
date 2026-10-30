@@ -219,12 +219,13 @@ function M:DecorateApplicant(member, appID, memberIdx)
     local icon = db.applicantSpec and type(specID) == "number" and select(4, GetSpecializationInfoByID(specID))
     if icon and member.Name then
         d.spec:SetTexture(icon)
-        Skin:IconZoom(d.spec, 0.08)
+        ns.SpecIcon:Apply(d.spec, "global")
         d.spec:ClearAllPoints()
         d.spec:SetPoint("RIGHT", member.Name, "LEFT", -2, 0)
         d.spec:Show()
     else
         d.spec:Hide()
+        ns.SpecIcon:SetShown(d.spec, false)
     end
     -- highlight applicants at or over your score line
     if db.applicantMinScore > 0 and type(score) == "number" and score >= db.applicantMinScore then

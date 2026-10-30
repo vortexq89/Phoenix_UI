@@ -28,6 +28,7 @@ local M = ns:NewModule("General", {
             powerColors = POWER_DEFAULTS, dispelColors = DISPEL_DEFAULTS,
         },
         blizzardFonts = true, mute = "",
+        specIconStyle = "zoomed", -- the shared spec icon look (UI/SpecIcon.lua); sites may override it
         -- Phoenix's UI scale (UIParent), below the game's 64 % floor too. Off: the game's own setting rules.
         scale = { enabled = false, auto = true, value = 0.71 },
     },
@@ -128,6 +129,11 @@ function M:OnInitialize()
     for _, ev in ipairs({ "PLAYER_ENTERING_WORLD", "UI_SCALE_CHANGED", "DISPLAY_SIZE_CHANGED" }) do
         ns.Events:On(ev, self, function() if self.db.scale.enabled then self:ApplyScale() end end)
     end
+end
+
+function M:OnSettingChanged(path)
+    if path == "specIconStyle" then return ns.Events:Fire("PUI_SPECICON_STYLE") end
+    self:Refresh()
 end
 
 function M:Refresh()

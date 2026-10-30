@@ -350,6 +350,7 @@ function M:StyleRow(r, y, width)
     r.sheen:SetColorTexture(1, 1, 1, db.sheen and 0.06 or 0)
     r.icon:SetSize(h - 2, h - 2)
     r.icon:SetShown(db.specIcon)
+    if not db.specIcon then ns.SpecIcon:SetShown(r.icon, false) end
     local left = db.specIcon and h + 2 or 4
     r.rank:ClearAllPoints()
     r.rank:SetShown(db.rank)
@@ -403,8 +404,13 @@ function M:PaintSource(r, mode, src, maxAmount, rank)
     local cr, cg, cb = barColor(class)
     r:SetStatusBarColor(cr, cg, cb, db.barAlpha)
     if db.specIcon then
-        if src.specIconID and src.specIconID ~= 0 then r.icon:SetTexture(src.specIconID); r.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-        else r.icon:SetTexture(nil) end
+        if src.specIconID and src.specIconID ~= 0 then
+            r.icon:SetTexture(src.specIconID)
+            ns.SpecIcon:Apply(r.icon, db.iconStyle, class)
+        else
+            r.icon:SetTexture(nil)
+            ns.SpecIcon:SetShown(r.icon, false)
+        end
     end
     if db.specIcon and db.iconBorder ~= "none" then M.PaintIconBorder(r.iconFrame, db.iconBorder, class) end
     if db.ilvl == "name" then

@@ -8116,6 +8116,22 @@ end)
 
 -- Phoenix damage meter (docs/DAMAGE_METER.md): rows from C_DamageMeter, secret amounts and names only reach sinks;
 -- breakdown, targets, compare, graph, report, recap, filters, pinning, presets and keys
+try("spec icon styles", function()
+    local SI = ns.SpecIcon
+    assert(#SI.styles >= 13 and SI.byKey.blizzard, "spec icon styles")
+    local f = env.CreateFrame("Frame")
+    local tex = f:CreateTexture()
+    for _, s in ipairs(SI.styles) do SI:Apply(tex, s.key, "MAGE"); SI:Apply(tex, s.key, nil) end
+    SI:SetShown(tex, false)
+    local G = ns.modules.General
+    ns.DB:Set(G, "specIconStyle", "hex"); G:OnSettingChanged("specIconStyle")
+    assert(SI.Resolve("global") == "hex" and SI.Resolve("round") == "round" and SI.Resolve("bogus") == "hex", "resolve")
+    local strip = SI.Strip(env.CreateFrame("Frame"))
+    assert(#strip.cells == #SI.styles, "gallery")
+    ns.DB:Set(G, "specIconStyle", "zoomed"); G:OnSettingChanged("specIconStyle")
+    assert(#SI.Values(true) == #SI.styles + 1, "values")
+end)
+
 try("phoenix damage meter", function()
     local DM = ns.modules.DamageMeter
     ns.Util.MergeDefaults(DM.db, DM.defaults) -- PLAYER_LOGOUT above stripped the saved settings
