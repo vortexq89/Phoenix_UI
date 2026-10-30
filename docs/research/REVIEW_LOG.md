@@ -87,3 +87,15 @@ short channels, keyword alerts, history, copy, whisper sound, hyperlink hover to
 | Edit box | top/bottom, skin, arrow keys, history | parity | none |
 | Links | armory link in menus | missing: ElvUI hyperlink hover tooltips | new "Link tooltips on hover" (on by default): item / spell / achievement / quest / currency and similar links show their tooltip; player, URL and addon links are left alone |
 | Class-coloured names | Blizzard's own setting | ElvUI duplicates it | none (no duplicate) |
+
+## 6-10. Bags, tooltips, minimap, skins, combat text (audit only)
+
+Compared against EllesmereUI's documented feature set and ElvUI's (PC offline, so no in-game side by side).
+
+| System | Phoenix covers | Finding |
+|---|---|---|
+| Bags | Blizzard / combined / category views, columns, slot size, reagents, category sort, empty slots, search, sort button + reverse sort (Blizzard direction), footer, currencies, free count, bag bar, quality, junk dim, new glow, bind text, cooldowns, upgrade arrows, sim arrows, bank / warband bank, auto open, item level, sell junk | parity with both; no change |
+| Tooltips | IDs (8 kinds), skin, health bar, class / quality borders, fonts, cursor anchor + offsets, scale, combat hide with modifier, class / reaction names, guild rank, realm, PvP, target, targeted by, role, inspect (spec / ilvl), mount, item count, vendor price, collected, keystone, M+ rating, sim / BiS lines | parity, more than both (sim / BiS); no change |
+| Minimap | round / square / rectangle, zone text, clock, coordinates, calendar, tracking, mail, crafting orders, difficulty, expansion button, compartment, wheel / auto zoom, button bin, ping names, world map coords / scale, zone levels, map reveal; size via Edit Mode | parity; no change |
+| Skins | 40+ Blizzard windows, own replacements for many, title / close styles, tabs, movable windows | parity with ElvUI skins; no change |
+| Combat text | scroll areas with anim / direction / alignment / duration / scale / colour / icons / position, merge, throttle, combat only, crits with scale / area / sound, damage font | more than both (ElvUI has none; EUI has damage font only); no change |
