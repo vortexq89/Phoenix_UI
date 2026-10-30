@@ -38,7 +38,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | Group finder | 5 | 50 | A | |
 | Tooltip | in General | 42 | A | |
 | QoL (general) | 66 | Automation 27 + General 23 | B | |
-| QoL movement alert | 27 | ✗ | B | |
+| QoL movement alert | 27 | Tracker Mobility | A | done: class movement spell icon with cooldown, mover, live |
 | QoL battle res | 7 | brez tracking present | E | |
 | QoL alerts | 14 | partial (Encounters 28) | E | |
 | QoL auto logging | 10 | Automation AutoLog | A | done: M+, raid, dungeon picks; only stops logs it started; live |

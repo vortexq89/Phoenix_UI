@@ -5657,6 +5657,17 @@ try("auto combat logging", function()
     A:UpdateAutoLog()
 end)
 
+try("movement alert", function()
+    local T = ns.modules.Tracker
+    assert(T.db.mobility.enabled == false and T.MOBILITY.MAGE, "movement alert is off by default")
+    assert(T.MobilitySpell("NOPE") == nil, "unknown class: no spell")
+    T:RefreshMobility(true)
+    T.db.mobility.enabled = true
+    T:RefreshMobility()
+    T.db.mobility.enabled = false
+    T:RefreshMobility()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

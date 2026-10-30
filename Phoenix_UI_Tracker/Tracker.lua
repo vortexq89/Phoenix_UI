@@ -80,6 +80,7 @@ local M = ns:NewModule("Tracker", {
             size = 36, point = "TOP", x = 0, y = -180,
             custom = "", groupBuffs = false, style = "icons",
         },
+        mobility = { enabled = false, size = 40, point = "CENTER", x = 0, y = -140 },
         auraBars = {
             enabled = false, list = "", width = 200, height = 18, spacing = 2, grow = "DOWN",
             point = "CENTER", x = 0, y = -220,
@@ -267,6 +268,7 @@ function M:OnEnable()
     self:EnableCustom()  -- Custom.lua
     self:EnableReminders() -- Reminders.lua
     self:EnableAuraBars() -- AuraBars.lua
+    self:EnableMobility() -- Mobility.lua
     for _, ev in ipairs({ "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD", "PLAYER_TARGET_CHANGED",
         "PLAYER_MOUNT_DISPLAY_CHANGED", "UNIT_ENTERED_VEHICLE", "UNIT_EXITED_VEHICLE", "PLAYER_SPECIALIZATION_CHANGED" }) do
         self:On(ev, onState)
@@ -285,6 +287,7 @@ function M:OnDisable()
     self:DisableCustom()
     self:DisableReminders()
     self:DisableAuraBars()
+    self:DisableMobility()
 end
 
 function M:Refresh()
@@ -292,6 +295,7 @@ function M:Refresh()
     self:RefreshCustom()
     self:RefreshReminders()
     self:RefreshAuraBars()
+    self:RefreshMobility()
     self:ApplyVisibility()
     if self.testShown then self:DrawTest() end
 end
