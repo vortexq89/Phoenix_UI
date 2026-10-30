@@ -5720,6 +5720,14 @@ try("upgrade calculator: crests and average gain", function()
     assert(A.PickupSmartMacro and A.OpenMacroWindow, "macro pick up and window buttons")
 end)
 
+try("what's new: full changelog and auto toggle", function()
+    assert(type(ns.CHANGELOG) == "table" and #ns.CHANGELOG > 0 and #ns.CHANGELOG[1].items > 0, "changelog data")
+    assert(ns.ChangelogText():find(ns.CHANGELOG[1].version, 1, true), "text has versions")
+    assert(ns.ShowChangelog(), "popup opens")
+    local g = { seenVersion = "0", whatsNewOff = true }
+    assert(ns.WhatsNew.WhatsNewDue(g) == false and g.seenVersion == ns.version, "off skips popup")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

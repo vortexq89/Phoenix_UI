@@ -35,5 +35,6 @@ Core\Core.xml
 UI\UI.xml
 Modules\Modules.xml
 Sim\Results.lua
+Core\Changelog.lua
 Core\Init.lua
 UI\MinimapButton.lua

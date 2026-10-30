@@ -418,6 +418,10 @@ local T = {
     MOVERS_EDITMODE = "Feche primeiro o Modo de Edição da Blizzard: os dois modos se sobrepõem.",
     WHATS_NEW_TITLE = "Novidades da %s",
     WHATS_NEW_OK = "Entendi",
+    WHATS_NEW_ALL = "Registro completo de mudanças",
+    WHATS_NEW_ALL_DESC = "Cada versão do Phoenix e suas novidades, da mais recente.",
+    WHATS_NEW_AUTO = "Mostrar novidades após atualizar",
+    WHATS_NEW_AUTO_DESC = "Abre a janela de novidades uma vez após atualizar o Phoenix.",
     WHATS_NEW_BODY = "- A janela de opções mantém um tamanho, nunca cobre a tela, e o Início agrupa os módulos como a barra lateral.\n- Clique em uma parte da prévia para mudar tamanho e layout ali mesmo; \"Tamanho e posição\" está em toda prévia.\n- Modo de layout: a engrenagem de um quadro agora tem Âncora e X / Y.\n- Novo: mover janelas da Blizzard (Shift+arrastar), XP de missões na barra de XP, lista de alts no correio.\n- Tamanhos de texto mais claros; amostras pequenas preenchem a prévia.",
     MOVERS_COMBAT_LOCKED = "Combate iniciado – movedores travados. Suas posições estão salvas.",
     ---------------------------------------------------------------- Cooldown text

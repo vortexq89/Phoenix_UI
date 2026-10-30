@@ -418,6 +418,10 @@ local T = {
     MOVERS_EDITMODE = "Schließe zuerst den Blizzard-Bearbeitungsmodus - die beiden Layoutmodi überlagern sich.",
     WHATS_NEW_TITLE = "Neu in %s",
     WHATS_NEW_OK = "Verstanden",
+    WHATS_NEW_ALL = "Vollständiges Änderungsprotokoll",
+    WHATS_NEW_ALL_DESC = "Jede Phoenix-Version und ihre Neuerungen, neueste zuerst.",
+    WHATS_NEW_AUTO = "Neuerungen nach Updates zeigen",
+    WHATS_NEW_AUTO_DESC = "Öffnet das Neuerungen-Fenster einmal nach einem Phoenix-Update.",
     WHATS_NEW_BODY = "- Das Einstellungsfenster behält eine Größe, verdeckt nie den Bildschirm, und die Startseite gruppiert Module wie die Seitenleiste.\n- Klicke auf einen Teil der Vorschau, um Größe und Anordnung direkt zu ändern; \"Größe & Position\" gibt es bei jeder Vorschau.\n- Layoutmodus: Das Zahnrad eines Rahmens hat jetzt Anker und X / Y.\n- Neu: Blizzard-Fenster verschieben (Umschalt+Ziehen), Quest-EP auf der EP-Leiste, Twinkliste in der Post.\n- Klarere Schriftgrößen; kleine Beispiele füllen ihre Vorschau.",
     MOVERS_COMBAT_LOCKED = "Kampf begonnen – Verschieber gesperrt. Deine Positionen sind gespeichert.",
     ---------------------------------------------------------------- Cooldown text

@@ -418,6 +418,10 @@ local T = {
     MOVERS_EDITMODE = "Fermez d'abord le mode Édition de Blizzard : les deux modes se superposent.",
     WHATS_NEW_TITLE = "Nouveautés de %s",
     WHATS_NEW_OK = "Compris",
+    WHATS_NEW_ALL = "Journal complet",
+    WHATS_NEW_ALL_DESC = "Chaque version de Phoenix et ses nouveautés, la plus récente d'abord.",
+    WHATS_NEW_AUTO = "Afficher les nouveautés après une mise à jour",
+    WHATS_NEW_AUTO_DESC = "Ouvre la fenêtre des nouveautés une fois après une mise à jour de Phoenix.",
     WHATS_NEW_BODY = "- La fenêtre d'options garde une taille, ne couvre jamais l'écran, et l'Accueil groupe les modules comme la barre latérale.\n- Cliquez sur une partie de l'aperçu pour changer sa taille et sa disposition sur place ; \"Taille et position\" est sur chaque aperçu.\n- Mode disposition : l'engrenage d'un cadre a maintenant Ancrage et X / Y.\n- Nouveau : déplacer les fenêtres Blizzard (Maj+glisser), XP de quêtes sur la barre d'XP, liste des alts dans le courrier.\n- Tailles de texte plus nettes ; les petits exemples remplissent leur aperçu.",
     MOVERS_COMBAT_LOCKED = "Combat engagé – Déplaceurs verrouillés. Vos positions sont enregistrées.",
     ---------------------------------------------------------------- Cooldown text

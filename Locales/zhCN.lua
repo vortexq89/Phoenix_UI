@@ -418,6 +418,10 @@ local T = {
     MOVERS_EDITMODE = "请先关闭暴雪编辑模式，两种布局模式会重叠。",
     WHATS_NEW_TITLE = "%s 新内容",
     WHATS_NEW_OK = "知道了",
+    WHATS_NEW_ALL = "完整更新日志",
+    WHATS_NEW_ALL_DESC = "每个 Phoenix 版本及其新增内容，最新在前。",
+    WHATS_NEW_AUTO = "更新后显示新内容",
+    WHATS_NEW_AUTO_DESC = "Phoenix 更新后打开一次新内容窗口。",
     WHATS_NEW_BODY = "- 设置窗口保持固定大小，不会遮住屏幕，主页像侧栏一样分组显示模块。\n- 点击预览的任意部分即可就地调整其大小和布局；每个预览上都有\"大小和位置\"。\n- 布局模式：框体的齿轮现在有锚点和 X / Y。\n- 新增：移动暴雪窗口（Shift+拖动）、经验条上的任务经验、邮件中的小号列表。\n- 更清晰的字号；小示例会填满预览。",
     MOVERS_COMBAT_LOCKED = "进入战斗——框体移动已锁定。你的位置已保存。",
     ---------------------------------------------------------------- Cooldown text

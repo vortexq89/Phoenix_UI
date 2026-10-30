@@ -69,7 +69,8 @@ local function slash(msg)
 end
 
 --[[ "What's new" after an update: once per version, a few lines on what changed (L.WHATS_NEW_BODY), shown a
-    few seconds after login, never in combat and never on a first install. /pui whatsnew opens it again. ]]
+    few seconds after login, never in combat and never on a first install.
+    About > What's new opens it again; Full changelog lists every version. ]]
 local whatsNew
 function Init.ShowWhatsNew() return ns.ShowWhatsNew() end
 function ns.ShowWhatsNew()
@@ -84,12 +85,43 @@ function ns.ShowWhatsNew()
         whatsNew.ok = W:Button(whatsNew, L.WHATS_NEW_OK, "primary", "check", 120)
         whatsNew.ok:SetPoint("BOTTOMRIGHT", -16, 14)
         whatsNew.ok.onClick = function() whatsNew:Hide() end
+        whatsNew.all = W:Button(whatsNew, L.WHATS_NEW_ALL, "ghost", "bell", 150)
+        whatsNew.all:SetPoint("RIGHT", whatsNew.ok, "LEFT", -8, 0)
+        whatsNew.all.onClick = function() whatsNew:Hide(); ns.ShowChangelog() end
     end
     ns.DB.sv.global.seenVersion = ns.version
     whatsNew:Show()
     return whatsNew
 end
+-- Every version in CHANGES.md (Core/Changelog.lua), newest first, in a scrolling popup.
+function ns.ChangelogText(log)
+    local lines = {}
+    for _, v in ipairs(log or ns.CHANGELOG or {}) do
+        lines[#lines + 1] = "|cffffd15a" .. v.version .. "|r"
+        for _, item in ipairs(v.items) do lines[#lines + 1] = "  - " .. item end
+        lines[#lines + 1] = " "
+    end
+    return table.concat(lines, "\n")
+end
+local changelog
+function ns.ShowChangelog()
+    local W = ns.Widgets
+    if not changelog then
+        changelog = W:Popup(L.WHATS_NEW_ALL, 560, 460, "bell")
+        local s = W:Scroll(changelog)
+        s:SetPoint("TOPLEFT", 18, -46); s:SetPoint("BOTTOMRIGHT", -24, 16)
+        local body = W.Text(s.child, "body", "text.primary")
+        body:SetPoint("TOPLEFT"); body:SetWidth(510); body:SetJustifyH("LEFT"); body:SetSpacing(3)
+        body:SetText(ns.ChangelogText())
+        s.child:SetSize(510, (body:GetStringHeight() or 400) + 8)
+        if s.UpdateBar then s:UpdateBar() end
+        changelog.scroll, changelog.body = s, body
+    end
+    changelog:Show()
+    return changelog
+end
 Init.WhatsNewDue = function(g)
+    if g.whatsNewOff then g.seenVersion = ns.version; return false end -- the user turned the popup off
     if not g.seenVersion then g.seenVersion = ns.version; return false end -- first install: nothing is "new"
     return g.seenVersion ~= ns.version
 end

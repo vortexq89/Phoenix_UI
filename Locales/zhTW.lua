@@ -418,6 +418,10 @@ local T = {
     MOVERS_EDITMODE = "請先關閉暴雪編輯模式，兩種版面模式會重疊。",
     WHATS_NEW_TITLE = "%s 新內容",
     WHATS_NEW_OK = "知道了",
+    WHATS_NEW_ALL = "完整更新日誌",
+    WHATS_NEW_ALL_DESC = "每個 Phoenix 版本及其新增內容，最新在前。",
+    WHATS_NEW_AUTO = "更新後顯示新內容",
+    WHATS_NEW_AUTO_DESC = "Phoenix 更新後開啟一次新內容視窗。",
     WHATS_NEW_BODY = "- 設定視窗保持固定大小，不會遮住螢幕，首頁像側欄一樣分組顯示模組。\n- 點擊預覽的任意部分即可就地調整其大小和配置；每個預覽上都有\"大小與位置\"。\n- 版面模式：框架的齒輪現在有錨點和 X / Y。\n- 新增：移動暴雪視窗（Shift+拖曳）、經驗條上的任務經驗、郵件中的分身列表。\n- 更清晰的字級；小範例會填滿預覽。",
     MOVERS_COMBAT_LOCKED = "進入戰鬥——框架移動已鎖定。你的位置已儲存。",
     ---------------------------------------------------------------- Cooldown text

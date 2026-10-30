@@ -53,7 +53,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | Friends | 1 | Friends skin | E | |
 | Chrome icons (micro menu, window medallions) | flat micro buttons | Ember Bevel set: 76 icons + 28 medallions, 4 states, 16 px variant (t169) | A | t169: rail, tabs, page tile, window controls, macro window and 20+ window medallions wired; flat switch |
 | Colours / fonts / textures / glows / style | 21 + 6 + 6 + 2 | Appearance page, Theme presets, media library, Phoenix Font | A | |
-| What's new | 1 | ✗ | B | in-game changelog page |
+| What's new | 1 | popup once per update (off switch in About), Full changelog popup with every version from CHANGES.md (tools/gen_changelog.py), opened from the popup and About | A | changelog item titles are English (generated from CHANGES.md) |
 | Gamepad | 1 | ✗ | B | |
 | Combat text | — | 26 | A | |
 | Encounters, PvP, AFK, Item level, Sim, Spell history, Bugs | — | yes | A | Phoenix-only |
