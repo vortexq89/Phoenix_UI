@@ -3,6 +3,9 @@
 ## 2.0.0-beta1
 
 ### New
+- **Public plugin API** (t162): global read-only `PhoenixUI` table, versioned (API 1.0) — register plugins with
+  settings pages, Layout-mode movers, theme/font access, events and after-combat queueing. Guide and a sample
+  plugin in docs/PLUGIN_API.md and docs/samples/Phoenix_UI_Hello.
 - **Phoenix damage meter** (both clients, t158): Phoenix's own meter windows, read from Blizzard's damage meter data
   (C_DamageMeter, the same source EllesmereUI uses), replacing Blizzard's window while on. Up to three windows, each
   a Layout-mode mover with its own mode (damage, DPS, healing, HPS, absorbs, interrupts, dispels, deaths, damage

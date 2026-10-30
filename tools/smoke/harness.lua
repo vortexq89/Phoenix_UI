@@ -8030,6 +8030,52 @@ try("phoenix font and expressway", function()
     assert(not M.FontLoads("") and not M.FontLoads(nil), "the font probe accepts an empty path")
 end)
 
+-- Public plugin API (Core/API.lua, docs/PLUGIN_API.md): a third-party plugin registered after login
+try("public plugin API", function()
+    for _, mod in ipairs(ns.moduleList) do ns.Util.MergeDefaults(mod.db, mod.defaults) end -- after PLAYER_LOGOUT's strip
+    local P = env.PhoenixUI
+    assert(P and P.API_MAJOR == 1 and P:Supports(1, 0) and not P:Supports(2), "API version")
+    assert(not pcall(function() env.PhoenixUI.RegisterPlugin = nil end), "API must be read-only")
+    assert(not pcall(P.RegisterPlugin, P, "bad key!", {}), "bad key accepted")
+    assert(not pcall(P.RegisterPlugin, P, "Test_Major", { apiMajor = 9 }), "wrong major accepted")
+    local enabled, refreshed = 0, 0
+    local m = P:RegisterPlugin("Test_Hello", {
+        label = "Hello", desc = "Sample plugin", category = "utility", apiMajor = 1,
+        defaults = { size = 20, text = { show = true } },
+        OnEnable = function() enabled = enabled + 1 end,
+        Refresh = function() refreshed = refreshed + 1 end,
+    })
+    assert(m.db and m.db.size == 20 and m.db.text.show == true, "plugin settings not bound")
+    assert(m:IsEnabled() and enabled == 1, "plugin not enabled after login")
+    assert(P:GetPlugin("Test_Hello") == m and P:GetPlugin("DamageMeter") == nil, "GetPlugin")
+    assert(not pcall(P.RegisterPlugin, P, "Test_Hello", {}), "duplicate key accepted")
+    P:RegisterSettings("Test_Hello", {
+        { type = "header", label = "General" },
+        { type = "range", key = "size", label = "Size", min = 10, max = 40, step = 1 },
+    })
+    assert(ns.options.Test_Hello and #ns.options.Test_Hello == 2, "plugin settings page")
+    ns.DB:Set(m, "size", 30)
+    assert(m.db.size == 30 and refreshed >= 1, "setting is not live")
+    local f = env.CreateFrame("Frame", nil, env.UIParent)
+    assert(P:RegisterMover("Test_Hello.frame", f, "Hello"), "mover")
+    local r, g, b = P:Color("accent.primary")
+    assert(type(r) == "number" and type(g) == "number" and type(b) == "number", "theme colour")
+    local font, size = P:Font("body")
+    assert(type(font) == "string" and font:find("Phoenix") and size == 15, "font role")
+    assert(type(P:BarTexture()) == "string", "bar texture")
+    P:StylePanel(f, "raised")
+    local t = P:CreateText(f, "small", "text.primary")
+    assert(t and t.SetText, "text")
+    assert(P:IsSecret(5) == false, "IsSecret")
+    local ran = false
+    P:AfterCombat("test.api", function() ran = true end)
+    assert(ran, "AfterCombat out of combat")
+    ns:SetModuleEnabled("Test_Hello", false)
+    assert(not m:IsEnabled(), "plugin live off")
+    ns:SetModuleEnabled("Test_Hello", true)
+    assert(m:IsEnabled() and enabled == 2, "plugin live on")
+end)
+
 -- Phoenix damage meter (docs/DAMAGE_METER.md): rows from C_DamageMeter, secret amounts and names only reach sinks;
 -- breakdown, targets, compare, graph, report, recap, filters, pinning, presets and keys
 try("phoenix damage meter", function()

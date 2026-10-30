@@ -23,6 +23,7 @@ globals = {
   "PhoenixUISimDB", -- sim requests and results (account-wide; read by the Phoenix app)
   "PhoenixUISimResults", -- written by the Phoenix app into Sim/Results.lua; imported and cleared at login
   "PhoenixUI_QuestData", -- the load-on-demand Phoenix_UI_Data addon's tables (Phoenix_UI_Data/Data.lua)
+  "PhoenixUI", -- the public plugin API (Core/API.lua, docs/PLUGIN_API.md)
   "PhoenixUI_Bridge", -- set only during Phoenix_UI's LoadAddOn("Phoenix_UI_Options") call (UI/Launcher.lua)
 }
 

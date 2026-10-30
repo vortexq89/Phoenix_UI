@@ -11,20 +11,27 @@ local U = ns.Util
 
 local DEFAULT_PROFILE = "Default"
 
-local function bindModules(self)
-    local profile = self.profile
+local function bindModule(self, m)
+    local profile, global = self.profile, self.sv.global
     profile.modules = profile.modules or {}
-    local global = self.sv.global
     global.modules = global.modules or {}
-    for _, m in ipairs(ns.moduleList) do
-        local key = m.key
-        profile.modules[key] = U.MergeDefaults(type(profile.modules[key]) == "table" and profile.modules[key] or {}, m.defaults)
-        m.db = profile.modules[key]
-        if m.globalDefaults then
-            global.modules[key] = U.MergeDefaults(type(global.modules[key]) == "table" and global.modules[key] or {}, m.globalDefaults)
-            m.global = global.modules[key]
-        end
+    local key = m.key
+    profile.modules[key] = U.MergeDefaults(type(profile.modules[key]) == "table" and profile.modules[key] or {}, m.defaults)
+    m.db = profile.modules[key]
+    if m.globalDefaults then
+        global.modules[key] = U.MergeDefaults(type(global.modules[key]) == "table" and global.modules[key] or {}, m.globalDefaults)
+        m.global = global.modules[key]
     end
+end
+
+local function bindModules(self)
+    for _, m in ipairs(ns.moduleList) do bindModule(self, m) end
+end
+
+-- A module created after login (a load-on-demand or third-party plugin, Core/API.lua) joins the active profile.
+function DB:BindModule(m)
+    if self.profile then bindModule(self, m) return true end
+    return false
 end
 
 local function stripModules(self)

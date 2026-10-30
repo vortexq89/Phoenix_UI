@@ -1,0 +1,6 @@
+## Interface: 120000
+## Title: Phoenix UI - Hello (sample plugin)
+## Notes: Sample third-party plugin for the Phoenix UI public API.
+## Dependencies: Phoenix_UI
+## SavedVariables: PhoenixUIHelloDB
+Hello.lua

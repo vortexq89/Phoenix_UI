@@ -22,4 +22,5 @@
     <Script file="Weekly.lua"/>
     <Script file="Diag.lua"/>
     <Script file="DevDiag.lua"/>
+    <Script file="API.lua"/>
 </Ui>
