@@ -165,3 +165,9 @@ None of these appear in the t146 shots, so the comparison is code against Ellesm
 | Cooldown text | CooldownManager styling | font, size, colour by remaining, expiring, decimals, min duration, hide on auras | parity; no change |
 | Damage meter | its own meter windows (EUI_DamageMeters_Window.lua): bar height / spacing, class colours, icons, fonts, per-context hide, combat timer, window count | skins Blizzard's built-in meter: texture, fill, shade, backdrop, border, fonts; bar height, spacing, class colours, icons, visibility and extra windows stay in Edit Mode because calling the meter's own setters taints frames that handle secret values | gap by design: matching EUI means writing a Phoenix meter (a feature, not polish). Left for the owner to decide |
 | Mythic+ | EUIMythicTimer (present, not opened in detail this round) | timer with forces, bosses, deaths, best, splits, pull, chests, affix icons, death log; key insert, party keys, keys window, kick tracker | parity; no change |
+
+## 14. Chat, round 2 (shot 222322, bottom left)
+
+| Defect seen | Cause | Fix |
+|---|---|---|
+| Blizzard tab art, edit box border and window chrome | "Style chat windows" and "Style the edit box" defaulted off, so a new install showed Blizzard's chat | both default on (EllesmereUI and ElvUI style chat out of the box); a player who switched them off keeps that |

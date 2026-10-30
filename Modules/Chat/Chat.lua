@@ -24,7 +24,7 @@ local M = ns:NewModule("Chat", {
         messages = Style.Text(14, { outline = "NONE", shadow = true }),  -- size stays the chat window's own
         tabs = Style.Text(11),
         -- window
-        skinWindows = false,
+        skinWindows = true, -- t146: Blizzard's chat art showed by default (EllesmereUI and ElvUI style it out of the box)
         background = Style.Background({ alpha = 0.55 }),
         border = Style.Border(),
         fade = true, fadeAfter = 120, maxLines = 0,       -- 0 = the game's own (Blizzard keeps 128)
@@ -35,7 +35,7 @@ local M = ns:NewModule("Chat", {
         shortChannels = false, keywords = "", keywordOwnName = true, keywordColor = false, keywordSound = "",
         itemLevels = true, linkIcons = true, roleIcons = true, throttle = 0,
         -- edit box
-        editBoxTop = false, skinEditBox = false, historyLines = 32,
+        editBoxTop = false, skinEditBox = true, historyLines = 32,
         editBox = Style.Text(14, { outline = "NONE", shadow = true }),
         -- tools
         chatBar = false, chatBarSide = "TOP", raidIcons = true, whisperSound = "",
