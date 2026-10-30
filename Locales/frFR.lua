@@ -4141,6 +4141,10 @@ local T = {
     UF_OOC_KEEP = "Afficher si actif",
     UF_OOC_KEEP_DESC = "Hors combat, le cadre reste visible quand vous avez une cible, lancez un sort ou le survolez.",
     AB_VIS_KEEP_DESC = "Hors combat, la barre reste visible quand vous avez une cible ou lancez un sort.",
+    NP_CV_TOP_INSET = "Marge d'écran haute",
+    NP_CV_TOP_INSET_DESC = "Distance sous le haut de l'écran où les barres s'arrêtent.",
+    NP_CV_BOTTOM_INSET = "Marge d'écran basse",
+    NP_CV_BOTTOM_INSET_DESC = "Distance au-dessus du bas de l'écran où les barres s'arrêtent.",
 }
 
 ns.RegisterLocale("frFR", T)

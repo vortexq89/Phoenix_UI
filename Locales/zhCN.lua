@@ -4141,6 +4141,10 @@ local T = {
     UF_OOC_KEEP = "活动时显示",
     UF_OOC_KEEP_DESC = "脱战时，有目标、施法或鼠标悬停时框体仍完全显示。",
     AB_VIS_KEEP_DESC = "脱战时，有目标或施法时动作条仍完全显示。",
+    NP_CV_TOP_INSET = "屏幕顶部边距",
+    NP_CV_TOP_INSET_DESC = "姓名板在屏幕顶部停下的距离。",
+    NP_CV_BOTTOM_INSET = "屏幕底部边距",
+    NP_CV_BOTTOM_INSET_DESC = "姓名板在屏幕底部停下的距离。",
 }
 
 ns.RegisterLocale("zhCN", T)

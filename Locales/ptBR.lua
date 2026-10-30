@@ -4141,6 +4141,10 @@ local T = {
     UF_OOC_KEEP = "Mostrar quando ativo",
     UF_OOC_KEEP_DESC = "Fora de combate o quadro aparece inteiro se você tiver um alvo, lançar ou passar o mouse.",
     AB_VIS_KEEP_DESC = "Fora de combate a barra aparece inteira se você tiver um alvo ou lançar.",
+    NP_CV_TOP_INSET = "Margem superior",
+    NP_CV_TOP_INSET_DESC = "Distância abaixo do topo da tela onde as placas param.",
+    NP_CV_BOTTOM_INSET = "Margem inferior",
+    NP_CV_BOTTOM_INSET_DESC = "Distância acima da base da tela onde as placas param.",
 }
 
 ns.RegisterLocale("ptBR", T)

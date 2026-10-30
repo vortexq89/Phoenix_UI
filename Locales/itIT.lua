@@ -4141,6 +4141,10 @@ local T = {
     UF_OOC_KEEP = "Mostra se attivo",
     UF_OOC_KEEP_DESC = "Fuori combattimento il riquadro resta visibile se hai un bersaglio, lanci o ci passi sopra.",
     AB_VIS_KEEP_DESC = "Fuori combattimento la barra resta visibile se hai un bersaglio o lanci.",
+    NP_CV_TOP_INSET = "Margine superiore",
+    NP_CV_TOP_INSET_DESC = "Distanza dal bordo superiore a cui si fermano le barre.",
+    NP_CV_BOTTOM_INSET = "Margine inferiore",
+    NP_CV_BOTTOM_INSET_DESC = "Distanza dal bordo inferiore a cui si fermano le barre.",
 }
 
 ns.RegisterLocale("itIT", T)

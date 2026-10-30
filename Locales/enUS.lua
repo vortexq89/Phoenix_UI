@@ -4167,4 +4167,8 @@ ns.RegisterLocale("enUS", {
     UF_OOC_KEEP = "Show while active",
     UF_OOC_KEEP_DESC = "Out of combat the frame still shows fully while you have a target, cast or hover it.",
     AB_VIS_KEEP_DESC = "Out of combat the bar still shows fully while you have a target or cast.",
+    NP_CV_TOP_INSET = "Top screen margin",
+    NP_CV_TOP_INSET_DESC = "How far below the top of the screen plates stop when pushed off screen.",
+    NP_CV_BOTTOM_INSET = "Bottom screen margin",
+    NP_CV_BOTTOM_INSET_DESC = "How far above the bottom of the screen plates stop.",
 })

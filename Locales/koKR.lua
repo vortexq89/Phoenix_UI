@@ -4141,6 +4141,10 @@ local T = {
     UF_OOC_KEEP = "활동 중 표시",
     UF_OOC_KEEP_DESC = "비전투 중에도 대상이 있거나 시전 중이거나 마우스를 올리면 프레임이 완전히 보입니다.",
     AB_VIS_KEEP_DESC = "비전투 중에도 대상이 있거나 시전 중이면 바가 완전히 보입니다.",
+    NP_CV_TOP_INSET = "화면 위 여백",
+    NP_CV_TOP_INSET_DESC = "이름표가 화면 위쪽에서 멈추는 거리입니다.",
+    NP_CV_BOTTOM_INSET = "화면 아래 여백",
+    NP_CV_BOTTOM_INSET_DESC = "이름표가 화면 아래쪽에서 멈추는 거리입니다.",
 }
 
 ns.RegisterLocale("koKR", T)

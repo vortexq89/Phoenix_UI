@@ -311,6 +311,11 @@ local game = {
     cvar("nameplateOverlapV", "number", { label = "NP_CV_OVERLAP_V", desc = "NP_CV_OVERLAP_V_DESC", min = 0.3, max = 3, step = 0.05 }),
     cvar("nameplateOverlapH", "number", { label = "NP_CV_OVERLAP_H", desc = "NP_CV_OVERLAP_H_DESC", min = 0.3, max = 3, step = 0.05 }),
     cvar("nameplateMaxDistance", "number", { label = "NP_CV_DISTANCE", desc = "NP_CV_DISTANCE_DESC", min = 10, max = 60, step = 1 }),
+    -- screen clamp (back in 12.1.5); hidden on clients that lack the CVar
+    cvar("nameplateTopInset", "number", { label = "NP_CV_TOP_INSET", desc = "NP_CV_TOP_INSET_DESC", min = 0, max = 0.5,
+        step = 0.01, percent = true, hidden = function() return C_CVar.GetCVar("nameplateTopInset") == nil end }),
+    cvar("nameplateBottomInset", "number", { label = "NP_CV_BOTTOM_INSET", desc = "NP_CV_BOTTOM_INSET_DESC", min = 0, max = 0.5,
+        step = 0.01, percent = true, hidden = function() return C_CVar.GetCVar("nameplateBottomInset") == nil end }),
     { type = "header", label = "BLIZZARD_FEATURES", icon = "general" },
 }
 local show = {

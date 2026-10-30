@@ -59,3 +59,17 @@ paging string, backdrops, flyout direction, key-down casting, cooldown text). Do
 | Text | hotkeys (short labels), macro text, counts, cooldown size / charges | parity | complete | none |
 | Extras | extra action / zone ability skin, vehicle exit, micro menu, bags bar, quest item bar, quick ring | more than both (quest item bar, ring) | complete | none |
 | Key-down casting | follows Blizzard's own setting | ElvUI exposes it | the game already offers it in its options | none (no duplicate) |
+
+## 4. Nameplates
+
+Reference: EllesmereUI Nameplates (styles, cast bars with kick/important colours, auras, threat, target
+glow/arrows, execute, class power) and ElvUI NamePlates (style filters, unit types, clamp to screen, CVars).
+
+| Area | Phoenix | Finding | Fix |
+|---|---|---|---|
+| Health / style | per-style size, name-only, texture, gradient, class colour, absorb, smooth, reverse | parity | none |
+| Threat / execute / quest / target / focus / hover | colours, arrows, markers, execute threshold, off-tank | parity, more than EUI (focus marker, off-tank) | none |
+| Cast bar | kick colour, important fill, shield, icon zoom, time format, hold, flash | parity | none |
+| Auras | debuffs, CC, buffs, sizes, rows, dispel, desaturate, swipe | parity | none |
+| Contexts | world / instance / pvp profiles | parity | none |
+| Client CVars | stacking, overlap, distance, target scale, other alpha, unit types | missing: clamp to screen (ElvUI) | added Top / Bottom screen margin (nameplateTopInset / nameplateBottomInset, restored in 12.1.5), hidden when the client lacks them |

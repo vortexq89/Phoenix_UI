@@ -4141,6 +4141,10 @@ local T = {
     UF_OOC_KEEP = "活動時顯示",
     UF_OOC_KEEP_DESC = "脫戰時，有目標、施法或滑鼠懸停時框架仍完全顯示。",
     AB_VIS_KEEP_DESC = "脫戰時，有目標或施法時快捷列仍完全顯示。",
+    NP_CV_TOP_INSET = "螢幕頂部邊距",
+    NP_CV_TOP_INSET_DESC = "名條在螢幕頂部停下的距離。",
+    NP_CV_BOTTOM_INSET = "螢幕底部邊距",
+    NP_CV_BOTTOM_INSET_DESC = "名條在螢幕底部停下的距離。",
 }
 
 ns.RegisterLocale("zhTW", T)

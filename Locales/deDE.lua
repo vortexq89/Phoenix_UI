@@ -4141,6 +4141,10 @@ local T = {
     UF_OOC_KEEP = "Bei Aktivität zeigen",
     UF_OOC_KEEP_DESC = "Außerhalb des Kampfes bleibt der Rahmen voll sichtbar, solange du ein Ziel hast, zauberst oder darüber fährst.",
     AB_VIS_KEEP_DESC = "Außerhalb des Kampfes bleibt die Leiste voll sichtbar, solange du ein Ziel hast oder zauberst.",
+    NP_CV_TOP_INSET = "Oberer Bildschirmrand",
+    NP_CV_TOP_INSET_DESC = "Wie weit unter dem oberen Rand Plaketten anhalten.",
+    NP_CV_BOTTOM_INSET = "Unterer Bildschirmrand",
+    NP_CV_BOTTOM_INSET_DESC = "Wie weit über dem unteren Rand Plaketten anhalten.",
 }
 
 ns.RegisterLocale("deDE", T)
