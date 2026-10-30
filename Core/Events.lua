@@ -23,6 +23,8 @@ end
 -- dispatched (a module enabled from an ADDON_LOADED handler, say) are added once the walk is over.
 local busy, pending = {}, {}
 
+local warned = {} -- events that failed to register, warned once in debug mode
+
 local function add(list, owner, fn)
     if busy[list] and list[owner] == nil then
         pending[#pending + 1] = { list, owner, fn }
@@ -63,11 +65,17 @@ function E:On(event, owner, fn)
     if event:find("^PUI_") then return self:Listen(event, owner, fn) end
     local list = handlers[event]
     if not list then
+        -- an unknown event (a typo, or a retail-only event on Forever) throws: keep nothing, so a later On retries
+        local ok, err = pcall(frame.RegisterEvent, frame, event)
+        if not ok then
+            if not warned[event] then warned[event] = true; ns:Debug("Events: cannot register %s (%s)", event, tostring(err)) end
+            return false, err
+        end
         list = {}
         handlers[event] = list
-        frame:RegisterEvent(event)
     end
     add(list, owner, fn)
+    return true
 end
 
 function E:OnUnit(event, owner, fn, unit1, unit2)
