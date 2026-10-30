@@ -4,5 +4,6 @@ local _, ns = ...
     A value reported secret may be passed to display sinks (SetText, SetValue, SetTexture …) but never
     compared, tested, used in arithmetic or stored. ]]
 ns.Secret = {
-    IsSecret = issecretvalue,
+    -- Forever 1.60.1 has issecretvalue too; the fallback keeps an older or stripped client from erroring
+    IsSecret = issecretvalue or function() return false end,
 }
