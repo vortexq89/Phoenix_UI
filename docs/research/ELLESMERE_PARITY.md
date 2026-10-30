@@ -47,7 +47,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | Quickdraw (hold-key action menu) | 45 | ActionBars Ring | A | done: hold and release, open at cursor, v9 quick_ring art; verify the secure release pick in game |
 | Macro model / macros | 104 + 6 | macro window skin, smart macros (heal, kick, mount rules), Pick up buttons per macro, open macro window from the GUI | E | t191: no step needs /macro; a full in-addon macro editor would make this A |
 | Upgrade calculator | 9 | planner (track and level per slot, steps left per track) + calculator: crests per track and total, average item level gain, crest cost and ilvl-per-step sliders, refreshes on gear change | A | |
-| Loot council | 5 | ✗ | B | |
+| Loot council | 5 | session boss drops with looter, Want button that shares your equipped item level in that slot, wants sorted by biggest upgrade, auto-open, raid-only, clear | E | in-game check: ENCOUNTER_LOOT_RECEIVED on both clients |
 | Loadout manager | 7 | ✗ | B | |
 | Party mode | 10 | ✗ | B | |
 | Friends | 1 | Friends skin | E | |

@@ -5728,6 +5728,19 @@ try("what's new: full changelog and auto toggle", function()
     assert(ns.WhatsNew.WhatsNewDue(g) == false and g.seenVersion == ns.version, "off skips popup")
 end)
 
+try("loot council: drops, wants, window", function()
+    local A = ns.modules.Automation
+    local id, lvl = A.DecodeWant(A.EncodeWant(212345, 639))
+    assert(id == 212345 and lvl == 639, "want round trip")
+    assert(A.WantText({ B = 640, A = 626 }) == "A (626), B (640)", "lowest level first")
+    for k in pairs(A.lcDrops) do A.lcDrops[k] = nil end
+    A:AddDrop(212345, "|cffa335ee|Hitem:212345|h[Thing]|h|r", "Someone", "MAGE")
+    A:AddWant(212345, "Me", 610)
+    assert(A.lcDrops[1].wants.Me == 610, "want stored")
+    assert(A:ShowLootCouncil(), "window")
+    for k in pairs(A.lcDrops) do A.lcDrops[k] = nil end; A:RefreshLootCouncil()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

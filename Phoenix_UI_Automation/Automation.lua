@@ -21,6 +21,7 @@ local M = ns:NewModule("Automation", {
         fishing = true, fishingQuiet = true, -- fishing helper (Fishing.lua)
         junkWindow = true, -- junk window at vendors (Junk.lua)
         autoLog = false, autoLogMplus = true, autoLogRaid = true, autoLogDungeon = false, -- AutoLog.lua
+        lootCouncil = false, lootCouncilOpen = true, lootCouncilRaidOnly = true, -- LootCouncil.lua
     },
     -- per character: the last companion pet and whether you put it away (PetSummon.lua)
     globalDefaults = { pets = {} },
@@ -135,6 +136,7 @@ function M:OnEnable()
     self:SetupFishing() -- Fishing.lua
     self:SetupJunk() -- Junk.lua
     self:EnableAutoLog() -- AutoLog.lua
+    self:EnableLootCouncil() -- LootCouncil.lua
     if not hooked then
         hooked = true
         hooksecurefunc("StaticPopup_Show", onPopup)

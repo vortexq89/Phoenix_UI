@@ -84,4 +84,10 @@ ns:RegisterOptions("Automation", {
     { type = "toggle", key = "autoLogMplus", label = "AUTO_LOG_MPLUS", disabled = function(m) return not m.db.autoLog end },
     { type = "toggle", key = "autoLogRaid", label = "AUTO_LOG_RAID", disabled = function(m) return not m.db.autoLog end },
     { type = "toggle", key = "autoLogDungeon", label = "AUTO_LOG_DUNGEON", disabled = function(m) return not m.db.autoLog end },
+    { type = "header", label = "LC_TITLE", icon = "items" },
+    { type = "toggle", key = "lootCouncil", label = "LC_ON", desc = "LC_ON_DESC", keywords = "loot council drop want trade raid" },
+    { type = "toggle", key = "lootCouncilOpen", label = "LC_AUTO_OPEN", disabled = function(m) return not m.db.lootCouncil end },
+    { type = "toggle", key = "lootCouncilRaidOnly", label = "LC_RAID_ONLY", disabled = function(m) return not m.db.lootCouncil end },
+    { type = "button", label = "LC_TITLE", desc = "LC_OPEN_DESC", button = "AUTO_OPEN_PAGE", icon = "items",
+      keywords = "loot council window", func = function(m) m:ShowLootCouncil() end },
 })
