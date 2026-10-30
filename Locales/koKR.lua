@@ -4363,6 +4363,23 @@ local T = {
     SKINS_PANEL_ICONS_DESC = "스킨이 적용된 각 창의 왼쪽 위에 창의 용도를 보여 주는 Phoenix 불씨 메달을 표시합니다.",
     CHROME_STYLE = "인터페이스 아이콘",
     CHROME_STYLE_DESC = "설정 목록, 페이지 타일, 하위 페이지, 창 버튼, 매크로 창의 Phoenix 아이콘입니다. 엠버 베벨: 테두리와 테마 색상. 평면: 단순한 글리프.",
+    GF_INDICATORS = "효과 표시기",
+    GF_INDICATORS_DESC = "배치마다 자유롭게 놓을 수 있는 표시기 6개입니다. 각각 한 종류의 효과를 추적하며 생명력 바의 3×3 격자 어디에나 아이콘 또는 색상 사각형으로 표시됩니다. 칸의 톱니바퀴에서 위치, 크기, 개수, 방향, 모양을 정합니다.",
+    GF_IND_SLOT_1 = "표시기 1",
+    GF_IND_SLOT_2 = "표시기 2",
+    GF_IND_SLOT_3 = "표시기 3",
+    GF_IND_SLOT_4 = "표시기 4",
+    GF_IND_SLOT_5 = "표시기 5",
+    GF_IND_SLOT_6 = "표시기 6",
+    GF_IND_EXTERNALS = "외부 생존기",
+    GF_IND_DEFENSIVES = "주요 생존기",
+    GF_IND_ICON = "아이콘",
+    GF_IND_SQUARE = "색상 사각형",
+    GF_IND_DISPEL = "해제 색상 사각형",
+    GF_IND_POINT = "바 위치",
+    GF_IND_GROW = "확장 방향",
+    GF_IND_STYLE = "모양",
+    GF_IND_COLOR = "사각형 색상",
 }
 
 ns.RegisterLocale("koKR", T)

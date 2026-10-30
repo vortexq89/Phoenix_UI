@@ -20,7 +20,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | Plugin manager | per-addon folders, Panel/Startup | Plugins page, toggles that load live, `needs`, memory | A | |
 | Profiles | 8 | Profiles page, import/export | E | add: per-spec auto-switch and a diff view before import |
 | Unit frames | 24 + MiniFrames 213 + Shared* 347 (~370 in folder) | 201 keys (372 settings in the harness) | E | mini-frame (target-of-target, focus-target, pet) depth; per-frame copy-from |
-| Raid / party frames | 91 + 12 + folder 149 | GroupFrames 53 keys (227 settings) | B | visual indicators page (corner indicators, aura placement grid), manager pages |
+| Raid / party frames | 91 + 12 + folder 149 | GroupFrames 53 keys + 6 placeable aura indicators (3x3 grid, nudge, growth, count, icon / colour / dispel-colour square, 8 filter kinds) per profile, raid marker bar | A | t169: indicators ship; previewed live on sample frames |
 | Name plates | 8 + folder 133 | 97 keys (278 settings) | A | |
 | Action bars | 7 + folder 97 | 88 | E | XP/rep bar page lives in DataBars for Phoenix; bar appearance presets |
 | Resource bars (class power, swing, cast) | 13 + folder 145 | class power inside UnitFrames; swing in CastBars | B | standalone resource-bar module with its own page |
@@ -51,7 +51,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | Loadout manager | 7 | ✗ | B | |
 | Party mode | 10 | ✗ | B | |
 | Friends | 1 | Friends skin | E | |
-| Chrome icons (micro menu, window medallions) | flat micro buttons | Ember Bevel set: 76 icons + 28 medallions, 4 states, 16 px variant (t169) | A | wire the rail, tabs, macro and window controls next |
+| Chrome icons (micro menu, window medallions) | flat micro buttons | Ember Bevel set: 76 icons + 28 medallions, 4 states, 16 px variant (t169) | A | t169: rail, tabs, page tile, window controls, macro window and 20+ window medallions wired; flat switch |
 | Colours / fonts / textures / glows / style | 21 + 6 + 6 + 2 | Appearance page, Theme presets, media library, Phoenix Font | A | |
 | What's new | 1 | ✗ | B | in-game changelog page |
 | Gamepad | 1 | ✗ | B | |

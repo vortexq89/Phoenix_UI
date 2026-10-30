@@ -4363,6 +4363,23 @@ local T = {
     SKINS_PANEL_ICONS_DESC = "Un medallón de ascuas de Phoenix en la esquina superior izquierda de cada ventana, que muestra para qué sirve.",
     CHROME_STYLE = "Iconos de la interfaz",
     CHROME_STYLE_DESC = "Los iconos propios de Phoenix en la barra de ajustes, las casillas de página, las subpáginas, los controles de ventana y la ventana de macros. Bisel de ascuas: enmarcados y con el tema. Plano: glifos simples.",
+    GF_INDICATORS = "Indicadores de auras",
+    GF_INDICATORS_DESC = "Seis indicadores colocables por diseño. Cada uno sigue un tipo de aura y se sitúa en cualquier punto de una cuadrícula 3×3 de la barra de salud, como icono o como cuadrado de color. El engranaje de cada ranura abre posición, tamaño, cantidad, crecimiento y aspecto.",
+    GF_IND_SLOT_1 = "Indicador 1",
+    GF_IND_SLOT_2 = "Indicador 2",
+    GF_IND_SLOT_3 = "Indicador 3",
+    GF_IND_SLOT_4 = "Indicador 4",
+    GF_IND_SLOT_5 = "Indicador 5",
+    GF_IND_SLOT_6 = "Indicador 6",
+    GF_IND_EXTERNALS = "Defensivos externos",
+    GF_IND_DEFENSIVES = "Defensivos grandes",
+    GF_IND_ICON = "Icono",
+    GF_IND_SQUARE = "Cuadrado de color",
+    GF_IND_DISPEL = "Cuadrado del color de disipación",
+    GF_IND_POINT = "Posición en la barra",
+    GF_IND_GROW = "Crece hacia",
+    GF_IND_STYLE = "Aspecto",
+    GF_IND_COLOR = "Color del cuadrado",
 }
 
 ns.RegisterLocale("esES", T)

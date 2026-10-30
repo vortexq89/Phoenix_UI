@@ -4363,6 +4363,23 @@ local T = {
     SKINS_PANEL_ICONS_DESC = "Un médaillon de braise Phoenix dans le coin supérieur gauche de chaque fenêtre habillée, qui indique son rôle.",
     CHROME_STYLE = "Icônes d'interface",
     CHROME_STYLE_DESC = "Les icônes de Phoenix dans la barre des réglages, les tuiles de page, les sous-pages, les contrôles de fenêtre et la fenêtre des macros. Biseau de braise : encadrées et aux couleurs du thème. Plat : glyphes simples.",
+    GF_INDICATORS = "Indicateurs d'auras",
+    GF_INDICATORS_DESC = "Six indicateurs plaçables par disposition. Chacun suit un type d'aura et se place n'importe où sur une grille 3×3 de la barre de vie, en icône ou en carré coloré. La roue crantée d'un emplacement ouvre position, taille, nombre, croissance et apparence.",
+    GF_IND_SLOT_1 = "Indicateur 1",
+    GF_IND_SLOT_2 = "Indicateur 2",
+    GF_IND_SLOT_3 = "Indicateur 3",
+    GF_IND_SLOT_4 = "Indicateur 4",
+    GF_IND_SLOT_5 = "Indicateur 5",
+    GF_IND_SLOT_6 = "Indicateur 6",
+    GF_IND_EXTERNALS = "Défensifs externes",
+    GF_IND_DEFENSIVES = "Gros défensifs",
+    GF_IND_ICON = "Icône",
+    GF_IND_SQUARE = "Carré coloré",
+    GF_IND_DISPEL = "Carré couleur de dissipation",
+    GF_IND_POINT = "Position sur la barre",
+    GF_IND_GROW = "Croissance",
+    GF_IND_STYLE = "Apparence",
+    GF_IND_COLOR = "Couleur du carré",
 }
 
 ns.RegisterLocale("frFR", T)

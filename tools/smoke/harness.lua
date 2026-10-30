@@ -5540,6 +5540,30 @@ try("group frames phoenix", function()
     M.db.testSize = 20
     assert(UF.UNIT_SOURCES["group.tanks"]().width == M.db.tanks.width, "tank frames read their own size")
 end)
+-- t169: placeable aura indicators (3x3 grid, growth, icon / square / dispel-colour square), filters only
+try("group frames aura indicators", function()
+    local M = ns.modules.GroupFrames
+    local p = M.db.profiles.party
+    assert(#p.indicators == M.INDICATOR_SLOTS and p.indicators[1].kind == "off", "six slots, all off by default")
+    local pt, x, y = M.IndicatorOffset({ point = "TOPRIGHT", grow = "LEFT", size = 10, spacing = 1, x = 0, y = 0 }, 3)
+    assert(pt == "TOPRIGHT" and x == -1 - 22 and y == -1, "grow left from the top right corner")
+    pt, x, y = M.IndicatorOffset({ point = "BOTTOM", grow = "UP", size = 8, spacing = 2, x = 3, y = 0 }, 2)
+    assert(pt == "BOTTOM" and x == 3 and y == 1 + 10, "grow up from the bottom middle")
+    p.indicators[1].kind, p.indicators[1].style = "hots", "square"
+    p.indicators[2].kind, p.indicators[2].style, p.indicators[2].point = "dispellable", "dispel", "CENTER"
+    p.indicators[3].kind, p.indicators[3].max = "externals", 3
+    local pool = {}
+    M:DrawSampleGroup(env.UIParent, "party", 5, pool)
+    local b = pool[2] -- the sample with HoTs
+    assert(b.Indicators and b.Indicators[1]:IsShown() and b.Indicators[1].max == 1, "indicator 1 laid out")
+    assert(not b.Indicators[4]:IsShown(), "an off slot hides")
+    assert(b.Indicators[3].max == 3, "indicator count")
+    local opts = ns.options and ns.options.GroupFrames
+    local found = 0
+    for _, r in ipairs(opts or {}) do if type(r.label) == "string" and r.label:find("^GF_IND_SLOT_") then found = found + 1 end end
+    assert(opts == nil or found == 6, "six indicator rows on the page, got " .. found)
+    for i = 1, 3 do p.indicators[i] = M.NewIndicator() end
+end)
 try("group frames blizzard fallback", function()
     local M = ns.modules.GroupFrames
     M.db.mode = "blizzard"

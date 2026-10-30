@@ -22,4 +22,5 @@ Blizzard.lua
 Headers.lua
 Update.lua
 ClickCast.lua
+Indicators.lua
 Markers.lua

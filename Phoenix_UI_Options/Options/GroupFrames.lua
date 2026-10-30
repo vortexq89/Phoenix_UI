@@ -69,6 +69,43 @@ local CC_MOD = { { value = "", label = "GF_CC_MOD_NONE" }, { value = "shift", la
     { value = "ctrl", label = "UF_KEY_CTRL" }, { value = "alt", label = "UF_KEY_ALT" } }
 local CC_BUTTON = { { value = 1, label = "UF_CLICK_LEFT" }, { value = 2, label = "UF_CLICK_RIGHT" },
     { value = 3, label = "UF_CLICK_MIDDLE" }, { value = 4, label = "GF_CC_BUTTON_4" }, { value = 5, label = "GF_CC_BUTTON_5" } }
+local IND_KIND = { { value = "off", label = "OFF" }, { value = "hots", label = "GF_FILTER_HOTS" },
+    { value = "raidbuffs", label = "GF_FILTER_RAID_BUFFS" }, { value = "externals", label = "GF_IND_EXTERNALS" },
+    { value = "defensives", label = "GF_IND_DEFENSIVES" }, { value = "dispellable", label = "GF_FILTER_DISPELLABLE" },
+    { value = "mydispels", label = "GF_FILTER_MY_DISPELS" }, { value = "cc", label = "GF_FILTER_CC" },
+    { value = "debuffs", label = "GF_DEBUFFS" } }
+local IND_POINT = {}
+for _, pt in ipairs({ "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }) do
+    IND_POINT[#IND_POINT + 1] = { value = pt, label = "ANCHOR_" .. pt }
+end
+local IND_STYLE = { { value = "icon", label = "GF_IND_ICON" }, { value = "square", label = "GF_IND_SQUARE" },
+    { value = "dispel", label = "GF_IND_DISPEL" } }
+local IND_GROW = { { value = "LEFT", label = "GROW_LEFT" }, { value = "RIGHT", label = "GROW_RIGHT" },
+    { value = "UP", label = "GROW_UP" }, { value = "DOWN", label = "GROW_DOWN" } }
+local SLOT_LABEL = {}
+for _, row in ipairs({ { label = "GF_IND_SLOT_1" }, { label = "GF_IND_SLOT_2" }, { label = "GF_IND_SLOT_3" },
+    { label = "GF_IND_SLOT_4" }, { label = "GF_IND_SLOT_5" }, { label = "GF_IND_SLOT_6" } }) do SLOT_LABEL[#SLOT_LABEL + 1] = row.label end
+-- one row per indicator slot: what it tracks; the cog holds where, how many and how it looks
+local function indicatorRows(px, P)
+    local rows = { { type = "header", label = "GF_INDICATORS", icon = "auras" },
+        { type = "description", text = "GF_INDICATORS_DESC" } }
+    for i = 1, 6 do
+        local k = P .. "indicators." .. i .. "."
+        local function off(m, u) return prof(m, u).indicators[i].kind == "off" end
+        rows[#rows + 1] = px({ type = "select", key = k .. "kind", label = SLOT_LABEL[i], values = IND_KIND,
+            keywords = "indicator corner square hot dispel tracker grid",
+            cog = { { type = "select", key = k .. "point", label = "GF_IND_POINT", values = IND_POINT, disabled = off },
+                    { type = "range", key = k .. "x", label = "OFFSET_X", min = -40, max = 40, step = 1, disabled = off },
+                    { type = "range", key = k .. "y", label = "OFFSET_Y", min = -40, max = 40, step = 1, disabled = off },
+                    { type = "range", key = k .. "size", label = "ICON_SIZE", min = 4, max = 40, step = 1, disabled = off },
+                    { type = "range", key = k .. "max", label = "UF_AURA_MAX", min = 1, max = 8, step = 1, disabled = off },
+                    { type = "select", key = k .. "grow", label = "GF_IND_GROW", values = IND_GROW, disabled = off },
+                    { type = "select", key = k .. "style", label = "GF_IND_STYLE", values = IND_STYLE, disabled = off },
+                    { type = "color", key = k .. "color", label = "GF_IND_COLOR", hasAlpha = true, disabled = off } } })
+    end
+    return rows
+end
+
 local function ccOff(m) return not m.db.clickCast.enabled end
 local function mkOff(m) return not m.db.markers.show end
 local function mk(row) return Opt.With(row, { disabled = mkOff }) end
@@ -101,7 +138,19 @@ local function text(path, label, extra)
 end
 local P = "profiles.@."
 
-ns:RegisterOptions("GroupFrames", {
+local function splice(rows)
+    local out = {}
+    for _, r in ipairs(rows) do
+        if r.indicators then
+            for _, x in ipairs(indicatorRows(px, P)) do out[#out + 1] = x end
+        else
+            out[#out + 1] = r
+        end
+    end
+    return out
+end
+
+ns:RegisterOptions("GroupFrames", splice({
     { type = "scope", key = "profiles", label = "GF_PROFILE", values = PROFILES },
     { type = "preview", kind = "groupframe" },
     ------------------------------------------------------------ layout
@@ -270,6 +319,7 @@ ns:RegisterOptions("GroupFrames", {
     px({ type = "range", key = P .. "dispel.size", label = "BORDER_SIZE", min = 1, max = 6, step = 1, disabled = dispelOff }),
     px({ type = "range", key = P .. "dispel.alpha", label = "GF_DISPEL_ALPHA", min = 0.1, max = 1, step = 0.05, percent = true,
       disabled = dispelOff }),
+    { indicators = true }, -- the indicator slots go here (spliced below)
     ------------------------------------------------------------ auras
     ------------------------------------------------------------ click casting (ClickCast.lua)
     { type = "tab", label = "GF_TAB_CLICK" },
@@ -356,4 +406,4 @@ ns:RegisterOptions("GroupFrames", {
     px(Opt.Text(P .. "auras.duration", "UF_AURA_DURATION_FONT", { place = true, show = true, max = 20 })),
     px(Opt.Text(P .. "auras.count", "UF_AURA_COUNT_FONT", { place = true, max = 20 })),
     { type = "description", text = "GF_NOTE", hidden = phoenix },
-})
+}))

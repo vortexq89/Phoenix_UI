@@ -4363,6 +4363,23 @@ local T = {
     SKINS_PANEL_ICONS_DESC = "Ein Phoenix-Glutmedaillon oben links in jedem gestalteten Fenster, das zeigt, wofür das Fenster da ist.",
     CHROME_STYLE = "Oberflächen-Symbole",
     CHROME_STYLE_DESC = "Phoenix' eigene Symbole in der Einstellungsleiste, den Seitenkacheln, Unterseiten, Fenstersteuerungen und im Makrofenster. Glutfassung: gerahmt und im Farbschema. Flach: schlichte Glyphen.",
+    GF_INDICATORS = "Aura-Indikatoren",
+    GF_INDICATORS_DESC = "Sechs platzierbare Indikatoren pro Layout. Jeder verfolgt eine Art Aura und sitzt an einer beliebigen Stelle eines 3×3-Rasters der Lebensleiste, als Symbol oder als farbiges Quadrat. Das Zahnrad eines Platzes öffnet Position, Größe, Anzahl, Wachstum und Aussehen.",
+    GF_IND_SLOT_1 = "Indikator 1",
+    GF_IND_SLOT_2 = "Indikator 2",
+    GF_IND_SLOT_3 = "Indikator 3",
+    GF_IND_SLOT_4 = "Indikator 4",
+    GF_IND_SLOT_5 = "Indikator 5",
+    GF_IND_SLOT_6 = "Indikator 6",
+    GF_IND_EXTERNALS = "Externe Verteidigung",
+    GF_IND_DEFENSIVES = "Große Verteidigung",
+    GF_IND_ICON = "Symbol",
+    GF_IND_SQUARE = "Farbiges Quadrat",
+    GF_IND_DISPEL = "Quadrat in Bannfarbe",
+    GF_IND_POINT = "Position auf der Leiste",
+    GF_IND_GROW = "Wächst",
+    GF_IND_STYLE = "Aussehen",
+    GF_IND_COLOR = "Quadratfarbe",
 }
 
 ns.RegisterLocale("deDE", T)

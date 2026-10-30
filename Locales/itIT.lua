@@ -4363,6 +4363,23 @@ local T = {
     SKINS_PANEL_ICONS_DESC = "Un medaglione di brace Phoenix nell'angolo in alto a sinistra di ogni finestra, che mostra a cosa serve.",
     CHROME_STYLE = "Icone dell'interfaccia",
     CHROME_STYLE_DESC = "Le icone di Phoenix nella barra delle impostazioni, nelle tessere di pagina, nelle sottopagine, nei controlli delle finestre e nella finestra delle macro. Smusso di brace: incorniciate e a tema. Piatto: glifi semplici.",
+    GF_INDICATORS = "Indicatori delle aure",
+    GF_INDICATORS_DESC = "Sei indicatori posizionabili per layout. Ognuno segue un tipo di aura e si colloca ovunque su una griglia 3×3 della barra della salute, come icona o come quadrato colorato. L'ingranaggio di ogni slot apre posizione, dimensione, numero, crescita e aspetto.",
+    GF_IND_SLOT_1 = "Indicatore 1",
+    GF_IND_SLOT_2 = "Indicatore 2",
+    GF_IND_SLOT_3 = "Indicatore 3",
+    GF_IND_SLOT_4 = "Indicatore 4",
+    GF_IND_SLOT_5 = "Indicatore 5",
+    GF_IND_SLOT_6 = "Indicatore 6",
+    GF_IND_EXTERNALS = "Difensivi esterni",
+    GF_IND_DEFENSIVES = "Grandi difensivi",
+    GF_IND_ICON = "Icona",
+    GF_IND_SQUARE = "Quadrato colorato",
+    GF_IND_DISPEL = "Quadrato col colore di dissoluzione",
+    GF_IND_POINT = "Posizione sulla barra",
+    GF_IND_GROW = "Crescita",
+    GF_IND_STYLE = "Aspetto",
+    GF_IND_COLOR = "Colore del quadrato",
 }
 
 ns.RegisterLocale("itIT", T)

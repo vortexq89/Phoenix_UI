@@ -4363,6 +4363,23 @@ local T = {
     SKINS_PANEL_ICONS_DESC = "在每个美化窗口的左上角显示 Phoenix 余烬徽章，标示窗口用途。",
     CHROME_STYLE = "界面图标",
     CHROME_STYLE_DESC = "设置栏、页面图块、子页面、窗口按钮和宏窗口中的 Phoenix 图标。余烬斜面：带框并随主题变色。平面：简单字形。",
+    GF_INDICATORS = "光环指示器",
+    GF_INDICATORS_DESC = "每种布局六个可放置的指示器。每个跟踪一类光环，可放在生命条 3×3 网格的任意位置，显示为图标或彩色方块。点击槽位的齿轮设置位置、大小、数量、增长方向和外观。",
+    GF_IND_SLOT_1 = "指示器 1",
+    GF_IND_SLOT_2 = "指示器 2",
+    GF_IND_SLOT_3 = "指示器 3",
+    GF_IND_SLOT_4 = "指示器 4",
+    GF_IND_SLOT_5 = "指示器 5",
+    GF_IND_SLOT_6 = "指示器 6",
+    GF_IND_EXTERNALS = "外部减伤",
+    GF_IND_DEFENSIVES = "大型减伤",
+    GF_IND_ICON = "图标",
+    GF_IND_SQUARE = "彩色方块",
+    GF_IND_DISPEL = "驱散颜色方块",
+    GF_IND_POINT = "在条上的位置",
+    GF_IND_GROW = "增长方向",
+    GF_IND_STYLE = "外观",
+    GF_IND_COLOR = "方块颜色",
 }
 
 ns.RegisterLocale("zhCN", T)

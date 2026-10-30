@@ -140,6 +140,7 @@ function M:LayoutParts(b, p)
         slot:SetPoint("RIGHT", b.Private, "RIGHT", -2 - (i - 1) * (pa.size + 1), 0)
         slot:SetShown(pa.enabled and i <= pa.max)
     end
+    self:LayoutIndicators(b, p) -- Indicators.lua
     b.partsDone = true
 end
 
@@ -223,6 +224,8 @@ local function fill(c, b, filter, kind, a, samples)
     return shown
 end
 
+M.FillAuras = fill
+
 local function auras(b, p)
     local ga, a = p.groupAuras, p.auras
     local s = b.sample or {}
@@ -266,6 +269,7 @@ function M:UpdateButton(b)
     if not b.partsDone then self:LayoutParts(b, p) end
     ns.SafeCall(dispel, b, p)
     ns.SafeCall(auras, b, p)
+    ns.SafeCall(self.FillIndicators, self, b, p) -- Indicators.lua
     ns.SafeCall(phase, b, p)
     roleIcon(b, p)
 end

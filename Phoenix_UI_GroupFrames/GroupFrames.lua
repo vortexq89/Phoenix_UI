@@ -22,6 +22,19 @@ local Style, Secret = ns.Style, ns.Secret
 
 local UF = ns.modules.UnitFrames
 
+-- placeable aura indicators (Indicators.lua): six slots per profile, all off until picked
+local INDICATOR_SLOTS = 6
+local function newIndicator(o)
+    o = o or {}
+    return { kind = o.kind or "off", point = o.point or "TOPRIGHT", x = 0, y = 0, size = o.size or 10, max = o.max or 1,
+        grow = o.grow or "LEFT", spacing = 1, style = o.style or "icon", color = { r = 0.2, g = 0.9, b = 0.3, a = 1 } }
+end
+local function defaultIndicators()
+    local t = {}
+    for i = 1, INDICATOR_SLOTS do t[i] = newIndicator() end
+    return t
+end
+
 -- One layout profile: a unit-frame settings table (UnitFrames' own shape) plus the group layout.
 local function profile(o)
     local p = UF.NewUnitSettings({ w = o.w, h = o.h, point = "TOPLEFT", x = o.x, y = o.y, text = o.text or 11,
@@ -52,6 +65,7 @@ local function profile(o)
         defensive = { enabled = true, size = o.defSize or 18 },
         private = { enabled = true, size = o.privSize or 18, max = 2, countdown = true, numbers = false },
     }
+    p.indicators = defaultIndicators()
     return p
 end
 
@@ -100,6 +114,7 @@ local M = ns:NewModule("GroupFrames", {
     defaults = DEFAULTS,
 })
 M.DEFAULTS = DEFAULTS
+M.INDICATOR_SLOTS, M.NewIndicator, M.DefaultIndicators = INDICATOR_SLOTS, newIndicator, defaultIndicators
 M.PROFILES = { "party", "raid", "large" }
 M.SIZE_OF = { party = 5, raid = 20, large = 40 }
 
