@@ -28,10 +28,10 @@ Legend: A = ahead, E = equal, B = behind, â€” = EllesmereUI has no equivalent, â
 | Aura / buff reminders | 57 | Auras 41 (reminders partial) | A | done: custom ID[:CLASS or ROLE] rules, group-buff mode, instance-only, v9 banner style |
 | Player aura bars | 55 | in Auras | A | done: Tracker aura bars (watched IDs, timer fill via duration object, mover) |
 | Damage meter | 48 | 54 + extras (ilvl, big timer, value backing, 15 spec icon styles) | A | |
-| Mythic+ timer | 71 | MythicPlus 25 | B | timer layout options, splits, death penalty view |
+| Mythic+ timer | 71 | MythicPlus 25 | A | done: v9 bar, chest, skull, affix and forces art, clock position; splits and death log were already in |
 | Blizzard skins | 81 | Skins 57 | E | per-window toggles coverage |
 | Chat | 14 | 42 | A | |
-| Minimap | 57 | 29 | B | button bar collector, shape/zoom/coords options |
+| Minimap | 57 | 29 | A | done: button bin bar mode under the minimap; shape, zoom and coords were already in |
 | Bags | 23 | 29 | A | |
 | Data bars / texts | 30 | DataTexts 54 | A | |
 | Quest tracker | 11 | Tracker 64 + Quests 36 | A | |

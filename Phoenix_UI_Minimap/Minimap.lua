@@ -22,7 +22,7 @@ local M = ns:NewModule("Minimap", {
         coordsText = Style.Text(11, { outline = "OUTLINE", anchor = "BOTTOM", y = 8 }),
         calendar = true, tracking = true, mail = true, craftingOrder = true, difficulty = true, expansion = true,
         compartment = true,
-        bin = true, binColumns = 4, binSize = 28, binIgnore = "", binMouseover = false,
+        bin = true, binColumns = 4, binSize = 28, binIgnore = "", binMouseover = false, binMode = "flyout",
         pingNames = true, worldMapCoords = true, worldMapScale = 1, zoneLevels = true,
         mapReveal = true, revealTint = true, revealAlpha = 0.85,
     },
@@ -365,9 +365,11 @@ local function layoutBin()
     local rows = math.max(1, math.ceil(#shown / cols))
     bin.flyout:SetSize(PAD * 2 + math.min(#shown, cols) * cell - 4, PAD * 2 + rows * cell - 4)
     bin.count = #shown
-    bin.toggle:SetShown(M.db.bin and #shown > 0)
+    local bar = M.db.binMode == "bar"
+    bin.toggle:SetShown(M.db.bin and #shown > 0 and not bar)
     bin.toggle:SetAlpha((M.db.binMouseover and not Minimap:IsMouseOver()) and 0 or 1)
-    if #shown == 0 then bin.flyout:Hide() end
+    M.PlaceBin(bar)
+    if #shown == 0 or not M.db.bin then bin.flyout:Hide() elseif bar then bin.flyout:Show() end
 end
 
 local function collect(name, button)
@@ -404,6 +406,20 @@ local function scanSoon()
 end
 M.ScanBin = scan
 
+-- "flyout": the bin opens from the glyph. "bar": the buttons sit in a strip under the minimap, always shown.
+function M.PlaceBin(bar)
+    if not bin then return end
+    local f = bin.flyout
+    f:ClearAllPoints()
+    if bar then
+        f:SetFrameStrata("MEDIUM")
+        f:SetPoint("TOP", band(), "BOTTOM", 0, -6)
+    else
+        f:SetFrameStrata("DIALOG")
+        f:SetPoint("TOPRIGHT", bin.toggle, "BOTTOMRIGHT", 0, -4)
+    end
+end
+
 -- Buttons currently in the bin, and a way to show it from the settings page.
 function M:BinCount() return bin and bin.count or 0 end
 function M:OpenBin() if bin and (bin.count or 0) > 0 then bin.flyout:Show() end end
@@ -439,6 +455,8 @@ local function buildBin()
     Minimap:HookScript("OnLeave", function() C_Timer.After(0.2, hover) end)
     t:HookScript("OnLeave", function() C_Timer.After(0.2, hover) end)
     f:HookScript("OnHide", hover)
+    -- bar mode keeps the strip up (Escape and other closers only hide the flyout)
+    f:HookScript("OnHide", function() if M.db.binMode == "bar" and M.db.bin then C_Timer.After(0, layoutBin) end end)
     bin.toggle, bin.flyout, bin.hover = glyph, f, hover
 end
 

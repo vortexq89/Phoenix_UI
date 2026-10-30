@@ -5635,6 +5635,16 @@ try("mythic+ timer art and clock layout", function()
     MP.db.clockAlign = "LEFT"
 end)
 
+try("minimap button bin bar mode", function()
+    local MM = ns.modules.Minimap
+    assert(MM.db.binMode == "flyout" and MM.PlaceBin, "bin mode default")
+    MM.db.binMode = "bar"
+    MM:Refresh()
+    MM.PlaceBin(true)
+    MM.db.binMode = "flyout"
+    MM:Refresh()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")
