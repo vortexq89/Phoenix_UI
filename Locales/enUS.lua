@@ -4171,4 +4171,6 @@ ns.RegisterLocale("enUS", {
     NP_CV_TOP_INSET_DESC = "How far below the top of the screen plates stop when pushed off screen.",
     NP_CV_BOTTOM_INSET = "Bottom screen margin",
     NP_CV_BOTTOM_INSET_DESC = "How far above the bottom of the screen plates stop.",
+    CHAT_LINK_HOVER = "Link tooltips on hover",
+    CHAT_LINK_HOVER_DESC = "Hover an item, spell or achievement link to see its tooltip without clicking.",
 })

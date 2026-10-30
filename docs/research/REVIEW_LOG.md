@@ -73,3 +73,17 @@ glow/arrows, execute, class power) and ElvUI NamePlates (style filters, unit typ
 | Auras | debuffs, CC, buffs, sizes, rows, dispel, desaturate, swipe | parity | none |
 | Contexts | world / instance / pvp profiles | parity | none |
 | Client CVars | stacking, overlap, distance, target scale, other alpha, unit types | missing: clamp to screen (ElvUI) | added Top / Bottom screen margin (nameplateTopInset / nameplateBottomInset, restored in 12.1.5), hidden when the client lacks them |
+
+## 5. Chat
+
+Reference: EllesmereUI chat skin (clean windows, pill tabs, fade, copy) and ElvUI Chat (panels, URL links,
+short channels, keyword alerts, history, copy, whisper sound, hyperlink hover tooltips, emoticons, class names).
+
+| Area | Phoenix | Finding | Fix |
+|---|---|---|---|
+| Windows | skin, fade, max lines, hide in combat, side buttons, jump to bottom, copy, fast scroll | parity | none |
+| Tabs | flash, whisper tabs, pill tabs, fade, selected colour | parity, matches EUI pills | none |
+| Messages | font, short channels, URLs, item levels, link icons, role icons, keywords, throttle, timestamp colour, raid icons, emotes | parity | none |
+| Edit box | top/bottom, skin, arrow keys, history | parity | none |
+| Links | armory link in menus | missing: ElvUI hyperlink hover tooltips | new "Link tooltips on hover" (on by default): item / spell / achievement / quest / currency and similar links show their tooltip; player, URL and addon links are left alone |
+| Class-coloured names | Blizzard's own setting | ElvUI duplicates it | none (no duplicate) |

@@ -4145,6 +4145,8 @@ local T = {
     NP_CV_TOP_INSET_DESC = "Distance sous le haut de l'écran où les barres s'arrêtent.",
     NP_CV_BOTTOM_INSET = "Marge d'écran basse",
     NP_CV_BOTTOM_INSET_DESC = "Distance au-dessus du bas de l'écran où les barres s'arrêtent.",
+    CHAT_LINK_HOVER = "Infobulles des liens au survol",
+    CHAT_LINK_HOVER_DESC = "Survolez un lien d'objet, de sort ou de haut fait pour voir son infobulle.",
 }
 
 ns.RegisterLocale("frFR", T)

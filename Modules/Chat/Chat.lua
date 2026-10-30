@@ -17,7 +17,7 @@ local W, Secret, Skin, Style, Media, Theme = ns.Widgets, ns.Secret, ns.Skin, ns.
 local M = ns:NewModule("Chat", {
     label = "CHAT", desc = "CHAT_DESC", category = "social", order = 10,
     defaults = {
-        urls = true, copyButton = true, armoryLink = true, arrowKeys = true, keepHistory = true, fastScroll = true,
+        urls = true, copyButton = true, armoryLink = true, linkHover = true, arrowKeys = true, keepHistory = true, fastScroll = true,
         tabFlash = true, whisperTabs = true,
         urlColor = false,                                  -- false = the theme's info colour
         styleText = false,
@@ -247,6 +247,22 @@ local function onWheel(chatFrame, delta)
     M:UpdateScrollButton(chatFrame)
 end
 
+-- Hovering an item, spell, achievement or similar link shows its tooltip (ElvUI's hyperlink hover).
+-- Only link kinds GameTooltip:SetHyperlink understands; player, url and addon links are left alone.
+local HOVER = { item = true, spell = true, achievement = true, quest = true, currency = true, talent = true,
+    enchant = true, instancelock = true, keystone = true, battlepet = true, mount = true, transmogappearance = true,
+    toy = true, conduit = true, azessence = true, mawpower = true }
+local function onLinkEnter(chatFrame, link)
+    if not (M:IsEnabled() and M.db.linkHover) or type(link) ~= "string" then return end
+    if not HOVER[link:match("^(%a+):") or ""] then return end
+    GameTooltip:SetOwner(chatFrame, "ANCHOR_CURSOR")
+    if pcall(GameTooltip.SetHyperlink, GameTooltip, link) then GameTooltip:Show() else GameTooltip:Hide() end
+end
+local function onLinkLeave(chatFrame)
+    if GameTooltip:GetOwner() == chatFrame then GameTooltip:Hide() end
+end
+M._onLinkEnter = onLinkEnter
+
 local function onLink(_, link)
     if type(link) ~= "string" then return end
     local url = link:match("^addon:Phoenix_UI:url:(.+)$")
@@ -297,6 +313,8 @@ function M:Refresh()
         if not wheelHooked[chatFrame] then
             wheelHooked[chatFrame] = true
             chatFrame:HookScript("OnMouseWheel", onWheel)
+            chatFrame:HookScript("OnHyperlinkEnter", onLinkEnter)
+            chatFrame:HookScript("OnHyperlinkLeave", onLinkLeave)
         end
         self:StyleWindow(chatFrame)
     end)

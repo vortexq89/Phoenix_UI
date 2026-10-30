@@ -4145,6 +4145,8 @@ local T = {
     NP_CV_TOP_INSET_DESC = "名條在螢幕頂部停下的距離。",
     NP_CV_BOTTOM_INSET = "螢幕底部邊距",
     NP_CV_BOTTOM_INSET_DESC = "名條在螢幕底部停下的距離。",
+    CHAT_LINK_HOVER = "懸停顯示連結提示",
+    CHAT_LINK_HOVER_DESC = "滑鼠懸停物品、法術或成就連結時顯示其提示。",
 }
 
 ns.RegisterLocale("zhTW", T)

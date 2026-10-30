@@ -4145,6 +4145,8 @@ local T = {
     NP_CV_TOP_INSET_DESC = "Distanza dal bordo superiore a cui si fermano le barre.",
     NP_CV_BOTTOM_INSET = "Margine inferiore",
     NP_CV_BOTTOM_INSET_DESC = "Distanza dal bordo inferiore a cui si fermano le barre.",
+    CHAT_LINK_HOVER = "Tooltip dei link al passaggio",
+    CHAT_LINK_HOVER_DESC = "Passa sopra un link di oggetto, incantesimo o impresa per vederne il tooltip.",
 }
 
 ns.RegisterLocale("itIT", T)

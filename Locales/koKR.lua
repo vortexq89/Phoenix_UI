@@ -4145,6 +4145,8 @@ local T = {
     NP_CV_TOP_INSET_DESC = "이름표가 화면 위쪽에서 멈추는 거리입니다.",
     NP_CV_BOTTOM_INSET = "화면 아래 여백",
     NP_CV_BOTTOM_INSET_DESC = "이름표가 화면 아래쪽에서 멈추는 거리입니다.",
+    CHAT_LINK_HOVER = "링크 마우스오버 툴팁",
+    CHAT_LINK_HOVER_DESC = "아이템, 주문, 업적 링크에 마우스를 올리면 툴팁을 보여줍니다.",
 }
 
 ns.RegisterLocale("koKR", T)

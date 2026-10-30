@@ -4145,6 +4145,8 @@ local T = {
     NP_CV_TOP_INSET_DESC = "Distancia bajo el borde superior donde se detienen las placas.",
     NP_CV_BOTTOM_INSET = "Margen inferior",
     NP_CV_BOTTOM_INSET_DESC = "Distancia sobre el borde inferior donde se detienen las placas.",
+    CHAT_LINK_HOVER = "Descripción de enlaces al pasar",
+    CHAT_LINK_HOVER_DESC = "Pasa el ratón sobre un enlace de objeto, hechizo o logro para ver su descripción.",
 }
 
 ns.RegisterLocale("esES", T)

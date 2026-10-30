@@ -55,6 +55,8 @@ ns:RegisterOptions("Chat", {
     { type = "toggle", key = "scrollButton", label = "CHAT_JUMP", desc = "CHAT_JUMP_DESC", keywords = "scroll bottom newest" },
     { type = "toggle", key = "copyButton", label = "CHAT_COPY_BUTTON", desc = "CHAT_COPY_BUTTON_DESC" },
     { type = "toggle", key = "armoryLink", label = "CHAT_ARMORY", desc = "CHAT_ARMORY_DESC" },
+    { type = "toggle", key = "linkHover", label = "CHAT_LINK_HOVER", desc = "CHAT_LINK_HOVER_DESC",
+      keywords = "hyperlink item spell tooltip mouseover" },
     { type = "toggle", key = "fastScroll", label = "CHAT_FAST_SCROLL", desc = "CHAT_FAST_SCROLL_DESC",
       keywords = "mouse wheel scroll top bottom page" },
     { type = "header", label = "CHAT_TABS", icon = "layout" },

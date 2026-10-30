@@ -4145,6 +4145,8 @@ local T = {
     NP_CV_TOP_INSET_DESC = "Distância abaixo do topo da tela onde as placas param.",
     NP_CV_BOTTOM_INSET = "Margem inferior",
     NP_CV_BOTTOM_INSET_DESC = "Distância acima da base da tela onde as placas param.",
+    CHAT_LINK_HOVER = "Dicas de links ao passar",
+    CHAT_LINK_HOVER_DESC = "Passe o mouse sobre um link de item, feitiço ou conquista para ver a dica.",
 }
 
 ns.RegisterLocale("ptBR", T)
