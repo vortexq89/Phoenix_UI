@@ -24,7 +24,7 @@ Config.GROUPS = {
                   { heading = "SUB_INSTANCES" }, "MythicPlus", "Encounters", "PvP",
                   { heading = "SUB_GEAR" }, "Sim" } },
     { key = "phoenix", label = "RAIL_PHOENIX", icon = "cat-phoenix",
-      entries = { { heading = "SUB_SETUP" }, "Movers", "profiles", "presets",
+      entries = { { heading = "SUB_SETUP" }, "plugins", "Movers", "profiles", "presets",
                   { heading = "SUB_LOOK" }, "General", "fonts", "textures", "sounds",
                   { heading = "SUB_UTILITY" }, "Quality", "Automation", "AFK",
                   { heading = "SUB_SUPPORT" }, "Bugs", "diagnostics", "about" } },

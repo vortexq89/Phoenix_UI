@@ -1196,7 +1196,9 @@ end
 
 ---------------------------------------------------------------- pages
 function Config.BuildModulePage(parent, key)
-    return Config.BuildSchemaPage(parent, ns.modules[key], ns.options[key])
+    local m = ns.modules[key]
+    if m and m.placeholder then return Config.BuildSchemaPage(parent, m, Config.placeholderSchema) end
+    return Config.BuildSchemaPage(parent, m, ns.options[key])
 end
 
 -- the hairline above a row and the zebra shade: every other line a shade lighter, so a long card reads across

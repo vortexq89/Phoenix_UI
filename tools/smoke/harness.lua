@@ -425,7 +425,7 @@ try("load on demand", function()
 end)
 if ns.Config then
     try("Config:Toggle", ns.Config.Toggle, ns.Config)
-    for _, key in ipairs({ "home", "profiles", "about" }) do try("page " .. key, ns.Config.Show, ns.Config, key) end
+    for _, key in ipairs({ "home", "profiles", "about", "plugins" }) do try("page " .. key, ns.Config.Show, ns.Config, key) end
     for _, m in ipairs(ns.moduleList or {}) do try("page " .. m.key, ns.Config.Show, ns.Config, m.key) end
     for _, m in ipairs(ns.moduleList or {}) do
         try("toggle " .. m.key, ns.SetModuleEnabled, ns, m.key, false)

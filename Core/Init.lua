@@ -90,6 +90,7 @@ ns.Events:On("ADDON_LOADED", Init, function(_, _, name)
     if name ~= ADDON then return end
     ns.Events:Off("ADDON_LOADED", Init)
     ns.DB:Init()
+    ns.Plugins:Boot()
     ns:InitializeModules()
     RegisterNewSlashCommand(slash, "pui", "phoenix")
 end)

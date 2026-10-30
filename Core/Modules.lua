@@ -15,9 +15,17 @@ local CATEGORY_ORDER = { "system", "interface", "combat", "social", "utility" }
 ns.categories = CATEGORY_ORDER
 
 function ns:NewModule(key, def)
-    assert(not ns.modules[key], "duplicate module " .. key)
     def = def or {}
-    local m = setmetatable(def, Module)
+    local old = ns.modules[key]
+    assert(not old or old.placeholder, "duplicate module " .. key)
+    local m
+    if old then -- a plugin's code arriving for its placeholder (Core/Plugins.lua): keep the same table
+        for k in pairs(old) do old[k] = nil end
+        for k, v in pairs(def) do old[k] = v end
+        m = setmetatable(old, Module)
+    else
+        m = setmetatable(def, Module)
+    end
     m.key = key
     m.defaults = m.defaults or {}
     if m.defaults.enabled == nil then m.defaults.enabled = true end
@@ -28,7 +36,8 @@ function ns:NewModule(key, def)
     if not ns:Supports(m.feature) then m.unavailable, m.hidden = true, true end
     if m.descWithout and not ns:Supports(m.descWithout.feature) then m.desc = m.descWithout.desc end
     ns.modules[key] = m
-    ns.moduleList[#ns.moduleList + 1] = m
+    if not old then ns.moduleList[#ns.moduleList + 1] = m end
+    if old and ns.DB.profile then ns.DB:BindModule(m) end
     return m
 end
 
@@ -42,7 +51,7 @@ function ns:RegisterOptions(key, schema)
     ns.options[key] = ns:FilterSchema(schema)
 end
 
-local function sortModules()
+function ns:SortModules()
     local rank = {}
     for i, c in ipairs(CATEGORY_ORDER) do rank[c] = i end
     table.sort(ns.moduleList, function(a, b)
@@ -58,7 +67,7 @@ function Module:IsEnabled()
 end
 
 function Module:ShouldEnable()
-    if not self.db or self.unavailable then return false end
+    if not self.db or self.unavailable or self.placeholder then return false end
     if not self.locked and not self.db.enabled then return false end
     if self.requires then
         for _, dep in ipairs(self.requires) do
@@ -98,7 +107,11 @@ function ns:SetModuleEnabled(key, enabled)
     local m = ns.modules[key]
     if not m or m.locked then return end
     ns.DB:Set(m, "enabled", enabled and true or false)
-    if m.reloadOnToggle then
+    if m.placeholder and enabled and not m.reloadOnToggle then
+        ns.Combat:Run("module." .. key, function() ns.Plugins:Activate(key) end)
+        return
+    end
+    if m.reloadOnToggle or m.placeholder then
         m.needsReload = true
         ns.Events:Fire("PUI_MODULE_STATE", key, m.state)
         return
@@ -109,6 +122,7 @@ function ns:SetModuleEnabled(key, enabled)
 end
 
 function ns:ReloadModules()
+    ns.Plugins:LoadWanted()
     for _, m in ipairs(ns.moduleList) do
         if m.OnProfileChanged then
             ns.SafeCall(m.OnProfileChanged, m)
@@ -128,7 +142,7 @@ function ns:ReloadModules()
 end
 
 function ns:InitializeModules()
-    sortModules()
+    ns:SortModules()
     for _, m in ipairs(ns.moduleList) do
         if m.OnInitialize and not m.unavailable then
             if not ns.SafeCall(m.OnInitialize, m) then m.state = "errored" end

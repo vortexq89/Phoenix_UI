@@ -48,6 +48,7 @@ Config\Diagnostics.lua
 Config\Presets.lua
 Config\Installer.lua
 Config\About.lua
+Config\Plugins.lua
 Options\General.lua
 Options\Bugs.lua
 Options\Skins.lua

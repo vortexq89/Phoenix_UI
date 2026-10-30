@@ -23,4 +23,5 @@
     <Script file="Diag.lua"/>
     <Script file="DevDiag.lua"/>
     <Script file="API.lua"/>
+    <Script file="Plugins.lua"/>
 </Ui>
