@@ -20,12 +20,12 @@ SI.styles = {
     { key = "outlined", label = "SPECICON_OUTLINED", zoom = 0.08, border = "class", size = 2 },
     { key = "round", label = "SPECICON_ROUND", zoom = 0.06, mask = tx.MASK_CIRCLE },
     { key = "ringed", label = "SPECICON_RINGED", zoom = 0.06, mask = tx.MASK_CIRCLE, ring = tx.RING_CIRCLE, ringColor = "class" },
-    { key = "hex", label = "SPECICON_HEX", zoom = 0.06, mask = tx.MASK_HEX, ring = tx.RING_HEX, ringColor = "accent" },
+    { key = "hex", label = "SPECICON_HEX", zoom = 0.06, mask = T .. "MaskSpecHex", ring = T .. "RingSpecHex", ringColor = "class" },
     { key = "diamond", label = "SPECICON_DIAMOND", zoom = 0.02, mask = T .. "MaskDiamond", ring = T .. "RingDiamond", ringColor = "class" },
-    { key = "shield", label = "SPECICON_SHIELD", zoom = 0.06, mask = T .. "MaskShield", ring = T .. "RingShield", ringColor = "accent" },
+    { key = "shield", label = "SPECICON_SHIELD", zoom = 0.06, mask = T .. "MaskShield", ring = T .. "RingShield", ringColor = "class" },
     { key = "octagon", label = "SPECICON_OCTAGON", zoom = 0.06, mask = T .. "MaskOctagon", ring = T .. "RingOctagon", ringColor = "class" },
     { key = "squircle", label = "SPECICON_SQUIRCLE", zoom = 0.06, mask = T .. "MaskSquircle", ring = T .. "RingSquircle",
-      ringColor = "border" },
+      ringColor = "class" },
     { key = "glossy", label = "SPECICON_GLOSSY", zoom = 0.08, border = "black", gloss = true, shade = true },
     { key = "ember", label = "SPECICON_EMBER", zoom = 0.1, frame = T .. "FrameEmber", shade = true },
     { key = "mono", label = "SPECICON_MONO", zoom = 0.08, border = "theme", desaturate = true },
@@ -57,6 +57,9 @@ local function colorOf(which, class)
     if which == "class" then
         local c = class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
         if c then return c.r, c.g, c.b, 1 end
+        -- One rule for every ring and class border: the player's class colour, and a neutral border when the
+        -- class is unknown (never the accent, so a missing class can't read as a highlight).
+        return Theme:Color("border.strong")
     elseif which == "black" then
         return 0, 0, 0, 1
     elseif which == "border" then
@@ -145,7 +148,7 @@ function SI.Strip(row, getStyle, setStyle)
         ns.modules.General:OnSettingChanged("specIconStyle")
     end
     local h = CreateFrame("Frame", nil, row)
-    local size, gap, perRow = 24, 6, 8
+    local size, gap, perRow = 24, 4, 8
     h:SetSize(W.CONTROL_WIDTH, 2 * size + gap + 4)
     h.cells = {}
     for i, s in ipairs(SI.styles) do
