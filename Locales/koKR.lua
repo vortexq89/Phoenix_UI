@@ -701,7 +701,6 @@ local T = {
     LINK_CURSEFORGE = "CurseForge",
     LINK_WAGO = "Wago",
     LINK_GITHUB = "GitHub",
-    SLASH_COMMANDS = "명령어",
     SLASH_HELP_TEXT = "/pui – 설정 열기\n/pui edit – 편집 모드\n/pui bugs – 오류 뷰어 (/pui bugs clear, /pui bugs options)\n/pui movers – 창 이동 잠금/해제\n/pui profile <이름> – 프로필 전환\n/pui reset – 창 위치 초기화\n/pui <모듈> – 모듈로 이동\n/gg – 투기장 항복 (PvP 모듈)",
     RECOMMENDED = "추천 애드온",
     ABOUT_TOOLS = "도구",

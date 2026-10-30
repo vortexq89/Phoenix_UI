@@ -724,7 +724,6 @@ ns.RegisterLocale("enUS", {
     LINK_CURSEFORGE = "CurseForge",
     LINK_WAGO = "Wago",
     LINK_GITHUB = "GitHub",
-    SLASH_COMMANDS = "Slash commands",
     SLASH_HELP_TEXT = "/pui – open settings\n/pui edit – Edit Mode\n/pui bugs – bug viewer (/pui bugs clear, /pui bugs options)\n/pui movers – unlock or lock the movers\n/pui profile <name> – switch profile\n/pui reset – reset window position\n/pui <module> – jump to a module\n/gg – surrender an arena (PvP module)",
     RECOMMENDED = "Recommended addons",
     ABOUT_TOOLS = "Tools",

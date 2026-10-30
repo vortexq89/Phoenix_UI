@@ -701,7 +701,6 @@ local T = {
     LINK_CURSEFORGE = "CurseForge",
     LINK_WAGO = "Wago",
     LINK_GITHUB = "GitHub",
-    SLASH_COMMANDS = "命令",
     SLASH_HELP_TEXT = "/pui – 開啟設定\n/pui edit – 編輯模式\n/pui bugs – 錯誤檢視器（/pui bugs clear、/pui bugs options）\n/pui movers – 解鎖或鎖定框架移動\n/pui profile <名稱> – 切換設定檔\n/pui reset – 重置視窗位置\n/pui <模組> – 跳轉到模組\n/gg – 競技場投降（PvP 模組）",
     RECOMMENDED = "推薦插件",
     ABOUT_TOOLS = "工具",

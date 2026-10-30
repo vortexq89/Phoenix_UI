@@ -701,7 +701,6 @@ local T = {
     LINK_CURSEFORGE = "CurseForge",
     LINK_WAGO = "Wago",
     LINK_GITHUB = "GitHub",
-    SLASH_COMMANDS = "Команды",
     SLASH_HELP_TEXT = "/pui – открыть настройки\n/pui edit – режим редактирования\n/pui bugs – просмотр ошибок (/pui bugs clear, /pui bugs options)\n/pui movers – разблокировать или заблокировать перемещение\n/pui profile <имя> – сменить профиль\n/pui reset – сбросить положение окна\n/pui <модуль> – перейти к модулю\n/gg – сдаться на арене (модуль PvP)",
     RECOMMENDED = "Рекомендуемые модификации",
     ABOUT_TOOLS = "Инструменты",
