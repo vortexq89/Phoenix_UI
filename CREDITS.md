@@ -27,7 +27,7 @@ inner shade, ember frame) is Phoenix's own, procedurally drawn by tools/media/ge
 icon set is used: none of the WoW class/spec icon sets we found is CC0 or permissively licensed.
 
 ## Ember Bevel chrome icons (t169)
-`Media/Icons/Bevel64_*.tga`, `Bevel16_*.tga` and `Panel128_*.tga` (and their sources in `tools/media/chrome_bevel/`) are **original Phoenix art** (Phoenix UI
+`Media/Icons/Chrome/*.tga` (the Ember Bevel sets for the ember, frost, fel, arcane and neutral themes, and their glow and burst overlays) are **original Phoenix art** (Phoenix UI
 licence), generated procedurally by `tools/media/gen_chrome_bevel.py` and `tools/media/ember_bevel.py` from
 Phoenix's own 24-grid glyphs. Nothing is traced, copied or recoloured from Blizzard or any addon. They are used
 for Phoenix's UI chrome only, never for class, spec, ability, spell, item, mount, pet or toy icons.

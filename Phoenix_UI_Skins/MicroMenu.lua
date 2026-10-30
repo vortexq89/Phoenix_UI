@@ -34,24 +34,28 @@ function M.MicroState(button, hover)
     return "idle"
 end
 
+-- Ember Bevel (Skins > Micro menu style): the framed icon fills the button, its 4 px glow margin included.
+-- Returns true when the bevel is drawn (the flat tile is hidden).
+local function paintBevel(button, t, s)
+    local CB = ns.ChromeBevel
+    local bevel = M.db and M.db.microStyle ~= "flat" and t.bevelName and CB and true or false
+    t.bg:SetShown(not bevel)
+    t.glyph:SetShown(not bevel)
+    if t.bevel then CB:SetShown(t.bevel, bevel) end
+    if not bevel then return false end
+    local w, h = button:GetWidth() or 32, button:GetHeight() or 40
+    CB:SetSize(t.bevel, math.min(w, h))
+    local state = s == "disabled" and "disabled" or ((s == "hover" or s == "active") and "hover" or "normal")
+    if not t.bevel.flashing then CB:Set(t.bevel, t.bevelName, state) end
+    Skin:SetBorderColor(t, 0, 0, 0, 0) -- the bevel is the border
+    return true
+end
+
 local function paintTile(button)
     local t = tiles[button]
     if not t then return end
     local s = M.MicroState(button, t.hover)
-    -- Ember Bevel (Skins > Micro menu style): the framed ember icon fills the button, glow margin included
-    local bevel = M.db and M.db.microStyle ~= "flat" and t.bevelName and ns.ChromeBevel
-    t.bevel:SetShown(bevel and true or false)
-    t.bg:SetShown(not bevel)
-    t.glyph:SetShown(not bevel)
-    if bevel then
-        local w, h = button:GetWidth() or 32, button:GetHeight() or 40
-        local cell = math.min(w, h)
-        t.bevel:SetSize(cell, cell)
-        local state = s == "disabled" and "disabled" or ((s == "hover" or s == "active") and "hover" or "normal")
-        if not t.flashing then ns.ChromeBevel:Apply(t.bevel, t.bevelName, state, ns.ChromeBevel.FrameIn(cell)) end
-        Skin:SetBorderColor(t, 0, 0, 0, 0) -- the bevel is the border
-        return
-    end
+    if paintBevel(button, t, s) then return end
     W.Color(t.bg, s == "active" and "accent.primary" or "bg.raised", s == "active" and 0.22 or (s == "hover" and 1 or 0.92))
     Skin:SetBorderColor(t, (s == "hover" or s == "active") and "accent.primary" or "border.subtle")
     ns.Icons:Tint(t.glyph, (s == "hover" or s == "active") and "accent.primary" or "text.secondary", s == "disabled" and 0.4 or 1)
@@ -97,17 +101,15 @@ function M.SkinMicroButton(button, glyph, bevelName)
     t.glyph = W.Icon(t, glyph, 16, "text.secondary", "ARTWORK")
     t.glyph:SetPoint("CENTER")
     t.bevelName = bevelName and ns.ChromeBevel and ns.ChromeBevel.Has(bevelName) and bevelName or nil
-    t.bevel = t:CreateTexture(nil, "ARTWORK", nil, 1)
-    t.bevel:SetPoint("CENTER")
-    t.bevel:Hide()
-    -- pressed: the Ember Bevel light burst as a 0.25 s flash
+    if t.bevelName then
+        t.bevel = ns.ChromeBevel:Create(t, "ARTWORK", 1)
+        t.bevel.tex:SetPoint("CENTER")
+        ns.ChromeBevel:SetShown(t.bevel, false)
+    end
+    -- pressed: the light burst as a 0.25 s flash
     button:HookScript("OnMouseDown", function(self)
         local tt = tiles[self]
-        if tt and tt.bevel:IsShown() then
-            tt.flashing = true
-            ns.ChromeBevel:Flash(tt.bevel, tt.bevelName, ns.ChromeBevel.FrameIn(tt.bevel:GetWidth() or 32),
-                function() tt.flashing = nil; paintTile(self) end)
-        end
+        if tt and tt.bevel and tt.bevel.shown then ns.ChromeBevel:Flash(tt.bevel, function() paintTile(self) end) end
     end)
     tiles[button] = t
     button:HookScript("OnEnter", function(self) tiles[self].hover = true; fade(self); paintTile(self) end)

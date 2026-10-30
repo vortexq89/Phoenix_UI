@@ -185,14 +185,16 @@ function M.PanelFor(frame)
     end
 end
 local function paintPanel(frame, e, dialog)
-    local glyph = not dialog and M.db.panelIcons and M.PanelFor(frame)
+    local CB = ns.ChromeBevel
+    local glyph = CB and not dialog and M.db.panelIcons and M.PanelFor(frame)
     if glyph and not e.panel then
-        e.panel = frame:CreateTexture(nil, "OVERLAY", nil, 6)
-        e.panel:SetSize(M.PANEL_SIZE, M.PANEL_SIZE)
-        e.panel:SetPoint("TOPLEFT", -14, 14)
+        e.panel = CB:Create(frame, "OVERLAY", 5)
+        CB:SetSize(e.panel, M.PANEL_SIZE)
+        e.panel.tex:SetPoint("TOPLEFT", -14, 14)
     end
     if e.panel then
-        e.panel:SetShown(glyph and ns.ChromeBevel and ns.ChromeBevel:Apply(e.panel, glyph, "normal", M.PANEL_SIZE) or false)
+        CB:SetShown(e.panel, glyph and true or false)
+        if glyph then CB:Set(e.panel, glyph, "normal", M.PANEL_SIZE) end
     end
 end
 M._PaintPanel = paintPanel
@@ -253,7 +255,7 @@ local function unwindow(frame)
     end
     local e = extras[frame]
     if e and e.strip then e.strip:Hide() end
-    if e and e.panel then e.panel:Hide() end
+    if e and e.panel then ns.ChromeBevel:SetShown(e.panel, false) end
     local close = frame.CloseButton or frame.ClosePanelButton
     if close and extras[close] then
         for _, getter in ipairs(CLOSE_ART) do

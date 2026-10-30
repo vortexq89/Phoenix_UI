@@ -16,14 +16,18 @@ Writes, per state (normal, hover, pressed, disabled):
 and UI/ChromeBevelData.lua (name -> cell). Usage: python3 tools/media/gen_chrome_bevel.py"""
 import csv, os, sys
 from concurrent.futures import ProcessPoolExecutor
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import ember_bevel as eb
 from gen_chrome_color import PANEL, _mask
 
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-ART = os.path.join(HERE, "chrome_bevel")
+# the approved themed sets (t169) live outside the repo (large masters); point PUI_CHROME_ART elsewhere if needed
+ART = os.environ.get("PUI_CHROME_ART", "/workspace/phoenix-art/out/full/themes")
+MANIFEST = os.path.join(HERE, "chrome_bevel", "manifest.csv")
+# pre-rendered themes; class and custom accents use "neutral", tinted in game with SetVertexColor
+THEMES = {"ember": 20, "frost": 205, "fel": 105, "arcane": 275, "neutral": None}  # hue of each ramp (for overrides)
 STATES = ["normal", "hover", "pressed", "disabled"]
 
 # look-alike pairs, re-drawn on the 24 grid (t169): module-actionbars was close to tab-layout, module-groupframes to
@@ -97,32 +101,97 @@ def medallion(job):
     return eb.down(img, 128)
 
 
+def recolour(im, theme):
+    """Moves an ember-rendered override into another theme's family: the hue rotated, or grey for neutral."""
+    hue = THEMES[theme]
+    if theme == "ember":
+        return im
+    a = im.split()[3]
+    if hue is None:
+        g = ImageEnhance.Brightness(im.convert("L").convert("RGB")).enhance(1.25)
+        out = g.convert("RGBA")
+    else:
+        h, sat, v = im.convert("RGB").convert("HSV").split()
+        shift = int((hue - THEMES["ember"]) / 360 * 255)
+        h = h.point(lambda x: (x + shift) % 256)
+        out = Image.merge("HSV", (h, sat, v)).convert("RGB").convert("RGBA")
+    out.putalpha(a)
+    return out
+
+
+def boost(im, theme, size):
+    # arcane's violet ramp is dark at small sizes: lift contrast and brightness on its 16 px cells
+    if theme != "arcane" or size != 16:
+        return im
+    a = im.split()[3]
+    rgb = ImageEnhance.Brightness(ImageEnhance.Contrast(im.convert("RGB")).enhance(1.35)).enhance(1.15)
+    out = rgb.convert("RGBA"); out.putalpha(a)
+    return out
+
+
+_FILES = {}
+def src(theme, fname):
+    """Finds an approved file in a theme's category folders (micro/, settings/, panel_round/ ...)."""
+    if theme not in _FILES:
+        _FILES[theme] = {}
+        for sub in os.listdir(os.path.join(ART, theme)):
+            d = os.path.join(ART, theme, sub)
+            if os.path.isdir(d) and sub != "panel":  # panel/ holds the square references, panel_round/ ships
+                for f in os.listdir(d):
+                    _FILES[theme][f] = os.path.join(d, f)
+    return Image.open(_FILES[theme][fname]).convert("RGBA")
+
+
+def save(im, path):
+    im.save(path, compression="tga_rle")  # transparent margins compress well; WoW reads RLE TGA
+
+
+def overlays(out):
+    """White overlays, tinted in game: the hover/pressed glow in the 4 px margin (square and round) and the burst."""
+    M = 1024
+    eb.M, eb.S = M, M / 64
+    white = lambda a: Image.merge("RGBA", (*[Image.new("L", (M, M), 255)] * 3, a))
+    save(eb.down(white(eb.outer_glow(1.0).split()[3]), 64), os.path.join(out, "GlowSquare.tga"))
+    save(eb.down(white(eb.rays().split()[3]), 64), os.path.join(out, "Burst.tga"))
+    k, c = M / 128, M / 2
+    def disc(r):
+        m = Image.new("L", (M, M), 0); ImageDraw.Draw(m).ellipse([c - r, c - r, c + r, c + r], fill=255); return m
+    g = ImageChops.subtract(disc(58 * k), disc(52 * k)).filter(ImageFilter.GaussianBlur(3 * k))
+    save(eb.down(white(g.point(lambda v: min(255, int(v * 1.8)))), 128), os.path.join(out, "GlowRound.tga"))
+
+
 def main():
-    names = sorted(r["name"] for r in csv.DictReader(open(os.path.join(ART, "manifest.csv"))) if r["category"] != "panel")
+    names = sorted(r["name"] for r in csv.DictReader(open(MANIFEST)) if r["category"] not in ("panel", "panel_round"))
     panels = sorted(PANEL_GLYPHS)
     assert len(names) <= 128 and len(panels) <= 32
-    out = os.path.join(ROOT, "Media", "Icons")
+    out = os.path.join(ROOT, "Media", "Icons", "Chrome")
+    os.makedirs(out, exist_ok=True)
     with ProcessPoolExecutor() as ex:
-        over = dict(zip([(n, s, z) for n in OVERRIDES for s in STATES for z in (64, 16)],
-                        ex.map(square, [(n, s, z, z == 16) for n in OVERRIDES for s in STATES for z in (64, 16)])))
+        keys = [(n, s, z) for n in OVERRIDES for s in STATES for z in (64, 16)]
+        over = dict(zip(keys, ex.map(square, [(n, s, z, z == 16) for n, s, z in keys])))
         mine = ["panel-collections"]
         med = dict(zip([(n, s) for n in mine for s in STATES], ex.map(medallion, [(n, s) for n in mine for s in STATES])))
-    for n in panels:
-        for st in STATES:
-            src = os.path.join(ART, "panel_round", f"{n}_{st}_128.png")
-            if (n, st) not in med:
-                med[(n, st)] = Image.open(src).convert("RGBA")
-    for st in STATES:
-        for z, tag in ((64, "Bevel64"), (16, "Bevel16")):
-            im = Image.new("RGBA", (16 * z, 8 * z), (0, 0, 0, 0))
-            for i, n in enumerate(names):
-                tile = over.get((n, st, z)) or Image.open(os.path.join(ART, f"{n}_{st}_{z}.png")).convert("RGBA")
-                im.alpha_composite(tile, ((i % 16) * z, (i // 16) * z))
-            im.save(os.path.join(out, f"{tag}_{st}.tga"))
-        im = Image.new("RGBA", (1024, 512), (0, 0, 0, 0))
-        for i, n in enumerate(panels):
-            im.alpha_composite(med[(n, st)], ((i % 8) * 128, (i // 8) * 128))
-        im.save(os.path.join(out, f"Panel128_{st}.tga"))
+    for theme in THEMES:
+        # disabled is grey whatever the theme: one shared set, taken from neutral
+        # only the normal look ships per theme (size): hover and pressed are drawn in game from it with the
+        # shared glow and light-burst overlays below (UI/ChromeBevel.lua)
+        states = ["normal", "disabled"] if theme == "neutral" else ["normal"]
+        for st in states:
+            tag = "Disabled" if st == "disabled" else f"{theme.capitalize()}_{st}"
+            for z in (64, 16):
+                im = Image.new("RGBA", (16 * z, 8 * z), (0, 0, 0, 0))
+                for i, n in enumerate(names):
+                    tile = over.get((n, st, z))
+                    tile = recolour(tile, theme) if tile else src(theme, f"{n}_{st}_{z}.png")
+                    im.alpha_composite(boost(tile, theme, z), ((i % 16) * z, (i // 16) * z))
+                save(im, os.path.join(out, f"{tag}{z}.tga"))
+            im = Image.new("RGBA", (1024, 512), (0, 0, 0, 0))
+            for i, n in enumerate(panels):
+                tile = med.get((n, st))
+                tile = recolour(tile, theme) if tile else src(theme, f"{n}_{st}_128.png")
+                im.alpha_composite(tile, ((i % 8) * 128, (i // 8) * 128))
+            save(im, os.path.join(out, f"{tag}Panel.tga"))
+    overlays(out)
     lines = ["-- Generated by tools/media/gen_chrome_bevel.py: chrome glyph -> cell (0-based). Do not edit.",
              "local _, ns = ...", "ns.ChromeBevelData = {", "    cells = {"]
     lines += [f'        ["{n}"] = {i},' for i, n in enumerate(names)]
@@ -130,7 +199,7 @@ def main():
     lines += [f'        ["{n}"] = {i},' for i, n in enumerate(panels)]
     lines += ["    },", "}", ""]
     open(os.path.join(ROOT, "UI", "ChromeBevelData.lua"), "w").write("\n".join(lines))
-    print(len(names), "chrome icons,", len(panels), "panels")
+    print(len(names), "chrome icons,", len(panels), "panels,", len(THEMES), "themes")
 
 
 if __name__ == "__main__":

@@ -2179,23 +2179,38 @@ try("micro menu ember bevel", function()
     assert(CB and ns.ChromeBevelData, "ChromeBevel not loaded")
     for _, e in ipairs(S.MICRO) do assert(CB.Has(e[3]), "no bevel cell for " .. tostring(e[3])) end
     assert(CB.CellFor(56) == 64 and CB.FrameIn(64) == 56, "4 px glow margin at 64")
-    local tex = CreateFrame("Frame"):CreateTexture()
-    local path
-    tex.SetTexture = function(_, p) path = p end
-    assert(CB:Apply(tex, "micro-character", "hover", 16) and path:find("Bevel16_hover"), "16 px uses the simplified cell")
-    assert(CB:Apply(tex, "micro-character", "pressed", 28) and path:find("Bevel64_pressed"), "28 px uses the 64 cell")
-    assert(CB:Apply(tex, "panel-bags", "normal", 60) and path:find("Panel128_normal"), "panel at 60 px uses 128")
-    assert(not CB:Apply(tex, "not-a-glyph"), "unknown glyph refused")
+    -- the sheet follows the theme: ember / frost / fel / arcane own sheets, class and custom tint neutral
+    local Theme = ns.Theme
+    local was = Theme.settings.preset
+    for _, key in ipairs({ "ember", "frost", "fel", "arcane" }) do
+        Theme.settings.preset = key
+        local fam, tinted = CB.Family()
+        assert(fam == key and not tinted, key .. ": own sheet")
+        assert(CB.Cell("micro-guild", 28):find(key:sub(1, 1):upper() .. key:sub(2) .. "_normal64"), key .. ": 64 sheet")
+        assert(CB.Cell("micro-guild", 16):find("_normal16"), key .. ": 16 px uses the simplified sheet")
+    end
+    Theme.settings.preset = "class"
+    local fam, tinted = CB.Family()
+    assert(fam == "neutral" and tinted, "class accent tints the neutral sheet")
+    assert(CB.Cell("panel-vault", 60):find("Neutral_normalPanel"), "panel medallion sheet")
+    assert(not CB.Cell("not-a-glyph", 28), "unknown glyph refused")
+    local ic = CB:Create(CreateFrame("Frame"))
+    CB:SetSize(ic, 32)
+    assert(CB:Set(ic, "micro-guild", "pressed"), "set pressed")
+    assert(ic.glow:IsShown() and ic.burst:IsShown() and ic.lift:IsShown(), "pressed: glow, burst and lift")
+    CB:Set(ic, "micro-guild", "normal")
+    assert(not ic.glow:IsShown() and not ic.burst:IsShown(), "normal: no overlays")
+    Theme.settings.preset = "frost"; CB:Refresh()
+    Theme.settings.preset = was; CB:Refresh()
     local b = CreateFrame("Button", "GuildMicroButton", UIParent)
     b:SetSize(32, 40)
     local t = S.SkinMicroButton(b, "guild", "micro-guild")
-    local was = S.db.microStyle
+    local style = S.db.microStyle
     S.db.microStyle = "bevel"; S.PaintMicro(b)
-    assert(t.bevel:IsShown() and not t.glyph:IsShown(), "bevel style shows the framed icon")
+    assert(t.bevel.shown and not t.glyph:IsShown(), "bevel style shows the framed icon")
     S.db.microStyle = "flat"; S.PaintMicro(b)
-    assert(not t.bevel:IsShown() and t.glyph:IsShown(), "flat style shows the tile glyph")
-    S.db.microStyle = was
-    -- every panel the Skins map names has a medallion cell, and the vault is the 28th
+    assert(not t.bevel.shown and t.glyph:IsShown(), "flat style shows the tile glyph")
+    S.db.microStyle = style
     for key, glyph in pairs(S.PANEL_FOR) do assert(ns.ChromeBevelData.panels[glyph], key .. ": no medallion " .. glyph) end
     local n = 0
     for _ in pairs(ns.ChromeBevelData.panels) do n = n + 1 end
@@ -2204,9 +2219,9 @@ try("micro menu ember bevel", function()
     local hadFor = S.PanelFor
     S.PanelFor = function() return "panel-mail" end
     S.db.panelIcons = true; S._PaintPanel(f, e, false)
-    assert(e.panel and e.panel:IsShown(), "medallion shown")
+    assert(e.panel and e.panel.shown, "medallion shown")
     S.db.panelIcons = false; S._PaintPanel(f, e, false)
-    assert(not e.panel:IsShown(), "medallion hidden with the switch off")
+    assert(not e.panel.shown, "medallion hidden with the switch off")
     S.db.panelIcons = true; S.PanelFor = hadFor
 end)
 -- t156: Blizzard's OnLeave / SetNormal put the micro art back; the skin fades it again, and off restores it

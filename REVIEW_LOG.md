@@ -63,3 +63,17 @@ checked against the shipping code (Phoenix Font, the merged 78 px header) before
 - Not wired yet: the settings rail, tabs and module tiles, the macro window and the window controls still use the
   flat glyphs. The atlases and `ns.ChromeBevel:Apply` are in place for them.
 - Credited as original Phoenix art in CREDITS.md. Class, spec and ability icons are never touched.
+
+## 5. Themed Ember Bevel sets (t169, approved)
+- Ember, frost, fel and arcane use their own pre-rendered sheets. Class and custom accents use the neutral sheet,
+  tinted with the accent through SetVertexColor. Icons swap live on PUI_THEME_CHANGED.
+- Arcane's 16 px cells (the ones drawn at 20 px or less) get +35% contrast and +15% brightness.
+- Size: only the in-game sizes ship (64, 16, and 128 for panels), with no 256 masters. Only the normal look
+  ships per theme, plus one shared grey disabled set. Hover and pressed are drawn in game: a theme-coloured glow
+  overlay in the 4 px margin (square or round), an additive lift (12% hover, 20% pressed) and, when pressed, the
+  light-burst overlay as a 0.25 s flash. `Media/Icons/Chrome` is about 13 MB, against about 37 MB with every
+  state pre-rendered.
+- The re-drawn look-alike icons (module-actionbars, module-groupframes, panel-collections) are hue-shifted into
+  each theme, or made grey for neutral.
+- The sources (the approved theme folders) stay outside the repo; `gen_chrome_bevel.py` reads them through
+  `PUI_CHROME_ART`.
