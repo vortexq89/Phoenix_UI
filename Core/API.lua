@@ -6,7 +6,7 @@ local _, ns = ...
     Plugins are ordinary Phoenix modules: they get saved settings in the active profile, live on/off from the
     module list, a settings page in the v4 Flow layout, Layout-mode movers and the theme. ]]
 
-local API_MAJOR, API_MINOR = 1, 1 -- 1.1 (t169): the art kit theme API (OverrideArt, RegisterIcon, ArtToken …)
+local API_MAJOR, API_MINOR = 1, 2 -- 1.1: art kit theme API; 1.2: v8.1 slots (DressArt, ArtEnabled), GetState, On returns ok
 local api = {}
 
 api.API_MAJOR, api.API_MINOR = API_MAJOR, API_MINOR
@@ -52,6 +52,15 @@ end
 function api:GetPlugin(key)
     local m = ns.modules[key]
     return m and m.thirdParty and m or nil
+end
+
+-- A plugin's lifecycle state ("disabled" | "enabled" | "errored" ...) and, for a built-in plugin, why it did not load.
+-- Watch PUI_MODULE_STATE (Listen) to see it change.
+function api:GetState(key)
+    local m = ns.modules[key]
+    if not m then return nil end
+    local p = ns.Plugins and ns.Plugins.byKey[key]
+    return m.state, p and p.reason or m.lastError
 end
 
 -- Settings page rows (same schema as Phoenix's own pages: header, toggle, range, select, color, texture, input,
@@ -106,11 +115,15 @@ function api:SetModuleIcon(moduleKey, iconKey) ns.Art:SetModuleIcon(moduleKey, i
 -- Paint a texture with an atlas piece ("card", "btn_pri_normal" …) or an icon ("status_enabled", "mod_chat" …).
 function api:PaintArt(tex, piece) return ns.Art:Paint(tex, piece) end
 function api:PaintIcon(tex, key) return ns.Art:Icon(tex, key) end
+-- v8.1 (THEME_API §7.04): dress a frame with a module slot ("Toast.frame", "Cooldowns.icon" ...); opts as UI/ArtKit.lua
+function api:DressArt(frame, slot, opts) return ns.Art.DressSlot and ns.Art:DressSlot(frame, slot, opts) end
+-- true while the phoenix-wings look draws game-frame art
+function api:ArtEnabled() return ns.Art.GameArt ~= nil and ns.Art.GameArt() end
 
 ---------------------------------------------------------------- events
 -- Game events and Phoenix messages ("PUI_THEME_CHANGED", "PUI_PROFILE_CHANGED", "PUI_MODULE_STATE",
 -- "PUI_SETTING_CHANGED", "PUI_COMBAT_END"). owner: any table, used to unregister.
-function api:On(event, owner, fn) ns.Events:On(event, owner, fn) end
+function api:On(event, owner, fn) return ns.Events:On(event, owner, fn) end
 function api:Off(event, owner) ns.Events:Off(event, owner) end
 function api:Listen(message, owner, fn) ns.Events:Listen(message, owner, fn) end
 -- Run fn now, or as soon as combat ends (protected changes).
