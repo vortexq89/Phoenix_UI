@@ -91,7 +91,7 @@ ns:RegisterOptions("Quests", {
       keywords = "quest giver location where coordinates tooltip" },
     { type = "toggle", key = "mapSearch", label = "QUESTS_MAP_SEARCH", desc = "QUESTS_MAP_SEARCH_DESC",
       keywords = "world map search find npc name waypoint" },
-    { type = "toggle", key = "waySlash", label = "QUESTS_WAY_SLASH", desc = "QUESTS_WAY_SLASH_DESC", reload = true,
+    { type = "toggle", key = "waySlash", label = "QUESTS_WAY_SLASH", desc = "QUESTS_WAY_SLASH_DESC",
       keywords = "/way tomtom waypoint coordinates command" },
     { type = "header", label = "QUESTS_EXPANSIONS", icon = "filter" },
     { type = "toggle", key = "slices.midnight", label = "QUESTS_SLICE_MIDNIGHT", feature = "questSliceRetail",

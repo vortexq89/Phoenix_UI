@@ -358,6 +358,7 @@ function M:Refresh()
     self.decoded = self.data and {} or self.decoded
     self.npcIndex = nil
     self:EnableMapSearch()
+    self:RegisterWay()
     self:RefreshTracker()
     self:RefreshPins()
     self:RefreshArrow()

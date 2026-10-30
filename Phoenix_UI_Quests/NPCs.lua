@@ -213,9 +213,10 @@ end
 ---------------------------------------------------------------- slash /way
 -- /way is TomTom's command; Phoenix registers it only when TomTom is not loaded (/pway always works).
 function M:RegisterWay()
+    -- live: registered the first time the option is on; the handler reads the option, so off is a no-op without /reload
     if self.wayRegistered or not self.db.waySlash then return end
     self.wayRegistered = true
-    local function way(msg) if M:IsEnabled() then M:Way(msg) end end
+    local function way(msg) if M:IsEnabled() and M.db.waySlash then M:Way(msg) end end
     if C_AddOns.IsAddOnLoaded("TomTom") then
         RegisterNewSlashCommand(way, "pway", "phoenixway")
     else
