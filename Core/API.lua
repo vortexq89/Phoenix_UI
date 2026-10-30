@@ -37,12 +37,15 @@ function api:RegisterPlugin(key, def)
     -- third-party keys are namespaced ("Vendor_Name"), so a later Phoenix plugin key can never be taken over
     check(key:find("_", 2, true) and not key:find("^Phoenix") and not (ns.Plugins and ns.Plugins.byKey[key])
         and not RESERVED[key], "plugin key must be Vendor_Name and not a Phoenix key: " .. key)
+    local copy = {} -- the module is a copy: one def table registered twice must not share state (L5)
+    for k, v in pairs(def) do copy[k] = v end
+    def = copy
     def.thirdParty = true
     def.label, def.desc = def.label or key, def.desc or ""
     def.icon = def.icon or "general"
     local m = ns:NewModule(key, def)
     -- Registered after Phoenix loaded its profile: bind, initialize and (after login) enable now.
-    if ns.DB:BindModule(m) then
+    if ns.DB.profile then -- NewModule already bound it (L6)
         if m.OnInitialize and not ns.SafeCall(m.OnInitialize, m) then m.state = "errored" end
         if IsLoggedIn() and m.state ~= "errored" and m:ShouldEnable() then m:Enable() end
     end
@@ -73,12 +76,24 @@ end
 
 -- Layout-mode mover. store = { get = fn -> { point, x, y }, set = fn(v), apply = fn(), reset = fn() } (all optional;
 -- without a store Phoenix saves the position itself).
+-- Movers off or not loaded yet: the registration is queued and replayed when it loads (returns false meanwhile).
+local pendingMovers = {}
+local function liveMovers()
+    local m = ns:GetModule("Movers")
+    return m and not m.placeholder and m.Register and m or nil
+end
 function api:RegisterMover(key, frame, label, store)
-    local movers = ns:GetModule("Movers")
     check(frame and frame.GetObjectType, "mover needs a frame")
+    local movers = liveMovers()
     if movers then movers:Register(key, frame, label, store) return true end
+    pendingMovers[key] = { frame, label, store }
     return false
 end
+ns.Events:Listen("PUI_MODULE_STATE", pendingMovers, function()
+    local movers = next(pendingMovers) and liveMovers()
+    if not movers then return end
+    for key, v in pairs(pendingMovers) do movers:Register(key, v[1], v[2], v[3]); pendingMovers[key] = nil end
+end)
 
 ---------------------------------------------------------------- theme and fonts
 -- Colour of a theme token ("accent.primary", "text.primary", "text.secondary", "bg.base", "bg.raised",
