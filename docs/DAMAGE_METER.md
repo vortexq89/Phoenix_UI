@@ -56,3 +56,39 @@ rate), per-window mode and segment, Threat (Forever), Blizzard skin, Details!.
 
 `Modules/DamageMeter/Meter.lua` (engine and windows), `Modules/DamageMeter/DamageMeter.lua` (module, Blizzard skin),
 `Phoenix_UI_Options/Options/DamageMeter.lua` (page), harness test "phoenix damage meter".
+
+## 5. Round 2 (t160): parity with EllesmereUI and beyond
+
+Audit of EllesmereUI Damage Meters 9.6.1 (defaults table and window code), with Details! and Skada for ideas.
+
+| Feature | EllesmereUI | Phoenix |
+|---|---|---|
+| C_DamageMeter data, 11 modes, current / overall / any fight | yes | yes |
+| Up to N windows, each its own mode and segment | yes (several) | yes (3), movers |
+| Spell breakdown of a player | yes | yes (click) |
+| Per-target list of a player | yes | yes (shift-click, from Enemy Damage Taken) |
+| Death recap (last hits) | yes | yes (Deaths mode tooltip, C_DeathRecap) |
+| Hover tooltip, spell tooltips in breakdown | yes | yes (top spells, game spell tooltip) |
+| Pin yourself | yes | yes, with your real rank |
+| Number formats | 4 | 4 (both, pipe, total, rate) |
+| Bar colour class / accent / custom, fill alpha, bar background | yes | yes |
+| Name / value text in class colour | yes | yes |
+| Bar texture and font pickers | yes | yes (Phoenix media pickers, shared with the Blizzard skin) |
+| Header height, hide Reset | yes | yes |
+| Visibility always / combat / group, refresh rate | yes | yes, plus out-of-combat fade |
+| Keybinds (toggle, reset) | yes | yes (override bindings, out of combat) |
+| Blizzard / classic look | yes | "Blizzard" engine keeps the skinned Blizzard meter |
+| Spell history | yes (own strip) | Phoenix's separate Spell History module |
+| Standalone big combat timer | yes | not built (the header clock covers the fight time) |
+| Text offsets, icon borders, header colours | yes | not built (theme tokens drive them) |
+| **Extras beyond EllesmereUI** | | |
+| Report to chat (auto / party / raid / instance / guild / only me) | no | yes |
+| Compare two players spell by spell | no | yes (ctrl-click two) |
+| Per-fight graph of your amount | no | yes (window ... menu) |
+| Presets per role (solo, DPS, healer, tank, raid, Mythic+) | no | yes |
+| Window lock, click-through | no | yes |
+| Role filter (tanks / healers / damage), from never-secret spec icons | no | yes |
+| Live settings preview drawn by the meter's own row code | no | yes |
+
+Rules kept: everything that needs arithmetic (tooltips, targets, compare, report, graph) only runs on plain values,
+so after combat; during combat those views explain why and the rows keep updating from secret sinks.

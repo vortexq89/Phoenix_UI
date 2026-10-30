@@ -16,9 +16,12 @@ local M = ns:NewModule("DamageMeter", {
         -- "phoenix": Phoenix's own meter windows (Meter.lua, docs/DAMAGE_METER.md); "blizzard": Blizzard's window, skinned
         engine = "phoenix",
         meter = {
-            windows = 1, width = 280, rows = 8, rowHeight = 18, spacing = 2,
-            classColor = true, specIcon = true, rank = true, valueFormat = "both", clock = true,
-            visibility = "always", idleAlpha = 1, rate = 0.3,
+            windows = 1, width = 280, rows = 8, rowHeight = 18, spacing = 2, headerHeight = 22,
+            barColor = "class", customColor = { r = 0.35, g = 0.55, b = 0.8 }, barAlpha = 0.85, trackAlpha = 0.35,
+            sheen = true, nameClassColor = false, valueClassColor = false,
+            specIcon = true, rank = true, valueFormat = "both", clock = true, hideReset = false,
+            visibility = "always", idleAlpha = 1, rate = 0.3, tooltip = true, pinSelf = true, filter = "all",
+            lock = false, reportLines = 5, reportChannel = "AUTO", toggleKey = "", resetKey = "", preset = "solo",
             win1 = { type = 0, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -16, y = 220 },
             win2 = { type = 2, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -306, y = 220 },
             win3 = { type = 7, segment = 0, overall = false, point = "BOTTOMRIGHT", x = -16, y = 420 },

@@ -10,6 +10,10 @@
   spells. Rank, spec icon, class colour, your row outlined, fight clock, out-of-combat fade, visibility rules; every
   setting live. Combat values stay secret and only reach the bars and text. Damage Meter > Meter
   (docs/DAMAGE_METER.md). The plugin now also switches on and off without a reload.
+- **Damage meter, round 2** (t160): per-target lists (shift-click), compare two players (ctrl-click two), death recap
+  tooltips, top-spell tooltips, report to chat, a per-fight graph, role filters, pin yourself, role presets, window
+  lock, keybinds (show / hide, reset), four number formats, bar colour class / accent / custom with opacity and
+  background, class-coloured text, header height, and the settings preview now draws the real meter rows.
 - **Map reveal** (WoW Forever): zone maps also show the parts you have not explored yet, tinted in the accent colour
   (switch and opacity on Minimap > World map). The pieces are the client's own map overlays, generated from its
   WorldMapOverlay tables by tools/mapreveal/build.py; explored parts stay Blizzard's.

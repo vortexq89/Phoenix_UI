@@ -8025,7 +8025,8 @@ try("phoenix font and expressway", function()
     assert(not M.FontLoads("") and not M.FontLoads(nil), "the font probe accepts an empty path")
 end)
 
--- Phoenix damage meter (docs/DAMAGE_METER.md): rows from C_DamageMeter, secret amounts and names only reach sinks
+-- Phoenix damage meter (docs/DAMAGE_METER.md): rows from C_DamageMeter, secret amounts and names only reach sinks;
+-- breakdown, targets, compare, graph, report, recap, filters, pinning, presets and keys
 try("phoenix damage meter", function()
     local DM = ns.modules.DamageMeter
     ns.Util.MergeDefaults(DM.db, DM.defaults) -- PLAYER_LOGOUT above stripped the saved settings
@@ -8033,60 +8034,132 @@ try("phoenix damage meter", function()
     local SECRET = setmetatable({}, { __tostring = function() return "<secret>" end, __lt = bad("compared"),
         __le = bad("compared"), __add = bad("added"), __sub = bad("subtracted"), __div = bad("divided"),
         __mul = bad("multiplied"), __concat = bad("concatenated"), __len = bad("measured") })
-    local saved = { C_DamageMeter = rawget(env, "C_DamageMeter"), issecretvalue = rawget(env, "issecretvalue"),
-        AbbreviateNumbers = rawget(env, "AbbreviateNumbers") }
+    local names = { "C_DamageMeter", "issecretvalue", "AbbreviateNumbers", "C_DeathRecap", "C_ChatInfo", "DEFAULT_CHAT_FRAME",
+        "IsControlKeyDown", "IsShiftKeyDown", "UnitAffectingCombat" }
+    local saved = {}
+    for _, k in ipairs(names) do saved[k] = rawget(env, k) end
+    rawset(env, "UnitAffectingCombat", function() return false end)
     local oldIs = ns.Secret.IsSecret
     rawset(env, "issecretvalue", function(v) return v == SECRET end)
     ns.Secret.IsSecret = env.issecretvalue
     rawset(env, "AbbreviateNumbers", function(v) return v == SECRET and SECRET or tostring(v) end)
-    local secretMode, resets = false, 0
+    local ctrl, shift = false, false
+    rawset(env, "IsControlKeyDown", function() return ctrl end)
+    rawset(env, "IsShiftKeyDown", function() return shift end)
+    local chat, sent = {}, {}
+    rawset(env, "DEFAULT_CHAT_FRAME", { AddMessage = function(_, t) chat[#chat + 1] = t end })
+    rawset(env, "C_ChatInfo", setmetatable({ SendChatMessage = function(t, ch) sent[#sent + 1] = ch .. ":" .. t end },
+        { __index = saved.C_ChatInfo }))
+    rawset(env, "C_DeathRecap", { GetRecapEvents = function(id)
+        assert(id == 7, "recap id"); return { { spellName = "Fireball", amount = 5000, currentHP = 0 }, { spellName = SECRET, amount = SECRET } }
+    end })
+    local secretMode, resets, count = false, 0, 12
     local function src(i)
         if secretMode then
             return { name = SECRET, sourceGUID = SECRET, totalAmount = SECRET, amountPerSecond = SECRET, classFilename = "MAGE",
-                specIconID = 135932, isLocalPlayer = i == 1 }
+                specIconID = 135932, isLocalPlayer = i == count, deathRecapID = 0 }
         end
         return { name = "P" .. i, sourceGUID = "Player-1-" .. i, totalAmount = 1000 / i, amountPerSecond = 100 / i,
-            classFilename = "WARRIOR", specIconID = 0, isLocalPlayer = false }
+            classFilename = "WARRIOR", specIconID = 0, isLocalPlayer = i == count, deathRecapID = 7 }
+    end
+    local function sources(t)
+        if t == 10 then return { { name = "Boss", sourceGUID = "Creature-1", sourceCreatureID = 9, totalAmount = 1 } } end
+        local out = {}
+        for i = 1, count do out[i] = src(i) end
+        return out
     end
     rawset(env, "C_DamageMeter", {
         GetCombatSessionFromType = function(_, t)
             assert(type(t) == "number", "meter type")
-            return { combatSources = { src(1), src(2), src(3) }, maxAmount = secretMode and SECRET or 1000 }
+            return { combatSources = sources(t), maxAmount = secretMode and SECRET or 1000 }
         end,
-        GetCombatSessionFromID = function() return { combatSources = { src(1) }, maxAmount = 1 } end,
-        GetCombatSessionSourceFromType = function(_, _, guid)
+        GetCombatSessionFromID = function(_, t) return { combatSources = sources(t), maxAmount = 1000 } end,
+        GetCombatSessionSourceFromType = function(_, t, guid)
             assert(not secretMode and type(guid) == "string", "breakdown asked with a secret GUID")
-            return { combatSpells = { { spellID = 133, totalAmount = 600, amountPerSecond = 60 } }, maxAmount = 600 }
+            if t == 10 then
+                return { combatSpells = { { spellID = 1, totalAmount = 300, combatSpellDetails = { unitName = "P2" } },
+                    { spellID = 2, totalAmount = 200, combatSpellDetails = { unitName = "P3" } } }, maxAmount = 300 }
+            end
+            return { combatSpells = { { spellID = 133, totalAmount = guid == "Player-1-2" and 600 or 400, amountPerSecond = 60 } },
+                maxAmount = 600 }
         end,
-        GetAvailableCombatSessions = function() return { { sessionID = 4, name = "Boss", durationSeconds = 95 } } end,
+        GetAvailableCombatSessions = function() return { { sessionID = 4, name = "Boss", durationSeconds = 95 },
+            { sessionID = 5, name = "", durationSeconds = 30 } } end,
         GetSessionDurationSeconds = function() return 75 end,
         ResetAllCombatSessions = function() resets = resets + 1 end,
     })
     local db = DM.db
     local keep = { db.engine, db.meter.windows }
-    db.engine, db.meter.windows = "phoenix", 3
+    db.engine, db.meter.windows, db.meter.rows = "phoenix", 3, 8
     DM:SetupMeter()
     local w = DM.meterWindows[1]
     assert(w and w:IsShown() and DM.meterWindows[3]:IsShown(), "meter windows not shown")
-    assert(w.rows[1]:IsShown() and w.rows[3]:IsShown() and not (w.rows[4] and w.rows[4]:IsShown()), "rows")
+    assert(w.rows[8]:IsShown() and not (w.rows[9] and w.rows[9]:IsShown()), "rows")
+    -- pin yourself: you are 12th of 12, so the last row is you with your real rank
+    assert(w.rows[8].src.isLocalPlayer and w.rows[8].rankShown == 12, "pinned self")
+    db.meter.pinSelf = false; DM:RefreshMeter()
+    assert(not w.rows[8].src.isLocalPlayer, "pin off")
+    db.meter.pinSelf = true
     assert(DM.Clock(75) == "1:15" and DM.Clock(SECRET) == nil, "clock")
-    -- breakdown out of combat, then back
-    DM:OpenBreakdown(w, 2)
-    assert(w.focus and w.focus.name == "P2" and w.rows[1]:IsShown() and not w.rows[2]:IsShown(), "breakdown")
-    DM:Back(w)
-    assert(not w.focus, "back")
-    -- in combat: every value is secret; painting must only pass them on, and a breakdown must not open
+    -- breakdown, targets, compare (out of combat)
+    DM:RowClick(w, w.rows[2], "LeftButton")
+    assert(w.view and w.view.kind == "spells" and w.view.name == "P2" and w.rows[1]:IsShown() and not w.rows[2]:IsShown(), "spells")
+    DM:RowTooltip(w, w.rows[1])
+    DM:RowClick(w, w.rows[1], "RightButton")
+    assert(not w.view, "back")
+    shift = true; DM:RowClick(w, w.rows[2], "LeftButton"); shift = false
+    assert(w.view and w.view.kind == "targets" and rawget(w.rows[1].name, "__text") == "Boss", "targets")
+    local t = DM.Targets(DM.db.meter.win1, "P2")
+    assert(#t == 1 and t[1].amount == 300, "per-target total")
+    DM:RowClick(w, w.rows[1], "RightButton")
+    ctrl = true; DM:RowClick(w, w.rows[2], "LeftButton"); DM:RowClick(w, w.rows[3], "LeftButton"); ctrl = false
+    assert(w.view and w.view.kind == "compare" and w.view.otherName == "P3", "compare")
+    DM:RowClick(w, w.rows[1], "RightButton")
+    -- graph, report, death recap, tooltips
+    w.view = { kind = "graph" }; DM:RefreshMeter()
+    assert(w.bars[2] and w.bars[2]:IsShown(), "graph columns")
+    w.view = nil
+    local series = DM.FightSeries(0, 12)
+    assert(#series == 2 and series[1].amount > 0 and series[2].name ~= "", "fight series")
+    DM:Report(w, "SELF")
+    assert(#chat == 1 + db.meter.reportLines and chat[2]:find("P1"), "report to own chat")
+    DM:Report(w, "GUILD")
+    assert(#sent >= 2 and sent[1]:find("^GUILD:"), "report to guild")
+    local recap = DM.RecapLines(7, 5)
+    assert(#recap == 2 and recap[1].name == "Fireball" and recap[2].name == "?", "recap skips secret fields")
+    db.meter.win1.type = 9; DM:RefreshMeter(); DM:RowTooltip(w, w.rows[1]); db.meter.win1.type = 0
+    DM:RowTooltip(w, w.rows[1])
+    -- in combat: every value is secret; painting only passes them on; detail views refuse
     secretMode = true
-    for _, fmt in ipairs({ "both", "total", "rate" }) do db.meter.valueFormat = fmt; DM:RefreshMeter() end
+    for _, fmt in ipairs(DM.FORMATS) do db.meter.valueFormat = fmt; DM:RefreshMeter() end
+    for _, c in ipairs({ "class", "accent", "custom" }) do db.meter.barColor = c; DM:RefreshMeter() end
+    db.meter.nameClassColor, db.meter.valueClassColor = true, true
     for id = 0, 10 do db.meter.win1.type = id; DM:RefreshMeter() end
-    DM:OpenBreakdown(w, 1)
-    assert(not w.focus, "a secret GUID opened a breakdown")
+    db.meter.win1.type = 0; DM:RefreshMeter()
+    DM:RowClick(w, w.rows[1], "LeftButton")
+    assert(not w.view, "a secret GUID opened a breakdown")
+    DM:RowTooltip(w, w.rows[1])
+    assert(DM.ReportLines(w, 5) == nil, "report with secret values")
     secretMode = false
-    db.meter.win1.type, db.meter.valueFormat = 0, "both"
-    -- live settings: fewer windows and rows, then the plugin off and on again
+    db.meter.win1.type, db.meter.valueFormat, db.meter.barColor = 0, "both", "class"
+    db.meter.nameClassColor, db.meter.valueClassColor = false, false
+    -- role filter: no sample spec maps to a role, so a filter leaves the window empty
+    db.meter.filter = "HEALER"; DM:RefreshMeter()
+    assert(not w.rows[1]:IsShown() and w.empty:IsShown(), "role filter")
+    db.meter.filter = "all"
+    -- presets, lock, keys, live settings, preview
+    DM:ApplyPreset("raid")
+    assert(db.meter.windows == 3 and db.meter.win2.type == 3 and db.meter.win3.type == 9, "raid preset")
+    db.meter.lock = true; DM:RefreshMeter(); db.meter.lock = false
+    db.meter.toggleKey, db.meter.resetKey = "ctrl-shift-d", "ctrl-shift-r"; DM:RefreshMeter()
+    DM:ToggleShown(); assert(not w:IsShown(), "toggle key hides"); DM:ToggleShown(); assert(w:IsShown(), "toggle back")
+    db.meter.toggleKey, db.meter.resetKey = "", ""
     db.meter.windows, db.meter.rows = 1, 2
     DM:Refresh()
     assert(not DM.meterWindows[2]:IsShown() and not w.rows[3]:IsShown(), "live window/row count")
+    local pw, paint = DM:BuildPreview(env.CreateFrame("Frame"))
+    paint()
+    assert(pw.rows[5] and pw.rows[5]:IsShown(), "preview rows")
     DM:ResetData()
     assert(resets == 1, "reset")
     db.engine = "blizzard"; DM:Refresh()
@@ -8096,8 +8169,9 @@ try("phoenix damage meter", function()
     DM:StopMeter()
     assert(not w:IsShown(), "stop")
     db.engine, db.meter.windows, db.meter.rows = keep[1], keep[2], 8
+    DM:ApplyPreset("solo")
     DM:Refresh()
-    for k, v in pairs(saved) do rawset(env, k, v) end
+    for _, k in ipairs(names) do rawset(env, k, saved[k]) end
     ns.Secret.IsSecret = oldIs
 end)
 

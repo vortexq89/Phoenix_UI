@@ -132,6 +132,13 @@ P:Register("damagemeter", {
                 threat.rows[i] = bar
             end
         end
+        -- Phoenix engine: the meter's own row code on sample data (Meter.lua BuildPreview)
+        local own, paintOwn
+        if m.BuildPreview then
+            own, paintOwn = m:BuildPreview(stage)
+            own:SetPoint("CENTER")
+            if threat then own:ClearAllPoints(); own:SetPoint("RIGHT", stage, "CENTER", -6, 0) end
+        end
         for i, s in ipairs(METER) do
             local bar = P.Bar(frame, s[2], 284, 18)
             bar:SetPoint("TOPLEFT", 8, -4 - (i - 1) * 20)
@@ -144,6 +151,13 @@ P:Register("damagemeter", {
             rows[i] = bar
         end
         return function()
+            local phoenix = own and m.db.engine == "phoenix"
+            frame:SetShown(not phoenix)
+            if own then own:SetShown(phoenix) end
+            if phoenix then
+                paintOwn()
+                own:SetScale(math.min(1, 120 / math.max(1, own:GetHeight())))
+            end
             local skin = m.db.skin
             if skin then
                 Skin:Panel(frame, "base", { border = false })
