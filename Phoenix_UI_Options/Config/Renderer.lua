@@ -578,6 +578,15 @@ function buildRow(card, page, m, item)
         if self.badge then
             self.badge:ClearAllPoints()
             -- after the label text, but never past the text column into the control
+            -- a label that would be cut short keeps its words: the badge folds to its icon (the tooltip names it)
+            local full = self.label:GetUnboundedStringWidth() + 8 + 64 > (self.textW or 140)
+            self.badge.text:SetShown(not full)
+            if full then
+                self.badge:SetSize(20, 16); self.badge.icon:ClearAllPoints(); self.badge.icon:SetPoint("CENTER")
+            else
+                self.badge:Set(L.BADGE_RELOAD, "state.warning")
+                self.badge.icon:ClearAllPoints(); self.badge.icon:SetPoint("LEFT", 6, 0)
+            end
             local room = math.max(0, (self.textW or 140) - (self.badge:GetWidth() or 0) - 8)
             if self.textW then self.label:SetWidth(math.max(40, room)) end
             self.badge:SetPoint("LEFT", self.label, "LEFT", math.min(self.label:GetUnboundedStringWidth(), 140, room) + 8, 0)
@@ -745,6 +754,9 @@ local function buildPageHeader(page, m, schema)
     h:SetFrameLevel(page:GetFrameLevel() + 20)
     h.bg = W.Texture(h, "BACKGROUND", 0)
     h.bg:SetAllPoints()
+    -- a faint accent wash from the module tile, so the header reads as the page's banner
+    h.glow = W.Texture(h, "BACKGROUND", 1)
+    h.glow:SetPoint("TOPLEFT"); h.glow:SetPoint("BOTTOMLEFT"); h.glow:SetWidth(520)
     h.iconBg = W.Texture(h, "ARTWORK", 0, Media.textures.ROUNDED)
     h.iconBg:SetSize(52, 52)
     h.iconBg:SetPoint("TOPLEFT", PAD, -14)
@@ -798,12 +810,26 @@ local function buildPageHeader(page, m, schema)
     h.changed:SetPoint("RIGHT", anchor, "LEFT", -10, 0)
     h.changed:Hide()
     W.AttachTooltip(h.changed, L.CHANGED_TITLE, L.CHANGED_DESC)
+    -- clicking the count walks through the changed settings, one per click
+    h.changed:EnableMouse(true)
+    h.changed:SetScript("OnMouseUp", function()
+        local list = {}
+        for _, row in ipairs(page.rows or {}) do
+            if row.IsModified and row.item.key ~= "enabled" and row:IsModified() then list[#list + 1] = row end
+        end
+        if #list == 0 then return end
+        h.walk = (h.walk or 0) % #list + 1
+        page:Focus(list[h.walk].item)
+    end)
     h.desc:SetPoint("RIGHT", h.changed, "LEFT", -16, 0)
     h.line = W.Texture(h, "BORDER")
     h.line:SetHeight(1)
     h.line:SetPoint("BOTTOMLEFT", PAD, 0); h.line:SetPoint("BOTTOMRIGHT", -PAD, 0)
     Skin:Register(h, function(self)
         W.Color(self.bg, "bg.base")
+        local r, g, b = ns.Theme:Color("accent.primary")
+        self.glow:SetVertexColor(1, 1, 1, 1)
+        self.glow:SetGradient("HORIZONTAL", CreateColor(r, g, b, 0.10), CreateColor(r, g, b, 0))
         W.TileColor(self.iconBg, self.icon, "accent.soft")
         W.Color(self.icon, "accent.primary")
         Skin:Text(self.crumb, "small", "text.muted")
@@ -1380,6 +1406,9 @@ local function makeRouter(page, key)
         function page.tabs:SetValue(v) self.value = v; page.tab = v end
         function page.tabs:GetValue() return self.value end
         page.tabs.onChange = function(_, v)
+            local ui = ns.DB.sv.global.ui
+            if type(ui.lastTab) ~= "table" then ui.lastTab = {} end
+            ui.lastTab[key] = v
             page.tabs.value = v
             page.tab = v
             W.HidePopover()
@@ -1390,6 +1419,9 @@ local function makeRouter(page, key)
             if Config.LayoutSidebar and Config.current == key then Config:LayoutSidebar() end
         end
     end
+    -- the sub-page last open on this module opens again (EllesmereUI keeps the last page per module too)
+    local last = type(ns.DB.sv.global.ui.lastTab) == "table" and ns.DB.sv.global.ui.lastTab[key]
+    if page.tabs and type(last) == "number" and page.tabList[last] then page.tabs.value, page.tab = last, last end
     function page:SetTab(v)
         if self.tabs then self.tabs:SetValue(v); self.tabs.onChange(self.tabs, v) end
     end

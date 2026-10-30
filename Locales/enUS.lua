@@ -4163,4 +4163,5 @@ ns.RegisterLocale("enUS", {
     FONT_SRC_GAME = "Game font",
     GEN_EXPRESSWAY = "Use Expressway when installed",
     GEN_EXPRESSWAY_DESC = "Phoenix Font is the default. If another addon on this PC (ElvUI, EllesmereUI or a shared-media pack) already has Expressway, Phoenix UI uses that instead. Phoenix UI never ships Expressway.",
+    NAV_SWITCH_TIP = "click to switch the module on or off",
 })

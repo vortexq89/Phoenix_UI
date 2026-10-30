@@ -4137,6 +4137,7 @@ local T = {
     FONT_SRC_GAME = "Police du jeu",
     GEN_EXPRESSWAY = "Utiliser Expressway s’il est installé",
     GEN_EXPRESSWAY_DESC = "Phoenix Font est la police par défaut. Si un autre addon (ElvUI, EllesmereUI ou un pack shared-media) fournit déjà Expressway, Phoenix UI l’utilise. Phoenix UI ne distribue jamais Expressway.",
+    NAV_SWITCH_TIP = "cliquez pour activer ou désactiver le module",
 }
 
 ns.RegisterLocale("frFR", T)

@@ -4137,6 +4137,7 @@ local T = {
     FONT_SRC_GAME = "游戏字体",
     GEN_EXPRESSWAY = "已安装时使用 Expressway",
     GEN_EXPRESSWAY_DESC = "默认使用 Phoenix Font。如果其他插件（ElvUI、EllesmereUI 或共享媒体包）已带有 Expressway，Phoenix UI 会改用它。Phoenix UI 从不附带 Expressway。",
+    NAV_SWITCH_TIP = "点击开启或关闭此模块",
 }
 
 ns.RegisterLocale("zhCN", T)

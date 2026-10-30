@@ -310,6 +310,22 @@ local function navRow(parent, key)
     r.label:SetWordWrap(false)
     r.dot = W:Dot(r, 6)
     r.dot:SetPoint("RIGHT", -16, 0)
+    -- the dot is the module's switch, as EllesmereUI's sidebar toggles: click turns the module on or off
+    local m0 = ns.modules[key]
+    if m0 and not m0.locked then
+        r.switch = CreateFrame("Button", nil, r)
+        r.switch:SetSize(20, 20)
+        r.switch:SetPoint("CENTER", r.dot, "CENTER")
+        r.switch:SetScript("OnClick", function()
+            PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+            ns:SetModuleEnabled(key, not m0.db.enabled)
+            r:Paint()
+        end)
+        r.switch:SetScript("OnEnter", function(self)
+            W.ShowTooltip(self, r.label:GetText(), (m0.db.enabled and L.ENABLED or L.DISABLED) .. " \226\128\148 " .. L.NAV_SWITCH_TIP)
+        end)
+        r.switch:SetScript("OnLeave", function() W.HideTooltip() end)
+    end
     function r:Paint()
         local m = ns.modules[self.key]
         if self.active then

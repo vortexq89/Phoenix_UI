@@ -4137,6 +4137,7 @@ local T = {
     FONT_SRC_GAME = "Spielschrift",
     GEN_EXPRESSWAY = "Expressway verwenden, wenn installiert",
     GEN_EXPRESSWAY_DESC = "Phoenix Font ist der Standard. Hat ein anderes Addon auf diesem PC (ElvUI, EllesmereUI oder ein Shared-Media-Paket) Expressway, nutzt Phoenix UI diese. Phoenix UI liefert Expressway nie mit.",
+    NAV_SWITCH_TIP = "Klicken, um das Modul ein- oder auszuschalten",
 }
 
 ns.RegisterLocale("deDE", T)
