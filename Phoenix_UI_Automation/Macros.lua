@@ -72,3 +72,24 @@ function M:WriteSmartMacros()
     ns:Print(L.AUTO_MACROS_DONE:format(n))
     return n
 end
+
+-- GUI-only macro helpers (t191): put a PUI macro on the cursor, or open the game's macro window.
+function M:PickupSmartMacro(name)
+    if InCombatLockdown() then ns:Print(L.AUTO_MACROS_COMBAT); return false end
+    local index = GetMacroIndexByName(name)
+    if not index or index == 0 then
+        self:WriteSmartMacros()
+        index = GetMacroIndexByName(name)
+    end
+    if index and index > 0 then PickupMacro(index); return true end
+    ns:Print(L.AUTO_MACROS_MISSING)
+    return false
+end
+
+function M.OpenMacroWindow()
+    if InCombatLockdown() then ns:Print(L.AUTO_MACROS_COMBAT); return false end
+    if C_AddOns and C_AddOns.LoadAddOn then pcall(C_AddOns.LoadAddOn, "Blizzard_MacroUI") end
+    if type(ShowMacroFrame) == "function" then ShowMacroFrame(); return true end
+    if MacroFrame and MacroFrame.Show then MacroFrame:Show(); return true end
+    return false
+end

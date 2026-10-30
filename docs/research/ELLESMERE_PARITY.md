@@ -45,7 +45,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | QoL cursor | 1 | cursor ring present | E | |
 | QoL raid tools | — | ready check / countdown partial | E | |
 | Quickdraw (hold-key action menu) | 45 | ActionBars Ring | A | done: hold and release, open at cursor, v9 quick_ring art; verify the secure release pick in game |
-| Macro model / macros | 104 + 6 | macro window skin | B | |
+| Macro model / macros | 104 + 6 | macro window skin, smart macros (heal, kick, mount rules), Pick up buttons per macro, open macro window from the GUI | E | t191: no step needs /macro; a full in-addon macro editor would make this A |
 | Upgrade calculator | 9 | crest info partial | B | |
 | Loot council | 5 | ✗ | B | |
 | Loadout manager | 7 | ✗ | B | |
