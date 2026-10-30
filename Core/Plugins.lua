@@ -86,6 +86,7 @@ local function loadOne(key, seen)
             return
         end
     end
+    p.missing, p.reason = nil, nil -- a retry after the user re-enabled the folder starts clean (L7)
     local ok, loaded, why = pcall(C_AddOns.LoadAddOn, p.addon)
     local m = ns.modules[key]
     p.loaded = ok and loaded and m and not m.placeholder or false
