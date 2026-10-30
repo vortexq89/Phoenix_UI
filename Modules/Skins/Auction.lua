@@ -50,7 +50,8 @@ function M:AuctionHeaders(ah, isOn)
                 if card and isOn then
                     ns.Skin:SetBorderColor(card, sortedBy[hc] == h and "accent.primary" or "border.subtle")
                 end
-                if not hookedHeaders[h] and h.HookScript then
+                -- t156: only Buttons have OnClick; HookScript("OnClick") on a Frame child raises an error (§24)
+                if not hookedHeaders[h] and h.HookScript and h.GetObjectType and h:GetObjectType() == "Button" then
                     hookedHeaders[h] = true
                     h:HookScript("OnClick", function(self) sortedBy[hc] = self; M:AuctionHeaders(ah, M.db.auction) end)
                 end

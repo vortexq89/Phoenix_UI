@@ -250,3 +250,13 @@ Fix: the outline follows each tab's SetChecked, which covers clicks and Blizzard
 Evidence (Blizzard live source, Blizzard_SharedTalentUI/Blizzard_SharedTalentFrame.lua lines 281-285 and 1442-1473; Blizzard_PlayerSpells/ClassTalents/Blizzard_ClassTalentsFrame.lua line 135): talent node buttons are built in `LoadTalentTree`, run from the talents frame's own OnShow and again on a spec or loadout change (ReleaseAllTalentButtons, then buttons from the pool). Phoenix re-skinned only on PlayerSpellsFrame OnShow and on trait events. Opening the window on the Spellbook tab and then switching to Talents left the nodes without rings until a trait event.
 
 Fix: also re-skin (next frame) after the talents frame's OnShow and after LoadTalentTreeInternal. No new harness test: the hook-once flag is module-local and set by an earlier test; existing talents tests pass on both flavours. Checked and kept: the spellbook category tabs and the loadout bar card.
+
+## 26. Auction headers guard; systems reviewed without change
+
+Auction House: column headers got `HookScript("OnClick")` without the Button check the PvP scoreboard has. A Frame child in the header container would raise the same error as §24. Now hooked only on Buttons.
+
+Reviewed against the live Blizzard source, no change needed:
+- Edit Mode movers (Movers.lua): offsets converted between the frame's scale and UIParent units both ways, Blizzard's anchors kept for reset, protected frames wait for combat to end, the re-apply hook is guarded against loops.
+- Collections: toy buttons are secure, created and anchored only out of combat, hidden before lockdown and when the window closes, laid out again after combat.
+- PvP scoreboard / results: header pools re-skinned after Init; "your row" uses PVP_SCOREBOARD_ALLIANCE_ALT_ROW_COLOR, which PVPMatchUtil.lua line 142 gives the local player whatever their faction, so Horde is covered.
+- LFG: see §16-17.
