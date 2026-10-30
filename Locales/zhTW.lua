@@ -286,6 +286,7 @@ local T = {
     DT_GOLD = "金幣",
     DT_GOLD_UNIT = "金",
     DT_CLOCK = "時鐘",
+    DT_TIME = "時間",
     DT_CLOCK24 = "24 小時制",
     DT_STYLE = "樣式",
     DT_BACKGROUND = "背景",

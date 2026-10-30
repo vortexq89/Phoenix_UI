@@ -295,6 +295,7 @@ ns.RegisterLocale("enUS", {
     DT_GOLD = "Gold",
     DT_GOLD_UNIT = "g",
     DT_CLOCK = "Clock",
+    DT_TIME = "Time",
     DT_CLOCK24 = "24-hour clock",
     DT_STYLE = "Style",
     DT_BACKGROUND = "Background",

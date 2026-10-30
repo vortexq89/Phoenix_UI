@@ -150,6 +150,17 @@ KIT.modules = {
   dm_track               = { w = 256, h = 16, coords = { 0.675781, 0.925781, 0.859375, 0.890625 }, left = 8, right = 8, top = 6, bottom = 6 },
   dm_value_back          = { w = 128, h = 16, coords = { 0.003906, 0.128906, 0.937500, 0.968750 } },
   row_sep                = { w = 256, h = 10, coords = { 0.136719, 0.386719, 0.937500, 0.957031 }, left = 8, right = 8, top = 0, bottom = 0 },
+  -- v9.1 DataTexts bar pieces and section icons (free space, y >= 468)
+  dt_strip               = { w = 256, h = 28, coords = { 0.398438, 0.648438, 0.917969, 0.972656 }, left = 8, right = 8, top = 8, bottom = 8 },
+  dt_cap_l               = { w = 25, h = 28, coords = { 0.656250, 0.680664, 0.917969, 0.972656 }, anchor = "RIGHT" },
+  dt_cap_r               = { w = 26, h = 28, coords = { 0.689453, 0.714844, 0.917969, 0.972656 }, anchor = "LEFT" },
+  dt_divider             = { w = 5, h = 24, coords = { 0.722656, 0.727539, 0.921875, 0.968750 } },
+  dt_icon_time           = { w = 32, h = 32, coords = { 0.738281, 0.769531, 0.917969, 0.980469 } },
+  dt_icon_gold           = { w = 32, h = 32, coords = { 0.777344, 0.808594, 0.917969, 0.980469 } },
+  dt_icon_bugs           = { w = 32, h = 32, coords = { 0.816406, 0.847656, 0.917969, 0.980469 } },
+  dt_icon_time_s         = { w = 16, h = 16, coords = { 0.855469, 0.871094, 0.917969, 0.949219 } },
+  dt_icon_gold_s         = { w = 16, h = 16, coords = { 0.878906, 0.894531, 0.917969, 0.949219 } },
+  dt_icon_bugs_s         = { w = 16, h = 16, coords = { 0.902344, 0.917969, 0.917969, 0.949219 } },
 }
 
 -- PhoenixUI_V9: 1024x512 RGBA, 37 pieces. © 2026 VortexQ8 - Phoenix UI - All rights reserved
@@ -443,6 +454,12 @@ A.SLOT = { -- slot -> modules atlas key; tokens "atlas.modules.<key>" swap the a
 }
 for i = 1, 6 do A.SLOT["GroupFrames.indicator" .. i] = "aura_slot" .. i end
 for i = 1, 3 do A.SLOT["MythicPlus.chest" .. i] = "chest_" .. i end
+A.SLOT["DataTexts.frame"], A.SLOT["DataTexts.divider"] = "dt_strip", "dt_divider"
+A.SLOT["DataTexts.capLeft"], A.SLOT["DataTexts.capRight"] = "dt_cap_l", "dt_cap_r"
+for key, piece in pairs({ clock = "time", gold = "gold", bugs = "bugs" }) do
+    A.SLOT["DataTexts.icon." .. key] = "dt_icon_" .. piece
+    A.SLOT["DataTexts.icon." .. key .. ".small"] = "dt_icon_" .. piece .. "_s"
+end
 
 -- a module slot on a frame (opts as Dress; panels pass backdrop = true)
 function A:DressSlot(frame, slot, opts)

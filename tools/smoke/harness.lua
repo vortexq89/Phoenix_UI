@@ -5668,6 +5668,25 @@ try("movement alert", function()
     T:RefreshMobility()
 end)
 
+try("datatexts v9.1 strip, caps, dividers and section icons", function()
+    local A, D = ns.Art, ns.modules.DataTexts
+    assert(A.KIT.modules.dt_strip and A.KIT.modules.dt_icon_bugs_s and A.SLOT["DataTexts.icon.clock.small"], "v9.1 dt pieces")
+    assert(D.BarArt and D.SegmentArt, "paint hooks")
+    local f = CreateFrame("Frame", nil, UIParent)
+    local o = { frame = f, bg = CreateFrame("Frame", nil, f), segments = {} }
+    local saved = D.db.border
+    D.db.border = { style = "ember" }
+    D.db.background = true
+    D:StyleBar(o)
+    assert(o.art, "ember border + phoenix-wings shows the strip")
+    D.db.border = { style = "pixel" }
+    D:StyleBar(o)
+    assert(not o.art, "other borders keep the lines")
+    D.db.border = saved
+    local s = { icon = f:CreateTexture() }
+    assert(D.SegmentArt("clock", s) and not D.SegmentArt("fps", s), "time icon painted, fps keeps its glyph")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

@@ -286,6 +286,7 @@ local T = {
     DT_GOLD = "골드",
     DT_GOLD_UNIT = "골",
     DT_CLOCK = "시계",
+    DT_TIME = "시간",
     DT_CLOCK24 = "24시간제",
     DT_STYLE = "스타일",
     DT_BACKGROUND = "배경",

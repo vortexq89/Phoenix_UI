@@ -286,6 +286,7 @@ local T = {
     DT_GOLD = "Oro",
     DT_GOLD_UNIT = "o",
     DT_CLOCK = "Orologio",
+    DT_TIME = "Ora",
     DT_CLOCK24 = "Orologio a 24 ore",
     DT_STYLE = "Stile",
     DT_BACKGROUND = "Sfondo",

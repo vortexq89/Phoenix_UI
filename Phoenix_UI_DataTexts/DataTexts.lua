@@ -493,12 +493,50 @@ function M:StyleBar(o)
     Skin:Backdrop(o.bg, db.backdrop, "bg.base")
     Skin:BorderSpec(o.bg, db.border, "border.subtle")
     o.frame:SetHeight(db.height)
+    M.BarArt(o)
     for key, s in pairs(o.segments) do
         Skin:TextSpec(s.value, db.value, "number")
         Skin:TextSpec(s.unit, db.unitText, "small", "text.muted")
         ns.Icons:Apply(s.icon, ICON[key] or key, ICON_SIZE) -- re-pick the atlas tier for the current scale
+        M.SegmentArt(key, s)
         s.icon:SetShown(db.icons)
     end
+end
+
+-- v9.1 art (THEME_API §7.04 DataTexts.*): with the phoenix-wings look and the "ember" border, the strip and
+-- its feather caps replace the line border; any other border keeps the lines. The caps stick out about 0.65x the
+-- bar height on each side, so the clamp rect grows by that much and the caps never leave the screen.
+function M.BarArt(o)
+    local A, db = ns.Art, M.db
+    local on = A and A.GameArt and A.GameArt() and db.background and Skin:ResolveBorder(db.border) == "ember"
+    if not A then return false end
+    local h = db.height or 26
+    if on then
+        Skin:BorderSpec(o.bg, { style = "none" }, "border.subtle")
+        A:DressSlot(o.bg, "DataTexts.frame", { scale = h / 28, layer = "BORDER", level = 1 })
+        A:DressSlot(o.bg, "DataTexts.capLeft", { size = { h * 0.9, h }, point = "RIGHT", relPoint = "LEFT", x = h * 0.25, level = 2 })
+        A:DressSlot(o.bg, "DataTexts.capRight", { size = { h * 0.9, h }, point = "LEFT", relPoint = "RIGHT", x = -h * 0.25, level = 2 })
+    elseif A.Undress then
+        A:Undress(o.bg)
+    end
+    local out = on and math.ceil(h * 0.65) or 0
+    o.frame:SetClampedToScreen(true)
+    o.frame:SetClampRectInsets(-out, out, 0, 0)
+    o.art = on and true or false
+    return o.art
+end
+
+-- painted section icons for time, gold and bugs (full colour, never the accent tint); the rest keep ns.Icons
+local KIT_ICON = { clock = "DataTexts.icon.clock", gold = "DataTexts.icon.gold", bugs = "DataTexts.icon.bugs" }
+function M.SegmentArt(key, s)
+    local A, slot = ns.Art, KIT_ICON[key]
+    if not (slot and A and A.GameArt and A.GameArt()) then return false end
+    local small = ICON_SIZE <= 16
+    if A:PaintSlot(s.icon, small and (slot .. ".small") or slot) then
+        s.icon:SetVertexColor(1, 1, 1, 1)
+        return true
+    end
+    return false
 end
 
 -- values: { [key] = { value, unit, token } } for the keys to show, laid out in `order` (default: panel 1's).
@@ -538,6 +576,21 @@ function M:FillBar(o, values, order)
         e.s:SetPoint("LEFT", o.frame, "LEFT", e.x + math.max(0, shift), 0)
     end
     o.frame:SetWidth(width)
+    -- dividers between shown segments: textures of the bar's own, painted only with the art on
+    o.dividers = o.dividers or {}
+    for i = 2, math.max(#shown, #o.dividers) do
+        local d = o.dividers[i]
+        if not d and shown[i] then d = o.frame:CreateTexture(nil, "ARTWORK"); o.dividers[i] = d end
+        if d then
+            local on = shown[i] and o.art and ns.Art:PaintSlot(d, "DataTexts.divider")
+            d:SetShown(on and true or false)
+            if on then
+                d:SetSize(3, math.max(4, (db.height or 26) - 8))
+                d:ClearAllPoints()
+                d:SetPoint("CENTER", shown[i].s, "LEFT", -db.spacing / 2, 0)
+            end
+        end
+    end
 end
 
 function M:Values()

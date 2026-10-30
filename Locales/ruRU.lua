@@ -286,6 +286,7 @@ local T = {
     DT_GOLD = "Золото",
     DT_GOLD_UNIT = "з",
     DT_CLOCK = "Часы",
+    DT_TIME = "Время",
     DT_CLOCK24 = "24-часовой формат",
     DT_STYLE = "Стиль",
     DT_BACKGROUND = "Фон",
