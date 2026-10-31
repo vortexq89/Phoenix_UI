@@ -6258,6 +6258,19 @@ try("encounters: boss modules from the journal, per-ability choices (t201)", fun
     assert(ns.EncounterData and ns.EncounterData.schema == 1, "data schema")
 end)
 
+try("boss data and important-cast announcements (t201)", function()
+    local E = ns.modules.Encounters
+    local n = 0
+    for _ in pairs(ns.EncounterData.encounters) do n = n + 1 end
+    assert(n > 500, "boss data for every expansion")
+    assert(E:AnnounceCast("Mob", "Spell", 1, false) == false, "a plain unimportant cast is not announced")
+    assert(E:AnnounceCast("Mob", "Spell", 1, nil) == false, "no flag, no line")
+    E:AnnounceCast("Mob", "Spell", 1, true)
+    local CB = ns.modules.CastBars
+    assert(type(CB.AnnounceImportant) == "function", "cast bars announce hook")
+    CB.AnnounceImportant({ key = "target" }, { importantAnnounce = false }, "target", "x", 1, 5, 7)
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

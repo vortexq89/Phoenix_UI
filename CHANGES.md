@@ -3,7 +3,9 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
-- **Boss mod bars, own sections** (31 Oct, t202): emphasised bars and pull / break bars each have their own size, stack, texture, colour, border and fonts, and their own anchor in Layout mode (pull / break: Own anchor). The live preview shows messages, bars, emphasised bars and pull / break bars as separate parts; click one to jump to its settings.
+- **Boss data for every expansion** (31 Oct, t201): per-boss ability roles and emphasis for about 960 raid and dungeon bosses, gathered as facts from the public BigWigs / LittleWigs boss lists by a script the daily sync reruns; abilities they emphasise or count in are emphasised or counted in on Phoenix's bars unless you chose otherwise.
+- **Announce important casts** (31 Oct): Cast bars > Important casts > Announce puts casts the game marks important on the Encounters warning banner, once per cast (LittleWigs-style trash warnings, no extra module).
+- **Boss mod bars, own sections** (31 Oct, cd2a305, t202): emphasised bars and pull / break bars each have their own size, stack, texture, colour, border and fonts, and their own anchor in Layout mode (pull / break: Own anchor). The live preview shows messages, bars, emphasised bars and pull / break bars as separate parts; click one to jump to its settings.
 - **Journal reader shared** (31 Oct, a945e2b): the journal window and the boss modules now read the Encounter Journal through one core reader (no duplicate code).
 - **Encounters: boss modules** (31 Oct, ea85372, BigWigs / LittleWigs parity step 1): Encounters > Boss modules lists every raid and dungeon of every expansion from the game's journal; pick a boss and set each ability to emphasise, sound, count in or hide on the bars. Structured data file for daily ability updates.
 - **Rare alert: loot marks** (31 Oct, 794d6e1): rares you loot remember their collectible drops (mounts, pets, toys, appearances) account-wide; the toast then says how many you still miss.

@@ -226,6 +226,22 @@ local function showGlow(f, b, spellID)
     end
 end
 
+-- Important casts announced on the Encounters warning banner (bars.@.importantAnnounce). Once per cast:
+-- castBarID is never secret, so target, focus and nameplate bars of the same cast announce it once.
+local announced, nAnnounced = {}, 0
+local function announce(f, b, unit, text, icon, spellID, castBarID)
+    if not (b.importantAnnounce and f.key ~= "player" and plain(castBarID) and castBarID) then return end
+    if announced[castBarID] then return end
+    local E = ns.modules.Encounters
+    if not (E and E.AnnounceCast and C_Spell and C_Spell.IsSpellImportant) then return end
+    local ok, yes = pcall(C_Spell.IsSpellImportant, spellID)
+    if not ok then return end
+    if nAnnounced > 200 then wipe(announced); nAnnounced = 0 end
+    announced[castBarID], nAnnounced = true, nAnnounced + 1
+    E:AnnounceCast(UnitName(unit), text, icon, flag(yes))
+end
+M.AnnounceImportant = announce
+
 ---------------------------------------------------------------- show / end
 local function resetLook(f)
     f.State:Hide()
@@ -284,6 +300,7 @@ function M:ShowCast(f, keepHold)
     showLatency(f, d)
     showTarget(f, b)
     showGlow(f, b, spellID)
+    announce(f, b, unit, text, icon, spellID, castBarID)
     if f.kickOn then self:LayoutKick(f, kind == "channel"); kickUpdate(f) else f.Kick:Hide() end
     f:Show()
 end

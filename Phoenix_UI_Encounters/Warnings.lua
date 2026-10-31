@@ -85,6 +85,7 @@ local pool = {}
 local function acquire()
     local f = table.remove(pool) or M:CreateWarningLine(banner)
     f:SetAlpha(1)
+    f.gate = nil -- a line gated by a secret (AnnounceCast) keeps the alpha the game gave it
     f:Show()
     return f
 end
@@ -102,7 +103,7 @@ local function onUpdate()
         local left = f.expires - now
         if left <= 0 then
             release(i)
-        else
+        elseif not f.gate then
             f:SetAlpha(left < FADE and left / FADE or 1)
         end
     end
@@ -186,6 +187,26 @@ local function onWarning(_, _, info)
     push(level, formatted(info), info.iconFileID, duration)
     M:PlayWarningSound(severity)
     if level == "high" and M.db.warnings.flash then M:FlashScreen() end
+end
+
+--[[ Important-cast announcements (CastBars > Important casts > Announce, the LittleWigs trash warnings done the
+    Midnight way): one banner line "caster: spell" when the game marks a cast important. `important` may be
+    secret: then the line's alpha comes from it (SetAlphaFromBoolean) and no sound plays, as a sound cannot hang
+    on a secret; a plain true plays the medium warning sound. Returns true when a line was pushed. ]]
+function M:AnnounceCast(caster, spell, icon, important)
+    if not (banner and M:Draws("warnings")) or important == nil then return false end
+    local secret = Secret.IsSecret(important)
+    if not secret and not important then return false end
+    local ok, text = pcall(string.format, L.ENC_CAST_ANNOUNCE, caster, spell)
+    push("medium", ok and text or spell, icon, 3)
+    local f = lines[1]
+    if secret then
+        f.gate = true
+        f:SetAlphaFromBoolean(important, 1, 0)
+    else
+        M:PlayWarningSound(1)
+    end
+    return true
 end
 
 local function clear()

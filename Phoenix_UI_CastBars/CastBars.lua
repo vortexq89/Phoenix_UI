@@ -55,6 +55,7 @@ local function bar(o)
         timeFormat = o.timeFormat or "remaining", decimals = 1, nameLength = 0,
         hold = 0.5, flash = true, important = o.important or false, targeted = o.targeted or false,
         importantFill = o.importantFill or false, kick = o.kick or false,
+        importantAnnounce = false, -- important casts also on the Encounters warning banner (Update.lua)
     }
 end
 
