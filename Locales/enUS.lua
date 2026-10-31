@@ -1877,7 +1877,7 @@ ns.RegisterLocale("enUS", {
     ENC_HIDE_QUEUED = "Hide queued abilities",
     ENC_HIDE_QUEUED_DESC = "Leaves out abilities whose timer ran out but which the boss has not cast yet. A game setting; Phoenix bars follow it too.",
     ENC_HIDE_ROLES = "Hide abilities for other roles",
-    ENC_HIDE_ROLES_DESC = "A game setting for the game's timeline. Phoenix bars cannot follow it: the role of an ability is hidden from addons during a fight.",
+    ENC_HIDE_ROLES_DESC = "A game setting for the game's timeline. Phoenix bars follow it too, using the role in Phoenix's boss data; your own choice for an ability always wins.",
     ENC_SEQUENCE = "Show cast counts",
     ENC_SEQUENCE_DESC = "Numbers repeated casts on the game's timeline (Breath 1, Breath 2 …).",
     ENC_ICONOGRAPHY = "Role and effect icons",

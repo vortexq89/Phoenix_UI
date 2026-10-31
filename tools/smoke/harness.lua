@@ -6267,6 +6267,20 @@ try("encounters: boss modules from the journal, per-ability choices (t201)", fun
     assert(E:SetAbilityChoice(12345, "default") and E:AbilityChoice(12345) == "default", "back to default")
     assert(not E:SetAbilityChoice(12345, "bogus"), "unknown choice")
     assert(ns.EncounterData and ns.EncounterData.schema == 1, "data schema")
+    -- roles from the data: a tank-only ability is hidden for a damage dealer while the game's role switch is on
+    local SI = env.C_SpecializationInfo
+    local hadRole, hadSpec = rawget(env, "GetSpecializationRole"), SI.GetSpecialization
+    SI.GetSpecialization = function() return 1 end
+    rawset(env, "GetSpecializationRole", function() return "DAMAGER" end)
+    assert(E.DataRole(428889) == "tank", "data role")
+    assert(E.ForOtherRole(428889) and E.RuleFor({ spellID = 428889 }) == "hide", "tank ability hidden for dps")
+    assert(not E.ForOtherRole(428668), "ability for everyone stays")
+    rawset(env, "GetSpecializationRole", function() return "TANK" end)
+    assert(not E.ForOtherRole(428889) and E.RuleFor({ spellID = 428889 }) ~= "hide", "tank sees it")
+    rawset(env, "GetSpecializationRole", function() return "DAMAGER" end)
+    assert(E:SetAbilityChoice(428889, "emph") and E.RuleFor({ spellID = 428889 }) == "emph", "own choice wins")
+    E:SetAbilityChoice(428889, "default")
+    rawset(env, "GetSpecializationRole", hadRole); SI.GetSpecialization = hadSpec
 end)
 
 try("boss data and important-cast announcements (t201)", function()

@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Boss mods: role options** (1 Nov): with the game's Hide abilities for other roles on, Phoenix bars now also hide tank-only abilities for non-tanks, healer-only ones for non-healers and tank / healer ones for damage dealers, from the role in Phoenix's boss data (BigWigs' role options). Your own choice for an ability always wins.
 - **Settings window: flat black background** (31 Oct): the settings window is plain black again, with only the small Phoenix UI By VortexQ8 fire logo in the middle. The phoenix wings picture, its drifting ash and its bottom logo are no longer shown (the art files stay, so this can be undone).
 - **Boss data for every expansion** (31 Oct, 2968391, t201): per-boss ability roles and emphasis for about 960 raid and dungeon bosses, gathered as facts from the public BigWigs / LittleWigs boss lists by a script the daily sync reruns; abilities they emphasise or count in are emphasised or counted in on Phoenix's bars unless you chose otherwise.
 - **Announce important casts** (31 Oct): Cast bars > Important casts > Announce puts casts the game marks important on the Encounters warning banner, once per cast (LittleWigs-style trash warnings, no extra module).

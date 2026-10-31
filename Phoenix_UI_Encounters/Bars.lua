@@ -142,7 +142,13 @@ local function ruleFor(info)
     -- your choice on the Boss modules tab, then the typed rules, then Phoenix's data default (Journal.lua)
     local own = type(db.abilities) == "table" and db.abilities[id]
     if own then return own end
-    return ruleCache[id] or (M.DataDefault and M.DataDefault(id))
+    if ruleCache[id] then return ruleCache[id] end
+    -- the game's "Hide abilities for other roles" now covers Phoenix bars too, by the role in Phoenix's boss data
+    if M.ForOtherRole and M.ForOtherRole(id) and C_CVar and C_CVar.GetCVarBool
+        and C_CVar.GetCVarBool("encounterTimelineHideForOtherRoles") then
+        return "hide"
+    end
+    return M.DataDefault and M.DataDefault(id)
 end
 M.RuleFor = ruleFor
 
