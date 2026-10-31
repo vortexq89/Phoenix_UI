@@ -79,6 +79,7 @@ local M = ns:NewModule("Tracker", {
             pet = true, healthstone = true, readyMana = true, manaPercent = 90, sound = "",
             size = 36, point = "TOP", x = 0, y = -180,
             custom = "", groupBuffs = false, style = "icons",
+            classBuff = true, click = true, dismiss = true, labels = true, glow = "pixel", -- review 30
         },
         mobility = { enabled = false, size = 40, point = "CENTER", x = 0, y = -140 },
         auraBars = {

@@ -10,7 +10,11 @@ local M = ns.modules.Tracker
       oil        C_PaperDollInfo.GetTemporaryEnchantmentInfo on the main hand
       pet        pet classes and specs without a pet out (not while mounted or in a vehicle)
       healthstone  when a warlock is in your group (or you are one) and you carry none
-      mana       on a ready check, for a few seconds, when your mana is below the threshold ]]
+      mana       on a ready check, for a few seconds, when your mana is below the threshold
+      class      rogue poisons, shaman elemental shield, holy paladin beacon on a group member (retail)
+    Icons are secure buttons of ours (review 30): a left click casts the buff or uses the best matching item from
+    your bags (oils with "/use 16" for the main hand), a right click hides that reminder until the next zone.
+    They are drawn and changed out of combat only and hidden as combat starts (PLAYER_REGEN_DISABLED). ]]
 
 local FLASKS = {
     1230875, 1235057, -- spellIDs(retail): Flask of Thalassian Resistance, Flask of Thalassian Resistance
@@ -31,17 +35,25 @@ local RAID_BUFF = {
     EVOKER = { 364342, 381748 }, SHAMAN = { 462854 }, -- spellIDs(retail): Blessing of the Bronze, Blessing of the Bronze, Skyfury
 }
 local HEALTHSTONES = { 5512, 224464 }
+local CREATE_HEALTHSTONE = 6201 -- spellIDs(retail): Create Healthstone
+local POISON_LETHAL = { 315584, 2823, 8679, 381664 } -- spellIDs(retail): Instant Poison, Deadly Poison, Wound Poison, Amplifying Poison
+local POISON_UTILITY = { 3408, 5761, 381637 } -- spellIDs(retail): Crippling Poison, Numbing Poison, Atrophic Poison
+local SHIELDS = { 192106, 52127, 974 } -- spellIDs(retail): Lightning Shield, Water Shield, Earth Shield
+local BEACONS = { 53563, 156910 } -- spellIDs(retail): Beacon of Light, Beacon of Faith
+local BEACON_VIRTUE = 200025 -- spellIDs(retail): Beacon of Virtue
+local PET_SPELL = { HUNTER = 883, DEATHKNIGHT = 46585, WARLOCK = 688 } -- spellIDs(retail): Call Pet 1, Raise Dead, Summon Imp
+local FELGUARD = 30146 -- spellIDs(retail): Summon Felguard
 -- pet classes: true = every spec, or the spec indices that use a pet
 local PET = { WARLOCK = true, HUNTER = { [1] = true, [3] = true }, DEATHKNIGHT = { [3] = true } }
 
-M.REMINDERS = { "flask", "food", "rune", "oil", "raidBuff", "pet", "healthstone", "readyMana" }
+M.REMINDERS = { "flask", "food", "rune", "oil", "raidBuff", "classBuff", "pet", "healthstone", "readyMana" }
 M.REMINDER_ICONS = {
     flask = "Interface\\Icons\\INV_Potion_97", food = "Interface\\Icons\\INV_Misc_Food_15",
     rune = "Interface\\Icons\\INV_Misc_Rune_01", oil = "Interface\\Icons\\INV_Potion_100",
     raidBuff = "Interface\\Icons\\Spell_Holy_MagicalSentry", pet = "Interface\\Icons\\Ability_Hunter_BeastCall",
     healthstone = "Interface\\Icons\\INV_Stone_04", readyMana = "Interface\\Icons\\INV_Potion_76",
 }
-local SPELL_BASED = { flask = true, food = true, rune = true, raidBuff = true }
+local SPELL_BASED = { flask = true, food = true, rune = true, raidBuff = true, classBuff = true }
 
 local holder, icons = nil, {}
 local readyUntil = 0
@@ -99,6 +111,60 @@ local function warlockNear()
     return false
 end
 
+local function known(id)
+    local ok, k = pcall(C_SpellBook.IsSpellKnown, id)
+    return ok and plain(k) and k and true or false
+end
+
+local function firstKnown(ids)
+    for _, id in ipairs(ids) do if known(id) then return id end end
+end
+
+local function spec()
+    local api = C_SpecializationInfo
+    local s = api and api.GetSpecialization and api.GetSpecialization()
+    return plain(s) and s or nil
+end
+
+-- Group units (not the player), for the beacon look-up.
+local function groupUnits()
+    local out, n = {}, tonumber(GetNumGroupMembers and GetNumGroupMembers()) or 0
+    if n == 0 then return out end
+    local raid = IsInRaid and IsInRaid()
+    for i = 1, raid and n or n - 1 do out[#out + 1] = (raid and "raid" or "party") .. i end
+    return out
+end
+
+local function beaconOut()
+    local names = {}
+    for _, id in ipairs(BEACONS) do names[#names + 1] = C_Spell.GetSpellName(id) end
+    if #names == 0 or not C_UnitAuras.GetAuraDataBySpellName then return true end
+    for _, unit in ipairs(groupUnits()) do
+        local isMe = UnitIsUnit(unit, "player")
+        if not (plain(isMe) and isMe) then
+            for _, nm in ipairs(names) do
+                local ok, aura = pcall(C_UnitAuras.GetAuraDataBySpellName, unit, nm, "HELPFUL|PLAYER")
+                if not ok or not plain(aura) or aura then return true end
+            end
+        end
+    end
+    return false
+end
+
+-- Class self buffs: "class:poison", "class:shield" or "class:beacon" when missing, else false.
+local function classBuffMissing()
+    local _, class = UnitClass("player")
+    if class == "ROGUE" then
+        if firstKnown(POISON_LETHAL) and not hasAny(POISON_LETHAL) then return "class:poison" end
+        if firstKnown(POISON_UTILITY) and not hasAny(POISON_UTILITY) then return "class:poison2" end
+    elseif class == "SHAMAN" then
+        if firstKnown(SHIELDS) and not hasAny(SHIELDS) then return "class:shield" end
+    elseif class == "PALADIN" and spec() == 1 and not known(BEACON_VIRTUE) and firstKnown(BEACONS) then
+        if #groupUnits() > 0 and not beaconOut() then return "class:beacon" end
+    end
+    return false
+end
+
 local function needsHealthstone()
     if not warlockNear() then return false end
     for _, id in ipairs(HEALTHSTONES) do
@@ -124,11 +190,10 @@ local CHECKS = {
     raidBuff = function()
         local _, class = UnitClass("player")
         local ids = RAID_BUFF[class]
-        if not ids then return false end
-        local ok, known = pcall(C_SpellBook.IsSpellKnown, ids[1])
-        if not ok or not plain(known) or not known then return false end
+        if not (ids and known(ids[1])) then return false end
         return not hasAny(ids)
     end,
+    classBuff = classBuffMissing,
     pet = needsPet,
     healthstone = needsHealthstone,
     readyMana = lowMana,
@@ -152,9 +217,8 @@ function M.ParseCustomReminders(text)
 end
 
 local function playerRole()
-    local api = C_SpecializationInfo
-    local spec = api and api.GetSpecialization and api.GetSpecialization()
-    local role = type(spec) == "number" and GetSpecializationRole and GetSpecializationRole(spec)
+    local s = spec()
+    local role = type(s) == "number" and GetSpecializationRole and GetSpecializationRole(s)
     return plain(role) and role or nil
 end
 
@@ -200,6 +264,8 @@ function M:GroupBuffsMissing()
     return out
 end
 
+M.dismissed = {} -- reminder key -> true until the next zone (right click on an icon)
+
 -- Which reminders apply right now (pure of frames: the smoke test calls it).
 function M:MissingReminders()
     local r, out = self.db.reminders, {}
@@ -211,18 +277,104 @@ function M:MissingReminders()
     for _, name in ipairs(M.REMINDERS) do
         if r[name] and (not SPELL_BASED[name] or ns:Supports("cdmReminders")) then
             local ok, missing = pcall(CHECKS[name], r)
-            if ok and missing then out[#out + 1] = name end
+            if ok and missing then
+                local key = type(missing) == "string" and missing or name
+                if not M.dismissed[key] then out[#out + 1] = key end
+            end
         end
     end
     if ns:Supports("cdmReminders") then
         if r.groupBuffs then
             local ok, list = pcall(self.GroupBuffsMissing, self)
-            if ok then for _, n in ipairs(list) do out[#out + 1] = n end end
+            if ok then for _, n in ipairs(list) do if not M.dismissed[n] then out[#out + 1] = n end end end
         end
         local ok, list = pcall(self.CustomMissing, self, r)
-        if ok then for _, n in ipairs(list) do out[#out + 1] = n end end
+        if ok then for _, n in ipairs(list) do if not M.dismissed[n] then out[#out + 1] = n end end end
     end
     return out
+end
+
+---------------------------------------------------------------- click actions (review 30)
+local function asSet(ids) local t = {} for _, id in ipairs(ids) do t[id] = true end return t end
+local FLASK_SET, RUNE_SET = asSet(FLASKS), asSet(RUNES)
+local CONSUMABLE = 0
+local SUB = { flask = 3, food = 5, oil = 6 } -- Enum.ItemConsumableSubclass: Flasksphials, Fooddrink, Itemenhancement
+
+-- Best bag item for a reminder from { id, class, sub, spell, level } rows (pure, smoke-tested): an item whose
+-- use spell is one of the known buffs first, then the matching consumable kind, the highest level first.
+function M.PickReminderItem(kind, rows)
+    local best, bestScore
+    for _, it in ipairs(rows or {}) do
+        local score
+        if kind == "flask" and FLASK_SET[it.spell] then score = 1000
+        elseif kind == "rune" and RUNE_SET[it.spell] then score = 1000
+        elseif SUB[kind] and it.class == CONSUMABLE and it.sub == SUB[kind] and it.spell then score = 0 end
+        if score then
+            score = score + (tonumber(it.level) or 0)
+            if not bestScore or score > bestScore or (score == bestScore and it.id > best.id) then
+                best, bestScore = it, score
+            end
+        end
+    end
+    return best and best.id or nil
+end
+
+local BAGS = { 0, 1, 2, 3, 4, 5 }
+local function bagRows()
+    local rows, seen = {}, {}
+    if not (C_Container and C_Container.GetContainerNumSlots) then return rows end
+    for _, bag in ipairs(BAGS) do
+        for slot = 1, tonumber(C_Container.GetContainerNumSlots(bag)) or 0 do
+            local id = C_Container.GetContainerItemID(bag, slot)
+            if id and not seen[id] then
+                seen[id] = true
+                local _, _, _, _, _, classID, subID = C_Item.GetItemInfoInstant(id)
+                local _, spellID = C_Item.GetItemSpell(id)
+                local level = select(5, C_Item.GetItemInfo(id))
+                rows[#rows + 1] = { id = id, class = classID, sub = subID, spell = spellID, level = level }
+            end
+        end
+    end
+    return rows
+end
+
+local function tankUnit()
+    for _, unit in ipairs(groupUnits()) do
+        local role = UnitGroupRolesAssigned(unit)
+        if plain(role) and role == "TANK" then return unit end
+    end
+end
+
+local ITEM_KIND = { flask = true, food = true, rune = true, oil = true }
+
+-- What a left click on a reminder does: { type = "spell" | "item" | "macro", spell, item, unit, macrotext } or nil.
+function M:ReminderAction(name)
+    local _, class = UnitClass("player")
+    if ITEM_KIND[name] then
+        local id = M.PickReminderItem(name, bagRows())
+        if not id then return nil end
+        if name == "oil" then return { type = "macro", item = id, macrotext = "/use item:" .. id .. "\n/use 16" } end
+        return { type = "item", item = id }
+    end
+    local spell
+    if name == "raidBuff" or name == "group:" .. tostring(class) then
+        spell = RAID_BUFF[class] and RAID_BUFF[class][1]
+    elseif name == "class:poison" then spell = firstKnown(POISON_LETHAL)
+    elseif name == "class:poison2" then spell = firstKnown(POISON_UTILITY)
+    elseif name == "class:shield" then
+        spell = (spec() == 3 and known(SHIELDS[2])) and SHIELDS[2] or firstKnown(SHIELDS)
+    elseif name == "class:beacon" then
+        spell = firstKnown(BEACONS)
+        if spell then return { type = "spell", spell = spell, unit = tankUnit() } end
+    elseif name == "pet" then
+        spell = (class == "WARLOCK" and spec() == 2 and known(FELGUARD)) and FELGUARD or PET_SPELL[class]
+    elseif name == "healthstone" then
+        spell = class == "WARLOCK" and CREATE_HEALTHSTONE or nil
+    else
+        local id = tonumber(name:match("^custom:(%d+)$") or "")
+        spell = id and known(id) and id or nil
+    end
+    if spell and known(spell) then return { type = "spell", spell = spell } end
 end
 
 ---------------------------------------------------------------- frames
@@ -253,23 +405,69 @@ local function ensureHolder()
     return holder
 end
 
+local function onEnter(self)
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
+    GameTooltip:AddLine(self.labelText or "", 1, 1, 1)
+    local act = self.action
+    if act and act.item then
+        local nm = C_Item.GetItemNameByID(act.item)
+        GameTooltip:AddLine(L.TRACKER_R_CLICK_USE:format(nm or ("item:" .. act.item)), 0.6, 1, 0.6)
+    elseif act and act.spell then
+        local nm = C_Spell.GetSpellName(act.spell) or tostring(act.spell)
+        local who = act.unit and UnitName(act.unit)
+        if who and plain(who) then nm = nm .. " > " .. who end
+        GameTooltip:AddLine(L.TRACKER_R_CLICK_CAST:format(nm), 0.6, 1, 0.6)
+    elseif self.reminder and ITEM_KIND[self.reminder] then
+        GameTooltip:AddLine(L.TRACKER_R_NONE_BAGS, 1, 0.5, 0.4)
+    end
+    if M.db.reminders.dismiss and not M.reminderTest then GameTooltip:AddLine(L.TRACKER_R_DISMISS_HINT, 0.7, 0.7, 0.7) end
+    GameTooltip:Show()
+end
+
+local function postClick(self, button)
+    if button ~= "RightButton" or not M.db.reminders.dismiss or M.reminderTest or not self.reminder then return end
+    M.dismissed[self.reminder] = true
+    GameTooltip:Hide()
+    if not InCombatLockdown() then M:RefreshReminders() end
+end
+
 local function iconFor(i)
     local f = icons[i]
     if f then return f end
-    f = CreateFrame("Frame", nil, holder)
+    f = CreateFrame("Button", "PhoenixUI_Reminder" .. i, holder, "SecureActionButtonTemplate")
+    f:RegisterForClicks("AnyUp")
     f.Icon = f:CreateTexture(nil, "ARTWORK")
     f.Icon:SetAllPoints()
     f.holder = CreateFrame("Frame", nil, f)
     f.holder:SetAllPoints()
     f.Label = f.holder:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     f.Label:SetPoint("TOP", f, "BOTTOM", 0, -2)
+    f.Count = f.holder:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    f.Count:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -1, 2)
+    f:SetScript("OnEnter", onEnter)
+    f:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    f:SetScript("PostClick", postClick)
     icons[i] = f
     return f
 end
 
+local ATTRS = { "type1", "spell", "item", "unit", "macrotext" }
+-- Secure attributes for one icon (out of combat only; the caller checks).
+local function arm(f, act)
+    for _, k in ipairs(ATTRS) do f:SetAttribute(k, nil) end
+    if not act then return end
+    f:SetAttribute("type1", act.type)
+    if act.type == "spell" then f:SetAttribute("spell", act.spell) end
+    if act.type == "item" then f:SetAttribute("item", "item:" .. act.item) end
+    if act.type == "macro" then f:SetAttribute("macrotext", act.macrotext) end
+    if act.unit then f:SetAttribute("unit", act.unit) end
+end
+M.ArmReminder = arm
+
 local LABELS = { flask = "TRACKER_R_FLASK", food = "TRACKER_R_FOOD", rune = "TRACKER_R_RUNE", oil = "TRACKER_R_OIL",
     raidBuff = "TRACKER_R_RAIDBUFF", pet = "TRACKER_R_PET", healthstone = "TRACKER_R_HEALTHSTONE",
-    readyMana = "TRACKER_R_MANA" }
+    readyMana = "TRACKER_R_MANA", classBuff = "TRACKER_R_CLASSBUFF" }
+local CLASS_ICON = { poison = POISON_LETHAL[2], poison2 = POISON_UTILITY[1], shield = SHIELDS[1], beacon = BEACONS[1] }
 M.REMINDER_LABELS = LABELS
 
 local function iconAndLabel(name)
@@ -278,6 +476,13 @@ local function iconAndLabel(name)
         local tex = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(id)
         local nm = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(id)
         return tex or 134400, nm or tostring(id)
+    end
+    local cb = name:match("^class:(%w+)$")
+    if cb then
+        local sid = CLASS_ICON[cb]
+        local tex = sid and C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(sid)
+        local nm = sid and C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(sid)
+        return tex or 134400, nm or L.TRACKER_R_CLASSBUFF
     end
     local class = name:match("^group:(%u+)$")
     if class then
@@ -321,24 +526,43 @@ local function draw(list)
         f:ClearAllPoints()
         f:SetPoint("LEFT", holder, "LEFT", (i - 1) * (size + gap), 0)
         local tex, label = iconAndLabel(name)
+        local act = (r.click and not M.reminderTest) and M:ReminderAction(name) or nil
+        if act and act.item then tex = C_Item.GetItemIconByID(act.item) or tex end
+        f.reminder, f.action, f.labelText = name, act, label
+        arm(f, act)
         f.Icon:SetTexture(tex)
+        f.Icon:SetDesaturated(r.click and not M.reminderTest and ITEM_KIND[name] and not act or false)
+        local n = act and act.item and tonumber(C_Item.GetItemCount(act.item)) or 0
+        Skin:TextSpec(f.Count, { size = 10, outline = "OUTLINE" }, "number", "text.primary")
+        f.Count:SetText(n > 1 and n or "")
         M:StyleIcon("essential", f.Icon, f.holder)
+        if r.glow ~= "none" then
+            local gr, gg, gb = Skin:SpecColor(nil, "accent.glow")
+            ns.Glow:Show(f, r.glow, gr, gg, gb, 1, "reminder")
+        else
+            ns.Glow:Hide(f, "reminder")
+        end
         local A = ns.Art
         if A and A.DressSlot then
             if r.style == "banner" then A:DressSlot(f.holder, "Reminders.icon") elseif A.Undress then A:Undress(f.holder) end
         end
         Skin:TextSpec(f.Label, { size = 10, outline = "OUTLINE" }, "small", "text.primary")
         f.Label:SetText(label or "")
+        f.Label:SetShown(r.labels ~= false)
         f:Show()
     end
-    for i = #list + 1, #icons do icons[i]:Hide() end
+    for i = #list + 1, #icons do
+        icons[i]:Hide()
+        arm(icons[i], nil)
+        icons[i].reminder, icons[i].action = nil, nil
+    end
     dressBanner(r, #list * (size + gap), size)
     holder:SetShown(#list > 0)
 end
 
 local shown = {}
 function M:RefreshReminders()
-    if self.reminderTest then return end
+    if self.reminderTest or InCombatLockdown() then return end -- secure icons change out of combat only
     local list = self:MissingReminders()
     local new = false
     for _, name in ipairs(list) do if not shown[name] then new = true end end
@@ -349,13 +573,14 @@ function M:RefreshReminders()
 end
 
 function M:DrawReminderTest()
+    if InCombatLockdown() then return end
     self.reminderTest = true
     draw({ "flask", "food", "oil", "raidBuff", "group:MAGE", "custom:1459" })
 end
 
 function M:HideReminderTest()
     self.reminderTest = nil
-    if holder then holder:Hide() end
+    if holder and not InCombatLockdown() then holder:Hide() end
     if self:IsEnabled() then self:RefreshReminders() end
 end
 
@@ -371,9 +596,13 @@ end
 
 function M:EnableReminders()
     ensureHolder()
-    for _, ev in ipairs({ "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD", "UNIT_PET", "GROUP_ROSTER_UPDATE",
-        "BAG_UPDATE_DELAYED", "UNIT_INVENTORY_CHANGED", "ZONE_CHANGED_NEW_AREA", "PLAYER_MOUNT_DISPLAY_CHANGED" }) do
+    for _, ev in ipairs({ "PLAYER_REGEN_ENABLED", "UNIT_PET", "GROUP_ROSTER_UPDATE",
+        "BAG_UPDATE_DELAYED", "UNIT_INVENTORY_CHANGED", "PLAYER_MOUNT_DISPLAY_CHANGED", "SPELLS_CHANGED",
+        "PLAYER_ROLES_ASSIGNED" }) do
         self:On(ev, queue)
+    end
+    for _, ev in ipairs({ "ZONE_CHANGED_NEW_AREA", "PLAYER_ENTERING_WORLD" }) do
+        self:On(ev, function() wipe(M.dismissed); queue() end)
     end
     self:On("UNIT_AURA", function(_, _, unit) if unit == "player" then queue() end end)
     self:On("PLAYER_REGEN_DISABLED", function() if holder and not M.reminderTest then holder:Hide() end end)
@@ -385,6 +614,6 @@ function M:EnableReminders()
 end
 
 function M:DisableReminders()
-    if holder then holder:Hide() end
+    if holder and not InCombatLockdown() then holder:Hide() end
     wipe(shown)
 end

@@ -5965,6 +5965,69 @@ try("review 29: minimap info line, difficulty text, vault, tracking menu, fade",
     assert(tt.lines >= 2, "vault / lockout lines")
 end)
 
+try("review 30: clickable secure reminders, class buffs, dismiss", function()
+    local M = ns.modules.Tracker
+    local r = M.db.reminders
+    assert(M.PickReminderItem("flask", { { id = 5, class = 0, sub = 3, spell = 1, level = 80 },
+        { id = 6, class = 0, sub = 3, spell = 431971, level = 70 } }) == 6, "a known flask wins over any phial")
+    assert(M.PickReminderItem("food", { { id = 7, class = 0, sub = 5, spell = 2, level = 10 },
+        { id = 8, class = 0, sub = 5, spell = 3, level = 80 }, { id = 9, class = 0, sub = 6, spell = 4, level = 90 } }) == 8,
+        "the highest food")
+    assert(M.PickReminderItem("oil", { { id = 9, class = 0, sub = 6, spell = 4 } }) == 9, "oil by subclass")
+    assert(M.PickReminderItem("rune", { { id = 9, class = 0, sub = 6, spell = 4 } }) == nil, "no rune")
+    local keys = { "IsInInstance", "C_UnitAuras", "UnitClass", "C_SpellBook", "C_Item", "C_Container", "InCombatLockdown",
+        "IsMounted", "UnitInVehicle", "UnitExists" }
+    local saved = {}
+    for _, k in ipairs(keys) do saved[k] = rawget(env, k) end
+    rawset(env, "IsMounted", function() return false end)
+    rawset(env, "UnitInVehicle", function() return false end)
+    rawset(env, "UnitExists", function() return true end)
+    rawset(env, "IsInInstance", function() return true, "party" end)
+    rawset(env, "C_UnitAuras", { GetPlayerAuraBySpellID = function() return nil end, GetAuraDataBySpellName = function() return nil end })
+    rawset(env, "UnitClass", function() return "Rogue", "ROGUE", 4 end)
+    rawset(env, "C_SpellBook", { IsSpellKnown = function() return true end })
+    rawset(env, "C_Container", setmetatable({ GetContainerNumSlots = function(bag) return bag == 0 and 2 or 0 end,
+        GetContainerItemID = function(_, slot) return slot == 1 and 1001 or 1002 end }, { __index = saved.C_Container }))
+    rawset(env, "C_Item", setmetatable({ GetItemCount = function() return 0 end,
+        GetItemInfoInstant = function(id) return id, nil, nil, nil, 1, 0, id == 1001 and 3 or 5 end,
+        GetItemSpell = function(id) return "Use", id == 1001 and 431971 or 99 end,
+        GetItemInfo = function() return nil, nil, nil, nil, 80 end,
+        GetItemIconByID = function() return 134400 end, GetItemNameByID = function() return "Thing" end },
+        { __index = saved.C_Item }))
+    rawset(env, "InCombatLockdown", function() return false end)
+    local missing = {}
+    for _, name in ipairs(M:MissingReminders()) do missing[name] = true end
+    if RETAIL then
+        assert(missing["class:poison"], "a rogue without poison is reminded")
+        local act = M:ReminderAction("class:poison")
+        assert(act and act.type == "spell" and act.spell == 315584, "the click casts a lethal poison")
+        local fl = M:ReminderAction("flask")
+        assert(fl and fl.type == "item" and fl.item == 1001, "the click uses the flask in the bags")
+        local fd = M:ReminderAction("food")
+        assert(fd and fd.item == 1002, "the click eats")
+        assert(M:ReminderAction("readyMana") == nil, "mana has no click")
+        r.instancesOnly = false
+        M:RefreshReminders()
+        local b = _G.PhoenixUI_Reminder1
+        assert(b and b:GetAttribute("type1"), "the first reminder icon is armed")
+        if b:GetScript("OnEnter") then b:GetScript("OnEnter")(b) end
+        local first = b.reminder
+        b:GetScript("PostClick")(b, "RightButton")
+        assert(M.dismissed[first] and b.reminder ~= first, "a right click hides the reminder")
+        for _, name in ipairs(M:MissingReminders()) do assert(not M.dismissed[name], "dismissed stays hidden") end
+        fire("ZONE_CHANGED_NEW_AREA")
+        assert(next(M.dismissed) == nil, "a new zone brings it back")
+        r.glow = "none"; M:RefreshReminders(); r.glow = "pixel"
+        r.click = false; M:RefreshReminders(); r.click = true
+        r.instancesOnly = true
+    else
+        assert(not missing["class:poison"], "class buffs are retail-only")
+    end
+    rawset(env, "InCombatLockdown", function() return true end)
+    M:RefreshReminders() -- no secure change in combat
+    for _, k in ipairs(keys) do rawset(env, k, saved[k]) end
+end)
+
 try("macro editor (t193)", function()
     local A = ns:GetModule("Automation")
     assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")

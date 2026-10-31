@@ -519,6 +519,9 @@
   "15487": {
    "name": "Silence"
   },
+  "156910": {
+   "name": "Beacon of Faith"
+  },
   "1766": {
    "name": "Kick"
   },
@@ -537,8 +540,14 @@
   "192081": {
    "name": "Ironfur"
   },
+  "192106": {
+   "name": "Lightning Shield"
+  },
   "19705": {
    "name": "Well Fed"
+  },
+  "200025": {
+   "name": "Beacon of Virtue"
   },
   "203981": {
    "name": "Soul Fragments"
@@ -573,11 +582,23 @@
   "26297": {
    "name": "Berserking"
   },
+  "2823": {
+   "name": "Deadly Poison"
+  },
   "28730": {
    "name": "Arcane Torrent"
   },
+  "30146": {
+   "name": "Summon Felguard"
+  },
   "31252": {
    "name": "Prospecting"
+  },
+  "315584": {
+   "name": "Instant Poison"
+  },
+  "3408": {
+   "name": "Crippling Poison"
   },
   "351338": {
    "name": "Quell"
@@ -590,6 +611,12 @@
   },
   "368970": {
    "name": "Tail Swipe"
+  },
+  "381637": {
+   "name": "Atrophic Poison"
+  },
+  "381664": {
+   "name": "Amplifying Poison"
   },
   "381748": {
    "name": "Blessing of the Bronze"
@@ -618,6 +645,9 @@
   "462854": {
    "name": "Skyfury"
   },
+  "46585": {
+   "name": "Raise Dead"
+  },
   "47528": {
    "name": "Mind Freeze"
   },
@@ -629,6 +659,15 @@
   },
   "5143": {
    "name": "Arcane Missiles"
+  },
+  "52127": {
+   "name": "Water Shield"
+  },
+  "53563": {
+   "name": "Beacon of Light"
+  },
+  "5761": {
+   "name": "Numbing Poison"
   },
   "57994": {
    "name": "Wind Shear"
@@ -645,6 +684,9 @@
   "61304": {
    "name": "Global Cooldown"
   },
+  "6201": {
+   "name": "Create Healthstone"
+  },
   "6552": {
    "name": "Pummel"
   },
@@ -653,6 +695,9 @@
   },
   "6673": {
    "name": "Battle Shout"
+  },
+  "688": {
+   "name": "Summon Imp"
   },
   "68992": {
    "name": "Darkflight"
@@ -672,8 +717,17 @@
   "78675": {
    "name": "Solar Beam"
   },
+  "8679": {
+   "name": "Wound Poison"
+  },
+  "883": {
+   "name": "Call Pet 1"
+  },
   "96231": {
    "name": "Rebuke"
+  },
+  "974": {
+   "name": "Earth Shield"
   }
  }
 }

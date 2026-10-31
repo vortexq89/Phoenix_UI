@@ -326,3 +326,24 @@ location text always / on mouse-over, icon positions and scales, reset zoom).
 
 Left: an M+ portal flyout on the map (the item bar and teleport prompt already cover it) and a friends-online
 button (Data Texts > Friends covers it).
+
+## 30. Reminders
+
+Reference: EllesmereUI AuraBuffReminders (ideas only: clickable icons that fix what is missing, consumables,
+raid buffs, class self buffs such as poisons and shields, Beacon reminders, talent reminders per zone, glow and
+sound). ElvUI has no reminder module beyond raid-buff icons on the minimap side, so EUI is the bar.
+
+| Area | Phoenix before | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Click to fix | icons were plain frames | EUI: secure icons cast / use | FEATURE_COVERAGE said "clickable" from the pre-v2 keys; the v2 icons did nothing | Icons are SecureActionButtons: cast the raid buff, the pet, Create Healthstone or a known custom buff; use the best flask / food / augment rune found in the bags (a known buff spell first, then the consumable kind, highest level); oils run "/use item" then "/use 16" so they land on the main hand |
+| Item feedback | generic art | EUI shows the consumable | no hint of what will be used | the icon shows the chosen item and its count; it greys out when nothing matching is in the bags, the tooltip says "None in your bags" |
+| Tooltip | none | EUI: name and action | missing | name, "Click: use / cast ...", the Beacon target, and the right-click hint |
+| Dismiss | none | EUI: right-click to hide | a reminder you chose to skip stayed up all key | right click hides it until the next zone (`dismiss`) |
+| Class buffs | none | EUI: poisons, shields, beacon | missing | `classBuff` (retail): rogue lethal and utility poisons, shaman Lightning / Water / Earth Shield (Water first for Restoration), Holy paladin Beacon of Light / Faith on a group member (skipped with Beacon of Virtue), the click casts it on the tank |
+| Look | label always, no glow | EUI: glow | flat next to the CDM icons | glow pick (pixel default, autocast, button, none) in the theme's accent glow; names under icons optional |
+| Combat safety | redraw could run any time | - | with secure icons any layout change in combat would be blocked | redraw and attributes only out of combat; the row still hides as combat starts |
+| Refresh | missed talent and role changes | - | a new talent or tank swap kept the old state | SPELLS_CHANGED and PLAYER_ROLES_ASSIGNED refresh it |
+| Talent per zone | Loadouts module | parity | complete | none |
+
+Left: none for the retail list. WoW Forever keeps oil, pet, healthstone and mana (its spell IDs for flasks,
+runes and class buffs are not verified, so those stay retail-only).
