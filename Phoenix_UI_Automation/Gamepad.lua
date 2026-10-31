@@ -22,5 +22,6 @@ function M.GamepadSet(which, value)
 end
 
 function M.GamepadConnected()
-    return C_GamePad and C_GamePad.GetActiveDeviceID and (C_GamePad.GetActiveDeviceID() or -1) >= 0 or false
+    local id = C_GamePad and C_GamePad.GetActiveDeviceID and C_GamePad.GetActiveDeviceID()
+    return type(id) == "number" and id >= 0
 end
