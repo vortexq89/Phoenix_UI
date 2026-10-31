@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 124 |
-| partial | 7 |
+| Phoenix has | 125 |
+| partial | 6 |
 | missing | 2 |
 | out of scope | 10 |
 
@@ -73,7 +73,7 @@ Overlaps found:
 | BugSack | Bug viewer (BugSack) | Phoenix has | `Modules/Bugs/Viewer.lua` (viewer) and `Modules/Bugs/Bugs.lua`. |
 | EllesmereUI | Lite framework instead of Ace3 | Phoenix has | Own module system and saved data: `Core/Modules.lua`, `Core/DB.lua`, `Core/Flavor.lua`. |
 | EllesmereUI | Unlock Mode (movers with anchors and snapping) | Phoenix has | `Modules/Movers/Movers.lua`: layout mode with grid, snap to frames, arrow nudge and a cog popup (anchor, X/Y). |
-| EllesmereUI | Spec overrides and conditional overrides | partial | Spec profiles in `Core/DB.lua:181` (`specProfiles`). Conditional overrides: not found on this branch. |
+| EllesmereUI | Spec overrides and conditional overrides | Phoenix has | Spec profiles (`specProfiles`) and, built 2026-11-01, profiles per place: Profiles > Places (open world, dungeons incl. scenarios, raids, arenas, battlegrounds), over the spec profile, the profile from before comes back in a place without one (`DB:ApplyAutoProfile`, `DB:CurrentContext`, Core/DB.lua). |
 | EllesmereUI | Macro Factory | Phoenix has | Automation > Smart macros; 2026-10-31 Pick up buttons and Open macro window. Full in-addon macro editor built 2026-10-31 (next row). |
 | EllesmereUI | Global options search | Phoenix has | `Phoenix_UI_Options/Config/Search.lua` (search every page, jump to and flash the row). No Ctrl+K command palette. |
 | EllesmereUI | First-install module picker, migrations, patch notes, video guides, uninstall | partial | What's new popup plus (2026-10-31) About > Full changelog and a show-after-updates switch. Module picker at first install: setup wizard only; video guides, uninstall: not planned. |

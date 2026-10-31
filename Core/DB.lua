@@ -192,10 +192,41 @@ function DB:GetSpecProfiles()
     return t
 end
 
-ns.Events:On("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", DB, function()
-    local t = DB:GetSpecProfiles()
-    if not t.enabled then return end
-    local spec = C_SpecializationInfo.GetSpecialization()
-    local name = spec and t[spec]
-    if type(name) == "string" and DB.sv.profiles[name] then DB:SetProfile(name) end
-end)
+--[[ Profiles per place (EllesmereUI's conditional overrides): open world, dungeons, raids, arenas, battlegrounds,
+    stored with the spec profiles (t.context = { enabled, world, party, raid, arena, pvp, base }). A place profile
+    wins over the spec one; leaving for a place without one brings back the profile from before (base).
+    SetProfile waits for the end of combat by itself (ns.Combat:Run). ]]
+DB.CONTEXTS = { "world", "party", "raid", "arena", "pvp" }
+function DB:CurrentContext()
+    local _, kind = IsInInstance()
+    if kind == "scenario" then return "party" end
+    if kind == "party" or kind == "raid" or kind == "arena" or kind == "pvp" then return kind end
+    return "world"
+end
+function DB:GetContextProfiles()
+    local t = self:GetSpecProfiles()
+    if type(t.context) ~= "table" then t.context = { enabled = false } end
+    return t.context
+end
+local function specProfile(t)
+    if not t.enabled then return nil end
+    local SI = C_SpecializationInfo
+    local spec = SI and SI.GetSpecialization and SI.GetSpecialization()
+    return spec and t[spec]
+end
+function DB:ApplyAutoProfile()
+    local t = self:GetSpecProfiles()
+    local c = self:GetContextProfiles()
+    local name = c.enabled and c[self:CurrentContext()] or nil
+    if type(name) == "string" and self.sv.profiles[name] then
+        if c.base == nil and name ~= self.profileName then c.base = self.profileName end
+    else
+        name = specProfile(t)
+        if not (type(name) == "string" and self.sv.profiles[name]) then name, c.base = c.base, nil end
+    end
+    if type(name) == "string" and self.sv.profiles[name] then self:SetProfile(name); return name end
+end
+local function auto() DB:ApplyAutoProfile() end
+ns.Events:On("ACTIVE_PLAYER_SPECIALIZATION_CHANGED", DB, auto)
+ns.Events:On("PLAYER_ENTERING_WORLD", DB, auto)
+ns.Events:On("ZONE_CHANGED_NEW_AREA", DB, auto)

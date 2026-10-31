@@ -207,6 +207,24 @@ local function buildSchema()
         }
     end
 
+    -- profiles per place (DB:ApplyAutoProfile), over the spec ones
+    schema[#schema + 1] = { type = "header", label = "CONTEXT_PROFILES", icon = "spec" }
+    schema[#schema + 1] = { type = "toggle", label = "CONTEXT_PROFILES_ENABLE", desc = "CONTEXT_PROFILES_ENABLE_DESC",
+        keywords = "conditional override instance dungeon raid arena battleground zone",
+        get = function() return DB:GetContextProfiles().enabled end,
+        set = function(_, v) DB:GetContextProfiles().enabled = v; DB:ApplyAutoProfile() end }
+    local CTX = { world = { label = "CTX_WORLD" }, party = { label = "CTX_PARTY" }, raid = { label = "CTX_RAID" },
+        arena = { label = "CTX_ARENA" }, pvp = { label = "CTX_PVP" } }
+    for _, ctx in ipairs(DB.CONTEXTS) do
+        schema[#schema + 1] = {
+            type = "select", label = CTX[ctx].label,
+            values = function() return profileValues(true) end,
+            disabled = function() return not DB:GetContextProfiles().enabled end,
+            get = function() return DB:GetContextProfiles()[ctx] or NONE end,
+            set = function(_, v) DB:GetContextProfiles()[ctx] = (v ~= NONE) and v or nil; DB:ApplyAutoProfile() end,
+        }
+    end
+
     local rest = {
         { type = "header", label = "EXPORT", icon = "export" },
         { type = "custom", label = "EXPORT_MODULES", desc = "EXPORT_MODULES_DESC", fullWidth = true, height = 210,

@@ -6283,6 +6283,28 @@ try("encounters: boss modules from the journal, per-ability choices (t201)", fun
     rawset(env, "GetSpecializationRole", hadRole); SI.GetSpecialization = hadSpec
 end)
 
+try("profiles per place (EllesmereUI conditional overrides)", function()
+    local DB = ns.DB
+    local hadInst, hadSet = rawget(env, "IsInInstance"), DB.SetProfile
+    local was = DB.profileName
+    local picked
+    DB.SetProfile = function(_, name) picked = name end
+    DB.sv.profiles.CtxRaid = DB.sv.profiles.CtxRaid or {}
+    local c = DB:GetContextProfiles()
+    c.enabled, c.raid, c.base = true, "CtxRaid", nil
+    rawset(env, "IsInInstance", function() return true, "raid" end)
+    assert(DB:CurrentContext() == "raid" and DB:ApplyAutoProfile() == "CtxRaid" and picked == "CtxRaid", "raid profile")
+    assert(c.base == was, "profile from before kept")
+    rawset(env, "IsInInstance", function() return false, "none" end)
+    picked = nil
+    assert(DB:CurrentContext() == "world" and DB:ApplyAutoProfile() == was and picked == was and c.base == nil, "back")
+    rawset(env, "IsInInstance", function() return true, "scenario" end)
+    assert(DB:CurrentContext() == "party", "scenario counts as a dungeon")
+    c.enabled, c.raid = false, nil
+    DB.sv.profiles.CtxRaid = nil
+    DB.SetProfile = hadSet; rawset(env, "IsInInstance", hadInst)
+end)
+
 try("boss data and important-cast announcements (t201)", function()
     local E = ns.modules.Encounters
     local n = 0

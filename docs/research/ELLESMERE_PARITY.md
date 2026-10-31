@@ -18,7 +18,7 @@ Legend: A = ahead, E = equal, B = behind, â€” = EllesmereUI has no equivalent, â
 |---|---|---|---|---|
 | Settings window / organisation | Options shell, widgets, cog popups, apply-to-all | v4 Flow: rail, sticky header, masonry cards, search over every setting, live preview, fold chips | A | keep: whole-pixel columns and the 20% chrome rule (t165) |
 | Plugin manager | per-addon folders, Panel/Startup | Plugins page, toggles that load live, `needs`, memory | A | |
-| Profiles | 8 | Profiles page, import/export | E | add: per-spec auto-switch and a diff view before import |
+| Profiles | 8 | Profiles page, import/export, per-spec auto-switch, profiles per place (1 Nov: world, dungeons, raids, arenas, battlegrounds) | E | add: a diff view before import |
 | Unit frames | 24 + MiniFrames 213 + Shared* 347 (~370 in folder) | 201 keys (372 settings in the harness) | E | mini-frame (target-of-target, focus-target, pet) depth; per-frame copy-from |
 | Raid / party frames | 91 + 12 + folder 149 | GroupFrames 53 keys + 6 placeable aura indicators (3x3 grid, nudge, growth, count, icon / colour / dispel-colour square, 8 filter kinds) per profile, raid marker bar | A | t169: indicators ship; previewed live on sample frames |
 | Name plates | 8 + folder 133 | 97 keys (278 settings) | A | |
