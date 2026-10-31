@@ -348,6 +348,10 @@ Settings window v2 (plan v2 stage S6, `Phoenix_UI_Options/Config/Window.lua`). M
 * Blizzard frames: we never call `SetPoint` on frames managed by `EditModeManagerFrame`. Action bars in Phoenix mode are the exception: their buttons are re-parented by a restricted snippet into Phoenix headers, and the headers are placed by Layout mode (Movers store delegate, `modules.ActionBars.bars.<key>`), not Edit Mode. Edit Mode's own bar settings (e.g. number of buttons shown) can still hide buttons. Size and position settings for Blizzard systems are left to Edit Mode. Our config page links to it with an "Open Edit Mode" button (`ShowUIPanel(EditModeManagerFrame)` out of combat).
 * Unit frames in Phoenix mode are the second exception: Blizzard's player, target, focus and boss frames are parked (events off, hidden, re-parented to a hidden frame out of combat); the Phoenix frames are placed by Layout mode (store delegate saving into `modules.UnitFrames.units.<key>`). Blizzard's target, focus and boss cast bars are lent to each Phoenix frame's cast anchor in Blizzard cast bar mode; in Phoenix mode (S9) Phoenix bars use the anchors and the player's Edit Mode cast bar is parked. Phoenix buff/debuff blocks (S9) move in Layout mode, not Edit Mode (`BuffFrame`/`DebuffFrame` are parked).
 * LibEditMode's `layout` callback re-applies our positions when the user switches layouts.
+* Every frame registered this way is also a Phoenix Layout mode box (Movers key `em.<key>`, review 28): the same
+  saved place, written from either mode; Layout mode adds the frame's scale and opacity (offsets saved in UIParent
+  units, `ui = true`) unless the caller passes `noScale` / `noAlpha` (data text panels have their own). `active()`
+  hides the box while the frame's feature is off, `preview(unlocked)` puts up a sample (encounter bars, warnings).
 
 ---
 

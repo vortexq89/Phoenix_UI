@@ -7,7 +7,10 @@ local LEM = LibStub("LibEditMode")
     Per event we read only what is never secret (id, source, duration from the event info; time remaining and
     state from C_EncounterTimeline) and do all sorting, filtering and emphasis on those. The spell name and
     icon may be secret: they go straight into SetText / SetTexture and are never compared or stored on disk.
-    Pull and break are Phoenix timers in the same stack, so the screen has one timer list, sorted by time. ]]
+    Pull and break are Phoenix timers in the same stack, so the screen has one timer list, sorted by time.
+    Review 28 (BigWigs parity): emphasised bars can move to their own, bigger stack ("Move emphasised bars"),
+    bars drain or fill, a spark marks the fill edge, and the countdown voice can count an ability in
+    (spellID=count, or every emphasised bar). ]]
 local B = {}
 M.Bars = B
 
@@ -16,8 +19,9 @@ local TRACK = Enum.EncounterTimelineTrack
 local SOURCE_EDITMODE = 2 -- Enum.EncounterTimelineEventSource.EditMode
 local THROTTLE = 0.05
 
-local anchor
+local anchor, bigAnchor
 local bars = {}      -- pooled bar frames, bars[i] shows rows[i]
+local bigBars = {}   -- the emphasised stack's bars (Move emphasised bars)
 local events = {}    -- eventID -> { info = EncounterTimelineEventInfo, duration, label? }
 local timers = {}    -- key -> { label, icon, endsAt, total }
 local editCount = 0  -- numbering for Blizzard's Edit Mode sample events ("Test 1", "Test 2" …)
@@ -59,11 +63,13 @@ function M:BarColor(emphasized)
     return Theme:Color(emphasized and "state.danger" or "accent.primary")
 end
 
--- Size, texture, colours, fonts and border of one bar; the preview calls this too.
-function M:StyleBar(f, emphasized)
+-- Size, texture, colours, fonts and border of one bar; the preview calls this too. `big`: a bar of the
+-- emphasised stack, `emphasizeScale` times the size.
+function M:StyleBar(f, emphasized, big)
     local db = self.db.timeline
-    local h = db.height
-    f:SetSize(db.width, h)
+    local k = big and (tonumber(db.emphasizeScale) or 1) or 1
+    local h = math.floor(db.height * k + 0.5)
+    f:SetSize(math.floor(db.width * k + 0.5), h)
     f.iconHolder:SetSize(h, h)
     f.iconHolder:ClearAllPoints()
     f.iconHolder:SetPoint("LEFT")
@@ -78,6 +84,13 @@ function M:StyleBar(f, emphasized)
     Skin:BorderSpec(f.iconHolder, db.border, "border.black")
     Skin:TextSpec(f.name, db.name, "unit", "text.primary")
     Skin:TextSpec(f.time, db.time, "number", "text.primary")
+    Skin:FillSpark(f.bar, db.spark, false)
+end
+
+-- Bar value for `left` of `total`: "drain" empties as the ability comes (the default), "fill" fills up.
+function M.BarValue(fill, left, total)
+    if fill == "fill" then return math.max(0, (total or 0) - left) end
+    return left
 end
 
 function M.FormatTime(left)
@@ -101,7 +114,7 @@ end
 -- Per-ability overrides (Encounters > Ability rules): "spellID=hide|emph|sound, …". They apply only when the
 -- event's spell ID is a plain number; a secret ID is never compared, so such events keep the defaults.
 local ruleCache, ruleText = {}, nil
-local RULE = { hide = true, emph = true, sound = true }
+local RULE = { hide = true, emph = true, sound = true, count = true }
 function M.ParseAbilityRules(text)
     local out = {}
     for id, what in tostring(text or ""):gmatch("(%d+)%s*=%s*(%a+)") do
@@ -167,7 +180,8 @@ local function collect(now)
             if e.rule == "hide" then hidden = true end
             if (state == STATE.Active or state == STATE.Paused) and not hidden and type(left) == "number"
                 and not Secret.IsSecret(left) and (db.horizon <= 0 or left <= db.horizon) then
-                rows[#rows + 1] = { key = id, label = e.label, info = e.info, left = left, total = e.duration, emph = e.rule == "emph",
+                rows[#rows + 1] = { key = id, label = e.label, info = e.info, left = left, total = e.duration,
+                    emph = e.rule == "emph" or e.rule == "count", count = e.rule == "count",
                     dim = state == STATE.Paused or query(C_EncounterTimeline.IsEventBlocked, id) == true }
             end
         end
@@ -185,51 +199,95 @@ local function collect(now)
 end
 
 ---------------------------------------------------------------- drawing
-local function barAt(i)
-    local f = bars[i]
+local function barAt(pool, parent, i)
+    local f = pool[i]
     if not f then
-        f = M:CreateBar(anchor)
-        bars[i] = f
+        f = M:CreateBar(parent)
+        pool[i] = f
         f.styled = nil
     end
     return f
 end
 
-local function place(f, i)
+local function place(f, i, parent, big)
+    if f.slot == i and f.slotParent == parent and f.slotBig == big then return end
+    f.slot, f.slotParent, f.slotBig = i, parent, big
     local db = M.db.timeline
-    local step = (i - 1) * (db.height + db.spacing)
+    local k = big and (tonumber(db.emphasizeScale) or 1) or 1
+    local step = (i - 1) * (math.floor(db.height * k + 0.5) + db.spacing)
     f:ClearAllPoints()
     if db.grow == "DOWN" then
-        f:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, -step)
+        f:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -step)
     else
-        f:SetPoint("BOTTOMLEFT", anchor, "BOTTOMLEFT", 0, step)
+        f:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", 0, step)
     end
 end
 
+-- Countdown voice for one ability (spellID=count, or every emphasised bar with "Count down emphasised bars"):
+-- the soonest such bar speaks its whole seconds from Countdown from down to 1. Off while the pull voice runs.
+local spoken = {} -- key -> last number spoken
+local function countIn(list)
+    local c = M.db.countdown
+    if not c.enabled or M.CountdownRunning() then return end
+    for _, r in ipairs(list) do
+        if r.count or (c.bars and r.emphasized and r.info) then
+            local n = math.ceil(r.left - 0.05)
+            if n >= 1 and n <= c.from and spoken[r.key] ~= n then
+                spoken[r.key] = n
+                local path = Media:Voice(c.voice, n)
+                if path then PlaySoundFile(path, "Master") end
+            end
+            return
+        end
+    end
+end
+
+local function fillBar(f, r, big, emphasized)
+    local db = M.db.timeline
+    if f.styled ~= emphasized or f.big ~= big then
+        M:StyleBar(f, emphasized, big); f.styled, f.big = emphasized, big
+    end
+    if f.key ~= r.key then
+        f.key = r.key
+        -- Our own label and icon are plain; the event's spell name and icon may be secret, so they are
+        -- handed to the sinks without any test (not even `or`).
+        if r.label then f.name:SetText(r.label) elseif r.info then f.name:SetText(r.info.spellName) end
+        if r.icon then f.icon:SetTexture(r.icon) elseif r.info then f.icon:SetTexture(r.info.iconFileID) end
+    end
+    f.bar:SetMinMaxValues(0, r.total > 0 and r.total or 1)
+    f.bar:SetValue(M.BarValue(db.fill, r.left, r.total))
+    f.time:SetText(r.left > 0.05 and M.FormatTime(r.left) or L.ENC_SOON)
+    f:SetAlpha(r.dim and 0.55 or 1)
+    f:Show()
+end
+
+local small, big = {}, {}
 local function draw(now)
     local db = M.db.timeline
     local list = collect(now)
-    local shown = math.min(#list, db.max)
-    for i = 1, shown do
-        local r, f = list[i], barAt(i)
-        local emphasized = r.emph or (db.emphasize and r.left <= db.emphasizeAt)
-        if f.styled ~= emphasized then M:StyleBar(f, emphasized); place(f, i); f.styled = emphasized end
-        if f.key ~= r.key then
-            f.key = r.key
-            -- Our own label and icon are plain; the event's spell name and icon may be secret, so they are
-            -- handed to the sinks without any test (not even `or`).
-            if r.label then f.name:SetText(r.label) elseif r.info then f.name:SetText(r.info.spellName) end
-            if r.icon then f.icon:SetTexture(r.icon) elseif r.info then f.icon:SetTexture(r.info.iconFileID) end
-            place(f, i)
-        end
-        f.bar:SetMinMaxValues(0, r.total > 0 and r.total or 1)
-        f.bar:SetValue(r.left)
-        f.time:SetText(r.left > 0.05 and M.FormatTime(r.left) or L.ENC_SOON)
-        f:SetAlpha(r.dim and 0.55 or 1)
-        f:Show()
+    wipe(small); wipe(big)
+    local move = db.emphasizeMove and bigAnchor ~= nil
+    for _, r in ipairs(list) do
+        r.emphasized = r.emph or (db.emphasize and r.left <= db.emphasizeAt)
+        if move and r.emphasized then big[#big + 1] = r elseif #small < db.max then small[#small + 1] = r end
     end
-    for i = shown + 1, #bars do bars[i]:Hide(); bars[i].key = nil end
-    return shown
+    for i, r in ipairs(small) do
+        local f = barAt(bars, anchor, i)
+        fillBar(f, r, false, r.emphasized)
+        place(f, i, anchor, false)
+    end
+    for i = #small + 1, #bars do bars[i]:Hide(); bars[i].key = nil end
+    local nBig = math.min(#big, db.max)
+    for i = 1, nBig do
+        local f = barAt(bigBars, bigAnchor, i)
+        fillBar(f, big[i], true, true)
+        place(f, i, bigAnchor, true)
+    end
+    for i = nBig + 1, #bigBars do bigBars[i]:Hide(); bigBars[i].key = nil end
+    if bigAnchor then bigAnchor:SetShown(nBig > 0 or (editing and move)) end
+    countIn(list)
+    if not next(events) then wipe(spoken) end
+    return #small + nBig
 end
 
 local elapsed = 0
@@ -280,6 +338,24 @@ function B:HasTimer(key) return timers[key] ~= nil end
 local function layoutAnchor()
     local db = M.db.timeline
     anchor:SetSize(db.width, db.height)
+    if bigAnchor then
+        local k = tonumber(db.emphasizeScale) or 1
+        bigAnchor:SetSize(math.floor(db.width * k + 0.5), math.floor(db.height * k + 0.5))
+    end
+end
+
+-- The emphasised stack (Move emphasised bars): its own anchor, in Edit Mode and Layout mode.
+local function ensureBig()
+    if bigAnchor or not M.db.timeline.emphasizeMove then return end
+    bigAnchor = CreateFrame("Frame", "PhoenixEncounterBarsBig", UIParent)
+    bigAnchor:SetFrameStrata("MEDIUM")
+    bigAnchor:SetClampedToScreen(true)
+    bigAnchor:Hide()
+    layoutAnchor()
+    ns.EditMode:Register(bigAnchor, { key = "EncounterBarsBig", name = ns.title .. " – " .. L.ENC_BIG_STACK,
+        default = { point = "CENTER", x = 0, y = 140 },
+        active = function() return M.active and M:Draws("timeline") and M.db.timeline.emphasizeMove end,
+        preview = function(unlocked) bigAnchor:SetShown(unlocked and M.db.timeline.emphasizeMove) end })
 end
 
 function B:Enable()
@@ -289,9 +365,18 @@ function B:Enable()
         anchor:SetClampedToScreen(true)
         anchor:Hide()
         anchor:SetScript("OnUpdate", onUpdate)
+        ensureBig()
         layoutAnchor()
         ns.EditMode:Register(anchor, { key = "EncounterBars", name = ns.title .. " – " .. L.ENC_TIMELINE,
-            default = { point = "CENTER", x = 320, y = 80 } })
+            default = { point = "CENTER", x = 320, y = 80 },
+            active = function() return M.active and M:Draws("timeline") end,
+            -- Layout mode: three sample bars so the box has the stack's real size and look
+            preview = function(unlocked)
+                for i = 1, 3 do
+                    if unlocked then B:StartTimer("layout" .. i, L.ENC_TEST_EVENT:format(i), 8 * i + 2, 30, M.PULL_ICON)
+                    else B:StopTimer("layout" .. i) end
+                end
+            end })
         LEM:RegisterCallback("enter", function() editing = true; if M.active then anchor:Show() end end)
         LEM:RegisterCallback("exit", function() editing = false end)
     end
@@ -306,13 +391,17 @@ function B:Disable()
     ns.Events:OffAll(B)
     wipe(timers)
     if anchor then anchor:Hide() end
+    if bigAnchor then bigAnchor:Hide() end
     for _, f in ipairs(bars) do f:Hide(); f.key = nil end
+    for _, f in ipairs(bigBars) do f:Hide(); f.key = nil end
 end
 
 function B:Refresh()
     if not anchor then return end
+    ensureBig()
     layoutAnchor()
-    for i, f in ipairs(bars) do f.styled = nil; f.key = nil; place(f, i) end
+    for _, f in ipairs(bars) do f.styled, f.key, f.slot = nil, nil, nil end
+    for _, f in ipairs(bigBars) do f.styled, f.key, f.slot = nil, nil, nil end
     if anchor:IsShown() then draw(GetTime()) end
 end
 

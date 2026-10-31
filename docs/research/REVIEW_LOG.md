@@ -279,3 +279,25 @@ to Blizzard's floating text or an addon). EllesmereUI only sets the damage font.
 | Per-event font | one combat font, size per event | MSBT: font face per event | could not set one event apart by face | Font in each event's cog (the six combat faces; size still from the combat font, area and event) |
 
 Left: nothing on MSBT's per-event options; MSBT's source-name codes need data 12.x does not give addons.
+
+## 28. Encounters (boss timeline bars, warnings, pull / break, voice)
+
+Reference: BigWigs (the reference for boss bars: normal and emphasised anchors, emphasised bars move and grow,
+fill or drain, spark, countdown voice per ability, flash and pulse on important messages, message lines),
+EllesmereUI (no boss mod of its own; it skins BigWigs' bars) and ElvUI (none; it leaves boss timers to BigWigs /
+DBM). Phoenix draws the game's own encounter timeline and warnings (`C_EncounterTimeline`, `ENCOUNTER_WARNING`),
+whose names and icons are secret in a fight, so only plain fields (duration, time left, state, severity) drive
+the logic.
+
+| Area | Phoenix before | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Emphasis | recolour in the last N seconds, `spellID=emph` | BigWigs: emphasised bars move to their own anchor and grow | an important bar stayed in the crowd | Move emphasised bars: a second stack (`emphasizeMove`, own Edit Mode / Layout mode place) at Size of emphasised bars (`emphasizeScale`, 100-200 %) |
+| Fill | drain only | BigWigs: fill or drain | no choice | Bar direction: drain / fill (`timeline.fill`, `M.BarValue`) |
+| Spark | none | BigWigs and the cast bars have one | the fill edge was hard to read at speed | Spark switch (`timeline.spark`, `Skin:FillSpark`, anchored to the fill texture: no maths on the value) |
+| Countdown voice | pull, key / arena starts | BigWigs: voice per ability | no way to be counted into a boss cast | `spellID=count` in the ability rules (also emphasises), and Count down emphasised abilities (`countdown.bars`); the soonest one speaks, never over the pull voice |
+| Banner | 3 lines fixed | BigWigs: message lines setting, flash on important | busy fights pushed lines out; a critical alert was easy to miss | Lines on the banner (1-5, `warnings.lines`); Flash the screen on critical warnings (`warnings.flash`, theme danger colour, one animation group) |
+| Positioning | Blizzard Edit Mode only | the user's rule: every Phoenix frame in Layout mode | bars and banner were the only combat frames missing from Layout mode | `ns.EditMode:Register` also registers a Layout mode box (`em.<key>`); the bars show three sample timers and the banner a line per severity while unlocked. The same fix covers the Mythic+ timer, spell history, XP bar and data text panels |
+| One owner | stands down for BigWigs / DBM, restores the game's CVars | parity | correct | none |
+| Forever | pull / break bars and voice only (no timeline) | - | correct, the new rows are timeline-only where they need it | `countdown.bars` is hidden without the timeline |
+
+Left: per-boss authored warnings (LittleWigs-style) stay a data question (FEATURE_COVERAGE: BigWigs per-boss knowledge).

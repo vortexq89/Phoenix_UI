@@ -21,9 +21,10 @@ local M = ns:NewModule("Encounters", {
         timeline = {
             display = "phoenix",            -- "phoenix": Phoenix bars, "blizzard": the game's timeline
             width = 260, height = 22, spacing = 4, grow = "UP", max = 8, horizon = 0,
-            icon = true, texture = "", color = false,
+            icon = true, texture = "", color = false, fill = "drain", spark = true,
             emphasize = true, emphasizeAt = 5, emphasizeColor = false,
-            rules = "", -- per-ability: "spellID=hide|emph|sound, …" (Bars.lua)
+            emphasizeMove = false, emphasizeScale = 1.25, -- emphasised bars in their own, bigger stack (BigWigs)
+            rules = "", -- per-ability: "spellID=hide|emph|sound|count, …" (Bars.lua)
             background = Style.Background({ alpha = 0.7 }),
             border = Style.Border(),
             name = Style.Text(12, { shadow = true }),
@@ -34,8 +35,9 @@ local M = ns:NewModule("Encounters", {
             icon = true,
             text = Style.Text(22, { outline = "OUTLINE", shadow = true }),
             sounds = { high = "blizzard", medium = "blizzard", low = "none" },
+            lines = 3, flash = true, -- lines on the banner; screen-edge flash on critical warnings
         },
-        countdown = { enabled = true, voice = "Jim", from = 5, pull = true, timers = true },
+        countdown = { enabled = true, voice = "Jim", from = 5, pull = true, timers = true, bars = false },
         pull = { seconds = 10 },
         breaks = { minutes = 5, sync = true },
         bigwigs = true,
@@ -116,6 +118,8 @@ local function stopCountdown()
     if ticker then ticker:Cancel(); ticker = nil end
 end
 M.StopCountdown = stopCountdown
+-- The pull / start voice is speaking (the bars' ability countdown waits for it).
+function M.CountdownRunning() return ticker ~= nil end
 
 -- Speaks from db.countdown.from down to 1 for a timer that ends `seconds` from now.
 function M:StartCountdown(seconds)

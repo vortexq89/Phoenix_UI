@@ -7,11 +7,13 @@ local LEM = LibStub("LibEditMode")
     target and icon are secret during an encounter: they are joined with string.format (allowed on secrets)
     and handed to SetText / SetTexture untouched. Severity and duration are plain, so the banner sizes,
     colours, orders, times out and picks the sound by severity. The game's minimum-severity setting
-    (encounterWarningsLevel) is honoured; "only when it targets me" cannot be, because the target is secret. ]]
+    (encounterWarningsLevel) is honoured; "only when it targets me" cannot be, because the target is secret.
+    Review 28 (BigWigs parity): how many lines the banner keeps, and a red flash on the screen edges for a
+    critical warning (BigWigs "Flash"; plain severity decides it, nothing secret is read). ]]
 local W = {}
 M.Warnings = W
 
-local LINES, FADE, GAP = 3, 0.5, 4
+local FADE, GAP = 0.5, 4
 M.WARN_SCALE = { high = 1.2, medium = 1, low = 0.82 }
 M.WARN_TOKEN = { high = "state.danger", medium = "state.warning", low = "text.primary" }
 
@@ -112,8 +114,48 @@ local function onUpdate()
 end
 
 -- Shows one warning. text may be secret; level and duration are plain.
+-- Screen-edge flash: four gradients on a full-screen frame, faded in and out by one animation.
+local flash
+local function edge(f, a, b, horizontal)
+    local t = f:CreateTexture(nil, "BACKGROUND")
+    t:SetTexture(Media.textures.WHITE)
+    t:SetPoint(a); t:SetPoint(b)
+    if horizontal then t:SetWidth(120) else t:SetHeight(120) end
+    return t
+end
+function M:FlashScreen()
+    if not flash then
+        flash = CreateFrame("Frame", nil, UIParent)
+        flash:SetAllPoints(UIParent)
+        flash:SetFrameStrata("FULLSCREEN_DIALOG")
+        flash:EnableMouse(false)
+        flash:SetAlpha(0)
+        flash.edges = {
+            { edge(flash, "TOPLEFT", "BOTTOMLEFT", true), "HORIZONTAL", true },
+            { edge(flash, "TOPRIGHT", "BOTTOMRIGHT", true), "HORIZONTAL", false },
+            { edge(flash, "TOPLEFT", "TOPRIGHT", false), "VERTICAL", false },
+            { edge(flash, "BOTTOMLEFT", "BOTTOMRIGHT", false), "VERTICAL", true },
+        }
+        local g = flash:CreateAnimationGroup()
+        local up = g:CreateAnimation("Alpha"); up:SetFromAlpha(0); up:SetToAlpha(1); up:SetDuration(0.15); up:SetOrder(1)
+        local down = g:CreateAnimation("Alpha"); down:SetFromAlpha(1); down:SetToAlpha(0); down:SetDuration(0.55); down:SetOrder(2)
+        g:SetScript("OnFinished", function() flash:SetAlpha(0); flash:Hide() end)
+        flash.anim = g
+    end
+    local r, g, b = ns.Theme:Color("state.danger")
+    for _, e in ipairs(flash.edges) do
+        -- strong at the screen edge, clear towards the middle
+        local solid, clear = CreateColor(r, g, b, 0.7), CreateColor(r, g, b, 0)
+        if e[3] then e[1]:SetGradient(e[2], solid, clear) else e[1]:SetGradient(e[2], clear, solid) end
+    end
+    flash:Show()
+    flash.anim:Stop()
+    flash.anim:Play()
+end
+
 local function push(level, text, icon, duration)
-    while #lines >= LINES do release(#lines) end
+    local most = math.max(1, math.min(5, tonumber(M.db.warnings.lines) or 3))
+    while #lines >= most do release(#lines) end
     local f = acquire()
     M:StyleWarningLine(f, level)
     f.text:SetText(text)
@@ -143,6 +185,7 @@ local function onWarning(_, _, info)
         and info.duration or DEFAULT_DURATION
     push(level, formatted(info), info.iconFileID, duration)
     M:PlayWarningSound(severity)
+    if level == "high" and M.db.warnings.flash then M:FlashScreen() end
 end
 
 local function clear()
@@ -159,6 +202,7 @@ function W:Test()
             if ok and type(info) == "table" then
                 push(M.SEVERITY[severity], formatted(info), info.iconFileID, DEFAULT_DURATION + 2)
                 M:PlayWarningSound(severity)
+                if severity == 2 and M.db.warnings.flash then M:FlashScreen() end
             end
         end)
     end
@@ -170,11 +214,17 @@ function W:Enable()
         banner = CreateFrame("Frame", "PhoenixEncounterWarnings", UIParent)
         banner:SetFrameStrata("HIGH")
         banner:SetClampedToScreen(true)
-        banner:SetSize(640, 3 * 34)
+        banner:SetSize(640, 3 * 34) -- the box Edit Mode / Layout mode shows; lines stack down from its top
         banner:Hide()
         banner:SetScript("OnUpdate", onUpdate)
         ns.EditMode:Register(banner, { key = "EncounterWarnings", name = ns.title .. " – " .. L.ENC_WARNINGS,
-            default = { point = "TOP", x = 0, y = -190 } })
+            default = { point = "TOP", x = 0, y = -190 },
+            active = function() return M:Draws("warnings") end,
+            -- Layout mode: one sample line per severity while unlocked
+            preview = function(unlocked)
+                if not unlocked then clear(); return end
+                for _, level in ipairs({ "low", "medium", "high" }) do push(level, L.ENC_WARNINGS, M.PULL_ICON, 3600) end
+            end })
         LEM:RegisterCallback("enter", function() editing = true; if M:Draws("warnings") then banner:Show() end end)
         LEM:RegisterCallback("exit", function() editing = false end)
     end

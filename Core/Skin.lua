@@ -423,6 +423,27 @@ function Sk:IconZoom(tex, zoom)
     tex:SetTexCoord(z, 1 - z, z, 1 - z)
 end
 
+-- A bright 2 px line on a status bar's fill edge (anchored to the fill texture, so no maths on a value that can be
+-- secret). `reverse` puts it on the left edge (a reverse-filled bar). Returns the spark texture.
+function Sk:FillSpark(bar, on, reverse)
+    local t = bar.puiSpark
+    if not on then if t then t:Hide() end; return t end
+    if not t then
+        t = bar:CreateTexture(nil, "OVERLAY", nil, 3)
+        t:SetTexture(Media.textures.WHITE)
+        t:SetBlendMode("ADD")
+        bar.puiSpark = t
+    end
+    local fill, edge = bar:GetStatusBarTexture(), reverse and "LEFT" or "RIGHT"
+    t:ClearAllPoints()
+    t:SetPoint("TOP", fill, "TOP" .. edge, 0, 0)
+    t:SetPoint("BOTTOM", fill, "BOTTOM" .. edge, 0, 0)
+    t:SetWidth(2)
+    t:SetVertexColor(1, 1, 1, 0.9)
+    t:Show()
+    return t
+end
+
 -- Zoom plus a border for an icon owned by someone else (Blizzard aura buttons): the border lives on a
 -- child frame of ours laid over the icon, so the owner's own regions and sizes are never changed.
 local iconFrames = setmetatable({}, { __mode = "k" })

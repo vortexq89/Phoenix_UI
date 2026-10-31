@@ -688,7 +688,7 @@ local function build(i)
     local key = i == 1 and "DataTexts" or "DataTexts2"
     local name = ns.title .. " – " .. (i == 1 and L.DATATEXTS or L.DT_PANEL2)
     ns.EditMode:Register(o.frame, { key = key, name = name,
-        default = { point = "BOTTOM", x = 0, y = i == 1 and 4 or 34 } })
+        default = { point = "BOTTOM", x = 0, y = i == 1 and 4 or 34 }, noScale = true, noAlpha = true })
     bars[i] = o
     return o
 end

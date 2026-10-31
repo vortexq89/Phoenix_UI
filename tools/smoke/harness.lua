@@ -5906,6 +5906,40 @@ try("quality: boss emotes and the quiet scope (BossBlock idea, t198)", function(
     Q:ApplyBanners()
 end)
 
+try("review 28: encounter frames in Layout mode, big stack, fill, count rule, flash", function()
+    local E, Mv = ns.modules.Encounters, ns.modules.Movers
+    for _, key in ipairs({ "em.EncounterBars", "em.EncounterWarnings", "em.MythicPlusTimer", "em.DataTexts" }) do
+        assert(Mv:GetEntry(key), "no Layout mode box for " .. key)
+    end
+    local e = Mv:GetEntry("em.EncounterBars")
+    local before = e.store.get()
+    e.store.set({ point = "CENTER", x = 40, y = -20, scale = 1.2 })
+    local p = e.store.get()
+    assert(p.point == "CENTER" and p.x == 40 and p.y == -20 and p.scale == 1.2, "layout mode place round trip")
+    e.store.reset()
+    assert(e.store.get().x == before.x, "reset to the Edit Mode default")
+    assert(Mv:GetEntry("em.DataTexts").noScale, "data texts keep their own scale")
+    assert(E.BarValue("drain", 3, 10) == 3 and E.BarValue("fill", 3, 10) == 7, "drain / fill")
+    assert(E.ParseAbilityRules("42=count")[42] == "count", "count rule")
+    E.db.timeline.emphasizeMove = true
+    E.Bars:Refresh()
+    E.Bars:StartTimer("t1", "x", 2, 10, E.PULL_ICON)
+    E.Bars:StartTimer("t2", "y", 30, 30, E.PULL_ICON)
+    assert(E.Bars:Draw() == 2, "one normal and one big bar")
+    assert(env.PhoenixEncounterBarsBig and env.PhoenixEncounterBarsBig:IsShown(), "big stack shown")
+    E.Bars:StopTimer("t1"); E.Bars:StopTimer("t2")
+    E.db.timeline.emphasizeMove = false
+    E.Bars:Draw()
+    E:FlashScreen()
+    E.db.warnings.lines = 1
+    e = Mv:GetEntry("em.EncounterWarnings")
+    e.store.preview(true)
+    assert(E.Warnings:Count() == 1, "the banner keeps one line")
+    e.store.preview(false)
+    assert(E.Warnings:Count() == 0, "preview cleared")
+    E.db.warnings.lines = 3
+end)
+
 try("macro editor (t193)", function()
     local A = ns:GetModule("Automation")
     assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")

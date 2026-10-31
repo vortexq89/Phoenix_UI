@@ -3,6 +3,8 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Encounters review** (31 Oct, review 28, BigWigs parity): Move emphasised bars (their own bigger stack with its own place), bar direction (drain or fill), a spark on each bar, the voice counts abilities in (spellID=count, or every emphasised one), banner lines (1-5) and a red screen-edge flash on critical warnings.
+- **Layout mode for every Phoenix frame** (31 Oct, review 28): the encounter bars and warnings, Mythic+ timer, spell history, XP bar and data text panels were only in Blizzard's Edit Mode; they now also have a Layout mode box with the same saved place (plus scale and opacity), and the encounter frames show samples while you move them.
 - **Quiet mode for instances** (31 Oct, BigWigs BossBlock idea): Quality of Life > Hide boss emotes (boss emotes and whispers stay in chat; raid warnings stay), and Where to hide (everywhere, dungeons and raids, raids only) for talking heads, zone text, the boss banner and boss emotes.
 - **Gold ledger** (31 Oct, EllesmereUI idea): the gold tooltip shows what this character earned and spent this session and its net change today (green / red); Data Texts > Gold can forget a deleted or transferred character.
 - **Combat text: per-event always sticky, message and icon** (31 Oct, MSBT parity): each event's cog now has Always sticky, Show the icon, Font (one of the six combat faces) and Message (%a = the number, for example (%a) or +%a; %s = the word on lines without one); the MSBT import also takes always sticky and %a messages.
