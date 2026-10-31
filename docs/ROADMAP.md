@@ -28,7 +28,7 @@ Sources: [research/addons/README.md](research/addons/README.md) (86 addon folder
 
 ## Status 31 Oct 2026 (parity pass, t169 / t191-t197)
 
-Done (see CHANGES.md 2.0.0-beta2 for dates and commits): Cooldown Manager, aura reminders and aura bars, Mythic+ timer art, minimap bin bar, auto combat logging, movement alert, Quickdraw hold mode, data texts v9.1 art, art kits v7.1 / v8.1 / v9.1, code-review and QA fixes, GUI for every slash feature, macros Pick up, upgrade calculator, What's new full changelog, loot council, loadouts, party mode, gamepad, combat text user areas, combat text MSBT styles on built-in animations, an icon on every combat text line, no double combat text, combat font pick, combat text substitutions, macro editor.
+Done (see CHANGES.md 2.0.0-beta2 for dates and commits): Cooldown Manager, aura reminders and aura bars, Mythic+ timer art, minimap bin bar, auto combat logging, movement alert, Quickdraw hold mode, data texts v9.1 art, art kits v7.1 / v8.1 / v9.1, code-review and QA fixes, GUI for every slash feature, macros Pick up, upgrade calculator, What's new full changelog, loot council, loadouts, party mode, gamepad, combat text user areas, combat text MSBT styles on built-in animations, an icon on every combat text line, no double combat text, combat font pick, combat text substitutions, macro editor, combat text money and XP notifications.
 
 In progress: combat text MSBT parity (Blizzard text ledger, notifications, triggers, substitutions, MSBT import).
 

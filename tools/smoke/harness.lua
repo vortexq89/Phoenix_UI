@@ -5856,6 +5856,17 @@ try("macro editor (t193)", function()
     A:ShowMacroEditor()
 end)
 
+try("combat text: money and XP notifications (t196 step 4b)", function()
+    local CT = ns.modules.CombatText
+    CT.db.scroll.enabled = true
+    CT.db.scroll.events.money.show = true
+    CT:EnableScroll()
+    CT.OnMoney(); CT.OnXP(nil, nil, "player")
+    CT.db.scroll.events.money.show = false
+    CT:EnableScroll()
+    assert(CT.SAMPLE.money and CT.SAMPLE.xp and CT.GLYPH.money == "gold", "samples and glyphs")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

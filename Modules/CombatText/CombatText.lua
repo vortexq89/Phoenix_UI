@@ -48,6 +48,8 @@ local M = ns:NewModule("CombatText", {
                 reactive = { show = true, area = "notify", color = { r = 1, g = 0.82, b = 0 }, scale = 1.2, sound = "" },
                 honor = { show = true, area = "notify", color = { r = 0.85, g = 0.5, b = 1 }, scale = 1, sound = "" },
                 rep = { show = true, area = "notify", color = { r = 0.5, g = 0.6, b = 1 }, scale = 1, sound = "" },
+                money = { show = false, area = "notify", color = { r = 1, g = 0.82, b = 0 }, scale = 0.9, sound = "" },
+                xp = { show = true, area = "notify", color = { r = 0.6, g = 0.4, b = 1 }, scale = 0.9, sound = "" },
                 hit = { show = true, area = "target", color = { r = 1, g = 0.95, b = 0.85 }, scale = 1, sound = "" },
                 p_mana = { show = true, area = "power", color = { r = 0, g = 0.55, b = 1 }, scale = 1, sound = "" },
                 p_rage = { show = true, area = "power", color = { r = 1, g = 0.2, b = 0.2 }, scale = 1, sound = "" },

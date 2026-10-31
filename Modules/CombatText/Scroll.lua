@@ -37,6 +37,8 @@ local EVENTS = {
     { key = "reactive", types = { "SPELL_ACTIVE" }, prefix = "" },
     { key = "honor", types = { "HONOR_GAINED" }, prefix = "+" },
     { key = "rep", types = { "FACTION" }, value = 2, prefix = "+" },
+    { key = "money", prefix = "+" }, -- PLAYER_MONEY rise (onMoney); off by default, Quality > Loot feed shows money too
+    { key = "xp", prefix = "+" },    -- PLAYER_XP_UPDATE rise (onXP)
     { key = "hit", unit = "WOUND", prefix = "", castIcon = true },
     { key = "theal", unit = "HEAL", prefix = "+", castIcon = true },
 }
@@ -323,7 +325,7 @@ end
 
 -- The glyph a line falls back to when the game gives it no spell icon.
 local GLYPH = { damage = "warning", spell = "warning", shield = "lock", heal = "heart", hot = "heart", avoid = "check",
-    buff = "auras", debuff = "auras", fade = "hide", reactive = "bell", honor = "pvp", rep = "guild",
+    buff = "auras", debuff = "auras", fade = "hide", reactive = "bell", honor = "pvp", rep = "guild", money = "gold", xp = "success",
     hit = "combattext", theal = "heart" }
 M.GLYPH = GLYPH
 
@@ -412,6 +414,31 @@ function M:ApplyBlizzardText()
 end
 
 local owner, loadOwner = {}, {}
+
+-- Notifications (step 4b): money and experience gained, as MSBT shows them. Both read plain, non-secret totals
+-- out of the game's own events and show only a rise (spending money or levelling up is skipped).
+local BY_KEY = {}
+for _, e in ipairs(EVENTS) do BY_KEY[e.key] = e end
+local lastMoney, lastXP
+local function onMoney()
+    local now = GetMoney and GetMoney()
+    if type(now) ~= "number" or Secret.IsSecret(now) then return end
+    local gain = lastMoney and now - lastMoney or 0
+    lastMoney = now
+    if gain > 0 then
+        local text = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString and C_CurrencyInfo.GetCoinTextureString(gain)
+        fire(BY_KEY.money, text or tostring(gain), false, "money")
+    end
+end
+local function onXP(_, _, unit)
+    if unit and unit ~= "player" then return end
+    local now = UnitXP and UnitXP("player")
+    if type(now) ~= "number" or Secret.IsSecret(now) then return end
+    local gain = lastXP and now - lastXP or 0
+    lastXP = now
+    if gain > 0 then fire(BY_KEY.xp, gain, false, "xp", nil, nil, " " .. (_G.XP or "XP")) end
+end
+M.OnMoney, M.OnXP = onMoney, onXP
 ns.Events:On("ADDON_LOADED", loadOwner, function(_, _, name)
     if name == "Blizzard_CombatText" and M.db then M:ApplyBlizzardText() end
 end)
@@ -437,11 +464,20 @@ function M:EnableScroll()
     local ev = db.events
     if ev.hit.show or ev.theal.show then ns.Events:On("UNIT_COMBAT", owner, onUnitCombat) end
     if db.castIcons then ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", owner, onCast, "player") end
+    if ev.money and ev.money.show then
+        lastMoney = nil; onMoney()
+        ns.Events:On("PLAYER_MONEY", owner, onMoney)
+    end
+    if ev.xp and ev.xp.show then
+        lastXP = nil; onXP()
+        ns.Events:On("PLAYER_XP_UPDATE", owner, onXP)
+    end
 end
 
 -- Test lines through every event's real route (colour, size, area): plain sample numbers.
 local SAMPLE = { damage = "12 846", spell = "9 310", shield = "640", heal = "8 230", hot = "1 904", buff = "FCT_SAMPLE_AURA",
     debuff = "FCT_SAMPLE_AURA", fade = "FCT_SAMPLE_AURA", reactive = "FCT_SAMPLE_AURA", honor = "48", rep = "250",
+    money = "12g 40s", xp = "1 250",
     hit = "31 044", theal = "4 112" }
 M.SAMPLE = SAMPLE
 function M:TestScroll()

@@ -164,6 +164,8 @@ local schema = {
     event("reactive", { label = "FCT_EV_REACTIVE", desc = "FCT_EV_REACTIVE_DESC", keywords = "proc reactive spell" }),
     event("honor", { label = "FCT_EV_HONOR", desc = "FCT_EV_HONOR_DESC", keywords = "honour pvp" }),
     event("rep", { label = "FCT_EV_REP", desc = "FCT_EV_REP_DESC", keywords = "reputation faction" }),
+    event("money", { label = "FCT_EV_MONEY", desc = "FCT_EV_MONEY_DESC", keywords = "gold money looted coins" }),
+    event("xp", { label = "FCT_EV_XP", desc = "FCT_EV_XP_DESC", keywords = "experience xp level" }),
     { type = "header", label = "FCT_AREA_POWER", icon = "speed" },
     ------------------------------------------------------------ crits
     { type = "tab", label = "FCT_TAB_CRITS" },

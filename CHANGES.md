@@ -3,7 +3,8 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
-- **Macro editor** (31 Oct, t193): Automation > Macro editor: account and character macros, name, icon picker, body with a live character count, a conditionals helper that inserts at the cursor, New / Save / Delete / Pick up; never in combat, no /macro needed.
+- **Combat text: money and experience notifications** (31 Oct, combat text step 4b): money gained (off by default, as Loot feed already shows it) and experience gained in the notification area, each with its own colour, size, area and sound.
+- **Macro editor** (31 Oct, e9df41f): Automation > Macro editor: account and character macros, name, icon picker, body with a live character count, a conditionals helper that inserts at the cursor, New / Save / Delete / Pick up; never in combat, no /macro needed.
 - **Combat text: substitutions** (31 Oct, 60a33fe): rename or shorten spell, aura and miss words before they are drawn ("from = to; ..."), MSBT style; amounts are never touched.
 - **Combat text: combat font pick** (31 Oct, 6502bc8): Phoenix Font Bold (default), Bebas Neue, Oswald, Russo One, Black Ops One or Grenze Black, applied live.
 - **Combat text: no double text** (31 Oct, 6a71fb6): while the scroll is on, the game's own text over your character is hidden (it still feeds the scroll) and returns when the scroll or the switch is off.
