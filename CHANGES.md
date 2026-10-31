@@ -47,6 +47,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Self-test on WoW Forever** (31 Oct): the review 28 Layout mode check no longer expects a Mythic+ timer box on Forever (it has no Mythic+, so that box is never made there) and checks that it really is absent.
 - **Combat text: crit size with sticky crits** (31 Oct): the Crit size slider was greyed out for the sticky crit style although sticky crits use it; it is now live for sticky and grow.
 - **Combat state and Combat alert** (31 Oct): both switches now name the other, so the two "entering / leaving combat" messages are not shown twice by accident.
 - **Code review fixes** (30 Oct, 80aef95, 6ae60cf, cfce46c, 728cdee, c7c1413, 887fadd, 180e254, 44b185a, 0b7f321, fd50673, f7582fc, c59e539): secret numbers in "full" format, plugin dependency loading, event registration failures, third-party plugin keys, IsSecret fallback, PvP timers on C_Timer, plugin API 1.2 docs, mover queueing, sample plugin TOC, Forever TOC docs.

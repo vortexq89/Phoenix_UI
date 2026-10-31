@@ -5909,7 +5909,13 @@ end)
 try("review 28: encounter frames in Layout mode, big stack, fill, count rule, flash", function()
     local E, Mv = ns.modules.Encounters, ns.modules.Movers
     for _, key in ipairs({ "em.EncounterBars", "em.EncounterWarnings", "em.MythicPlusTimer", "em.DataTexts" }) do
-        assert(Mv:GetEntry(key), "no Layout mode box for " .. key)
+        -- Forever has no Mythic+, so the M+ timer is never built or registered there
+        if key ~= "em.MythicPlusTimer" or ns:Supports("mythicplus") then
+            assert(Mv:GetEntry(key), "no Layout mode box for " .. key)
+        end
+    end
+    if not ns:Supports("mythicplus") then
+        assert(not Mv:GetEntry("em.MythicPlusTimer"), "no M+ timer box on a client without Mythic+")
     end
     local e = Mv:GetEntry("em.EncounterBars")
     local before = e.store.get()

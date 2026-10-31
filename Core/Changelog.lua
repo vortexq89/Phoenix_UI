@@ -44,6 +44,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Self-test on WoW Forever (31 Oct) — the review 28 Layout mode check no longer expects a Mythic+ timer box on Forever…",
         "Combat text: crit size with sticky crits (31 Oct) — the Crit size slider was greyed out for the sticky crit style alt…",
         "Combat state and Combat alert (31 Oct) — both switches now name the other, so the two \"entering / leaving combat\" mes…",
         "Code review fixes (30 Oct, 80aef95, 6ae60cf, cfce46c, 728cdee, c7c1413, 887fadd, 180e254, 44b185a, 0b7f321, fd50673,…",
