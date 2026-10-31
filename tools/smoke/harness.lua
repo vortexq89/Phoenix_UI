@@ -3636,10 +3636,21 @@ try("settings quality pass", function()
     assert(w >= C.MIN_W and h >= C.MIN_H, "window under its minimum size " .. tostring(w) .. "x" .. tostring(h))
     assert(type(ns.Skin.Reapply) == "function" and type(C.SnapPosition) == "function", "pixel helpers")
     ns.Skin:Reapply(); ns.Skin:Reapply()
-    -- row labels stay on one line
+    -- row labels stay on one line; a row with a description may wrap its label (two lines at most, t204)
     local page = C:Show("ActionBars")
-    local row = page and page.rows and page.rows[3]
-    assert(row and rawget(row.label, "__wrap") == false, "row labels do not wrap")
+    local plain, described = 0, 0
+    for _, r in ipairs(page and page.rows or {}) do
+        -- setting rows only (they carry controlW); chips, headers and other builders draw their own labels
+        if not r.controlW then -- skip
+        elseif r.label and r.desc then
+            described = described + 1
+            assert(rawget(r.label, "__wrap") == true, "described row labels wrap")
+        elseif r.label and not r.isDescription then
+            plain = plain + 1
+            assert(rawget(r.label, "__wrap") == false, "row labels do not wrap")
+        end
+    end
+    assert(plain > 0 and described > 0, "row label wrap checked")
     C:Show("home")
     -- every module page has a preview fed by its settings
     for kind, mod in pairs({ automation = "Automation", movers = "Movers", bugs = "Bugs" }) do

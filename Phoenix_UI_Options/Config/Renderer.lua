@@ -436,6 +436,9 @@ function buildRow(card, page, m, item)
     -- one line, cut with "..." at the text column (the full label is in the row tooltip): a wrapped label
     -- ran into the control or the row below
     row.label:SetWordWrap(false)
+    -- a row with a description grows with its text (Measure), so its label may take a second line before the
+    -- "...": narrow three-column cards (Fonts, Textures) cut "Unit Frames · Name font" to "Unit Frames · ..."
+    if hasDesc then row.label:SetWordWrap(true); row.label:SetMaxLines(2) end
     row.label:SetText(text(item.label))
     if item.icon and item.type == "toggle" then row.icon = W.Icon(row, item.icon, 14, "accent.primary") end
     row.control = makeControl(row, page, m, item)
@@ -579,7 +582,8 @@ function buildRow(card, page, m, item)
             self.badge:ClearAllPoints()
             -- after the label text, but never past the text column into the control
             -- a label that would be cut short keeps its words: the badge folds to its icon (the tooltip names it)
-            local full = self.label:GetUnboundedStringWidth() + 8 + 64 > (self.textW or 140)
+            local badgeW = math.max(64, (self.badge.text:GetUnboundedStringWidth() or 0) + 26)
+            local full = self.label:GetUnboundedStringWidth() + 8 + badgeW > (self.textW or 140)
             self.badge.text:SetShown(not full)
             if full then
                 self.badge:SetSize(20, 16); self.badge.icon:ClearAllPoints(); self.badge.icon:SetPoint("CENTER")
@@ -589,7 +593,8 @@ function buildRow(card, page, m, item)
             end
             local room = math.max(0, (self.textW or 140) - (self.badge:GetWidth() or 0) - 8)
             if self.textW then self.label:SetWidth(math.max(40, room)) end
-            self.badge:SetPoint("LEFT", self.label, "LEFT", math.min(self.label:GetUnboundedStringWidth(), 140, room) + 8, 0)
+            local labelW = math.min(self.label:GetUnboundedStringWidth(), self.label:GetWidth(), room)
+            self.badge:SetPoint("LEFT", self.label, "LEFT", labelW + 8, 0)
             self.badge:Show()
         end
     end

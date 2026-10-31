@@ -311,6 +311,8 @@ local function weekCard(parent)
         end
         r.value = W.Text(r, "number", "text.primary")
         r.value:SetPoint("LEFT", r.pips[3], "RIGHT", 12, 0)
+        r.value:SetPoint("RIGHT", r, "RIGHT", 0, 0)
+        r.value:SetJustifyH("LEFT")
         r.track = track
         c.tracks[i] = r
     end
@@ -362,6 +364,17 @@ local function weekCard(parent)
             self.runs:SetText(L.HOME_RUNS_WEEK:format(s.runs) .. "  ·  " .. L.HOME_BEST_WEEK:format(s.best))
         else
             self.runs:SetText(L.HOME_NO_RUNS)
+        end
+        -- the rating column keeps its own room: the track rows end where it starts (it ran over the World row
+        -- in long locales), and a runs line wider than half the card wraps under the rating instead
+        local half = math.max(120, (self:GetWidth() or 400) / 2 - 24)
+        self.runs:SetWidth(0)
+        self.runs:SetWordWrap(true)
+        if self.runs:GetUnboundedStringWidth() > half then self.runs:SetWidth(half) end
+        local col = math.max(self.rating:GetUnboundedStringWidth(), self.ratingLabel:GetUnboundedStringWidth(),
+            math.min(half, self.runs:GetUnboundedStringWidth()))
+        for _, r in ipairs(self.tracks) do
+            r:SetPoint("RIGHT", self, "RIGHT", -math.floor(col + 36), 0)
         end
     end
 

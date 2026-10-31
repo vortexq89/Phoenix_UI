@@ -55,7 +55,8 @@ function W:Button(parent, text, variant, icon, width)
         else
             self.fill:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 1))
             if v == "danger" then
-                W.Color(self.fill, "state.danger", 0.14)
+                -- opaque: a see-through red fill read red-on-red over the fire art
+                W.Color(self.fill, "bg.raised")
                 Skin:Text(self.label, "body", "state.danger")
                 Skin:SetBorderColor(self, "state.danger")
             elseif v == "ghost" then
@@ -81,7 +82,8 @@ function W:Button(parent, text, variant, icon, width)
         if self.variant == "primary" then
             self.shine:SetVertexColor(1, 1, 1, 0.32)
         else
-            W.Color(self.fill, self.variant == "danger" and "state.danger" or "bg.hover", self.variant == "danger" and 0.26 or 1)
+            W.Color(self.fill, self.variant == "danger" and "state.danger" or "bg.hover", self.variant == "danger" and 0.9 or 1)
+            if self.variant == "danger" then Skin:Text(self.label, "body", "text.primary") end
             if self.icon then Icons:SetState(self.icon, self.variant == "danger" and "danger" or "active") end
             Skin:SetBorderColor(self, self.variant == "danger" and "state.danger" or "accent.primary")
         end

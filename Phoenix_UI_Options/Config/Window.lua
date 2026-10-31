@@ -196,7 +196,16 @@ local function buildTopBar(f)
     h.search.onTextChanged = function(_, text) Config:Search(text) end
     h.search:HookScript("OnEscapePressed", function(self) self:SetValue(""); Config:Search("") end)
 
-    function h:Arrange() self.search:SetWidth(RAIL_W - 28) end
+    function h:Arrange()
+        self.search:SetWidth(RAIL_W - 28)
+        -- the version badge stays inside the rail: a long build tag drops its suffix (the full one is in the tooltip)
+        local room = RAIL_W - 16 - 26 - 8 - self.brand:GetUnboundedStringWidth() - 5
+            - self.brandUI:GetUnboundedStringWidth() - 8 - 10
+        local full = "v" .. ns.version
+        self.version:Set(full, "accent.primary")
+        if self.version:GetWidth() > room then self.version:Set((full:gsub("%-.*$", "")), "accent.primary") end
+    end
+    W.AttachTooltip(h.version, "Phoenix UI", "v" .. ns.version)
     Skin:Register(h, function(self)
         Skin:Text(self.brand, "brand", "text.primary", 16)
         Skin:Text(self.brandUI, "heading", "accent.primary")

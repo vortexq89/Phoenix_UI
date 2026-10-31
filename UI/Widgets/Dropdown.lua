@@ -225,8 +225,15 @@ function W:Dropdown(parent, items, preview, width)
         sample(self)
         ns.Icons:Tint(self.arrow, self.open and "accent.primary" or "text.secondary")
     end)
-    d:SetScript("OnEnter", function(self) if not self.open and not self.disabled then Skin:SetBorderColor(self, "border.strong") end end)
-    d:SetScript("OnLeave", function(self) if not self.open then Skin:SetBorderColor(self, "border.subtle") end end)
+    -- a choice cut short with "..." shows in full on hover
+    d:SetScript("OnEnter", function(self)
+        if not self.open and not self.disabled then Skin:SetBorderColor(self, "border.strong") end
+        if self.label:IsTruncated() then W.ShowTooltip(self, self.label:GetText()) end
+    end)
+    d:SetScript("OnLeave", function(self)
+        if not self.open then Skin:SetBorderColor(self, "border.subtle") end
+        W.HideTooltip()
+    end)
 
     function d:GetItems()
         return type(self.items) == "function" and self.items() or self.items
@@ -254,7 +261,10 @@ function W:Dropdown(parent, items, preview, width)
             self.icon:Hide()
             self.label:SetPoint("LEFT", 10, 0)
         end
-        Skin:Text(self.label, "body", "text.primary")
+        -- nothing chosen (or a value no longer in the list) reads "None" in muted text, never an empty box
+        local empty = text == "" and self.current == nil
+        if empty then self.label:SetText(L.NONE) end
+        Skin:Text(self.label, "body", empty and "text.muted" or "text.primary")
         sample(self)
     end
     function d:GetValue() return self.value end
