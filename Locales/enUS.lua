@@ -4026,6 +4026,8 @@ ns.RegisterLocale("enUS", {
     FCT_ICON_SIZE = "Icon size",
     FCT_CAST_ICONS = "Your last cast's icon on outgoing lines",
     FCT_CAST_ICONS_DESC = "The game does not say which spell made outgoing damage, heals or power, so these lines show the spell you cast just before (within about a second).",
+    FCT_CAST_NAMES = "Name of your last cast",
+    FCT_CAST_NAMES_DESC = "Outgoing damage, heals and power lines also name the spell you cast just before, like \"1 234 (Fireball)\". The game does not say which spell hit, so it is your last cast within about a second.",
     FCT_COMBAT_FONT = "Combat font",
     FCT_COMBAT_FONT_DESC = "A quick pick of bold faces that read well in a fight (all free-licensed, see Media/Fonts/FONTS.md). Any other font can be set in the text settings below.",
     FCT_GLYPH_ICONS = "An icon on every line",

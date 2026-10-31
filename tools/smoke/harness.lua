@@ -6283,6 +6283,21 @@ try("encounters: boss modules from the journal, per-ability choices (t201)", fun
     rawset(env, "GetSpecializationRole", hadRole); SI.GetSpecialization = hadSpec
 end)
 
+try("combat text: name of your last cast on outgoing lines (MSBT attribution)", function()
+    local M = ns.modules.CombatText
+    local db = M.db.scroll
+    local was = db.castNames
+    local e = { key = "hit", castIcon = true }
+    db.castNames = false
+    assert(M.CastSuffix(e) == nil, "off by default")
+    db.castNames = true
+    M.OnCast(nil, nil, "player", nil, 133)
+    local s = M.CastSuffix(e)
+    assert(s == nil or (type(s) == "string" and s:find("^ %(")), "suffix shape")
+    assert(M.CastSuffix({ key = "buff" }) == nil, "only outgoing lines")
+    db.castNames = was
+end)
+
 try("turn Phoenix off (EllesmereUI uninstall)", function()
     local C = ns.Config
     local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")

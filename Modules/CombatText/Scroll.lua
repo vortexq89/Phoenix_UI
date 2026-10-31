@@ -320,11 +320,21 @@ M.AddLine = add
 -- secret, kept for CAST_WINDOW seconds. 12.x gives these lines no spell of their own, so it is labelled "your last
 -- cast" on the page and can be switched off.
 local CAST_WINDOW = 1.2
-local lastIcon, lastAt = nil, 0
+local lastIcon, lastAt, lastName = nil, 0, nil
 local function onCast(_, _, unit, _, spellID)
     if unit ~= "player" or spellID == nil or Secret.IsSecret(spellID) then return end
     local tex = C_Spell and C_Spell.GetSpellTexture and C_Spell.GetSpellTexture(spellID)
-    if tex and not Secret.IsSecret(tex) then lastIcon, lastAt = tex, GetTime() end
+    local name = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(spellID)
+    lastName = (type(name) == "string" and not Secret.IsSecret(name)) and name or nil
+    if tex and not Secret.IsSecret(tex) then lastIcon = tex end
+    lastAt = GetTime()
+end
+M.OnCast = onCast
+-- " (Spell)" for outgoing lines when scroll.castNames is on and you cast within the window (MSBT's attribution,
+-- worked out from your own casts as 12.x has no combat log)
+function M.CastSuffix(e)
+    if not (e.castIcon and M.db.scroll.castNames and lastName and GetTime() - lastAt < CAST_WINDOW) then return nil end
+    return " (" .. lastName .. ")"
 end
 
 -- The glyph a line falls back to when the game gives it no spell icon.
@@ -420,6 +430,8 @@ local function fire(e, amount, crit, mergeKey, word, name, suffix)
         if ts ~= nil then suffix = ts end
     end
     local icon = s.icon ~= false and iconFor(e, name, s.color) or nil
+    local cast = amount ~= nil and M.CastSuffix(e)
+    if cast then suffix = (suffix or "") .. cast end
     add(s.area, s.color, prefix, amount, crit, mergeKey, s.scale, s.sound, icon, suffix, s.sticky == true, s.font)
 end
 M.Fire = fire
@@ -512,7 +524,7 @@ function M:EnableScroll()
     if C_CombatText and C_CombatText.GetCurrentEventInfo then ns.Events:On("COMBAT_TEXT_UPDATE", owner, onCombatText) end
     local ev = db.events
     if ev.hit.show or ev.theal.show then ns.Events:On("UNIT_COMBAT", owner, onUnitCombat) end
-    if db.castIcons then ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", owner, onCast, "player") end
+    if db.castIcons or db.castNames then ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", owner, onCast, "player") end
     if ev.money and ev.money.show then
         lastMoney = nil; onMoney()
         ns.Events:On("PLAYER_MONEY", owner, onMoney)
