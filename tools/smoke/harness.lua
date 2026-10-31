@@ -5966,6 +5966,15 @@ try("review 28: encounter frames in Layout mode, big stack, fill, count rule, fl
     assert(env.PhoenixEncounterBarsBig and env.PhoenixEncounterBarsBig:IsShown(), "big stack shown")
     E.Bars:StopTimer("t1"); E.Bars:StopTimer("t2")
     E.db.timeline.emphasizeMove = false
+    -- t202: pull / break bars in their own stack, placed in Layout mode
+    E.db.timeline.timerBars.move = true
+    E.Bars:Refresh()
+    E.Bars:StartTimer("t3", "z", 5, 10, E.PULL_ICON)
+    assert(E.Bars:Draw() == 1 and env.PhoenixEncounterTimerBars:IsShown(), "timer stack shown")
+    assert(Mv:GetEntry("em.EncounterTimerBars"), "timer stack in Layout mode")
+    E.Bars:StopTimer("t3")
+    E.db.timeline.timerBars.move = false
+    E.Bars:Refresh()
     E.Bars:Draw()
     E:FlashScreen()
     E.db.warnings.lines = 1

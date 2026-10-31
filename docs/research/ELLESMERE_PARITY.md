@@ -56,7 +56,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | What's new | 1 | popup once per update (off switch in About), Full changelog popup with every version from CHANGES.md (tools/gen_changelog.py), opened from the popup and About | A | changelog item titles are English (generated from CHANGES.md) |
 | Gamepad | 1 | controller support switch, camera turn and tilt speed sliders (game console variables, no console needed) | A | |
 | Combat text | — | 26 | A | |
-| Encounters, PvP, AFK, Item level, Sim, Spell history, Bugs | — | yes | A | Phoenix-only |
+| Encounters, PvP, AFK, Item level, Sim, Spell history, Bugs | — | yes | A | Phoenix-only. Encounters 2026-10-31: boss modules from the journal (every expansion), per-ability choices, bar groups (normal, emphasised, pull / break) each with own style, Layout anchor and preview section (t201, t202) |
 
 ## 2. Screens (to render to renders\t169\ per system)
 Each system's pass renders its settings page, plus the in-game visual where the harness can draw it.

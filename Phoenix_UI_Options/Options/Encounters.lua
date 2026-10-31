@@ -7,6 +7,36 @@ local function notBars(m) return m.db.timeline.display ~= "phoenix" end
 local function notBanner(m) return m.db.warnings.display ~= "phoenix" end
 local function noVoice(m) return not m.db.countdown.enabled end
 local function noEmphasis(m) return notBars(m) or not m.db.timeline.emphasize end
+local function noBig(m) return noEmphasis(m) or not m.db.timeline.emphasizeMove end
+local function noTimers(m) return not m.db.timeline.timerBars.move end
+
+-- One bar group's rows (t202): size, stack, look and fonts under `p` ("timeline.big", "timeline.timerBars").
+local function barRows(p, off, token)
+    return { flat = true,
+        { type = "range", key = p .. ".width", label = "ENC_WIDTH", min = 120, max = 600, step = 2, disabled = off },
+        { type = "range", key = p .. ".height", label = "ENC_HEIGHT", min = 12, max = 60, step = 1, disabled = off },
+        { type = "range", key = p .. ".spacing", label = "ENC_SPACING", min = 0, max = 12, step = 1, disabled = off },
+        { type = "range", key = p .. ".max", label = "ENC_MAX_BARS", min = 1, max = 10, step = 1, disabled = off },
+        { type = "select", key = p .. ".grow", label = "ENC_GROW", disabled = off, values = {
+            { value = "UP", label = "ENC_GROW_UP", icon = "arrow-up" },
+            { value = "DOWN", label = "ENC_GROW_DOWN", icon = "arrow-down" } } },
+        { type = "toggle", key = p .. ".icon", label = "ENC_SHOW_ICON", disabled = off },
+        { type = "texture", key = p .. ".texture", label = "BAR_TEXTURE", allowDefault = true, disabled = off },
+        { type = "color", key = p .. ".color", label = "ENC_BAR_COLOR", token = token, reset = true, disabled = off },
+        Opt.With(Opt.Background(p .. ".background"), { disabled = off }),
+        Opt.With(Opt.Border(p .. ".border"), { disabled = off }),
+        Opt.Text(p .. ".name", "ENC_NAME_FONT", { max = 32, row = { disabled = off } }),
+        Opt.Text(p .. ".time", "ENC_TIME_FONT", { max = 32, row = { disabled = off } }),
+    }
+end
+-- Splices barRows' lists into the page schema.
+local function flat(list)
+    local out = {}
+    for _, row in ipairs(list) do
+        if row.flat then for _, r in ipairs(row) do out[#out + 1] = r end else out[#out + 1] = row end
+    end
+    return out
+end
 
 local masterGet, masterSet = CVar("combatWarningsEnabled")
 
@@ -63,7 +93,7 @@ local function testRow(t)
         end }
 end
 
-ns:RegisterOptions("Encounters", {
+ns:RegisterOptions("Encounters", flat({
     { type = "preview", kind = "encounters" },
     { type = "header", label = "ENC_START", icon = "encounters" },
     { type = "toggle", label = "ENC_MASTER", desc = "ENC_MASTER_DESC", get = masterGet, set = masterSet, combat = true,
@@ -106,9 +136,7 @@ ns:RegisterOptions("Encounters", {
           disabled = noEmphasis },
       } },
     { type = "toggle", key = "timeline.emphasizeMove", label = "ENC_BIG_MOVE", desc = "ENC_BIG_MOVE_DESC", disabled = noEmphasis,
-      keywords = "big bar emphasized emphasised bigwigs second anchor stack",
-      cog = { { type = "range", key = "timeline.emphasizeScale", label = "ENC_BIG_SCALE", min = 1, max = 2, step = 0.05,
-                percent = true } } },
+      keywords = "big bar emphasized emphasised bigwigs second anchor stack" },
     { type = "select", key = "timeline.fill", label = "ENC_FILL", desc = "ENC_FILL_DESC", disabled = notBars,
       keywords = "fill drain direction deplete", values = {
         { value = "drain", label = "ENC_FILL_DRAIN" }, { value = "fill", label = "ENC_FILL_FILL" } } },
@@ -122,6 +150,11 @@ ns:RegisterOptions("Encounters", {
     Opt.With(Opt.Border("timeline.border"), { disabled = notBars }),
     Opt.Text("timeline.name", "ENC_NAME_FONT", { max = 24, row = { disabled = notBars } }),
     Opt.Text("timeline.time", "ENC_TIME_FONT", { max = 24, row = { disabled = notBars } }),
+
+    -- t202: the emphasised stack, styled on its own (placed in Layout mode as "Emphasised bars")
+    { type = "header", label = "ENC_BIG_BARS", icon = "textures" },
+    { type = "description", text = "ENC_BIG_BARS_TEXT" },
+    barRows("timeline.big", noBig, "state.danger"),
 
     { type = "tab", label = "ENC_TAB_BOSSES", feature = "encounterTimeline" },
     { type = "header", label = "ENC_BOSSES", icon = "boss" },
@@ -172,6 +205,11 @@ ns:RegisterOptions("Encounters", {
       keywords = "pull timer countdown", func = function(m) m:Pull() end },
     { type = "button", label = "ENC_PULL_CANCEL", desc = "ENC_PULL_CANCEL_DESC", button = "ENC_CANCEL", icon = "close",
       func = function(m) m:Pull(0) end },
+    -- t202: pull and break bars in their own stack, styled on their own and placed in Layout mode
+    { type = "header", label = "ENC_TIMER_BARS", icon = "textures" },
+    { type = "toggle", key = "timeline.timerBars.move", label = "ENC_TIMER_MOVE", desc = "ENC_TIMER_MOVE_DESC",
+      keywords = "pull break bars anchor stack move layout" },
+    barRows("timeline.timerBars", noTimers, "accent.primary"),
     { type = "header", label = "ENC_BREAK", icon = "break" },
     { type = "range", key = "breaks.minutes", label = "ENC_BREAK_MINUTES", min = 1, max = 30, step = 1 },
     { type = "toggle", key = "breaks.sync", label = "ENC_BREAK_SYNC", desc = "ENC_BREAK_SYNC_DESC",
@@ -207,4 +245,4 @@ ns:RegisterOptions("Encounters", {
     { type = "header", label = "ENC_BIGWIGS", icon = "addon" },
     { type = "toggle", key = "bigwigs", label = "ENC_BW_STYLE", desc = "ENC_BW_STYLE_DESC", keywords = "bigwigs littlewigs bars style" },
     { type = "description", text = function() return M and M.BigWigs and M.BigWigs:StatusText() or L.ENC_BW_ABSENT end },
-})
+}))

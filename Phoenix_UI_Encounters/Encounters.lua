@@ -23,7 +23,14 @@ local M = ns:NewModule("Encounters", {
             width = 260, height = 22, spacing = 4, grow = "UP", max = 8, horizon = 0,
             icon = true, texture = "", color = false, fill = "drain", spark = true,
             emphasize = true, emphasizeAt = 5, emphasizeColor = false,
-            emphasizeMove = false, emphasizeScale = 1.25, -- emphasised bars in their own, bigger stack (BigWigs)
+            emphasizeMove = false, emphasizeScale = 1.25, -- emphasised bars in their own stack (BigWigs); scale: legacy
+            -- t202: the emphasised stack and the pull / break stack are styled on their own (bar groups)
+            big = { width = 320, height = 28, spacing = 4, grow = "UP", max = 5, icon = true, texture = "", color = false,
+                background = Style.Background({ alpha = 0.7 }), border = Style.Border(),
+                name = Style.Text(14, { shadow = true }), time = Style.Text(14, { shadow = true }) },
+            timerBars = { move = false, width = 220, height = 20, spacing = 4, grow = "DOWN", max = 3, icon = true,
+                texture = "", color = false, background = Style.Background({ alpha = 0.7 }), border = Style.Border(),
+                name = Style.Text(12, { shadow = true }), time = Style.Text(12, { shadow = true }) },
             rules = "", -- per-ability: "spellID=hide|emph|sound|count, …" (Bars.lua)
             abilities = {}, -- per-ability choices from the Boss modules tab: [spellID] = "hide"|"emph"|"sound"|"count"
             background = Style.Background({ alpha = 0.7 }),

@@ -19,7 +19,8 @@ local TRACK = Enum.EncounterTimelineTrack
 local SOURCE_EDITMODE = 2 -- Enum.EncounterTimelineEventSource.EditMode
 local THROTTLE = 0.05
 
-local anchor, bigAnchor
+local anchor, bigAnchor, timerAnchor
+local timerBars = {} -- the pull / break stack's bars (Pull and break bars > Own anchor)
 local bars = {}      -- pooled bar frames, bars[i] shows rows[i]
 local bigBars = {}   -- the emphasised stack's bars (Move emphasised bars)
 local events = {}    -- eventID -> { info = EncounterTimelineEventInfo, duration, label? }
@@ -51,25 +52,33 @@ function M:CreateBar(parent)
     return f
 end
 
-function M:BarTexture()
-    local t = self.db.timeline.texture
+-- Bar groups (t202): "bars" the normal stack (timeline.*), "big" the emphasised stack (timeline.big.*),
+-- "timers" the pull / break stack (timeline.timerBars.*). Each has its own size, look and anchor.
+function M:BarGroup(group)
+    local db = self.db.timeline
+    if group == "big" or group == true then return db.big end
+    if group == "timers" then return db.timerBars end
+    return db
+end
+
+function M:BarTexture(group)
+    local t = self:BarGroup(group).texture
     return t ~= "" and Media:Bar(t) or Theme:Bar()
 end
 
-function M:BarColor(emphasized)
-    local db = self.db.timeline
-    local c = emphasized and db.emphasizeColor or db.color
+function M:BarColor(emphasized, group)
+    local db, g = self.db.timeline, self:BarGroup(group)
+    local c
+    if g ~= db then c = g.color or (group ~= "timers" and db.emphasizeColor) else c = emphasized and db.emphasizeColor or db.color end
     if type(c) == "table" then return c.r, c.g, c.b end
-    return Theme:Color(emphasized and "state.danger" or "accent.primary")
+    return Theme:Color((emphasized or group == "big" or group == true) and "state.danger" or "accent.primary")
 end
 
--- Size, texture, colours, fonts and border of one bar; the preview calls this too. `big`: a bar of the
--- emphasised stack, `emphasizeScale` times the size.
-function M:StyleBar(f, emphasized, big)
-    local db = self.db.timeline
-    local k = big and (tonumber(db.emphasizeScale) or 1) or 1
-    local h = math.floor(db.height * k + 0.5)
-    f:SetSize(math.floor(db.width * k + 0.5), h)
+-- Size, texture, colours, fonts and border of one bar; the preview calls this too. `group`: see BarGroup.
+function M:StyleBar(f, emphasized, group)
+    local db = self:BarGroup(group)
+    local h = db.height
+    f:SetSize(db.width, h)
     f.iconHolder:SetSize(h, h)
     f.iconHolder:ClearAllPoints()
     f.iconHolder:SetPoint("LEFT")
@@ -77,14 +86,14 @@ function M:StyleBar(f, emphasized, big)
     f.bar:ClearAllPoints()
     f.bar:SetPoint("TOPLEFT", db.icon and (h + 2) or 0, 0)
     f.bar:SetPoint("BOTTOMRIGHT")
-    f.bar:SetStatusBarTexture(self:BarTexture())
-    f.bar:SetStatusBarColor(self:BarColor(emphasized))
+    f.bar:SetStatusBarTexture(self:BarTexture(group))
+    f.bar:SetStatusBarColor(self:BarColor(emphasized, group))
     Skin:Backdrop(f.bar, db.background, "bg.sunken")
     Skin:BorderSpec(f.edge, db.border, "border.black")
     Skin:BorderSpec(f.iconHolder, db.border, "border.black")
     Skin:TextSpec(f.name, db.name, "unit", "text.primary")
     Skin:TextSpec(f.time, db.time, "number", "text.primary")
-    Skin:FillSpark(f.bar, db.spark, false)
+    Skin:FillSpark(f.bar, self.db.timeline.spark, false)
 end
 
 -- Bar value for `left` of `total`: "drain" empties as the ability comes (the default), "fill" fills up.
@@ -194,7 +203,7 @@ local function collect(now)
         if left <= 0 then
             timers[key] = nil
         else
-            rows[#rows + 1] = { key = key, label = t.label, icon = t.icon, left = left, total = t.total }
+            rows[#rows + 1] = { key = key, label = t.label, icon = t.icon, left = left, total = t.total, timer = true }
         end
     end
     table.sort(rows, function(a, b) return a.left < b.left end)
@@ -212,12 +221,11 @@ local function barAt(pool, parent, i)
     return f
 end
 
-local function place(f, i, parent, big)
-    if f.slot == i and f.slotParent == parent and f.slotBig == big then return end
-    f.slot, f.slotParent, f.slotBig = i, parent, big
-    local db = M.db.timeline
-    local k = big and (tonumber(db.emphasizeScale) or 1) or 1
-    local step = (i - 1) * (math.floor(db.height * k + 0.5) + db.spacing)
+local function place(f, i, parent, group)
+    if f.slot == i and f.slotParent == parent and f.slotBig == group then return end
+    f.slot, f.slotParent, f.slotBig = i, parent, group
+    local db = M:BarGroup(group)
+    local step = (i - 1) * (db.height + db.spacing)
     f:ClearAllPoints()
     if db.grow == "DOWN" then
         f:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -step)
@@ -245,10 +253,10 @@ local function countIn(list)
     end
 end
 
-local function fillBar(f, r, big, emphasized)
+local function fillBar(f, r, group, emphasized)
     local db = M.db.timeline
-    if f.styled ~= emphasized or f.big ~= big then
-        M:StyleBar(f, emphasized, big); f.styled, f.big = emphasized, big
+    if f.styled ~= emphasized or f.big ~= group then
+        M:StyleBar(f, emphasized, group); f.styled, f.big = emphasized, group
     end
     if f.key ~= r.key then
         f.key = r.key
@@ -264,33 +272,37 @@ local function fillBar(f, r, big, emphasized)
     f:Show()
 end
 
-local small, big = {}, {}
+local small, big, timed = {}, {}, {}
+local function drawStack(list, pool, parent, group, n, emphasized)
+    for i = 1, n do
+        local f = barAt(pool, parent, i)
+        fillBar(f, list[i], group, emphasized or list[i].emphasized)
+        place(f, i, parent, group)
+    end
+    for i = n + 1, #pool do pool[i]:Hide(); pool[i].key = nil end
+end
 local function draw(now)
     local db = M.db.timeline
     local list = collect(now)
-    wipe(small); wipe(big)
+    wipe(small); wipe(big); wipe(timed)
     local move = db.emphasizeMove and bigAnchor ~= nil
+    local moveTimers = db.timerBars.move and timerAnchor ~= nil
     for _, r in ipairs(list) do
         r.emphasized = r.emph or (db.emphasize and r.left <= db.emphasizeAt)
-        if move and r.emphasized then big[#big + 1] = r elseif #small < db.max then small[#small + 1] = r end
+        if moveTimers and r.timer then timed[#timed + 1] = r
+        elseif move and r.emphasized then big[#big + 1] = r
+        elseif #small < db.max then small[#small + 1] = r end
     end
-    for i, r in ipairs(small) do
-        local f = barAt(bars, anchor, i)
-        fillBar(f, r, false, r.emphasized)
-        place(f, i, anchor, false)
-    end
-    for i = #small + 1, #bars do bars[i]:Hide(); bars[i].key = nil end
-    local nBig = math.min(#big, db.max)
-    for i = 1, nBig do
-        local f = barAt(bigBars, bigAnchor, i)
-        fillBar(f, big[i], true, true)
-        place(f, i, bigAnchor, true)
-    end
-    for i = nBig + 1, #bigBars do bigBars[i]:Hide(); bigBars[i].key = nil end
+    drawStack(small, bars, anchor, "bars", #small)
+    local nBig = bigAnchor and math.min(#big, db.big.max) or 0
+    if bigAnchor then drawStack(big, bigBars, bigAnchor, "big", nBig, true) end
+    local nTimed = timerAnchor and math.min(#timed, db.timerBars.max) or 0
+    if timerAnchor then drawStack(timed, timerBars, timerAnchor, "timers", nTimed) end
     if bigAnchor then bigAnchor:SetShown(nBig > 0 or (editing and move)) end
+    if timerAnchor then timerAnchor:SetShown(nTimed > 0 or (editing and moveTimers)) end
     countIn(list)
     if not next(events) then wipe(spoken) end
-    return #small + nBig
+    return #small + nBig + nTimed
 end
 
 local elapsed = 0
@@ -341,10 +353,22 @@ function B:HasTimer(key) return timers[key] ~= nil end
 local function layoutAnchor()
     local db = M.db.timeline
     anchor:SetSize(db.width, db.height)
-    if bigAnchor then
-        local k = tonumber(db.emphasizeScale) or 1
-        bigAnchor:SetSize(math.floor(db.width * k + 0.5), math.floor(db.height * k + 0.5))
-    end
+    if bigAnchor then bigAnchor:SetSize(db.big.width, db.big.height) end
+    if timerAnchor then timerAnchor:SetSize(db.timerBars.width, db.timerBars.height) end
+end
+
+-- The pull / break stack (Pull and break bars > Own anchor): its own anchor, in Edit Mode and Layout mode.
+local function ensureTimers()
+    if timerAnchor or not M.db.timeline.timerBars.move then return end
+    timerAnchor = CreateFrame("Frame", "PhoenixEncounterTimerBars", UIParent)
+    timerAnchor:SetFrameStrata("MEDIUM")
+    timerAnchor:SetClampedToScreen(true)
+    timerAnchor:Hide()
+    layoutAnchor()
+    ns.EditMode:Register(timerAnchor, { key = "EncounterTimerBars", name = ns.title .. " – " .. L.ENC_TIMER_STACK,
+        default = { point = "TOP", x = 0, y = -120 },
+        active = function() return M.active and M.db.timeline.timerBars.move end,
+        preview = function(unlocked) timerAnchor:SetShown(unlocked and M.db.timeline.timerBars.move) end })
 end
 
 -- The emphasised stack (Move emphasised bars): its own anchor, in Edit Mode and Layout mode.
@@ -369,6 +393,7 @@ function B:Enable()
         anchor:Hide()
         anchor:SetScript("OnUpdate", onUpdate)
         ensureBig()
+        ensureTimers()
         layoutAnchor()
         ns.EditMode:Register(anchor, { key = "EncounterBars", name = ns.title .. " – " .. L.ENC_TIMELINE,
             default = { point = "CENTER", x = 320, y = 80 },
@@ -395,16 +420,21 @@ function B:Disable()
     wipe(timers)
     if anchor then anchor:Hide() end
     if bigAnchor then bigAnchor:Hide() end
-    for _, f in ipairs(bars) do f:Hide(); f.key = nil end
-    for _, f in ipairs(bigBars) do f:Hide(); f.key = nil end
+    if timerAnchor then timerAnchor:Hide() end
+    for _, pool in ipairs({ bars, bigBars, timerBars }) do
+        for _, f in ipairs(pool) do f:Hide(); f.key = nil end
+    end
 end
 
 function B:Refresh()
     if not anchor then return end
     ensureBig()
+    ensureTimers()
     layoutAnchor()
-    for _, f in ipairs(bars) do f.styled, f.key, f.slot = nil, nil, nil end
-    for _, f in ipairs(bigBars) do f.styled, f.key, f.slot = nil, nil, nil end
+    for _, pool in ipairs({ bars, bigBars, timerBars }) do
+        for _, f in ipairs(pool) do f.styled, f.key, f.slot = nil, nil, nil end
+    end
+    if timerAnchor and not M.db.timeline.timerBars.move then timerAnchor:Hide() end
     if anchor:IsShown() then draw(GetTime()) end
 end
 

@@ -3,7 +3,8 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
-- **Journal reader shared** (31 Oct): the journal window and the boss modules now read the Encounter Journal through one core reader (no duplicate code).
+- **Boss mod bars, own sections** (31 Oct, t202): emphasised bars and pull / break bars each have their own size, stack, texture, colour, border and fonts, and their own anchor in Layout mode (pull / break: Own anchor). The live preview shows messages, bars, emphasised bars and pull / break bars as separate parts; click one to jump to its settings.
+- **Journal reader shared** (31 Oct, a945e2b): the journal window and the boss modules now read the Encounter Journal through one core reader (no duplicate code).
 - **Encounters: boss modules** (31 Oct, ea85372, BigWigs / LittleWigs parity step 1): Encounters > Boss modules lists every raid and dungeon of every expansion from the game's journal; pick a boss and set each ability to emphasise, sound, count in or hide on the bars. Structured data file for daily ability updates.
 - **Rare alert: loot marks** (31 Oct, 794d6e1): rares you loot remember their collectible drops (mounts, pets, toys, appearances) account-wide; the toast then says how many you still miss.
 - **Nameplates: simpler minor enemies** (31 Oct, 3ac841e): weak trash (the game's minor class) gets smaller, dimmer plates so the mobs that matter stand out; size and opacity sliders, on by default.
