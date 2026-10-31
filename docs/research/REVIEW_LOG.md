@@ -347,3 +347,24 @@ sound). ElvUI has no reminder module beyond raid-buff icons on the minimap side,
 
 Left: none for the retail list. WoW Forever keeps oil, pet, healthstone and mana (its spell IDs for flasks,
 runes and class buffs are not verified, so those stay retail-only).
+
+## 31. Resource bars
+
+Reference: EllesmereUI ResourceBars (ideas only: per-bar visibility (always / combat / target / group / instance),
+threshold colour with a percent, spark, gradient, absorb / heal absorb / max-health-loss overlays, GCD bar, cast
+bar, swing timer, spec bars) and ElvUI's class bar (spark, smoothing, detach). Phoenix's block is the
+`Phoenix_UI_UnitFrames/Resources.lua` health / power / druid mana / class resource / spec bar stack.
+
+| Area | Phoenix before | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Rows and order | five rows, four orders, collapse | EUI separate bars | parity (one block, Layout mode) | none |
+| Spark | none | EUI and ElvUI spark | fills ended flat | `spark` (on): Skin:FillSpark on health, power and mana |
+| Gradient | flat colour | EUI gradient per bar | missing | `gradient`: darker to full along the fill |
+| Absorbs | none on the block | EUI absorb / heal absorb overlays | a shield was invisible on the block | `health.absorb` and `health.healAbsorb` (on): striped bars from the fill's end, the frames' absorb colours, values straight from UnitGetTotalAbsorbs (secret safe) |
+| Threshold | ticks only | EUI threshold colour | no "you have enough" signal | `power.threshold` + colour: an overlay on the fill whose alpha is a step curve through UnitPowerPercent, so it works on secret power in combat |
+| Visibility | fade out of combat | EUI visibility list, instances only | no target / group / instance / mount rules | `visibility` (always, combat, hostile target, combat or target, group, instance), `hideMounted`, `hiddenAlpha` |
+| Events | health, power, auras | - | absorbs and the new rules had no event | absorb, target, mount, roster and zone events |
+| Code | one 40-branch update | - | luacheck complexity limit | split into health / power / mana / threshold helpers |
+| GCD, cast, swing, totems | Cast Bars and totem bar | parity | complete | coverage row pointed at a module that no longer exists; corrected |
+
+Left: a max-health-loss overlay (the reduced maximum is not exposed as a plain value on retail 12.x).

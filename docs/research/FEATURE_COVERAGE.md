@@ -135,10 +135,10 @@ Overlaps found:
 | EllesmereUI_RaidFrames | Click casting | Phoenix has | Built 2026-10-29: `Modules/GroupFrames/ClickCast.lua` (Group Frames > Click casting); stands aside for Clique. Blizzard's own Click Casting also works on Phoenix frames. |
 | EllesmereUI_RaidFrames | Pet frames, party targets, portraits | Phoenix has | Phoenix `rf.pets`, `rf.partyTargets` (Extra.lua). |
 | EllesmereUI_RaidFrames | Forever missing buffs | Phoenix has | Phoenix Reminders (`rm.raid`, `rm.class`). |
-| EllesmereUI_ResourceBars | Thresholds and colour bands per spec | Phoenix has | Phoenix `Phoenix_UI_ResourceBars` (`rb.*`), CooldownManager thresholds. Colour-by-threshold through curves: unverified. `C_CurveUtil` is used in `Phoenix_UI_ResourceBars/ |
+| EllesmereUI_ResourceBars | Thresholds and colour bands per spec | Phoenix has | Review 31 (2026-10-31): `Phoenix_UI_UnitFrames/Resources.lua` power threshold colour (a `C_CurveUtil` step alpha curve read by `UnitPowerPercent`, works on secret power), power ticks, spark, gradient, absorbs, visibility rules. The old `Phoenix_UI_ResourceBars` / `rb.*` pointer was stale. |
 | EllesmereUI_ResourceBars | Tank active mitigation bars | Phoenix has | Resources.lua: Ironfur / Ignore Pain bars |
 | EllesmereUI_ResourceBars | Spec-specific engine drivers | Phoenix has | Resources.lua: Ebon Might |
-| EllesmereUI_ResourceBars | GCD bar, cast bar with latency and channel ticks, totem bar | Phoenix has | Phoenix `rb.gcd`, `rb.cast`, `rb.totem`. |
+| EllesmereUI_ResourceBars | GCD bar, cast bar with latency and channel ticks, totem bar | Phoenix has | GCD bar and latency / channel ticks in `Phoenix_UI_CastBars` (Extras.lua, CastBars.lua), totem bar in `Phoenix_UI_UnitFrames/Resources.lua`. |
 | EllesmereUI_ResourceBars | Forever: swing timer, druid mana in forms, call totem bar | Phoenix has | Swing timer (Cast Bars), druid mana while shapeshifted (resource block), totem bar (Unit Frames). |
 | EllesmereUI_UnitFrames | Frames with stock styles | Phoenix has | Phoenix `Phoenix_UI_UnitFrames` (358 `uf.*` keys, styles, tags, text slots, Blizzard or Phoenix per frame). |
 | EllesmereUI_UnitFrames | Player aura bars | Phoenix has | Phoenix `uf.auraBars.*` (+ `dedupeCDM`). |

@@ -6028,6 +6028,39 @@ try("review 30: clickable secure reminders, class buffs, dismiss", function()
     for _, k in ipairs(keys) do rawset(env, k, saved[k]) end
 end)
 
+try("review 31: resource bars spark, gradient, absorbs, threshold, visibility", function()
+    local UF = ns.modules.UnitFrames
+    local r = UF.db.resources
+    local V = UF.ResourceVisible
+    local st = { combat = false, target = false, group = false, instance = false, mounted = false }
+    assert(V({ visibility = "always" }, st), "always shows")
+    assert(not V({ visibility = "combat" }, st) and V({ visibility = "combat" }, { combat = true }), "combat only")
+    assert(V({ visibility = "combatTarget" }, { target = true }), "a hostile target shows it")
+    assert(not V({ visibility = "group" }, st) and V({ visibility = "instance" }, { instance = true }), "group / instance")
+    assert(not V({ visibility = "always", hideMounted = true }, { mounted = true }), "hidden while mounted")
+    assert(V({ visibility = "always", hideMounted = true }, { mounted = true, combat = true }), "mounted in combat shows")
+    assert(type(UF.ResourceVisState()) == "table", "live state is safe")
+    r.gradient, r.power.threshold, r.spark = true, 50, true
+    local f = UF:BuildResources(env.UIParent, { sample = UF.ResourceSample("ROGUE") })
+    local oa = 0
+    f.rows.power.over.SetAlpha = function(_, v) oa = v end
+    f.rows.power.over.GetAlpha = function() return oa end
+    UF:LayoutResources(f); UF:UpdateResources(f)
+    assert(f.rows.health.absorb and f.rows.health.absorb:IsShown(), "absorbs on the health row")
+    assert(f.rows.power.over:GetAlpha() == 1, "80 energy is over a 50 threshold")
+    assert(f.rows.health.puiSpark and f.rows.health.puiSpark:IsShown(), "spark on the fill")
+    r.power.threshold = 90; UF:UpdateResources(f)
+    assert(f.rows.power.over:GetAlpha() == 0, "under the threshold")
+    r.spark, r.health.absorb = false, false
+    UF:LayoutResources(f); UF:UpdateResources(f)
+    assert(not f.rows.health.absorb:IsShown() and not f.rows.health.puiSpark:IsShown(), "both off")
+    r.gradient, r.power.threshold, r.spark, r.health.absorb = false, 0, true, true
+    if UF.resourceBlock then
+        r.visibility = "combat"; UF:UpdateResources(UF.resourceBlock)
+        r.visibility = "always"; UF:UpdateResources(UF.resourceBlock)
+    end
+end)
+
 try("macro editor (t193)", function()
     local A = ns:GetModule("Automation")
     assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")

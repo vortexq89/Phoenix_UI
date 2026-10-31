@@ -15,7 +15,11 @@ local M = ns.modules.UnitFrames
     Totem bar      Four secure buttons (SecureActionButtonTemplate, type "destroytotem" on right click: DestroyTotem
                    is protected) showing GetTotemInfo's icon and GetTotemDuration's swipe; empty slots fade
                    through SetAlphaFromBoolean (the "have totem" flag can be secret). Built, sized and placed out of
-                   combat. With it on, the game's TotemFrame stays out of sight. ]]
+                   combat. With it on, the game's TotemFrame stays out of sight.
+    Review 31      A spark on each fill, a darker-to-full gradient, damage / heal absorbs on the health row (the
+                   frames' own sinks: UnitGetTotalAbsorbs into a StatusBar anchored on the fill), a power threshold
+                   colour (a step alpha curve read by UnitPowerPercent, so a secret power still lights it) and
+                   visibility rules (combat, a hostile target, group, instance, not mounted) faded to a chosen alpha. ]]
 
 local Enum_ = Enum or {}
 local TIMER = Enum_.StatusBarTimerDirection or {}
@@ -73,7 +77,7 @@ end
 
 ---------------------------------------------------------------- resource block
 local block
-local function bar(parent)
+local function bar(parent, absorbs)
     local b = CreateFrame("StatusBar", nil, parent)
     b:SetStatusBarTexture(Media.textures.WHITE)
     b:SetMinMaxValues(0, 1)
@@ -83,9 +87,81 @@ local function bar(parent)
     b.bg:SetTexture(Media.textures.WHITE)
     b.text = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     b.text:SetWordWrap(false)
+    if absorbs then
+        b:SetClipsChildren(true)
+        b.absorb = CreateFrame("StatusBar", nil, b)
+        b.absorb:SetPoint("TOPLEFT", b:GetStatusBarTexture(), "TOPRIGHT")
+        b.absorb:SetPoint("BOTTOMLEFT", b:GetStatusBarTexture(), "BOTTOMRIGHT")
+        b.absorb:SetMinMaxValues(0, 1)
+        b.absorb:SetValue(0)
+        b.healAbsorb = CreateFrame("StatusBar", nil, b)
+        b.healAbsorb:SetReverseFill(true)
+        b.healAbsorb:SetPoint("TOPRIGHT", b:GetStatusBarTexture(), "TOPRIGHT")
+        b.healAbsorb:SetPoint("BOTTOMRIGHT", b:GetStatusBarTexture(), "BOTTOMRIGHT")
+        b.healAbsorb:SetMinMaxValues(0, 1)
+        b.healAbsorb:SetValue(0)
+    else
+        -- the power threshold overlay: the fill's own shape in the threshold colour, its alpha from a step curve
+        b.over = b:CreateTexture(nil, "ARTWORK", nil, 2)
+        b.over:SetAllPoints(b:GetStatusBarTexture())
+        b.over:SetAlpha(0)
+    end
     b:Hide()
     return b
 end
+
+-- Visibility rules (pure, smoke-tested): state = { combat, target, group, instance, mounted }.
+M.RESOURCE_VIS = { "always", "combat", "target", "combatTarget", "group", "instance" }
+function M.ResourceVisible(r, st)
+    if r.hideMounted and st.mounted and not st.combat then return false end
+    local v = r.visibility or "always"
+    if v == "combat" then return st.combat and true or false end
+    if v == "target" then return st.target and true or false end
+    if v == "combatTarget" then return (st.combat or st.target) and true or false end
+    if v == "group" then return st.group and true or false end
+    if v == "instance" then return st.instance and true or false end
+    return true
+end
+
+local INSTANCE_KINDS = { party = true, raid = true, scenario = true, arena = true, pvp = true }
+local function visState()
+    local hostile = UnitExists("target") and UnitCanAttack("player", "target")
+    local _, kind = IsInInstance()
+    return { combat = InCombatLockdown() or UnitAffectingCombat("player"), target = plain(hostile) and hostile,
+             group = IsInGroup(), instance = INSTANCE_KINDS[kind] or false,
+             mounted = IsMounted() or (UnitInVehicle and UnitInVehicle("player")) }
+end
+M.ResourceVisState = visState
+
+-- 0 below the threshold, 1 from it up (a fraction of max power); one curve per threshold.
+local thresholdCurve, thresholdAt
+local function thresholdAlphaCurve(pct)
+    if thresholdAt == pct then return thresholdCurve or nil end
+    thresholdAt, thresholdCurve = pct, false
+    if C_CurveUtil and C_CurveUtil.CreateCurve and Enum.LuaCurveType then
+        local ok, c = pcall(function()
+            local curve = C_CurveUtil.CreateCurve()
+            curve:SetType(Enum.LuaCurveType.Step)
+            curve:AddPoint(0, 0)
+            curve:AddPoint(math.min(1, math.max(0.001, pct / 100)), 1)
+            return curve
+        end)
+        if ok and c then thresholdCurve = c end
+    end
+    return thresholdCurve or nil
+end
+
+-- The fill colour, flat or a darker-to-full gradient along the bar.
+local function paint(b, r, g, bl, gradient)
+    local tex = b:GetStatusBarTexture()
+    if gradient and tex and tex.SetGradient and CreateColor then
+        b:SetStatusBarColor(1, 1, 1)
+        tex:SetGradient("HORIZONTAL", CreateColor(r * 0.55, g * 0.55, bl * 0.55, 1), CreateColor(r, g, bl, 1))
+    else
+        b:SetStatusBarColor(r, g, bl)
+    end
+end
+M.PaintResourceBar = paint
 
 -- The block's widgets: built once, the preview builds its own with the same function.
 function M:BuildResources(parent, opts)
@@ -94,7 +170,7 @@ function M:BuildResources(parent, opts)
     f:SetSize(220, 40)
     -- (Live and Sample sources read f.unit / f.unitKey / f.sample: this frame is "the player")
     f.unit, f.unitKey, f.sample, f.detached, f.noLayout = "player", "player", opts.sample, true, true
-    f.rows = { health = bar(f), power = bar(f), mana = bar(f), spec = bar(f) }
+    f.rows = { health = bar(f, true), power = bar(f), mana = bar(f), spec = bar(f) }
     f.ClassPower = CreateFrame("Frame", nil, f)
     f.ClassPower.pips = {}
     f.ClassPower.bar = CreateFrame("StatusBar", nil, f.ClassPower)
@@ -136,7 +212,7 @@ function M.ResourceSample(classFile)
     local s = { name = "", class = CLASS_SAMPLE[classFile] and classFile or "PALADIN", hp = 412000, hpMax = 520000,
                 power = c.power or 162000, powerMax = c.powerMax or 250000, powerToken = c.powerToken,
                 classPowerKind = c.classPowerKind, classPower = c.classPower, classPowerMax = c.classPowerMax,
-                manaShift = c.manaShift }
+                manaShift = c.manaShift, absorb = 90000, healAbsorb = 30000 }
     if c.spec then
         local name = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(c.spec)
         s.specBar = { value = 0.6, label = type(name) == "string" and name or "" }
@@ -245,6 +321,25 @@ function M:LayoutResources(f)
         b:Show()
         if b ~= f.ClassPower then
             b:SetStatusBarTexture(tex)
+            Skin:FillSpark(b, r.spark and row.key ~= "spec")
+            if b.over then
+                b.over:SetTexture(tex)
+                local c = r.power.thresholdColor
+                b.over:SetVertexColor(c.r, c.g, c.b, 1)
+                if row.key ~= "power" or (r.power.threshold or 0) <= 0 then b.over:SetAlpha(0) end
+            end
+            if b.absorb then
+                b.absorb:SetSize(r.width, row.h)
+                b.absorb:SetStatusBarTexture(Media:Bar("FineStripes"))
+                b.absorb:SetStatusBarColor(self:Color("absorb"))
+                b.absorb:SetAlpha(0.75)
+                b.absorb:SetShown(r.health.absorb)
+                b.healAbsorb:SetSize(r.width, row.h)
+                b.healAbsorb:SetStatusBarTexture(Media:Bar("Stripes"))
+                b.healAbsorb:SetStatusBarColor(self:Color("healAbsorb"))
+                b.healAbsorb:SetAlpha(0.7)
+                b.healAbsorb:SetShown(r.health.healAbsorb)
+            end
             Skin:BorderSpec(b, r.border, "border.black")
             Skin:Backdrop(b, r.background, "bg.sunken")
             local spec = (row.key == "health" and r.health.text) or (row.key == "power" and r.power.text) or nil
@@ -299,6 +394,59 @@ local function drawSpec(f, b)
     end
 end
 
+local function drawHealth(f, h, r, src)
+    local hmax = src:HealthMax(f)
+    h:SetMinMaxValues(0, hmax)
+    setValue(h, src:Health(f), r.smooth and not f.sample)
+    local cr, cg, cb = healthColor(r, src:ClassFile(f) or select(2, UnitClass("player")))
+    paint(h, cr, cg, cb, r.gradient)
+    if r.health.absorb then h.absorb:SetMinMaxValues(0, hmax); h.absorb:SetValue(src:Absorbs(f)) end
+    if r.health.healAbsorb then h.healAbsorb:SetMinMaxValues(0, hmax); h.healAbsorb:SetValue(src:HealAbsorbs(f)) end
+    h.bg:SetVertexColor(cr * 0.2, cg * 0.2, cb * 0.2, 0.9)
+    M.ApplyTags(h.text, f.compiledHealth, f, src)
+end
+
+-- the threshold overlay's alpha: the step curve on live power, a plain compare on sample frames
+local function drawThreshold(f, p, r, src, kind, max)
+    local th = r.power.threshold or 0
+    if th <= 0 then return end
+    if f.sample then
+        local v = src:Power(f)
+        local hit = type(v) == "number" and type(max) == "number" and max > 0 and v / max * 100 >= th
+        p.over:SetAlpha(hit and 1 or 0)
+        return
+    end
+    local curve = thresholdAlphaCurve(th)
+    local ok, a = false, 0
+    if curve then ok, a = pcall(UnitPowerPercent, "player", kind, false, curve) end
+    p.over:SetAlpha(ok and a or 0)
+end
+
+local function drawPower(f, p, r, src)
+    local kind, token = src:PowerType(f)
+    local max = src:PowerMax(f)
+    p:SetMinMaxValues(0, max)
+    setValue(p, src:Power(f), r.smooth and not f.sample)
+    local pr, pg, pb = powerColor(r, token, kind, src:ClassFile(f) or select(2, UnitClass("player")))
+    drawTicks(f, p, r, max)
+    paint(p, pr, pg, pb, r.gradient)
+    drawThreshold(f, p, r, src, kind, max)
+    p.bg:SetVertexColor(pr * 0.2, pg * 0.2, pb * 0.2, 0.9)
+    M.ApplyTags(p.text, f.compiledPower, f, src)
+end
+
+local function drawMana(f, m, r)
+    local manaKind = PT.Mana or 0
+    if f.sample then m:SetMinMaxValues(0, 1); m:SetValue(0.7) else
+        m:SetMinMaxValues(0, UnitPowerMax("player", manaKind))
+        m:SetValue(UnitPower("player", manaKind))
+    end
+    local mr, mg, mb = M.PowerColor("MANA", manaKind)
+    paint(m, mr, mg, mb, r.gradient)
+    m.bg:SetVertexColor(mr * 0.2, mg * 0.2, mb * 0.2, 0.9)
+    m.text:SetText("")
+end
+
 function M:UpdateResources(f)
     if not f then return end
     local r = self.db.resources
@@ -307,44 +455,16 @@ function M:UpdateResources(f)
     local active = self:ResourceActive(f)
     local sig = (active.class and "c" or "") .. (active.spec and "s" or "") .. (active.mana and "m" or "")
     if sig ~= f.activeSig then f.activeSig = sig; self:LayoutResources(f) end
-    local h, p, m = f.rows.health, f.rows.power, f.rows.mana
-    if h:IsShown() then
-        h:SetMinMaxValues(0, src:HealthMax(f))
-        setValue(h, src:Health(f), r.smooth and not f.sample)
-        local cr, cg, cb = healthColor(r, src:ClassFile(f) or select(2, UnitClass("player")))
-        h:SetStatusBarColor(cr, cg, cb)
-        h.bg:SetVertexColor(cr * 0.2, cg * 0.2, cb * 0.2, 0.9)
-        M.ApplyTags(h.text, f.compiledHealth, f, src)
-    end
-    if p:IsShown() then
-        local kind, token = src:PowerType(f)
-        local max = src:PowerMax(f)
-        p:SetMinMaxValues(0, max)
-        setValue(p, src:Power(f), r.smooth and not f.sample)
-        local pr, pg, pb = powerColor(r, token, kind, src:ClassFile(f) or select(2, UnitClass("player")))
-        drawTicks(f, p, r, max)
-        p:SetStatusBarColor(pr, pg, pb)
-        p.bg:SetVertexColor(pr * 0.2, pg * 0.2, pb * 0.2, 0.9)
-        M.ApplyTags(p.text, f.compiledPower, f, src)
-    end
-    if m:IsShown() then
-        local manaKind = PT.Mana or 0
-        if f.sample then m:SetMinMaxValues(0, 1); m:SetValue(0.7) else
-            m:SetMinMaxValues(0, UnitPowerMax("player", manaKind))
-            m:SetValue(UnitPower("player", manaKind))
-        end
-        local mr, mg, mb = M.PowerColor("MANA", manaKind)
-        m:SetStatusBarColor(mr, mg, mb)
-        m.bg:SetVertexColor(mr * 0.2, mg * 0.2, mb * 0.2, 0.9)
-        m.text:SetText("")
-    end
-    if f.ClassPower:IsShown() or active.class then
-        if f.ClassPower:IsShown() then self:UpdateClassPower(f) end
-    end
+    if f.rows.health:IsShown() then drawHealth(f, f.rows.health, r, src) end
+    if f.rows.power:IsShown() then drawPower(f, f.rows.power, r, src) end
+    if f.rows.mana:IsShown() then drawMana(f, f.rows.mana, r) end
+    if f.ClassPower:IsShown() then self:UpdateClassPower(f) end
     if f.rows.spec:IsShown() then drawSpec(f, f.rows.spec) end
     if not f.sample then
         local ooc = not InCombatLockdown()
-        f:SetAlpha((r.combatOnly and ooc) and r.oocAlpha or 1)
+        local a = (r.combatOnly and ooc) and r.oocAlpha or 1
+        if not M.ResourceVisible(r, visState()) then a = math.min(a, r.hiddenAlpha or 0) end
+        f:SetAlpha(a)
     end
 end
 
@@ -389,11 +509,12 @@ local function spawnBlock()
     local function update() if block:IsShown() then ns.SafeCall(M.UpdateResources, M, block) end end
     local E = ns.Events
     for _, ev in ipairs({ "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_POWER_UPDATE", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER",
-        "UNIT_AURA" }) do
+        "UNIT_AURA", "UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_HEAL_ABSORB_AMOUNT_CHANGED" }) do
         E:OnUnit(ev, block, update, "player")
     end
     for _, ev in ipairs({ "RUNE_POWER_UPDATE", "PLAYER_SPECIALIZATION_CHANGED", "UPDATE_SHAPESHIFT_FORM",
-        "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED", "PLAYER_ENTERING_WORLD" }) do
+        "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED", "PLAYER_ENTERING_WORLD", "PLAYER_TARGET_CHANGED",
+        "PLAYER_MOUNT_DISPLAY_CHANGED", "GROUP_ROSTER_UPDATE", "ZONE_CHANGED_NEW_AREA" }) do
         E:On(ev, block, update)
     end
     -- runes recharge without events: a 0.1 s follower, only while the class has runes (death knights)

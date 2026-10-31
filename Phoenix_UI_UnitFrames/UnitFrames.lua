@@ -154,10 +154,13 @@ local DEFAULTS = {
         enabled = false, point = "CENTER", x = 0, y = -170, width = 220, spacing = 2, strata = "MEDIUM", scale = 1,
         texture = "", border = Style.Border({ style = "pixel" }), background = Style.Background({ alpha = 0.8 }),
         order = "default", smooth = true,
+        spark = true, gradient = false, visibility = "always", hideMounted = false, hiddenAlpha = 0, -- review 31
         health = { show = true, height = 12, tag = "[health:percent]", color = "class", fixed = { r = 0.2, g = 0.8, b = 0.3 },
+                   absorb = true, healAbsorb = true,
                    text = Style.Text(10, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) },
         power = { show = true, height = 8, tag = "[power:current]", mana = true, color = "type",
                   fixed = { r = 0.3, g = 0.5, b = 1 }, ticks = "", tickColor = { r = 1, g = 1, b = 1, a = 0.8 },
+                  threshold = 0, thresholdColor = { r = 1, g = 0.82, b = 0.2 },
                   text = Style.Text(9, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) },
         class = { show = true, height = 8 },
         spec = { show = true, height = 6 },
