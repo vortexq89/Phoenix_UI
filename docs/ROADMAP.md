@@ -33,6 +33,8 @@ Done (see CHANGES.md 2.0.0-beta2 for dates and commits): Cooldown Manager, aura 
 In progress: the FEATURE_COVERAGE partial rows (review pass of Minimap, Reminders, Encounters and Resource bars done, REVIEW_LOG 28-31; BossBlock row done, REVIEW_LOG 32). Partial rows left: EllesmereUI conditional overrides and first-install picker, MSBT outgoing attribution and trigger conditions (limited by 12.x secrets), Tust_EUI LFG badges and nameplate rules, LittleWigs-style warnings, RareScanner loot marks, NaowhForever windows.
 
 Still missing (docs/research/FEATURE_COVERAGE.md): RareScanner loot marks (needs per-rare loot data), LittleWigs-style dungeon warnings, WindTools and NaowhForever ideas, then the EllesmereUI 'equal' rows. Localization polish last.
+CVar editor (WindTools) done 31 Oct.
+
 ## Order of work
 
 Phase 0 (now): the user's in-game pass of the restored build. Fix what it finds before anything below.

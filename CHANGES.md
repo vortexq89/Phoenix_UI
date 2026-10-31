@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **CVar editor** (31 Oct, WindTools idea): Automation > CVar editor: type any console variable's name, see and change its value, or put the game's default back; out of combat, no console.
 - **Quiet mode: instance list and boss fight sound** (31 Oct, review 32, BigWigs BossBlock parity): Where to hide gains Only listed instances, with Add this instance and Remove from the list buttons; Quality of Life can mute music, ambience, sound effects and error speech from a boss pull to the kill or wipe. Only channels that were on are turned off, they are written to a ledger first, and a fight cut short by a disconnect or crash is put right at the next login.
 - **Resource bars review** (31 Oct, review 31, EllesmereUI parity): a spark on each fill, an optional gradient, damage and heal absorbs on the health row, a power threshold colour (the bar lights up from a chosen percent, also in combat), and show rules (always, in combat, with a hostile target, either, in a group, in instances; hide while mounted) that fade the block to a chosen opacity.
 - **Reminders review** (31 Oct, review 30, EllesmereUI parity): reminder icons are clickable: a left click casts the missing buff or uses the best flask, food, rune or oil from your bags (oil goes on the main hand), and the icon shows that item and its count; a right click hides a reminder until you change zone; class buffs (rogue poisons, shaman shields, Holy paladin Beacon on the tank); glow and name options; the tooltip says what a click does.

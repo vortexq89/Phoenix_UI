@@ -22,6 +22,7 @@ RareAlert.lua
 AlreadyKnown.lua
 Macros.lua
 MacroEditor.lua
+CVarEditor.lua
 Undercut.lua
 PetSummon.lua
 Fishing.lua

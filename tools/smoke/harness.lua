@@ -6210,6 +6210,13 @@ try("announcements (WindTools idea, t193)", function()
     A:EnableAnnounce()
 end)
 
+try("CVar editor (WindTools idea)", function()
+    local A = ns:GetModule("Automation")
+    assert(A.CVarInfo("") == nil, "empty name")
+    A.CVarInfo("autoLootDefault"); A.CVarSet("autoLootDefault", "1"); A.CVarReset("autoLootDefault")
+    assert(A.CVarSet("", "1") == false, "no name, no write")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

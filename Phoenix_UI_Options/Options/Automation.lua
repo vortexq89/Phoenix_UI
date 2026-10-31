@@ -145,6 +145,24 @@ ns:RegisterOptions("Automation", {
     { type = "toggle", key = "announceThanks", label = "ANNOUNCE_THANKS", desc = "ANNOUNCE_THANKS_DESC", keywords = "thanks goodbye ty" },
     { type = "input", key = "announceThanksText", label = "ANNOUNCE_THANKS_TEXT", desc = "ANNOUNCE_THANKS_TEXT_DESC",
       disabled = function(m) return not m.db.announceThanks end },
+    { type = "header", label = "CVAR_EDITOR", icon = "terminal" },
+    { type = "description", text = "CVAR_EDITOR_TEXT" },
+    { type = "input", label = "CVAR_NAME", desc = "CVAR_NAME_DESC", keywords = "cvar console variable setting advanced",
+      get = function(m) return m.cvarName end,
+      set = function(m, v)
+          m.cvarName = v or ""
+          if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+      end },
+    { type = "input", label = "CVAR_VALUE", desc = "CVAR_VALUE_DESC", combat = true,
+      hidden = function(m) return m.CVarInfo(m.cvarName) == nil end,
+      get = function(m) return (m.CVarInfo(m.cvarName)) end,
+      set = function(m, v) m.CVarSet(m.cvarName, v) end },
+    { type = "button", label = "CVAR_RESET", desc = "CVAR_RESET_DESC", button = "RESET", icon = "reset", combat = true,
+      hidden = function(m) local _, d = m.CVarInfo(m.cvarName); return d == nil end,
+      func = function(m)
+          m.CVarReset(m.cvarName)
+          if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+      end },
     { type = "header", label = "GAMEPAD_TITLE", icon = "keyboard" },
     { type = "toggle", label = "GAMEPAD_ON", desc = "GAMEPAD_ON_DESC", combat = true, keywords = "gamepad controller console",
       get = function(m) return m.GamepadGet("enable") end, set = function(m, v) m.GamepadSet("enable", v) end },
