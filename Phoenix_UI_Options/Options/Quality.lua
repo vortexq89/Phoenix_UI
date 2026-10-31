@@ -26,6 +26,12 @@ ns:RegisterOptions("Quality", {
       keywords = "zone name subzone banner" },
     { type = "toggle", key = "hideBossBanner", label = "QUALITY_BOSS_BANNER", desc = "QUALITY_BOSS_BANNER_DESC",
       keywords = "boss kill banner loot" },
+    { type = "toggle", key = "hideBossEmotes", label = "QUALITY_BOSS_EMOTES", desc = "QUALITY_BOSS_EMOTES_DESC",
+      keywords = "boss emote whisper bossblock quiet raid warning" },
+    { type = "select", key = "hideWhere", label = "QUALITY_HIDE_WHERE", desc = "QUALITY_HIDE_WHERE_DESC",
+      keywords = "bossblock quiet instance dungeon raid only where", values = {
+        { value = "always", label = "QUALITY_HIDE_ALWAYS" }, { value = "instances", label = "QUALITY_HIDE_INSTANCES" },
+        { value = "raids", label = "QUALITY_HIDE_RAIDS" } } },
     { type = "toggle", key = "filterErrors", label = "FILTER_ERRORS", desc = "FILTER_ERRORS_DESC", keywords = "red text spam" },
     { type = "toggle", key = "achievementScreenshot", label = "ACHIEVEMENT_SCREENSHOT", desc = "ACHIEVEMENT_SCREENSHOT_DESC" },
     { type = "toggle", key = "knownTint", label = "QUALITY_KNOWN", desc = "QUALITY_KNOWN_DESC",

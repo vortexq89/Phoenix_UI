@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Quiet mode for instances** (31 Oct, BigWigs BossBlock idea): Quality of Life > Hide boss emotes (boss emotes and whispers stay in chat; raid warnings stay), and Where to hide (everywhere, dungeons and raids, raids only) for talking heads, zone text, the boss banner and boss emotes.
 - **Gold ledger** (31 Oct, EllesmereUI idea): the gold tooltip shows what this character earned and spent this session and its net change today (green / red); Data Texts > Gold can forget a deleted or transferred character.
 - **Combat text: per-event always sticky, message and icon** (31 Oct, MSBT parity): each event's cog now has Always sticky, Show the icon, Font (one of the six combat faces) and Message (%a = the number, for example (%a) or +%a; %s = the word on lines without one); the MSBT import also takes always sticky and %a messages.
 - **Layout mode: hide a frame, a scale per window** (31 Oct, MoveAny level): the cog popup on a Layout mode box has Hide this frame (faded out, kept hidden when the game sets its opacity, shown with a (hidden) label while unlocked so you can bring it back); Movers > Blizzard windows gives each window its own scale on top of the shared one.

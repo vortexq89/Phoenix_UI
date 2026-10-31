@@ -553,9 +553,10 @@ Shipped font set: 89 files in 36 families, listed with their licences in `Media/
   `C_TooltipInfo.GetInventoryItem` and `C_Item.GetItemNumSockets`/`GetItemGem`. Movers adds edge snapping
   (`M.SnapToEdges`, pure), arrow-key nudge on the selected mover, an unlock key (`SetOverrideBindingClick` to our
   own button, out of combat) and one scale for Blizzard's UI panel windows (`M.WINDOWS`, `OnShow` post-hook,
-  `SetScale` only, out of combat, skipped for frames Edit Mode manages). Quality of Life hides zone text and boss
-  banners by unregistering those frames' own events (the UIErrorsFrame precedent) and registers them back when
-  off; its raid markers bar is our own `SecureActionButtonTemplate` macro buttons (`/tm`, `/wm`, `/cwm`) under a
+  `SetScale` only, out of combat, skipped for frames Edit Mode manages). Quality of Life hides zone text, boss
+  banners and boss emotes (`RaidWarningFrame`'s RAID_BOSS_EMOTE / RAID_BOSS_WHISPER only) by unregistering those
+  frames' own events (the UIErrorsFrame precedent) and registers back exactly the ones it removed when off or when
+  the quiet scope (everywhere / dungeons and raids / raids) no longer applies; its raid markers bar is our own `SecureActionButtonTemplate` macro buttons (`/tm`, `/wm`, `/cwm`) under a
   `[petbattle] hide; [group] show; hide` state driver, changed out of combat only; the cursor ring, combat banner
   and the merchant known-item tint (`C_TooltipInfo.GetMerchantItem`, `ITEM_SPELL_KNOWN`, post-hook) are our own
   textures. Game settings on that page are CVar rows through `ns.Combat.CVarAccessors`; each CVar has one owner

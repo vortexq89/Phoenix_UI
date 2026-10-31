@@ -14,7 +14,7 @@ local M = ns:NewModule("Quality", {
     label = "QUALITY", desc = "QUALITY_DESC", category = "utility", order = 10,
     defaults = {
         hideTalkingHead = false, filterErrors = false, achievementScreenshot = false,
-        hideZoneText = false, hideBossBanner = false,
+        hideZoneText = false, hideBossBanner = false, hideBossEmotes = false, hideWhere = "always",
         cursorRing = false, ringSize = 48, ringCombatOnly = false,
         combatAlert = false, combatSound = "", knownTint = true,
         -- flight timer (Flight.lua)
@@ -27,27 +27,49 @@ local M = ns:NewModule("Quality", {
     globalDefaults = { flight = { times = {} } },
 })
 
+-- Quiet scope (BigWigs BossBlock idea): the hide switches below (talking heads, zone text, boss banner, boss emotes)
+-- apply everywhere, only in dungeons and raids, or only in raids.
+function M.QuietHere(where)
+    where = where or M.db.hideWhere
+    if where ~= "instances" and where ~= "raids" then return true end
+    local inside, kind = IsInInstance()
+    if not inside then return false end
+    if where == "raids" then return kind == "raid" end
+    return kind == "party" or kind == "raid" or kind == "scenario"
+end
+
 local function talkingHeadHook()
-    if M:IsEnabled() and M.db.hideTalkingHead then TalkingHeadFrame:CloseImmediately() end
+    if M:IsEnabled() and M.db.hideTalkingHead and M.QuietHere() then TalkingHeadFrame:CloseImmediately() end
 end
 
 ---------------------------------------------------------------- banners
 local ZONE_EVENTS = { "ZONE_CHANGED", "ZONE_CHANGED_INDOORS", "ZONE_CHANGED_NEW_AREA" }
 local BOSS_EVENTS = { "BOSS_KILL", "ENCOUNTER_LOOT_RECEIVED" }
-local muted = {}
+-- boss emotes and whispers in the middle of the screen (Blizzard_RaidWarning, RaidWarningUtil.MessageTypeEvents);
+-- raid warnings from players and boss mods stay. The text still reaches chat.
+local EMOTE_EVENTS = { "RAID_BOSS_EMOTE", "RAID_BOSS_WHISPER" }
+local muted = {} -- frame -> the events we unregistered (only those are registered back)
 
 local function setEvents(frame, events, off)
-    if type(frame) ~= "table" or not frame.RegisterEvent or muted[frame] == off then return end
-    muted[frame] = off
-    for _, e in ipairs(events) do
-        if off then frame:UnregisterEvent(e) else frame:RegisterEvent(e) end
+    if type(frame) ~= "table" or not frame.RegisterEvent or (muted[frame] ~= nil) == off then return end
+    if off then
+        local list = {}
+        for _, e in ipairs(events) do
+            if not frame.IsEventRegistered or frame:IsEventRegistered(e) then frame:UnregisterEvent(e); list[#list + 1] = e end
+        end
+        muted[frame] = list
+    else
+        for _, e in ipairs(muted[frame]) do frame:RegisterEvent(e) end
+        muted[frame] = nil
     end
 end
+M.MutedEvents = muted
 
 function M:ApplyBanners()
-    local on = self:IsEnabled()
+    local on = self:IsEnabled() and M.QuietHere()
     setEvents(ZoneTextFrame, ZONE_EVENTS, on and self.db.hideZoneText or false)
     setEvents(BossBanner, BOSS_EVENTS, on and self.db.hideBossBanner or false)
+    setEvents(rawget(_G, "RaidWarningFrame"), EMOTE_EVENTS, on and self.db.hideBossEmotes or false)
 end
 
 ---------------------------------------------------------------- cursor ring
@@ -140,6 +162,9 @@ function M:OnEnable()
     ns.Events:On("ACHIEVEMENT_EARNED", self, function()
         if self.db.achievementScreenshot then C_Timer.After(1, Screenshot) end
     end)
+    -- the quiet scope follows you in and out of instances
+    ns.Events:On("PLAYER_ENTERING_WORLD", self, function() self:ApplyBanners() end)
+    ns.Events:On("ZONE_CHANGED_NEW_AREA", self, function() self:ApplyBanners() end)
     self:SetupFlight() -- Flight.lua
     self:SetupLootFeed() -- LootFeed.lua
     self:Refresh()

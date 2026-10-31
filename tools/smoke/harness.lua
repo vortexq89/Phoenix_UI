@@ -5884,6 +5884,28 @@ try("data texts: gold ledger (EllesmereUI idea, t198)", function()
     assert(DT.TIPS.gold():find(ns.L.DT_GOLD_SESSION, 1, true), "the ledger lines are in the tooltip")
 end)
 
+try("quality: boss emotes and the quiet scope (BossBlock idea, t198)", function()
+    local Q = ns:GetModule("Quality")
+    local inside, kind = false, "none"
+    rawset(env, "IsInInstance", function() return inside, kind end)
+    assert(Q.QuietHere("always") and not Q.QuietHere("instances"), "outside: only everywhere")
+    inside, kind = true, "party"
+    assert(Q.QuietHere("instances") and not Q.QuietHere("raids"), "dungeon")
+    inside, kind = true, "raid"
+    assert(Q.QuietHere("raids"), "raid")
+    local rw = CreateFrame("Frame", "RaidWarningFrame", UIParent)
+    rawset(env, "RaidWarningFrame", rw)
+    rw:RegisterEvent("RAID_BOSS_EMOTE"); rw:RegisterEvent("RAID_BOSS_WHISPER"); rw:RegisterEvent("CHAT_MSG_RAID_WARNING")
+    Q.db.hideBossEmotes, Q.db.hideWhere = true, "raids"
+    Q:ApplyBanners()
+    assert(not rw:IsEventRegistered("RAID_BOSS_EMOTE") and rw:IsEventRegistered("CHAT_MSG_RAID_WARNING"), "emotes muted, warnings kept")
+    inside, kind = false, "none"
+    Q:ApplyBanners()
+    assert(rw:IsEventRegistered("RAID_BOSS_EMOTE") and rw:IsEventRegistered("RAID_BOSS_WHISPER"), "back outside the raid")
+    Q.db.hideBossEmotes, Q.db.hideWhere = false, "always"
+    Q:ApplyBanners()
+end)
+
 try("macro editor (t193)", function()
     local A = ns:GetModule("Automation")
     assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")
