@@ -12,9 +12,9 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 116 |
+| Phoenix has | 117 |
 | partial | 12 |
-| missing | 5 |
+| missing | 4 |
 | out of scope | 10 |
 
 ## Prioritized build list
@@ -74,7 +74,7 @@ Overlaps found:
 | EllesmereUI | Lite framework instead of Ace3 | Phoenix has | Own module system and saved data: `Core/Modules.lua`, `Core/DB.lua`, `Core/Flavor.lua`. |
 | EllesmereUI | Unlock Mode (movers with anchors and snapping) | Phoenix has | `Modules/Movers/Movers.lua`: layout mode with grid, snap to frames, arrow nudge and a cog popup (anchor, X/Y). |
 | EllesmereUI | Spec overrides and conditional overrides | partial | Spec profiles in `Core/DB.lua:181` (`specProfiles`). Conditional overrides: not found on this branch. |
-| EllesmereUI | Macro Factory | Phoenix has | Automation > Smart macros; 2026-10-31 Pick up buttons and Open macro window. Full in-addon macro editor: in progress (next row). |
+| EllesmereUI | Macro Factory | Phoenix has | Automation > Smart macros; 2026-10-31 Pick up buttons and Open macro window. Full in-addon macro editor built 2026-10-31 (next row). |
 | EllesmereUI | Global options search | Phoenix has | `Phoenix_UI_Options/Config/Search.lua` (search every page, jump to and flash the row). No Ctrl+K command palette. |
 | EllesmereUI | First-install module picker, migrations, patch notes, video guides, uninstall | partial | What's new popup plus (2026-10-31) About > Full changelog and a show-after-updates switch. Module picker at first install: setup wizard only; video guides, uninstall: not planned. |
 | EllesmereUI | Shared engines | Phoenix has | Spell cost preview: `Modules/UnitFrames/Update.lua` `Live:SpellCost` (cost of the spell being cast, secret-safe). Five-second-rule spark (Forever): not built. |
@@ -179,7 +179,7 @@ Overlaps found:
 | Tust_EUI | Chat replacement | Phoenix has | Phoenix `Phoenix_UI_Chat` (skin, history, whisper windows, channel bar, emoji, keyword alerts). |
 | Tust_EUI | Data Bars multi-bar engine | Phoenix has | Phoenix DataBars (`db.*`), `rt.*`, friends in minimap (`mm.extra.friends`). |
 | Tust_EUI | Enhanced XP bar, LFG region/rating, nameplate rules, tooltips, bag upgrade markers, stat priorities, minimap group info | partial | Quest-XP on the XP bar (`Modules/DataTexts/Bar.lua`), upgrade arrows in bags (`Modules/Bags`). LFG region/rating badges and nameplate rules not found. |
-| EllesmereUI | Full in-addon macro editor (account / character, icon picker, conditionals helper) | missing | Planned next (t191 GUI only). |
+| EllesmereUI | Full in-addon macro editor (account / character, icon picker, conditionals helper) | Phoenix has | Built 2026-10-31: `Phoenix_UI_Automation/MacroEditor.lua` (M:ShowMacroEditor, MacroList, SaveMacro, InsertSnippet); Automation > Macro editor. |
 | EllesmereUI | Loot council | Phoenix has | Built 2026-10-31: Automation > Loot council (session drops, Want shares your equipped item level, auto-open, raid only). |
 | EllesmereUI | Loadout manager | Phoenix has | Built 2026-10-31: Automation > Loadouts (talents + equipment set per content per spec, offer or auto apply). |
 | EllesmereUI_CooldownManager | Cooldown Manager parity pass | Phoenix has | 2026-10-30: Cooldown Manager rows, aura reminders (custom, group buffs, banner style), aura bars (`Tracker/AuraBars.lua`). |

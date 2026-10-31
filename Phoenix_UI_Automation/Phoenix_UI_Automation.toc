@@ -21,6 +21,7 @@ BulkBuy.lua
 RareAlert.lua
 AlreadyKnown.lua
 Macros.lua
+MacroEditor.lua
 Undercut.lua
 PetSummon.lua
 Fishing.lua

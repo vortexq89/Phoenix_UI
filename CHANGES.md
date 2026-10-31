@@ -3,7 +3,8 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
-- **Combat text: substitutions** (31 Oct, combat text step 4b): rename or shorten spell, aura and miss words before they are drawn ("from = to; ..."), MSBT style; amounts are never touched.
+- **Macro editor** (31 Oct, t193): Automation > Macro editor: account and character macros, name, icon picker, body with a live character count, a conditionals helper that inserts at the cursor, New / Save / Delete / Pick up; never in combat, no /macro needed.
+- **Combat text: substitutions** (31 Oct, 60a33fe): rename or shorten spell, aura and miss words before they are drawn ("from = to; ..."), MSBT style; amounts are never touched.
 - **Combat text: combat font pick** (31 Oct, 6502bc8): Phoenix Font Bold (default), Bebas Neue, Oswald, Russo One, Black Ops One or Grenze Black, applied live.
 - **Combat text: no double text** (31 Oct, 6a71fb6): while the scroll is on, the game's own text over your character is hidden (it still feeds the scroll) and returns when the scroll or the switch is off.
 - **Combat text: an icon on every line** (31 Oct, cfb8ed8): lines without a spell icon (incoming hits, misses, honor, reputation, power) get a Phoenix glyph in the line colour on the area's left or right icon side; switch under Combat text.

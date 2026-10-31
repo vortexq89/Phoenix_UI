@@ -5846,6 +5846,16 @@ try("combat text: substitutions (t196 step 4b)", function()
     assert(CT.Substitute("Renew") == "Renew", "cleared")
 end)
 
+try("macro editor (t193)", function()
+    local A = ns:GetModule("Automation")
+    assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")
+    local body, cur = A.InsertSnippet("/cast X", 0, "#showtooltip\n")
+    assert(body == "#showtooltip\n/cast X" and cur == 13, "insert")
+    assert(#A.MACRO_SNIPPETS > 10, "snippets")
+    assert(type(A.MacroList(false)) == "table", "list")
+    A:ShowMacroEditor()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")
