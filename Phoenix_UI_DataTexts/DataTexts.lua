@@ -23,7 +23,7 @@ local M = ns:NewModule("DataTexts", {
         order = "fps,latency,speed,durability,gold,currency,bags,itemlevel,friends,guild,mail,spec,keystone,coords,volume,events,"
             .. "clock,bugs",
         order2 = "", panel2 = false, width = 0, justify = "LEFT", mouseover = false,
-        clock24 = true, clockRealm = false, goldCopper = false, goldAccount = true, durabilityWarn = 25,
+        clock24 = true, clockRealm = false, goldCopper = false, goldAccount = true, goldLedger = true, durabilityWarn = 25,
         tooltips = true, combatTips = true,
         xpBar = false, xpRep = true, rested = true, questXP = true, barWidth = 520, barHeight = 10, barTextMode = "mouseover",
         barHonor = false, barTexture = "", barReverse = false, barSmooth = true, barGradient = "none",
@@ -279,12 +279,58 @@ local MAX_LINES = 15
 local function money(copper) return C_CurrencyInfo.GetCoinTextureString(math.max(0, copper or 0)) end
 local function line(label, value) return Theme:Wrap(label, "text.secondary") .. "  " .. tostring(value) end
 
+-- Gold ledger (EllesmereUI idea): what this character earned and spent since login (session, in memory) and its net
+-- change today (sv.global.goldDay[name - realm] = { day, start }, a new day starts at the first money seen that day).
+local session = { earned = 0, spent = 0, last = nil }
+M.GoldSession = session
+local function today() return date("%Y-%m-%d") end
+
+local function trackMoney(g, now)
+    if session.last then
+        local d = now - session.last
+        if d > 0 then session.earned = session.earned + d elseif d < 0 then session.spent = session.spent - d end
+    end
+    session.last = now
+    g.goldDay = type(g.goldDay) == "table" and g.goldDay or {}
+    local key, day = ns.Util.PlayerKey(), today()
+    local rec = g.goldDay[key]
+    if type(rec) ~= "table" or rec.day ~= day then g.goldDay[key] = { day = day, start = now } end
+end
+
+-- Net change today on this character (0 before anything is saved).
+function M.GoldToday()
+    local g = ns.DB.sv and ns.DB.sv.global
+    local rec = g and type(g.goldDay) == "table" and g.goldDay[ns.Util.PlayerKey()]
+    if type(rec) ~= "table" or rec.day ~= today() then return 0 end
+    return GetMoney() - (tonumber(rec.start) or GetMoney())
+end
+
 -- Every character's gold, saved account-wide when seen (ns.DB.sv.global.gold[name - realm] = copper).
 function M:SaveGold()
     local g = ns.DB.sv and ns.DB.sv.global
     if not g then return end
     g.gold = type(g.gold) == "table" and g.gold or {}
-    g.gold[ns.Util.PlayerKey()] = GetMoney()
+    local now = GetMoney()
+    g.gold[ns.Util.PlayerKey()] = now
+    trackMoney(g, now)
+end
+
+-- The saved characters (for Forget), and forgetting one (a deleted or moved character); never the one logged in.
+function M.GoldCharacters()
+    local g = ns.DB.sv and ns.DB.sv.global
+    local out = {}
+    for name in pairs(g and type(g.gold) == "table" and g.gold or {}) do
+        if name ~= ns.Util.PlayerKey() then out[#out + 1] = name end
+    end
+    table.sort(out)
+    return out
+end
+function M:ForgetGold(name)
+    local g = ns.DB.sv and ns.DB.sv.global
+    if not (g and type(g.gold) == "table" and name and g.gold[name]) or name == ns.Util.PlayerKey() then return false end
+    g.gold[name] = nil
+    if type(g.goldDay) == "table" then g.goldDay[name] = nil end
+    return true
 end
 
 local function warbandMoney()
@@ -330,6 +376,16 @@ local TIPS = {
             total = total + bank
             out[#out + 1] = line(L.DT_WARBAND_BANK, money(bank))
             out[#out + 1] = line(L.DT_TOTAL, money(total))
+        end
+        if M.db.goldLedger then
+            local function signed(c)
+                if c == 0 then return money(0) end
+                return Theme:Wrap((c > 0 and "+" or "-"), c > 0 and "state.success" or "state.danger") .. money(math.abs(c))
+            end
+            out[#out + 1] = " "
+            out[#out + 1] = line(L.DT_GOLD_SESSION, signed(session.earned - session.spent))
+            out[#out + 1] = line(L.DT_GOLD_EARNED, money(session.earned)) .. "    " .. line(L.DT_GOLD_SPENT, money(session.spent))
+            out[#out + 1] = line(L.DT_GOLD_TODAY, signed(M.GoldToday()))
         end
         return table.concat(out, "\n")
     end,

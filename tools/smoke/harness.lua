@@ -5864,6 +5864,26 @@ try("combat text: per-event sticky, icon and message (MSBT parity, t198)", funct
     CT.db.scroll.enabled = false; CT:EnableScroll()
 end)
 
+try("data texts: gold ledger (EllesmereUI idea, t198)", function()
+    local DT = ns:GetModule("DataTexts")
+    local g = ns.DB.sv.global
+    DT:SaveGold()
+    local s = DT.GoldSession
+    s.last = (s.last or 0) + 500 -- as if 500 copper were spent since the last save
+    DT:SaveGold()
+    assert(s.spent >= 500, "spent counted")
+    assert(type(DT.GoldToday()) == "number", "today")
+    g.gold["Old Alt - Realm"] = 12345
+    g.goldDay = g.goldDay or {}; g.goldDay["Old Alt - Realm"] = { day = "2000-01-01", start = 1 }
+    local found
+    for _, n in ipairs(DT.GoldCharacters()) do found = found or n == "Old Alt - Realm" end
+    assert(found, "listed")
+    assert(DT:ForgetGold("Old Alt - Realm") and g.gold["Old Alt - Realm"] == nil and g.goldDay["Old Alt - Realm"] == nil, "forgotten")
+    assert(not DT:ForgetGold(ns.Util.PlayerKey()), "never the one logged in")
+    DT.db.goldLedger = true
+    assert(DT.TIPS.gold():find(ns.L.DT_GOLD_SESSION, 1, true), "the ledger lines are in the tooltip")
+end)
+
 try("macro editor (t193)", function()
     local A = ns:GetModule("Automation")
     assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")

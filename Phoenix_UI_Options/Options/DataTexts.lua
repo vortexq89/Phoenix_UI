@@ -10,6 +10,14 @@ local LABEL = { fps = "DT_FPS", latency = "DT_LATENCY", speed = "DT_SPEED", dura
     guild = "DT_GUILD", mail = "DT_MAIL", spec = "DT_SPEC", keystone = "DT_KEYSTONE", coords = "DT_COORDS",
     volume = "DT_VOLUME", currency = "DT_CURRENCY", events = "DT_EVENTS" }
 
+-- Gold ledger: forget a character Phoenix saw (a deleted or transferred one); the one logged in is never listed.
+local forgetPick
+local function GOLD_CHARS(m)
+    local out = {}
+    for _, n in ipairs(m.GoldCharacters()) do out[#out + 1] = { value = n, label = n } end
+    return out
+end
+
 -- The currency picker: every currency in your currency list, plus "none".
 local function currencyValues(m)
     local out = { { value = 0, label = "NONE" } }
@@ -80,6 +88,19 @@ ns:RegisterOptions("DataTexts", {
       disabled = function(m) return not m.db.gold end },
     { type = "toggle", key = "goldAccount", label = "DT_GOLD_ACCOUNT", desc = "DT_GOLD_ACCOUNT_DESC",
       keywords = "warband bank alts characters total", disabled = function(m) return not m.db.gold end },
+    { type = "toggle", key = "goldLedger", label = "DT_GOLD_LEDGER", desc = "DT_GOLD_LEDGER_DESC",
+      keywords = "ledger session today earned spent profit", disabled = function(m) return not m.db.gold end },
+    { type = "select", label = "DT_GOLD_FORGET_PICK", desc = "DT_GOLD_FORGET_PICK_DESC", values = GOLD_CHARS,
+      keywords = "forget delete remove character alt gold", hidden = function(m) return #m.GoldCharacters() == 0 end,
+      get = function(m) return forgetPick or m.GoldCharacters()[1] end, set = function(_, v) forgetPick = v end },
+    { type = "button", label = "DT_GOLD_FORGET", desc = "DT_GOLD_FORGET_DESC", button = "DELETE", icon = "delete",
+      hidden = function(m) return #m.GoldCharacters() == 0 end,
+      func = function(m)
+          if m:ForgetGold(forgetPick or m.GoldCharacters()[1]) then
+              forgetPick = nil
+              if ns.Config.RebuildPage then ns.Config:RebuildPage("DataTexts") end
+          end
+      end },
     { type = "header", label = "DT_BUGS", icon = "datatexts" },
     { type = "toggle", key = "bugs", label = "DT_BUGS", desc = "DT_BUGS_DESC", keywords = "errors lua",
       disabled = function() local b = ns:GetModule("Bugs"); return not (b and b:IsEnabled()) end },

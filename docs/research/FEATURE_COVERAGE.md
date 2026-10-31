@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 120 |
-| partial | 10 |
+| Phoenix has | 121 |
+| partial | 9 |
 | missing | 3 |
 | out of scope | 10 |
 
@@ -89,7 +89,7 @@ Overlaps found:
 | EllesmereUI_AuraBuffReminders | Ready-check mana warning; Beacon M+ reminders | Phoenix has | Tracker/Reminders.lua ready-check low mana |
 | EllesmereUI_Bags | Three views and categories | Phoenix has | Phoenix Vault (`vault.view`, `vault.rules`, `vault.sections`, `vault.listColumns`, `vault.compactSize`, custom rules). |
 | EllesmereUI_Bags | Quick actions | Phoenix has | Built 2026-10-29: `Modules/Bags/Process.lua` (Process chip / bag-window button; secure spell-on-item cells; retail). |
-| EllesmereUI_Bags | Junk marker, sell junk, reagent window, gold ledger | partial | Junk dim and sell, reagents, bank skin in `Modules/Bags/`. No gold ledger found. |
+| EllesmereUI_Bags | Junk marker, sell junk, reagent window, gold ledger | Phoenix has | Junk dim and sell, reagents, bank skin in `Modules/Bags/`. Gold ledger built 2026-10-31 (t198): every character's gold and the warband bank (existing), plus session earned / spent and today's net change in the gold tooltip (`goldLedger`, `M.GoldSession`, `M.GoldToday`) and Forget character (`M:ForgetGold`), `Phoenix_UI_DataTexts/DataTexts.lua`. |
 | EllesmereUI_BlizzardSkin | Window engine and packs | Phoenix has | Phoenix `Phoenix_UI_Skins` (`skins.*`, 119 keys; applied and removed live). |
 | EllesmereUI_BlizzardSkin | Character sheet rework | Phoenix has | Built 2026-10-29: `Modules/ItemLevel/StatDR.lua` (Item Level > Diminishing returns in stat tooltips): DR cost and the next 100 rating, from the game's own rating functions. |
 | EllesmereUI_BlizzardSkin | Skyriding vigor skin | Phoenix has | ActionBars skyriding/vigor handling |
