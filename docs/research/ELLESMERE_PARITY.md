@@ -49,7 +49,7 @@ Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, �
 | Upgrade calculator | 9 | planner (track and level per slot, steps left per track) + calculator: crests per track and total, average item level gain, crest cost and ilvl-per-step sliders, refreshes on gear change | A | |
 | Loot council | 5 | session boss drops with looter, Want button that shares your equipped item level in that slot, wants sorted by biggest upgrade, auto-open, raid-only, clear | E | in-game check: ENCOUNTER_LOOT_RECEIVED on both clients |
 | Loadout manager | 7 | per spec: talent loadout + equipment set for raid, dungeon, arena, battleground and open world; offer window or auto apply on entering, apply-now button | A | in-game check: LoadConfig and UseEquipmentSet out of combat |
-| Party mode | 10 | ✗ | B | |
+| Party mode | 10 | edge party lights (button start/stop), celebrations on boss kills, timed keys and level ups, sound, length and strength sliders; a manual session is never ended by a trigger | E | AFK screen lives in the AFK module |
 | Friends | 1 | Friends skin | E | |
 | Chrome icons (micro menu, window medallions) | flat micro buttons | Ember Bevel set: 76 icons + 28 medallions, 4 states, 16 px variant (t169) | A | t169: rail, tabs, page tile, window controls, macro window and 20+ window medallions wired; flat switch |
 | Colours / fonts / textures / glows / style | 21 + 6 + 6 + 2 | Appearance page, Theme presets, media library, Phoenix Font | A | |

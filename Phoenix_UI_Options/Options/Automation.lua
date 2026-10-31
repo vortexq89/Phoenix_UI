@@ -127,4 +127,13 @@ ns:RegisterOptions("Automation", {
       set = function(m, v) m:SetLoadout("world", "gear", v) end, disabled = function(m) return not m.db.loadoutsOn end },
     { type = "button", label = "LOADOUT_CHECK", desc = "LOADOUT_CHECK_DESC", button = "LOADOUT_APPLY", icon = "spec", combat = true,
       func = function(m) local c = m:LoadoutChanges(m.LoadoutContext()); if c then m:ApplyLoadout(c) end end },
+    { type = "header", label = "PARTY_TITLE", icon = "palette" },
+    { type = "button", label = "PARTY_NOW", desc = "PARTY_NOW_DESC", button = "PARTY_TOGGLE", icon = "palette",
+      keywords = "party mode lights celebrate fun", func = function(m) m:ToggleParty() end },
+    { type = "toggle", key = "partyBoss", label = "PARTY_BOSS" },
+    { type = "toggle", key = "partyMplus", label = "PARTY_MPLUS" },
+    { type = "toggle", key = "partyLevel", label = "PARTY_LEVEL" },
+    { type = "toggle", key = "partySound", label = "PARTY_SOUND" },
+    { type = "range", key = "partyDuration", label = "PARTY_DURATION", desc = "PARTY_DURATION_DESC", min = 2, max = 30, step = 1 },
+    { type = "range", key = "partyStrength", label = "PARTY_STRENGTH", min = 10, max = 100, step = 5 },
 })

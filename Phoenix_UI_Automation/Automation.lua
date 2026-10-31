@@ -23,6 +23,8 @@ local M = ns:NewModule("Automation", {
         autoLog = false, autoLogMplus = true, autoLogRaid = true, autoLogDungeon = false, -- AutoLog.lua
         lootCouncil = false, lootCouncilOpen = true, lootCouncilRaidOnly = true, -- LootCouncil.lua
         loadoutsOn = false, loadoutsAuto = false, loadouts = {}, -- Loadouts.lua
+        partyBoss = false, partyMplus = false, partyLevel = false, partySound = true, partyDuration = 6,
+        partyStrength = 60, -- PartyMode.lua
     },
     -- per character: the last companion pet and whether you put it away (PetSummon.lua)
     globalDefaults = { pets = {} },
@@ -139,6 +141,7 @@ function M:OnEnable()
     self:EnableAutoLog() -- AutoLog.lua
     self:EnableLootCouncil() -- LootCouncil.lua
     self:EnableLoadouts() -- Loadouts.lua
+    self:EnableParty() -- PartyMode.lua
     if not hooked then
         hooked = true
         hooksecurefunc("StaticPopup_Show", onPopup)

@@ -5752,6 +5752,16 @@ try("loadouts: per content talents and gear", function()
     assert(A:OfferLoadout("raid", { talent = 1 }), "offer window")
 end)
 
+try("party mode: manual session survives triggers", function()
+    local A = ns.modules.Automation
+    A:StartParty(true); assert(A.party.on and A.party.manual, "manual on")
+    A:StartParty(false); assert(A.party.manual, "trigger leaves manual alone")
+    A:ToggleParty(); assert(not A.party.on, "toggle stops")
+    A:StartParty(false); assert(A.party.on and not A.party.manual, "timed")
+    A:StopParty()
+    assert(A.PartyPaint(3, 0.5), "paint")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

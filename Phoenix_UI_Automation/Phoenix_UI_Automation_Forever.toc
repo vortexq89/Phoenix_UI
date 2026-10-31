@@ -29,3 +29,4 @@ Junk.lua
 AutoLog.lua
 LootCouncil.lua
 Loadouts.lua
+PartyMode.lua
