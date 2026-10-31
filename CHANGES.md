@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Combat text: per-event always sticky, message and icon** (31 Oct, MSBT parity): each event's cog now has Always sticky, Show the icon, Font (one of the six combat faces) and Message (%a = the number, for example (%a) or +%a; %s = the word on lines without one); the MSBT import also takes always sticky and %a messages.
 - **Layout mode: hide a frame, a scale per window** (31 Oct, MoveAny level): the cog popup on a Layout mode box has Hide this frame (faded out, kept hidden when the game sets its opacity, shown with a (hidden) label while unlocked so you can bring it back); Movers > Blizzard windows gives each window its own scale on top of the shared one.
 - **Announcements** (31 Oct, WindTools idea): Automation > Announcements tells your group your new keystone after a run, that an instance reset worked, and your own thank-you after a key; each off by default.
 - **Rare alert: killed and seen today** (31 Oct, 2711acd): the toast says when you already killed or saw that rare today on this character; the list clears at the daily reset.
@@ -39,6 +40,8 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Combat text: crit size with sticky crits** (31 Oct): the Crit size slider was greyed out for the sticky crit style although sticky crits use it; it is now live for sticky and grow.
+- **Combat state and Combat alert** (31 Oct): both switches now name the other, so the two "entering / leaving combat" messages are not shown twice by accident.
 - **Code review fixes** (30 Oct, 80aef95, 6ae60cf, cfce46c, 728cdee, c7c1413, 887fadd, 180e254, 44b185a, 0b7f321, fd50673, f7582fc, c59e539): secret numbers in "full" format, plugin dependency loading, event registration failures, third-party plugin keys, IsSecret fallback, PvP timers on C_Timer, plugin API 1.2 docs, mover queueing, sample plugin TOC, Forever TOC docs.
 - **QA fixes** (30 Oct, 0ce5b9d, e559187, 7be2326): undressed art stays hidden, no new holders on secure frames in combat, waypoints turn on and off live, a Russian profile import crash.
 - **Settings and spec icons** (30 Oct, 67332c2, a07b0b2, 248ea30, a43f3da): even ring strokes, whole-pixel columns, preview scrolls away unless kept, damage meter value fade.

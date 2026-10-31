@@ -64,6 +64,13 @@ local function unlock()
 end
 local ALIGN = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "CENTER", label = "ANCHOR_CENTER" },
     { value = "RIGHT", label = "ANCHOR_RIGHT" } }
+-- the combat font quick list (MSBT-style OFL faces); events may take their own face ("" = the combat font)
+local COMBAT_FONTS = {
+    { value = "PhoenixFontBold", label = "Phoenix Font Bold" }, { value = "BebasNeueRegular", label = "Bebas Neue" },
+    { value = "OswaldSemiBold", label = "Oswald" }, { value = "RussoOneRegular", label = "Russo One" },
+    { value = "BlackOpsRegular", label = "Black Ops One" }, { value = "GrenzeBlack", label = "Grenze Black" } }
+local EVENT_FONTS = { { value = "", label = "FCT_EV_FONT_SAME" } }
+for _, v in ipairs(COMBAT_FONTS) do EVENT_FONTS[#EVENT_FONTS + 1] = v end
 -- one switch per event type, its colour, size, area and sound behind the cog
 local function event(key, t)
     local base = "scroll.events." .. key
@@ -73,6 +80,10 @@ local function event(key, t)
             { type = "range", key = base .. ".scale", label = "FCT_EV_SCALE", min = 0.5, max = 2, step = 0.05, percent = true },
             { type = "select", key = base .. ".area", label = "FCT_EV_AREA", values = AREAS },
             { type = "sound", key = base .. ".sound", label = "FCT_EV_SOUND" },
+            { type = "toggle", key = base .. ".sticky", label = "FCT_EV_STICKY", desc = "FCT_EV_STICKY_DESC" },
+            { type = "toggle", key = base .. ".icon", label = "FCT_EV_ICON", desc = "FCT_EV_ICON_DESC" },
+            { type = "input", key = base .. ".msg", label = "FCT_EV_MSG", desc = "FCT_EV_MSG_DESC" },
+            { type = "select", key = base .. ".font", label = "FCT_EV_FONT", desc = "FCT_EV_FONT_DESC", values = EVENT_FONTS },
         } }, { disabled = noScroll })
 end
 local DIRS = { { value = "UP", label = "GROW_UP" }, { value = "DOWN", label = "GROW_DOWN" } }
@@ -122,10 +133,7 @@ local schema = {
     scroll({ type = "button", label = "FCT_SCROLL_TEST", desc = "FCT_SCROLL_TEST_DESC", button = "CB_TEST_BUTTON", icon = "test",
       func = function(m) ns.Config.frame:Hide(); m:TestScroll() end, keywords = "test sample" }),
     scroll({ type = "select", key = "scroll.font.font", label = "FCT_COMBAT_FONT", desc = "FCT_COMBAT_FONT_DESC",
-      keywords = "msbt font face combat numbers", values = {
-        { value = "PhoenixFontBold", label = "Phoenix Font Bold" }, { value = "BebasNeueRegular", label = "Bebas Neue" },
-        { value = "OswaldSemiBold", label = "Oswald" }, { value = "RussoOneRegular", label = "Russo One" },
-        { value = "BlackOpsRegular", label = "Black Ops One" }, { value = "GrenzeBlack", label = "Grenze Black" } } }),
+      keywords = "msbt font face combat numbers", values = COMBAT_FONTS }),
     scroll(Opt.Text("scroll.font", "FCT_SCROLL_FONT", { min = 10, max = 40 })),
     scroll({ type = "toggle", key = "scroll.merge", label = "FCT_MERGE", desc = "FCT_MERGE_DESC", keywords = "merge spam combine hits" }),
     scroll({ type = "range", key = "scroll.mergeWindow", label = "FCT_MERGE_WINDOW", desc = "FCT_MERGE_WINDOW_DESC", min = 0.1, max = 2,
@@ -217,7 +225,7 @@ local schema = {
     { type = "header", label = "FCT_CRIT", icon = "warning" },
     scroll({ type = "select", key = "scroll.crit", label = "FCT_CRIT", desc = "FCT_CRIT_DESC", values = CRIT, keywords = "critical crit" }),
     scroll({ type = "range", key = "scroll.critScale", label = "FCT_CRIT_SCALE", min = 1, max = 3, step = 0.05, percent = true,
-      disabled = function(m) return noScroll(m) or m.db.scroll.crit ~= "grow" end }),
+      disabled = function(m) return noScroll(m) or (m.db.scroll.crit ~= "grow" and m.db.scroll.crit ~= "sticky") end }),
     scroll({ type = "select", key = "scroll.critArea", label = "FCT_CRIT_AREA", desc = "FCT_CRIT_AREA_DESC", values = CRIT_AREA }),
     scroll({ type = "sound", key = "scroll.critSound", label = "FCT_CRIT_SOUND", desc = "FCT_CRIT_SOUND_DESC" }),
 }

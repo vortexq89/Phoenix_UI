@@ -260,3 +260,22 @@ Reviewed against the live Blizzard source, no change needed:
 - Collections: toy buttons are secure, created and anchored only out of combat, hidden before lockdown and when the window closes, laid out again after combat.
 - PvP scoreboard / results: header pools re-skinned after Init; "your row" uses PVP_SCOREBOARD_ALLIANCE_ALT_ROW_COLOR, which PVPMatchUtil.lua line 142 gives the local player whatever their faction, so Horde is covered.
 - LFG: see §16-17.
+
+## 27. Combat text after the MSBT build (t198)
+
+Reference: MikScrollingBattleText's own options (MSBTProfiles.lua on the PC, read-only: per-event `alwaysSticky`,
+`message` with codes, colour, font, sound, scroll area) and ElvUI (no scrolling combat text of its own; it leaves this
+to Blizzard's floating text or an addon). EllesmereUI only sets the damage font.
+
+| Area | Phoenix before | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Per-event sticky | sticky only for crits (`scroll.crit`) | MSBT: Always sticky per event (procs, low health) | an important event could not be made to stay | Always sticky in each event's cog (`events.<e>.sticky`) |
+| Per-event message | fixed prefix / suffix | MSBT: a message per event with codes (%a amount, %n name, %s spell ...) | "(1234)" or "+1234" styles impossible | Message in each event's cog: %a = the number (or aura / spell name), %s = the word on lines without one; the template is split, the amount still only goes to SetFormattedText (secret-safe). MSBT's %n / school codes have no source in 12.x and are not offered |
+| Per-event icon | icon on every line (area side, glyph fallback) | MSBT: skill icons on or off | no way to keep text-only lines for one noisy event | Show the icon in each event's cog (`events.<e>.icon`) |
+| MSBT import | areas, events (on, colour, area), substitutions | MSBT saved data | always sticky and messages were dropped | imported; a message is taken only when %a is its one code |
+| Crits tab | Crit size enabled only for "grow" | the sticky style also multiplies by Crit size (`M:StyleLine`) | slider greyed out though it acts | enabled for sticky and grow |
+| Combat state | two switches, neither mentions the other | ElvUI / EUI have one | two "entering combat" messages by accident | each description names the other switch |
+| Layout and look | six tabs (Blizzard, Scroll, Areas, Events, Triggers, Crits), area scope picker, preview, every area a Layout mode box | MSBT: one big tree window, no live preview, no on-screen positioning | ahead of MSBT on presentation; no change | - |
+| Per-event font | one combat font, size per event | MSBT: font face per event | could not set one event apart by face | Font in each event's cog (the six combat faces; size still from the combat font, area and event) |
+
+Left: nothing on MSBT's per-event options; MSBT's source-name codes need data 12.x does not give addons.

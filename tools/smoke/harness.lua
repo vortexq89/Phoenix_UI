@@ -5846,6 +5846,24 @@ try("combat text: substitutions (t196 step 4b)", function()
     assert(CT.Substitute("Renew") == "Renew", "cleared")
 end)
 
+try("combat text: per-event sticky, icon and message (MSBT parity, t198)", function()
+    local CT = ns.modules.CombatText
+    local p, s = CT.Template("(%a)", "x", true)
+    assert(p == "(" and s == ")", "amount template splits around %a")
+    p, s = CT.Template("+", "x", true)
+    assert(p == "+" and s == nil, "no %a: the message is the prefix")
+    assert(CT.Template("%s!", "Dodge", false) == "Dodge!", "word template")
+    assert(CT.Template("", "x", true) == nil, "empty: default text")
+    local ev = CT.db.scroll.events.heal
+    assert(ev.sticky == false and ev.msg == "" and ev.icon == true, "defaults on every event")
+    ev.sticky, ev.msg, ev.icon = true, "+%a", false
+    CT.db.scroll.enabled = true; CT:EnableScroll()
+    ev.font = "OswaldSemiBold"
+    CT.Fire({ key = "heal" }, 1234, false, "HEAL", nil, nil)
+    ev.sticky, ev.msg, ev.icon, ev.font = false, "", true, ""
+    CT.db.scroll.enabled = false; CT:EnableScroll()
+end)
+
 try("macro editor (t193)", function()
     local A = ns:GetModule("Automation")
     assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")
@@ -5894,6 +5912,12 @@ try("combat text: MSBT import (t196 step 4b)", function()
     assert(h.area == "notify" and h.color.b == 0.5 and CT.db.scroll.subs == "Power Word: Shield = PWS", "events, subs")
     a.anim, a.dir, a.align, a.height, a.show, h.area, h.color, h.show, CT.db.scroll.subs = unpack(was, 1, 9)
     CT:EnableScroll()
+    local d = CT.db.scroll.events.damage
+    CT:ImportMSBT({ profiles = { Default = { events = {
+        INCOMING_DAMAGE = { alwaysSticky = true, message = "(%a)" }, INCOMING_HEAL = { message = "(%n) +%a" } } } } }, {})
+    assert(d.sticky == true and d.msg == "(%a)", "always sticky and an %a message")
+    assert(h.msg == "", "a message with codes Phoenix has no source for is skipped")
+    d.sticky, d.msg = false, ""
 end)
 
 try("movers: any frame by name or click (MoveAny level, t194)", function()

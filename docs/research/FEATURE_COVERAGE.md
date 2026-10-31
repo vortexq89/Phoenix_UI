@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 119 |
-| partial | 11 |
+| Phoenix has | 120 |
+| partial | 10 |
 | missing | 3 |
 | out of scope | 10 |
 
@@ -41,7 +41,7 @@ Font: the scroll text uses **Phoenix Font Bold** with a thick outline and shadow
 
 Overlaps found:
 - Blizzard floating combat text and Phoenix scroll read the same source (COMBAT_TEXT_UPDATE). With both "Your own combat text" (`enableFloatingCombatText`) and the scroll on, incoming numbers show twice. Merge: when the scroll is on, offer to turn Blizzard's self text off (one switch, both tabs). Resolved 2026-10-31 (combat text step 4): `scroll.hideBlizzard` (on by default) makes the game's CombatText frame invisible while the scroll is on; it keeps feeding the scroll and returns when either is off (`M:ApplyBlizzardText`, Scroll.lua).
-- "Combat state" CVar (`floatingCombatTextCombatState_v2`) vs Quality > Combat alert banner (`Modules/Quality/Quality.lua:19`, `combatAlert`): two "entering / leaving combat" messages. Merge: one control that names both.
+- "Combat state" CVar (`floatingCombatTextCombatState_v2`) vs Quality > Combat alert banner (`Modules/Quality/Quality.lua:19`, `combatAlert`): two "entering / leaving combat" messages. Merge: one control that names both. Resolved 2026-10-31 (t198): each switch's description names the other (the CVar is account-wide and the banner is profile data, so they stay two switches).
 - Notify area (buff / debuff / fade / reactive) vs Cooldown Manager proc glows and Reminders: different jobs (scrolling note vs icon), no merge, but the notify defaults should stay off for procs the CDM already glows.
 - Honor / reputation text vs Quality > Loot feed (items, money, currencies) and the DataTexts rep bar: no real duplicate.
 - Damage meter (totals) and Encounters (timeline bars): no overlap.
@@ -187,7 +187,7 @@ Overlaps found:
 | EllesmereUI_Minimap | Button bin as flyout or bar | Phoenix has | 2026-10-30: Minimap > bin mode flyout / bar. |
 | EllesmereUI_DataBars | Time, gold and bugs data texts with v9.1 art | Phoenix has | 2026-10-30: ember caps and dividers, 12/24h and local/server options, live bug count. |
 | MikScrollingBattleText | Custom scroll areas, every area in Layout mode | Phoenix has | Built 2026-10-31 (e3473f7): user areas (add, name, rename, remove, route events; `scroll.custom`, `M:AddArea` in `Modules/CombatText/Scroll.lua`); every area is always a Layout-mode mover with snapping, on or off. |
-| MikScrollingBattleText | Per-event sound and icon rules | partial | t195: sound per event exists (`scroll.events.<e>.sound`); icons only from your own casts (`scroll.castIcons`). Gap: icon per event, sticky per event. Step 3 (2026-10-31): every line has an icon (spell icon, your last cast, else a Phoenix glyph per event in the line colour, `scroll.glyphIcons`); per-event custom icon choice still open. |
+| MikScrollingBattleText | Per-event sound and icon rules | Phoenix has | t195: sound per event exists (`scroll.events.<e>.sound`); icons only from your own casts (`scroll.castIcons`). Gap: icon per event, sticky per event. Step 3 (2026-10-31): every line has an icon (spell icon, your last cast, else a Phoenix glyph per event in the line colour, `scroll.glyphIcons`). Built 2026-10-31 (t198): per event Always sticky (`events.<e>.sticky`), Show the icon (`events.<e>.icon`) and Message with %a (`events.<e>.msg`, `M.Template`), Font per event (`events.<e>.font`, the six combat faces); MSBT import takes alwaysSticky and %a messages. |
 | BigWigs | Per-boss knowledge (LittleWigs-style warnings) | partial | Timeline bars and ability rules; no per-boss authored warnings. |
 | RareScanner | Rare already-killed / loot status on the alert | partial | Built 2026-10-31: killed today and seen today on the toast, per character, cleared at the daily reset (`M.NoteRare`, `M.RareStatus`, RareAlert.lua). Gap: loot-collected marks need per-rare loot data. |
 | WindTools | Smart Tab, Event Tracker, CVar editor, merchant extra pages | missing | Ideas list (docs/research/windtools.md); Smart Tab was declined for taint, re-check. |

@@ -73,6 +73,10 @@ local M = ns:NewModule("CombatText", {
     },
 })
 
+-- MSBT's per-event extras, the same for every event: always sticky, an own message (%a = the amount), the icon and a
+-- font face ("" = the combat font).
+for _, e in pairs(M.defaults.scroll.events) do e.sticky, e.msg, e.icon, e.font = false, "", true, "" end
+
 function M:OnInitialize()
     if self.db.damageFont ~= "" then DAMAGE_TEXT_FONT = ns.Media:Font(self.db.damageFont) end -- luacheck: ignore 121 (read by C only)
 end

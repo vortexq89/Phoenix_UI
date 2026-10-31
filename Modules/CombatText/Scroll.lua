@@ -153,11 +153,15 @@ local function placeIcon(fs, a, tex)
     ic:Show()
 end
 
--- Paint one line: the shared font, scaled by the area, the event and the crit style.
-function M:StyleLine(fs, crit, areaKey, scale)
+-- Paint one line: the shared font (or the event's own face), scaled by the area, the event and the crit style.
+function M:StyleLine(fs, crit, areaKey, scale, face)
     local db = self.db.scroll
     local spec = db.font
     Skin:TextSpec(fs, spec, "combat")
+    if type(face) == "string" and face ~= "" then
+        local _, size, flags = fs:GetFont()
+        fs:SetFont(Media:Font(face), size or spec.size, flags)
+    end
     local a = areaKey and db.areas[areaKey]
     local mult = (a and a.scale or 1) * (scale or 1)
     if crit and (db.crit == "grow" or db.crit == "sticky") then mult = mult * (db.critScale or 1.5) end
@@ -281,7 +285,7 @@ local function freeSlot(f)
 end
 
 -- Add (or merge into) a line. amount may be secret: it only goes to SetFormattedText.
-local function add(key, color, prefix, amount, crit, mergeKey, scale, sound, icon, suffix)
+local function add(key, color, prefix, amount, crit, mergeKey, scale, sound, icon, suffix, alwaysSticky, face)
     local db = M.db.scroll
     local a
     key, a = route(db, key, crit)
@@ -290,7 +294,7 @@ local function add(key, color, prefix, amount, crit, mergeKey, scale, sound, ico
     local now = GetTime()
     if merge(db, f, mergeKey, now, prefix, amount) or not allow(f, db.throttle, now) then return end
     local fs = table.remove(f.free) or newLine(f)
-    M:StyleLine(fs, crit, key, scale)
+    M:StyleLine(fs, crit, key, scale, face)
     local r, g, b = colorOf(a.useColor and a.color or color)
     if crit and db.crit == "flash" then r, g, b = Theme:Color("accent.primary") end
     fs:SetTextColor(r, g, b)
@@ -300,7 +304,7 @@ local function add(key, color, prefix, amount, crit, mergeKey, scale, sound, ico
     placeIcon(fs, a, icon)
     local snd = crit and db.critSound ~= "" and db.critSound or sound
     if snd and snd ~= "" and not M.testing then Media:PlaySound(snd) end
-    local sticky = crit and db.crit == "sticky"
+    local sticky = alwaysSticky or (crit and db.crit == "sticky")
     local slot = (a.anim == "static" or a.anim == "pow" or a.anim == "horizontal" or sticky) and freeSlot(f) or 0
     f.flip = not f.flip
     local _, h = fs:GetFont()
@@ -393,12 +397,30 @@ local function runTriggers(e, name)
     end
 end
 
+-- An event's own message (MSBT's per-event format): %a stands for the number (or the aura / spell name the event
+-- carries), %s for the event's word on lines without one ("Dodge"). Only the plain template is split; the amount
+-- itself still goes, untouched, to SetFormattedText. Returns prefix, suffix (nil suffix keeps the default).
+function M.Template(msg, word, hasAmount)
+    if type(msg) ~= "string" or msg == "" then return nil end
+    if not hasAmount then return (msg:gsub("%%s", function() return word or "" end)), nil end
+    local a, b = msg:find("%a", 1, true)
+    if not a then return msg, nil end
+    return msg:sub(1, a - 1), msg:sub(b + 1)
+end
+
 local function fire(e, amount, crit, mergeKey, word, name, suffix)
     if TRIGGER_WHEN[e.key] and name ~= nil then runTriggers(e, name) end
     local s = M.db.scroll.events[e.key]
     if not (s and s.show) then return end
     amount, word = substitute(amount), substitute(word)
-    add(s.area, s.color, word or e.prefix, amount, crit, mergeKey, s.scale, s.sound, iconFor(e, name, s.color), suffix)
+    local prefix = word or e.prefix
+    local tp, ts = M.Template(s.msg, prefix, amount ~= nil)
+    if tp then
+        prefix = tp
+        if ts ~= nil then suffix = ts end
+    end
+    local icon = s.icon ~= false and iconFor(e, name, s.color) or nil
+    add(s.area, s.color, prefix, amount, crit, mergeKey, s.scale, s.sound, icon, suffix, s.sticky == true, s.font)
 end
 M.Fire = fire
 
@@ -621,7 +643,7 @@ end
 
 ---------------------------------------------------------------- MikScrollingBattleText import (step 4b)
 -- Reads MSBT's own saved settings (only there while MSBT is enabled) and copies what maps onto Phoenix: area
--- style, direction, alignment, height, on/off; event on/off, colour and area; ability substitutions. MSBT's data is
+-- style, direction, alignment, height, on/off; event on/off, colour, area, always sticky and message; ability substitutions. MSBT's data is
 -- only read, never changed. Returns the number of settings written, or nil and a locale key for why not.
 M.MSBT_AREAS = { Incoming = "incoming", Outgoing = "target", Notification = "notify" }
 M.MSBT_ANIM = { Straight = "straight", Parabola = "parabola", Static = "static", Angled = "angled",
@@ -660,6 +682,9 @@ local function importEvents(db, p)
             if e.colorR or e.colorG or e.colorB then
                 to.color = { r = unit01(e.colorR), g = unit01(e.colorG), b = unit01(e.colorB) }; n = n + 1
             end
+            if e.alwaysSticky ~= nil then to.sticky = e.alwaysSticky == true; n = n + 1 end
+            -- a message is taken only when %a (the amount) is its one code; MSBT's name / school codes have no source here
+            if type(e.message) == "string" and not e.message:gsub("%%a", ""):find("%", 1, true) then to.msg = e.message; n = n + 1 end
         end
     end
     return n
