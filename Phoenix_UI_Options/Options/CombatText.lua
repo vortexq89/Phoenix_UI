@@ -95,6 +95,8 @@ local schema = {
     { type = "description", text = "FCT_SCROLL_TEXT" },
     scroll({ type = "toggle", key = "scroll.hideBlizzard", label = "FCT_HIDE_BLIZZARD", desc = "FCT_HIDE_BLIZZARD_DESC",
       keywords = "double duplicate blizzard text" }),
+    scroll({ type = "input", key = "scroll.subs", label = "FCT_SUBS", desc = "FCT_SUBS_DESC",
+      keywords = "substitutions rename abbreviate shorten msbt" }),
     scroll({ type = "button", label = "FCT_SCROLL_TEST", desc = "FCT_SCROLL_TEST_DESC", button = "CB_TEST_BUTTON", icon = "test",
       func = function(m) ns.Config.frame:Hide(); m:TestScroll() end, keywords = "test sample" }),
     scroll({ type = "select", key = "scroll.font.font", label = "FCT_COMBAT_FONT", desc = "FCT_COMBAT_FONT_DESC",

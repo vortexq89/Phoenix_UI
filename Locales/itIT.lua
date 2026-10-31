@@ -3749,6 +3749,8 @@ local T = {
     FCT_SCROLL_TEXT = "I valori vengono dagli eventi del testo di combattimento; nei contenuti limitati il gioco ne nasconde alcuni.",
     FCT_HIDE_BLIZZARD = "Nascondi il testo del gioco mentre è attivo",
     FCT_HIDE_BLIZZARD_DESC = "Il testo del gioco sopra il personaggio mostra gli stessi colpi, quindi vedresti tutto due volte. Diventa invisibile (continua ad alimentare questo testo) e torna appena il testo o questo interruttore è spento.",
+    FCT_SUBS = "Sostituzioni",
+    FCT_SUBS_DESC = "Rinomina o accorcia nomi di incantesimi, aure e mancati prima di mostrarli, come da = a, separati da ;. Esempio: Parola del Potere: Scudo = PP:S; Schivata = Schivato!",
     FCT_SCROLL_TEST = "Prova le aree",
     FCT_SCROLL_TEST_DESC = "Invia righe di esempio in ogni area visibile.",
     FCT_SCROLL_FONT = "Testo scorrevole",

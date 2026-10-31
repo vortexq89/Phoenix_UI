@@ -16,7 +16,7 @@ local M = ns:NewModule("CombatText", {
         scroll = {
             enabled = false, merge = true, mergeWindow = 0.35, throttle = 0, onlyCombat = false,
             crit = "sticky", critScale = 1.5, critArea = "same", critSound = "",
-            castIcons = true, glyphIcons = true, hideBlizzard = true, custom = {},
+            castIcons = true, glyphIcons = true, hideBlizzard = true, subs = "", custom = {},
             -- the MSBT-style look: a bold condensed face, thick outline and a drop shadow
             font = Style.Text(20, { font = "PhoenixFontBold", outline = "THICK", shadow = true }),
             areas = {

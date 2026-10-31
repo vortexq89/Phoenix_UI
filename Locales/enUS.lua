@@ -3775,6 +3775,8 @@ ns.RegisterLocale("enUS", {
     FCT_SCROLL_TEXT = "Amounts come from the game's own combat text events and are drawn as they are; in restricted content some numbers are hidden by the game.",
     FCT_HIDE_BLIZZARD = "Hide the game's own text while this is on",
     FCT_HIDE_BLIZZARD_DESC = "The game's text over your character shows the same hits, so you would see everything twice. It is made invisible (it still feeds this scroll) and comes back as soon as the scroll or this switch is off.",
+    FCT_SUBS = "Substitutions",
+    FCT_SUBS_DESC = "Rename or shorten spell, aura and miss words before they are shown, as from = to, separated by ;. Example: Power Word: Shield = PW:S; Dodge = Dodged!",
     FCT_SCROLL_TEST = "Test scroll areas",
     FCT_SCROLL_TEST_DESC = "Sends sample lines through every shown area.",
     FCT_SCROLL_FONT = "Scroll text",

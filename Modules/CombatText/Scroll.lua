@@ -343,9 +343,32 @@ local function iconFor(e, name, color)
 end
 M.IconFor = iconFor
 
+-- Substitutions (MSBT style): "from = to; from2 = to2" renames spell and aura names and fixed words before they are
+-- drawn. Only plain, non-secret strings are touched; amounts are never compared or changed.
+local subsSrc, subs = nil, {}
+local function parseSubs(src)
+    local out = {}
+    for pair in tostring(src or ""):gmatch("[^;\n]+") do
+        local from, to = pair:match("^%s*(.-)%s*=%s*(.-)%s*$")
+        if from and from ~= "" then out[from] = to end
+    end
+    return out
+end
+M.ParseSubs = parseSubs
+local function substitute(text)
+    if type(text) ~= "string" or Secret.IsSecret(text) then return text end
+    local src = M.db.scroll.subs
+    if src ~= subsSrc then subsSrc, subs = src, parseSubs(src) end
+    local to = subs[text]
+    if to == nil then return text end
+    return to
+end
+M.Substitute = substitute
+
 local function fire(e, amount, crit, mergeKey, word, name, suffix)
     local s = M.db.scroll.events[e.key]
     if not (s and s.show) then return end
+    amount, word = substitute(amount), substitute(word)
     add(s.area, s.color, word or e.prefix, amount, crit, mergeKey, s.scale, s.sound, iconFor(e, name, s.color), suffix)
 end
 M.Fire = fire

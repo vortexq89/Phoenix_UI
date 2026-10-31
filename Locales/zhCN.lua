@@ -3749,6 +3749,8 @@ local T = {
     FCT_SCROLL_TEXT = "数值来自游戏自身的战斗文字事件并原样显示；受限内容中游戏会隐藏部分数字。",
     FCT_HIDE_BLIZZARD = "开启时隐藏游戏自带文字",
     FCT_HIDE_BLIZZARD_DESC = "游戏在角色上方的文字显示相同的伤害，你会看到两遍。它会变为不可见（仍为此滚动文字提供数据），关闭滚动文字或此开关后立即恢复。",
+    FCT_SUBS = "替换",
+    FCT_SUBS_DESC = "在显示前重命名或缩短法术、光环和未命中文字，格式为 原 = 新，用 ; 分隔。例：真言术：盾 = 盾; 躲闪 = 闪!",
     FCT_SCROLL_TEST = "测试滚动区域",
     FCT_SCROLL_TEST_DESC = "在每个显示的区域发送示例文字。",
     FCT_SCROLL_FONT = "滚动文字",

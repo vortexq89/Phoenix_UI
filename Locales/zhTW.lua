@@ -3749,6 +3749,8 @@ local T = {
     FCT_SCROLL_TEXT = "數值來自遊戲自身的戰鬥文字事件並原樣顯示；受限內容中遊戲會隱藏部分數字。",
     FCT_HIDE_BLIZZARD = "開啟時隱藏遊戲內建文字",
     FCT_HIDE_BLIZZARD_DESC = "遊戲在角色上方的文字顯示相同的傷害，你會看到兩次。它會變為不可見（仍為此捲動文字提供資料），關閉捲動文字或此開關後立即恢復。",
+    FCT_SUBS = "替換",
+    FCT_SUBS_DESC = "在顯示前重新命名或縮短法術、光環和未命中文字，格式為 原 = 新，用 ; 分隔。例：真言術：壁 = 壁; 閃躲 = 閃!",
     FCT_SCROLL_TEST = "測試捲動區域",
     FCT_SCROLL_TEST_DESC = "在每個顯示的區域傳送範例文字。",
     FCT_SCROLL_FONT = "捲動文字",

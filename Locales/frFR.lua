@@ -3749,6 +3749,8 @@ local T = {
     FCT_SCROLL_TEXT = "Les valeurs viennent des évènements de texte de combat du jeu ; en contenu restreint, le jeu en masque certaines.",
     FCT_HIDE_BLIZZARD = "Masquer le texte du jeu pendant ce temps",
     FCT_HIDE_BLIZZARD_DESC = "Le texte du jeu au-dessus de votre personnage montre les mêmes coups : vous verriez tout en double. Il devient invisible (il alimente toujours ce défilement) et revient dès que le défilement ou cet interrupteur est désactivé.",
+    FCT_SUBS = "Substitutions",
+    FCT_SUBS_DESC = "Renomme ou raccourcit les noms de sorts, d'auras et de ratés avant l'affichage, sous la forme de = à, séparés par ;. Exemple : Mot de pouvoir : Bouclier = MP:B; Esquive = Esquivé !",
     FCT_SCROLL_TEST = "Tester les zones",
     FCT_SCROLL_TEST_DESC = "Envoie des lignes d'exemple dans chaque zone visible.",
     FCT_SCROLL_FONT = "Texte défilant",

@@ -3749,6 +3749,8 @@ local T = {
     FCT_SCROLL_TEXT = "Las cifras vienen de los eventos de texto de combate del juego; en contenido restringido el juego oculta algunas.",
     FCT_HIDE_BLIZZARD = "Ocultar el texto del juego mientras esté activo",
     FCT_HIDE_BLIZZARD_DESC = "El texto del juego sobre tu personaje muestra los mismos golpes, así que lo verías todo dos veces. Se vuelve invisible (sigue alimentando este texto) y vuelve en cuanto este texto o este interruptor se apaga.",
+    FCT_SUBS = "Sustituciones",
+    FCT_SUBS_DESC = "Cambia o acorta nombres de hechizos, auras y fallos antes de mostrarlos, como de = a, separados por ;. Ejemplo: Palabra de poder: escudo = PP:E; Esquiva = ¡Esquivado!",
     FCT_SCROLL_TEST = "Probar áreas",
     FCT_SCROLL_TEST_DESC = "Envía líneas de ejemplo por cada área visible.",
     FCT_SCROLL_FONT = "Texto desplazado",

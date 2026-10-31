@@ -3749,6 +3749,8 @@ local T = {
     FCT_SCROLL_TEXT = "Werte stammen aus den Kampftext-Ereignissen des Spiels; in eingeschränkten Inhalten verbirgt das Spiel manche Zahlen.",
     FCT_HIDE_BLIZZARD = "Den Text des Spiels dabei ausblenden",
     FCT_HIDE_BLIZZARD_DESC = "Der Text des Spiels über deiner Figur zeigt dieselben Treffer, du sähest alles doppelt. Er wird unsichtbar (speist diese Laufschrift weiter) und kehrt zurück, sobald die Laufschrift oder dieser Schalter aus ist.",
+    FCT_SUBS = "Ersetzungen",
+    FCT_SUBS_DESC = "Zauber-, Aura- und Verfehlt-Wörter vor der Anzeige umbenennen oder kürzen, als von = zu, getrennt durch ;. Beispiel: Machtwort: Schild = MW:S; Ausweichen = Ausgewichen!",
     FCT_SCROLL_TEST = "Laufbereiche testen",
     FCT_SCROLL_TEST_DESC = "Schickt Beispielzeilen durch alle sichtbaren Bereiche.",
     FCT_SCROLL_FONT = "Lauftext",

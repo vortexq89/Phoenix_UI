@@ -5835,6 +5835,17 @@ try("combat text: combat font list (t196 step 5)", function()
     assert(ns.modules.CombatText.db.scroll.font.font == "PhoenixFontBold", "default")
 end)
 
+try("combat text: substitutions (t196 step 4b)", function()
+    local CT = ns.modules.CombatText
+    local t = CT.ParseSubs("Power Word: Shield = PW:S ; Dodge=Dodged!")
+    assert(t["Power Word: Shield"] == "PW:S" and t.Dodge == "Dodged!", "parse")
+    CT.db.scroll.subs = "Renew = R"
+    assert(CT.Substitute("Renew") == "R" and CT.Substitute("Flash Heal") == "Flash Heal", "apply")
+    assert(CT.Substitute(1234) == 1234, "amounts untouched")
+    CT.db.scroll.subs = ""
+    assert(CT.Substitute("Renew") == "Renew", "cleared")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")
