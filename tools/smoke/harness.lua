@@ -5908,6 +5908,16 @@ try("movers: any frame by name or click (MoveAny level, t194)", function()
     mv:PickFrame(function() end)
 end)
 
+try("rare alert: killed / seen today (RareScanner idea, t193)", function()
+    local A = ns:GetModule("Automation")
+    A.NoteRare("Test Rare XY")
+    assert(A.RareStatus("Test Rare XY") == "SEEN", "seen")
+    A.NoteRare("Test Rare XY", true)
+    assert(A.RareStatus("Test Rare XY") == "KILLED", "killed")
+    assert(A.RareStatus("Nobody") == nil, "unknown")
+    A:ShowRare("guid-1", { name = "Test Rare XY" })
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

@@ -3,7 +3,8 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
-- **Layout mode: any frame** (31 Oct, MoveAny level): Movers > Any frame adds any named frame by clicking it on screen or typing its name; it then moves, scales and fades like the built-in entries, per profile.
+- **Rare alert: killed and seen today** (31 Oct, RareScanner idea): the toast says when you already killed or saw that rare today on this character; the list clears at the daily reset.
+- **Layout mode: any frame** (31 Oct, 0ecfd2a): Movers > Any frame adds any named frame by clicking it on screen or typing its name; it then moves, scales and fades like the built-in entries, per profile.
 - **Combat text: import from MikScrollingBattleText** (31 Oct, 6b6732b): one button on the Triggers tab copies MSBT's area styles, directions, alignment and height, event colours, areas and on/off, and its ability substitutions; MSBT is only read.
 - **Combat text: your own triggers** (31 Oct, 1b81f2b): on the Triggers tab, show your message (%s = the name) with a colour, area and sound when you gain or lose a named aura or a reactive spell lights up; all in the GUI.
 - **Combat text: money and experience notifications** (31 Oct, 343cb59): money gained (off by default, as Loot feed already shows it) and experience gained in the notification area, each with its own colour, size, area and sound.
