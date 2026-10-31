@@ -6298,6 +6298,17 @@ try("combat text: name of your last cast on outgoing lines (MSBT attribution)", 
     db.castNames = was
 end)
 
+try("combat text: triggers on your casts (MSBT spell cast condition)", function()
+    local M = ns.modules.CombatText
+    local db = M.db.scroll
+    local saved = db.triggers
+    db.triggers = { { on = true, when = "cast", spell = "Fireball", text = "%s!", area = "notify" } }
+    assert(M.HasCastTrigger() and #M.MatchTriggers("cast", "fireball") == 1, "cast trigger matches by name")
+    assert(M.TriggerText(db.triggers[1], "Fireball") == "Fireball!", "message")
+    M.RunCastTriggers("Fireball")
+    db.triggers = saved
+end)
+
 try("turn Phoenix off (EllesmereUI uninstall)", function()
     local C = ns.Config
     local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")

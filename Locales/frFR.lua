@@ -4045,6 +4045,7 @@ local T = {
     FCT_EV_DEBUFF = "Affaiblissements subis",
     FCT_EV_FADE = "Auras qui disparaissent",
     FCT_EV_REACTIVE = "Sorts réactifs",
+    FCT_EV_CAST = "Vos incantations",
     FCT_EV_HONOR = "Honneur",
     FCT_EV_REP = "Réputation",
     FCT_EV_HIT = "Dégâts sur votre cible",

@@ -4045,6 +4045,7 @@ local T = {
     FCT_EV_DEBUFF = "Penalità subite",
     FCT_EV_FADE = "Aure che svaniscono",
     FCT_EV_REACTIVE = "Incantesimi reattivi",
+    FCT_EV_CAST = "I tuoi lanci",
     FCT_EV_HONOR = "Onore",
     FCT_EV_REP = "Reputazione",
     FCT_EV_HIT = "Danni al tuo bersaglio",

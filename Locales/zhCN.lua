@@ -4045,6 +4045,7 @@ local T = {
     FCT_EV_DEBUFF = "获得减益",
     FCT_EV_FADE = "光环消失",
     FCT_EV_REACTIVE = "反应法术",
+    FCT_EV_CAST = "你的施法",
     FCT_EV_HONOR = "荣誉",
     FCT_EV_REP = "声望",
     FCT_EV_HIT = "目标受到的伤害",

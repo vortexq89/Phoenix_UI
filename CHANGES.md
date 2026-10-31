@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Combat text: triggers on your casts** (1 Nov): Triggers > When now has Your casts, so a spell you cast (by name) can show your own message with its colour, area and sound (MSBT's spell cast condition).
 - **Combat text: name of your last cast** (1 Nov): an option adds the spell you cast just before to outgoing damage, heal and power lines, like "1 234 (Fireball)" (MSBT-style attribution worked out from your own casts; the game does not say which spell hit). Off by default.
 - **Turn off Phoenix UI** (1 Nov): About > Tools turns every Phoenix UI addon off for this character with a second click and reloads to the game's own interface, switching back on any sound a boss fight muted; your settings stay for when you turn it on again.
 - **Profiles per place** (1 Nov): Profiles > Places picks a profile for the open world, dungeons, raids, arenas and battlegrounds; it switches as you enter (after combat if you are fighting), wins over the specialization profile, and your profile from before comes back in a place without one (EllesmereUI's conditional overrides).

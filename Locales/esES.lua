@@ -4045,6 +4045,7 @@ local T = {
     FCT_EV_DEBUFF = "Perjuicios obtenidos",
     FCT_EV_FADE = "Auras que terminan",
     FCT_EV_REACTIVE = "Hechizos reactivos",
+    FCT_EV_CAST = "Tus lanzamientos",
     FCT_EV_HONOR = "Honor",
     FCT_EV_REP = "Reputación",
     FCT_EV_HIT = "Daño a tu objetivo",

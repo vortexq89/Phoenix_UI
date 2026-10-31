@@ -45,7 +45,8 @@ local function TRIGGERS(m)
     return out
 end
 local WHEN = { { value = "buff", label = "FCT_EV_BUFF" }, { value = "debuff", label = "FCT_EV_DEBUFF" },
-    { value = "fade", label = "FCT_EV_FADE" }, { value = "reactive", label = "FCT_EV_REACTIVE" } }
+    { value = "fade", label = "FCT_EV_FADE" }, { value = "reactive", label = "FCT_EV_REACTIVE" },
+    { value = "cast", label = "FCT_EV_CAST" } }
 local function trow(row, field)
     row.get, row.set = tfield(field)
     row.hidden = noTrig

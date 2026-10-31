@@ -4045,6 +4045,7 @@ local T = {
     FCT_EV_DEBUFF = "Erhaltene Schwächungen",
     FCT_EV_FADE = "Auslaufende Auren",
     FCT_EV_REACTIVE = "Reaktive Zauber",
+    FCT_EV_CAST = "Deine Zauber",
     FCT_EV_HONOR = "Ehre",
     FCT_EV_REP = "Ruf",
     FCT_EV_HIT = "Schaden an deinem Ziel",

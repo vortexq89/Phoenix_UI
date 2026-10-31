@@ -4071,6 +4071,7 @@ ns.RegisterLocale("enUS", {
     FCT_EV_DEBUFF = "Debuffs gained",
     FCT_EV_FADE = "Auras fading",
     FCT_EV_REACTIVE = "Reactive spells",
+    FCT_EV_CAST = "Your casts",
     FCT_EV_HONOR = "Honour",
     FCT_EV_REP = "Reputation",
     FCT_EV_HIT = "Damage on your target",

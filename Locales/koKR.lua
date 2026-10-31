@@ -4045,6 +4045,7 @@ local T = {
     FCT_EV_DEBUFF = "받은 약화 효과",
     FCT_EV_FADE = "사라지는 효과",
     FCT_EV_REACTIVE = "반응 주문",
+    FCT_EV_CAST = "내 시전",
     FCT_EV_HONOR = "명예",
     FCT_EV_REP = "평판",
     FCT_EV_HIT = "대상이 받은 피해",

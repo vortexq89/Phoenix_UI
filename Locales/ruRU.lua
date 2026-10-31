@@ -4045,6 +4045,7 @@ local T = {
     FCT_EV_DEBUFF = "Полученные дебаффы",
     FCT_EV_FADE = "Исчезающие ауры",
     FCT_EV_REACTIVE = "Реактивные заклинания",
+    FCT_EV_CAST = "Ваши заклинания",
     FCT_EV_HONOR = "Честь",
     FCT_EV_REP = "Репутация",
     FCT_EV_HIT = "Урон по вашей цели",

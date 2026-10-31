@@ -48,7 +48,7 @@ end
 local BY_POWER = {}
 for _, e in ipairs(EVENTS) do if e.power then BY_POWER[e.power] = e end end
 -- spell-name events whose name can give an icon
-local NAME_ICON = { buff = true, debuff = true, fade = true, reactive = true }
+local NAME_ICON = { buff = true, debuff = true, fade = true, reactive = true, cast = true }
 local WORDS = {
     MISS = "COMBAT_TEXT_MISS", SPELL_MISS = "COMBAT_TEXT_MISS", DODGE = "COMBAT_TEXT_DODGE", SPELL_DODGE = "COMBAT_TEXT_DODGE",
     PARRY = "COMBAT_TEXT_PARRY", SPELL_PARRY = "COMBAT_TEXT_PARRY", BLOCK = "COMBAT_TEXT_BLOCK",
@@ -328,6 +328,7 @@ local function onCast(_, _, unit, _, spellID)
     lastName = (type(name) == "string" and not Secret.IsSecret(name)) and name or nil
     if tex and not Secret.IsSecret(tex) then lastIcon = tex end
     lastAt = GetTime()
+    if lastName and M.RunCastTriggers then M.RunCastTriggers(lastName) end
 end
 M.OnCast = onCast
 -- " (Spell)" for outgoing lines when scroll.castNames is on and you cast within the window (MSBT's attribution,
@@ -384,7 +385,7 @@ M.Substitute = substitute
 -- User triggers (step 4b, MSBT style, set up on the Triggers tab): when an aura you gain or lose, or a reactive
 -- spell, matches a name, show your own message (%s = the name) in an area with a colour and sound. Only plain,
 -- non-secret names are matched; nothing is read from the combat log.
-local TRIGGER_WHEN = { buff = true, debuff = true, fade = true, reactive = true }
+local TRIGGER_WHEN = { buff = true, debuff = true, fade = true, reactive = true, cast = true }
 M.TRIGGER_WHEN = TRIGGER_WHEN
 function M.MatchTriggers(when, name)
     local out = {}
@@ -403,8 +404,16 @@ function M.TriggerText(t, name)
 end
 local function runTriggers(e, name)
     for _, t in ipairs(M.MatchTriggers(e.key, name)) do
-        add(t.area or "notify", t.color, "", M.TriggerText(t, name), false, nil, 1.2, t.sound, iconFor(e, name, t.color))
+        local c = t.color or M.TRIGGER_TEMPLATE.color
+        add(t.area or "notify", c, "", M.TriggerText(t, name), false, nil, 1.2, t.sound, iconFor(e, name, c))
     end
+end
+-- "When: your casts" triggers (MSBT's spell cast condition): a spell you cast, by name (onCast)
+local CAST_EVENT = { key = "cast" }
+function M.RunCastTriggers(name) runTriggers(CAST_EVENT, name) end
+function M.HasCastTrigger()
+    for _, t in ipairs(M.db.scroll.triggers or {}) do if t.on and t.when == "cast" then return true end end
+    return false
 end
 
 -- An event's own message (MSBT's per-event format): %a stands for the number (or the aura / spell name the event
@@ -524,7 +533,9 @@ function M:EnableScroll()
     if C_CombatText and C_CombatText.GetCurrentEventInfo then ns.Events:On("COMBAT_TEXT_UPDATE", owner, onCombatText) end
     local ev = db.events
     if ev.hit.show or ev.theal.show then ns.Events:On("UNIT_COMBAT", owner, onUnitCombat) end
-    if db.castIcons or db.castNames then ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", owner, onCast, "player") end
+    if db.castIcons or db.castNames or M.HasCastTrigger() then
+        ns.Events:OnUnit("UNIT_SPELLCAST_SUCCEEDED", owner, onCast, "player")
+    end
     if ev.money and ev.money.show then
         lastMoney = nil; onMoney()
         ns.Events:On("PLAYER_MONEY", owner, onMoney)
