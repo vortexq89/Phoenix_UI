@@ -752,7 +752,20 @@ function Config:Build()
     setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
     Skin:Register(f, function(self)
         Skin:Panel(self, "base", { border = "border.strong", shadow = 18 })
-        if ns.Art then ns.Art:Background(self) end -- v7.1: the phoenix behind the window (cover-fit, released when hidden)
+        -- Flat black again (31 Oct): the wings art, its ash and its bottom logo are no longer drawn. To undo, call
+        -- ns.Art:Background(self) here again; Media/Art/PhoenixWingsBG and UI/Art.lua are kept.
+        if not self.flatBG then
+            self.flatBG = W.Texture(self, "BACKGROUND", -7, Media.textures.WHITE)
+            self.flatBG:SetPoint("TOPLEFT", 1, -1); self.flatBG:SetPoint("BOTTOMRIGHT", -1, 1)
+        end
+        self.flatBG:SetVertexColor(0, 0, 0, 1)
+        -- the "Phoenix UI By VortexQ8" fire logo, small, in the middle of the window (hidden with Phoenix art off)
+        if ns.Art then
+            local logo = ns.Art:Logo(self, 240, "BACKGROUND")
+            logo:SetDrawLayer("BACKGROUND", -6)
+            logo:ClearAllPoints()
+            logo:SetPoint("CENTER", self, "CENTER", 0, 0)
+        end
     end)
     self.frame = f
     for _, ev in ipairs({ "DISPLAY_SIZE_CHANGED", "UI_SCALE_CHANGED" }) do

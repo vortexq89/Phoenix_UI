@@ -6345,6 +6345,8 @@ try("art kit v7.1", function()
     G.db.artKit = false; A:FitBackground(win)
     assert(not win.phoenixArt:IsShown(), "Phoenix art off hides it")
     G.db.artKit = true
+    local cw = ns.Config and ns.Config.frame
+    if cw then assert(cw.flatBG and not cw.phoenixArt and cw.phoenixLogo, "settings window: flat black and the logo") end
     local PUI = env.PhoenixUI
     assert(PUI:Supports(1, 1) and PUI.OverrideArt and PUI.RegisterIcon, "plugin art API 1.1")
     assert(PUI:RegisterIcon("Test_Icon", { file = "x/i" }) and A:IconEntry("Test_Icon").file == "x/i", "plugin icon")
