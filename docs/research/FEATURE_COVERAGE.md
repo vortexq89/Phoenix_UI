@@ -187,7 +187,7 @@ Overlaps found:
 | EllesmereUI_Minimap | Button bin as flyout or bar | Phoenix has | 2026-10-30: Minimap > bin mode flyout / bar. |
 | EllesmereUI_DataBars | Time, gold and bugs data texts with v9.1 art | Phoenix has | 2026-10-30: ember caps and dividers, 12/24h and local/server options, live bug count. |
 | MikScrollingBattleText | Custom scroll areas, every area in Layout mode | Phoenix has | Built 2026-10-31 (e3473f7): user areas (add, name, rename, remove, route events; `scroll.custom`, `M:AddArea` in `Modules/CombatText/Scroll.lua`); every area is always a Layout-mode mover with snapping, on or off. |
-| MikScrollingBattleText | Per-event sound and icon rules | partial | t195: sound per event exists (`scroll.events.<e>.sound`); icons only from your own casts (`scroll.castIcons`). Gap: icon per event, sticky per event. |
+| MikScrollingBattleText | Per-event sound and icon rules | partial | t195: sound per event exists (`scroll.events.<e>.sound`); icons only from your own casts (`scroll.castIcons`). Gap: icon per event, sticky per event. Step 3 (2026-10-31): every line has an icon (spell icon, your last cast, else a Phoenix glyph per event in the line colour, `scroll.glyphIcons`); per-event custom icon choice still open. |
 | BigWigs | Per-boss knowledge (LittleWigs-style warnings) | partial | Timeline bars and ability rules; no per-boss authored warnings. |
 | RareScanner | Rare already-killed / loot status on the alert | missing | Alert has target button and waypoint; add killed-today and loot-collected marks from game data. |
 | WindTools | Smart Tab, Event Tracker, CVar editor, merchant extra pages | missing | Ideas list (docs/research/windtools.md); Smart Tab was declined for taint, re-check. |

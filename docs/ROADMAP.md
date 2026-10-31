@@ -28,9 +28,9 @@ Sources: [research/addons/README.md](research/addons/README.md) (86 addon folder
 
 ## Status 31 Oct 2026 (parity pass, t169 / t191-t197)
 
-Done (see CHANGES.md 2.0.0-beta2 for dates and commits): Cooldown Manager, aura reminders and aura bars, Mythic+ timer art, minimap bin bar, auto combat logging, movement alert, Quickdraw hold mode, data texts v9.1 art, art kits v7.1 / v8.1 / v9.1, code-review and QA fixes, GUI for every slash feature, macros Pick up, upgrade calculator, What's new full changelog, loot council, loadouts, party mode, gamepad, combat text user areas, combat text MSBT styles on built-in animations.
+Done (see CHANGES.md 2.0.0-beta2 for dates and commits): Cooldown Manager, aura reminders and aura bars, Mythic+ timer art, minimap bin bar, auto combat logging, movement alert, Quickdraw hold mode, data texts v9.1 art, art kits v7.1 / v8.1 / v9.1, code-review and QA fixes, GUI for every slash feature, macros Pick up, upgrade calculator, What's new full changelog, loot council, loadouts, party mode, gamepad, combat text user areas, combat text MSBT styles on built-in animations, an icon on every combat text line.
 
-In progress: combat text MSBT parity (ability icons, Blizzard text ledger, notifications, triggers, substitutions, MSBT import, combat fonts: Phoenix Font Bold plus Bebas Neue, Oswald, Russo One, Black Ops One, Grenze Black).
+In progress: combat text MSBT parity (Blizzard text ledger, notifications, triggers, substitutions, MSBT import, combat fonts: Phoenix Font Bold plus Bebas Neue, Oswald, Russo One, Black Ops One, Grenze Black).
 
 Still missing (docs/research/FEATURE_COVERAGE.md): full macro editor, MoveAny-level any-frame move / scale / hide, RareScanner killed and loot marks, LittleWigs-style dungeon warnings, WindTools and NaowhForever ideas, then the EllesmereUI 'equal' rows. Localization polish last.
 ## Order of work

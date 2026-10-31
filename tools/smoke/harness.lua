@@ -5801,6 +5801,18 @@ try("combat text: AnimationGroup flight, MSBT styles (t196)", function()
     CT:EnableScroll()
 end)
 
+try("combat text: an icon on every line (t196)", function()
+    local CT = ns.modules.CombatText
+    local ic = CT.IconFor({ key = "avoid" }, nil, { r = 1, g = 0, b = 0 })
+    assert(type(ic) == "table" and ic.glyph == "check" and ns.Icons:Has(ic.glyph), "avoid glyph")
+    for _, g in pairs(CT.GLYPH) do assert(ns.Icons:Has(g), "glyph " .. g) end
+    assert(ns.Icons:Has("speed") and ns.Icons:Has("combattext"), "fallbacks")
+    CT.db.scroll.glyphIcons = false
+    assert(CT.IconFor({ key = "avoid" }) == nil, "off")
+    CT.db.scroll.glyphIcons = true
+    CT.AddLine("notify", { 1, 1, 1 }, "", "1", false, nil, 1, nil, ic)
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

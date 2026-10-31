@@ -130,6 +130,7 @@ local schema = {
       keywords = "spell icon msbt" }),
     scroll({ type = "range", key = "scroll.areas.@.iconSize", label = "FCT_ICON_SIZE", min = 10, max = 48, step = 1 }),
     scroll({ type = "toggle", key = "scroll.castIcons", label = "FCT_CAST_ICONS", desc = "FCT_CAST_ICONS_DESC" }),
+    scroll({ type = "toggle", key = "scroll.glyphIcons", label = "FCT_GLYPH_ICONS", desc = "FCT_GLYPH_ICONS_DESC" }),
     { type = "header", label = "UF_POSITION", icon = "movers" },
     scroll({ type = "range", key = "scroll.areas.@.x", label = "OFFSET_X", min = -800, max = 800, step = 10 }),
     scroll({ type = "range", key = "scroll.areas.@.y", label = "OFFSET_Y", min = -500, max = 500, step = 10 }),

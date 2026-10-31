@@ -130,11 +130,22 @@ local function newLine(f)
 end
 
 -- The icon beside a line: left or right of the text, sized by the area; hidden without a texture or when off.
+-- A table tex is { glyph = name, color = {r,g,b} }: a Phoenix glyph tinted like the line (step 3: every line has one).
 local function placeIcon(fs, a, tex)
     local ic = fs.icon
     if not (tex and a.iconSide ~= "OFF") then ic:Hide(); return end
-    ic:SetTexture(tex)
-    ic:SetSize(a.iconSize or 20, a.iconSize or 20)
+    local size = a.iconSize or 20
+    if type(tex) == "table" and type(tex.glyph) == "string" then
+        ic:SetSize(size, size)
+        ns.Icons:Apply(ic, tex.glyph, size)
+        local c = tex.color or {}
+        ic:SetVertexColor(c.r or c[1] or 1, c.g or c[2] or 1, c.b or c[3] or 1, 1)
+    else
+        ns.Icons:Release(ic)
+        ic:SetTexture(tex)
+        ic:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    end
+    ic:SetSize(size, size)
     ic:ClearAllPoints()
     if a.iconSide == "RIGHT" then ic:SetPoint("LEFT", fs, "RIGHT", 4, 0) else ic:SetPoint("RIGHT", fs, "LEFT", -4, 0) end
     ic:Show()
@@ -310,19 +321,32 @@ local function onCast(_, _, unit, _, spellID)
     if tex and not Secret.IsSecret(tex) then lastIcon, lastAt = tex, GetTime() end
 end
 
-local function iconFor(e, name)
+-- The glyph a line falls back to when the game gives it no spell icon.
+local GLYPH = { damage = "warning", spell = "warning", shield = "lock", heal = "heart", hot = "heart", avoid = "check",
+    buff = "auras", debuff = "auras", fade = "hide", reactive = "bell", honor = "pvp", rep = "guild",
+    hit = "combattext", theal = "heart" }
+M.GLYPH = GLYPH
+
+local function glyphFor(e, color)
+    if not M.db.scroll.glyphIcons then return nil end
+    return { glyph = GLYPH[e.key] or (e.power and "speed") or "combattext", color = color }
+end
+
+local function iconFor(e, name, color)
     local db = M.db.scroll
     if NAME_ICON[e.key] and type(name) == "string" and not Secret.IsSecret(name) and C_Spell and C_Spell.GetSpellTexture then
         local tex = C_Spell.GetSpellTexture(name)
         if tex and not Secret.IsSecret(tex) then return tex end
     end
     if e.castIcon and db.castIcons and lastIcon and GetTime() - lastAt < CAST_WINDOW then return lastIcon end
+    return glyphFor(e, color)
 end
+M.IconFor = iconFor
 
 local function fire(e, amount, crit, mergeKey, word, name, suffix)
     local s = M.db.scroll.events[e.key]
     if not (s and s.show) then return end
-    add(s.area, s.color, word or e.prefix, amount, crit, mergeKey, s.scale, s.sound, iconFor(e, name), suffix)
+    add(s.area, s.color, word or e.prefix, amount, crit, mergeKey, s.scale, s.sound, iconFor(e, name, s.color), suffix)
 end
 M.Fire = fire
 
