@@ -367,7 +367,34 @@ local function substitute(text)
 end
 M.Substitute = substitute
 
+-- User triggers (step 4b, MSBT style, set up on the Triggers tab): when an aura you gain or lose, or a reactive
+-- spell, matches a name, show your own message (%s = the name) in an area with a colour and sound. Only plain,
+-- non-secret names are matched; nothing is read from the combat log.
+local TRIGGER_WHEN = { buff = true, debuff = true, fade = true, reactive = true }
+M.TRIGGER_WHEN = TRIGGER_WHEN
+function M.MatchTriggers(when, name)
+    local out = {}
+    if not TRIGGER_WHEN[when] or type(name) ~= "string" or Secret.IsSecret(name) then return out end
+    local low = name:lower()
+    for _, t in ipairs(M.db.scroll.triggers or {}) do
+        if t.on and t.when == when and type(t.spell) == "string" and t.spell ~= "" and t.spell:lower() == low then
+            out[#out + 1] = t
+        end
+    end
+    return out
+end
+function M.TriggerText(t, name)
+    local msg = (type(t.text) == "string" and t.text ~= "") and t.text or "%s"
+    return (msg:gsub("%%s", function() return name end))
+end
+local function runTriggers(e, name)
+    for _, t in ipairs(M.MatchTriggers(e.key, name)) do
+        add(t.area or "notify", t.color, "", M.TriggerText(t, name), false, nil, 1.2, t.sound, iconFor(e, name, t.color))
+    end
+end
+
 local function fire(e, amount, crit, mergeKey, word, name, suffix)
+    if TRIGGER_WHEN[e.key] and name ~= nil then runTriggers(e, name) end
     local s = M.db.scroll.events[e.key]
     if not (s and s.show) then return end
     amount, word = substitute(amount), substitute(word)
@@ -577,11 +604,27 @@ function M:AddArea(name)
     return key
 end
 
+M.TRIGGER_TEMPLATE = { on = true, when = "buff", spell = "", text = "", area = "notify", sound = "",
+    color = { r = 1, g = 0.82, b = 0 } }
+function M:AddTrigger()
+    local db = self.db.scroll
+    db.triggers = type(db.triggers) == "table" and db.triggers or {}
+    db.triggers[#db.triggers + 1] = copy(M.TRIGGER_TEMPLATE)
+    return #db.triggers
+end
+function M:RemoveTrigger(i)
+    local list = self.db.scroll.triggers
+    if not (list and list[i]) then return false end
+    table.remove(list, i)
+    return true
+end
+
 function M:RemoveArea(key)
     local db = self.db.scroll
     if not (M.IsCustomArea(key) and db.areas[key]) then return false end
     for i = #(db.custom or {}), 1, -1 do if db.custom[i] == key then table.remove(db.custom, i) end end
     for _, e in pairs(db.events) do if e.area == key then e.area = "notify" end end
+    for _, t in ipairs(db.triggers or {}) do if t.area == key then t.area = "notify" end end
     if db.critArea == key then db.critArea = "same" end
     db.areas[key] = nil
     local f = frames[key]

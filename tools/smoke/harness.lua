@@ -5867,6 +5867,19 @@ try("combat text: money and XP notifications (t196 step 4b)", function()
     assert(CT.SAMPLE.money and CT.SAMPLE.xp and CT.GLYPH.money == "gold", "samples and glyphs")
 end)
 
+try("combat text: user triggers (t196 step 4b)", function()
+    local CT = ns.modules.CombatText
+    local i = CT:AddTrigger()
+    local t = CT.db.scroll.triggers[i]
+    t.spell, t.text, t.when = "Bloodlust", "LUST! %s", "buff"
+    assert(#CT.MatchTriggers("buff", "bloodlust") == 1, "match, any case")
+    assert(#CT.MatchTriggers("fade", "Bloodlust") == 0, "other event")
+    assert(CT.TriggerText(t, "Bloodlust") == "LUST! Bloodlust", "text")
+    CT.db.scroll.enabled = true; CT:EnableScroll()
+    CT.Fire({ key = "buff", prefix = "+" }, "Bloodlust", false, nil, nil, "Bloodlust")
+    assert(CT:RemoveTrigger(i) and #CT.db.scroll.triggers == i - 1, "removed")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

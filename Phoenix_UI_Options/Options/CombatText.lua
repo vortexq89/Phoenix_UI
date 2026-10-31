@@ -29,6 +29,28 @@ local function CRIT_AREA(m)
 end
 local function rebuild() if ns.Config.RebuildPage then ns.Config:RebuildPage("CombatText") end end
 local newName = ""
+-- Triggers tab: one trigger is edited at a time (picked in the first row); every row reads and writes that one.
+local editing = 1
+local function trig(m) local l = m.db.scroll.triggers; return l and l[editing] end
+local function noTrig(m) return trig(m) == nil end
+local function tfield(field)
+    return function(m) local t = trig(m); return t and t[field] end,
+        function(m, v) local t = trig(m); if t then t[field] = v end end
+end
+local function TRIGGERS(m)
+    local out = {}
+    for i, t in ipairs(m.db.scroll.triggers or {}) do
+        out[i] = { value = i, label = i .. ". " .. ((t.spell ~= "" and t.spell) or "…") }
+    end
+    return out
+end
+local WHEN = { { value = "buff", label = "FCT_EV_BUFF" }, { value = "debuff", label = "FCT_EV_DEBUFF" },
+    { value = "fade", label = "FCT_EV_FADE" }, { value = "reactive", label = "FCT_EV_REACTIVE" } }
+local function trow(row, field)
+    row.get, row.set = tfield(field)
+    row.hidden = noTrig
+    return row
+end
 local ANIM = { { value = "straight", label = "FCT_ANIM_STRAIGHT" }, { value = "parabola", label = "FCT_ANIM_PARABOLA" },
     { value = "angled", label = "FCT_ANIM_ANGLED" }, { value = "static", label = "FCT_ANIM_STATIC" },
     { value = "horizontal", label = "FCT_ANIM_HORIZONTAL" }, { value = "pow", label = "FCT_ANIM_POW" } }
@@ -168,6 +190,23 @@ local schema = {
     event("xp", { label = "FCT_EV_XP", desc = "FCT_EV_XP_DESC", keywords = "experience xp level" }),
     { type = "header", label = "FCT_AREA_POWER", icon = "speed" },
     ------------------------------------------------------------ crits
+    { type = "tab", label = "FCT_TAB_TRIGGERS" },
+    { type = "header", label = "FCT_TRIGGERS", icon = "bell" },
+    { type = "description", text = "FCT_TRIGGERS_TEXT" },
+    { type = "button", label = "FCT_TRIGGER_ADD", desc = "FCT_TRIGGER_ADD_DESC", button = "FCT_TRIGGER_ADD", icon = "add",
+      keywords = "trigger alert custom message msbt",
+      func = function(m) editing = m:AddTrigger(); rebuild() end },
+    { type = "select", label = "FCT_TRIGGER", desc = "FCT_TRIGGER_DESC", values = TRIGGERS, hidden = noTrig,
+      get = function() return editing end, set = function(_, v) editing = v; rebuild() end },
+    trow({ type = "toggle", label = "FCT_TRIGGER_ON" }, "on"),
+    trow({ type = "select", label = "FCT_TRIGGER_WHEN", values = WHEN }, "when"),
+    trow({ type = "input", label = "FCT_TRIGGER_SPELL", desc = "FCT_TRIGGER_SPELL_DESC" }, "spell"),
+    trow({ type = "input", label = "FCT_TRIGGER_TEXT", desc = "FCT_TRIGGER_TEXT_DESC" }, "text"),
+    trow({ type = "select", label = "FCT_EV_AREA", values = AREAS }, "area"),
+    trow({ type = "color", label = "FCT_EV_COLOR" }, "color"),
+    trow({ type = "sound", label = "FCT_EV_SOUND" }, "sound"),
+    { type = "button", label = "FCT_TRIGGER_REMOVE", desc = "FCT_TRIGGER_REMOVE_DESC", button = "DELETE", icon = "delete",
+      hidden = noTrig, func = function(m) if m:RemoveTrigger(editing) then editing = math.max(1, editing - 1); rebuild() end end },
     { type = "tab", label = "FCT_TAB_CRITS" },
     { type = "header", label = "FCT_CRIT", icon = "warning" },
     scroll({ type = "select", key = "scroll.crit", label = "FCT_CRIT", desc = "FCT_CRIT_DESC", values = CRIT, keywords = "critical crit" }),
