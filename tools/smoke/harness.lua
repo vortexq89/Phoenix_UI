@@ -5918,6 +5918,16 @@ try("rare alert: killed / seen today (RareScanner idea, t193)", function()
     A:ShowRare("guid-1", { name = "Test Rare XY" })
 end)
 
+try("announcements (WindTools idea, t193)", function()
+    local A = ns:GetModule("Automation")
+    A.db.announceKey, A.db.announceReset, A.db.announceThanks = true, true, true
+    A:EnableAnnounce()
+    A.OnCompleted(); A.OnKeyBags(); A.OnSystem(nil, nil, "Deadmines has been reset.")
+    assert(A.AnnounceSend("") == false, "empty text is not sent")
+    A.db.announceKey, A.db.announceReset, A.db.announceThanks = false, false, false
+    A:EnableAnnounce()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

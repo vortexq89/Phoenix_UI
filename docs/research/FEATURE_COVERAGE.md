@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 117 |
-| partial | 13 |
+| Phoenix has | 118 |
+| partial | 12 |
 | missing | 3 |
 | out of scope | 10 |
 
@@ -191,7 +191,7 @@ Overlaps found:
 | BigWigs | Per-boss knowledge (LittleWigs-style warnings) | partial | Timeline bars and ability rules; no per-boss authored warnings. |
 | RareScanner | Rare already-killed / loot status on the alert | partial | Built 2026-10-31: killed today and seen today on the toast, per character, cleared at the daily reset (`M.NoteRare`, `M.RareStatus`, RareAlert.lua). Gap: loot-collected marks need per-rare loot data. |
 | WindTools | Smart Tab, Event Tracker, CVar editor, merchant extra pages | missing | Ideas list (docs/research/windtools.md); Smart Tab was declined for taint, re-check. |
-| WindTools | Combat alert banner and sound, announcements set, sound mute list by ID, world map scale | partial | Pieces exist (Quality, Automation); fill the gaps. |
+| WindTools | Combat alert banner and sound, announcements set, sound mute list by ID, world map scale | Phoenix has | Re-checked 2026-10-31: combat alert (Quality `combatAlert`), sound mute by file ID (General `GEN_MUTE`, General.lua:89), world map scale (Minimap `worldMapScale`); announcements built 2026-10-31 (Automation > Announcements: new key, instance reset, thanks; Announce.lua). |
 | NaowhForever | Training planner, profession recipes incl. unlearned, gear swap bar, paladin blessings | missing | Forever-first ideas (docs/research/naowhforever.md); data from the wowf DB2 build. |
 | NaowhForever | Forever dungeon journal, group inspect window, threat meter window | partial | Encounters data, meter item level and plate threat exist; add the windows. |
 | idTip | IDs on every tooltip kind | Phoenix has | Tooltip > ids and idKinds (`Phoenix_UI_Options/Options/Tooltip.lua:93`, `Modules/Tooltip/Tooltip.lua`). |

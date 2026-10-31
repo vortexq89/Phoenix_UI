@@ -23,6 +23,7 @@ local M = ns:NewModule("Automation", {
         autoLog = false, autoLogMplus = true, autoLogRaid = true, autoLogDungeon = false, -- AutoLog.lua
         lootCouncil = false, lootCouncilOpen = true, lootCouncilRaidOnly = true, -- LootCouncil.lua
         loadoutsOn = false, loadoutsAuto = false, loadouts = {}, -- Loadouts.lua
+        announceKey = false, announceReset = false, announceThanks = false, announceThanksText = "",
         partyBoss = false, partyMplus = false, partyLevel = false, partySound = true, partyDuration = 6,
         partyStrength = 60, -- PartyMode.lua
     },
@@ -142,6 +143,7 @@ function M:OnEnable()
     self:EnableLootCouncil() -- LootCouncil.lua
     self:EnableLoadouts() -- Loadouts.lua
     self:EnableParty() -- PartyMode.lua
+    self:EnableAnnounce() -- Announce.lua
     if not hooked then
         hooked = true
         hooksecurefunc("StaticPopup_Show", onPopup)

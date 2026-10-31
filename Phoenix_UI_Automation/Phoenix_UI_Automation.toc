@@ -31,3 +31,4 @@ LootCouncil.lua
 Loadouts.lua
 PartyMode.lua
 Gamepad.lua
+Announce.lua
