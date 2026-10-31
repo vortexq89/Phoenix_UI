@@ -55,6 +55,42 @@ for _, e in ipairs(ns:GetModule("Movers").BLIZZARD) do
 end
 schema[#schema + 1] = { type = "custom", label = "BUGS_INDICATOR", get = function() return true end,
     build = function(row, m) return frameRow(row, m, "BugIndicator") end }
+-- Any frame (MoveAny level): type a name or click a frame, then it is a Layout mode entry like the ones above.
+local anyName, anyPicked = "", nil
+local function rebuild() if ns.Config.RebuildPage then ns.Config:RebuildPage("Movers") end end
+local function anyAdd(m, name)
+    local ok, why = m:AddAnyFrame(name)
+    if ok then anyPicked, anyName = ok, ""; rebuild() else ns:Print(L[why]) end
+end
+local function ANY(m)
+    local out = {}
+    for _, n in ipairs(m.db.any or {}) do out[#out + 1] = { value = n, label = n } end
+    return out
+end
+schema[#schema + 1] = { type = "header", label = "MOVERS_ANY", icon = "search" }
+schema[#schema + 1] = { type = "description", text = "MOVERS_ANY_TEXT" }
+schema[#schema + 1] = { type = "button", label = "MOVERS_ANY_PICK", desc = "MOVERS_ANY_PICK_DESC", button = "MOVERS_ANY_PICK_BUTTON",
+    icon = "search", combat = true, keywords = "moveany any frame pick click choose",
+    func = function(m)
+        ns.Config.frame:Hide()
+        m:PickFrame(function(name)
+            if name then anyAdd(m, name) else ns:Print(L.MOVERS_ANY_NONE) end
+            ns.Config.frame:Show()
+        end)
+    end }
+schema[#schema + 1] = { type = "input", label = "MOVERS_ANY_NAME", desc = "MOVERS_ANY_NAME_DESC", keywords = "moveany frame name",
+    get = function() return anyName end, set = function(_, v) anyName = v or "" end }
+schema[#schema + 1] = { type = "button", label = "MOVERS_ANY_ADD", desc = "MOVERS_ANY_ADD_DESC", button = "MOVERS_ANY_ADD", icon = "add",
+    combat = true, func = function(m) anyAdd(m, anyName) end }
+schema[#schema + 1] = { type = "select", label = "MOVERS_ANY_LIST", desc = "MOVERS_ANY_LIST_DESC", values = ANY,
+    hidden = function(m) return #(m.db.any or {}) == 0 end,
+    get = function(m) return anyPicked or (m.db.any or {})[1] end, set = function(_, v) anyPicked = v end }
+schema[#schema + 1] = { type = "button", label = "MOVERS_ANY_REMOVE", desc = "MOVERS_ANY_REMOVE_DESC", button = "DELETE", icon = "delete",
+    hidden = function(m) return #(m.db.any or {}) == 0 end,
+    func = function(m)
+        local n = anyPicked or (m.db.any or {})[1]
+        if n and m:RemoveAnyFrame(n) then anyPicked = nil; rebuild() end
+    end }
 local tail = {
     { type = "button", label = "MOVERS_RESET_ALL", desc = "MOVERS_RESET_ALL_DESC", button = "RESET", icon = "reset", variant = "danger",
       func = function(m) m:ResetAll() end },

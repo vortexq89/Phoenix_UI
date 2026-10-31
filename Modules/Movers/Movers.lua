@@ -18,7 +18,7 @@ local W, Skin = ns.Widgets, ns.Skin
 local M = ns:NewModule("Movers", {
     label = "MOVERS", desc = "MOVERS_DESC", category = "interface", order = 95,
     defaults = { showHidden = false, grid = true, gridSize = 32, snap = true, frames = {}, snapFrames = true, arrows = true, coords = true,
-        unlockKey = "", windowScale = 1 },
+        unlockKey = "", windowScale = 1, any = {} },
 })
 
 local OVERLAY_MIN_W, OVERLAY_MIN_H = 48, 20 -- the box matches the frame; tiny frames still get a grabbable box
@@ -367,6 +367,98 @@ function M:ResetFrame(key)
     ns.Events:Fire("PUI_MOVERS")
 end
 
+---------------------------------------------------------------- any frame (MoveAny level, t194)
+-- Add any named frame to Layout mode, by typing its name or by clicking it on screen. It then moves, scales and
+-- fades like the built-in entries (per profile, db.frames["any:<name>"]). Frames Edit Mode manages, forbidden
+-- frames and the screen roots are refused; protected ones are placed out of combat only (apply / blocked).
+local ROOTS = { UIParent = true, WorldFrame = true }
+local function anyKey(name) return "any:" .. name end
+M.AnyKey = anyKey
+
+function M.FrameByName(name)
+    name = type(name) == "string" and name:match("^%s*(.-)%s*$") or ""
+    if name == "" or ROOTS[name] then return nil, "MOVERS_ANY_BAD" end
+    local f = _G[name]
+    if type(f) ~= "table" or type(f.GetObjectType) ~= "function" or not f.SetPoint then return nil, "MOVERS_ANY_BAD" end
+    if f:IsForbidden() then return nil, "MOVERS_ANY_BAD" end
+    if M.IsManaged(f) then return nil, "MOVERS_ANY_MANAGED" end
+    return f, name
+end
+
+local function registerAny(name)
+    local key = anyKey(name)
+    if byKey[key] then return byKey[key] end
+    local e = { key = key, frame = name, text = name, any = true }
+    entries[#entries + 1], byKey[key] = e, e
+    return e
+end
+
+function M:AddAnyFrame(name)
+    local f, clean = M.FrameByName(name)
+    if not f then return nil, clean end
+    local list = self.db.any
+    for _, n in ipairs(list) do if n == clean then return clean end end
+    list[#list + 1] = clean
+    registerAny(clean)
+    ns.Events:Fire("PUI_MOVERS")
+    return clean
+end
+
+function M:RemoveAnyFrame(name)
+    local list, key = self.db.any, anyKey(name or "")
+    local found
+    for i = #list, 1, -1 do if list[i] == name then table.remove(list, i); found = true end end
+    if not found then return false end
+    self:ResetFrame(key)
+    for i = #entries, 1, -1 do if entries[i].key == key then table.remove(entries, i) end end
+    byKey[key] = nil
+    if overlays[key] then overlays[key]:Hide(); overlays[key] = nil end
+    ns.Events:Fire("PUI_MOVERS")
+    return true
+end
+
+function M:RegisterAnyFrames()
+    for _, n in ipairs(self.db.any or {}) do registerAny(n) end
+end
+
+-- The named frame under a screen point's mouse focus: the first ancestor with a global name that is usable.
+function M.NamedAncestor(f)
+    while f and f.GetName do
+        local n = f:GetName()
+        if n and not ROOTS[n] and _G[n] == f and M.FrameByName(n) then return n end
+        f = f.GetParent and f:GetParent()
+    end
+end
+
+-- Click-to-pick: a full-screen catcher takes the next click, steps aside, and reads what was under the mouse.
+local catcher
+function M:PickFrame(done)
+    if InCombatLockdown() then return false end
+    if not catcher then
+        catcher = CreateFrame("Button", nil, UIParent)
+        catcher:SetAllPoints(UIParent)
+        catcher:SetFrameStrata("TOOLTIP")
+        catcher.tint = catcher:CreateTexture(nil, "BACKGROUND")
+        catcher.tint:SetAllPoints(); catcher.tint:SetColorTexture(1, 0.5, 0.1, 0.08)
+        catcher.text = catcher:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+        catcher.text:SetPoint("TOP", 0, -120)
+        catcher:RegisterForClicks("AnyUp")
+    end
+    catcher.text:SetText(L.MOVERS_ANY_PICKING)
+    catcher:SetScript("OnClick", function(self, button)
+        self:Hide()
+        if button ~= "LeftButton" then return done(nil) end
+        C_Timer.After(0, function()
+            local foci = GetMouseFoci and GetMouseFoci() or {}
+            local name
+            for _, f in ipairs(foci or {}) do name = name or M.NamedAncestor(f) end
+            done(name)
+        end)
+    end)
+    catcher:Show()
+    return true
+end
+
 function M:ResetAll()
     for _, e in ipairs(entries) do
         if not e.store then self.db.frames[e.key] = nil end
@@ -608,6 +700,7 @@ end
 
 ---------------------------------------------------------------- lifecycle
 function M:OnEnable()
+    self:RegisterAnyFrames()
     self:ApplyAll()
     self:ApplyWindowScale()
     self:ApplyUnlockKey()
@@ -642,6 +735,7 @@ function M:Refresh()
 end
 
 function M:OnProfileChanged()
+    self:RegisterAnyFrames()
     if self:ShouldEnable() then
         if self:IsEnabled() then self:Refresh() else self:Enable() end
     else

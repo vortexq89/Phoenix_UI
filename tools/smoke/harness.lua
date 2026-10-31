@@ -5896,6 +5896,18 @@ try("combat text: MSBT import (t196 step 4b)", function()
     CT:EnableScroll()
 end)
 
+try("movers: any frame by name or click (MoveAny level, t194)", function()
+    local mv = ns:GetModule("Movers")
+    local f = CreateFrame("Frame", "PUIAnyTestFrame", UIParent)
+    rawset(env, "PUIAnyTestFrame", f); _G.PUIAnyTestFrame = f
+    assert(mv.FrameByName("UIParent") == nil and mv.FrameByName("NoSuchFrameXYZ") == nil, "refuses roots and unknown")
+    assert(mv:AddAnyFrame(" PUIAnyTestFrame ") == "PUIAnyTestFrame", "added")
+    assert(mv:GetEntry(mv.AnyKey("PUIAnyTestFrame")), "an entry")
+    assert(mv:AddAnyFrame("PUIAnyTestFrame") and #mv.db.any == 1, "no duplicate")
+    assert(mv:RemoveAnyFrame("PUIAnyTestFrame") and #mv.db.any == 0 and not mv:GetEntry(mv.AnyKey("PUIAnyTestFrame")), "removed")
+    mv:PickFrame(function() end)
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")
