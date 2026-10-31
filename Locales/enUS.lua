@@ -3802,6 +3802,8 @@ ns.RegisterLocale("enUS", {
     FCT_ICON_SIZE = "Icon size",
     FCT_CAST_ICONS = "Your last cast's icon on outgoing lines",
     FCT_CAST_ICONS_DESC = "The game does not say which spell made outgoing damage, heals or power, so these lines show the spell you cast just before (within about a second).",
+    FCT_COMBAT_FONT = "Combat font",
+    FCT_COMBAT_FONT_DESC = "A quick pick of bold faces that read well in a fight (all free-licensed, see Media/Fonts/FONTS.md). Any other font can be set in the text settings below.",
     FCT_GLYPH_ICONS = "An icon on every line",
     FCT_GLYPH_ICONS_DESC = "Lines the game gives no spell icon (incoming hits, misses, honor, reputation, power) show a Phoenix glyph in the line's colour, on the area's icon side.",
     FCT_EV_POWER_DESC = "Show gains of this power. Colour, size, area and sound are behind the cog.",

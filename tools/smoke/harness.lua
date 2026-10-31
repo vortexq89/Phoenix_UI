@@ -5826,6 +5826,15 @@ try("combat text: no double text with the game's own (t196 step 4)", function()
     _G.CombatText = nil; rawset(env, "CombatText", nil)
 end)
 
+try("combat text: combat font list (t196 step 5)", function()
+    for _, k in ipairs({ "BebasNeueRegular", "OswaldSemiBold", "RussoOneRegular", "BlackOpsRegular", "GrenzeBlack" }) do
+        local found
+        for _, f in ipairs(ns.FontData or ns.FONTS or {}) do if f.key == k then found = true end end
+        assert(found or not (ns.FontData or ns.FONTS), "font " .. k)
+    end
+    assert(ns.modules.CombatText.db.scroll.font.font == "PhoenixFontBold", "default")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

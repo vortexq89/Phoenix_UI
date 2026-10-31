@@ -3,7 +3,8 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
-- **Combat text: no double text** (31 Oct, combat text step 4): while the scroll is on, the game's own text over your character is hidden (it still feeds the scroll) and returns when the scroll or the switch is off.
+- **Combat text: combat font pick** (31 Oct, combat text step 5): Phoenix Font Bold (default), Bebas Neue, Oswald, Russo One, Black Ops One or Grenze Black, applied live.
+- **Combat text: no double text** (31 Oct, 6a71fb6): while the scroll is on, the game's own text over your character is hidden (it still feeds the scroll) and returns when the scroll or the switch is off.
 - **Combat text: an icon on every line** (31 Oct, cfb8ed8): lines without a spell icon (incoming hits, misses, honor, reputation, power) get a Phoenix glyph in the line colour on the area's left or right icon side; switch under Combat text.
 - **Combat text: MSBT styles on built-in animations** (31 Oct, 3aac2fb): horizontal and pow join straight, parabola, angled and static; every line now moves with the game's own animations (no per-frame Lua), merged hits restart their flight.
 - **Combat text: your own scroll areas** (31 Oct, e3473f7): add, name, rename and remove areas and route any event to them; every area, on or off, is always shown and draggable (with snapping) in Layout mode.

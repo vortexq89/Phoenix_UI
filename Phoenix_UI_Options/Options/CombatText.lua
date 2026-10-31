@@ -97,6 +97,11 @@ local schema = {
       keywords = "double duplicate blizzard text" }),
     scroll({ type = "button", label = "FCT_SCROLL_TEST", desc = "FCT_SCROLL_TEST_DESC", button = "CB_TEST_BUTTON", icon = "test",
       func = function(m) ns.Config.frame:Hide(); m:TestScroll() end, keywords = "test sample" }),
+    scroll({ type = "select", key = "scroll.font.font", label = "FCT_COMBAT_FONT", desc = "FCT_COMBAT_FONT_DESC",
+      keywords = "msbt font face combat numbers", values = {
+        { value = "PhoenixFontBold", label = "Phoenix Font Bold" }, { value = "BebasNeueRegular", label = "Bebas Neue" },
+        { value = "OswaldSemiBold", label = "Oswald" }, { value = "RussoOneRegular", label = "Russo One" },
+        { value = "BlackOpsRegular", label = "Black Ops One" }, { value = "GrenzeBlack", label = "Grenze Black" } } }),
     scroll(Opt.Text("scroll.font", "FCT_SCROLL_FONT", { min = 10, max = 40 })),
     scroll({ type = "toggle", key = "scroll.merge", label = "FCT_MERGE", desc = "FCT_MERGE_DESC", keywords = "merge spam combine hits" }),
     scroll({ type = "range", key = "scroll.mergeWindow", label = "FCT_MERGE_WINDOW", desc = "FCT_MERGE_WINDOW_DESC", min = 0.1, max = 2,
