@@ -30,6 +30,8 @@ local M = ns:NewModule("General", {
         blizzardFonts = true, mute = "",
         artPreset = "phoenix-wings", -- look: "phoenix-wings" (v8.1 game-frame art) or "settings" (v7.1 settings art only)
         artKit = true, -- Phoenix art kit v7.1 (UI/Art.lua): background, logo, textured cards and controls
+        -- v11 game-frame art (UI/ArtKitHQ_*.lua): version "v11" | "v10.3" | "v8" (the v8.1 pieces only)
+        art = { version = "v11", elite = { mode = "auto", classFrames = true }, resource = { style = "auto_power", tint = "preset" } },
         chromeStyle = "bevel", -- Phoenix chrome icons: "bevel" (Ember Bevel, UI/ChromeBevel.lua) or "flat"
         specIconStyle = "zoomed", -- the shared spec icon look (UI/SpecIcon.lua); sites may override it
         -- Phoenix's UI scale (UIParent), below the game's 64 % floor too. Off: the game's own setting rules.
@@ -136,7 +138,7 @@ end
 
 function M:OnSettingChanged(path)
     if path == "specIconStyle" then return ns.Events:Fire("PUI_SPECICON_STYLE") end
-    if path == "chromeStyle" or path == "artKit" or path == "artPreset" then
+    if path == "chromeStyle" or path == "artKit" or path == "artPreset" or tostring(path):find("^art%.") then
         if ns.ChromeBevel then ns.ChromeBevel:Refresh() end
         if ns.EmblemFX then ns.EmblemFX:UpdateAll() end
         return ns.Events:Fire("PUI_THEME_CHANGED")

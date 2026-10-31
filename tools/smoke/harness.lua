@@ -6338,6 +6338,19 @@ try("turn Phoenix off (EllesmereUI uninstall)", function()
     rawset(env, "C_AddOns", hadA); rawset(env, "C_UI", hadUI)
 end)
 
+try("v11 art: on by default, guarded, v8 falls back (UI/ArtKitHQ_*.lua)", function()
+    local A, G = ns.Art, ns.modules.General
+    assert(ns.ArtHQ and ns.ArtHQ.PhoenixUI_HUD_v11 and ns.ArtHQ.PhoenixUI_Resources, "atlas tables on ns.ArtHQ")
+    assert(rawget(env, "PhoenixUI_HQ") == nil, "no atlas globals")
+    assert(A.V11On(), "v11 on by default")
+    G.db.art.version = "v8"
+    assert(not A.V11On(), "v8 is the v8.1 pieces only")
+    G.db.art.version = "v11"
+    assert(A.db.version == "v11" and A.db.elite.mode == "auto", "settings shim")
+    local s = { icon = CreateFrame("Frame"):CreateTexture() }
+    assert(type(ns.modules.DataTexts.HUDIcon(s, "speed")) == "boolean", "non-HUD segment keeps its icon")
+end)
+
 try("profiles per place (EllesmereUI conditional overrides)", function()
     local DB = ns.DB
     local hadInst, hadSet = rawget(env, "IsInInstance"), DB.SetProfile

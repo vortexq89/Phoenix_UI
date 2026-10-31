@@ -498,12 +498,23 @@ function M:NewBar(parent, live)
     return { frame = f, bg = bg, segments = {}, live = live }
 end
 
+-- v11 painted icons for these segments (UI/ArtKitHQ_render.lua A:HUDIconV11); others keep ns.Icons
+local HUD = { clock = "time", gold = "gold", bugs = "bugs", fps = "fps", latency = "ms" }
+function M.HUDIcon(s, key)
+    local A = ns.Art
+    if not (HUD[key] and s.icon and A and A.V11On and A.V11On()) then return false end
+    local ok, done = pcall(A.HUDIconV11, A, s.icon, HUD[key], ICON_SIZE)
+    if ok and done then s.icon:SetVertexColor(1, 1, 1, 1) end
+    return ok and done
+end
+
 local function segment(o, key)
     local s = o.segments[key]
     if s then return s end
     s = CreateFrame("Frame", nil, o.frame)
     s:SetHeight(22)
     s.icon = ns.Icons:Create(s, ICON[key] or key, ICON_SIZE, "accent.primary")
+    M.HUDIcon(s, key)
     s.icon:SetPoint("LEFT")
     s.value = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     s.value:SetPoint("LEFT", s.icon, "RIGHT", 5, 0)

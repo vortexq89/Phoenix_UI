@@ -244,7 +244,8 @@ end
 function A:PaintKit(tex, sheet, key, scale)
     local p, file = self:KitPiece(sheet, key)
     if not (tex and p) then return false end
-    tex:SetTexture(p.file or file)
+    -- clamp + trilinear: the v11 BLPs carry a full mip chain (UI/ArtKitHQ_render.lua A:SetHQTexture)
+    tex:SetTexture(p.file or file, "CLAMP", "CLAMP", "TRILINEAR")
     tex:SetTexCoord(unpack(p.coords))
     slice(tex, p, scale or 0.5)
     return true
@@ -340,26 +341,92 @@ function A.RingFor(unitKey, unit, size)
     return r
 end
 
+--[[ v11 art (Media/Art/v11*, UI/ArtKitHQ_*.lua): General > art.version "v11" (default) or "v10.3" paints the
+    v11 pieces over these; "v8" keeps the pieces above. Every v11 paint is guarded: a missing piece or a failure
+    keeps the v8 dress, so the art can never break a frame. ]]
+function A.V11On()
+    local g = general()
+    local v = g and type(g.art) == "table" and g.art.version or "v11"
+    return v ~= "v8" and A.GameArt() and ns.ArtHQ ~= nil and A.PaintV11 ~= nil
+end
+local function try(fn, ...)
+    local ok, r = pcall(fn, ...)
+    return ok and r ~= false
+end
+local function v11Tex(holder, key, layer, level)
+    holder.pv11 = holder.pv11 or {}
+    local t = holder.pv11[key]
+    if not t then
+        local fr = CreateFrame("Frame", nil, holder)
+        fr:SetAllPoints()
+        fr:SetFrameLevel(holder:GetFrameLevel() + (level or 3))
+        t = fr:CreateTexture(nil, layer or "OVERLAY")
+        holder.pv11[key] = t
+    end
+    return t
+end
+local function v11Hide(holder, key)
+    local t = holder and holder.pv11 and holder.pv11[key]
+    if t then t:Hide() end
+end
+A.V11Hide = v11Hide
+
+-- portrait overlay by classification (A.PaintElite); true when it drew (elite.mode "normal" draws nothing)
+local function v11Portrait(f, unit)
+    if not A.V11On() then return false end
+    local t = v11Tex(f.PortraitHolder, "elite", "OVERLAY", 4)
+    if not try(A.PaintElite, t, f.PortraitHolder, unit) then t:Hide(); return false end
+    return t:IsShown()
+end
+-- power bar: v11 fill and per-power frame (A.PaintResource)
+local function v11Power(f, unit)
+    if not A.V11On() then return false end
+    local t = v11Tex(f.Power, "power", "OVERLAY", 2)
+    t:Show()
+    if not try(A.PaintResource, f.Power, t, unit) then t:Hide(); return false end
+    f.Power.pv11Painted = true
+    return true
+end
+
 -- unit frame: health and power frames with caps, portrait ring by classification
 function A:DressUnit(f, unit)
     if f.Health then
         self:Dress(f.Health, "bars", "health_frame", { out = 2 })
     end
     if f.Power and f.Power:IsShown() then
-        self:Dress(f.Power, "bars", "power_frame", { out = 2 })
+        if v11Power(f, unit) then self:Undress(f.Power) else
+            v11Hide(f.Power, "power")
+            self:Dress(f.Power, "bars", "power_frame", { out = 2 })
+        end
     elseif f.Power then
         self:Undress(f.Power)
+        v11Hide(f.Power, "power")
     end
     if f.PortraitHolder and f.PortraitHolder:IsShown() then
         local w = f.PortraitHolder:GetWidth() or 0
-        self:Dress(f.PortraitHolder, "portraits", A.RingFor(f.unitKey, unit, w), { slot = "ring", out = math.floor(w * 0.45 + 0.5) })
+        if v11Portrait(f, unit) then self:Undress(f.PortraitHolder) else
+            v11Hide(f.PortraitHolder, "elite")
+            self:Dress(f.PortraitHolder, "portraits", A.RingFor(f.unitKey, unit, w), { slot = "ring", out = math.floor(w * 0.45 + 0.5) })
+        end
     elseif f.PortraitHolder then
         self:Undress(f.PortraitHolder)
+        v11Hide(f.PortraitHolder, "elite")
     end
 end
 
 -- class power pip (StatusBar): a gem over it; lit / unlit follow the fill, tinted with the resource colour
+local PIP = { ComboPoints = "combo", Chi = "chi", HolyPower = "holy", SoulShards = "shard", ArcaneCharges = "arcane",
+    Essence = "essence", Runes = "rune" }
 function A:DressPip(p, kind, lit, r, g, b)
+    -- v11: painted pips (no tint), an empty socket when unlit
+    if PIP[kind] and A.V11On() then
+        local t = v11Tex(p, "pip", "OVERLAY", 2)
+        t:Show()
+        if try(A.PaintPip, t, PIP[kind], lit) then self:Undress(p, "gem"); return t end
+        t:Hide()
+    else
+        v11Hide(p, "pip")
+    end
     local key = kind == "Runes" and "rune" or kind == "SoulShards" and "shard" or (lit and "gem_lit" or "gem_unlit")
     local t = self:Dress(p, "bars", key, { slot = "gem", out = 2, level = 2 })
     if t and r and t.holder:IsShown() then t:SetVertexColor(r, g, b, 1) end
@@ -375,7 +442,14 @@ end
 
 -- cast bar: frame around the bar, ember cap (interruptible) and steel cap (locked) at capScale x bar height
 function A:DressCast(_, bar, h)
-    self:Dress(bar, "actions", "cast_frame", { out = { 6, 6, 4, 4 }, scale = math.max(0.25, h / 78 * 1.4) })
+    local frame = self:Dress(bar, "actions", "cast_frame", { out = { 6, 6, 4, 4 }, scale = math.max(0.25, h / 78 * 1.4) })
+    -- v11: the HUD sheet's cast frame in the same place; caps and lock stay
+    if frame and A.V11On() then
+        local key = h <= 22 and "cast_s" or "cast"
+        if not try(A.PaintV11, A, frame, ns.ArtHQ.PhoenixUI_HUD_v11, A.V11.hudFile, key, h) then
+            self:PaintKit(frame, "actions", "cast_frame", math.max(0.25, h / 78 * 1.4))
+        end
+    end
     local cs = (A:Token("cast.capScale") or 1.4) * h
     local ember = self:Dress(bar, "actions", "cast_cap_ember", { slot = "cap", size = { cs * 0.93, cs }, point = "RIGHT", relPoint = "LEFT", x = cs * 0.3, level = 3 })
     local steel = self:Dress(bar, "actions", "cast_cap_steel", { slot = "lock", size = { cs * 0.93, cs }, point = "RIGHT", relPoint = "LEFT", x = cs * 0.3, level = 3 })
@@ -397,7 +471,13 @@ end
 function A:DressPlate(p, h, unit)
     local bar = p.Health or p.health or p.bar
     if not bar then return end
-    self:Dress(bar, "frames", "nameplate", { out = { 2, 3, 2, 2 }, scale = math.max(0.25, h / 38 * 1.4) })
+    local frame = self:Dress(bar, "frames", "nameplate", { out = { 2, 3, 2, 2 }, scale = math.max(0.25, h / 38 * 1.4) })
+    if frame and A.V11On() then
+        local key = h <= 14 and "nameplate_s" or "nameplate"
+        if not try(A.PaintV11, A, frame, ns.ArtHQ.PhoenixUI_HUD_v11, A.V11.hudFile, key, h) then
+            self:PaintKit(frame, "frames", "nameplate", math.max(0.25, h / 38 * 1.4))
+        end
+    end
     local nh = h * 1.25
     self:Dress(bar, "frames", "nameplate_notch", { slot = "notch", size = { nh * 0.78, nh }, point = "RIGHT", relPoint = "LEFT", x = nh * 0.25, level = 2 })
     local crest = A.CREST[A.Classification(unit)]

@@ -50,6 +50,9 @@ exclude_files = {
 
 -- Locale files are prose; long string lines are expected there.
 files["Locales/*.lua"] = { max_line_length = false }
+-- generated v11 atlas tables and the handoff render helpers (UI/ArtKitHQ_*.lua)
+files["UI/ArtKitHQ_atlas.lua"] = { max_line_length = false }
+files["UI/ArtKitHQ_render.lua"] = { max_line_length = false, max_cyclomatic_complexity = false }
 -- Generated quest slices (tools/questdata/build_questdata.py): one packed string per map.
 files["Phoenix_UI_Data/Quests_*.lua"] = { max_line_length = false }
 files["Phoenix_UI_Data/NPCs_*.lua"] = { max_line_length = false }
