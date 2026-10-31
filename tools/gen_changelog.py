@@ -12,6 +12,10 @@ for line in src.splitlines():
     if m: flush(); ver=m.group(1).strip(); items=[]; continue
     m=re.match(r'^- \*\*(.+?)\*\*\s*(\([^)]*\))?:?\s*(.*)',line)
     if m and ver:
-        t=m.group(1).strip(); rest=re.sub(r'[`*]','',m.group(3)); rest=re.split(r'(?<=[.;:])\s',rest)[0][:110]
-        items.append((t+' — '+rest).rstrip(' —') if rest else t)
-flush(); out.append('}'); print('\n'.join(out))
+        t=m.group(1).strip(); when=(m.group(2) or '').strip()
+        if when: t=t+' '+when
+        rest=re.sub(r'[`*]','',m.group(3)); rest=re.split(r'(?<=[.;:])\s',rest)[0].rstrip(';:')
+        line=(t+' — '+rest) if rest else t
+        if len(line)>118: line=line[:117].rstrip()+'…'
+        items.append(line)
+flush(); out.append('}'); sys.stdout.write('\n'.join(out)+'\n')

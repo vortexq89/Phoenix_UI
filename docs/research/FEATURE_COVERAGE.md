@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 115 |
-| partial | 13 |
+| Phoenix has | 116 |
+| partial | 12 |
 | missing | 5 |
 | out of scope | 10 |
 
@@ -186,7 +186,7 @@ Overlaps found:
 | EllesmereUI_MythicTimer | Timer art and clock alignment | Phoenix has | 2026-10-30: v9 timer art (bar, skull, chest marks, forces, affixes), clock alignment. |
 | EllesmereUI_Minimap | Button bin as flyout or bar | Phoenix has | 2026-10-30: Minimap > bin mode flyout / bar. |
 | EllesmereUI_DataBars | Time, gold and bugs data texts with v9.1 art | Phoenix has | 2026-10-30: ember caps and dividers, 12/24h and local/server options, live bug count. |
-| MikScrollingBattleText | Custom scroll areas, every area in Layout mode | partial | t195: every area is a Layout-mode mover (`fct.<area>`, Scroll.lua:396) with its scroll path drawn, but only while the area is on (`active`, Scroll.lua:361); no user-added areas (7 fixed). Gap: user areas and a "show hidden areas" switch in Layout mode. |
+| MikScrollingBattleText | Custom scroll areas, every area in Layout mode | Phoenix has | Built 2026-10-31 (e3473f7): user areas (add, name, rename, remove, route events; `scroll.custom`, `M:AddArea` in `Modules/CombatText/Scroll.lua`); every area is always a Layout-mode mover with snapping, on or off. |
 | MikScrollingBattleText | Per-event sound and icon rules | partial | t195: sound per event exists (`scroll.events.<e>.sound`); icons only from your own casts (`scroll.castIcons`). Gap: icon per event, sticky per event. |
 | BigWigs | Per-boss knowledge (LittleWigs-style warnings) | partial | Timeline bars and ability rules; no per-boss authored warnings. |
 | RareScanner | Rare already-killed / loot status on the alert | missing | Alert has target button and waypoint; add killed-today and loot-collected marks from game data. |

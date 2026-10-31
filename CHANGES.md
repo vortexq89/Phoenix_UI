@@ -1,5 +1,38 @@
 # Phoenix UI changelog
 
+## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
+
+### New
+- **Combat text: your own scroll areas** (31 Oct, e3473f7): add, name, rename and remove areas and route any event to them; every area, on or off, is always shown and draggable (with snapping) in Layout mode.
+- **Gamepad** (31 Oct, f802454, d0d2ab2): Automation > Gamepad: controller support switch and camera turn and tilt speed, no console needed.
+- **Party mode** (31 Oct, 935031c, 4130082): edge lights with a start/stop button; celebrations on boss kills, finished keys and level ups; sound, length and strength; a session you start is never ended by a trigger.
+- **Loadouts** (31 Oct, 363cc17): per spec, a talent loadout and equipment set for raid, dungeon, arena, battleground and open world; offered (or applied) when you enter, plus an apply-now button.
+- **Loot council** (31 Oct, 4082ba5): this session's boss drops and who got them; Want tells the group with your equipped item level in that slot; auto-open and raids-only switches.
+- **What's new and full changelog** (31 Oct, 126e7cb): About > Full changelog lists every version; the popup has a Full changelog button and can be switched off.
+- **Upgrade calculator** (31 Oct, 78d720c): crests per track and in total, average item level gain, cost and item-level-per-step sliders, refreshes when gear changes.
+- **Macros from the GUI** (31 Oct, 09d76c9): Pick up buttons for each PUI macro and a Macro window button.
+- **Everything in the GUI** (31 Oct, 7889c9f, 323fdf5): every former slash feature has a control (About > Tools: Layout mode, setup wizard, What's new, game AddOns settings, diagnostics, reset window, debug; Bugs test error; arena surrender; waypoint box); the settings window opens from the Esc menu, the minimap icon and the AddOns list on both clients; no text tells you to type a command.
+- **Quickdraw** (30 Oct, f9b36d3): quick ring hold-and-release mode, open at the cursor, v9 ring art.
+- **Data texts v9.1 art** (30 Oct, 214e405): ember strip, feather caps (kept on screen), dividers, Time / Gold / Bugs icons; Time (12/24 h, local/server), Gold and Bugs sections at the top of the page; the bug count updates live.
+- **Movement alert** (30 Oct, 487f657): your class movement spell's cooldown as a movable icon.
+- **Auto combat logging** (30 Oct, d45461f): turns combat logging on in Mythic+, raids and dungeons (your pick) and off when you leave; never stops a log you started.
+- **Minimap button bin as a bar** (30 Oct, d3310d8): flyout or a bar under the minimap.
+- **Mythic+ timer art** (30 Oct, 282a04a): v9 bar, chest marks, skull, affix and forces art; clock position.
+- **Aura reminders and aura bars** (30 Oct, a888acd): custom reminders by class or role, group buffs, banner style; aura bars for the auras you pick.
+- **Cooldown Manager** (30 Oct, 200014e): spell picker, bar display for custom bars, cooldown icon art.
+- **Phoenix art kits v7.1, v8.1 and v9.1** (30 Oct, e072648, 83231bc, 0ce5b9d): background, logo, meter art, phoenix-wings default look (portrait rings, action/stance/cast borders, resource gems, nameplates, party/raid), v9.1 portraits, compact boss ring, gold-coin greed roll; Grenze Black and Metamorphous fonts (OFL).
+- **Ember Bevel chrome** (30 Oct, f18a001, 33f5b93, b68f9af): 76 icons and 28 window medallions in four states and themes (ember, frost, fel, arcane).
+- **Group frame aura indicators** (30 Oct, 8f33ac8): six placeable indicators per profile.
+- **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
+
+### Fixed
+- **Code review fixes** (30 Oct, 80aef95, 6ae60cf, cfce46c, 728cdee, c7c1413, 887fadd, 180e254, 44b185a, 0b7f321, fd50673, f7582fc, c59e539): secret numbers in "full" format, plugin dependency loading, event registration failures, third-party plugin keys, IsSecret fallback, PvP timers on C_Timer, plugin API 1.2 docs, mover queueing, sample plugin TOC, Forever TOC docs.
+- **QA fixes** (30 Oct, 0ce5b9d, e559187, 7be2326): undressed art stays hidden, no new holders on secure frames in combat, waypoints turn on and off live, a Russian profile import crash.
+- **Settings and spec icons** (30 Oct, 67332c2, a07b0b2, 248ea30, a43f3da): even ring strokes, whole-pixel columns, preview scrolls away unless kept, damage meter value fade.
+
+### Docs
+- **Coverage and parity** (31 Oct, 55c2ebd): FEATURE_COVERAGE refreshed for every studied addon, combat text review against the real code, duplicate checks before building.
+
 ## 2.0.0-beta1
 
 ### New
