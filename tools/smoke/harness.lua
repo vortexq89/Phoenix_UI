@@ -473,11 +473,12 @@ local function eachItem(list, fn, parent)
         eachItem(item.cog, fn, item)
     end
 end
-local function scopeUnits(list)
+local function scopeUnits(list, m)
     for _, item in ipairs(list or {}) do
         if item.type == "scope" then
             local out = {}
-            for _, v in ipairs(item.values) do out[#out + 1] = v.value end
+            local vals = type(item.values) == "function" and item.values(m) or item.values
+            for _, v in ipairs(vals) do out[#out + 1] = v.value end
             return out
         end
     end
@@ -485,7 +486,7 @@ local function scopeUnits(list)
 end
 for _, m in ipairs(ns.moduleList or {}) do
   -- a plugin this client lacks is a placeholder (Core/Plugins.lua): its options are never shown here
-  for _, unit in ipairs(m.placeholder and {} or scopeUnits(ns.options[m.key])) do
+  for _, unit in ipairs(m.placeholder and {} or scopeUnits(ns.options[m.key], m)) do
     eachItem(ns.options[m.key], function(item, parent)
         local owner = (parent and parent.hidden) and parent or item
         local hiddenHere = owner.hidden and item.key and item.key:find("@", 1, true) and owner.hidden(m, unit)
@@ -5767,6 +5768,25 @@ try("gamepad: cvars behind GUI controls", function()
     assert(type(A.GamepadGet("enable")) == "boolean" and type(A.GamepadGet("yaw")) == "number", "reads")
     assert(A.GamepadSet("bogus", 1) == false, "unknown key refused")
     A.GamepadConnected()
+end)
+
+try("combat text: user areas, always in Layout mode (t196)", function()
+    local CT = ns.modules.CombatText
+    local mv = ns:GetModule("Movers")
+    CT.db.scroll.areas.notify.show = false
+    CT:EnableScroll()
+    local e = mv and mv:GetEntry("fct.notify")
+    assert(not mv or (e and e.store.active()), "hidden area still a mover")
+    CT.db.scroll.areas.notify.show = true
+    local key = CT:AddArea("Big hits")
+    assert(CT.IsCustomArea(key) and CT.db.scroll.areas[key].name == "Big hits", "added")
+    local keys = CT.AreaKeys()
+    assert(keys[#keys] == key, "listed")
+    assert(not mv or mv:GetEntry("fct." .. key), "new area is a mover")
+    CT.db.scroll.events.hit.area = key
+    assert(CT:RemoveArea(key) and CT.db.scroll.events.hit.area == "notify", "removed, events rerouted")
+    CT.db.scroll.events.hit.area = "target"
+    assert(not CT:RemoveArea("incoming"), "fixed areas stay")
 end)
 
 try("art kit v8.1 phoenix-wings", function()

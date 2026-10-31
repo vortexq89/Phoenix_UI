@@ -871,6 +871,15 @@ function Config:Show(key)
     return page
 end
 
+-- Throw a built page away and build it again (a page whose rows depend on data, e.g. combat text user areas).
+function Config:RebuildPage(key)
+    local page = self.pages and self.pages[key]
+    if not page then return end
+    page:Hide()
+    self.pages[key] = nil
+    if self.current == key then self.current = nil; self:Show(key) end
+end
+
 function Config:Toggle(key)
     local f = self:Build()
     if f:IsShown() and (not key or key == self.current) then f:Hide() else self:Show(key) end

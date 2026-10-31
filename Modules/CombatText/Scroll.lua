@@ -61,6 +61,18 @@ for _, e in ipairs(EVENTS) do
 end
 M.EVENTS, M.AREAS, M.WORDS, M.POWERS = EVENTS, AREAS, WORDS, POWERS
 
+-- Every area key: the seven fixed ones, then the user's own (db.scroll.custom, in the order they were added).
+function M.AreaKeys()
+    local out = {}
+    for i, k in ipairs(AREAS) do out[i] = k end
+    local custom = M.db and M.db.scroll.custom
+    if type(custom) == "table" then
+        for _, k in ipairs(custom) do if M.db.scroll.areas[k] then out[#out + 1] = k end end
+    end
+    return out
+end
+function M.IsCustomArea(key) return type(key) == "string" and key:find("^custom%d+$") ~= nil end
+
 local frames = {}
 local function areaDB(key) return M.db.scroll.areas[key] end
 
@@ -306,9 +318,9 @@ end
 local owner = {}
 function M:EnableScroll()
     local db = self.db.scroll
-    if not self.moversDone then self.moversDone = true; self:RegisterAreaMovers() end
+    self:RegisterAreaMovers() -- idempotent; picks up user areas after a profile change
     ns.Events:OffAll(owner)
-    for _, key in ipairs(AREAS) do
+    for _, key in ipairs(M.AreaKeys()) do
         if frames[key] then
             placeArea(key)
             local on = db.enabled and areaDB(key).show
@@ -358,7 +370,8 @@ end
 -- scroll path (dots along CombatText.Path), so you see where lines will travel while placing it.
 local function store(key)
     return {
-        active = function() local db = M.db.scroll; return M:IsEnabled() and db.enabled and db.areas[key].show end,
+        -- always in Layout mode while the module is on (t196), even when the area or scrolling is switched off
+        active = function() return M:IsEnabled() and areaDB(key) ~= nil end,
         get = function() local a = areaDB(key); return { point = a.point or "CENTER", x = a.x, y = a.y } end,
         set = function(v)
             local a = areaDB(key)
@@ -366,7 +379,7 @@ local function store(key)
         end,
         apply = function() placeArea(key) end,
         reset = function()
-            local d, a = M.defaults.scroll.areas[key], areaDB(key)
+            local d, a = M.defaults.scroll.areas[key] or M.CUSTOM_TEMPLATE, areaDB(key)
             a.point, a.x, a.y = d.point or "CENTER", d.x, d.y
             placeArea(key)
         end,
@@ -393,11 +406,53 @@ local function store(key)
     }
 end
 
-function M:RegisterAreaMovers()
+function M:RegisterAreaMover(key)
     local movers = ns:GetModule("Movers")
-    if not movers then return end
-    for _, key in ipairs(AREAS) do
-        local f = area(key)
-        movers:Register("fct." .. key, f, ns.L.COMBATTEXT .. " – " .. ns.L["FCT_AREA_" .. key:upper()], store(key))
-    end
+    if not movers or not areaDB(key) then return end
+    local f = area(key)
+    local a = areaDB(key)
+    local label = M.IsCustomArea(key) and (a.name ~= "" and a.name or key) or ns.L["FCT_AREA_" .. key:upper()]
+    movers:Register("fct." .. key, f, ns.L.COMBATTEXT .. " – " .. label, store(key))
+end
+
+function M:RegisterAreaMovers()
+    for _, key in ipairs(M.AreaKeys()) do self:RegisterAreaMover(key) end
+end
+
+-- User areas (t196): a copy of the template, named, placed at the screen centre; events can be routed to it.
+M.CUSTOM_TEMPLATE = { show = true, x = 0, y = 0, width = 260, height = 200, dir = "UP", anim = "straight", align = "CENTER",
+    duration = 2.4, scale = 1, iconSide = "LEFT", iconSize = 22, useColor = false, color = { r = 1, g = 1, b = 1 }, name = "" }
+local function copy(t)
+    local o = {}
+    for k, v in pairs(t) do o[k] = type(v) == "table" and copy(v) or v end
+    return o
+end
+
+function M:AddArea(name)
+    local db = self.db.scroll
+    db.custom = type(db.custom) == "table" and db.custom or {}
+    local n = 1
+    while db.areas["custom" .. n] do n = n + 1 end
+    local key = "custom" .. n
+    local a = copy(M.CUSTOM_TEMPLATE)
+    a.name = type(name) == "string" and name or ""
+    a.y = -40 * (#db.custom % 6)
+    db.areas[key] = a
+    db.custom[#db.custom + 1] = key
+    self:RegisterAreaMover(key)
+    self:EnableScroll()
+    return key
+end
+
+function M:RemoveArea(key)
+    local db = self.db.scroll
+    if not (M.IsCustomArea(key) and db.areas[key]) then return false end
+    for i = #(db.custom or {}), 1, -1 do if db.custom[i] == key then table.remove(db.custom, i) end end
+    for _, e in pairs(db.events) do if e.area == key then e.area = "notify" end end
+    if db.critArea == key then db.critArea = "same" end
+    db.areas[key] = nil
+    local f = frames[key]
+    if f then f:SetScript("OnUpdate", nil); f:Hide() end
+    self:EnableScroll()
+    return true
 end

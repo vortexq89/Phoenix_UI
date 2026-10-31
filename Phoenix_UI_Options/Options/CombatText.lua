@@ -12,14 +12,23 @@ local Opt = ns.Opt
 local scaleGet, scaleSet = CVar("WorldTextScale_v2", "number")
 local function noScroll(m) return not m.db.scroll.enabled end
 local function scroll(row) return Opt.With(row, { disabled = row.disabled or noScroll }) end
-local AREAS = {
-    { value = "incoming", label = "FCT_AREA_INCOMING" }, { value = "heals", label = "FCT_AREA_HEALS" },
-    { value = "target", label = "FCT_AREA_TARGET" }, { value = "outheal", label = "FCT_AREA_OUTHEAL" },
-    { value = "power", label = "FCT_AREA_POWER" }, { value = "notify", label = "FCT_AREA_NOTIFY" },
-    { value = "crits", label = "FCT_AREA_CRITS" },
-}
-local CRIT_AREA = { { value = "same", label = "FCT_CRIT_SAME" } }
-for _, a in ipairs(AREAS) do CRIT_AREA[#CRIT_AREA + 1] = a end
+-- the seven fixed areas, then the user's own (named in the area's "name"); a function so new areas appear
+local function AREAS(m)
+    local out = {}
+    for _, key in ipairs(m.AreaKeys()) do
+        local a = m.db.scroll.areas[key]
+        local label = m.IsCustomArea(key) and ((a.name ~= "" and a.name) or key) or ("FCT_AREA_" .. key:upper())
+        out[#out + 1] = { value = key, label = label }
+    end
+    return out
+end
+local function CRIT_AREA(m)
+    local out = { { value = "same", label = "FCT_CRIT_SAME" } }
+    for _, a in ipairs(AREAS(m)) do out[#out + 1] = a end
+    return out
+end
+local function rebuild() if ns.Config.RebuildPage then ns.Config:RebuildPage("CombatText") end end
+local newName = ""
 local ANIM = { { value = "straight", label = "FCT_ANIM_STRAIGHT" }, { value = "parabola", label = "FCT_ANIM_PARABOLA" },
     { value = "angled", label = "FCT_ANIM_ANGLED" }, { value = "static", label = "FCT_ANIM_STATIC" } }
 local ICON = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "RIGHT", label = "ANCHOR_RIGHT" }, { value = "OFF", label = "OFF" } }
@@ -98,6 +107,15 @@ local schema = {
     scroll({ type = "button", label = "FCT_UNLOCK", desc = "FCT_UNLOCK_DESC", button = "FCT_UNLOCK_BUTTON", icon = "movers",
       combat = true, func = unlock, keywords = "move drag unlock areas position" }),
     scroll({ type = "toggle", key = "scroll.areas.@.show", label = "FCT_AREA_SHOW", desc = "FCT_AREA_SHOW_DESC" }),
+    { type = "input", label = "FCT_AREA_NEW", desc = "FCT_AREA_NEW_DESC", keywords = "custom scroll area add new",
+      get = function() return newName end, set = function(_, v) newName = v or "" end },
+    { type = "button", label = "FCT_AREA_ADD", desc = "FCT_AREA_ADD_DESC", button = "FCT_AREA_ADD", icon = "add",
+      func = function(m) m:AddArea(newName); newName = ""; rebuild() end },
+    scroll({ type = "input", key = "scroll.areas.@.name", label = "FCT_AREA_NAME", desc = "FCT_AREA_NAME_DESC",
+      hidden = function(m, unit) return not m.IsCustomArea(unit) end }),
+    { type = "button", label = "FCT_AREA_REMOVE", desc = "FCT_AREA_REMOVE_DESC", button = "DELETE", icon = "delete",
+      hidden = function(m, unit) return not m.IsCustomArea(unit) end,
+      func = function(m, page) if m:RemoveArea(page and page.scope and page.scope.unit) then rebuild() end end },
     scroll({ type = "select", key = "scroll.areas.@.anim", label = "FCT_ANIM", desc = "FCT_ANIM_DESC", values = ANIM,
       keywords = "animation parabola curve angled static straight msbt xct" }),
     scroll({ type = "select", key = "scroll.areas.@.dir", label = "FCT_AREA_DIR", values = DIRS, keywords = "direction up down" }),

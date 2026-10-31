@@ -27,7 +27,8 @@ local function collect(kind)
                 for _, item in ipairs(schema) do
                     if item.type == "scope" then
                         units, unitLabels = {}, {}
-                        for i, v in ipairs(item.values) do units[i], unitLabels[i] = v.value, L[v.label] end
+                        local vals = type(item.values) == "function" and item.values(m) or item.values
+                        for i, v in ipairs(vals) do units[i], unitLabels[i] = v.value, L[v.label] or v.label end
                     end
                 end
                 local function visit(item, parent)

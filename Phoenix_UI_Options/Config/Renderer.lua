@@ -879,7 +879,8 @@ end
     element's, and each "@" row has a ⇄ button that sends its value to every element. ]]
 local function buildScope(page, m, item)
     local values = {}
-    for i, v in ipairs(item.values) do values[i] = { value = v.value, label = text(v.label) } end
+    local scopeSrc = type(item.values) == "function" and item.values(m) or item.values
+    for i, v in ipairs(scopeSrc) do values[i] = { value = v.value, label = text(v.label) } end
     page.scope = { unit = values[1].value, mode = "this", multi = {}, root = item.key, values = values }
     local scope = page.scope
 
