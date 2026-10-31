@@ -6217,6 +6217,15 @@ try("CVar editor (WindTools idea)", function()
     assert(A.CVarSet("", "1") == false, "no name, no write")
 end)
 
+try("nameplates: minor enemies simpler (Tust idea)", function()
+    local NP = ns.modules.NamePlates
+    assert(NP.db.minor and NP.db.minor.enabled and NP.db.minor.scale == 0.7, "defaults")
+    assert(type(NP.IsMinor("nameplate1")) == "boolean", "boolean")
+    NP.db.minor.enabled = false
+    assert(NP.IsMinor("nameplate1") == false, "off")
+    NP.db.minor.enabled = true
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

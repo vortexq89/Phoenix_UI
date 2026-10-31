@@ -178,7 +178,7 @@ Overlaps found:
 | TrufiGCD | Ability queue | Phoenix has | Phoenix `Phoenix_UI_CastHistory` (`ch.*`: unit, direction, speed, blockSpells/blockItems, showCancelled, showInterrupted, empowerHeld, masque, where). Phoenix also covers |
 | Tust_EUI | Chat replacement | Phoenix has | Phoenix `Phoenix_UI_Chat` (skin, history, whisper windows, channel bar, emoji, keyword alerts). |
 | Tust_EUI | Data Bars multi-bar engine | Phoenix has | Phoenix DataBars (`db.*`), `rt.*`, friends in minimap (`mm.extra.friends`). |
-| Tust_EUI | Enhanced XP bar, LFG region/rating, nameplate rules, tooltips, bag upgrade markers, stat priorities, minimap group info | partial | Quest-XP on the XP bar (`Modules/DataTexts/Bar.lua`), upgrade arrows in bags (`Modules/Bags`). LFG region/rating badges and nameplate rules not found. |
+| Tust_EUI | Enhanced XP bar, LFG region/rating, nameplate rules, tooltips, bag upgrade markers, stat priorities, minimap group info | partial | Quest-XP on the XP bar (`Modules/DataTexts/Bar.lua`), upgrade arrows in bags (`Modules/Bags`). Minor-enemy plates built 2026-10-31 (Nameplates > Minor enemies, `M.IsMinor`, smaller and dimmer). LFG region/rating badges not found. |
 | EllesmereUI | Full in-addon macro editor (account / character, icon picker, conditionals helper) | Phoenix has | Built 2026-10-31: `Phoenix_UI_Automation/MacroEditor.lua` (M:ShowMacroEditor, MacroList, SaveMacro, InsertSnippet); Automation > Macro editor. |
 | EllesmereUI | Loot council | Phoenix has | Built 2026-10-31: Automation > Loot council (session drops, Want shares your equipped item level, auto-open, raid only). |
 | EllesmereUI | Loadout manager | Phoenix has | Built 2026-10-31: Automation > Loadouts (talents + equipment set per content per spec, offer or auto apply). |

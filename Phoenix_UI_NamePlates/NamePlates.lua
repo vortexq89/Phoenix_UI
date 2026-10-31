@@ -92,6 +92,7 @@ local DEFAULTS = {
     focus = { marker = true },
     hover = { highlight = true, alpha = 0.25 },
     threatRole = "auto",                      -- auto | tank | dps
+    minor = { enabled = true, scale = 0.7, alpha = 0.8 }, -- minor enemies ("minus" trash): smaller, dimmer (Tust idea)
     click = { enabled = false, enemyW = 140, enemyH = 30, friendlyW = 110, friendlyH = 24, friendlyThrough = false },
     contexts = { enabled = false, world = context({}), instance = context({ friendly = "name", minions = false }),
                  pvp = context({ friendly = "show" }) },

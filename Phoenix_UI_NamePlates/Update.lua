@@ -311,11 +311,23 @@ function M:UpdateCast(p)
 end
 
 ---------------------------------------------------------------- visibility (contexts: hide enemies out of combat)
+-- Minor enemies (the game's "minus" classification: packs of weak trash) get a simpler plate: smaller and dimmer,
+-- so the mobs that matter stand out (Tust idea, our own code). A secret classification is treated as normal.
+function M.IsMinor(unit)
+    local db = M.db and M.db.minor
+    if not (db and db.enabled and unit and UnitClassification) then return false end
+    local ok, c = pcall(UnitClassification, unit)
+    return ok and plain(c) and c == "minus" or false
+end
+
 function M:UpdateVisibility(p)
     if p.sample then p:SetAlpha(1); return end
     local c = self:Context()
     local hide = c and c.hideOOC and p.kind == "enemy" and not InCombatLockdown()
-    p:SetAlpha(hide and 0 or 1)
+    local base = c and c.scale > 0 and c.scale or 1
+    local minor = p.kind == "enemy" and M.IsMinor(p.unit)
+    p:SetScale(minor and base * self.db.minor.scale or base)
+    p:SetAlpha(hide and 0 or (minor and self.db.minor.alpha or 1))
 end
 
 ---------------------------------------------------------------- everything
