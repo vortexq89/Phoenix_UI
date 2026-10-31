@@ -16,8 +16,8 @@ local M = ns:GetModule("CombatText")
     Secret-safety: amounts only ever reach FontString:SetFormattedText (a sink); they are never compared, added
     or tested. The message type and UNIT_COMBAT's action/flag strings are checked with Secret.IsSecret first and
     a secret one is skipped. Merging counts hits instead of summing amounts, so it works on secret amounts too.
-    Movement runs in each area's own OnUpdate, set only while a line is in flight (this branch has no Ticker
-    registry; the handler is cleared when the area empties). ]]
+    Movement runs on each line's own AnimationGroup (translation, bend, pop, fade: C side, no OnUpdate, t196);
+    six styles after MSBT: straight, parabola, angled, horizontal, pow and static. ]]
 local AREAS = { "incoming", "heals", "target", "outheal", "power", "notify", "crits" }
 -- power types the game reports through ENERGIZE / PERIODIC_ENERGIZE (arg3 is the power token)
 local POWERS = { "MANA", "RAGE", "FOCUS", "ENERGY", "RUNIC_POWER", "INSANITY", "FURY", "PAIN", "MAELSTROM",
@@ -88,6 +88,12 @@ function M.Path(anim, t, height, width, side, slot, lineH)
         return side * width * 0.35 * t * t, span * t
     elseif anim == "angled" then
         return side * width * 0.3 * t, span * t
+    elseif anim == "horizontal" then
+        -- MSBT "horizontal": slides sideways from its row
+        return side * width * 0.8 * t, math.min(span, (slot or 0) * (lineH or 20))
+    elseif anim == "pow" then
+        -- MSBT "pow": pops in at its row and holds still
+        return 0, math.min(span, (slot or 0) * (lineH or 20))
     end
     return side * 14, span * t
 end
@@ -100,12 +106,26 @@ local function placeArea(key)
     f:SetSize(a.width, a.height)
 end
 
+-- One pooled line: a holder frame carrying the text and icon, moved by its own AnimationGroup (translation, bend,
+-- pop and fade run on the C side, so a flying line costs no Lua per frame; t196 replaces the old OnUpdate).
+local release
 local function newLine(f)
-    local fs = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    local h = CreateFrame("Frame", nil, f)
+    h:SetSize(1, 1)
+    local fs = h:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     fs:SetWordWrap(false)
-    fs.icon = f:CreateTexture(nil, "OVERLAY")
+    fs.holder = h
+    fs.icon = h:CreateTexture(nil, "OVERLAY")
     fs.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
     fs.icon:Hide()
+    local g = h:CreateAnimationGroup()
+    h.anim = g
+    h.move = g:CreateAnimation("Translation")
+    h.bend = g:CreateAnimation("Translation")
+    h.pop = g:CreateAnimation("Scale")
+    h.fade = g:CreateAnimation("Alpha")
+    h.fade:SetFromAlpha(1); h.fade:SetToAlpha(0)
+    g:SetScript("OnFinished", function() release(f, fs) end)
     return fs
 end
 
@@ -135,40 +155,58 @@ function M:StyleLine(fs, crit, areaKey, scale)
     if a then fs:SetJustifyH(a.align or "CENTER") end
 end
 
-local function move(self, dt)
-    local a = areaDB(self.key)
-    local dur = math.max(0.5, a.duration or 2.4)
-    local fadeAt = dur * 0.66
-    for i = #self.active, 1, -1 do
-        local line = self.active[i]
-        line.t = line.t + dt
-        if line.t >= dur then
-            line.fs:Hide(); line.fs.icon:Hide()
-            table.remove(self.active, i)
-            self.free[#self.free + 1] = line.fs
-        else
-            local x, y
-            if line.sticky then
-                -- sticky crit: pops in larger, eases to size and holds still at the area's centre, stacked
-                x, y = 0, a.height / 2 - line.h / 2 + (line.slot % 3) * line.h * (a.dir == "DOWN" and 1 or -1)
-                local pop = line.t < 0.18 and (1 + 0.7 * (1 - line.t / 0.18)) or 1
-                line.fs:SetScale(pop)
-                x, y = x / pop, y / pop
-            else
-                x, y = M.Path(a.anim, line.t / dur, a.height, a.width, line.side, line.slot, line.h)
-            end
-            if a.align == "LEFT" then x = math.abs(x) elseif a.align == "RIGHT" then x = -math.abs(x) end
-            local side = a.align == "LEFT" and "LEFT" or (a.align == "RIGHT" and "RIGHT" or "")
-            local inset = (side == "LEFT" and (a.iconSize or 20) + 6) or (side == "RIGHT" and -((a.iconSize or 20) + 6)) or 0
-            line.fs:ClearAllPoints()
-            if a.dir == "DOWN" then line.fs:SetPoint("TOP" .. side, self, "TOP" .. side, x + inset, -y)
-            else line.fs:SetPoint("BOTTOM" .. side, self, "BOTTOM" .. side, x + inset, y) end
-            local alpha = line.t > fadeAt and math.max(0, 1 - (line.t - fadeAt) / (dur - fadeAt)) or 1
-            line.fs:SetAlpha(alpha); line.fs.icon:SetAlpha(alpha)
-        end
-    end
-    if #self.active == 0 then self:SetScript("OnUpdate", nil); self:Hide() end
+-- Back to the pool: called when a line's animation ends or its area is cleared.
+release = function(f, fs)
+    for i = #f.active, 1, -1 do if f.active[i].fs == fs then table.remove(f.active, i) end end
+    fs.holder.anim:Stop()
+    fs.holder:Hide(); fs:Hide(); fs.icon:Hide()
+    f.free[#f.free + 1] = fs
+    if #f.active == 0 then f:Hide() end
 end
+
+local function setScale(anim, from, to)
+    if anim.SetScaleFrom then anim:SetScaleFrom(from, from); anim:SetScaleTo(to, to)
+    else anim:SetScale(to / from, to / from) end
+end
+
+-- Start point, travel and sideways bend for one style.
+local function flight(a, line, style, sx, span)
+    local row = math.min(span, line.slot * line.h)
+    if style == "static" or style == "pow" then return 0, row, 0, 0, 0
+    elseif style == "sticky" then return 0, a.height / 2 - line.h / 2 + (line.slot % 3) * line.h, 0, 0, 0
+    elseif style == "parabola" then return 0, 0, 0, span, sx * a.width * 0.35
+    elseif style == "angled" then return 0, 0, sx * a.width * 0.3, span, 0
+    elseif style == "horizontal" then return 0, row, sx * a.width * 0.8, 0, 0 end
+    return sx * 14, 0, 0, span, 0
+end
+
+-- Start (or restart, for a merged line) the line's flight for its area's style.
+local function fly(f, line)
+    local a = areaDB(f.key)
+    local fs, h = line.fs, line.fs.holder
+    local dur = math.max(0.5, a.duration or 2.4)
+    local span = math.max(20, a.height - line.h)
+    local down = a.dir == "DOWN"
+    local sx = (a.align == "LEFT" and 1) or (a.align == "RIGHT" and -1) or line.side
+    local style = line.sticky and "sticky" or a.anim
+    local x0, y0, dx, dy, bend = flight(a, line, style, sx, span)
+    if down then y0, dy = -y0, -dy end
+    local side = (a.align == "LEFT" and "LEFT") or (a.align == "RIGHT" and "RIGHT") or ""
+    local inset = (side == "LEFT" and (a.iconSize or 20) + 6) or (side == "RIGHT" and -((a.iconSize or 20) + 6)) or 0
+    local edge = (down and "TOP" or "BOTTOM") .. side
+    h:ClearAllPoints(); h:SetPoint(edge, f, edge, x0 + inset, y0)
+    fs:ClearAllPoints(); fs:SetPoint(edge, h, edge, 0, 0)
+    local g = h.anim
+    g:Stop()
+    h.move:SetOffset(dx, dy); h.move:SetDuration(dur); h.move:SetSmoothing("NONE")
+    h.bend:SetOffset(bend, 0); h.bend:SetDuration(dur); h.bend:SetSmoothing("IN")
+    local pops = style == "pow" or style == "sticky"
+    setScale(h.pop, pops and 1.7 or 1, 1); h.pop:SetDuration(pops and 0.18 or 0.01)
+    h.fade:SetStartDelay(dur * 0.66); h.fade:SetDuration(dur * 0.34)
+    h:SetAlpha(1); h:Show(); fs:Show()
+    g:Play()
+end
+M.FlyLine = fly
 
 local function area(key)
     local f = frames[key]
@@ -213,8 +251,9 @@ local function merge(db, f, mergeKey, now, prefix, amount)
     if not (db.merge and mergeKey) then return false end
     for _, line in ipairs(f.active) do
         if line.key == mergeKey and now - line.born < (db.mergeWindow or 0.35) then
-            line.n, line.born, line.t = line.n + 1, now, 0
+            line.n, line.born = line.n + 1, now
             line.fs:SetFormattedText("%s%s%s ×%d", prefix, amount, line.suffix or "", line.n)
+            fly(f, line)
             return true
         end
     end
@@ -249,14 +288,14 @@ local function add(key, color, prefix, amount, crit, mergeKey, scale, sound, ico
     local snd = crit and db.critSound ~= "" and db.critSound or sound
     if snd and snd ~= "" and not M.testing then Media:PlaySound(snd) end
     local sticky = crit and db.crit == "sticky"
-    local slot = (a.anim == "static" or sticky) and freeSlot(f) or 0
-    fs:SetScale(1)
+    local slot = (a.anim == "static" or a.anim == "pow" or a.anim == "horizontal" or sticky) and freeSlot(f) or 0
     f.flip = not f.flip
     local _, h = fs:GetFont()
-    f.active[#f.active + 1] = { fs = fs, t = 0, side = f.flip and -1 or 1, slot = slot, h = (h or 18) + 4,
+    local line = { fs = fs, side = f.flip and -1 or 1, slot = slot, h = (h or 18) + 4,
         key = mergeKey, n = 1, born = now, suffix = suffix, sticky = sticky }
-    f:SetScript("OnUpdate", move)
+    f.active[#f.active + 1] = line
     f:Show()
+    fly(f, line)
 end
 M.AddLine = add
 
@@ -325,11 +364,7 @@ function M:EnableScroll()
             placeArea(key)
             local on = db.enabled and areaDB(key).show
             if not on then
-                for _, line in ipairs(frames[key].active) do
-                    line.fs:Hide(); line.fs.icon:Hide(); frames[key].free[#frames[key].free + 1] = line.fs
-                end
-                wipe(frames[key].active)
-                frames[key]:SetScript("OnUpdate", nil)
+                for i = #frames[key].active, 1, -1 do release(frames[key], frames[key].active[i].fs) end
                 frames[key]:Hide()
             end
             for _, line in ipairs(frames[key].active) do self:StyleLine(line.fs, false, key) end
@@ -452,7 +487,7 @@ function M:RemoveArea(key)
     if db.critArea == key then db.critArea = "same" end
     db.areas[key] = nil
     local f = frames[key]
-    if f then f:SetScript("OnUpdate", nil); f:Hide() end
+    if f then for i = #f.active, 1, -1 do release(f, f.active[i].fs) end; f:Hide() end
     self:EnableScroll()
     return true
 end

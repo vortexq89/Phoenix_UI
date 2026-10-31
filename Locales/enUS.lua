@@ -3807,6 +3807,8 @@ ns.RegisterLocale("enUS", {
     FCT_ANIM_PARABOLA = "Parabola",
     FCT_ANIM_ANGLED = "Angled",
     FCT_ANIM_STATIC = "Static",
+    FCT_ANIM_HORIZONTAL = "Horizontal",
+    FCT_ANIM_POW = "Pow",
     FCT_ANIM = "Animation",
     FCT_ANIM_DESC = "How lines move: straight up or down, curving outward, at an angle, or stacked in place.",
     FCT_ALIGN = "Text alignment",

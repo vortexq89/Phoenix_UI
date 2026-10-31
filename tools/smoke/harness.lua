@@ -5789,6 +5789,18 @@ try("combat text: user areas, always in Layout mode (t196)", function()
     assert(not CT:RemoveArea("incoming"), "fixed areas stay")
 end)
 
+try("combat text: AnimationGroup flight, MSBT styles (t196)", function()
+    local CT = ns.modules.CombatText
+    CT.db.scroll.enabled = true
+    CT:EnableScroll()
+    for _, style in ipairs({ "straight", "parabola", "angled", "horizontal", "pow", "static" }) do
+        CT.db.scroll.areas.notify.anim = style
+        CT.AddLine("notify", { 1, 1, 1 }, "", "123", style == "pow", nil, 1)
+    end
+    CT.db.scroll.areas.notify.anim = "straight"
+    CT:EnableScroll()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

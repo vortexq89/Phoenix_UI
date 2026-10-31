@@ -30,7 +30,8 @@ end
 local function rebuild() if ns.Config.RebuildPage then ns.Config:RebuildPage("CombatText") end end
 local newName = ""
 local ANIM = { { value = "straight", label = "FCT_ANIM_STRAIGHT" }, { value = "parabola", label = "FCT_ANIM_PARABOLA" },
-    { value = "angled", label = "FCT_ANIM_ANGLED" }, { value = "static", label = "FCT_ANIM_STATIC" } }
+    { value = "angled", label = "FCT_ANIM_ANGLED" }, { value = "static", label = "FCT_ANIM_STATIC" },
+    { value = "horizontal", label = "FCT_ANIM_HORIZONTAL" }, { value = "pow", label = "FCT_ANIM_POW" } }
 local ICON = { { value = "LEFT", label = "ANCHOR_LEFT" }, { value = "RIGHT", label = "ANCHOR_RIGHT" }, { value = "OFF", label = "OFF" } }
 -- the areas are Phoenix movers: unlocking shows every area's box (with its scroll path) next to the other frames
 local function unlock()
