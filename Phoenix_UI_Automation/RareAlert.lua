@@ -1,0 +1,202 @@
+local _, ns = ...
+local L = ns.L
+local W, Secret = ns.Widgets, ns.Secret
+local M = ns:GetModule("Automation")
+
+--[[ Rare alert: when a rare (a kill vignette) appears on the minimap, a small toast names it with a sound.
+    "Target" is a secure macro button (/target <name>), set up only out of combat; "Waypoint" puts the game's own
+    map pin on it and tracks it. Each vignette alerts once. Off with Automation > Rare alert. ]]
+local seen = {}
+
+-- Today's rares (RareScanner idea, t193): per character, which rares you saw and which died, cleared at the daily
+-- reset. Kept in PhoenixUIDB.global.rareLog["Name-Realm"][rare name] = { seen = time, killed = time }; only plain,
+-- non-secret names from the game's vignettes are stored.
+local function now() local t = time(); return type(t) == "number" and t or 0 end
+local function lastReset()
+    local left = C_DateAndTime and C_DateAndTime.GetSecondsUntilDailyReset and C_DateAndTime.GetSecondsUntilDailyReset()
+    if type(left) ~= "number" or Secret.IsSecret(left) then return now() - 86400 end
+    return now() + left - 86400
+end
+local function rareLog()
+    local g = PhoenixUIDB and PhoenixUIDB.global
+    if type(g) ~= "table" then return {} end
+    g.rareLog = type(g.rareLog) == "table" and g.rareLog or {}
+    local who = (UnitName("player") or "?") .. "-" .. (GetRealmName() or "?")
+    local log = g.rareLog[who]
+    if type(log) ~= "table" then log = {}; g.rareLog[who] = log end
+    local since = lastReset()
+    for name, e in pairs(log) do
+        if type(e) ~= "table" or (e.seen or 0) < since and (e.killed or 0) < since then log[name] = nil end
+    end
+    return log
+end
+M.RareLog = rareLog
+
+function M.NoteRare(name, killed)
+    if type(name) ~= "string" or Secret.IsSecret(name) or name == "" then return end
+    local log = rareLog()
+    local e = log[name] or {}
+    if killed then e.killed = now() else e.seen = e.seen or now() end
+    log[name] = e
+end
+
+-- Loot marks (RareScanner idea, our own data): when you loot a rare you killed, its collectible drops (mounts, pets,
+-- toys, appearances) are remembered account-wide in PhoenixUIDB.global.rareLoot[rare name] = { itemID, ... }. The
+-- toast then says how many of those you still miss. Only plain item links and names are read.
+local function lootBook()
+    local g = PhoenixUIDB and PhoenixUIDB.global
+    if type(g) ~= "table" then return {} end
+    g.rareLoot = type(g.rareLoot) == "table" and g.rareLoot or {}
+    return g.rareLoot
+end
+M.RareLootBook = lootBook
+
+local function plain(v) return v ~= nil and not Secret.IsSecret(v) end
+
+-- true / false for a collectible item (collected or not), nil when the item is not a collectible
+function M.ItemCollected(id)
+    if type(id) ~= "number" then return nil end
+    if C_MountJournal and C_MountJournal.GetMountFromItem then
+        local mount = C_MountJournal.GetMountFromItem(id)
+        if plain(mount) and mount then return select(11, C_MountJournal.GetMountInfoByID(mount)) and true or false end
+    end
+    if C_PetJournal and C_PetJournal.GetPetInfoByItemID then
+        local species = select(13, C_PetJournal.GetPetInfoByItemID(id))
+        if plain(species) and type(species) == "number" then return (C_PetJournal.GetNumCollectedInfo(species) or 0) > 0 end
+    end
+    if C_ToyBox and C_ToyBox.GetToyInfo and plain(C_ToyBox.GetToyInfo(id)) and C_ToyBox.GetToyInfo(id) then
+        return PlayerHasToy(id) and true or false
+    end
+    if C_TransmogCollection and C_TransmogCollection.PlayerHasTransmog and C_Item and C_Item.IsDressableItemByID
+        and C_Item.IsDressableItemByID(id) then
+        return C_TransmogCollection.PlayerHasTransmog(id) and true or false
+    end
+    return nil
+end
+
+function M.NoteRareLoot(name, ids)
+    if type(name) ~= "string" or not plain(name) or name == "" then return end
+    local book = lootBook()
+    local list = type(book[name]) == "table" and book[name] or {}
+    local have = {}
+    for _, id in ipairs(list) do have[id] = true end
+    for _, id in ipairs(ids or {}) do
+        if type(id) == "number" and not have[id] and M.ItemCollected(id) ~= nil then list[#list + 1] = id; have[id] = true end
+    end
+    if #list > 0 then book[name] = list end
+end
+
+-- known collectibles and how many you still miss, or nil
+function M.RareLootStatus(name)
+    local list = type(name) == "string" and lootBook()[name]
+    if type(list) ~= "table" or #list == 0 then return nil end
+    local missing = 0
+    for _, id in ipairs(list) do if M.ItemCollected(id) == false then missing = missing + 1 end end
+    return #list, missing
+end
+
+local function onLoot()
+    if not (M:IsEnabled() and M.db.rareAlert) then return end
+    local c, name = UnitClassification("target"), UnitName("target")
+    if not (plain(c) and plain(name) and (c == "rare" or c == "rareelite") and UnitIsDead("target")) then return end
+    local ids = {}
+    for slot = 1, (GetNumLootItems() or 0) do
+        local link = GetLootSlotLink(slot)
+        local id = plain(link) and type(link) == "string" and tonumber(link:match("item:(%d+)"))
+        if id then ids[#ids + 1] = id end
+    end
+    M.NoteRareLoot(name, ids)
+end
+M.OnRareLoot = onLoot
+
+-- "KILLED", "SEEN" or nil: today's status for the toast (read before this sighting is noted).
+function M.RareStatus(name)
+    local e = type(name) == "string" and rareLog()[name]
+    if not e then return nil end
+    if e.killed then return "KILLED" end
+    if e.seen then return "SEEN" end
+end
+
+-- Is this vignette a rare to alert on? Kill vignettes only (not treasures, events or ones already looted).
+function M.IsRareVignette(info)
+    if type(info) ~= "table" or Secret.IsSecret(info.name) or Secret.IsSecret(info.atlasName) then return false end
+    if info.isDead or info.onWorldMap == false and info.onMinimap == false then return false end
+    local atlas = type(info.atlasName) == "string" and info.atlasName:lower() or ""
+    return atlas:find("vignettekill", 1, true) ~= nil and type(info.name) == "string" and info.name ~= ""
+end
+
+local toast
+local function build()
+    local t = W:Popup(L.AUTO_RARE, 300, 104, "boss")
+    t:ClearAllPoints()
+    t:SetPoint("TOP", 0, -140)
+    t.name = W.Text(t, "body", "text.primary")
+    t.name:SetPoint("TOPLEFT", 16, -42); t.name:SetPoint("RIGHT", -16, 0)
+    t.status = W.Text(t, "small", "text.secondary")
+    t.status:SetPoint("TOPLEFT", t.name, "BOTTOMLEFT", 0, -2)
+    t.target = CreateFrame("Button", "PhoenixUI_RareTarget", t, "SecureActionButtonTemplate")
+    t.target:SetSize(120, 26)
+    t.target:SetPoint("BOTTOMLEFT", 16, 12)
+    t.target:RegisterForClicks("AnyUp", "AnyDown")
+    t.target:SetAttribute("type", "macro")
+    t.targetLabel = W:Button(t.target, L.AUTO_RARE_TARGET, "primary", "user", 120)
+    t.targetLabel:SetAllPoints()
+    t.targetLabel:EnableMouse(false)
+    -- the toast holds a secure button: never hide it in combat (that would be blocked); close after combat instead
+    t.close.onClick = function() ns.Combat:Run("rare.close", function() t:Hide() end) end
+    t.way = W:Button(t, L.AUTO_RARE_WAYPOINT, "secondary", "maps", 130)
+    t.way:SetPoint("BOTTOMRIGHT", -16, 12)
+    return t
+end
+
+function M:ShowRare(guid, info)
+    toast = toast or build()
+    toast.name:SetText(info.name)
+    local st = M.RareStatus(info.name)
+    local status = st == "KILLED" and L.AUTO_RARE_KILLED or st == "SEEN" and L.AUTO_RARE_SEEN_TODAY or ""
+    local known, missing = M.RareLootStatus(info.name)
+    if known then
+        local loot = missing > 0 and L.AUTO_RARE_LOOT_MISSING:format(missing, known) or L.AUTO_RARE_LOOT_DONE
+        status = status ~= "" and (status .. " · " .. loot) or loot
+    end
+    toast.status:SetText(status)
+    M.NoteRare(info.name)
+    if not InCombatLockdown() then
+        toast.target:SetAttribute("macrotext", "/cleartarget\n/targetexact " .. info.name)
+        toast.target:Show()
+    end
+    toast.way.onClick = function()
+        local map = C_Map.GetBestMapForUnit("player")
+        local pos = map and C_VignetteInfo.GetVignettePosition(guid, map)
+        if pos and C_Map.CanSetUserWaypointOnMap(map) then
+            C_Map.SetUserWaypoint(UiMapPoint.CreateFromVector2D(map, pos))
+            C_SuperTrack.SetSuperTrackedUserWaypoint(true)
+        end
+    end
+    if not InCombatLockdown() then toast:Show() end
+    PlaySound(SOUNDKIT.RAID_WARNING, "Master")
+    ns:Print(L.AUTO_RARE_SEEN:format(info.name))
+    return toast
+end
+
+local function onVignette(_, _, guid, onMinimap)
+    if not (M:IsEnabled() and M.db.rareAlert) or not guid or Secret.IsSecret(guid) then return end
+    if seen[guid] then
+        -- a rare we alerted on that is now dead: today's log marks it killed
+        local dead = C_VignetteInfo.GetVignetteInfo(guid)
+        if type(dead) == "table" and dead.isDead and not Secret.IsSecret(dead.name) then M.NoteRare(dead.name, true) end
+        return
+    end
+    if onMinimap == false or IsInInstance() then return end
+    local info = C_VignetteInfo.GetVignetteInfo(guid)
+    if not M.IsRareVignette(info) then return end
+    seen[guid] = true
+    M:ShowRare(guid, info)
+end
+
+function M:SetupRareAlert()
+    if self.rareHooked then return end
+    self.rareHooked = true
+    ns.Events:On("VIGNETTE_MINIMAP_UPDATED", self, onVignette)
+    ns.Events:On("LOOT_OPENED", self, onLoot)
+end

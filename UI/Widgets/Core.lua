@@ -1,0 +1,108 @@
+local _, ns = ...
+
+--[[ ns.Widgets — themed controls for the config window. Every widget:
+    :SetValue(v) / :GetValue(), .onChange = function(widget, value), :SetEnabledState(bool).
+    Colours always come from ns.Theme; widgets re-theme on PUI_THEME_CHANGED via ns.Skin:Register. ]]
+local W = {}
+ns.Widgets = W
+local Theme, Skin, Media = ns.Theme, ns.Skin, ns.Media
+local WHITE = Media.textures.WHITE
+
+W.ROW_HEIGHT = 30
+W.CONTROL_WIDTH = 200
+
+function W.Texture(parent, layer, sub, path)
+    local t = parent:CreateTexture(nil, layer or "ARTWORK", nil, sub or 0)
+    t:SetTexture(path or WHITE)
+    return t
+end
+
+function W.Text(parent, role, token, justify)
+    local fs = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    Skin:Text(fs, role or "body", token or "text.primary")
+    fs:SetJustifyH(justify or "LEFT")
+    fs:SetWordWrap(false)
+    return fs
+end
+
+function W.Color(tex, token, alpha)
+    if ns.Icons:Owns(tex) then
+        ns.Icons:SetState(tex, nil)
+        return ns.Icons:Tint(tex, token, alpha)
+    end
+    local r, g, b, a = Theme:Color(token)
+    tex:SetVertexColor(r, g, b, alpha or a)
+end
+
+-- Tintable glyph from the Phoenix icon set (ns.Icons). Colour with ns.Icons:Tint / :SetState.
+function W.Icon(parent, name, size, token, layer)
+    return ns.Icons:Create(parent, name, size or 16, token or "text.secondary", layer)
+end
+
+-- Icon tiles (module cards, page header, search results): a tinted glyph sits on an accent tile; full-colour
+-- game art instead fills the tile on a neutral backing, so it never reads as an orange square with a speck.
+function W.TileColor(bg, icon, token, alpha)
+    local art = ns.Icons:IsArt(icon)
+    W.Color(bg, art and "bg.sunken" or token, art and 1 or alpha)
+    local w = bg:GetWidth()
+    if type(w) == "number" and w > 0 then
+        icon.puiGlyph = icon.puiGlyph or icon:GetWidth()
+        local size = art and (w - 4) or icon.puiGlyph
+        icon:SetSize(size, size)
+    end
+end
+
+-- Shared disabled handling.
+function W.SetEnabledState(frame, enabled)
+    frame.disabled = not enabled
+    frame:SetAlpha(enabled and 1 or 0.4)
+    if frame.EnableMouse then frame:EnableMouse(enabled) end
+end
+
+---------------------------------------------------------------- themed tooltip
+local tip
+local function getTip()
+    if tip then return tip end
+    tip = CreateFrame("Frame", nil, UIParent)
+    tip:SetFrameStrata("TOOLTIP")
+    tip:SetClampedToScreen(true)
+    tip.title = W.Text(tip, "body", "text.primary")
+    tip.text = W.Text(tip, "desc", "text.secondary")
+    tip.text:SetWordWrap(true)
+    tip.title:SetPoint("TOPLEFT", 10, -9)
+    tip.text:SetPoint("TOPLEFT", tip.title, "BOTTOMLEFT", 0, -4)
+    tip.text:SetWidth(260)
+    Skin:Register(tip, function(f)
+        Skin:Panel(f, "raised", { border = "border.strong", shadow = 8 })
+        Skin:Text(f.title, "body", "text.primary")
+        Skin:Text(f.text, "desc", "text.secondary")
+    end)
+    tip:Hide()
+    return tip
+end
+
+function W.ShowTooltip(owner, title, text)
+    local t = getTip()
+    t.title:SetText(title or "")
+    t.text:SetText(text or "")
+    t.text:SetShown(text ~= nil and text ~= "")
+    local w = math.max(t.title:GetStringWidth(), text and math.min(260, t.text:GetStringWidth()) or 0)
+    t.text:SetWidth(math.max(w, 1))
+    t:SetSize(w + 20, t.title:GetStringHeight() + (t.text:IsShown() and t.text:GetStringHeight() + 4 or 0) + 18)
+    t:ClearAllPoints()
+    t:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 6)
+    ns.Anim:FadeIn(t, 0.1)
+end
+
+function W.HideTooltip()
+    if tip then tip:Hide() end
+end
+
+function W.AttachTooltip(frame, title, text)
+    frame:HookScript("OnEnter", function(self)
+        local t = type(title) == "function" and title(self) or title
+        local d = type(text) == "function" and text(self) or text
+        if t then W.ShowTooltip(self, t, d) end
+    end)
+    frame:HookScript("OnLeave", W.HideTooltip)
+end

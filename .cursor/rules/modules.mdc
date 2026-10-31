@@ -1,0 +1,17 @@
+---
+description: Module contract — registration, lifecycle, enable/disable, options schema
+globs: ["Modules/**/*", "Core/Modules.lua"]
+alwaysApply: false
+---
+# Module contract
+
+- Register with `ns:NewModule(key, { label, category, order, defaults, requires?, reloadOnToggle?, loadWhen? })`. `key` is PascalCase and unique. Folder `Modules/<Key>/` with `<Key>.lua` (+ helpers); its schema is `Phoenix_UI_Options/Options/<Key>.lua`.
+- Lifecycle: `OnInitialize` (no visuals/events) → `OnEnable` (create/attach/register) → `OnSettingChanged(path, value)` / `Refresh()` → `OnDisable` (revert all visuals; the core releases events) → `OnProfileChanged`.
+- Every `hooksecurefunc`/`HookScript` body begins with `if not M:IsEnabled() then return end`. Hooks are installed once (guard flag), never per enable.
+- Every visual change on a Blizzard object must be reversible through `ns.Skin:Restore` (Skin primitives record originals).
+- Events only through `ns.Events:On/OnUnit/Listen`. No private event frames. No `COMBAT_LOG_EVENT*`.
+- Settings: read `self.db.<key>` and write only through `ns.DB:Set(self, path, value)` (never mutate `self.db` from UI code). Defaults live in the module definition and are not copied into SavedVariables.
+- Options are declarative (`ns:RegisterOptions(key, schema)`). No widget code in modules. Every label/desc is a locale key; add `keywords` for search.
+- Cross-module access only via `ns:GetModule(key)` public methods or `PUI_*` messages.
+- A module failing in `OnEnable` must not break others (the core wraps it). Don't swallow errors yourself with bare `pcall`.
+- Before adding a module, confirm Blizzard 12.1.5 doesn't already provide the feature (Edit Mode, Cooldown Manager, damage meter, boss timeline, nameplate settings).

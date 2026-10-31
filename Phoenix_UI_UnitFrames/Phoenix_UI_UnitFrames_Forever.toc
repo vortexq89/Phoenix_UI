@@ -1,0 +1,27 @@
+# WoW Forever. Generated from Phoenix_UI_UnitFrames.toc by tools/gen_tocs.py; edit that file instead.
+## Interface: 16001
+## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r UnitFrames
+## Notes: Phoenix UI plugin: UnitFrames. Turn it on or off in /pui > Plugins.
+## Author: VortexQ8
+#@debug@
+## Version: 2.0.0-beta1
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
+## Category: User Interface
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
+## Dependencies: Phoenix_UI
+## LoadOnDemand: 1
+## X-License: MIT
+## X-Website: https://github.com/vortexq89/Phoenix_UI
+
+Bridge.lua
+UnitFrames.lua
+Blizzard.lua
+Build.lua
+Update.lua
+Spawn.lua
+Arena.lua
+Resources.lua
+Imbues.lua
