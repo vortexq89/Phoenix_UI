@@ -17,6 +17,15 @@ local function cvarRow(name, kind, item)
     return item
 end
 
+-- Quiet scope instance list (BigWigs BossBlock idea): pick one listed instance to remove it.
+local quietPick
+local function notListed(m) return m.db.hideWhere ~= "listed" end
+local function QUIET_VALUES(m)
+    local out = {}
+    for _, e in ipairs(m.QuietListEntries()) do out[#out + 1] = { value = e.id, label = e.name } end
+    return out
+end
+
 ns:RegisterOptions("Quality", {
     { type = "preview", kind = "quality" },
     { type = "tab", label = "QUALITY_TAB_INTERFACE" },
@@ -28,10 +37,35 @@ ns:RegisterOptions("Quality", {
       keywords = "boss kill banner loot" },
     { type = "toggle", key = "hideBossEmotes", label = "QUALITY_BOSS_EMOTES", desc = "QUALITY_BOSS_EMOTES_DESC",
       keywords = "boss emote whisper bossblock quiet raid warning" },
+    { type = "toggle", key = "muteMusic", label = "QUALITY_MUTE_MUSIC", desc = "QUALITY_MUTE_DESC",
+      keywords = "bossblock boss fight encounter mute music sound quiet" },
+    { type = "toggle", key = "muteAmbience", label = "QUALITY_MUTE_AMBIENCE", desc = "QUALITY_MUTE_DESC",
+      keywords = "bossblock boss fight encounter mute ambience sound quiet" },
+    { type = "toggle", key = "muteSfx", label = "QUALITY_MUTE_SFX", desc = "QUALITY_MUTE_DESC",
+      keywords = "bossblock boss fight encounter mute effects sfx sound quiet" },
+    { type = "toggle", key = "muteErrorSpeech", label = "QUALITY_MUTE_ERRORS", desc = "QUALITY_MUTE_DESC",
+      keywords = "bossblock boss fight encounter mute error speech voice not ready sound quiet" },
     { type = "select", key = "hideWhere", label = "QUALITY_HIDE_WHERE", desc = "QUALITY_HIDE_WHERE_DESC",
       keywords = "bossblock quiet instance dungeon raid only where", values = {
         { value = "always", label = "QUALITY_HIDE_ALWAYS" }, { value = "instances", label = "QUALITY_HIDE_INSTANCES" },
-        { value = "raids", label = "QUALITY_HIDE_RAIDS" } } },
+        { value = "raids", label = "QUALITY_HIDE_RAIDS" }, { value = "listed", label = "QUALITY_HIDE_LISTED" } } },
+    { type = "button", label = "QUALITY_QUIET_ADD", desc = "QUALITY_QUIET_ADD_DESC", button = "QUALITY_QUIET_ADD_BUTTON", icon = "add",
+      keywords = "bossblock quiet instance list add this dungeon raid", hidden = notListed,
+      disabled = function(m) return m.CurrentInstance() == nil end,
+      func = function(m)
+          if m:QuietListAdd() and ns.Config.RebuildPage then ns.Config:RebuildPage("Quality") end
+      end },
+    { type = "select", label = "QUALITY_QUIET_PICK", desc = "QUALITY_QUIET_PICK_DESC", values = QUIET_VALUES,
+      keywords = "bossblock quiet instance list", hidden = function(m) return notListed(m) or #m.QuietListEntries() == 0 end,
+      get = function(m) return quietPick or (m.QuietListEntries()[1] or {}).id end, set = function(_, v) quietPick = v end },
+    { type = "button", label = "QUALITY_QUIET_REMOVE", desc = "QUALITY_QUIET_REMOVE_DESC", button = "DELETE", icon = "delete",
+      hidden = function(m) return notListed(m) or #m.QuietListEntries() == 0 end,
+      func = function(m)
+          if m:QuietListRemove(quietPick or (m.QuietListEntries()[1] or {}).id) then
+              quietPick = nil
+              if ns.Config.RebuildPage then ns.Config:RebuildPage("Quality") end
+          end
+      end },
     { type = "toggle", key = "filterErrors", label = "FILTER_ERRORS", desc = "FILTER_ERRORS_DESC", keywords = "red text spam" },
     { type = "toggle", key = "achievementScreenshot", label = "ACHIEVEMENT_SCREENSHOT", desc = "ACHIEVEMENT_SCREENSHOT_DESC" },
     { type = "toggle", key = "knownTint", label = "QUALITY_KNOWN", desc = "QUALITY_KNOWN_DESC",

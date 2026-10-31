@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 121 |
-| partial | 9 |
+| Phoenix has | 122 |
+| partial | 8 |
 | missing | 3 |
 | out of scope | 10 |
 
@@ -66,7 +66,7 @@ Overlaps found:
 | BigWigs | Midnight timers from the encounter timeline | Phoenix has | `Modules/Encounters/Bars.lua` and `Encounters.lua` draw bars from the game's encounter timeline; BigWigs bridge in `Modules/Encounters/BigWigs.lua`. |
 | BigWigs | Messages, sounds, countdown voice | Phoenix has | Encounters > Ability rules (spellID=hide / emph / sound / count) on the Phoenix timeline bars. Review 28 (2026-10-31): emphasised bars in their own bigger stack, drain / fill, spark, voice count-in per ability or for every emphasised bar, banner lines, screen-edge flash on critical warnings. |
 | BigWigs | Pull, break and battle-res tools | Phoenix has | Phoenix `Phoenix_UI_RaidTools` (`rt.pullSeconds`, `rt.breakMinutes`, `rt.mplusCountdown`, `/pui cd`), battle res on item bar and in Ascent (`ascent.brLust`), `Skins/Queue |
-| BigWigs | BossBlock (noise control) | partial | Banner hiding in `Modules/Quality/Quality.lua` (hideZoneText, hideBossBanner, hideTalkingHead). Built 2026-10-31 (t198): boss emotes (`hideBossEmotes`, RaidWarningFrame's emote events only) and a quiet scope for all four (`hideWhere`: everywhere / dungeons and raids / raids, `M.QuietHere`). Gap left: a list of single instances and a CVar ledger (restore CVars a boss mod changed). |
+| BigWigs | BossBlock (noise control) | have | Banner hiding in `Modules/Quality/Quality.lua` (hideZoneText, hideBossBanner, hideTalkingHead). Built 2026-10-31 (t198): boss emotes (`hideBossEmotes`, RaidWarningFrame's emote events only) and a quiet scope for all four (`hideWhere`: everywhere / dungeons and raids / raids, `M.QuietHere`). Completed 2026-10-31 (review 32): `hideWhere = "listed"` with `quietList` (Add this instance / Remove, `M:QuietListAdd`, `M:QuietListRemove`), and boss fight sound muting (`muteMusic`, `muteAmbience`, `muteSfx`, `muteErrorSpeech`, ENCOUNTER_START / END) with a CVar ledger (`global.soundLedger`, restored at the end of the fight or at the next login). Movies: Automation > Skip cinematics; objective tracker: Quests > Auto-collapse; error text: Filter errors. |
 | BigWigs | Nameplate icons and InfoBox/AltPower | out of scope | Phoenix Nameplates has cast/aura lanes and M+ indicators; no boss-module nameplate timers. |
 | BigWigs | Statistics | Phoenix has | Phoenix `rt.stats.*` (encounter stats with wipe trend, `rt.stats.yieldToBossMods`). |
 | BugSack | Early error capture | Phoenix has | `Core/Errors.lua` captures errors early with privacy scrubbing. |

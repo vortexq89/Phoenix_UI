@@ -368,3 +368,20 @@ bar, swing timer, spec bars) and ElvUI's class bar (spark, smoothing, detach). P
 | GCD, cast, swing, totems | Cast Bars and totem bar | parity | complete | coverage row pointed at a module that no longer exists; corrected |
 
 Left: a max-health-loss overlay (the reduced maximum is not exposed as a plain value on retail 12.x).
+
+## 32. Quiet mode (BigWigs BossBlock parity)
+
+Reference: BigWigs BossBlock (ideas only: talking heads per content type, boss emotes, zone text, movies, objective
+tracker, sound channels muted during a boss with the CVars re-enabled at load in case a disconnect left them off).
+Phoenix's side is Quality of Life > Interface (`Modules/Quality/Quality.lua`).
+
+| Area | Phoenix before | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Banners, emotes, talking heads | event unregistering, quiet scope | BossBlock | parity | none |
+| Scope | everywhere / instances / raids | BossBlock per content type | no way to quiet only the instances you choose | Where to hide > Only listed instances, Add this instance (the one you are in) and Remove from the list (`quietList`, by instance ID) |
+| Sound | none | BossBlock mutes music, ambience, SFX, error speech | missing | four switches; ENCOUNTER_START mutes the chosen channels that were on (sound CVars are not combat-protected), ENCOUNTER_END turns them back on; follows Where to hide |
+| Safety net | n/a | BossBlock re-enables CVars at load | a crash mid-fight would leave music off | every muted channel goes into an account ledger first (`global.soundLedger`); login (outside an encounter) and turning the module off restore exactly those |
+| Movies, tracker, error text | Automation, Quests, Quality | BossBlock | parity elsewhere | none (Skip cinematics, Auto-collapse, Filter errors) |
+
+Left: none.
+

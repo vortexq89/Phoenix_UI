@@ -5902,6 +5902,37 @@ try("quality: boss emotes and the quiet scope (BossBlock idea, t198)", function(
     inside, kind = false, "none"
     Q:ApplyBanners()
     assert(rw:IsEventRegistered("RAID_BOSS_EMOTE") and rw:IsEventRegistered("RAID_BOSS_WHISPER"), "back outside the raid")
+    -- listed instances only: add the one you are in, quiet there, not in another, remove it again
+    local iid, iname = 2652, "The Stonevault"
+    rawset(env, "GetInstanceInfo", function() return iname, kind, 8, "Mythic", 5, 0, false, iid end)
+    Q.db.hideWhere = "listed"
+    assert(Q.CurrentInstance() == nil and not Q.QuietHere(), "listed: nothing outside")
+    assert(Q:QuietListAdd() == nil, "cannot add the open world")
+    inside, kind = true, "party"
+    assert(not Q.QuietHere(), "listed: not yet on the list")
+    assert(Q:QuietListAdd() == iname and Q.QuietHere(), "added and quiet")
+    assert(not rw:IsEventRegistered("RAID_BOSS_EMOTE") or not Q.db.hideBossEmotes, "applied on add")
+    iid, iname = 2660, "Ara-Kara"
+    assert(not Q.QuietHere(), "another instance stays loud")
+    local list = Q.QuietListEntries()
+    assert(#list == 1 and list[1].id == 2652, "one entry")
+    assert(Q:QuietListRemove(2652) and not Q:QuietListRemove(2652) and #Q.QuietListEntries() == 0, "removed once")
+    -- boss fight sound: only channels that were on, put back at the end and after a crash mid-fight
+    local cv = { Sound_EnableMusic = "1", Sound_EnableAmbience = "0", Sound_EnableSFX = "1", Sound_EnableErrorSpeech = "1" }
+    local og, os_ = env.C_CVar.GetCVar, env.C_CVar.SetCVar
+    env.C_CVar.GetCVar = function(k) return cv[k] end
+    env.C_CVar.SetCVar = function(k, v) cv[k] = v end
+    Q.db.hideWhere, Q.db.muteMusic, Q.db.muteAmbience, Q.db.muteErrorSpeech = "always", true, true, true
+    assert(Q:MuteBossSound() == 2 and cv.Sound_EnableMusic == "0" and cv.Sound_EnableErrorSpeech == "0", "music and speech off")
+    assert(cv.Sound_EnableSFX == "1" and cv.Sound_EnableAmbience == "0", "sfx untouched, ambience was already off")
+    assert(Q:MuteBossSound() == 0, "a second pull does not double the ledger")
+    assert(Q.global.soundLedger.Sound_EnableMusic, "written to the ledger")
+    assert(Q:RestoreBossSound() == 2 and cv.Sound_EnableMusic == "1" and cv.Sound_EnableAmbience == "0", "restored exactly")
+    Q.db.hideWhere = "raids"
+    assert(Q:MuteBossSound() == 0 and cv.Sound_EnableMusic == "1", "outside the quiet scope nothing is muted")
+    Q.db.muteMusic, Q.db.muteAmbience, Q.db.muteErrorSpeech = false, false, false
+    env.C_CVar.GetCVar, env.C_CVar.SetCVar = og, os_
+    inside, kind = false, "none"
     Q.db.hideBossEmotes, Q.db.hideWhere = false, "always"
     Q:ApplyBanners()
 end)
