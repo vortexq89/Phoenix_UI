@@ -14,11 +14,13 @@ local W, Skin = ns.Widgets, ns.Skin
       The original anchors are kept in memory so "reset" restores Blizzard's own layout.
     * S16: snapping to other frames' edges, an arrow-key switch, live coordinates, an unlock key (an override
       binding to our own button, set out of combat) and one scale for Blizzard's UI panel windows (M.WINDOWS,
-      none of them Edit Mode systems; scaled on show, protected ones out of combat only). ]]
+      none of them Edit Mode systems; scaled on show, protected ones out of combat only).
+    * MoveAny parity (t194 / t198): any named frame, a per-frame hide (alpha 0, kept against Blizzard's own SetAlpha)
+      and a scale per Blizzard window on top of the shared one (db.windowScales[name]). ]]
 local M = ns:NewModule("Movers", {
     label = "MOVERS", desc = "MOVERS_DESC", category = "interface", order = 95,
     defaults = { showHidden = false, grid = true, gridSize = 32, snap = true, frames = {}, snapFrames = true, arrows = true, coords = true,
-        unlockKey = "", windowScale = 1, any = {} },
+        unlockKey = "", windowScale = 1, windowScales = {}, any = {} },
 })
 
 local OVERLAY_MIN_W, OVERLAY_MIN_H = 48, 20 -- the box matches the frame; tiny frames still get a grabbable box
@@ -47,6 +49,7 @@ local entries, byKey = {}, {}
 for _, e in ipairs(M.BLIZZARD) do entries[#entries + 1] = e; byKey[e.key] = e end
 
 local unlocked, selected = false, nil
+local hookAlpha -- (e, f) keeps a hidden frame hidden; defined with the hide code below
 local toolbar, grid
 
 ---------------------------------------------------------------- targets
@@ -111,7 +114,9 @@ local function apply(e)
     remember(e, f)
     e.applying = true
     if not e.noScale and s.scale then f:SetScale(ns.Util.SafeScale(s.scale)) end
-    if not e.noAlpha and s.alpha then f:SetAlpha(s.alpha) end
+    if not e.noAlpha then
+        if s.hidden then f:SetAlpha(0) elseif s.alpha then f:SetAlpha(s.alpha) end
+    end
     if s.point then
         local k = uiScale(f) -- offsets are in the frame's own units
         f:ClearAllPoints()
@@ -145,7 +150,11 @@ function M:ApplyAll()
     for _, e in ipairs(entries) do
         hookTarget(e)
         if e.store then -- the owning module places its own frames
-        elseif saved(e) then apply(e) else restore(e) end
+        elseif saved(e) then
+            apply(e)
+            local f = M.IsHidden(e) and resolve(e)
+            if f then hookAlpha(e, f) end
+        else restore(e) end
     end
 end
 
@@ -197,7 +206,7 @@ local function commit(e, cx, cy, scale, alpha)
     local s
     s, scale = placement(e, cx, cy, scale, saved(e))
     if not e.noScale then s.scale = scale end
-    if alpha and not e.noAlpha then s.alpha = alpha end
+    if alpha and not e.noAlpha then s.alpha, s.hidden = alpha, nil end -- a chosen opacity shows a hidden frame again
     if e.store then e.store.set(s) else M.db.frames[e.key] = s end
     apply(e)
 end
@@ -255,6 +264,7 @@ local function syncOverlay(o)
     local roomy = h >= 34
     o.role = (w < 120 or h < 26) and "small" or "body"
     Skin:Text(o.label, o.role, selected == o.entry and "text.primary" or "text.secondary")
+    o.label:SetText(M.IsHidden(o.entry) and L.MOVERS_HIDDEN_BOX:format(M:LabelOf(o.entry)) or M:LabelOf(o.entry))
     o.label:SetWidth(w - 8)
     o.label:ClearAllPoints()
     o.label:SetPoint("CENTER", 0, (roomy and M.db.coords) and 6 or 0)
@@ -469,6 +479,55 @@ function M:ResetAll()
     ns.Events:Fire("PUI_MOVERS")
 end
 
+-- Hide (MoveAny's per-frame hide): the frame fades to nothing but keeps its place, its events and its Show/Hide
+-- logic, so nothing Blizzard does with it changes. Blizzard code that sets the frame's alpha itself is answered by a
+-- post-hook (never in combat on a protected frame). Phoenix's own frames (stores) have their own on/off switches,
+-- and noAlpha frames animate their alpha themselves, so neither offers it.
+function M.CanHide(e) return e ~= nil and not e.store and not e.noAlpha end
+function M.IsHidden(e)
+    if not M.CanHide(e) then return false end
+    local s = saved(e)
+    return s ~= nil and s.hidden == true
+end
+
+function hookAlpha(e, f)
+    if e.alphaHooked then return end
+    e.alphaHooked = true
+    hooksecurefunc(f, "SetAlpha", function(frame)
+        if e.applying or not M:IsEnabled() or not M.IsHidden(e) or blocked(frame) then return end
+        e.applying = true
+        frame:SetAlpha(0)
+        e.applying = false
+    end)
+    -- a frame first shown after login (apply skips frames that are not on screen) takes its saved state then
+    f:HookScript("OnShow", function() if M:IsEnabled() and saved(e) then apply(e) end end)
+end
+
+function M:SetHidden(key, on)
+    local e = byKey[key]
+    if not M.CanHide(e) then return false end
+    local f = resolve(e)
+    if not f or f:IsForbidden() or blocked(f) then return false end
+    remember(e, f)
+    local s = self.db.frames[key] or {}
+    s.hidden = on and true or nil
+    if next(s) == nil then
+        self.db.frames[key] = nil
+        restore(e)
+    else
+        self.db.frames[key] = s
+        e.applying = true
+        f:SetAlpha(on and 0 or s.alpha or (e.orig and e.orig.alpha) or 1)
+        e.applying = false
+        apply(e)
+    end
+    if on then hookAlpha(e, f) end
+    if overlays[key] then syncOverlay(overlays[key]) end
+    if toolbar then toolbar:Update() end
+    ns.Events:Fire("PUI_MOVERS")
+    return true
+end
+
 local ARROWS = { UP = { 0, 1 }, DOWN = { 0, -1 }, LEFT = { -1, 0 }, RIGHT = { 1, 0 } }
 
 local function overlayFor(e)
@@ -655,9 +714,14 @@ end
 
 ---------------------------------------------------------------- Blizzard windows scale
 local scaledHooks = {}
+-- A window's own scale (db.windowScales[name]) wins over the shared one.
+function M.WindowScaleOf(name)
+    local own = name and M.db.windowScales and M.db.windowScales[name]
+    return ns.Util.SafeScale(own or M.db.windowScale)
+end
 local function scaleWindow(f)
     if not (M:IsEnabled() and type(f) == "table" and f.SetScale) or f:IsForbidden() or M.IsManaged(f) then return end
-    local want = ns.Util.SafeScale(M.db.windowScale)
+    local want = M.WindowScaleOf(f:GetName())
     if blocked(f) then return ns.Combat:Run("movers.window", scaleWindow, f) end
     if want == 1 and not scaledHooks[f] then return end
     f:SetScale(want)
@@ -667,13 +731,21 @@ function M:ApplyWindowScale()
     for _, name in ipairs(M.WINDOWS) do
         local f = rawget(_G, name) -- load-on-demand windows may not exist yet
         if type(f) == "table" and f.HookScript then
-            if not scaledHooks[f] and (self.db.windowScale or 1) ~= 1 then
+            if not scaledHooks[f] and ((self.db.windowScale or 1) ~= 1 or (self.db.windowScales or {})[name]) then
                 scaledHooks[f] = true
                 f:HookScript("OnShow", scaleWindow)
             end
             if scaledHooks[f] and f:IsShown() then scaleWindow(f) end
         end
     end
+end
+
+-- nil (or the shared value) clears the window's own scale.
+function M:SetWindowScale(name, v)
+    self.db.windowScales = self.db.windowScales or {}
+    if v ~= nil and math.abs(v - (self.db.windowScale or 1)) < 0.001 then v = nil end
+    self.db.windowScales[name] = v
+    self:ApplyWindowScale()
 end
 
 ---------------------------------------------------------------- unlock key

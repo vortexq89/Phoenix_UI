@@ -53,6 +53,10 @@ local function build()
     p.anchorLabel:SetText(L.AB_ANCHOR)
     p.x, p.y = row(p, "x"), row(p, "y")
     p.x.label:SetText(L.OFFSET_X); p.y.label:SetText(L.OFFSET_Y)
+    -- hide (MoveAny's per-frame hide), for the frames whose opacity Movers owns
+    p.hideLabel = W.Text(p, "body", "text.secondary")
+    p.hideLabel:SetText(L.MOVERS_HIDE)
+    p.hide = W:Toggle(p)
     p.all = W:Button(p, L.MOVERS_SETTINGS, "secondary", "cog", 256)
     Skin:Register(p, function(self) Skin:Panel(self, "raised", { border = "border.strong", shadow = 12 }) end)
     p:Hide()
@@ -95,6 +99,7 @@ function M:OpenPopup(e, anchor)
         y = y - 44
     end
     y = M.PlacePositionRows(popup, e, y)
+    y = M.PlaceHideRow(popup, e, y)
     popup.all:ClearAllPoints()
     popup.all:SetPoint("TOPLEFT", 12, y - 4)
     popup.all.onClick = function()
@@ -137,6 +142,20 @@ function M.PlacePositionRows(p, e, y)
         y = y - 44
     end
     return y
+end
+
+-- The Hide switch under the position rows; returns the next y.
+function M.PlaceHideRow(p, e, y)
+    local can = M.CanHide(e)
+    p.hide:SetShown(can); p.hideLabel:SetShown(can)
+    if not can then return y end
+    p.hideLabel:ClearAllPoints(); p.hideLabel:SetPoint("TOPLEFT", 12, y - 2)
+    p.hide:ClearAllPoints(); p.hide:SetPoint("TOPRIGHT", -12, y)
+    p.hide:SetValue(M.IsHidden(e))
+    p.hide.onChange = function(t, v)
+        if InCombatLockdown() or not M:SetHidden(e.key, v) then t:SetValue(M.IsHidden(e)) end
+    end
+    return y - 28
 end
 
 function M:ClosePopup() if popup then popup:Hide() end end

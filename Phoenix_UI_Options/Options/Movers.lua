@@ -17,6 +17,8 @@ local function frameRow(row, m, key)
         local moved = m.db.frames[key] ~= nil
         if not f then
             self.badge:Set(L.MOVERS_NOT_LOADED, "text.muted")
+        elseif m.IsHidden(e) then
+            self.badge:Set(L.MOVERS_HIDDEN, "state.warning")
         elseif moved then
             self.badge:Set(L.MOVERS_MOVED, "accent.primary")
         else
@@ -27,6 +29,13 @@ local function frameRow(row, m, key)
     ns.Events:Listen("PUI_MOVERS", holder, function() holder:SetValue() end)
     return holder
 end
+
+-- A scale per Blizzard window (MoveAny level): pick the window, then its own scale; Reset follows the shared one.
+local WINDOWS = {}
+for _, name in ipairs(ns:GetModule("Movers").WINDOWS) do
+    WINDOWS[#WINDOWS + 1] = { value = name, label = L["MOVERS_WIN_" .. name:upper()] }
+end
+local pickedWindow = WINDOWS[1].value
 
 local schema = {
     { type = "preview", kind = "movers" },
@@ -47,6 +56,16 @@ local schema = {
     { type = "header", label = "MOVERS_WINDOWS", icon = "skins" },
     { type = "range", key = "windowScale", label = "MOVERS_WINDOW_SCALE", desc = "MOVERS_WINDOW_SCALE_DESC", min = 0.6, max = 1.5,
       step = 0.05, percent = true, combat = true, keywords = "scale blizzard windows character bags collections size" },
+    { type = "select", label = "MOVERS_WINDOW_PICK", desc = "MOVERS_WINDOW_PICK_DESC", values = WINDOWS,
+      keywords = "scale window each own per window", get = function() return pickedWindow end,
+      set = function(_, v) pickedWindow = v end },
+    { type = "range", label = "MOVERS_WINDOW_OWN", desc = "MOVERS_WINDOW_OWN_DESC", min = 0.6, max = 1.5, step = 0.05,
+      percent = true, combat = true, keywords = "scale window each own per window",
+      get = function(m) return m.WindowScaleOf(pickedWindow) end,
+      set = function(m, v) m:SetWindowScale(pickedWindow, v) end },
+    { type = "button", label = "MOVERS_WINDOW_OWN_RESET", desc = "MOVERS_WINDOW_OWN_RESET_DESC", button = "RESET", icon = "reset",
+      combat = true, disabled = function(m) return not (m.db.windowScales or {})[pickedWindow] end,
+      func = function(m) m:SetWindowScale(pickedWindow, nil); if ns.Config.RebuildPage then ns.Config:RebuildPage("Movers") end end },
     { type = "header", label = "MOVERS_FRAMES", icon = "editmode" },
 }
 for _, e in ipairs(ns:GetModule("Movers").BLIZZARD) do

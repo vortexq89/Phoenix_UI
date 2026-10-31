@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Layout mode: hide a frame, a scale per window** (31 Oct, MoveAny level): the cog popup on a Layout mode box has Hide this frame (faded out, kept hidden when the game sets its opacity, shown with a (hidden) label while unlocked so you can bring it back); Movers > Blizzard windows gives each window its own scale on top of the shared one.
 - **Announcements** (31 Oct, WindTools idea): Automation > Announcements tells your group your new keystone after a run, that an instance reset worked, and your own thank-you after a key; each off by default.
 - **Rare alert: killed and seen today** (31 Oct, 2711acd): the toast says when you already killed or saw that rare today on this character; the list clears at the daily reset.
 - **Layout mode: any frame** (31 Oct, 0ecfd2a): Movers > Any frame adds any named frame by clicking it on screen or typing its name; it then moves, scales and fades like the built-in entries, per profile.
