@@ -18,6 +18,7 @@
     <Script file="Migrations.lua"/>
     <Script file="Modules.lua"/>
     <Script file="EditMode.lua"/>
+    <Script file="Journal.lua"/>
     <Script file="Profiles.lua"/>
     <Script file="Weekly.lua"/>
     <Script file="Diag.lua"/>

@@ -3,7 +3,8 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
-- **Encounters: boss modules** (31 Oct, BigWigs / LittleWigs parity step 1): Encounters > Boss modules lists every raid and dungeon of every expansion from the game's journal; pick a boss and set each ability to emphasise, sound, count in or hide on the bars. Structured data file for daily ability updates.
+- **Journal reader shared** (31 Oct): the journal window and the boss modules now read the Encounter Journal through one core reader (no duplicate code).
+- **Encounters: boss modules** (31 Oct, ea85372, BigWigs / LittleWigs parity step 1): Encounters > Boss modules lists every raid and dungeon of every expansion from the game's journal; pick a boss and set each ability to emphasise, sound, count in or hide on the bars. Structured data file for daily ability updates.
 - **Rare alert: loot marks** (31 Oct, 794d6e1): rares you loot remember their collectible drops (mounts, pets, toys, appearances) account-wide; the toast then says how many you still miss.
 - **Nameplates: simpler minor enemies** (31 Oct, 3ac841e): weak trash (the game's minor class) gets smaller, dimmer plates so the mobs that matter stand out; size and opacity sliders, on by default.
 - **CVar editor** (31 Oct, dfbef35): Automation > CVar editor: type any console variable's name, see and change its value, or put the game's default back; out of combat, no console.

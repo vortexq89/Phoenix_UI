@@ -19,24 +19,15 @@ local view, detailTab, openSections = "dungeon", "overview", {}
 local abilities, journeys
 
 -- The boss's ability tree flattened for display: every section at depth 0, children of open ones below.
+-- The ability tree as rows, open sections expanded (the walk itself is ns.Journal, shared with Encounters).
 function M.JournalSections(rootID, open)
     local out = {}
-    local function walk(id, depth, guard)
-        while id and id > 0 and guard < 400 do
-            guard = guard + 1
-            local info = C_EncounterJournal.GetSectionInfo(id)
-            if type(info) ~= "table" then return guard end
-            if not info.filteredByDifficulty then
-                local hasKids = (tonumber(info.firstChildSectionID) or 0) > 0
-                out[#out + 1] = { id = id, depth = depth, title = tostring(info.title or ""), desc = info.description,
-                    icon = info.abilityIcon, kids = hasKids }
-                if hasKids and open[id] then guard = walk(info.firstChildSectionID, depth + 1, guard) end
-            end
-            id = tonumber(info.siblingSectionID)
-        end
-        return guard
-    end
-    walk(tonumber(rootID), 0, 0)
+    ns.Journal.Walk(rootID, function(info, id, depth)
+        local hasKids = (tonumber(info.firstChildSectionID) or 0) > 0
+        out[#out + 1] = { id = id, depth = depth, title = tostring(info.title or ""), desc = info.description,
+            icon = info.abilityIcon, kids = hasKids }
+        return hasKids and open[id]
+    end)
     return out
 end
 
@@ -56,25 +47,8 @@ function M.JournalJourneys()
     return out
 end
 
-function M.JournalInstances(isRaid)
-    local out = {}
-    for i = 1, 200 do
-        local id, name = EJ_GetInstanceByIndex(i, isRaid)
-        if not id then break end
-        out[#out + 1] = { id = id, name = tostring(name or "") }
-    end
-    return out
-end
-
-function M.JournalBosses()
-    local out = {}
-    for i = 1, 40 do
-        local name, _, id = EJ_GetEncounterInfoByIndex(i)
-        if not name then break end
-        out[#out + 1] = { id = id, name = tostring(name) }
-    end
-    return out
-end
+function M.JournalInstances(isRaid) return ns.Journal.Instances(isRaid) end
+function M.JournalBosses() return ns.Journal.Bosses() end
 
 local function loot()
     local out = {}
