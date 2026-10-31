@@ -116,6 +116,13 @@ function M:Lockouts()
 end
 
 ---------------------------------------------------------------- one group as a plain record
+-- The leader's realm from "Name-Realm" (Tust_EUI's LFG region badge); nil on your own realm or when unknown.
+function M.LeaderRealm(name)
+    if type(name) ~= "string" then return nil end
+    local realm = name:match("%-(.+)$")
+    if not realm or realm == "" then return nil end
+    return realm
+end
 -- The listing's own fields: size, age, requirements, friends, voice, flags and the leader's ratings.
 local function readInfo(r, info)
     r.members = plainNum(info.numMembers)
@@ -142,6 +149,7 @@ local function readInfo(r, info)
     end
     local pvp = type(info.leaderPvpRatingInfo) == "table" and info.leaderPvpRatingInfo[1]
     r.pvp = type(pvp) == "table" and plainNum(pvp.rating) or 0
+    r.realm = M.LeaderRealm(plain(info.leaderName))
 end
 
 -- What kind of activity it is (difficulty, PvP, raid or dungeon).

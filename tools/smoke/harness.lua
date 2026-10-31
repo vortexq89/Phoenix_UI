@@ -6309,6 +6309,13 @@ try("combat text: triggers on your casts (MSBT spell cast condition)", function(
     db.triggers = saved
 end)
 
+try("group finder: leader's realm in the tooltip (Tust_EUI LFG region)", function()
+    local G = ns.modules.GroupFinder
+    if not G.LeaderRealm then return end -- Forever placeholder
+    assert(G.LeaderRealm("Bob-Kazzak") == "Kazzak", "realm from name")
+    assert(G.LeaderRealm("Bob") == nil and G.LeaderRealm(nil) == nil, "own realm or unknown")
+end)
+
 try("turn Phoenix off (EllesmereUI uninstall)", function()
     local C = ns.Config
     local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")

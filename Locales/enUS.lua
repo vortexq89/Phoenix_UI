@@ -3765,6 +3765,7 @@ ns.RegisterLocale("enUS", {
     LFG_TIP_BEST = "Leader's best key here",
     LFG_TIP_UNTIMED = "(not timed)",
     LFG_TIP_PVP = "Leader PvP rating",
+    LFG_TIP_REALM = "Leader's realm",
     LFG_TIP_SAVED = "You are saved: %d/%d bosses",
     LFG_TIP_LOCK_LOST = "%d boss(es) you killed are still up here: no loot from them.",
     LFG_TIP_LOCK_SKIP = "%d boss(es) are down here that you have not killed.",

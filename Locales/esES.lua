@@ -3739,6 +3739,7 @@ local T = {
     LFG_TIP_BEST = "Mejor llave del líder aquí",
     LFG_TIP_UNTIMED = "(fuera de tiempo)",
     LFG_TIP_PVP = "Índice JcJ del líder",
+    LFG_TIP_REALM = "Reino del líder",
     LFG_TIP_SAVED = "Tienes bloqueo: %d/%d jefes",
     LFG_TIP_LOCK_LOST = "%d jefe(s) que mataste siguen en pie aquí: sin botín de ellos.",
     LFG_TIP_LOCK_SKIP = "%d jefe(s) están caídos aquí y tú no los has matado.",

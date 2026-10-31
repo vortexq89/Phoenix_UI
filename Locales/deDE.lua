@@ -3739,6 +3739,7 @@ local T = {
     LFG_TIP_BEST = "Bester Schlüssel des Anführers hier",
     LFG_TIP_UNTIMED = "(nicht in der Zeit)",
     LFG_TIP_PVP = "PvP-Wertung des Anführers",
+    LFG_TIP_REALM = "Realm des Anführers",
     LFG_TIP_SAVED = "Du bist gespeichert: %d/%d Bosse",
     LFG_TIP_LOCK_LOST = "%d von dir getötete(r) Boss(e) leben hier noch: keine Beute von ihnen.",
     LFG_TIP_LOCK_SKIP = "%d Boss(e) sind hier tot, die du nicht getötet hast.",

@@ -3739,6 +3739,7 @@ local T = {
     LFG_TIP_BEST = "隊長在此的最佳鑰石",
     LFG_TIP_UNTIMED = "（超時）",
     LFG_TIP_PVP = "隊長 PvP 評級",
+    LFG_TIP_REALM = "隊長伺服器",
     LFG_TIP_SAVED = "你已鎖定：%d/%d 個首領",
     LFG_TIP_LOCK_LOST = "你擊殺過的 %d 個首領在這裡仍存活：它們不會給你戰利品。",
     LFG_TIP_LOCK_SKIP = "這裡已擊殺了 %d 個你沒擊殺過的首領。",

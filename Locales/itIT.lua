@@ -3739,6 +3739,7 @@ local T = {
     LFG_TIP_BEST = "Miglior chiave del capogruppo qui",
     LFG_TIP_UNTIMED = "(fuori tempo)",
     LFG_TIP_PVP = "Valutazione PvP del capogruppo",
+    LFG_TIP_REALM = "Reame del capogruppo",
     LFG_TIP_SAVED = "Sei vincolato: %d/%d boss",
     LFG_TIP_LOCK_LOST = "%d boss che hai ucciso sono ancora vivi qui: niente bottino da loro.",
     LFG_TIP_LOCK_SKIP = "%d boss sono già stati uccisi qui e tu non li hai uccisi.",

@@ -3739,6 +3739,7 @@ local T = {
     LFG_TIP_BEST = "Meilleure clé du chef ici",
     LFG_TIP_UNTIMED = "(hors temps)",
     LFG_TIP_PVP = "Cote JcJ du chef",
+    LFG_TIP_REALM = "Royaume du chef",
     LFG_TIP_SAVED = "Vous êtes sauvegardé : %d/%d boss",
     LFG_TIP_LOCK_LOST = "%d boss que vous avez tués sont encore debout ici : pas de butin sur eux.",
     LFG_TIP_LOCK_SKIP = "%d boss sont tombés ici que vous n'avez pas tués.",

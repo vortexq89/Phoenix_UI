@@ -3739,6 +3739,7 @@ local T = {
     LFG_TIP_BEST = "이곳의 파티장 최고 쐐기",
     LFG_TIP_UNTIMED = "(시간 초과)",
     LFG_TIP_PVP = "파티장 PvP 평점",
+    LFG_TIP_REALM = "파티장 서버",
     LFG_TIP_SAVED = "귀속됨: 우두머리 %d/%d",
     LFG_TIP_LOCK_LOST = "내가 처치한 우두머리 %d마리가 여기 아직 살아 있습니다: 전리품 없음.",
     LFG_TIP_LOCK_SKIP = "여기서 내가 처치하지 않은 우두머리 %d마리가 이미 처치되었습니다.",

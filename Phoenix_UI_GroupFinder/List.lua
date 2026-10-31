@@ -155,6 +155,7 @@ function M:AddTooltipLines(tt, resultID)
             0.8, 0.8, 0.8, 1, 1, 1)
     end
     if r.pvpactivity and r.pvp > 0 then tt:AddDoubleLine(L.LFG_TIP_PVP, r.pvp, 0.8, 0.8, 0.8, 1, 1, 1) end
+    if r.realm then tt:AddDoubleLine(L.LFG_TIP_REALM, r.realm, 0.8, 0.8, 0.8, 1, 1, 1) end
     if r.dungeon then
         local bits = {}
         if r.lust then bits[#bits + 1] = L.LFG_LUST end

@@ -3739,6 +3739,7 @@ local T = {
     LFG_TIP_BEST = "队长在此的最佳钥石",
     LFG_TIP_UNTIMED = "（超时）",
     LFG_TIP_PVP = "队长 PvP 评级",
+    LFG_TIP_REALM = "队长服务器",
     LFG_TIP_SAVED = "你已锁定：%d/%d 个首领",
     LFG_TIP_LOCK_LOST = "你击杀过的 %d 个首领在这里仍存活：它们不会给你战利品。",
     LFG_TIP_LOCK_SKIP = "这里已击杀了 %d 个你没击杀过的首领。",
