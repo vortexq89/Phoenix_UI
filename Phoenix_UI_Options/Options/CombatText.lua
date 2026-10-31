@@ -93,6 +93,8 @@ local schema = {
     { type = "toggle", gate = true, key = "scroll.enabled", label = "FCT_SCROLL_ENABLE", desc = "FCT_SCROLL_ENABLE_DESC",
       keywords = "scrolling combat text sct msbt parrot areas" },
     { type = "description", text = "FCT_SCROLL_TEXT" },
+    scroll({ type = "toggle", key = "scroll.hideBlizzard", label = "FCT_HIDE_BLIZZARD", desc = "FCT_HIDE_BLIZZARD_DESC",
+      keywords = "double duplicate blizzard text" }),
     scroll({ type = "button", label = "FCT_SCROLL_TEST", desc = "FCT_SCROLL_TEST_DESC", button = "CB_TEST_BUTTON", icon = "test",
       func = function(m) ns.Config.frame:Hide(); m:TestScroll() end, keywords = "test sample" }),
     scroll(Opt.Text("scroll.font", "FCT_SCROLL_FONT", { min = 10, max = 40 })),

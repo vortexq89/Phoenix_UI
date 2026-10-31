@@ -5813,6 +5813,19 @@ try("combat text: an icon on every line (t196)", function()
     CT.AddLine("notify", { 1, 1, 1 }, "", "1", false, nil, 1, nil, ic)
 end)
 
+try("combat text: no double text with the game's own (t196 step 4)", function()
+    local CT = ns.modules.CombatText
+    local a = 1
+    local mock = { SetAlpha = function(_, v) a = v end }
+    _G.CombatText = mock; rawset(env, "CombatText", mock)
+    CT.db.scroll.enabled, CT.db.scroll.hideBlizzard = true, true
+    CT:Refresh(); assert(a == 0, "hidden")
+    CT.db.scroll.hideBlizzard = false
+    CT:Refresh(); assert(a == 1, "back")
+    CT.db.scroll.hideBlizzard = true
+    _G.CombatText = nil; rawset(env, "CombatText", nil)
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

@@ -378,7 +378,21 @@ local function onUnitCombat(_, _, unit, action, flags, amount)
     fire(e, amount, crit, action)
 end
 
-local owner = {}
+-- Blizzard's own text over your character (Blizzard_CombatText, frame CombatText) shows the same events the scroll
+-- does. Its events must keep firing (they are our source), so it is made invisible instead of switched off, and
+-- shown again the moment the scroll or this switch is off (step 4: no double text).
+function M:ApplyBlizzardText()
+    local f = _G.CombatText
+    if not (f and f.SetAlpha) then return end
+    local db = self.db.scroll
+    f:SetAlpha((db.enabled and db.hideBlizzard) and 0 or 1)
+end
+
+local owner, loadOwner = {}, {}
+ns.Events:On("ADDON_LOADED", loadOwner, function(_, _, name)
+    if name == "Blizzard_CombatText" and M.db then M:ApplyBlizzardText() end
+end)
+
 function M:EnableScroll()
     local db = self.db.scroll
     self:RegisterAreaMovers() -- idempotent; picks up user areas after a profile change
@@ -394,6 +408,7 @@ function M:EnableScroll()
             for _, line in ipairs(frames[key].active) do self:StyleLine(line.fs, false, key) end
         end
     end
+    self:ApplyBlizzardText()
     if not db.enabled then return end
     if C_CombatText and C_CombatText.GetCurrentEventInfo then ns.Events:On("COMBAT_TEXT_UPDATE", owner, onCombatText) end
     local ev = db.events
