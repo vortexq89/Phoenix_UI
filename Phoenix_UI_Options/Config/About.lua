@@ -7,6 +7,25 @@ local Config = ns.Config
     features removed in 2.0 (ARCHITECTURE §2, decision 1). ]]
 local page = { key = "about", label = "ABOUT", desc = "ABOUT_DESC", icon = "about", locked = true, db = {} }
 
+--[[ Turn Phoenix off (EllesmereUI's uninstall): every Phoenix_UI* addon off for this character, the sound a boss fight
+    muted back on, then a reload. Settings stay, so turning the addons on again brings everything back. ]]
+function Config.TurnOffPhoenix()
+    local Q = ns.modules.Quality
+    if Q and Q.RestoreBossSound then pcall(Q.RestoreBossSound, Q) end
+    local A = C_AddOns
+    if not (A and A.GetNumAddOns and A.GetAddOnInfo and A.DisableAddOn) then return 0 end
+    local who, n = UnitName("player"), 0
+    for i = 1, A.GetNumAddOns() do
+        local name = A.GetAddOnInfo(i)
+        if type(name) == "string" and (name == "Phoenix_UI" or name:find("^Phoenix_UI_")) then
+            A.DisableAddOn(name, who)
+            n = n + 1
+        end
+    end
+    if n > 0 and C_UI and C_UI.Reload then C_UI.Reload() end
+    return n
+end
+
 local LINKS = {
     { label = "LINK_CURSEFORGE", url = "https://www.curseforge.com/projects/1242528", icon = "web" },
     { label = "LINK_WAGO",       url = "https://addons.wago.io/addons/jK8XQjKy",       icon = "link" },
@@ -60,6 +79,18 @@ local tail = {
       func = function() ns.Diag:Run(false) end },
     { type = "button", label = "ABOUT_RESET_WINDOW", button = "RESET", icon = "reset",
       func = function() Config:ResetPosition(); ns:Print(L.SLASH_RESET_DONE) end },
+    { type = "custom", label = "ABOUT_TURN_OFF", desc = "ABOUT_TURN_OFF_DESC",
+      keywords = "uninstall remove disable turn off blizzard default interface", build = function(row)
+        -- a second click within 3 s turns everything off
+        local b = W:Button(row, L.ABOUT_TURN_OFF_BUTTON, "danger", "close", 120)
+        b.onClick = function(self)
+            if self.armed then self.armed = nil; Config.TurnOffPhoenix(); return end
+            self.armed = true
+            self:SetText(L.CONFIRM)
+            C_Timer.After(3, function() if self.armed then self.armed = nil; self:SetText(L.ABOUT_TURN_OFF_BUTTON) end end)
+        end
+        return b
+    end },
     { type = "toggle", label = "ABOUT_DEBUG", desc = "ABOUT_DEBUG_DESC",
       get = function() return ns.debug and true or false end, set = function(_, v) ns.SetDebug(v) end },
     { type = "header", label = "ABOUT_DEV", icon = "terminal" },

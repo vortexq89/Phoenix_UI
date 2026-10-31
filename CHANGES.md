@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Turn off Phoenix UI** (1 Nov): About > Tools turns every Phoenix UI addon off for this character with a second click and reloads to the game's own interface, switching back on any sound a boss fight muted; your settings stay for when you turn it on again.
 - **Profiles per place** (1 Nov): Profiles > Places picks a profile for the open world, dungeons, raids, arenas and battlegrounds; it switches as you enter (after combat if you are fighting), wins over the specialization profile, and your profile from before comes back in a place without one (EllesmereUI's conditional overrides).
 - **Boss mods: role options** (1 Nov): with the game's Hide abilities for other roles on, Phoenix bars now also hide tank-only abilities for non-tanks, healer-only ones for non-healers and tank / healer ones for damage dealers, from the role in Phoenix's boss data (BigWigs' role options). Your own choice for an ability always wins.
 - **Settings window: flat black background** (31 Oct): the settings window is plain black again, with only the small Phoenix UI By VortexQ8 fire logo in the middle. The phoenix wings picture, its drifting ash and its bottom logo are no longer shown (the art files stay, so this can be undone).

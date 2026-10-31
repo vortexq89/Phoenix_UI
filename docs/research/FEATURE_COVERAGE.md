@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 125 |
-| partial | 6 |
+| Phoenix has | 126 |
+| partial | 5 |
 | missing | 2 |
 | out of scope | 10 |
 
@@ -76,7 +76,7 @@ Overlaps found:
 | EllesmereUI | Spec overrides and conditional overrides | Phoenix has | Spec profiles (`specProfiles`) and, built 2026-11-01, profiles per place: Profiles > Places (open world, dungeons incl. scenarios, raids, arenas, battlegrounds), over the spec profile, the profile from before comes back in a place without one (`DB:ApplyAutoProfile`, `DB:CurrentContext`, Core/DB.lua). |
 | EllesmereUI | Macro Factory | Phoenix has | Automation > Smart macros; 2026-10-31 Pick up buttons and Open macro window. Full in-addon macro editor built 2026-10-31 (next row). |
 | EllesmereUI | Global options search | Phoenix has | `Phoenix_UI_Options/Config/Search.lua` (search every page, jump to and flash the row). No Ctrl+K command palette. |
-| EllesmereUI | First-install module picker, migrations, patch notes, video guides, uninstall | partial | What's new popup plus (2026-10-31) About > Full changelog and a show-after-updates switch. Module picker at first install: setup wizard only; video guides, uninstall: not planned. |
+| EllesmereUI | First-install module picker, migrations, patch notes, video guides, uninstall | Phoenix has | What's new popup plus (2026-10-31) About > Full changelog and a show-after-updates switch. Module picker: setup wizard step and Presets > Choose modules. Migrations: Core/DB.lua schema. Uninstall built 2026-11-01: About > Turn off Phoenix UI (every Phoenix_UI* addon off for the character, boss-fight sound restored, reload; settings kept; `Config.TurnOffPhoenix`). Video guides: not planned (no video in the client). |
 | EllesmereUI | Shared engines | Phoenix has | Spell cost preview: `Modules/UnitFrames/Update.lua` `Live:SpellCost` (cost of the spell being cast, secret-safe). Five-second-rule spark (Forever): not built. |
 | EllesmereUI | Party mode and profile sync | Phoenix has | Built 2026-10-31: Automation > Party mode (edge lights, boss / key / level-up celebrations, manual session never ended by a trigger). Profiles are account-wide with per-character choice. |
 | EllesmereUI_ActionBars | Own secure bars and buttons | Phoenix has | Phoenix `Phoenix_UI_ActionBars` (ab.bar1..bar10, stance, pet, vehicle, extra, items, `ab.editModeCapture`). |

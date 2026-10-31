@@ -6283,6 +6283,18 @@ try("encounters: boss modules from the journal, per-ability choices (t201)", fun
     rawset(env, "GetSpecializationRole", hadRole); SI.GetSpecialization = hadSpec
 end)
 
+try("turn Phoenix off (EllesmereUI uninstall)", function()
+    local C = ns.Config
+    local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")
+    local off, reloaded = {}, false
+    rawset(env, "C_AddOns", { GetNumAddOns = function() return 3 end,
+        GetAddOnInfo = function(i) return ({ "Phoenix_UI", "Phoenix_UI_Bags", "BigWigs" })[i] end,
+        DisableAddOn = function(name) off[#off + 1] = name end })
+    rawset(env, "C_UI", { Reload = function() reloaded = true end })
+    assert(C.TurnOffPhoenix() == 2 and reloaded and off[1] == "Phoenix_UI" and off[2] == "Phoenix_UI_Bags", "only Phoenix")
+    rawset(env, "C_AddOns", hadA); rawset(env, "C_UI", hadUI)
+end)
+
 try("profiles per place (EllesmereUI conditional overrides)", function()
     local DB = ns.DB
     local hadInst, hadSet = rawget(env, "IsInInstance"), DB.SetProfile
