@@ -40,6 +40,75 @@ function M.NoteRare(name, killed)
     log[name] = e
 end
 
+-- Loot marks (RareScanner idea, our own data): when you loot a rare you killed, its collectible drops (mounts, pets,
+-- toys, appearances) are remembered account-wide in PhoenixUIDB.global.rareLoot[rare name] = { itemID, ... }. The
+-- toast then says how many of those you still miss. Only plain item links and names are read.
+local function lootBook()
+    local g = PhoenixUIDB and PhoenixUIDB.global
+    if type(g) ~= "table" then return {} end
+    g.rareLoot = type(g.rareLoot) == "table" and g.rareLoot or {}
+    return g.rareLoot
+end
+M.RareLootBook = lootBook
+
+local function plain(v) return v ~= nil and not Secret.IsSecret(v) end
+
+-- true / false for a collectible item (collected or not), nil when the item is not a collectible
+function M.ItemCollected(id)
+    if type(id) ~= "number" then return nil end
+    if C_MountJournal and C_MountJournal.GetMountFromItem then
+        local mount = C_MountJournal.GetMountFromItem(id)
+        if plain(mount) and mount then return select(11, C_MountJournal.GetMountInfoByID(mount)) and true or false end
+    end
+    if C_PetJournal and C_PetJournal.GetPetInfoByItemID then
+        local species = select(13, C_PetJournal.GetPetInfoByItemID(id))
+        if plain(species) and type(species) == "number" then return (C_PetJournal.GetNumCollectedInfo(species) or 0) > 0 end
+    end
+    if C_ToyBox and C_ToyBox.GetToyInfo and plain(C_ToyBox.GetToyInfo(id)) and C_ToyBox.GetToyInfo(id) then
+        return PlayerHasToy(id) and true or false
+    end
+    if C_TransmogCollection and C_TransmogCollection.PlayerHasTransmog and C_Item and C_Item.IsDressableItemByID
+        and C_Item.IsDressableItemByID(id) then
+        return C_TransmogCollection.PlayerHasTransmog(id) and true or false
+    end
+    return nil
+end
+
+function M.NoteRareLoot(name, ids)
+    if type(name) ~= "string" or not plain(name) or name == "" then return end
+    local book = lootBook()
+    local list = type(book[name]) == "table" and book[name] or {}
+    local have = {}
+    for _, id in ipairs(list) do have[id] = true end
+    for _, id in ipairs(ids or {}) do
+        if type(id) == "number" and not have[id] and M.ItemCollected(id) ~= nil then list[#list + 1] = id; have[id] = true end
+    end
+    if #list > 0 then book[name] = list end
+end
+
+-- known collectibles and how many you still miss, or nil
+function M.RareLootStatus(name)
+    local list = type(name) == "string" and lootBook()[name]
+    if type(list) ~= "table" or #list == 0 then return nil end
+    local missing = 0
+    for _, id in ipairs(list) do if M.ItemCollected(id) == false then missing = missing + 1 end end
+    return #list, missing
+end
+
+local function onLoot()
+    if not (M:IsEnabled() and M.db.rareAlert) then return end
+    local c, name = UnitClassification("target"), UnitName("target")
+    if not (plain(c) and plain(name) and (c == "rare" or c == "rareelite") and UnitIsDead("target")) then return end
+    local ids = {}
+    for slot = 1, (GetNumLootItems() or 0) do
+        local link = GetLootSlotLink(slot)
+        local id = plain(link) and type(link) == "string" and tonumber(link:match("item:(%d+)"))
+        if id then ids[#ids + 1] = id end
+    end
+    M.NoteRareLoot(name, ids)
+end
+M.OnRareLoot = onLoot
+
 -- "KILLED", "SEEN" or nil: today's status for the toast (read before this sighting is noted).
 function M.RareStatus(name)
     local e = type(name) == "string" and rareLog()[name]
@@ -84,7 +153,13 @@ function M:ShowRare(guid, info)
     toast = toast or build()
     toast.name:SetText(info.name)
     local st = M.RareStatus(info.name)
-    toast.status:SetText(st == "KILLED" and L.AUTO_RARE_KILLED or st == "SEEN" and L.AUTO_RARE_SEEN_TODAY or "")
+    local status = st == "KILLED" and L.AUTO_RARE_KILLED or st == "SEEN" and L.AUTO_RARE_SEEN_TODAY or ""
+    local known, missing = M.RareLootStatus(info.name)
+    if known then
+        local loot = missing > 0 and L.AUTO_RARE_LOOT_MISSING:format(missing, known) or L.AUTO_RARE_LOOT_DONE
+        status = status ~= "" and (status .. " · " .. loot) or loot
+    end
+    toast.status:SetText(status)
     M.NoteRare(info.name)
     if not InCombatLockdown() then
         toast.target:SetAttribute("macrotext", "/cleartarget\n/targetexact " .. info.name)
@@ -123,4 +198,5 @@ function M:SetupRareAlert()
     if self.rareHooked then return end
     self.rareHooked = true
     ns.Events:On("VIGNETTE_MINIMAP_UPDATED", self, onVignette)
+    ns.Events:On("LOOT_OPENED", self, onLoot)
 end

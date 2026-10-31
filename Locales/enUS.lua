@@ -628,6 +628,8 @@ ns.RegisterLocale("enUS", {
     AUTO_RARE_SEEN = "Rare: %s",
     AUTO_RARE_KILLED = "Already killed today",
     AUTO_RARE_SEEN_TODAY = "Already seen today",
+    AUTO_RARE_LOOT_MISSING = "Loot: %d of %d still to collect",
+    AUTO_RARE_LOOT_DONE = "Loot: all collected",
     AUTO_KNOWN = "Already known at merchants",
     AUTO_KNOWN_DESC = "Recipes, mounts, pets and toys you already know are tinted green at vendors.",
     AUTO_UNDERCUT = "Auction undercut",

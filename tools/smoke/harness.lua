@@ -6226,6 +6226,19 @@ try("nameplates: minor enemies simpler (Tust idea)", function()
     NP.db.minor.enabled = true
 end)
 
+try("rare alert: loot marks (RareScanner idea)", function()
+    local A = ns:GetModule("Automation")
+    assert(A.RareLootStatus("Nobody Rare") == nil, "unknown rare")
+    local was = A.ItemCollected
+    A.ItemCollected = function(id) if id == 1 then return false elseif id == 2 then return true end end
+    A.NoteRareLoot("Test Rare", { 1, 2, 3, 1 })
+    local known, missing = A.RareLootStatus("Test Rare")
+    assert(known == 2 and missing == 1, "two collectibles, one missing")
+    A.ItemCollected = was
+    A.RareLootBook()["Test Rare"] = nil
+    A.OnRareLoot()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

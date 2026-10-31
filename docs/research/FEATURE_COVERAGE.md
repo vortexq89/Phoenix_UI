@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 122 |
-| partial | 9 |
+| Phoenix has | 123 |
+| partial | 8 |
 | missing | 2 |
 | out of scope | 10 |
 
@@ -189,7 +189,7 @@ Overlaps found:
 | MikScrollingBattleText | Custom scroll areas, every area in Layout mode | Phoenix has | Built 2026-10-31 (e3473f7): user areas (add, name, rename, remove, route events; `scroll.custom`, `M:AddArea` in `Modules/CombatText/Scroll.lua`); every area is always a Layout-mode mover with snapping, on or off. |
 | MikScrollingBattleText | Per-event sound and icon rules | Phoenix has | t195: sound per event exists (`scroll.events.<e>.sound`); icons only from your own casts (`scroll.castIcons`). Gap: icon per event, sticky per event. Step 3 (2026-10-31): every line has an icon (spell icon, your last cast, else a Phoenix glyph per event in the line colour, `scroll.glyphIcons`). Built 2026-10-31 (t198): per event Always sticky (`events.<e>.sticky`), Show the icon (`events.<e>.icon`) and Message with %a (`events.<e>.msg`, `M.Template`), Font per event (`events.<e>.font`, the six combat faces); MSBT import takes alwaysSticky and %a messages. |
 | BigWigs | Per-boss knowledge (LittleWigs-style warnings) | partial | Timeline bars and ability rules; no per-boss authored warnings. |
-| RareScanner | Rare already-killed / loot status on the alert | partial | Built 2026-10-31: killed today and seen today on the toast, per character, cleared at the daily reset (`M.NoteRare`, `M.RareStatus`, RareAlert.lua). Gap: loot-collected marks need per-rare loot data. |
+| RareScanner | Rare already-killed / loot status on the alert | Phoenix has | Built 2026-10-31: killed today and seen today on the toast, per character, cleared at the daily reset (`M.NoteRare`, `M.RareStatus`, RareAlert.lua). Loot marks built 2026-10-31: collectible drops remembered when you loot a rare (`M.NoteRareLoot`, `M.RareLootStatus`), missing count on the toast. |
 | WindTools | Smart Tab, Event Tracker, CVar editor, merchant extra pages | partial | CVar editor built 2026-10-31 (Automation > CVar editor, `Phoenix_UI_Automation/CVarEditor.lua`). Ideas list (docs/research/windtools.md); Smart Tab was declined for taint, re-check. |
 | WindTools | Combat alert banner and sound, announcements set, sound mute list by ID, world map scale | Phoenix has | Re-checked 2026-10-31: combat alert (Quality `combatAlert`), sound mute by file ID (General `GEN_MUTE`, General.lua:89), world map scale (Minimap `worldMapScale`); announcements built 2026-10-31 (Automation > Announcements: new key, instance reset, thanks; Announce.lua). |
 | NaowhForever | Training planner, profession recipes incl. unlearned, gear swap bar, paladin blessings | missing | Forever-first ideas (docs/research/naowhforever.md); data from the wowf DB2 build. |
