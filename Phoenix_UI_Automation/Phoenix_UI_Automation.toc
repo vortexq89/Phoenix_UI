@@ -29,3 +29,4 @@ AutoLog.lua
 LootCouncil.lua
 Loadouts.lua
 PartyMode.lua
+Gamepad.lua

@@ -5762,6 +5762,13 @@ try("party mode: manual session survives triggers", function()
     assert(A.PartyPaint(3, 0.5), "paint")
 end)
 
+try("gamepad: cvars behind GUI controls", function()
+    local A = ns.modules.Automation
+    assert(type(A.GamepadGet("enable")) == "boolean" and type(A.GamepadGet("yaw")) == "number", "reads")
+    assert(A.GamepadSet("bogus", 1) == false, "unknown key refused")
+    A.GamepadConnected()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

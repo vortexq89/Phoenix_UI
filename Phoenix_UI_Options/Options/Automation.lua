@@ -136,4 +136,13 @@ ns:RegisterOptions("Automation", {
     { type = "toggle", key = "partySound", label = "PARTY_SOUND" },
     { type = "range", key = "partyDuration", label = "PARTY_DURATION", desc = "PARTY_DURATION_DESC", min = 2, max = 30, step = 1 },
     { type = "range", key = "partyStrength", label = "PARTY_STRENGTH", min = 10, max = 100, step = 5 },
+    { type = "header", label = "GAMEPAD_TITLE", icon = "keyboard" },
+    { type = "toggle", label = "GAMEPAD_ON", desc = "GAMEPAD_ON_DESC", combat = true, keywords = "gamepad controller console",
+      get = function(m) return m.GamepadGet("enable") end, set = function(m, v) m.GamepadSet("enable", v) end },
+    { type = "range", label = "GAMEPAD_YAW", min = 0.1, max = 4, step = 0.1, combat = true,
+      get = function(m) return m.GamepadGet("yaw") end, set = function(m, v) m.GamepadSet("yaw", v) end,
+      disabled = function(m) return not m.GamepadGet("enable") end },
+    { type = "range", label = "GAMEPAD_PITCH", min = 0.1, max = 4, step = 0.1, combat = true,
+      get = function(m) return m.GamepadGet("pitch") end, set = function(m, v) m.GamepadSet("pitch", v) end,
+      disabled = function(m) return not m.GamepadGet("enable") end },
 })
