@@ -301,3 +301,28 @@ the logic.
 | Forever | pull / break bars and voice only (no timeline) | - | correct, the new rows are timeline-only where they need it | `countdown.bars` is hidden without the timeline |
 
 Left: per-boss authored warnings (LittleWigs-style) stay a data question (FEATURE_COVERAGE: BigWigs per-boss knowledge).
+
+## 29. Minimap
+
+Reference: EllesmereUI Minimap (read on the box from the user's copy, ideas only: FPS / MS line with a lockouts or
+vault tooltip, difficulty text, Great Vault and M+ portal buttons, friends button, clock modes and hover tooltip,
+visibility rules, zoom reset, button flyout) and ElvUI (right click = tracking menu, middle click = game menu,
+location text always / on mouse-over, icon positions and scales, reset zoom).
+
+| Area | Phoenix before | Compared | Finding | Fix |
+|---|---|---|---|---|
+| Shape, border, band | round / square / rectangle band, style-library border, ember ring on round | EUI square + round, ElvUI square / circle | ahead (rectangle band, live) | none |
+| Info line | none | EUI: FPS / MS with interval, tooltip lockouts / vault | missing | Frame rate and latency (`info`, world / home / both / none, 1-5 s, font and place); its tooltip has the Great Vault per track and saved lockouts (`ns.Weekly:Lockouts`) |
+| Clock tooltip | Blizzard's only | EUI: lockouts / vault on hover | missing | Lockouts on the clock (`clockTip`), a post-hook on the clock button's OnEnter |
+| Difficulty | Blizzard badge, show / hide | EUI: difficulty text | the badge is hard to read and clashes with square maps | Difficulty as text (`difficultyText`: N, H, M, M+12, LFR, raid size; font and place); the badge tucks while it is on |
+| Great Vault | Phoenix vault window, no minimap entry | EUI: vault button with tooltip | no one-click way in | Great Vault button (`vaultButton`, retail), lit when a reward waits, tooltip with progress |
+| Clicks | left = ping, wheel = zoom | ElvUI: right = tracking, middle = menu | hiding the tracking or calendar button lost those menus | Right-click for tracking (Phoenix's own menu from `C_Minimap` tracking, ticks live) and middle-click for the calendar |
+| Visibility | always | EUI: visibility and opacity rules | the map stayed bright in combat | Fade in combat / while mounted to a faded opacity, mouse-over brings it back (cluster alpha only) |
+| Mouse-over texts | zone and coords always | ElvUI: location on mouse-over | clutter on a clean map | Zone text / coordinates only on mouse-over |
+| Buttons | tuck calendar, tracking, mail, crafting, difficulty, expansion, compartment, zoom | parity | complete | none |
+| Bin | flyout or bar, columns, size, ignore list, mouse-over glyph | EUI flyout with grow direction | parity | none |
+| Extras | ping names, world map coords and scale, zone levels, map reveal (Forever) | ahead of both | none | none |
+| Preview | map, texts, buttons, bin | - | new rows had no sample | the preview shows the info line, difficulty text and vault button |
+
+Left: an M+ portal flyout on the map (the item bar and teleport prompt already cover it) and a friends-online
+button (Data Texts > Friends covers it).

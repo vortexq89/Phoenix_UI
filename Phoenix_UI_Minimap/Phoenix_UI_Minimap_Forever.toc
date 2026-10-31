@@ -18,6 +18,7 @@
 
 Bridge.lua
 Minimap.lua
+Extras.lua
 ZoneLevels.lua
 RevealData.lua
 Reveal.lua

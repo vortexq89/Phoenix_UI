@@ -5940,6 +5940,31 @@ try("review 28: encounter frames in Layout mode, big stack, fill, count rule, fl
     E.db.warnings.lines = 3
 end)
 
+try("review 29: minimap info line, difficulty text, vault, tracking menu, fade", function()
+    local Mm = ns.modules.Minimap
+    assert(Mm.DifficultyText({ isChallengeMode = true, level = 12 }) == "M+12", "keystone text")
+    assert(Mm.DifficultyText({ displayHeroic = true, raid = true, size = 20 }) == "20 H", "raid heroic text")
+    assert(Mm.DifficultyText({ isLFR = true, raid = true, size = 25 }) == "LFR", "lfr has no size")
+    assert(Mm.DifficultyText({}) == "N" and Mm.DifficultyText(nil) == "", "normal / none")
+    assert(Mm.InfoText(59.6, 20, 35, "world") == "60 fps  35 ms" and Mm.InfoText(30, 20, 35, "both") == "30 fps  20 / 35 ms",
+        "info text")
+    assert(Mm.InfoText(30, 1, 2, "none") == "30 fps", "fps only")
+    assert(Mm.FadeAlpha({ fadeCombat = true, fadeAlpha = 0.3 }, true, false, false) == 0.3, "faded in combat")
+    assert(Mm.FadeAlpha({ fadeCombat = true, fadeAlpha = 0.3 }, true, false, true) == 1, "hover brings it back")
+    assert(Mm.FadeAlpha({ fadeMounted = false }, false, true, false) == 1, "mounted fade off")
+    assert(type(Mm.TrackingList()) == "table", "tracking list")
+    Mm.db.info, Mm.db.difficultyText, Mm.db.vaultButton, Mm.db.fadeCombat = true, true, true, true
+    Mm:Refresh()
+    Mm:OpenTrackingMenu()
+    Mm.db.info, Mm.db.difficultyText, Mm.db.vaultButton, Mm.db.fadeCombat = false, false, false, false
+    Mm:Refresh()
+    local tt = { lines = 0 }
+    function tt.AddLine(self) self.lines = self.lines + 1 end
+    function tt.AddDoubleLine(self) self.lines = self.lines + 1 end
+    Mm.AddWeeklyLines(tt)
+    assert(tt.lines >= 2, "vault / lockout lines")
+end)
+
 try("macro editor (t193)", function()
     local A = ns:GetModule("Automation")
     assert(A.MacroRoom("abc") == 252 and A.MacroRoom(string.rep("x", 300)) < 0, "room")

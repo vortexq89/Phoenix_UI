@@ -61,6 +61,25 @@ function Wk:Season()
     return { rating = rating, runs = runs, best = best }
 end
 
+-- Saved instance lockouts, raids first: { { name, difficulty, down, total, raid, reset (seconds) }, … }.
+-- Plain values from GetSavedInstanceInfo; extended (but expired) lockouts are left out.
+function Wk:Lockouts()
+    local out = {}
+    local n = num(GetNumSavedInstances and GetNumSavedInstances()) or 0
+    for i = 1, n do
+        local name, _, reset, _, locked, extended, _, isRaid, _, difficultyName, total, down = GetSavedInstanceInfo(i)
+        if (locked or extended) and type(name) == "string" and not Secret.IsSecret(name) then
+            out[#out + 1] = { name = name, difficulty = type(difficultyName) == "string" and difficultyName or "",
+                down = num(down) or 0, total = num(total) or 0, raid = isRaid and true or false, reset = num(reset) or 0 }
+        end
+    end
+    table.sort(out, function(a, b)
+        if a.raid ~= b.raid then return a.raid end
+        return a.name < b.name
+    end)
+    return out
+end
+
 -- Ask the client for fresh data (answers arrive as WEEKLY_REWARDS_UPDATE / CHALLENGE_MODE_MAPS_UPDATE).
 function Wk:Request()
     if C_MythicPlus and C_MythicPlus.RequestMapInfo then pcall(C_MythicPlus.RequestMapInfo) end

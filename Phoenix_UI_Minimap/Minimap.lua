@@ -25,6 +25,12 @@ local M = ns:NewModule("Minimap", {
         bin = true, binColumns = 4, binSize = 28, binIgnore = "", binMouseover = false, binMode = "flyout",
         pingNames = true, worldMapCoords = true, worldMapScale = 1, zoneLevels = true,
         mapReveal = true, revealTint = true, revealAlpha = 0.85,
+        -- review 29 (Extras.lua): info line, difficulty text, vault button, clicks, fade, mouse-over texts
+        info = false, infoLatency = "world", infoInterval = 2,
+        infoText = Style.Text(10, { outline = "OUTLINE", anchor = "TOP" }),
+        difficultyText = false, difficultyFont = Style.Text(12, { outline = "OUTLINE", anchor = "TOPLEFT", x = 2, y = -4 }),
+        vaultButton = false, clockTip = true, rightTracking = true, middleCalendar = true,
+        fadeCombat = false, fadeMounted = false, fadeAlpha = 0.3, zoneMouseover = false, coordsMouseover = false,
     },
 })
 
@@ -120,7 +126,9 @@ function M:ApplyElements()
     local on = self:IsEnabled()
     for _, e in ipairs(M.ELEMENTS) do
         local frame = e.get()
-        if frame then tuck(frame, not on or self.db[e.key] ~= false) end
+        -- the difficulty text (Extras.lua) stands in for Blizzard's badge
+        local keep = self.db[e.key] ~= false and not (e.key == "difficulty" and self.db.difficultyText)
+        if frame then tuck(frame, not on or keep) end
     end
     local ind = cluster("IndicatorFrame")
     if ind and ind.Layout then ind:Layout() end
@@ -183,6 +191,8 @@ M.ApplyShape = applyShape
 
 ---------------------------------------------------------------- texts
 local coords, ticker
+
+M.CoordsText = function() return coords end
 
 local function updateCoords()
     local x, y = ns.Util.PlayerMapXY()
@@ -463,7 +473,7 @@ end
 ---------------------------------------------------------------- lifecycle
 local function onAddOn(_, name)
     if name == "Blizzard_HybridMinimap" then hybridMask()
-    elseif name == "Blizzard_TimeManager" then styleClock()
+    elseif name == "Blizzard_TimeManager" then styleClock(); M:HookClockTip()
     elseif name == "Blizzard_WorldMap" then setupMapCoords(); hookMapScale(); applyMapScale(); M:SetupZoneLevels(); M:SetupReveal() end
     if M.db.bin then scanSoon() end
 end
@@ -505,6 +515,7 @@ function M:Refresh()
     self:ApplyElements()
     scheduleZoomOut()
     if bin then layoutBin() end
+    self:SetupExtras() -- Extras.lua
 end
 
 -- Edit Mode's Minimap "Size" setting as a percentage, or nil before Edit Mode has initialized.
@@ -520,6 +531,7 @@ function M:OnDisable()
     if mapCoords then mapCoords:Hide() end
     applyMapScale()
     self:HideReveal()
+    self:HideExtras()
     for frame in pairs(tucked) do tuck(frame, true) end
     Minimap:EnableMouseWheel(true)
 end

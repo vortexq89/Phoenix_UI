@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Minimap review** (31 Oct, review 29, EllesmereUI / ElvUI parity): an info line (frame rate, latency) whose tooltip lists the Great Vault and saved lockouts (also on the clock's tooltip), difficulty as text (N / H / M / M+12 / LFR with raid size), a Great Vault button, right-click tracking menu and middle-click calendar (work with those buttons hidden), fade in combat or while mounted, zone text and coordinates on mouse-over only.
 - **Encounters review** (31 Oct, review 28, BigWigs parity): Move emphasised bars (their own bigger stack with its own place), bar direction (drain or fill), a spark on each bar, the voice counts abilities in (spellID=count, or every emphasised one), banner lines (1-5) and a red screen-edge flash on critical warnings.
 - **Layout mode for every Phoenix frame** (31 Oct, review 28): the encounter bars and warnings, Mythic+ timer, spell history, XP bar and data text panels were only in Blizzard's Edit Mode; they now also have a Layout mode box with the same saved place (plus scale and opacity), and the encounter frames show samples while you move them.
 - **Quiet mode for instances** (31 Oct, BigWigs BossBlock idea): Quality of Life > Hide boss emotes (boss emotes and whispers stay in chat; raid warnings stay), and Where to hide (everywhere, dungeons and raids, raids only) for talking heads, zone text, the boss banner and boss emotes.
