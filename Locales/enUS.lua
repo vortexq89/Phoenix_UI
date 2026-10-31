@@ -3071,6 +3071,8 @@ ns.RegisterLocale("enUS", {
     MERCHW_STOCK = "%d left",
     MERCHW_OWN = "Phoenix merchant window",
     MERCHW_OWN_DESC = "Phoenix's own vendor window: item cards, buyback, sell junk and repair. Off: Blizzard's vendor, restyled. Applies live.",
+    MERCHW_WIDE = "Wide vendor window",
+    MERCHW_WIDE_DESC = "Shows four columns of items, two pages side by side (WindTools' extra merchant pages). Applies live.",
     FRIENDW_TITLE = "Friends",
     FRIENDW_ONLINE = "Online %d / %d",
     FRIENDW_WHISPER = "Whisper",

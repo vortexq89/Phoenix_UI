@@ -36,6 +36,7 @@ ns:RegisterOptions("Skins", {
     { type = "toggle", key = "mail", label = "SKINS_MAIL", keywords = "mailbox" },
     { type = "toggle", key = "ownMail", label = "MAILW_OWN", desc = "MAILW_OWN_DESC", keywords = "mail inbox own window" },
     { type = "toggle", key = "ownMerchant", label = "MERCHW_OWN", desc = "MERCHW_OWN_DESC", keywords = "vendor merchant own window" },
+    { type = "toggle", key = "merchantWide", label = "MERCHW_WIDE", desc = "MERCHW_WIDE_DESC", keywords = "vendor merchant pages wide" },
     { type = "toggle", key = "ownFriends", label = "FRIENDW_OWN", desc = "FRIENDW_OWN_DESC", keywords = "friends social own window" },
     { type = "toggle", key = "ownAchievements", label = "ACHW_OWN", desc = "ACHW_OWN_DESC", keywords = "achievements points own window" },
     { type = "toggle", key = "ownCalendar", label = "CALW_OWN", desc = "CALW_OWN_DESC", keywords = "calendar events own window" },

@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 129 |
-| partial | 2 |
+| Phoenix has | 130 |
+| partial | 1 |
 | missing | 2 |
 | out of scope | 10 |
 
@@ -190,7 +190,7 @@ Overlaps found:
 | MikScrollingBattleText | Per-event sound and icon rules | Phoenix has | t195: sound per event exists (`scroll.events.<e>.sound`); icons only from your own casts (`scroll.castIcons`). Gap: icon per event, sticky per event. Step 3 (2026-10-31): every line has an icon (spell icon, your last cast, else a Phoenix glyph per event in the line colour, `scroll.glyphIcons`). Built 2026-10-31 (t198): per event Always sticky (`events.<e>.sticky`), Show the icon (`events.<e>.icon`) and Message with %a (`events.<e>.msg`, `M.Template`), Font per event (`events.<e>.font`, the six combat faces); MSBT import takes alwaysSticky and %a messages. |
 | BigWigs | Per-boss knowledge (LittleWigs-style warnings) | Phoenix has | Completed 2026-11-01: role options (BigWigs' tank / healer flags) follow the game's "Hide abilities for other roles" on Phoenix bars, from the role in `Data.lua` (`M.ForOtherRole`, Journal.lua; your own choice wins). Timeline bars and ability rules. Step 1 built 2026-10-31 (t201): Encounters > Boss modules, every expansion's raids and dungeons from the Encounter Journal (`Journal.lua`), per-ability emph / sound / count / hide (`timeline.abilities`), data defaults in `Data.lua` (schema 1, for a daily sync). Per-boss data 2026-10-31: ~960 bosses, ~5900 abilities with role and emphasis, generated from the public BigWigs / LittleWigs boss lists by `tools/sync/boss_data.py` (facts only, own format; rerun by the daily sync). |
 | RareScanner | Rare already-killed / loot status on the alert | Phoenix has | Built 2026-10-31: killed today and seen today on the toast, per character, cleared at the daily reset (`M.NoteRare`, `M.RareStatus`, RareAlert.lua). Loot marks built 2026-10-31: collectible drops remembered when you loot a rare (`M.NoteRareLoot`, `M.RareLootStatus`), missing count on the toast. |
-| WindTools | Smart Tab, Event Tracker, CVar editor, merchant extra pages | partial | CVar editor built 2026-10-31 (Automation > CVar editor, `Phoenix_UI_Automation/CVarEditor.lua`). Ideas list (docs/research/windtools.md); Smart Tab was declined for taint, re-check. |
+| WindTools | Smart Tab, Event Tracker, CVar editor, merchant extra pages | Phoenix has | CVar editor built 2026-10-31 (Automation > CVar editor, `Phoenix_UI_Automation/CVarEditor.lua`). Event tracker built (Data Texts > Events). Merchant extra pages built 2026-11-01 in Phoenix's own vendor window (Skins > Wide vendor window, four columns, `M.MerchantCols`; Blizzard's slots are not moved). Smart Tab stays declined (writing the chat edit box's chat type taints secure slash commands). |
 | WindTools | Combat alert banner and sound, announcements set, sound mute list by ID, world map scale | Phoenix has | Re-checked 2026-10-31: combat alert (Quality `combatAlert`), sound mute by file ID (General `GEN_MUTE`, General.lua:89), world map scale (Minimap `worldMapScale`); announcements built 2026-10-31 (Automation > Announcements: new key, instance reset, thanks; Announce.lua). |
 | NaowhForever | Training planner, profession recipes incl. unlearned, gear swap bar, paladin blessings | missing | Forever-first ideas (docs/research/naowhforever.md); data from the wowf DB2 build. |
 | NaowhForever | Forever dungeon journal, group inspect window, threat meter window | partial | Encounters data, meter item level and plate threat exist; add the windows. |

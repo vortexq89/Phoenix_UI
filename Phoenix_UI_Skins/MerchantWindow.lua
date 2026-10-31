@@ -9,7 +9,9 @@ local M = ns:GetModule("Skins")
     bags (Blizzard's MerchantFrame is open the whole visit, tucked away by the shared Replacement shell).
     Skins > "Phoenix merchant window" off: Blizzard's vendor, reskinned, live. ]]
 
-local COLS, ROWS, CARD_W, CARD_H, GAP = 2, 6, 230, 46, 6
+local ROWS, CARD_W, CARD_H, GAP = 6, 230, 46, 6
+-- Columns: two, or four with Skins > Wide vendor window (WindTools' extra merchant pages: two pages side by side).
+function M.MerchantCols() return (M.db and M.db.merchantWide) and 4 or 2 end
 local page, tab, armed = 1, "buy", nil
 local r
 
@@ -67,7 +69,6 @@ local function card(i)
     if c then return c end
     c = CreateFrame("Button", nil, r.body)
     c:SetSize(CARD_W, CARD_H)
-    c:SetPoint("TOPLEFT", ((i - 1) % COLS) * (CARD_W + GAP), -40 - math.floor((i - 1) / COLS) * (CARD_H + GAP))
     c:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     c.icon = c:CreateTexture(nil, "ARTWORK")
     c.icon:SetSize(36, 36)
@@ -134,8 +135,17 @@ local function paintCard(c, index, name, texture, costText, stack, usable)
     c:Show()
 end
 
+-- Window width for the column count, and the cards past one page hidden.
+local function fitColumns()
+    local cols = M.MerchantCols()
+    local per = cols * ROWS
+    if r.win then r.win:SetWidth(cols * (CARD_W + GAP) - GAP + 20) end
+    for i = per + 1, #r.cards do r.cards[i]:Hide() end
+    return cols, per
+end
+
 local function layout()
-    local per = COLS * ROWS
+    local cols, per = fitColumns()
     for key, t in pairs(r.tabs) do
         t.variant = key == tab and "primary" or "secondary"
         local idle = t:GetScript("OnLeave")
@@ -148,6 +158,8 @@ local function layout()
     for slot = 1, per do
         local index = (page - 1) * per + slot
         local c = card(slot)
+        c:ClearAllPoints()
+        c:SetPoint("TOPLEFT", ((slot - 1) % cols) * (CARD_W + GAP), -40 - math.floor((slot - 1) / cols) * (CARD_H + GAP))
         if index > n then
             c:Hide()
         elseif tab == "buyback" then
@@ -214,7 +226,7 @@ local function build(rr)
 end
 
 local merchant = M.Replacement({ key = "ownMerchant", frame = "MerchantFrame", title = L.MERCHW_TITLE,
-    width = COLS * (CARD_W + GAP) - GAP + 20, height = 34 + 40 + ROWS * (CARD_H + GAP) + 80,
+    width = 2 * (CARD_W + GAP) - GAP + 20, height = 34 + 40 + ROWS * (CARD_H + GAP) + 80,
     build = build, layout = layout, close = function() if CloseMerchant then CloseMerchant() end end })
 M.MerchantReplacement = merchant
 

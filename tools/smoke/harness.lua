@@ -6316,6 +6316,16 @@ try("group finder: leader's realm in the tooltip (Tust_EUI LFG region)", functio
     assert(G.LeaderRealm("Bob") == nil and G.LeaderRealm(nil) == nil, "own realm or unknown")
 end)
 
+try("vendor window: wide, two pages side by side (WindTools merchant pages)", function()
+    local S = ns.modules.Skins
+    if not S.MerchantCols then return end
+    local saved = S.db.merchantWide
+    S.db.merchantWide = false; assert(S.MerchantCols() == 2, "two columns")
+    S.db.merchantWide = true; assert(S.MerchantCols() == 4, "four columns")
+    S:SyncMerchant()
+    S.db.merchantWide = saved; S:SyncMerchant()
+end)
+
 try("turn Phoenix off (EllesmereUI uninstall)", function()
     local C = ns.Config
     local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")

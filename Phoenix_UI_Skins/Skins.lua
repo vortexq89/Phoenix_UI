@@ -17,7 +17,7 @@ local M = ns:NewModule("Skins", {
         auction = true, mail = true, merchant = true, gossip = true, loot = true, achievements = true, journal = true,
         calendar = true, communities = true, friends = true, settings = true, vault = true, keystone = true,
         trade = true, dressUp = true, transmog = true, housing = true, pvpMatch = true, pgf = true, alerts = false,
-        ownMail = true, ownMerchant = true, ownFriends = true, ownAchievements = true, ownCalendar = true,
+        ownMail = true, ownMerchant = true, merchantWide = false, ownFriends = true, ownAchievements = true, ownCalendar = true,
         ownVault = true, ownCollections = true, ownJournal = true,
         ownCharacter = true, ownGuild = true, ownProfessions = true, ownQuestLog = true,
         ownLoot = true, lootPlace = "blizzard", lootSort = "quality", lootPos = {},
