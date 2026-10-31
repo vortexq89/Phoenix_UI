@@ -619,6 +619,73 @@ function M:RemoveTrigger(i)
     return true
 end
 
+---------------------------------------------------------------- MikScrollingBattleText import (step 4b)
+-- Reads MSBT's own saved settings (only there while MSBT is enabled) and copies what maps onto Phoenix: area
+-- style, direction, alignment, height, on/off; event on/off, colour and area; ability substitutions. MSBT's data is
+-- only read, never changed. Returns the number of settings written, or nil and a locale key for why not.
+M.MSBT_AREAS = { Incoming = "incoming", Outgoing = "target", Notification = "notify" }
+M.MSBT_ANIM = { Straight = "straight", Parabola = "parabola", Static = "static", Angled = "angled",
+    Horizontal = "horizontal", Pow = "pow" }
+M.MSBT_ALIGN = { "LEFT", "CENTER", "RIGHT" }
+M.MSBT_EVENTS = { INCOMING_DAMAGE = "damage", INCOMING_SPELL_DAMAGE = "spell", INCOMING_HEAL = "heal", INCOMING_HOT = "hot",
+    INCOMING_MISS = "avoid", OUTGOING_DAMAGE = "hit", OUTGOING_HEAL = "theal", NOTIFICATION_BUFF = "buff",
+    NOTIFICATION_DEBUFF = "debuff", NOTIFICATION_BUFF_FADE = "fade", NOTIFICATION_REP_GAIN = "rep",
+    NOTIFICATION_HONOR_GAIN = "honor", NOTIFICATION_MONEY = "money", NOTIFICATION_EXPERIENCE_GAIN = "xp" }
+
+local function unit01(v) v = tonumber(v); return v and math.max(0, math.min(1, v)) or 1 end
+
+local function importAreas(db, p)
+    local n = 0
+    for from, key in pairs(M.MSBT_AREAS) do
+        local a, to = type(p.scrollAreas) == "table" and p.scrollAreas[from], db.areas[key]
+        if type(a) == "table" and to then
+            if M.MSBT_ANIM[a.animationStyle] then to.anim = M.MSBT_ANIM[a.animationStyle]; n = n + 1 end
+            if a.direction == "Up" or a.direction == "Down" then to.dir = a.direction:upper(); n = n + 1 end
+            local align = M.MSBT_ALIGN[tonumber(a.textAlignIndex) or 0]
+            if align then to.align = align; n = n + 1 end
+            if tonumber(a.scrollHeight) then to.height = math.max(60, math.min(600, tonumber(a.scrollHeight))); n = n + 1 end
+            if a.isDisabled ~= nil then to.show = not a.isDisabled; n = n + 1 end
+        end
+    end
+    return n
+end
+
+local function importEvents(db, p)
+    local n = 0
+    for from, key in pairs(M.MSBT_EVENTS) do
+        local e, to = type(p.events) == "table" and p.events[from], db.events[key]
+        if type(e) == "table" and to then
+            if e.disabled ~= nil then to.show = not e.disabled; n = n + 1 end
+            if M.MSBT_AREAS[e.scrollArea] then to.area = M.MSBT_AREAS[e.scrollArea]; n = n + 1 end
+            if e.colorR or e.colorG or e.colorB then
+                to.color = { r = unit01(e.colorR), g = unit01(e.colorG), b = unit01(e.colorB) }; n = n + 1
+            end
+        end
+    end
+    return n
+end
+
+function M:ImportMSBT(sv, charSv)
+    sv = sv or rawget(_G, "MSBTProfiles_SavedVars")
+    charSv = charSv or rawget(_G, "MSBTProfiles_SavedVarsPerChar")
+    if type(sv) ~= "table" or type(sv.profiles) ~= "table" then return nil, "FCT_MSBT_NONE" end
+    local name = type(charSv) == "table" and charSv.currentProfileName or "Default"
+    local p = sv.profiles[name]
+    if type(p) ~= "table" then return nil, "FCT_MSBT_NONE" end
+    local db = self.db.scroll
+    local n = importAreas(db, p) + importEvents(db, p)
+    if type(p.abilitySubstitutions) == "table" then
+        local list = {}
+        for from, to in pairs(p.abilitySubstitutions) do
+            if type(from) == "string" and type(to) == "string" then list[#list + 1] = from .. " = " .. to end
+        end
+        table.sort(list)
+        if #list > 0 then db.subs = table.concat(list, "; "); n = n + 1 end
+    end
+    self:EnableScroll()
+    return n
+end
+
 function M:RemoveArea(key)
     local db = self.db.scroll
     if not (M.IsCustomArea(key) and db.areas[key]) then return false end

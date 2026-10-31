@@ -5880,6 +5880,22 @@ try("combat text: user triggers (t196 step 4b)", function()
     assert(CT:RemoveTrigger(i) and #CT.db.scroll.triggers == i - 1, "removed")
 end)
 
+try("combat text: MSBT import (t196 step 4b)", function()
+    local CT = ns.modules.CombatText
+    assert(CT:ImportMSBT({}) == nil, "nothing loaded")
+    local sv = { profiles = { Default = {
+        scrollAreas = { Incoming = { animationStyle = "Parabola", direction = "Down", textAlignIndex = 3, scrollHeight = 900 } },
+        events = { INCOMING_HEAL = { colorR = 0, colorG = 1, colorB = 0.5, scrollArea = "Notification", disabled = false } },
+        abilitySubstitutions = { ["Power Word: Shield"] = "PWS" } } } }
+    local a, h = CT.db.scroll.areas.incoming, CT.db.scroll.events.heal
+    local was = { a.anim, a.dir, a.align, a.height, a.show, h.area, h.color, h.show, CT.db.scroll.subs }
+    local n = CT:ImportMSBT(sv, { currentProfileName = "Default" })
+    assert(n and n >= 8 and a.anim == "parabola" and a.dir == "DOWN" and a.align == "RIGHT" and a.height == 600, "areas")
+    assert(h.area == "notify" and h.color.b == 0.5 and CT.db.scroll.subs == "Power Word: Shield = PWS", "events, subs")
+    a.anim, a.dir, a.align, a.height, a.show, h.area, h.color, h.show, CT.db.scroll.subs = unpack(was, 1, 9)
+    CT:EnableScroll()
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

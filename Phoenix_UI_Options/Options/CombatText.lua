@@ -193,6 +193,12 @@ local schema = {
     { type = "tab", label = "FCT_TAB_TRIGGERS" },
     { type = "header", label = "FCT_TRIGGERS", icon = "bell" },
     { type = "description", text = "FCT_TRIGGERS_TEXT" },
+    { type = "button", label = "FCT_MSBT_IMPORT", desc = "FCT_MSBT_IMPORT_DESC", button = "FCT_MSBT_IMPORT_BUTTON", icon = "import",
+      keywords = "msbt mik scrolling battle text import profile copy",
+      func = function(m)
+          local n, why = m:ImportMSBT()
+          if n then ns:Print(ns.L.FCT_MSBT_DONE:format(n)); rebuild() else ns:Print(ns.L[why]) end
+      end },
     { type = "button", label = "FCT_TRIGGER_ADD", desc = "FCT_TRIGGER_ADD_DESC", button = "FCT_TRIGGER_ADD", icon = "add",
       keywords = "trigger alert custom message msbt",
       func = function(m) editing = m:AddTrigger(); rebuild() end },
