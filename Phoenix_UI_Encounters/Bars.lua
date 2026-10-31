@@ -130,7 +130,10 @@ local function ruleFor(info)
     if id == nil or Secret.IsSecret(id) or type(id) ~= "number" then return nil end
     M.seenAbilities = M.seenAbilities or {}
     M.seenAbilities[id] = true
-    return ruleCache[id]
+    -- your choice on the Boss modules tab, then the typed rules, then Phoenix's data default (Journal.lua)
+    local own = type(db.abilities) == "table" and db.abilities[id]
+    if own then return own end
+    return ruleCache[id] or (M.DataDefault and M.DataDefault(id))
 end
 M.RuleFor = ruleFor
 

@@ -10,6 +10,13 @@ local function noEmphasis(m) return notBars(m) or not m.db.timeline.emphasize en
 
 local masterGet, masterSet = CVar("combatWarningsEnabled")
 
+-- Boss modules tab: the picked expansion, instance, boss and ability (this session only).
+local pick = { raid = true }
+local function rebuild() if ns.Config.RebuildPage then ns.Config:RebuildPage("Encounters") end end
+local CHOICES = { { value = "default", label = "ENC_CHOICE_DEFAULT" }, { value = "emph", label = "ENC_CHOICE_EMPH" },
+    { value = "sound", label = "ENC_CHOICE_SOUND" }, { value = "count", label = "ENC_CHOICE_COUNT" },
+    { value = "hide", label = "ENC_CHOICE_HIDE" } }
+
 -- Blizzard settings shown as rows (the game applies them to its own timeline and banner).
 -- row = { label, desc, … } plus the CVar's get/set.
 local function cvarToggle(cvar, row)
@@ -116,6 +123,28 @@ ns:RegisterOptions("Encounters", {
     Opt.Text("timeline.name", "ENC_NAME_FONT", { max = 24, row = { disabled = notBars } }),
     Opt.Text("timeline.time", "ENC_TIME_FONT", { max = 24, row = { disabled = notBars } }),
 
+    { type = "tab", label = "ENC_TAB_BOSSES", feature = "encounterTimeline" },
+    { type = "header", label = "ENC_BOSSES", icon = "boss" },
+    { type = "description", text = "ENC_BOSSES_TEXT" },
+    { type = "toggle", label = "ENC_BOSS_RAIDS", desc = "ENC_BOSS_RAIDS_DESC", keywords = "raid dungeon littlewigs bigwigs",
+      get = function() return pick.raid end,
+      set = function(_, v) pick.raid = v and true or false; pick.inst, pick.boss, pick.spell = nil, nil, nil; rebuild() end },
+    { type = "select", label = "ENC_BOSS_TIER", values = function(m) return m.JournalTiers() end,
+      keywords = "expansion tier boss modules",
+      get = function() return pick.tier end,
+      set = function(_, v) pick.tier, pick.inst, pick.boss, pick.spell = v, nil, nil, nil; rebuild() end },
+    { type = "select", label = "ENC_BOSS_INSTANCE", values = function(m) return m.JournalInstances(pick.tier, pick.raid) end,
+      hidden = function() return not pick.tier end,
+      get = function() return pick.inst end, set = function(_, v) pick.inst, pick.boss, pick.spell = v, nil, nil; rebuild() end },
+    { type = "select", label = "ENC_BOSS_BOSS", values = function(m) return m.JournalBosses(pick.inst) end,
+      hidden = function() return not pick.inst end,
+      get = function() return pick.boss end, set = function(_, v) pick.boss, pick.spell = v, nil; rebuild() end },
+    { type = "select", label = "ENC_BOSS_ABILITY", values = function(m) return m.BossAbilities(pick.boss) end,
+      hidden = function() return not pick.boss end,
+      get = function() return pick.spell end, set = function(_, v) pick.spell = v; rebuild() end },
+    { type = "select", label = "ENC_BOSS_CHOICE", desc = "ENC_BOSS_CHOICE_DESC", values = CHOICES,
+      hidden = function() return not pick.spell end,
+      get = function(m) return m:AbilityChoice(pick.spell) end, set = function(m, v) m:SetAbilityChoice(pick.spell, v) end },
     { type = "tab", label = "ENC_TAB_WARNINGS", feature = "encounterWarnings" },
     { type = "header", label = "ENC_WARNINGS", icon = "warning" },
     { type = "select", key = "warnings.display", label = "ENC_WARN_DISPLAY", desc = "ENC_WARN_DISPLAY_DESC",

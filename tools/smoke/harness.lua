@@ -6239,6 +6239,16 @@ try("rare alert: loot marks (RareScanner idea)", function()
     A.OnRareLoot()
 end)
 
+try("encounters: boss modules from the journal, per-ability choices (t201)", function()
+    local E = ns.modules.Encounters
+    assert(type(E.JournalTiers()) == "table" and type(E.BossAbilities(nil)) == "table", "journal readers")
+    assert(E:SetAbilityChoice(12345, "emph") and E:AbilityChoice(12345) == "emph", "choice stored")
+    assert(E.RuleFor({ spellID = 12345 }) == "emph", "choice drives the bars")
+    assert(E:SetAbilityChoice(12345, "default") and E:AbilityChoice(12345) == "default", "back to default")
+    assert(not E:SetAbilityChoice(12345, "bogus"), "unknown choice")
+    assert(ns.EncounterData and ns.EncounterData.schema == 1, "data schema")
+end)
+
 try("art kit v8.1 phoenix-wings", function()
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")

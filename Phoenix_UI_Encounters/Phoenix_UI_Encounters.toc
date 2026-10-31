@@ -17,6 +17,8 @@
 
 Bridge.lua
 Encounters.lua
+Data.lua
+Journal.lua
 Bars.lua
 Warnings.lua
 BigWigs.lua

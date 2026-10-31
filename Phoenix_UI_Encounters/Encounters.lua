@@ -25,6 +25,7 @@ local M = ns:NewModule("Encounters", {
             emphasize = true, emphasizeAt = 5, emphasizeColor = false,
             emphasizeMove = false, emphasizeScale = 1.25, -- emphasised bars in their own, bigger stack (BigWigs)
             rules = "", -- per-ability: "spellID=hide|emph|sound|count, …" (Bars.lua)
+            abilities = {}, -- per-ability choices from the Boss modules tab: [spellID] = "hide"|"emph"|"sound"|"count"
             background = Style.Background({ alpha = 0.7 }),
             border = Style.Border(),
             name = Style.Text(12, { shadow = true }),
