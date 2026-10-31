@@ -20,7 +20,7 @@ local function build()
     overlay.edges = {}
     local function edge(p1, p2, horizontal, flip)
         local t = overlay:CreateTexture(nil, "OVERLAY")
-        t:SetTexture("Interface\\Buttons\\WHITE8x8")
+        t:SetColorTexture(1, 1, 1, 1)
         t:SetPoint(p1); t:SetPoint(p2)
         t.horizontal, t.flip = horizontal, flip
         overlay.edges[#overlay.edges + 1] = t
@@ -70,8 +70,8 @@ function M:StartParty(manual)
             M.PartyPaint(M.party.step, (tonumber(M.db.partyStrength) or 60) / 100)
         end)
     end
-    if db.partySound and PlaySound and SOUNDKIT and SOUNDKIT.UI_PERSONAL_LOOT_BANNER then
-        pcall(PlaySound, SOUNDKIT.UI_PERSONAL_LOOT_BANNER)
+    if db.partySound and PlaySound and SOUNDKIT and SOUNDKIT.IG_QUEST_LIST_COMPLETE then
+        pcall(PlaySound, SOUNDKIT.IG_QUEST_LIST_COMPLETE)
     end
     if not manual then stopTimer = C_Timer.NewTimer(tonumber(db.partyDuration) or 6, function() M:StopParty() end) end
 end
