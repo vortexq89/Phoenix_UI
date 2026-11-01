@@ -27,13 +27,15 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
   `Phoenix_UI_Bags/Chrome.lua` has the same timing problem. Fix: re-apply from a hook on Blizzard's own update and
   layout functions (a post-hook, original code), not from a one-off event.
   **Done 1 Nov:** the micro menu and bag bar are skinned again after PLAYER_ENTERING_WORLD (and 1 s later), after EDIT_MODE_LAYOUTS_UPDATED, and after Blizzard's `Layout` on MicroMenu / MicroMenuContainer / BagsBar and `UpdateMicroButtons`. The re-skins are combined into one per frame. Harness check added; still to confirm in game after a /reload.
-- [ ] **4. Borders around every box, dialog and group: drop the border-image theme and draw them in code with colour, with better borders whose corners expand properly. Border colour doesn't change when you change the colour.**
+- [x] **4. Borders around every box, dialog and group: drop the border-image theme and draw them in code with colour, with better borders whose corners expand properly. Border colour doesn't change when you change the colour.**
   Cause: frames are framed with `UI/ArtKit.lua` `A:Dress(..., {slot=..., out=...})` image pieces. Their colour is baked
   into the texture and not repainted from the theme's border token when it changes. Fix: one code-drawn border
   (edges plus corner pieces that grow with the size), coloured by the `border` token and repainted on theme change.
-- [ ] **12. Tooltip: the theme/border art sits inside the tooltip instead of at the edge.**
+  **Done 1 Nov:** `Skin:Panel` always draws a flat theme fill and a 1 px code border in the panel's border token, which is repainted on every theme change. The picture-frame path (`opts.art`) is ignored. Harness check added. The textured buttons and toggles are restyled in the GUI rework (EllesmereUI widgets).
+- [x] **12. Tooltip: the theme/border art sits inside the tooltip instead of at the edge.**
   Cause: `UI/ArtKit.lua:501` `A:DressTooltip` (`out = 6`, scale 0.35). The art's inner padding is larger than `out`,
   so the visible frame line lands inside. This goes away with the code-drawn border (item 4) anchored on the tooltip edge.
+  **Done 1 Nov:** `A:DressTooltip` is removed; tooltips keep only their code backdrop and border, on the edge.
 - [x] **14. AFK preview button: you can't exit it with the mouse, only with a key. Make any mouse move or click exit it.**
   Cause: `Phoenix_UI_AFK/AFK.lua`: the screen `EnableMouse(true)` takes the mouse but has no mouse handler. It only
   closes on PLAYER_FLAGS_CHANGED (a key press clears AFK), and a preview never was AFK. The file also uses an

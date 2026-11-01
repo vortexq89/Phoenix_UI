@@ -74,6 +74,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Borders drawn in code** (1 Nov): every box, dialog and group in the settings window now has a clean 1 px border in the theme's border colour instead of a picture frame. It changes with your colours and its corners fit any size. Tooltips lost their inner picture frame; their border sits on the edge.
 - **Micro menu and bag bar keep their skin after /reload** (1 Nov): Phoenix now skins them again after the game lays them out, so the Blizzard art no longer comes back.
 - **Moving spells on the action bars** (1 Nov): dragging a spell to another slot no longer makes the bars flicker, and bars that hide empty slots now show them while you drag, so you can drop it anywhere.
 - **AFK preview closes with the mouse** (1 Nov): the AFK screen's Preview now closes as soon as you move the mouse or click, and a click also closes the real AFK screen.

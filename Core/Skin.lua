@@ -79,8 +79,9 @@ end
 
 ---------------------------------------------------------------- panels
 -- style: "base" | "raised" | "sunken" | "hover" | "overlay"; opts: { border, shadow, sheen, inset, art, alpha }
---   art = an atlas piece (UI/Art.lua, "card" …) drawn 9-sliced instead of the flat fill while the art kit is on;
---   alpha = a panel.alpha.* token name ("card", "rail" …): the fill lets the background art through (v7.1)
+--   Every box, dialog and group is a flat theme fill with a 1 px code border in its border token (t213 #4):
+--   the colour follows the theme live and the corners meet at any size. opts.art (the old picture frames)
+--   is accepted and ignored. alpha = a panel.alpha.* token name ("card", "rail" …) for the fill.
 function Sk:Panel(frame, style, opts)
     opts = opts or {}
     local s = st(frame)
@@ -93,25 +94,18 @@ function Sk:Panel(frame, style, opts)
     s.bg:SetPoint("TOPLEFT", inset, -inset)
     s.bg:SetPoint("BOTTOMRIGHT", -inset, inset)
     local Art = ns.Art
-    local arted = opts.art and Art and Art.Enabled() and Art:Paint(s.bg, opts.art)
-    if not arted then
-        s.bg:SetTexture(WHITE)
-        s.bg:SetTexCoord(0, 1, 0, 1)
-        if s.bg.ClearTextureSlice then s.bg:ClearTextureSlice() end
-        local r, g, b, a = Theme:Color("bg." .. (style or "base"))
-        local pa = opts.alpha and Art and Art.Enabled() and Art:Token("panel.alpha." .. opts.alpha)
-        s.bg:SetVertexColor(r, g, b, pa or a or 1)
-    else
-        s.bg:SetAlpha(1)
-        -- the piece bakes its own fill opacity (card: 94%); the vertex alpha brings it to the panel.alpha token
-        local piece = Art:Piece(opts.art)
-        local want = Art:Token("panel.alpha." .. (opts.alpha or "card")) or 1
-        s.bg:SetVertexColor(1, 1, 1, math.min(1, want / (piece.alpha or 1)))
-    end
+    s.bg:SetTexture(WHITE)
+    s.bg:SetTexCoord(0, 1, 0, 1)
+    if s.bg.ClearTextureSlice then s.bg:ClearTextureSlice() end
+    local r, g, b, a = Theme:Color("bg." .. (style or "base"))
+    local pa = opts.alpha and Art and Art.Enabled() and Art:Token("panel.alpha." .. opts.alpha)
+    s.bg:SetVertexColor(r, g, b, pa or a or 1)
     s.bg:Show()
-    if arted then
-        if s.border then for _, side in ipairs(SIDES) do s.border[side]:Hide() end end
-    elseif opts.border ~= false then self:Border(frame, opts.border or "border.subtle") end
+    if opts.border ~= false then
+        self:Border(frame, opts.border or "border.subtle")
+    elseif s.border then
+        for _, side in ipairs(SIDES) do s.border[side]:Hide() end
+    end
     if opts.sheen then
         if not s.sheen then
             s.sheen = frame:CreateTexture(nil, "BACKGROUND", nil, -7)

@@ -39,8 +39,8 @@ local ROLE_ATLAS = { TANK = "roleicon-tiny-tank", HEALER = "roleicon-tiny-healer
 ---------------------------------------------------------------- style (shared with the options preview)
 function M:StyleFrame(frame)
     Skin:Backdrop(frame, self.db.backdrop, "bg.raised")
+    -- the code border sits on the tooltip's edge (the picture panel drew its frame inside it, t213 #12)
     Skin:BorderSpec(frame, self.db.border, "border.strong")
-    if ns.Art and ns.Art.DressTooltip then ns.Art:DressTooltip(frame) end -- phoenix-wings panel
 end
 
 function M:BorderColor() return Skin:SpecColor(self.db.border.color, "border.strong") end

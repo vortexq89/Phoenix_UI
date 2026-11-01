@@ -4193,6 +4193,16 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- boxes, dialogs and groups get a code border even when they ask for a picture frame (t213 #4); no tooltip art (#12)
+try("code borders on every panel", function()
+    local f = CreateFrame("Frame")
+    local made, CT = 0, f.CreateTexture
+    rawset(f, "CreateTexture", function(self, ...) made = made + 1; return CT(self, ...) end)
+    ns.Skin:Panel(f, "raised", { art = "card" })
+    assert(made == 5, "panel with art = card made " .. made .. " textures, want fill + 4 border sides")
+    assert(not (ns.Art and ns.Art.DressTooltip), "tooltip picture panel still present")
+end)
+
 -- the micro menu and bag bar are skinned again after Blizzard's own layout passes (lost after /reload, t213 #3)
 try("micro menu skin survives a reload", function()
     local sk = ns.modules.Skins
