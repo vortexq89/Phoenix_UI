@@ -73,6 +73,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Sliders and buttons in the EllesmereUI look (1 Nov, specs/001 T004, T006) — sliders have a flat thin track, an accent…",
         "Switches in the EllesmereUI look (1 Nov, specs/001 T001–T002) — every on/off switch in the settings is now EllesmereU…",
         "One theme (1 Nov, t213 #5) — Phoenix now has one look, EllesmereUI's",
         "Group and raid frames stay on screen (1 Nov) — no size, spacing or growth setting can push the party or raid frames o…",

@@ -6730,6 +6730,19 @@ try("EllesmereUI toggle and look table (specs/001 T001-T002)", function()
     tg:SetValue(false)
     assert(tg.progress == 0, "off")
 end)
+try("EllesmereUI slider and button (specs/001 T004, T006)", function()
+    local W = ns.Widgets
+    local sl = W:Slider(env.UIParent, 0, 10, 1)
+    assert(not sl.glow and sl.thumb:GetWidth() == 14 and sl.box:GetWidth() == 40, "flat track, square thumb, 40 px box")
+    rawset(sl.bar, "SetScript", function(_, k, fn) assert(k ~= "OnUpdate" or fn == nil, "slider drag must not use OnUpdate") end)
+    local down = sl.bar:GetScript("OnMouseDown"); if down then down(sl.bar) end
+    assert(sl.dragTicker, "drag follows on a ticker")
+    local up = sl.bar:GetScript("OnMouseUp"); if up then up(sl.bar) end
+    assert(not sl.dragTicker, "ticker stops on release")
+    rawset(sl.bar, "SetScript", nil)
+    local b = W:Button(env.UIParent, "x")
+    assert(not b.art and not b.shine, "no picture art on buttons")
+end)
 try("group frames blizzard fallback", function()
     local M = ns.modules.GroupFrames
     M.db.mode = "blizzard"

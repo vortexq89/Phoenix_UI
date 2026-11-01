@@ -1,5 +1,5 @@
 local _, ns = ...
-local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
+local W, Theme, Skin = ns.Widgets, ns.Theme, ns.Skin
 
 local function snap(v, min, max, step)
     v = math.max(min, math.min(max, v))
@@ -14,34 +14,39 @@ local function fmt(v, step, isPercent)
     return (text:gsub("%.$", ""))
 end
 
--- Track with accent fill, round thumb and an editable value box.
+-- EllesmereUI slider (specs/001 FR-003): a flat 4 px track (white 0.16), an accent fill (0.75), a square 14 px accent
+-- thumb and a 40x26 value box (dark at 0.25, white 0.02 border, dim text).
 function W:Slider(parent, min, max, step, isPercent)
+    local E = W.EUI.slider
     local s = CreateFrame("Frame", nil, parent)
-    s:SetSize(W.CONTROL_WIDTH, 22)
+    s:SetSize(W.CONTROL_WIDTH, 26)
     s.min, s.max, s.step, s.isPercent = min, max, step, isPercent
     s.value = min
 
     local bar = CreateFrame("Button", nil, s)
     bar:SetPoint("LEFT", 0, 0)
-    bar:SetPoint("RIGHT", -56, 0)
-    bar:SetHeight(18)
+    bar:SetPoint("RIGHT", -52, 0)
+    bar:SetHeight(20)
     s.bar = bar
-    s.track = W.Texture(bar, "ARTWORK", 0, Media.textures.PILL)
+    s.track = W.Texture(bar, "ARTWORK", 0)
     s.track:SetPoint("LEFT"); s.track:SetPoint("RIGHT"); s.track:SetHeight(4)
-    s.fill = W.Texture(bar, "ARTWORK", 1, Media.textures.PILL)
+    s.fill = W.Texture(bar, "ARTWORK", 1)
     s.fill:SetPoint("LEFT"); s.fill:SetHeight(4)
-    s.glow = W.Texture(bar, "ARTWORK", 2, Media.textures.CIRCLE)
-    s.glow:SetSize(24, 24)
-    s.thumb = W.Texture(bar, "OVERLAY", 3, Media.textures.CIRCLE)
+    s.thumb = W.Texture(bar, "OVERLAY", 3)
     s.thumb:SetSize(14, 14)
 
     local box = CreateFrame("EditBox", nil, s)
-    box:SetSize(48, 22)
+    box:SetSize(40, 26)
     box:SetPoint("RIGHT")
     box:SetAutoFocus(false)
     box:SetJustifyH("CENTER")
     box:SetTextInsets(2, 2, 0, 0)
+    box:SetMaxLetters(7)
     s.box = box
+    box.bg = W.Texture(box, "BACKGROUND", 0)
+    box.bg:SetAllPoints()
+    box.bg:SetVertexColor(E.input[1], E.input[2], E.input[3], E.inputA)
+    Skin:Border(box)
 
     local function layout(self)
         local w = self.bar:GetWidth()
@@ -49,41 +54,18 @@ function W:Slider(parent, min, max, step, isPercent)
         local x = math.max(0, math.min(w, w * p))
         self.fill:SetWidth(math.max(0.01, x))
         self.thumb:ClearAllPoints(); self.thumb:SetPoint("CENTER", self.bar, "LEFT", x, 0)
-        self.glow:ClearAllPoints(); self.glow:SetPoint("CENTER", self.thumb)
         if not self.box:HasFocus() then self.box:SetText(fmt(self.value, self.step, self.isPercent)) end
     end
 
     Skin:Register(s, function(self)
-        W.Color(self.track, "border.subtle")
-        self.fill:SetVertexColor(1, 1, 1, 1)
-        Skin:Gradient(self.fill, "HORIZONTAL", "accent.primary", "accent.secondary")
-        self.thumb:SetVertexColor(1, 1, 1, 1)
-        W.Color(self.glow, "accent.glow", self.dragging and 0.7 or 0)
-        -- v7.1 art kit: baked track, fill and thumb (the fill is 9-sliced, so its width follows the value)
-        local Art = ns.Art
-        local art = Art and Art.Enabled() and Art:Paint(self.track, "slider_track")
-        if art then
-            Art:Paint(self.fill, "slider_fill")
-            Art:Paint(self.thumb, "slider_thumb")
-            self.glow:SetAlpha(0)
-        else
-            for _, t in ipairs({ self.track, self.fill, self.thumb }) do
-                t:SetTexCoord(0, 1, 0, 1)
-                if t.ClearTextureSlice then t:ClearTextureSlice() end
-            end
-            self.track:SetTexture(Media.textures.PILL); self.fill:SetTexture(Media.textures.PILL)
-            self.thumb:SetTexture(Media.textures.CIRCLE)
-            W.Color(self.track, "border.subtle")
-            self.fill:SetVertexColor(1, 1, 1, 1)
-            Skin:Gradient(self.fill, "HORIZONTAL", "accent.primary", "accent.secondary")
-            self.thumb:SetVertexColor(1, 1, 1, 1)
-            self.glow:SetAlpha(1)
-        end
-        self.track:SetHeight(art and 6 or 4); self.fill:SetHeight(art and 6 or 4)
-        self.thumb:SetSize(art and 16 or 14, art and 16 or 14)
-        Skin:Panel(self.box, "sunken", { border = "border.subtle" })
+        self.track:SetVertexColor(1, 1, 1, E.trackA)
+        local r, g, b = Theme:Color("accent.primary")
+        self.fill:SetVertexColor(r, g, b, E.fillA)
+        self.thumb:SetVertexColor(r, g, b, 1)
+        Skin:SetBorderColor(self.box, 1, 1, 1, E.inputBorderA)
         self.box:SetFont(Theme:Font("number"))
-        self.box:SetTextColor(Theme:Color("text.primary"))
+        local tr, tg, tb = Theme:Color("text.secondary")
+        self.box:SetTextColor(tr, tg, tb, 1)
         layout(self)
     end)
 
@@ -102,18 +84,16 @@ function W:Slider(parent, min, max, step, isPercent)
     bar:SetScript("OnMouseDown", function()
         if s.disabled then return end
         s.dragging = true
-        W.Color(s.glow, "accent.glow", 0.7)
         setFromCursor(s)
-        bar:SetScript("OnUpdate", function() setFromCursor(s) end)
+        -- follows the cursor on a C_Timer ticker while the button is held (no OnUpdate)
+        if s.dragTicker then s.dragTicker:Cancel() end
+        s.dragTicker = C_Timer.NewTicker(0.016, function() setFromCursor(s) end)
     end)
     bar:SetScript("OnMouseUp", function()
         s.dragging = false
-        W.Color(s.glow, "accent.glow", 0)
-        bar:SetScript("OnUpdate", nil)
+        if s.dragTicker then s.dragTicker:Cancel(); s.dragTicker = nil end
         if s.onCommit then s.onCommit(s, s.value) end
     end)
-    bar:SetScript("OnEnter", function() if not s.dragging then W.Color(s.glow, "accent.glow", 0.35) end end)
-    bar:SetScript("OnLeave", function() if not s.dragging then W.Color(s.glow, "accent.glow", 0) end end)
     bar:EnableMouseWheel(true)
     bar:SetScript("OnMouseWheel", function(_, delta)
         if s.disabled then return end
@@ -134,8 +114,8 @@ function W:Slider(parent, min, max, step, isPercent)
         layout(s)
     end)
     box:SetScript("OnEscapePressed", function(self) self:ClearFocus(); layout(s) end)
-    box:SetScript("OnEditFocusGained", function(self) Skin:SetBorderColor(self, "accent.primary"); self:HighlightText() end)
-    box:SetScript("OnEditFocusLost", function(self) Skin:SetBorderColor(self, "border.subtle"); layout(s) end)
+    box:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
+    box:SetScript("OnEditFocusLost", function() layout(s) end)
 
     function s:SetValue(v) self.value = snap(tonumber(v) or self.min, self.min, self.max, self.step); layout(self) end
     function s:GetValue() return self.value end

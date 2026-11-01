@@ -1,16 +1,16 @@
 local _, ns = ...
-local W, Skin, Media, Icons = ns.Widgets, ns.Skin, ns.Media, ns.Icons
+local W, Skin, Icons = ns.Widgets, ns.Skin, ns.Icons
 
--- variant: "primary" (accent gradient), "secondary" (raised), "ghost" (transparent), "danger"
+-- EllesmereUI buttons (specs/001 FR-005). variant: "secondary" (flat warm fill 0.6, white 0.3 border, text 0.55),
+-- "primary" (accent fill), "ghost" (no fill or border), "danger" (red text and border). Hover lifts the alphas.
 function W:Button(parent, text, variant, icon, width)
+    local E = W.EUI.button
     variant = variant or "secondary"
     local b = CreateFrame("Button", nil, parent)
     b:SetSize(width or 120, 28)
     b.variant = variant
     b.fill = W.Texture(b, "BACKGROUND", 1)
     b.fill:SetAllPoints()
-    b.shine = W.Texture(b, "BACKGROUND", 2, Media.textures.FADE_V)
-    b.shine:SetPoint("TOPLEFT", 1, -1); b.shine:SetPoint("TOPRIGHT", -1, -1); b.shine:SetHeight(14)
     b.label = W.Text(b, "body", "text.primary", "CENTER")
     if icon then
         b.icon = W.Icon(b, icon, 14)
@@ -23,81 +23,50 @@ function W:Button(parent, text, variant, icon, width)
     b.label:SetText(text or "")
     if not width and text then b:SetWidth(math.max(72, b.label:GetStringWidth() + (icon and 46 or 28))) end
 
-    -- v7.1 art kit: primary and secondary buttons use the baked 9-slice states (coords swap on mouse events)
-    b.art = W.Texture(b, "BACKGROUND", 3)
-    b.art:SetAllPoints()
-    b.art:Hide()
-    local ART = { primary = { normal = "btn_pri_normal", hover = "btn_pri_hover", pressed = "btn_pri_pressed",
-                              disabled = "btn_pri_disabled" },
-                  secondary = { normal = "btn_sec_normal", hover = "btn_sec_hover", pressed = "btn_sec_hover",
-                                disabled = "btn_sec_normal" } }
-    local function artState(self, state)
-        local set, Art = ART[self.variant], ns.Art
-        local on = set and Art and Art.Enabled() and Art:Paint(self.art, set[self.disabled and "disabled" or state])
-        self.art:SetShown(on and true or false)
-        self.fill:SetAlpha(on and 0 or 1)
-        self.shine:SetAlpha(on and 0 or 1)
-        if on then Skin:SetBorderColor(self, 0, 0, 0, 0) end
-        return on
-    end
-    b.ArtState = artState
-
-    local function idle(self)
+    local function paint(self, hover)
         local v = self.variant
-        self.shine:SetVertexColor(1, 1, 1, v == "primary" and 0.18 or 0.04)
+        self.label:SetShadowOffset(0, 0)
         if v == "primary" then
-            self.fill:SetVertexColor(1, 1, 1, 1)
-            Skin:Gradient(self.fill, "HORIZONTAL", "accent.primary", "accent.secondary")
+            local r, g, bl = ns.Theme:Color("accent.primary")
+            self.fill:SetVertexColor(r, g, bl, hover and 1 or 0.85)
             Skin:Text(self.label, "body", "bg.base")
-            self.label:SetShadowOffset(0, 0)
-            Skin:SetBorderColor(self, "accent.primary")
+            Skin:SetBorderColor(self, r, g, bl, 1)
             if self.icon then Icons:SetState(self.icon, nil); Icons:Tint(self.icon, "bg.base") end
-        else
-            self.fill:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 1))
-            if v == "danger" then
-                -- opaque: a see-through red fill read red-on-red over the fire art
-                W.Color(self.fill, "bg.raised")
-                Skin:Text(self.label, "body", "state.danger")
-                Skin:SetBorderColor(self, "state.danger")
-            elseif v == "ghost" then
-                W.Color(self.fill, "bg.hover", 0)
-                Skin:Text(self.label, "body", "text.secondary")
-                Skin:SetBorderColor(self, 0, 0, 0, 0)
-            else
-                W.Color(self.fill, "bg.raised")
-                Skin:Text(self.label, "body", "text.primary")
-                Skin:SetBorderColor(self, "border.strong")
-            end
-            if self.icon then
-                Icons:SetState(self.icon, nil)
-                Icons:Tint(self.icon, v == "danger" and "state.danger" or "text.secondary")
-            end
+            return
         end
-        artState(self, "normal")
+        if v == "ghost" then
+            self.fill:SetVertexColor(1, 1, 1, hover and 0.04 or 0)
+            Skin:SetBorderColor(self, 0, 0, 0, 0)
+        else
+            self.fill:SetVertexColor(E.bg[1], E.bg[2], E.bg[3], hover and E.bgHoverA or E.bgA)
+        end
+        if v == "danger" then
+            local r, g, bl = ns.Theme:Color("state.danger")
+            Skin:Text(self.label, "body", "state.danger")
+            Skin:SetBorderColor(self, r, g, bl, hover and 0.9 or 0.6)
+        else
+            Skin:Text(self.label, "body", "text.primary")
+            self.label:SetTextColor(1, 1, 1, hover and E.textHoverA or E.textA)
+            if v ~= "ghost" then Skin:SetBorderColor(self, 1, 1, 1, hover and E.borderHoverA or E.borderA) end
+        end
+        if self.icon then
+            Icons:SetState(self.icon, nil)
+            Icons:Tint(self.icon, v == "danger" and "state.danger" or "text.secondary")
+        end
     end
+    local function idle(self) paint(self, false) end
     Skin:Border(b, "border.strong")
     Skin:Register(b, idle)
-    b:SetScript("OnEnter", function(self)
-        if self.disabled then return end
-        if self.variant == "primary" then
-            self.shine:SetVertexColor(1, 1, 1, 0.32)
-        else
-            W.Color(self.fill, self.variant == "danger" and "state.danger" or "bg.hover", self.variant == "danger" and 0.9 or 1)
-            if self.variant == "danger" then Skin:Text(self.label, "body", "text.primary") end
-            if self.icon then Icons:SetState(self.icon, self.variant == "danger" and "danger" or "active") end
-            Skin:SetBorderColor(self, self.variant == "danger" and "state.danger" or "accent.primary")
-        end
-        artState(self, "hover")
-    end)
+    b:SetScript("OnEnter", function(self) if not self.disabled then paint(self, true) end end)
     b:SetScript("OnLeave", idle)
     b:SetScript("OnMouseDown", function(self)
         if not self.disabled and not self.pressed then
-            self.pressed = true; self.label:AdjustPointsOffset(0, -1); artState(self, "pressed")
+            self.pressed = true; self.label:AdjustPointsOffset(0, -1)
         end
     end)
     b:SetScript("OnMouseUp", function(self)
         if self.pressed then
-            self.pressed = false; self.label:AdjustPointsOffset(0, 1); artState(self, self:IsMouseOver() and "hover" or "normal")
+            self.pressed = false; self.label:AdjustPointsOffset(0, 1)
         end
     end)
     b:SetScript("OnClick", function(self, ...)
