@@ -2227,6 +2227,7 @@ try("micro menu ember bevel", function()
 end)
 -- t169: Ember Bevel across Phoenix chrome: attach over a flat glyph, the global flat switch, macro controls, medallions
 try("ember bevel chrome wiring", function()
+    ns.modules.General.db.artKit, ns.modules.General.db.chromeStyle = true, "bevel" -- t213 #5: opt-in now
     local CB, G, S = ns.ChromeBevel, ns.modules.General, ns.modules.Skins
     local f = CreateFrame("Frame")
     local flat, fa = f:CreateTexture(), 1
@@ -5812,6 +5813,7 @@ try("movement alert", function()
 end)
 
 try("datatexts v9.1 strip, caps, dividers and section icons", function()
+    ns.modules.General.db.artKit, ns.modules.General.db.chromeStyle = true, "bevel" -- t213 #5: opt-in now
     local A, D = ns.Art, ns.modules.DataTexts
     assert(A.KIT.modules.dt_strip and A.KIT.modules.dt_icon_bugs_s and A.SLOT["DataTexts.icon.clock.small"], "v9.1 dt pieces")
     assert(D.BarArt and D.SegmentArt, "paint hooks")
@@ -6573,10 +6575,11 @@ try("turn Phoenix off (EllesmereUI uninstall)", function()
     rawset(env, "C_AddOns", hadA); rawset(env, "C_UI", hadUI)
 end)
 
-try("v11 art: on by default, guarded, v8 falls back (UI/ArtKitHQ_*.lua)", function()
+try("v11 art: on with the art kit, guarded, v8 falls back (UI/ArtKitHQ_*.lua)", function()
     local A, G = ns.Art, ns.modules.General
     assert(ns.ArtHQ and ns.ArtHQ.PhoenixUI_HUD_v11 and ns.ArtHQ.PhoenixUI_Resources, "atlas tables on ns.ArtHQ")
     assert(rawget(env, "PhoenixUI_HQ") == nil, "no atlas globals")
+    ns.modules.General.db.artKit = true
     assert(A.V11On(), "v11 on by default")
     G.db.art.version = "v8"
     assert(not A.V11On(), "v8 is the v8.1 pieces only")
@@ -6622,6 +6625,7 @@ try("boss data and important-cast announcements (t201)", function()
 end)
 
 try("art kit v8.1 phoenix-wings", function()
+    ns.modules.General.db.artKit, ns.modules.General.db.chromeStyle = true, "bevel" -- t213 #5: opt-in now
     local A = ns.Art
     assert(A.KIT.modules.dm_window and A.KIT.portraits.ring_player and A.KIT.panels.tooltip, "v8.1 sheets loaded")
     assert(A.GameArt(), "phoenix-wings is the default look")
@@ -6651,7 +6655,22 @@ try("art kit v8.1 phoenix-wings", function()
     h:Remove()
 end)
 
+try("one theme migration (t213 #5)", function()
+    local T = ns.Theme
+    assert(T.presets[1].key == "eui" and #T.presets == 3, "eui, class, custom")
+    local sv = { profiles = { a = { modules = { General = { artKit = true, chromeStyle = "bevel", art = {},
+        theme = { preset = "frost", borderStyle = "ember", glowColor = { r = 1 }, surfaceAlpha = 0.5, fontScale = 1.2 } } } },
+        b = { modules = { General = { theme = { preset = "custom" } } } } } }
+    ns.Migrations.OneTheme(sv)
+    local g = sv.profiles.a.modules.General
+    assert(g.theme.preset == nil and g.theme.borderStyle == nil and g.theme.glowColor == nil and g.theme.surfaceAlpha == nil,
+        "old presets and overrides cleared")
+    assert(g.theme.fontScale == 1.2 and g.artKit == nil and g.chromeStyle == nil and g.art == nil, "fonts kept, art dropped")
+    assert(sv.profiles.b.modules.General.theme.preset == "custom", "custom accent kept")
+    assert(ns.Migrations.steps[#ns.Migrations.steps].version == ns.C.SCHEMA, "schema matches the last step")
+end)
 try("art kit v7.1", function()
+    ns.modules.General.db.artKit, ns.modules.General.db.chromeStyle = true, "bevel" -- t213 #5: opt-in now
     local A = ns.Art
     assert(A and A.Enabled() and A.IconsEnabled(), "art kit on by default")
     local l, r, t, b = A.CoverCoords(2400, 1000, 2, "TOP")

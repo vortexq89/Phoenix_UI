@@ -8,7 +8,7 @@ local Config = ns.Config
     quick actions and what's new. The group filter narrows the module rows. ]]
 local PAD, GAP, ROW_H, WEEK_H, HERO_H = 20, 12, 30, 132, 150
 local THREE_AT, TWO_AT = 980, 640
-local PRESETS = { "ember", "frost", "fel", "arcane", "class" }
+local PRESETS = { "eui", "class" }
 
 -- One module row in a group card: tile, name, settings count, the on/off switch; click opens the page.
 local function moduleCard(parent, m)

@@ -20,7 +20,7 @@ local M = ns:NewModule("General", {
     label = "GENERAL", desc = "GENERAL_DESC", category = "system", order = 1, icon = "general", locked = true,
     defaults = {
         theme = {
-            preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
+            preset = "eui", custom = { r = 0.047, g = 0.824, b = 0.616 }, fontScale = 1,
             uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true,
             -- the style library defaults every module border set to "Follow Appearance" uses (Core/Style.lua)
             borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
@@ -29,10 +29,10 @@ local M = ns:NewModule("General", {
         },
         blizzardFonts = true, mute = "",
         artPreset = "phoenix-wings", -- look: "phoenix-wings" (v8.1 game-frame art) or "settings" (v7.1 settings art only)
-        artKit = true, -- Phoenix art kit v7.1 (UI/Art.lua): background, logo, textured cards and controls
+        artKit = false, -- one theme (t213 #5): the picture art kit is off; flat EllesmereUI-style surfaces
         -- v11 game-frame art (UI/ArtKitHQ_*.lua): version "v11" | "v10.3" | "v8" (the v8.1 pieces only)
         art = { version = "v11", elite = { mode = "auto", classFrames = true }, resource = { style = "auto_power", tint = "preset" } },
-        chromeStyle = "bevel", -- Phoenix chrome icons: "bevel" (Ember Bevel, UI/ChromeBevel.lua) or "flat"
+        chromeStyle = "flat", -- Phoenix chrome icons: flat line glyphs (the one theme, t213 #5)
         specIconStyle = "zoomed", -- the shared spec icon look (UI/SpecIcon.lua); sites may override it
         -- Phoenix's UI scale (UIParent), below the game's 64 % floor too. Off: the game's own setting rules.
         scale = { enabled = false, auto = true, value = 0.71 },

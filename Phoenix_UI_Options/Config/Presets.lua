@@ -10,13 +10,13 @@ local U = ns.Util
     whole interface takes the preset's General choices. The same cards open once on a first install. ]]
 local PRESETS = {
     { key = "ember", label = "PRESET_EMBER", desc = "PRESET_EMBER_DESC",
-      general = { preset = "ember", barTexture = "Satin", uiFont = "", unitFont = "" },
+      general = { preset = "eui", barTexture = "Satin", uiFont = "", unitFont = "" },
       border = "shadow" },
     { key = "clean", label = "PRESET_CLEAN", desc = "PRESET_CLEAN_DESC",
-      general = { preset = "frost", barTexture = "Flat", uiFont = "PhoenixFont", unitFont = "PhoenixFontSemiBold" },
+      general = { preset = "eui", barTexture = "Flat", uiFont = "PhoenixFont", unitFont = "PhoenixFontSemiBold" },
       border = "solid" },
     { key = "vivid", label = "PRESET_VIVID", desc = "PRESET_VIVID_DESC",
-      general = { preset = "arcane", barTexture = "Gloss", uiFont = "BarlowSemiCondSemiBold", unitFont = "BarlowCondBold" },
+      general = { preset = "eui", barTexture = "Gloss", uiFont = "BarlowSemiCondSemiBold", unitFont = "BarlowCondBold" },
       border = "glow" },
 }
 Config.PRESETS = PRESETS

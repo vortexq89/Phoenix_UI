@@ -79,9 +79,10 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
 
 ## B. Settings consolidation (second)
 
-- [ ] **5. Too many overlapping theme/colour systems: Accent, Interface>Skins, Phoenix>Presets, Interface>Skin>Appearance, Phoenix>General, Phoenix>Textures and more. Consolidate into ONE organised system with no duplicates and no conflicting settings.**
+- [~] **5. Too many overlapping theme/colour systems: Accent, Interface>Skins, Phoenix>Presets, Interface>Skin>Appearance, Phoenix>General, Phoenix>Textures and more. Consolidate into ONE organised system with no duplicates and no conflicting settings.**
   Files: Options/General.lua, Options/Skins.lua, the presets / textures pages, Core theme tokens. Plan: one
   "Appearance" page (preset, accent, colours, textures, borders, fonts) that owns every token; the other pages link to it.
+  **Done 1 Nov (part 1):** one theme: the EllesmereUI surfaces, white-alpha borders and text, and one accent (EllesmereUI green #0CD29D by default, or class, or a custom colour). The old Ember / Frost / Fel / Arcane accents, the picture art kit, the bevel chrome icons and the global border / shadow / glow / window opacity overrides are removed from General; migration step 8 (also run on imported profiles) clears them from saved profiles and keeps fonts, scale, custom and class accents. Harness check added. **Part 2 (stopped by t222):** the Presets page, Skins > Appearance and the Textures page; now planned in ELLESMERE_REBUILD_MAP.md.
 - [ ] **8. MoveAny: keep only two features: (a) move ANY unmovable Blizzard frame (auction house, character panel, achievements, warband collections, group finder and all the rest), (b) Shift + mouse wheel over a frame changes its scale. Remove or merge the other MoveAny extras so nothing duplicates Layout mode.**
   Files: `Phoenix_UI_Skins/Move.lua`, Modules/Movers, Options/Movers.lua.
 - [ ] **9. Phoenix Layout/Edit mode: per-frame background transparency while editing. Ctrl+right-click resets a frame's position; plain right-click opens a quick menu (size, scale, position, transparency and every related option), not just the small cog. Reconcile Blizzard Edit Mode and Phoenix Layout so each frame is controlled in one place.**

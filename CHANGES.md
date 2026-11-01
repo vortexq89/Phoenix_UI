@@ -74,6 +74,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **One theme** (1 Nov, t213 #5): Phoenix now has one look, EllesmereUI's: warm near-black surfaces, faint white borders and white text, and one accent colour (EllesmereUI green by default, your class colour, or a colour you pick). The Ember, Frost, Fel and Arcane accents, the picture art kit, the bevel chrome icons and the global border, shadow, glow and window opacity settings are gone from General, so nothing fights the theme any more. Your saved profiles are moved over once: those settings go back to the theme's values, and your fonts, scale and a custom or class accent are kept.
 - **Group and raid frames stay on screen** (1 Nov): no size, spacing or growth setting can push the party or raid frames off the screen any more. A new Group numbers option (on by default) shows "Group 1", "Group 2" and so on above each raid group.
 - **Talent node borders** (1 Nov): round and octagonal talent nodes no longer get a square border; their own edge is tinted in the theme colour (accent when the node has points).
 - **Frame positions kept after /reload** (1 Nov): frames you placed in Layout mode no longer jump back to their default spots when the game re-applies its Edit Mode layout after a login or /reload.

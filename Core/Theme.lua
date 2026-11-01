@@ -11,32 +11,30 @@ local function c(h, a)
     return { r, g, b, a or 1 }
 end
 
--- Surfaces & text are shared by every preset; presets change the accent family.
+-- ONE theme (t213 #5, t215): the EllesmereUI look. Warm near-black surfaces, white borders and text at fixed
+-- alphas (they adapt to any surface), one accent. Values measured from the user's EllesmereUI copy; Phoenix's own code.
+local function w(a) return { 1, 1, 1, a } end
 T.base = {
-    -- opaque surfaces: a see-through window tinted every card with the world behind it (brown and muddy over
-    -- the red and orange zones); contrast steps between base, raised and sunken are wide enough to read at a glance
-    ["bg.base"]       = c("0B0C10", 1),
-    ["bg.raised"]     = c("15171D", 1),
-    ["bg.sunken"]     = c("07080A", 1),
-    ["bg.hover"]      = c("20232B", 1),
-    ["bg.overlay"]    = c("000000", 0.6),
-    ["border.subtle"] = c("2B2F39", 1),
-    ["border.strong"] = c("454B59", 1),
-    ["border.black"]  = c("000000", 1),
-    ["text.primary"]  = c("F4F5F8", 1),
-    ["text.secondary"] = c("B9BFCB", 1),
-    ["text.muted"]    = c("8A90A0", 1),
+    ["bg.base"]       = { 0.069, 0.058, 0.047, 1 },  -- panel background
+    ["bg.raised"]     = { 0.089, 0.080, 0.072, 1 },  -- buttons, cards
+    ["bg.sunken"]     = { 0.030, 0.023, 0.018, 1 },  -- inputs, wells
+    ["bg.hover"]      = { 0.103, 0.095, 0.088, 1 },  -- dropdowns, hovered rows
+    ["bg.overlay"]    = { 0, 0, 0, 0.6 },
+    ["border.subtle"] = w(0.05),                     -- the global 1 px border
+    ["border.strong"] = w(0.20),                     -- dropdown / emphasised border
+    ["border.black"]  = { 0, 0, 0, 1 },              -- game-frame element borders
+    ["text.primary"]  = w(1),
+    ["text.secondary"] = w(0.53),                    -- dim text
+    ["text.muted"]    = w(0.41),                     -- section headers, hints
     ["state.success"] = c("3DDC97", 1),
     ["state.warning"] = c("FFC24B", 1),
     ["state.danger"]  = c("FF4D5E", 1),
     ["state.info"]    = c("4DA3FF", 1),
 }
 
+-- The accent: EllesmereUI's green (default), the class colour, or one colour you pick.
 T.presets = {
-    { key = "ember",  label = "THEME_EMBER",  primary = "FF6A1A", secondary = "FFB23F", glow = "FF3D00" },
-    { key = "frost",  label = "THEME_FROST",  primary = "2FA8FF", secondary = "7EE0FF", glow = "0077FF" },
-    { key = "fel",    label = "THEME_FEL",    primary = "5BD43B", secondary = "C8FF5A", glow = "22B000" },
-    { key = "arcane", label = "THEME_ARCANE", primary = "A35BFF", secondary = "FF7AE6", glow = "7A2BFF" },
+    { key = "eui",    label = "THEME_EUI",    primary = "0CD29D", secondary = "6BE6C4", glow = "0CD29D" },
     { key = "class",  label = "THEME_CLASS" },
     { key = "custom", label = "THEME_CUSTOM" },
 }
@@ -61,7 +59,7 @@ T.fontRoles = {
 local tokens = {}
 T.tokens = tokens
 T.settings = {
-    preset = "ember", custom = { r = 1, g = 0.42, b = 0.1 }, fontScale = 1,
+    preset = "eui", custom = { r = 0.047, g = 0.824, b = 0.616 }, fontScale = 1,
     uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true,
     borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
     surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = {},
@@ -122,42 +120,9 @@ function T:Rebuild()
     tokens["accent.soft"] = { r, g, b, 0.10 }
     local tr, tg, tb = lighten(r, g, b, 0.15)
     tokens["accent.text"] = { tr, tg, tb, 1 }
-    -- Appearance & General overrides every module inherits: the colour of element borders that follow the theme
-    -- ("border.black") and of every glow (ember borders, glow shadows).
-    local s = self.settings
-    local function rgb(col)
-        if col.token == "class" then
-            local _, classFile = UnitClass("player")
-            return ns.Util.ClassColor(classFile)
-        end
-        return col.r or 1, col.g or 1, col.b or 1
-    end
-    local bc, gc = s.borderColor, s.glowColor
-    if type(bc) == "table" then
-        local br, bg, bb = rgb(bc)
-        tokens["border.black"] = { br, bg, bb, bc.a or 1 }
-    end
-    if type(gc) == "table" then
-        local gr, gg, gb = rgb(gc)
-        tokens["accent.glow"] = { gr, gg, gb, 0.35 }
-    end
-    -- window surface opacity: every Phoenix panel background (base, raised, sunken) scales with it
-    local sa = s.surfaceAlpha or 1
-    if sa < 1 then
-        for _, key in ipairs({ "bg.base", "bg.raised", "bg.sunken" }) do
-            local t = tokens[key]
-            tokens[key] = { t[1], t[2], t[3], t[4] * sa }
-        end
-    end
 end
 
--- v7.1 art kit: muted text is raised to #A7ACBA over the translucent panels (worst measured pixel under an 86%
--- card on the phoenix: 4.74:1; the flat #8A90A0 would fall to 3.37:1)
-local ART_MUTED = c("A7ACBA", 1)
 function T:Color(token)
-    if token == "text.muted" and ns.Art and ns.Art.Enabled() then
-        return ART_MUTED[1], ART_MUTED[2], ART_MUTED[3], ART_MUTED[4]
-    end
     local v = tokens[token] or tokens["text.primary"]
     return v[1], v[2], v[3], v[4]
 end

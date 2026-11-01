@@ -6,7 +6,7 @@ local Mg = {}
 ns.Migrations = Mg
 
 -- legacy (Phoenix_UI 11.x AceDB profile) path -> { module, key, transform? }
-local THEMES = { PhoenixFlame = "ember", Dark = "ember", Blizzard = "ember", Class = "class", Custom = "custom" }
+local THEMES = { PhoenixFlame = "eui", Dark = "eui", Blizzard = "eui", Class = "class", Custom = "custom" }
 local function bool(v) if type(v) == "boolean" then return v end end
 
 local LEGACY_MAP = {
@@ -159,13 +159,36 @@ local function moveProfile(profile)
     end
 end
 
+-- t213 #5: one theme. The old accent presets, the picture art kit, chrome bevel icons and the global border /
+-- shadow / glow / surface overrides go back to the one theme's values (custom and class accents are kept).
+local OLD_PRESETS = { ember = true, frost = true, fel = true, arcane = true }
+local function oneTheme(sv)
+    for _, profile in pairs(sv.profiles) do
+        local g = type(profile) == "table" and type(profile.modules) == "table" and profile.modules.General
+        if type(g) == "table" then
+            local t = type(g.theme) == "table" and g.theme
+            if t then
+                if OLD_PRESETS[t.preset] then t.preset = nil end
+                for _, k in ipairs({ "borderStyle", "borderSize", "borderColor", "shadowAlpha", "glowColor", "surfaceAlpha" }) do
+                    t[k] = nil
+                end
+            end
+            g.artKit, g.artPreset, g.art, g.chromeStyle = nil, nil, nil, nil
+        end
+    end
+end
+Mg.OneTheme = oneTheme
+
 local function moveKeys(sv)
     for _, profile in pairs(sv.profiles) do moveProfile(profile) end
 end
 
 -- Profiles imported from an older export string get the same upgrade.
 function Mg:UpgradeProfile(profile, schema)
-    if (tonumber(schema) or 0) < ns.C.SCHEMA then ns.SafeCall(moveProfile, profile) end
+    if (tonumber(schema) or 0) < ns.C.SCHEMA then
+        ns.SafeCall(moveProfile, profile)
+        if (tonumber(schema) or 0) < 8 then ns.SafeCall(oneTheme, { profiles = { profile } }) end
+    end
     return profile
 end
 
@@ -177,6 +200,7 @@ Mg.steps = {
     { version = 5, run = moveKeys },   -- Minimap.square -> Minimap.shape (CONVERTS)
     { version = 6, run = moveKeys },   -- Bags.countSize -> Bags.count.size (MOVES)
     { version = 7, run = moveKeys },   -- Quality.markers -> GroupFrames.markers.show (MODULE_MOVES)
+    { version = 8, run = oneTheme },   -- t213 #5: one theme (EllesmereUI look)
 }
 
 function Mg:Run(sv)
