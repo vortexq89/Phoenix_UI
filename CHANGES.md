@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Plan: shared libraries audit** (1 Nov): docs/research/LIBRARIES.md lists every library bundled by the installed retail and Forever addons and by the reference copies in I:\ (EllesmereUI first), with version, licence found in the files and whether Phoenix may bundle it, plus which ones to adopt. Nothing is added to the addon yet.
 - **Plan: one theme with the EllesmereUI look** (1 Nov): the settings window, widgets, colours, borders and unit frames will follow EllesmereUI's look with one theme, and the separate accent, skin, preset, appearance and texture choices will be merged into it. The only extra is an optional phoenix border around the Player and Target portraits. The measured values are in docs/research/AUDIT_T213.md.
 - **Plan: the user's 24-point fix list** (1 Nov): every point, with its cause and files, is in docs/research/AUDIT_T213.md, with the order of work in the roadmap (broken behaviour first, then one settings system, then the GUI rework and its new style).
 - **Paladin blessings** (1 Nov): Automation > Paladin blessings shows paladins a small window with you and your group and your blessing on each, its time left or Missing; click a row to target that member (NaowhForever's paladin blessings). Off by default.
