@@ -249,12 +249,13 @@ local function refreshAll()
 end
 ns.Events:Listen("PUI_THEME_CHANGED", I, refreshAll)
 
---[[ Icon source: PhoenixUIDB.global.icons = "auto" (default) | "phoenix" | "game". Automatic uses the game
-    icons only when the latest /pui diag of this version found an icon atlas that did not load. ]]
+--[[ Icon source: always Phoenix's own glyphs (t213 #16). The old automatic switch to stock game icons, when a
+    diagnostics run found an atlas that had not loaded, swapped the whole window to spell icons; a saved
+    "game" choice is cleared once. ]]
 function I:Source()
     local g = ns.DB and ns.DB.sv and ns.DB.sv.global
-    local v = g and g.icons
-    return (v == "phoenix" or v == "game") and v or "auto"
+    if g and g.icons ~= nil then g.icons = nil end
+    return "phoenix"
 end
 
 function I:AtlasFailed()
@@ -267,8 +268,8 @@ function I:AtlasFailed()
 end
 
 function I:UpdateSource()
-    local src = self:Source()
-    local game = src == "game" or (src == "auto" and self:AtlasFailed())
+    self:Source()
+    local game = false
     if game ~= I.game then
         I.game = game
         refreshAll()
@@ -276,8 +277,7 @@ function I:UpdateSource()
     return game
 end
 
-function I:SetSource(v)
-    ns.DB.sv.global.icons = (v == "phoenix" or v == "game") and v or nil
+function I:SetSource()
     return self:UpdateSource()
 end
 

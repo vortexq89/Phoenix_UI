@@ -54,8 +54,7 @@ local function report()
     if not d then return "Phoenix UI " .. ns.version .. ": no diagnostics yet. Run them above." end
     local lines = {
         ("Phoenix UI %s · WoW %s (%s) · %s"):format(tostring(d.version), tostring(d.build), tostring(d.toc), tostring(d.locale)),
-        ("Screen %s · UI scale %s · icons: %s%s"):format(tostring(d.screen), tostring(d.uiScale), ns.Icons:Source(),
-            ns.Icons.game and " (game icons in use)" or ""),
+        ("Screen %s · UI scale %s · icons: %s"):format(tostring(d.screen), tostring(d.uiScale), ns.Icons:Source()),
         ("Settings addon %s"):format(tostring(select(2, ns.Launcher:Versions()))),
         ("Media %d/%d loaded · %s"):format((d.total or 0) - (d.failed or 0), d.total or 0, mediaSummary(d)),
     }
@@ -109,23 +108,6 @@ local schema = {
         ns.Diag:Run(false)
         update()
     end },
-    { type = "header", label = "DIAG_ICONS", icon = "preview" },
-    { type = "select", label = "DIAG_ICON_SOURCE", desc = "DIAG_ICON_SOURCE_DESC", default = "auto",
-      values = {
-          { value = "auto", label = "DIAG_ICONS_AUTO" }, { value = "phoenix", label = "DIAG_ICONS_PHOENIX" },
-          { value = "game", label = "DIAG_ICONS_GAME" },
-      },
-      get = function() return ns.Icons:Source() end,
-      set = function(_, v)
-          ns.Icons:SetSource(v)
-          update()
-      end },
-    { type = "custom", label = "DIAG_ICONS_NOW", build = valueRow(function()
-        if ns.Icons.game then
-            return ns.Icons:AtlasFailed() and L.DIAG_ICONS_GAME_FAILED or L.DIAG_ICONS_GAME, "state.warning"
-        end
-        return L.DIAG_ICONS_PHOENIX, "state.success"
-    end) },
     { type = "header", label = "DIAG_FILES", icon = "textures" },
     { type = "custom", label = "DIAG_BY_KIND", build = valueRow(function()
         local d = last()

@@ -4193,6 +4193,14 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- the settings window always draws Phoenix glyphs; no switch to stock game icons (t213 #16)
+try("phoenix icons only", function()
+    ns.DB.sv.global.icons = "game"
+    ns.Icons:SetSource("game")
+    assert(ns.Icons:Source() == "phoenix" and not ns.Icons.game, "game icons still selectable")
+    assert(ns.DB.sv.global.icons == nil, "saved game icon choice not cleared")
+end)
+
 -- the bug viewer's Upload says what happens (t213 #15)
 try("bug upload says what happens", function()
     local L = ns.L
@@ -9189,15 +9197,12 @@ try("tooltip hooks", function()
 end)
 try("icon fallback", function()
     local I = ns.Icons
-    -- the stub client "fails" every probe, so the automatic source must switch to game icons
+    -- a failed atlas in the diagnostics no longer swaps the window to stock game icons (t213 #16)
     ns.DB.sv.global.diag = { version = ns.version, media = { { kind = "icons", ok = false } } }
     I:SetSource("auto")
-    assert(I.game, "a failed atlas in /pui diag did not switch to game icons")
+    assert(not I.game and I:AtlasFailed(), "a failed atlas switched the window to game icons")
     local probe = env.CreateFrame("Frame"):CreateTexture()
     I:Apply(probe, "close", 16)
-    assert(I:Markup("home", 14):find("Interface\\Icons\\", 1, true), "game markup should use a stock icon")
-    I:SetSource("phoenix")
-    assert(not I.game and ns.DB.sv.global.icons == "phoenix", "choosing Phoenix glyphs did not stick")
     local page = ns.Config:Show("diagnostics")
     assert(ns.Config.DiagReport():find("Phoenix UI", 1, true), "diagnostics report is empty")
     assert(page.rows and #page.rows > 5, "diagnostics page has no rows")
