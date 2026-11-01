@@ -90,7 +90,42 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
   Files: Phoenix_UI_UnitFrames, Options/UnitFrames.lua, Previews. Lock: one clear Lock / Unlock in the page header.
   Covering: the window size and scale (`Config/Window.lua` lines 78/101).
 - [ ] **24. Overall: rework the GUI (settings, tabs, sections, dialogs, lists, live preview) to be organised, simple and professional, with fast, easy options.**
-- [ ] **25 (t214). The GUI rework also includes a NEW theme and GUI style: design, colours and icons.** The visual
+- [ ] **25 (t214, replaced by t215 below). The GUI rework also includes a NEW theme and GUI style: design, colours and icons.** The visual
   design comes from figma bro after the user approves it. Until then: the structural rework only (organisation,
   tabs, sections, consolidation, persistence), with every colour, size and icon read from theme tokens so the new
   design can be dropped in.
+
+## t215 design decision (1 Nov 2026, 5:31 AM UTC+3): one theme, the EllesmereUI look
+
+This replaces item 25 and drives items 4, 5 and 24. The GUI, theme, colours, borders and unit frame look follow
+EllesmereUI exactly. The reference is the user's read-only copy in `I:\EllesmereUI*` (EllesmereUI 9.6.1). Phoenix
+writes its own code to reproduce the look; no EllesmereUI file, function or media is copied. Values below are
+measurements of the look (sizes, colours, alphas), written as Phoenix tokens.
+There is **one theme**. The Accent, Skins, Presets, Appearance, General colour and Textures theme systems are merged
+into it; old saved keys are migrated once (read the old value, write the token, drop the old key) so nothing conflicts.
+The **only Phoenix-specific option** is an optional phoenix border around the portrait on the Player and Target unit frames.
+No other variants.
+
+### Mapping (EllesmereUI reference -> Phoenix token / place)
+
+| Look element | EllesmereUI reference (I:\EllesmereUI) | Phoenix target |
+|---|---|---|
+| Accent | default theme accent #0CD29D (Forever client: #DCA77F) | `accent` token; the only colour choice is accent (default as reference, class colour, custom) |
+| Panel background | warm near-black rgb 0.069 / 0.058 / 0.047 | `bg.panel` |
+| Border | white at alpha 0.05, 1 px, drawn in code | `border` (item 4: code-drawn border, every box repainted from this token) |
+| Text | white 1.0; dim white 0.53; section header white 0.41 | `text.primary` / `text.secondary` / `text.section` |
+| Option rows | alternating black overlay 0.10 / 0.20 | `row.odd` / `row.even` |
+| Slider | track white 0.16, fill accent 0.75, input box dark 0.25 with border 0.02 | Widgets slider |
+| Toggle | off track #444 at 0.65, on track accent 0.75, knob white 0.5 off / 1.0 on | Widgets toggle |
+| Checkbox | box rgb 0.112 / 0.105 / 0.098, border 0.05, checked 0.15 | Widgets checkbox |
+| Button | bg rgb 0.089 / 0.080 / 0.072 at 0.6 (hover 0.65), border white 0.3 (0.45), text white 0.55 (0.70) | Widgets button |
+| Dropdown | bg rgb 0.103 / 0.095 / 0.088 at 0.9 (0.98), border 0.20 (0.30), value text 0.50 (0.60), item hover 0.08, selected 0.04 | Widgets dropdown |
+| Two-up / three-up rows | item 350 wide with a 42 gap / item 180 wide with a 50 gap | options layout grid |
+| Window | click area 1300 x 946, centred; sidebar 295; header 138 (title, description, accent glow, tab band); tab bar 40; footer 82; content padding 45 | `Config/Window.lua` (items 7, 22, 24) |
+| Sidebar nav | selected text and icon 1.0; enabled 0.6; disabled text 0.11, icon 0.20; hover 0.86 / 0.39; an icon on every entry | rail (item 7) |
+| Close / collapse | 40 x 40 buttons at the top right | window chrome |
+| Unit frames | width 181, health 46, power 6, 1 px border, absorb and heal-absorb bars 4, player cast bar 181 x 14, bottom text bar 16 | UnitFrames defaults (item 21) + phoenix portrait border option (Player, Target) |
+
+Still to measure before the code change (from the same reference, by reading, not copying): the font sizes per
+text role, the tab underline and sidebar indicator shapes, the popup and tooltip style, the raid / party frame
+defaults (item 19), and the data bar and chat panels (items 18, 20).
