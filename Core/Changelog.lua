@@ -73,6 +73,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Sidebar in EllesmereUI's order (1 Nov, specs/001 T009) — the settings sidebar now has five groups, Home, Core (bars,…",
         "Settings window in EllesmereUI proportions (1 Nov, specs/001 T008) — the window opens at 1300 × 946 (scaled down to f…",
         "Colour swatches, segmented choices and tabs in the EllesmereUI look (1 Nov, specs/001 T007)",
         "Dropdowns in the EllesmereUI look (1 Nov, specs/001 T005) — the box is flat warm grey with a faint white border and s…",

@@ -7,27 +7,20 @@ local Config = ns.Config
     never touches saved settings, and a module that is missing here (a new one, or a third-party plug-in)
     falls into the group for its category, so every page stays reachable. Pages a client lacks (Mythic+ and
     Sim on WoW Forever) simply drop out of their group. ]]
--- Order (t119u): what players change most comes first. Bars before frames, the main page of each group first,
--- and in the Phoenix group the setup tools (Layout mode, profiles, presets) ahead of the look pages.
+-- specs/001 T009: EllesmereUI's sidebar order (ELLESMERE_REBUILD_MAP.md §7): Home, Core, QoL, UI Reskin, Phoenix.
 Config.GROUPS = {
     { key = "home", label = "HOME", icon = "home", entries = { "home" } },
-    { key = "bars", label = "RAIL_BARS", icon = "actionbars", entries = { "ActionBars", "Tracker", "CooldownText" } },
-    { key = "frames", label = "RAIL_FRAMES", icon = "unitframes",
-      entries = { "UnitFrames", "GroupFrames", "CastBars", "NamePlates", "Auras" } },
-    { key = "interface", label = "RAIL_INTERFACE", icon = "interface",
-      entries = { { heading = "SUB_CHAT_MAPS" }, "Chat", "Minimap", "DataTexts",
-                  { heading = "SUB_ITEMS" }, "Tooltip", "Bags", "ItemLevel",
-                  { heading = "SUB_WINDOWS" }, "Skins" } },
-    { key = "combat", label = "CAT_COMBAT", icon = "cat-combat", entries = { "CombatText", "DamageMeter", "SpellHistory" } },
-    { key = "content", label = "RAIL_CONTENT", icon = "content",
-      entries = { { heading = "SUB_QUESTING" }, "Quests", "GroupFinder",
-                  { heading = "SUB_INSTANCES" }, "MythicPlus", "Encounters", "PvP",
-                  { heading = "SUB_GEAR" }, "Sim" } },
+    { key = "core", label = "RAIL_CORE", icon = "actionbars",
+      entries = { "ActionBars", "CooldownText", "NamePlates", "UnitFrames", "Auras", "Tracker", "CastBars", "GroupFrames",
+                  "Encounters", "PvP" } },
+    { key = "qol", label = "RAIL_QOL", icon = "content",
+      entries = { "Quality", "Automation", "AFK", "CombatText", "DataTexts", "ItemLevel", "Sim" } },
+    { key = "reskin", label = "RAIL_RESKIN", icon = "interface",
+      entries = { "Skins", "Tooltip", "GroupFinder", "DamageMeter", "SpellHistory", "MythicPlus", "Quests", "Minimap",
+                  "Chat", "Bags" } },
     { key = "phoenix", label = "RAIL_PHOENIX", icon = "cat-phoenix",
-      entries = { { heading = "SUB_SETUP" }, "plugins", "Movers", "profiles", "presets",
-                  { heading = "SUB_LOOK" }, "General", "fonts", "textures", "sounds",
-                  { heading = "SUB_UTILITY" }, "Quality", "Automation", "AFK",
-                  { heading = "SUB_SUPPORT" }, "Bugs", "diagnostics", "about" } },
+      entries = { "General", "fonts", "textures", "sounds", "profiles", "presets", "Movers", "plugins", "Bugs",
+                  "diagnostics", "about" } },
 }
 
 --[[ How deep each page is planned to go (plan v2 target rows, GAP_MATRIX.md). The module list and Home show
@@ -41,7 +34,7 @@ Config.DEPTH = {
 }
 
 -- Where an unlisted module goes.
-local FALLBACK = { system = "phoenix", interface = "interface", combat = "combat", social = "interface", utility = "phoenix" }
+local FALLBACK = { system = "phoenix", interface = "reskin", combat = "core", social = "reskin", utility = "qol" }
 
 local groupOf = {}
 

@@ -1007,11 +1007,14 @@ try("search", function()
     assert(page.tab == textTab, "focusing a Text-tab option did not switch tabs")
     ns.Config:Search("")
 end)
--- layout: the 7 rail groups of plan v2; every module and built-in page sits in exactly one; every option row is reachable
+-- layout: the 5 sidebar groups of the EllesmereUI map (specs/001 T009); every module and built-in page sits in exactly one; every option row is reachable
 try("layout coverage", function()
     local C = ns.Config
     local groups, seen = C:Groups(), {}
-    assert(#C.GROUPS == 7, "expected 7 rail groups, have " .. #C.GROUPS)
+    assert(#C.GROUPS == 5, "expected 5 sidebar groups, have " .. #C.GROUPS)
+    local order = {}
+    for i, g in ipairs(C.GROUPS) do order[i] = g.key end
+    assert(table.concat(order, ",") == "home,core,qol,reskin,phoenix", "sidebar order " .. table.concat(order, ","))
     for _, g in ipairs(groups) do
         for _, key in ipairs(g.entries) do
             assert(not seen[key], key .. " is listed in two groups")
@@ -1055,9 +1058,7 @@ try("search pages and groups", function()
     end
     assert(find("unit frames texture", function(e) return e.key == "UnitFrames" and e.item end), "multi-word search failed")
     assert(find("export", function(e) return e.key == "profiles" and e.item end), "profiles page rows are not searchable")
-    local e = find(ns.L.SUB_ITEMS:lower(), function(x) return x.key == "ItemLevel" end)
-    assert(e, "a sub-heading does not find its pages")
-    e = find(ns.L.RAIL_CONTENT:lower(), function(x) return x.key == "Encounters" end)
+    local e = find(ns.L.RAIL_RESKIN:lower(), function(x) return x.key == "DamageMeter" end)
     assert(e, "a rail group name does not find its pages")
     assert(find("hp", function(x) return x.item and (ns.L[x.item.label] or ""):lower():find("health") end),
         "the synonym hp does not find health options")
@@ -1323,7 +1324,7 @@ try("flavor", function()
             local m = ns.modules[k]
             assert(not m.unavailable and not m.hidden and m:IsEnabled() and keys[k], k .. " should be on retail")
         end
-        assert(labels.content == "RAIL_CONTENT" and keys.MythicPlus and keys.Sim, "the Content group lost Mythic+ or Sim on retail")
+        assert(labels.reskin == "RAIL_RESKIN" and labels.qol == "RAIL_QOL" and keys.MythicPlus and keys.Sim, "UI Reskin lost Mythic+ or QoL lost Sim on retail")
         assert(tooltip.mplusRating and tooltip.simLine and plates.forces and plates["forcesText.font"] and bags.simArrow,
             "retail lost a Mythic+ or Sim option")
         assert(enc.ENC_TAB_TIMELINE and enc.ENC_TAB_WARNINGS and enc["timeline.display"] and enc.ENC_MASTER,
@@ -1343,7 +1344,7 @@ try("flavor", function()
         assert(C:Show(k) == C.pages.home, "opening " .. k .. " on Forever did not fall back to Home")
     end
     assert(ns.modules.Sim.db and type(ns.modules.Sim.db.mode) == "string", "a gated module lost its saved settings")
-    assert(labels.content == "RAIL_CONTENT" and keys.Encounters and keys.PvP, "the Content group lost its pages on Forever")
+    assert(labels.core == "RAIL_CORE" and keys.Encounters and keys.PvP, "Core lost Encounters or PvP on Forever")
     assert(not (tooltip.mplusRating or tooltip.simLine or plates.forces or plates["forcesText.font"] or bags.simArrow),
         "a Mythic+ or Sim option is left on Forever")
     assert(tooltip.ids and plates.healthText and bags.upgrade, "filtering dropped options that Forever has")
@@ -4999,10 +5000,10 @@ end)
 try("home v2", function()
     local C = ns.Config
     local home = C:Show("home")
-    home.filter:SetValue("frames"); home:Layout()
+    home.filter:SetValue("core"); home:Layout()
     local shown = 0
-    for _, c in ipairs(home.cards) do if c:IsShown() then shown = shown + 1; assert(c.group == "frames", "filter let another group through") end end
-    assert(shown >= 3, "the Frames filter shows " .. shown .. " cards")
+    for _, c in ipairs(home.cards) do if c:IsShown() then shown = shown + 1; assert(c.group == "core", "filter let another group through") end end
+    assert(shown >= 3, "the Core filter shows " .. shown .. " cards")
     home.filter:SetValue("all"); home:Layout()
     for _, c in ipairs(home.cards) do assert(c.depth, "a module card has no depth meter") end
     home.side:Refresh()
@@ -7532,9 +7533,9 @@ try("quests depth (S14)", function()
     print(("  Quests settings: %d"):format(n))
     local inContent = false
     for _, g in ipairs(ns.Config.GROUPS) do
-        if g.key == "content" then for _, e in ipairs(g.entries) do if e == "Quests" then inContent = true end end end
+        if g.key == "reskin" then for _, e in ipairs(g.entries) do if e == "Quests" then inContent = true end end end
     end
-    assert(inContent, "Quests is not in the Content group")
+    assert(inContent, "Quests is not in the UI Reskin group")
     local found = {}
     for _, item in ipairs(ns.options.Quests) do if item.key then found[item.key] = true end end
     assert((found.turnins == true) == RETAIL and (found["slices.forever"] == true) == not RETAIL, "flavour-gated quest rows")
@@ -7803,9 +7804,9 @@ try("group finder depth and gating (S15)", function()
     local G = ns.modules.GroupFinder
     local inContent = false
     for _, g in ipairs(ns.Config.GROUPS) do
-        if g.key == "content" then for _, e in ipairs(g.entries) do if e == "GroupFinder" then inContent = true end end end
+        if g.key == "reskin" then for _, e in ipairs(g.entries) do if e == "GroupFinder" then inContent = true end end end
     end
-    assert(inContent and ns.Config.DEPTH.GroupFinder == 13, "Group Finder is not in the Content group with its target")
+    assert(inContent and ns.Config.DEPTH.GroupFinder == 13, "Group Finder is not in the UI Reskin group with its target")
     if RETAIL then
         local n = ns.Config.CountSettings(ns.options.GroupFinder)
         assert(n >= 14, ("GroupFinder has %d of 14 settings"):format(n))
