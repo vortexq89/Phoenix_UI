@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Gear swap bar** (1 Nov): Automation > Gear swap bar puts a button for each equipment set (click to wear it, the worn one glows) and your two trinkets (click to use, with cooldowns) on a small movable bar (NaowhForever's gear and trinkets bar). Off by default.
 - **Recipes to learn** (1 Nov): Automation > Recipes to learn lists the recipes of a profession you have not learned yet, from your last visit to its trainer, the ones you can learn now first with their cost (NaowhForever's professions).
 - **Training planner** (1 Nov): Automation > Training planner remembers what your class trainer teaches each visit and shows what you can learn now with the total cost, then what comes next by level, per character (NaowhForever's training planner).
 - **Dungeon journal on its own** (1 Nov): Encounters > Dungeon journal opens Phoenix's dungeon and raid journal (every instance, bosses, loot, ability tree) without the game's Adventure Guide, so WoW Forever, which has none, gets a journal window too (NaowhForever's Forever journal).

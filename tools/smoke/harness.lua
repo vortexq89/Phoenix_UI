@@ -6348,6 +6348,16 @@ try("dungeon journal opens on its own (NaowhForever Forever journal)", function(
     assert(not ej.standalone, "close ends it")
 end)
 
+try("gear swap bar (NaowhForever gear and trinkets)", function()
+    local A = ns.modules.Automation
+    local list = A.GearBarEntries(true)
+    assert(list[#list].slot == 14, "trinkets last")
+    local was = A.db.gearBar
+    A.db.gearBar = true; A:UpdateGearBar()
+    assert(A:GearBar(), "bar built")
+    A.db.gearBar = was; A:UpdateGearBar()
+end)
+
 try("recipes to learn (NaowhForever professions)", function()
     local A = ns.modules.Automation
     local rec = A.TrainingStore("recipes")

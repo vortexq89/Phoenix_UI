@@ -26,6 +26,7 @@ local M = ns:NewModule("Automation", {
         announceKey = false, announceReset = false, announceThanks = false, announceThanksText = "",
         partyBoss = false, partyMplus = false, partyLevel = false, partySound = true, partyDuration = 6,
         partyStrength = 60, -- PartyMode.lua
+        gearBar = false, gearBarTrinkets = true, gearBarSize = 32, gearBarPoint = "BOTTOM", gearBarX = 0, gearBarY = 220, -- GearBar.lua
     },
     -- per character: the last companion pet and whether you put it away (PetSummon.lua)
     globalDefaults = { pets = {} },
@@ -140,6 +141,7 @@ function M:OnEnable()
     self:SetupFishing() -- Fishing.lua
     self:SetupJunk() -- Junk.lua
     self:SetupTraining() -- Training.lua
+    self:SetupGearBar() -- GearBar.lua
     self:EnableAutoLog() -- AutoLog.lua
     self:EnableLootCouncil() -- LootCouncil.lua
     self:EnableLoadouts() -- Loadouts.lua
