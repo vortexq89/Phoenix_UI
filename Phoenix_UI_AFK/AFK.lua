@@ -74,18 +74,34 @@ local function build()
 
     Skin:Register(f, paint)
 
-    local elapsed, angle = 0, 0
-    f:SetScript("OnUpdate", function(self, dt)
-        if M.db.spin and not Theme.settings.reduceMotion then
-            angle = (angle + dt * 0.25) % (math.pi * 2)
-            self.model:SetFacing(angle)
-        end
-        elapsed = elapsed + dt
-        if elapsed < 0.25 then return end
-        elapsed = 0
-        self.timer:SetText(ns.Util.FormatClock(GetTime() - self.since))
-    end)
+    -- a click closes it; the ticker stops whenever it hides (t213 #14)
+    f:SetScript("OnMouseDown", function() M:Hide() end)
+    f:SetScript("OnHide", function(self) if self.ticker then self.ticker:Cancel(); self.ticker = nil end end)
     return f
+end
+
+-- spin, clock and (preview) the mouse watch, on a C_Timer ticker while the screen is up (no OnUpdate)
+local TICK = 0.05
+local function startTicker(f)
+    if f.ticker then f.ticker:Cancel() end
+    local angle, elapsed = 0, 0
+    local cx, cy = GetCursorPosition()
+    f.ticker = C_Timer.NewTicker(TICK, function()
+        if M.db.spin and not Theme.settings.reduceMotion then
+            angle = (angle + TICK * 0.25) % (math.pi * 2)
+            f.model:SetFacing(angle)
+        end
+        elapsed = elapsed + TICK
+        if elapsed >= 0.25 then
+            elapsed = 0
+            f.timer:SetText(ns.Util.FormatClock(GetTime() - f.since))
+        end
+        -- the preview closes on any mouse move
+        if f.preview then
+            local x, y = GetCursorPosition()
+            if math.abs((x or 0) - (cx or 0)) + math.abs((y or 0) - (cy or 0)) > 6 then f:Hide() end
+        end
+    end)
 end
 
 -- "Item level 642 · Mythic+ 2840 · Vault 3/9" from plain numbers (nil parts are left out).
@@ -120,9 +136,11 @@ function M:Apply()
     paint(screen)
 end
 
-function M:Show()
+function M:Show(preview)
     if InCombatLockdown() then return end
     screen = screen or build()
+    self.frame = screen
+    screen.preview = preview and true or nil
     local name = UnitName("player")
     local className, classFile = UnitClass("player")
     local r, g, b = ns.Util.ClassColor(classFile)
@@ -140,9 +158,11 @@ function M:Show()
     screen.model:SetAnimation(0)
     self:Apply()
     ns.Anim:FadeIn(screen, 0.4)
+    startTicker(screen)
 end
 
 function M:Hide()
+    if screen and screen.preview then screen:Hide(); return end
     if screen and screen:IsShown() then ns.Anim:FadeOut(screen, 0.25) end
 end
 

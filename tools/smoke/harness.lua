@@ -4193,6 +4193,32 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- the AFK preview closes on a mouse move or a click and has no OnUpdate (t213 #14)
+try("AFK preview exits with the mouse", function()
+    local afk = ns.modules.AFK
+    if not afk then return end
+    local tick, cx = nil, 0
+    local oldT, oldC = rawget(env, "C_Timer"), rawget(env, "GetCursorPosition")
+    rawset(env, "C_Timer", setmetatable({ NewTicker = function(_, fn) tick = fn; return { Cancel = function() end } end },
+        { __index = oldT }))
+    rawset(env, "GetCursorPosition", function() return cx, 0 end)
+    local ok, err = pcall(function()
+        afk:Show(true)
+        local f = afk.frame
+        assert(f and tick, "AFK preview did not start its ticker")
+        assert(not f:GetScript("OnUpdate"), "AFK screen uses OnUpdate")
+        f:Show(); tick()
+        assert(f:IsShown(), "AFK preview closed without a mouse move")
+        cx = 50; tick()
+        assert(not f:IsShown(), "AFK preview did not close on a mouse move")
+        afk:Show(true); f:Show()
+        f:GetScript("OnMouseDown")(f)
+        assert(not f:IsShown(), "AFK preview did not close on a click")
+    end)
+    rawset(env, "C_Timer", oldT); rawset(env, "GetCursorPosition", oldC)
+    assert(ok, err)
+end)
+
 -- drag the live preview: every module page with a preview gets resize / move grips that drive its own range rows
 try("preview drag", function()
     local C, D = ns.Config, ns.PreviewDrag

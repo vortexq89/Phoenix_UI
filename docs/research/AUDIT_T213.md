@@ -32,11 +32,12 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
 - [ ] **12. Tooltip: the theme/border art sits inside the tooltip instead of at the edge.**
   Cause: `UI/ArtKit.lua:501` `A:DressTooltip` (`out = 6`, scale 0.35). The art's inner padding is larger than `out`,
   so the visible frame line lands inside. This goes away with the code-drawn border (item 4) anchored on the tooltip edge.
-- [ ] **14. AFK preview button: you can't exit it with the mouse, only with a key. Make any mouse move or click exit it.**
+- [x] **14. AFK preview button: you can't exit it with the mouse, only with a key. Make any mouse move or click exit it.**
   Cause: `Phoenix_UI_AFK/AFK.lua`: the screen `EnableMouse(true)` takes the mouse but has no mouse handler. It only
   closes on PLAYER_FLAGS_CHANGED (a key press clears AFK), and a preview never was AFK. The file also uses an
   `OnUpdate` (line 78) for the clock and spin, which breaks the Ticker rule. Fix: OnMouseDown closes it, cursor moves
   are checked from the Ticker registry while it is shown, and the OnUpdate moves to the Ticker.
+  **Done 1 Nov:** a click closes the AFK screen; the preview also closes on any mouse move. Spin, clock and the mouse watch run on a C_Timer ticker that stops when the screen hides (the OnUpdate is gone). Harness check added.
 - [ ] **15. Bug upload: show clearly whether it was sent (success or failure) and tell the user what happens or what to do.**
   Cause: `Modules/Bugs/Viewer.lua:342-344`: "Upload" only opens the Bugs settings page. The sending is done outside
   the game by PhoenixUploader reading `PhoenixUIBugsDB` (Modules/Bugs/Bugs.lua:54), so the game never learns the result.

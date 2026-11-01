@@ -74,6 +74,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **AFK preview closes with the mouse** (1 Nov): the AFK screen's Preview now closes as soon as you move the mouse or click, and a click also closes the real AFK screen.
 - **Settings window moves from its top** (1 Nov): you can now drag the window by its whole top border and by the page title band, not only by the logo; it stays where you leave it.
 - **Action bars preview no longer shrinks** (1 Nov): opening the Action bars tab again kept making the live preview smaller; the bars now fit the preview once and stay that size.
 - **Screen review fixes** (1 Nov): the bug counter says "1 bug" for one, the game menu's NEW label no longer covers the Options text, and the tooltip frame art no longer covers the tooltip's first line.

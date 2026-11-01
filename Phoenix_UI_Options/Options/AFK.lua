@@ -18,7 +18,7 @@ ns:RegisterOptions("AFK", {
       disabled = function(m) return not m:IsEnabled() end,
       func = function(m)
           ns.Config.frame:Hide()
-          m:Show()
+          m:Show(true)
           C_Timer.After(6, function() if not UnitIsAFK("player") then m:Hide() end end)
       end },
 })
