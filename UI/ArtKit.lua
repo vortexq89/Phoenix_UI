@@ -497,7 +497,8 @@ end
 function A:DressMinimap(mm, w)
     return self:Dress(mm, "panels", "minimap_ring", { slot = "ring", size = { w * 1.18, w * 1.27 }, y = -w * 0.02, level = 2 })
 end
-function A:DressTooltip(tt) return self:Dress(tt, "panels", "tooltip", { slot = "panel", out = 2, scale = 0.35, layer = "BACKGROUND", level = 0 }) end
+-- out 6: the frame art sits outside the text, so the first line is no longer under the top edge (1 Nov review)
+function A:DressTooltip(tt) return self:Dress(tt, "panels", "tooltip", { slot = "panel", out = 6, scale = 0.35, layer = "BACKGROUND", level = 0 }) end
 function A:DressChat(cf) return self:Dress(cf, "panels", "chat_frame", { slot = "panel", out = 4, scale = 0.4, layer = "BACKGROUND", level = 0 }) end
 function A:DressBags(win)
     self:Dress(win, "panels", "bag_panel", { slot = "panel", out = 4, scale = 0.5, layer = "BACKGROUND", level = 0 })

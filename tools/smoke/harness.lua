@@ -6348,6 +6348,21 @@ try("dungeon journal opens on its own (NaowhForever Forever journal)", function(
     assert(not ej.standalone, "close ends it")
 end)
 
+try("screenshot review 1 Nov: one bug singular, game menu NEW label moved", function()
+    assert(ns.L.DT_BUGS_UNIT_ONE and ns.L.DT_BUGS_UNIT_ONE ~= "", "singular unit")
+    local S = ns.modules.Skins
+    if not (S and S.MenuBadge and CreateFrame("Button").GetChildren) then return end
+    local b = CreateFrame("Button")
+    local badge = CreateFrame("Frame", nil, b)
+    badge.Label = badge:CreateFontString()
+    badge:SetPoint("TOPLEFT")
+    rawset(b, "GetChildren", function() return badge end)
+    local moved
+    rawset(badge, "SetPoint", function(_, point) moved = point end)
+    S.MenuBadge(b)
+    assert(moved == "RIGHT", "badge at the right end")
+end)
+
 try("live bugs 1 Nov: quest log count with two returns, Skin:Restore(nil)", function()
     local saved = rawget(env, "C_QuestLog")
     rawset(env, "C_QuestLog", setmetatable({ GetNumQuestLogEntries = function() return 2, 35 end,

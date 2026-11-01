@@ -58,6 +58,18 @@ end
 M.PaintMenuRow = paintRow
 M._MenuRow = function(button) return rows[button] end
 
+-- The game's "NEW" label on a menu button (a NewFeatureLabel child) sat over the centred text: move it to the
+-- row's right end (1 Nov screenshot review). Only plain child frames with a Label are touched.
+function M.MenuBadge(button)
+    if not (button and button.GetChildren) then return end
+    for _, c in ipairs({ button:GetChildren() }) do
+        if c ~= rows[button] and (c.Label or c.BGLabel) and not (c.IsProtected and c:IsProtected()) then
+            c:ClearAllPoints()
+            c:SetPoint("RIGHT", button, "RIGHT", -22, 0)
+        end
+    end
+end
+
 function M.SkinMenuButton(button)
     if not button then return end
     local o = rows[button]
@@ -96,6 +108,7 @@ function M.SkinMenuButton(button)
         ns.Icons:Apply(o.icon, name, 14)
     end
     if o.icon then o.icon:SetShown(name and true or false) end
+    M.MenuBadge(button)
     o.hover = false
     paintRow(button)
 end

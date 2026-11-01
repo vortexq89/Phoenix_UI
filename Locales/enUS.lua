@@ -303,6 +303,7 @@ ns.RegisterLocale("enUS", {
     DT_BUGS = "Bug count",
     DT_BUGS_DESC = "Errors caught this session (Bugs module). Flashes on a new one; click to open the viewer.",
     DT_BUGS_UNIT = "bugs",
+    DT_BUGS_UNIT_ONE = "bug",
     DT_MOVE = "Move",
     DT_MOVE_DESC = "Position this element in Edit Mode.",
 

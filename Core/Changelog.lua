@@ -68,6 +68,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Screen review fixes (1 Nov) — the bug counter says \"1 bug\" for one, the game menu's NEW label no longer covers the Op…",
         "Live errors (1 Nov) — the quest progress sounds and the Phoenix quest log no longer error in zones with many quests (…",
         "Settings text fits (31 Oct, t204 screenshot review) — the version badge in the sidebar drops its build suffix when it…",
         "Self-test on WoW Forever (31 Oct) — the review 28 Layout mode check no longer expects a Mythic+ timer box on Forever…",

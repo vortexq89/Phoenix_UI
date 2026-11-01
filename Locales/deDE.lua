@@ -294,6 +294,7 @@ local T = {
     DT_BUGS = "Fehleranzahl",
     DT_BUGS_DESC = "In dieser Sitzung abgefangene Fehler (Modul „Fehler“). Blinkt bei einem neuen; Klick öffnet die Anzeige.",
     DT_BUGS_UNIT = "Fehler",
+    DT_BUGS_UNIT_ONE = "Fehler",
     DT_MOVE = "Verschieben",
     DT_MOVE_DESC = "Positioniere dieses Element im Bearbeitungsmodus.",
     ---------------------------------------------------------------- Bugs

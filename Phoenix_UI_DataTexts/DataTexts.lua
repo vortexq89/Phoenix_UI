@@ -152,7 +152,7 @@ local PROVIDERS = {
     end,
     bugs = function()
         local unique = bugsModule():Counts()
-        return unique, L.DT_BUGS_UNIT, unique > 0 and "state.danger" or "state.success"
+        return unique, unique == 1 and L.DT_BUGS_UNIT_ONE or L.DT_BUGS_UNIT, unique > 0 and "state.danger" or "state.success"
     end,
     bags = function()
         local free = 0

@@ -294,6 +294,7 @@ local T = {
     DT_BUGS = "Número de errores",
     DT_BUGS_DESC = "Errores capturados en esta sesión (módulo Errores). Parpadea con uno nuevo; haz clic para abrir el visor.",
     DT_BUGS_UNIT = "errores",
+    DT_BUGS_UNIT_ONE = "error",
     DT_MOVE = "Mover",
     DT_MOVE_DESC = "Coloca este elemento en el Modo Edición.",
     ---------------------------------------------------------------- Bugs

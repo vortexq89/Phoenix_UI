@@ -294,6 +294,7 @@ local T = {
     DT_BUGS = "Nombre d'erreurs",
     DT_BUGS_DESC = "Erreurs capturées pendant cette session (module Erreurs). Clignote à chaque nouvelle erreur ; cliquez pour ouvrir la liste.",
     DT_BUGS_UNIT = "erreurs",
+    DT_BUGS_UNIT_ONE = "erreur",
     DT_MOVE = "Déplacer",
     DT_MOVE_DESC = "Placez cet élément en Mode Édition.",
     ---------------------------------------------------------------- Bugs
