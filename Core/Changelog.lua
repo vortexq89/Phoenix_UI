@@ -71,6 +71,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Group and raid frames stay on screen (1 Nov) — no size, spacing or growth setting can push the party or raid frames o…",
         "Talent node borders (1 Nov) — round and octagonal talent nodes no longer get a square border",
         "Frame positions kept after /reload (1 Nov) — frames you placed in Layout mode no longer jump back to their default sp…",
         "No more odd icons (1 Nov) — the settings window no longer switches to the game's spell icons after a diagnostics run,…",

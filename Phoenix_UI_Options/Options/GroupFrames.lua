@@ -185,6 +185,7 @@ ns:RegisterOptions("GroupFrames", splice({
     px({ type = "select", key = P .. "groupGrowth", label = "GF_GROUP_GROWTH", desc = "GF_GROUP_GROWTH_DESC", values = GROWTH,
       combat = true }),
     px({ type = "range", key = P .. "groupSpacing", label = "GF_GROUP_SPACING", min = 0, max = 40, step = 1, combat = true }),
+    px({ type = "toggle", key = P .. "groupLabels", label = "GF_GROUP_LABELS", desc = "GF_GROUP_LABELS_DESC", combat = true }),
     px({ type = "range", key = P .. "perColumn", label = "GF_PER_COLUMN", desc = "GF_PER_COLUMN_DESC", min = 1, max = 40, step = 1,
       combat = true, hidden = perHidden }),
     { type = "header", label = "GF_SORTING", icon = "filter" },

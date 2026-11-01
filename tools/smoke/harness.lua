@@ -4193,6 +4193,24 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- group and raid frames stay on screen and can show group numbers (t213 #19)
+try("group frames clamp and group numbers", function()
+    local gf = ns.modules.GroupFrames
+    if not (gf and gf.holders and gf.holders.raid and gf:IsEnabled()) then return end
+    local clamped = {}
+    for key, h in pairs(gf.holders) do
+        rawset(h, "SetClampedToScreen", function(_, on) clamped[key] = on end)
+    end
+    local ok, err = pcall(function()
+        gf:Layout()
+        assert(clamped.raid and clamped.party, "group holders are not clamped to the screen")
+        assert(gf:Profile("raid").groupLabels == true, "group numbers are not on by default")
+    end)
+    print("  group frames: holders clamped, group numbers on")
+    for _, h in pairs(gf.holders) do rawset(h, "SetClampedToScreen", nil) end
+    assert(ok, err)
+end)
+
 -- talent nodes keep their own shape: the state border is tinted, no square ring on round nodes (t213 #10)
 try("talent node borders follow the node shape", function()
     local sk = ns.modules.Skins

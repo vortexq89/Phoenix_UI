@@ -211,6 +211,20 @@ local function placeHolder(holder, p, w, hgt)
     holder:SetSize(math.max(1, w), math.max(1, hgt))
     holder:ClearAllPoints()
     holder:SetPoint(p.point, UIParent, p.point, p.x / scale, p.y / scale)
+    -- the holder is sized to the whole group: clamped, no setting can push the frames off screen (t213 #19)
+    holder:SetClampedToScreen(true)
+end
+
+-- "Group 1" ... above each raid group header
+local function groupLabel(h, i, show)
+    if not h.puiLabel then
+        if not show then return end
+        h.puiLabel = h:CreateFontString(nil, "OVERLAY")
+        h.puiLabel:SetPoint("BOTTOM", h, "TOP", 0, 2)
+        ns.Skin:Text(h.puiLabel, "small", "text.secondary")
+    end
+    h.puiLabel:SetText(ns.L.GF_GROUP_LABEL:format(i))
+    h.puiLabel:SetShown(show and true or false)
 end
 
 local function difficulty()
@@ -250,6 +264,7 @@ local function layoutNow()
             h:SetPoint(c, headers["g" .. (i - 1)], from, shift[3] * rp.groupSpacing, shift[4] * rp.groupSpacing)
         end
         applyHeader(h, rp, M.HeaderAttributes(rp, "group", i, groups), split and i <= groups)
+        groupLabel(h, i, rp.groupLabels and split and i <= groups)
     end
     local rh = headers.raid
     rh:ClearAllPoints()

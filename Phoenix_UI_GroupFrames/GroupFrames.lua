@@ -51,6 +51,7 @@ local function profile(o)
     -- layout (the unit settings' spacing / growth are the unit spacing and growth)
     p.spacing, p.growth = o.spacing or 3, o.growth or "DOWN"
     p.groupGrowth, p.groupSpacing = o.groupGrowth or "RIGHT", o.groupSpacing or 6
+    p.groupLabels = true -- "Group 1" ... above each raid group (t213 #19)
     p.sortBy, p.sortDir = o.sortBy or "group", "ASC"
     p.roleOrder = "TANK,HEALER,DAMAGER"
     p.showPlayer, p.showSolo = true, false

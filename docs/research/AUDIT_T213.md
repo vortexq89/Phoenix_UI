@@ -71,9 +71,11 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
 - [ ] **6. Character panel is a mess: Reputation is mixed up and overlapping. Fix and polish it.**
   Files: `Phoenix_UI_Skins/CharacterWindow.lua`, `CharacterLists.lua`, `Character.lua`. Suspected: the reputation
   list is laid out over the character tab's own area (two owners of the same space).
-- [ ] **19. Group/raid frames: too hard; one change can push the frames entirely off screen. Need simple horizontal/vertical, width, height, spacing between members and between groups, and group numbers above each group; clamp to the screen.**
+  Audit 1 Nov: there are two reputation lists. `CharacterWindow.lua` (the Phoenix character window) has its own list, and `CharacterLists.lua` restyles Blizzard's ReputationFrame rows. The overlap needs an in-game screenshot to tell which one draws over the other; this item stays open until then.
+- [x] **19. Group/raid frames: too hard; one change can push the frames entirely off screen. Need simple horizontal/vertical, width, height, spacing between members and between groups, and group numbers above each group; clamp to the screen.**
   Files: Phoenix_UI_GroupFrames, `Phoenix_UI_Options/Options/GroupFrames.lua`. Missing: clamp to the screen
   (SetClampedToScreen plus clamping the mover), a single orientation option, group labels.
+  **Done 1 Nov:** the party and raid holders, sized to the whole group, are clamped to the screen, so no setting pushes the frames off it. New "Group numbers" option (on by default, all 10 locales) shows "Group 1"... above each raid group. Width, height, unit spacing, group spacing, unit growth and group growth (horizontal / vertical) were already on the page. Making that page simpler is part of the GUI rework (#24).
 
 ## B. Settings consolidation (second)
 
