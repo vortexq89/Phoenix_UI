@@ -173,6 +173,20 @@ function M:SkinMicroMenu()
     -- buttons Blizzard builds later in the login (housing, store) are picked up once the world is in
     if not self._microPEW then
         self._microPEW = true
-        ns.Events:On("PLAYER_ENTERING_WORLD", self, function() M:SkinMicroMenu() end)
+        -- after a /reload Blizzard lays the micro menu and bag bar out again (Edit Mode layout, then its own
+        -- Layout calls) after Phoenix skinned them, and the game art came back (t213 #3): skin again after each
+        local function again() if M:IsEnabled() and M.db.microMenu then M:SkinMicroMenu() end end
+        local queued
+        local function soon()
+            if queued then return end
+            queued = true
+            C_Timer.After(0, function() queued = nil; again() end)
+        end
+        ns.Events:On("PLAYER_ENTERING_WORLD", self, function() again(); C_Timer.After(1, again) end)
+        ns.Events:On("EDIT_MODE_LAYOUTS_UPDATED", self, soon)
+        for _, bar in ipairs({ _G.MicroMenu, _G.MicroMenuContainer, _G.BagsBar }) do
+            if type(bar) == "table" and type(bar.Layout) == "function" then hooksecurefunc(bar, "Layout", soon) end
+        end
+        if type(_G.UpdateMicroButtons) == "function" then hooksecurefunc("UpdateMicroButtons", soon) end
     end
 end

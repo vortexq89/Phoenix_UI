@@ -4193,6 +4193,21 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- the micro menu and bag bar are skinned again after Blizzard's own layout passes (lost after /reload, t213 #3)
+try("micro menu skin survives a reload", function()
+    local sk = ns.modules.Skins
+    assert(sk and sk.SkinMicroMenu, "no micro menu skin")
+    local events, On = {}, ns.Events.On
+    ns.Events.On = function(self, ev, ...) events[ev] = true; return On(self, ev, ...) end
+    local was = sk._microPEW
+    sk._microPEW = nil
+    local ok, err = pcall(sk.SkinMicroMenu, sk)
+    ns.Events.On = On
+    sk._microPEW = was or sk._microPEW
+    assert(ok, err)
+    assert(events.EDIT_MODE_LAYOUTS_UPDATED and events.PLAYER_ENTERING_WORLD, "micro menu not skinned again after layout")
+end)
+
 -- dragging an action shows empty slots by the secure snippet only; the slot change mid-drag does not relayout (t213 #2)
 try("action bars drag grid", function()
     local ab = ns.modules.ActionBars

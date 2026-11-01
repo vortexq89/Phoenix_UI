@@ -74,6 +74,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Micro menu and bag bar keep their skin after /reload** (1 Nov): Phoenix now skins them again after the game lays them out, so the Blizzard art no longer comes back.
 - **Moving spells on the action bars** (1 Nov): dragging a spell to another slot no longer makes the bars flicker, and bars that hide empty slots now show them while you drag, so you can drop it anywhere.
 - **AFK preview closes with the mouse** (1 Nov): the AFK screen's Preview now closes as soon as you move the mouse or click, and a click also closes the real AFK screen.
 - **Settings window moves from its top** (1 Nov): you can now drag the window by its whole top border and by the page title band, not only by the logo; it stays where you leave it.

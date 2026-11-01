@@ -21,11 +21,12 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
   the bar in the middle of the drag. Fix: while the cursor holds an action (ACTIONBAR_SHOWGRID / HIDEGRID), show the
   empty slots and skip the refresh until the drop.
   **Done 1 Nov:** while an action is on the cursor there is no relayout. Bars that hide empty slots show them on ACTIONBAR_SHOWGRID and hide them again on HIDEGRID; only the secure layout snippet runs, so the backdrop and border are not repainted. Harness check added.
-- [ ] **3. After /reload the micro menu skin is gone (back to Blizzard defaults); the same goes for Bags.**
+- [x] **3. After /reload the micro menu skin is gone (back to Blizzard defaults); the same goes for Bags.**
   Suspected: `Phoenix_UI_Skins/MicroMenu.lua:165-178` skins once and again on PLAYER_ENTERING_WORLD. After a reload,
   Blizzard repaints the micro buttons later (its micro-menu layout / update calls), so the art comes back. Bags:
   `Phoenix_UI_Bags/Chrome.lua` has the same timing problem. Fix: re-apply from a hook on Blizzard's own update and
   layout functions (a post-hook, original code), not from a one-off event.
+  **Done 1 Nov:** the micro menu and bag bar are skinned again after PLAYER_ENTERING_WORLD (and 1 s later), after EDIT_MODE_LAYOUTS_UPDATED, and after Blizzard's `Layout` on MicroMenu / MicroMenuContainer / BagsBar and `UpdateMicroButtons`. The re-skins are combined into one per frame. Harness check added; still to confirm in game after a /reload.
 - [ ] **4. Borders around every box, dialog and group: drop the border-image theme and draw them in code with colour, with better borders whose corners expand properly. Border colour doesn't change when you change the colour.**
   Cause: frames are framed with `UI/ArtKit.lua` `A:Dress(..., {slot=..., out=...})` image pieces. Their colour is baked
   into the texture and not repainted from the theme's border token when it changes. Fix: one code-drawn border
