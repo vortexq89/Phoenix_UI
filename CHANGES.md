@@ -74,6 +74,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Talent node borders** (1 Nov): round and octagonal talent nodes no longer get a square border; their own edge is tinted in the theme colour (accent when the node has points).
 - **Frame positions kept after /reload** (1 Nov): frames you placed in Layout mode no longer jump back to their default spots when the game re-applies its Edit Mode layout after a login or /reload.
 - **No more odd icons** (1 Nov): the settings window no longer switches to the game's spell icons after a diagnostics run, and Tools > Diagnostics no longer has the icon source picker. Phoenix's own icons are always used.
 - **Bug upload explains itself** (1 Nov): Upload in the Bugs window now tells you whether sending is on, how many reports are ready, and that the Phoenix Uploader app sends them after /reload or logout and shows whether they were sent.

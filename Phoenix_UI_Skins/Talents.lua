@@ -19,9 +19,26 @@ function M.NodeRingToken(info)
     return rank > 0 and "accent.primary" or "border.subtle"
 end
 
+-- Talent nodes are round (passive), square (active) and octagonal (choice): a square 1 px ring sat wrongly on
+-- every round and octagonal node (t213 #10). The node's own state border follows its shape, so it is tinted
+-- instead; only a node without one gets the square ring.
+local tinted = setmetatable({}, { __mode = "k" })
 local function ringFor(button, isOn)
     local r = rings[button]
-    if not isOn then if r then r:Hide() end; return end
+    local edge = rawget(button, "StateBorder")
+    if not isOn then
+        if r then r:Hide() end
+        if edge and tinted[button] then edge:SetVertexColor(1, 1, 1, 1); tinted[button] = nil end
+        return
+    end
+    local info = button.GetNodeInfo and select(2, pcall(button.GetNodeInfo, button)) or button.nodeInfo
+    local token = M.NodeRingToken(info)
+    if type(edge) == "table" and edge.SetVertexColor then
+        if r then r:Hide() end
+        edge:SetVertexColor(ns.Theme:Color(token))
+        tinted[button] = true
+        return
+    end
     if not r then
         r = CreateFrame("Frame", nil, button)
         r:SetPoint("TOPLEFT", -1, 1); r:SetPoint("BOTTOMRIGHT", 1, -1)
@@ -29,8 +46,7 @@ local function ringFor(button, isOn)
         Skin:Border(r, "border.subtle")
         rings[button] = r
     end
-    local info = button.GetNodeInfo and select(2, pcall(button.GetNodeInfo, button)) or button.nodeInfo
-    Skin:SetBorderColor(r, M.NodeRingToken(info))
+    Skin:SetBorderColor(r, token)
     r:Show()
 end
 M.TalentRing = ringFor

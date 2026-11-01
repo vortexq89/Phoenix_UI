@@ -4193,6 +4193,19 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- talent nodes keep their own shape: the state border is tinted, no square ring on round nodes (t213 #10)
+try("talent node borders follow the node shape", function()
+    local sk = ns.modules.Skins
+    local tinted
+    local button = { StateBorder = { SetVertexColor = function(_, r) tinted = r end },
+        nodeInfo = { activeRank = 1 } }
+    sk.TalentRing(button, true)
+    assert(tinted, "talent node border not tinted")
+    tinted = nil
+    sk.TalentRing(button, false)
+    assert(tinted == 1, "talent node border not restored")
+end)
+
 -- saved frame spots are placed again after Blizzard's Edit Mode layout pass on login / reload (t213 #23)
 try("positions survive a reload", function()
     local mv = ns.modules.Movers

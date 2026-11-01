@@ -65,7 +65,9 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
   copy, and Forever .toc lines that differ from retail. Add a harness check that saves, reloads and compares.
   Findings: a round trip of all 1231 boolean and number settings (changed, stripped at logout, bound again, every module refreshed) lost none, so the save path is sound. The resets came from positions: after login or /reload, Blizzard's Edit Mode lays its frames out again from its own layout after Phoenix placed them, and only frames with a hook were placed back.
   **Done 1 Nov:** Layout mode places every saved frame again after PLAYER_ENTERING_WORLD and EDIT_MODE_LAYOUTS_UPDATED (once per frame). Harness check added. If a setting still resets in game, the Bugs window entry or the setting's name will point to the next cause.
-- [ ] **10. Talent frame borders are wrong.** Files: `Phoenix_UI_Skins/Talents.lua`. Same border system as item 4.
+- [x] **10. Talent frame borders are wrong.** Files: `Phoenix_UI_Skins/Talents.lua`. Same border system as item 4.
+  Cause: a square 1 px ring was drawn around every talent node, but passive nodes are round and choice nodes are octagonal.
+  **Done 1 Nov:** the node's own state border (which follows its shape) is tinted with the accent or subtle token instead; only a node without one keeps the square ring. Harness check added; to confirm in game.
 - [ ] **6. Character panel is a mess: Reputation is mixed up and overlapping. Fix and polish it.**
   Files: `Phoenix_UI_Skins/CharacterWindow.lua`, `CharacterLists.lua`, `Character.lua`. Suspected: the reputation
   list is laid out over the character tab's own area (two owners of the same space).
