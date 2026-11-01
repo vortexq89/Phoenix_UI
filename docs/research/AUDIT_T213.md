@@ -9,11 +9,12 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
 
 ## A. Broken behaviour (first)
 
-- [ ] **1. Action bars tab: the Live Preview gets smaller every time you click the tab.**
+- [x] **1. Action bars tab: the Live Preview gets smaller every time you click the tab.**
   Cause: `Phoenix_UI_Options/Previews/Previews.lua`: `stage:Fit` / `measure()` only ever grows `designWidth` /
   `needHeight` and re-lays the page. On top of that, `Previews/ActionBars.lua` (lines ~171-201, STAGE_W 440 /
   STAGE_H 132) scales its own holder with `holder:SetScale(fit)` and works out y from STAGE_H/fit, so the two
   scales stack on every show. Fix: reset the measured size on each show and let self-fitting previews opt out of the stage zoom.
+  **Done 1 Nov:** previews can be marked `selfFit`; the stage then neither measures nor zooms them. The action bars preview is one. Harness check added.
 - [ ] **2. Action bars flicker when you drag a spell to another slot; you can't move it properly.**
   Cause: `Phoenix_UI_ActionBars/Bars.lua:441`: every `ACTIONBAR_SLOT_CHANGED` (picking a spell up empties its slot)
   runs `RefreshBar` on every bar whose empty slots are hidden. That hides the slot under the cursor and re-lays
@@ -129,3 +130,13 @@ No other variants.
 Still to measure before the code change (from the same reference, by reading, not copying): the font sizes per
 text role, the tab underline and sidebar indicator shapes, the popup and tooltip style, the raid / party frame
 defaults (item 19), and the data bar and chat panels (items 18, 20).
+
+### t217 (5:51 AM): unit frames and the phoenix portrait border
+
+- Unit frames match EllesmereUI (approved t217): Player and Target 181 wide, health 46, power 6, 1 px border, an
+  attached square 2D portrait (EllesmereUI's default `portraitStyle = "attached"`, `portraitMode = "2d"`).
+- Phoenix portrait border (figma bro handoff in `/workspace/phoenix_ui/handoff/portrait_border/`):
+  - **square shape only** (EllesmereUI's portrait shape); the round pieces are dropped from the atlas and the code;
+  - an option on the Player and Target frames, **off by default**;
+  - class pips are not changed unless the border is on;
+  - **not wired until the user approves** the code (t217); it gets its own commit then.

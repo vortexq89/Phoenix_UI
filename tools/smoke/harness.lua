@@ -8907,6 +8907,9 @@ try("live bugs: game menu sort, PUI_ event bus, keystones, spell history font, p
         local c = ns.Previews.ClampScale(v)
         assert(type(c) == "number" and c > 0 and c == c, "preview scale " .. tostring(v) .. " not clamped")
     end
+    -- 6) Action bars preview fits itself: the stage must not measure and zoom it again (t213 #1, shrank per visit)
+    local abDef = ns.Previews.kinds and ns.Previews.kinds.actionbar
+    assert(not abDef or abDef.selfFit, "action bars preview must be selfFit")
     print("  live bugs: game menu, PUI bus, keystones, spell history font, preview scale all hold")
 end)
 

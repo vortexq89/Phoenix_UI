@@ -174,7 +174,9 @@ function P:Create(kind, parent, m, page)
         end
         -- third argument: every element being edited (multi-select / Edit all), the picked one first
         if draw then ns.SafeCall(draw, self, page.scope and page.scope.unit, page.Targets and page:Targets() or nil) end
-        if not measureQueued and self:IsVisible() then
+        -- self-fitting previews (selfFit) scale their own content to the stage: measuring them as well stacked
+        -- the two scales and shrank the sample on every visit (t213 #1)
+        if not (def and def.selfFit) and not measureQueued and self:IsVisible() then
             measureQueued = true
             C_Timer.After(0, function() ns.SafeCall(measure) end)
         end

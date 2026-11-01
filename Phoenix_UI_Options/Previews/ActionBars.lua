@@ -122,6 +122,7 @@ P:Register("actionbar", {
     module = "ActionBars",
     width = STAGE_W,
     height = STAGE_H,
+    selfFit = true, -- the bars scale themselves to the stage (no stage measure / zoom on top)
     states = {
         { key = "cooldown", label = "PREVIEW_STATE_COOLDOWN", icon = "clock" },
         { key = "empty", label = "PREVIEW_STATE_EMPTY", icon = "grid" },

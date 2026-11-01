@@ -1,11 +1,11 @@
 # Installs Phoenix UI from this repo into the game's AddOns folder: Phoenix_UI plus every Phoenix_UI_* folder
-# (settings, quest data and the plugins, docs/PLUGIN_SPLIT.md). Touches only Phoenix_UI* folders; never runs while
-# the game is open.
+# (settings, quest data and the plugins, docs/PLUGIN_SPLIT.md). Touches only Phoenix_UI* folders; runs while the game
+# is open too (user t218: the files load on the next /reload).
 #   powershell -File tools\pc\install.ps1 [-AddOns "<path to Interface\AddOns>"]
 param([string]$AddOns = "D:\Games\ALL GAMES\World of Warcraft\_retail_\Interface\AddOns")
 $ErrorActionPreference = "Stop"
 $repo = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if (Get-Process Wow, WowClassic, WowT -ErrorAction SilentlyContinue) { "WOW RUNNING - not installed"; exit 1 }
+if (Get-Process Wow, WowClassic, WowT -ErrorAction SilentlyContinue) { "WoW is running: installing anyway (user t218); /reload in game to load it" }
 if (-not (Test-Path $AddOns)) { "AddOns folder not found: $AddOns"; exit 1 }
 $folders = Get-ChildItem $repo -Directory -Filter "Phoenix_UI_*" | ForEach-Object Name
 $skip = @(".git", ".github", ".cursor", ".tools", ".luacheck", "docs", "tools", "uploader") + $folders
