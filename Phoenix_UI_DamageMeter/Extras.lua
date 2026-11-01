@@ -54,7 +54,9 @@ local function step()
 end
 
 function M:ScanItemLevels()
-    if inCombat() or self.db.meter.ilvl == "off" or not self:UsesPhoenixMeter() then return end
+    if inCombat() then return end
+    local forMeter = self.db.meter.ilvl ~= "off" and self:UsesPhoenixMeter()
+    if not (forMeter or (self.db.group and self.db.group.enabled)) then return end -- Group.lua reads the same cache
     wipe(queue)
     for _, unit in ipairs(groupUnits()) do
         local guid = UnitGUID(unit)

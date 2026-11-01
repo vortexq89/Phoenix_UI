@@ -6326,6 +6326,18 @@ try("vendor window: wide, two pages side by side (WindTools merchant pages)", fu
     S.db.merchantWide = saved; S:SyncMerchant()
 end)
 
+try("group item levels window (NaowhForever group inspect)", function()
+    local M = ns.modules.DamageMeter
+    local il = { a = 480, b = nil, c = 470 }
+    local rows, avg = M.GroupRows({ "a", "b", "c" }, function(u) return il[u] end, function(u) return u end,
+        function() return "MAGE" end)
+    assert(rows[1].name == "a" and rows[2].name == "c" and rows[3].ilvl == nil, "highest first, unknown last")
+    assert(avg == 475, "average of known values")
+    local was = M.db.group.enabled
+    M.db.group.enabled = true; M:UpdateGroup()
+    M.db.group.enabled = was; M:UpdateGroup()
+end)
+
 try("turn Phoenix off (EllesmereUI uninstall)", function()
     local C = ns.Config
     local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")

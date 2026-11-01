@@ -37,6 +37,8 @@ local M = ns:NewModule("DamageMeter", {
         bigTimerText = Style.Text(30),
         -- threat meter (Threat.lua, WoW Forever)
         threat = { enabled = true, combatOnly = true, rows = 5, width = 200, point = "RIGHT", x = -260, y = -120 },
+        -- group item levels (Group.lua)
+        group = { enabled = false, combatHide = true, rows = 5, width = 200, point = "LEFT", x = 260, y = -120 },
     },
 })
 
@@ -191,6 +193,7 @@ end
 
 function M:OnEnable()
     self:SetupThreat() -- Threat.lua (Forever)
+    self:SetupGroup() -- Group.lua
     ns.SafeCall(self.SetupMeter, self) -- Meter.lua
     if not DamageMeter then return end
     if self.blizzardHooked then return self:Refresh() end
@@ -204,10 +207,12 @@ function M:OnDisable()
     self:Unskin()
     if self.StopMeter then ns.SafeCall(self.StopMeter, self) end
     if self.ThreatWindow and self:ThreatWindow() then self:ThreatWindow():Hide() end
+    if self.GroupWindow and self:GroupWindow() then self:GroupWindow():Hide() end
 end
 
 function M:Refresh()
     if self.UpdateThreat then ns.SafeCall(self.UpdateThreat, self) end
+    if self.UpdateGroup then ns.SafeCall(self.ScanItemLevels, self); ns.SafeCall(self.UpdateGroup, self) end
     if self.RefreshMeter then ns.SafeCall(self.ApplyEngine, self); ns.SafeCall(self.RefreshMeter, self) end
     if not self.db.skin then return self:Unskin() end
     if DamageMeter and DamageMeter.ForEachSessionWindow then DamageMeter:ForEachSessionWindow(styleWindow) end

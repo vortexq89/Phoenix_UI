@@ -19,5 +19,6 @@
 Bridge.lua
 DamageMeter.lua
 Threat.lua
+Group.lua
 Meter.lua
 Extras.lua

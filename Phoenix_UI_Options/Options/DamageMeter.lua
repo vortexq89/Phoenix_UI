@@ -4,6 +4,7 @@ local L, Opt = ns.L, ns.Opt
 local dmGet, dmSet = ns.Combat.CVarAccessors("damageMeterEnabled")
 local function unskinned(m) return not m.db.skin end
 local function noThreat(m) return not m.db.threat.enabled end
+local function noGroup(m) return not m.db.group.enabled end
 local function noBg(m) return unskinned(m) or not m.db.bg.show end
 local function skinned(row) return Opt.With(row, { disabled = row.disabled or unskinned }) end
 
@@ -176,6 +177,12 @@ for _, r in ipairs({
       disabled = noThreat },
     { type = "range", key = "threat.width", label = "UF_WIDTH", min = 120, max = 400, step = 1, feature = "threatMeter",
       disabled = noThreat },
+    { type = "header", label = "DM_GROUP", icon = "damagemeter" },
+    { type = "toggle", key = "group.enabled", label = "DM_GROUP_SHOW", desc = "DM_GROUP_DESC",
+      keywords = "inspect item level ilvl gear group party raid" },
+    { type = "toggle", key = "group.combatHide", label = "DM_GROUP_COMBAT", disabled = noGroup },
+    { type = "range", key = "group.rows", label = "DM_THREAT_ROWS", min = 1, max = 40, step = 1, disabled = noGroup },
+    { type = "range", key = "group.width", label = "UF_WIDTH", min = 120, max = 400, step = 1, disabled = noGroup },
     { type = "header", label = "DM_EDIT_MODE", icon = "editmode" },
     { type = "description", text = "DM_EDIT_MODE_TEXT" },
     { type = "button", label = "DM_EDIT_MODE_OPEN", desc = "DM_EDIT_MODE_OPEN_DESC", button = "OPEN_EDIT_MODE", icon = "editmode",

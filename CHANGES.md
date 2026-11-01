@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Group item levels** (1 Nov): Damage Meter > Group item levels shows a small window with you and your group, highest item level first in class colours with the group average on top; members are inspected out of combat, one at a time (NaowhForever's group inspect window). Off by default; movable in Layout mode.
 - **v11 game-frame art** (1 Nov): the v11 painted portrait frames (level, class and elite / rare / boss), power bar fills and per-power frames, class pips, cast bar and nameplate frames and data bar icons (clock, gold, bugs, fps, latency), all with mipmaps. General > Appearance: art version (v11, v10.3, v8.1 pieces only), portrait frames (automatic or plain ring) and power bar frame (current power or specialization). Any missing piece keeps the v8.1 art.
 - **Wide vendor window** (1 Nov): Skins > Wide vendor window shows Phoenix's vendor items in four columns, two pages side by side, so you page less (WindTools' extra merchant pages). Off by default; applies live.
 - **Group finder: leader's realm** (1 Nov): a group's tooltip now shows the leader's realm when it is not yours, next to the leader's score and PvP rating (Tust_EUI's LFG region badge).
