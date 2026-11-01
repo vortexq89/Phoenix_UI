@@ -33,3 +33,4 @@ Loadouts.lua
 PartyMode.lua
 Gamepad.lua
 Announce.lua
+Training.lua

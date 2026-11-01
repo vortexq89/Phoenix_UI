@@ -139,6 +139,7 @@ function M:OnEnable()
     self:SetupPetSummon() -- PetSummon.lua
     self:SetupFishing() -- Fishing.lua
     self:SetupJunk() -- Junk.lua
+    self:SetupTraining() -- Training.lua
     self:EnableAutoLog() -- AutoLog.lua
     self:EnableLootCouncil() -- LootCouncil.lua
     self:EnableLoadouts() -- Loadouts.lua

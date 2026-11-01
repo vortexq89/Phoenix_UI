@@ -6348,6 +6348,21 @@ try("dungeon journal opens on its own (NaowhForever Forever journal)", function(
     assert(not ej.standalone, "close ends it")
 end)
 
+try("training planner (NaowhForever)", function()
+    local A = ns.modules.Automation
+    local svc = { { "Header", nil, "header" }, { "Frostbolt", "Rank 2", "available" }, { "Blizzard", "Rank 1", "unavailable" },
+        { "Frostbolt", "Rank 1", "used" } }
+    local list = A.TrainingRead(#svc, function(i) return unpack(svc[i]) end, function(i) return ({ 0, 8, 20, 4 })[i] end,
+        function(i) return ({ 0, 100, 900, 10 })[i] end)
+    assert(#list == 3, "headers left out")
+    local now, later, cost = A.TrainingPlan(list, 10)
+    assert(#now == 1 and now[1].name == "Frostbolt" and cost == 100, "now and cost")
+    assert(#later == 1 and later[1].level == 20, "later by level, learned left out")
+    A:OpenTraining()
+    assert(A:TrainingWindow():IsShown(), "window")
+    A:TrainingWindow():Hide()
+end)
+
 try("turn Phoenix off (EllesmereUI uninstall)", function()
     local C = ns.Config
     local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")

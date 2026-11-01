@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Training planner** (1 Nov): Automation > Training planner remembers what your class trainer teaches each visit and shows what you can learn now with the total cost, then what comes next by level, per character (NaowhForever's training planner).
 - **Dungeon journal on its own** (1 Nov): Encounters > Dungeon journal opens Phoenix's dungeon and raid journal (every instance, bosses, loot, ability tree) without the game's Adventure Guide, so WoW Forever, which has none, gets a journal window too (NaowhForever's Forever journal).
 - **Group item levels** (1 Nov): Damage Meter > Group item levels shows a small window with you and your group, highest item level first in class colours with the group average on top; members are inspected out of combat, one at a time (NaowhForever's group inspect window). Off by default; movable in Layout mode.
 - **v11 game-frame art** (1 Nov): the v11 painted portrait frames (level, class and elite / rare / boss), power bar fills and per-power frames, class pips, cast bar and nameplate frames and data bar icons (clock, gold, bugs, fps, latency), all with mipmaps. General > Appearance: art version (v11, v10.3, v8.1 pieces only), portrait frames (automatic or plain ring) and power bar frame (current power or specialization). Any missing piece keeps the v8.1 art.
