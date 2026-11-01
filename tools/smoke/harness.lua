@@ -4451,14 +4451,16 @@ try("settings flow", function()
     assert(C.ChangedCount(page) == before + 1 and page.header.changed:IsShown(), "the changed-from-default count did not move (" .. key .. ")")
     ns.DB:Set(AB, key, old)
     rawset(page.scroll.child, "GetWidth", nil)
-    -- sub-pages are listed under the open page in the rail
+    -- sub-pages are tabs along the page header (specs/001 T010), and the last one opens again
     if page.tabList and #page.tabList > 1 then
-        local subs = 0
-        for _, r in ipairs(C.frame.sidebar.subs) do if r:IsShown() then subs = subs + 1 end end
-        assert(subs == #page.tabList, "the rail lists " .. subs .. " sub-pages, the page has " .. #page.tabList)
-        C.frame.sidebar.subs[2]:GetScript("OnClick")(C.frame.sidebar.subs[2])
-        assert(page.tab == 2, "a sub-page row did not switch the page")
+        local bar = page.header.tabBar
+        assert(bar and #bar.tabs == #page.tabList, "the header tab bar lists every sub-page")
+        assert(page.headerH == ns.Config.HEADER_H + ns.Config.TAB_BAR_H, "the header grows by the 40 px tab bar")
+        bar.tabs[2]:GetScript("OnClick")(bar.tabs[2])
+        assert(page.tab == 2 and bar:GetValue() == 2, "a header tab did not switch the page")
+        assert(ns.DB.sv.global.ui.lastTab.ActionBars == 2, "the open tab is not remembered")
         page:SetTab(1)
+        assert(bar:GetValue() == 1, "SetTab did not move the tab bar")
     end
 end)
 

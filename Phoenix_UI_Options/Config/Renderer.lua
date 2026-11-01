@@ -1429,12 +1429,23 @@ local function countCards(page)
     end
 end
 
+local TAB_BAR_H = 40 -- EllesmereUI's tab bar under the page header (specs/001 T010)
+Config.TAB_BAR_H = TAB_BAR_H
+
 local function makeRouter(page, key)
-    -- sub-pages: listed in the window's rail under the open module (Window.lua); this router keeps the old
-    -- tabs API (SetValue / onChange) that search, links and the smoke tests use
+    -- sub-pages: tabs along the bottom of the page header, EllesmereUI style (specs/001 T010); the router keeps
+    -- the tabs API (SetValue / onChange) that search, links and the smoke tests use
     if #page.tabList > 1 then
         page.tabs = { value = 1 }
-        function page.tabs:SetValue(v) self.value = v; page.tab = v end
+        local items = {}
+        for i, t in ipairs(page.tabList) do items[i] = { value = i, label = t.label } end
+        local h = page.header
+        h.tabBar = W:Tabs(h, items)
+        h.tabBar:SetPoint("BOTTOMLEFT", PAD - 12, 0); h.tabBar:SetPoint("BOTTOMRIGHT", -PAD, 0)
+        h:SetHeight(HEADER_H + TAB_BAR_H)
+        page.headerH = HEADER_H + TAB_BAR_H
+        h.tabBar.onChange = function(_, v) page.tabs.onChange(page.tabs, v) end
+        function page.tabs:SetValue(v) self.value = v; page.tab = v; h.tabBar:SetValue(v) end
         function page.tabs:GetValue() return self.value end
         page.tabs.onChange = function(_, v)
             local ui = ns.DB.sv.global.ui
@@ -1442,6 +1453,7 @@ local function makeRouter(page, key)
             ui.lastTab[key] = v
             page.tabs.value = v
             page.tab = v
+            page.header.tabBar:SetValue(v)
             W.HidePopover()
             page:Layout()
             page.scroll:SetVerticalScroll(0)
@@ -1452,7 +1464,7 @@ local function makeRouter(page, key)
     end
     -- the sub-page last open on this module opens again (EllesmereUI keeps the last page per module too)
     local last = type(ns.DB.sv.global.ui.lastTab) == "table" and ns.DB.sv.global.ui.lastTab[key]
-    if page.tabs and type(last) == "number" and page.tabList[last] then page.tabs.value, page.tab = last, last end
+    if page.tabs and type(last) == "number" and page.tabList[last] then page.tabs:SetValue(last) end
     function page:SetTab(v)
         if self.tabs then self.tabs:SetValue(v); self.tabs.onChange(self.tabs, v) end
     end
@@ -1554,7 +1566,7 @@ function Config.BuildSchemaPage(parent, m, schema)
     function page:Layout()
         local width = math.max(320, child:GetWidth() - 2 * PAD)
         -- the fixed area: header, then the element chips; the scroll starts under them
-        local top = HEADER_H
+        local top = self.headerH or HEADER_H
         for _, t in ipairs(self.tops) do
             t:ClearAllPoints()
             t:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -(top + 10))
@@ -1640,7 +1652,7 @@ function Config.BuildSchemaPage(parent, m, schema)
             return
         end
         pc:ClearAllPoints()
-        pc:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -((self.fixedTop or HEADER_H) + math.max(STICK_TOP, top)))
+        pc:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -((self.fixedTop or self.headerH or HEADER_H) + math.max(STICK_TOP, top)))
         pc.shade:SetShown(stuck)
         self.stuck = stuck
     end

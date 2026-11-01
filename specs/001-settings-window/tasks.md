@@ -30,7 +30,7 @@ check_locales, the harness, then prepush, push and install.
 - [x] T008 [US2] Window proportions: base 1300 × 946 (fit to screen), sidebar 295, header 138, tab bar 40, footer 82,
   padding 45 (Window.lua)
 - [x] T009 [US2] Sidebar groups Core / QoL / UI Reskin / Phoenix per map §7, nav row states (Groups.lua, Window.lua)
-- [ ] T010 [US2] Module pages as header tabs, last tab remembered (Window.lua, Renderer.lua)
+- [x] T010 [US2] Module pages as header tabs, last tab remembered (Window.lua, Renderer.lua)
 - [ ] T011 [US2] Footer: profile, Layout, Test frames, window-scale slider; remove every "reload to apply" text and
   its locale keys (Window.lua, Locales/*)
 - [ ] T012 [US2] Section headers (white 0.41 caps) and rows 50 high, two-up 350 + 42 + 350, three-up 180 / 50,

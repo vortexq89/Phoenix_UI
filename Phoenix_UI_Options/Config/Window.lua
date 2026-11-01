@@ -24,7 +24,7 @@ Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
 local TOP_H, RAIL_W, LIST_W, FOOTER_H = 0, 295, 0, 82 -- EllesmereUI proportions (specs/001 T008)
 local HEAD_H = 138 -- the rail head: brand and search
-local NAV_ROW, NAV_HEAD, NAV_GROUP, NAV_SUB, NAV_LINE = 28, 22, 34, 24, 16
+local NAV_ROW, NAV_HEAD, NAV_GROUP, NAV_LINE = 28, 22, 34, 16
 local DOCK_MIN, DOCK_MAX = 380, 460
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
 local DEFAULT_W, DEFAULT_H = 1300, 946
@@ -298,33 +298,6 @@ function Config.TabGlyph(label)
     end
 end
 
--- A sub-page row under the open page: a short tick, its name; the current one in the accent.
-local function subRow(parent)
-    local r = CreateFrame("Button", nil, parent)
-    r:SetHeight(NAV_SUB)
-    r.tick = W.Texture(r, "ARTWORK")
-    r.tick:SetSize(6, 1)
-    r.tick:SetPoint("LEFT", 40, 0)
-    r.label = W.Text(r, "desc", "text.muted")
-    r.label:SetPoint("LEFT", r.tick, "RIGHT", 8, 0)
-    r.label:SetPoint("RIGHT", -14, 0)
-    r.label:SetWordWrap(false)
-    function r:Paint()
-        local on = self.page and self.page.tab == self.tab
-        W.Color(self.tick, on and "accent.primary" or "border.strong")
-        if self.bevel then ns.ChromeBevel:State(self.bevel, (on or self.hover) and "hover" or "normal") end
-        Skin:Text(self.label, "desc", on and "accent.primary" or (self.hover and "text.primary" or "text.muted"))
-    end
-    r:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
-    r:SetScript("OnLeave", function(self) self.hover = false; self:Paint() end)
-    r:SetScript("OnClick", function(self)
-        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-        if self.page and self.page.SetTab then self.page:SetTab(self.tab) end
-    end)
-    Skin:Register(r, function(self) self:Paint() end)
-    return r
-end
-
 local function buildRail(f)
     -- kept for callers that know the v2 rail; the group heads live in the list now
     local r = CreateFrame("Frame", nil, f)
@@ -466,7 +439,7 @@ local function buildList(f)
     scroll:SetPoint("TOPLEFT", 0, -HEAD_H)
     scroll:SetPoint("BOTTOMRIGHT", -6, 8)
     sb.scroll = scroll
-    sb.headings, sb.subs = {}, {}
+    sb.headings = {}
 end
 
 -- Rows of every page, made once; LayoutSidebar places them.
@@ -485,10 +458,9 @@ function Config:LayoutSidebar()
     local c = sb.scroll.child
     for _, row in pairs(self.navRows) do row:Hide() end
     for _, fs in ipairs(sb.headings) do fs:Hide(); fs.line:Hide() end
-    for _, r in ipairs(sb.subs) do r:Hide() end
     local heads = {}
     for _, b in ipairs(self.frame.rail.buttons) do heads[b.group.key] = b; b:Hide() end
-    local y, n, ns_ = 4, 0, 0
+    local y, n = 4, 0
     local function place(frame, h, x)
         frame:ClearAllPoints()
         frame:SetPoint("TOPLEFT", c, "TOPLEFT", x or 0, -y)
@@ -505,26 +477,6 @@ function Config:LayoutSidebar()
         fs:SetText((L[textKey] or textKey):upper())
         fs:Show(); fs.line:Show()
         y = y + NAV_HEAD
-    end
-    local function subs(key)
-        local page = self.pages[key]
-        if key ~= self.current or not (page and page.tabs and page.tabList) then return end
-        for i, t in ipairs(page.tabList) do
-            ns_ = ns_ + 1
-            local r = sb.subs[ns_] or subRow(c)
-            sb.subs[ns_] = r
-            r.page, r.tab = page, i
-            r.label:SetText(t.label)
-            local glyph = ns.ChromeBevel and Config.TabGlyph(t.label)
-            if glyph and not r.bevel then r.bevel = ns.ChromeBevel:Attach(r.tick, glyph, 14) end
-            if r.bevel then
-                r.bevel.name = glyph or r.bevel.name
-                if glyph then ns.ChromeBevel:Sync(r.bevel) else ns.ChromeBevel:SetShown(r.bevel, false); r.tick:SetAlpha(1) end
-            end
-            place(r, NAV_SUB)
-            r:Paint()
-        end
-        y = y + 4
     end
     for _, g in ipairs(self:Groups()) do
         local b = heads[g.key]
@@ -555,7 +507,6 @@ function Config:LayoutSidebar()
                             row.active = key == self.current
                             place(row, NAV_ROW, 14)
                             row:Paint()
-                            subs(key)
                         end
                     end
                 end
