@@ -73,6 +73,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "General › Looks and the Phoenix group order (1 Nov, specs/002 T005–T007) — the three looks, Undo and the setup button…",
         "Phoenix › Colors, Fonts, Textures and Glows (1 Nov, specs/002 T002–T004) — the accent and the class, power and dispel…",
         "Plan: global pages (1 Nov, specs/002) — the Spec Kit spec, plan and tasks for build step 2, the Colors, Fonts, Textur…",
         "Sync to all (1 Nov, specs/001 T014) — a setting shared by several frames can carry a ⇄ button that copies its value t…",

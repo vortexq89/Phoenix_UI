@@ -103,7 +103,7 @@ ns.GlobalRows = {
     }),
 }
 
-ns:RegisterOptions("General", {
+local generalRows = {
     { type = "preview", kind = "theme" },
     { type = "tab", label = "TAB_DISPLAY" },
     { type = "header", label = "GEN_SCALE", icon = "layout" },
@@ -137,4 +137,13 @@ ns:RegisterOptions("General", {
     { type = "header", label = "ACCESSIBILITY", icon = "user" },
     { type = "toggle", key = "theme.emblemFX", label = "EMBLEM_FX", desc = "EMBLEM_FX_DESC", keywords = "logo glow embers animation" },
     { type = "toggle", key = "theme.reduceMotion", label = "REDUCE_MOTION", desc = "REDUCE_MOTION_DESC", keywords = "animation" },
-})
+}
+-- the old Presets page (specs/002 T005): three looks, undo and the setup tools, as the tab before Behaviour
+do
+    local at
+    for i, item in ipairs(generalRows) do if item.type == "tab" and item.label == "TAB_BEHAVIOUR" then at = i end end
+    local looks = { { type = "tab", label = "PRESETS_LOOKS" } }
+    for _, item in ipairs(ns.Config and ns.Config.PresetRows or {}) do looks[#looks + 1] = item end
+    for i, item in ipairs(looks) do table.insert(generalRows, at + i - 1, item) end
+end
+ns:RegisterOptions("General", generalRows)

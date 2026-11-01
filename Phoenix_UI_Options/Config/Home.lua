@@ -113,7 +113,7 @@ local function buildSide(parent)
         quickAction(sd.actions, L.LAYOUT_MODE, "layout", function() Config.frame.header.layout.onClick() end),
         quickAction(sd.actions, L.TEST_FRAMES, "test", function() Config.frame.header.test.onClick() end),
         quickAction(sd.actions, L.PROFILES, "profiles", function() Config:Show("profiles") end),
-        quickAction(sd.actions, L.PRESETS, "presets", function() Config:Show("presets") end),
+        quickAction(sd.actions, L.PRESETS, "presets", function() Config:ShowLooks() end),
     }
     sd.news = W:Card(sd, L.HOME_NEW, "bell")
     sd.news.lines = {}

@@ -1650,7 +1650,9 @@ try("presets", function()
     C:UndoPreset()
     assert(ns.Util.Equal(snapshot(), before), "Undo did not restore every setting")
     assert(not C:CanUndoPreset(), "Undo is still offered")
-    C:Show("presets")
+    local gp = C:ShowLooks()
+    assert(gp and gp.tabList[gp.tab].label == ns.L.PRESETS_LOOKS, "General › Looks did not open (specs/002 T005)")
+    assert(not C.builders.presets, "the Presets page is still registered")
     local ui = ns.DB.sv.global.ui
     local fresh, picked = ns.DB.fresh, ui.stylePicked
     ns.DB.fresh, ui.stylePicked = false, nil
@@ -4452,6 +4454,12 @@ try("global pages", function()
     assert(n >= 5, "Glows lists " .. n .. " glow settings")
     C:Show("glows")
     print(("  global pages: %d glow rows"):format(n))
+    -- the Phoenix group in the map's order (specs/002 T006)
+    local ph
+    for _, g in ipairs(C.GROUPS) do if g.key == "phoenix" then ph = table.concat(g.entries, ",") end end
+    assert(ph == "General,colors,fonts,textures,glows,sounds,profiles,Movers,plugins,Bugs,diagnostics,about", "Phoenix order " .. tostring(ph))
+    -- every General setting is still counted once (SC-002): 21 before the move
+    assert(C:Depth("General") >= 21, "General settings lost in the move: " .. C:Depth("General"))
 end)
 -- a row on a global page writes to the module it names (specs/002 T001)
 try("row owner", function()

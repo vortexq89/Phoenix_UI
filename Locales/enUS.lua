@@ -1752,7 +1752,6 @@ ns.RegisterLocale("enUS", {
     PREVIEW_CAST_SPELL = "Flame Lash",
     ---------------------------------------------------------------- presets and the welcome picker
     PRESETS = "Presets",
-    PRESETS_DESC = "Complete looks in one click, with Undo.",
     PRESETS_LOOKS = "Looks",
     PRESETS_INTRO = "Each look sets the theme colour, fonts and bar texture under General, the border style of auras, plates, cast bars, group frames and the tracker, and puts every font and texture row back on Default so it follows the look. Nothing else changes.",
     PRESET_APPLY = "Use this look",

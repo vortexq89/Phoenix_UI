@@ -19,7 +19,7 @@ Config.GROUPS = {
       entries = { "Skins", "Tooltip", "GroupFinder", "DamageMeter", "SpellHistory", "MythicPlus", "Quests", "Minimap",
                   "Chat", "Bags" } },
     { key = "phoenix", label = "RAIL_PHOENIX", icon = "cat-phoenix",
-      entries = { "General", "colors", "fonts", "textures", "glows", "sounds", "profiles", "presets", "Movers", "plugins", "Bugs",
+      entries = { "General", "colors", "fonts", "textures", "glows", "sounds", "profiles", "Movers", "plugins", "Bugs",
                   "diagnostics", "about" } },
 }
 

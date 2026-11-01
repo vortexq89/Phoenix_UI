@@ -1726,7 +1726,6 @@ local T = {
     PREVIEW_CAST_SPELL = "Flammenpeitsche",
     ---------------------------------------------------------------- presets and the welcome picker
     PRESETS = "Vorlagen",
-    PRESETS_DESC = "Komplette Looks mit einem Klick, mit Rückgängig.",
     PRESETS_LOOKS = "Looks",
     PRESETS_INTRO = "Jeder Look setzt Themenfarbe, Schriften und Leistentextur unter Allgemein, den Rahmenstil von Auren, Plaketten, Zauberleisten, Gruppenrahmen und Tracker, und stellt jede Schrift- und Texturzeile auf Standard, damit sie dem Look folgt. Sonst ändert sich nichts.",
     PRESET_APPLY = "Diesen Look nutzen",

@@ -153,7 +153,6 @@ end
 Config.LookCard = lookCard
 
 ---------------------------------------------------------------- page
-local page = { key = "presets", label = "PRESETS", desc = "PRESETS_DESC", icon = "presets", locked = true, db = {} }
 
 local function refreshPage()
     local pg = Config.pages and Config.pages[Config.current]
@@ -206,9 +205,15 @@ local schema = {
       keywords = "modules choose enable disable first install", func = function() Config:ShowModulePicker(true) end },
 }
 
-Config:RegisterPage("presets", function(parent)
-    return Config.BuildSchemaPage(parent, page, schema)
-end, { label = page.label, icon = page.icon, object = page, schema = schema })
+-- The looks live under General › Looks now (specs/002 T005): Options/General.lua adds these rows as its last tab.
+Config.PresetRows = schema
+function Config:ShowLooks()
+    local pg = self:Show("General")
+    for i, t in ipairs(pg and pg.tabList or {}) do
+        if t.label == L.PRESETS_LOOKS and pg.SetTab then pg:SetTab(i) end
+    end
+    return pg
+end
 
 ---------------------------------------------------------------- first-install style picker
 local picker

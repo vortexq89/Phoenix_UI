@@ -1726,7 +1726,6 @@ local T = {
     PREVIEW_CAST_SPELL = "烈焰鞭笞",
     ---------------------------------------------------------------- presets and the welcome picker
     PRESETS = "预设",
-    PRESETS_DESC = "一键套用完整外观，可撤销。",
     PRESETS_LOOKS = "外观",
     PRESETS_INTRO = "每种外观会设置“通用”中的主题色、字体和进度条材质，光环、姓名板、施法条、团队框体与追踪器的边框风格，并把所有字体与材质项恢复为默认以跟随外观。其他设置不变。",
     PRESET_APPLY = "使用此外观",

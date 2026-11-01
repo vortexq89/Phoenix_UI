@@ -1726,7 +1726,6 @@ local T = {
     PREVIEW_CAST_SPELL = "Látigo de llamas",
     ---------------------------------------------------------------- presets and the welcome picker
     PRESETS = "Preajustes",
-    PRESETS_DESC = "Estilos completos en un clic, con Deshacer.",
     PRESETS_LOOKS = "Estilos",
     PRESETS_INTRO = "Cada estilo fija el color del tema, las fuentes y la textura de barra en General, el estilo de borde de auras, placas, barras de lanzamiento, marcos de grupo y el rastreador, y devuelve cada fila de fuente y textura a Predeterminado para que siga el estilo. Nada más cambia.",
     PRESET_APPLY = "Usar este estilo",

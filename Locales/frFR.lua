@@ -1726,7 +1726,6 @@ local T = {
     PREVIEW_CAST_SPELL = "Fouet de flammes",
     ---------------------------------------------------------------- presets and the welcome picker
     PRESETS = "Préréglages",
-    PRESETS_DESC = "Des looks complets en un clic, avec Annuler.",
     PRESETS_LOOKS = "Looks",
     PRESETS_INTRO = "Chaque look règle la couleur du thème, les polices et la texture de barre dans Général, le style de bordure des auras, barres de nom, barres d'incantation, cadres de groupe et du suivi, et remet chaque ligne de police et de texture sur Défaut pour qu'elle suive le look. Rien d'autre ne change.",
     PRESET_APPLY = "Utiliser ce look",

@@ -1726,7 +1726,6 @@ local T = {
     PREVIEW_CAST_SPELL = "Chicote de Chamas",
     ---------------------------------------------------------------- presets and the welcome picker
     PRESETS = "Predefinições",
-    PRESETS_DESC = "Visuais completos em um clique, com Desfazer.",
     PRESETS_LOOKS = "Visuais",
     PRESETS_INTRO = "Cada visual define a cor do tema, as fontes e a textura de barra em Geral, o estilo de borda de auras, placas, barras de lançamento, quadros de grupo e do rastreador, e volta cada linha de fonte e textura para Padrão para seguir o visual. Nada mais muda.",
     PRESET_APPLY = "Usar este visual",

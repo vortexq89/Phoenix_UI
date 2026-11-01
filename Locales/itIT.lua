@@ -1726,7 +1726,6 @@ local T = {
     PREVIEW_CAST_SPELL = "Frusta di fiamme",
     ---------------------------------------------------------------- presets and the welcome picker
     PRESETS = "Preimpostazioni",
-    PRESETS_DESC = "Look completi con un clic, con Annulla.",
     PRESETS_LOOKS = "Look",
     PRESETS_INTRO = "Ogni look imposta colore del tema, caratteri e texture delle barre in Generale, lo stile del bordo di aure, targhe, barre di lancio, riquadri di gruppo e tracker, e riporta ogni riga di carattere e texture su Predefinito perché segua il look. Nient'altro cambia.",
     PRESET_APPLY = "Usa questo look",
