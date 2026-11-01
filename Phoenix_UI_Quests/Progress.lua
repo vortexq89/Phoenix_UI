@@ -61,7 +61,7 @@ local function look()
     queued = false
     if not (M:IsEnabled() and (M.db.progressSound or M.db.progressAnnounce ~= "off")) then return end
     local now = {}
-    for i = 1, tonumber(C_QuestLog.GetNumQuestLogEntries()) or 0 do
+    for i = 1, tonumber((C_QuestLog.GetNumQuestLogEntries())) or 0 do -- two returns: the second is not a base
         local info = C_QuestLog.GetInfo(i)
         if info and not info.isHeader and info.questID and info.questID > 0 then
             local st = stateOf(info.questID)

@@ -506,6 +506,7 @@ end
 
 ---------------------------------------------------------------- undo
 function Sk:Restore(obj)
+    if obj == nil then return end -- a window piece this game build does not have
     registry[obj] = nil
     local s = state[obj]
     if s then

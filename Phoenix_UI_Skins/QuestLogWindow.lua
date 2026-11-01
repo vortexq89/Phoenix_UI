@@ -25,7 +25,7 @@ function M.QuestRows()
     local out = {}
     local needle = search:lower()
     local header
-    for i = 1, tonumber(C_QuestLog.GetNumQuestLogEntries()) or 0 do
+    for i = 1, tonumber((C_QuestLog.GetNumQuestLogEntries())) or 0 do -- two returns: the second is not a base
         local q = C_QuestLog.GetInfo(i)
         if type(q) == "table" and not q.isHidden then
             if q.isHeader then

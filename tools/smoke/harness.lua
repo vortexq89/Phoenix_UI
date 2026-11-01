@@ -6348,6 +6348,23 @@ try("dungeon journal opens on its own (NaowhForever Forever journal)", function(
     assert(not ej.standalone, "close ends it")
 end)
 
+try("live bugs 1 Nov: quest log count with two returns, Skin:Restore(nil)", function()
+    local saved = rawget(env, "C_QuestLog")
+    rawset(env, "C_QuestLog", setmetatable({ GetNumQuestLogEntries = function() return 2, 35 end,
+        GetInfo = function() return nil end }, { __index = saved }))
+    local Q = ns.modules.Quests
+    if Q and Q.LookQuestProgress and Q.db then
+        local was = Q.db.progressSound
+        Q.db.progressSound = true
+        Q.LookQuestProgress()
+        Q.db.progressSound = was
+    end
+    local S = ns.modules.Skins
+    if S and S.QuestRows then S.QuestRows() end
+    rawset(env, "C_QuestLog", saved)
+    ns.Skin:Restore(nil)
+end)
+
 try("paladin blessings (NaowhForever)", function()
     local A = ns.modules.Automation
     local auras = { { name = "Blessing of Might", expirationTime = 400, duration = 300 }, { name = "Blessing of Kings", expirationTime = 900, duration = 600 } }
