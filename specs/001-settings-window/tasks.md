@@ -21,7 +21,7 @@ check_locales, the harness, then prepush, push and install.
 - [x] T003 [P] [US1] Checkbox widget `W:Checkbox` (18 px box, border 0.05/0.15, solid accent square) in UI/Widgets/Toggle.lua; rows adopt it in T013
 - [x] T004 [P] [US1] Slider: track white 0.16, fill accent 0.75, input box 0.030/0.023/0.018 at 0.25, border 0.02
   (UI/Widgets/Slider.lua)
-- [ ] T005 [P] [US1] Dropdown: box and menu colours, hover / selection alphas, max height 200, 4 px scroll bar
+- [x] T005 [P] [US1] Dropdown: box and menu colours, hover / selection alphas, max height 200, 4 px scroll bar
   (UI/Widgets/Dropdown.lua)
 - [x] T006 [P] [US1] Button: flat background 0.6/0.65, border 0.3/0.45, text 0.55/0.70 (UI/Widgets/Button.lua)
 - [ ] T007 [P] [US1] Colour swatch 1 px border and Segmented / Tabs flat style (ColorSwatch.lua, Controls.lua)

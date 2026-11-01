@@ -5,7 +5,9 @@ local W, Theme, Skin, Media = ns.Widgets, ns.Theme, ns.Skin, ns.Media
 --[[ Dropdown with a shared popup. Long lists get a type-to-filter search box, items may carry a
     group heading (item.group), and the "font" / "bar" previews draw every entry as a live sample:
     font names in their own face, statusbar textures as tinted strips. ]]
-local ROW, HEAD, MAX_ROWS, SEARCH_AT, SEARCH_H = 24, 20, 12, 12, 34
+-- EllesmereUI dropdown (specs/001 FR-004): rows 26 high, a menu at most ~200 px tall (7 rows) with a 4 px bar,
+-- white highlights at 0.08 (hover) and 0.04 (chosen); the box is warm grey with a white 0.20 border.
+local ROW, HEAD, MAX_ROWS, SEARCH_AT, SEARCH_H = 26, 20, 7, 12, 34
 local popup
 
 local function fontOf(item) return item.font or Media:Font(item.value) end
@@ -40,9 +42,13 @@ local function getPopup()
     popup:EnableMouseWheel(true)
     popup.rows = {}
     popup.offset = 0
-    Skin:Register(popup, function(f) Skin:Panel(f, "raised", { border = "border.strong", shadow = 12 }) end)
+    Skin:Register(popup, function(f)
+        local E = W.EUI.dropdown
+        Skin:Panel(f, "hover", { border = "border.strong" })
+        Skin:SetBorderColor(f, 1, 1, 1, E.borderA)
+    end)
     popup.scroll = W.Texture(popup, "OVERLAY", 2)
-    popup.scroll:SetWidth(2)
+    popup.scroll:SetWidth(W.EUI.dropdown.scrollW)
     popup.search = W:Input(popup, 100, L.DROPDOWN_FILTER)
     popup.search:SetPoint("TOPLEFT", 6, -5)
     popup.search:SetPoint("TOPRIGHT", -6, -5)
@@ -89,12 +95,12 @@ local function getPopup()
         -- owner.onHover(owner, value) previews an entry while it is pointed at; nil ends the preview
         r:SetScript("OnEnter", function(b)
             if b.heading then return end
-            W.Color(b.hl, "bg.hover")
+            b.hl:SetVertexColor(1, 1, 1, W.EUI.dropdown.itemHoverA)
             local owner = popup.owner
             if owner and owner.onHover then owner.onHover(owner, b.value) end
         end)
         r:SetScript("OnLeave", function(b)
-            W.Color(b.hl, "bg.hover", 0)
+            b.hl:SetVertexColor(1, 1, 1, b.value ~= nil and popup.owner and b.value == popup.owner.value and W.EUI.dropdown.itemSelA or 0)
             local owner = popup.owner
             if owner and owner.onHover and not popup:IsMouseOver() then owner.onHover(owner, nil) end
         end)
@@ -128,7 +134,7 @@ local function getPopup()
                 r.label:ClearAllPoints()
                 r.label:SetPoint("RIGHT", -26, 0)
                 r.bar:Hide(); r.check:Hide(); r.icon:Hide()
-                W.Color(r.hl, "bg.hover", 0)
+                r.hl:SetVertexColor(1, 1, 1, (not item.heading and item.value == owner.value) and W.EUI.dropdown.itemSelA or 0)
                 if r.heading then
                     r.label:SetPoint("LEFT", 10, -2)
                     Skin:Text(r.label, "heading", "text.muted")
@@ -172,7 +178,7 @@ local function getPopup()
             self.scroll:SetHeight(h * MAX_ROWS / n)
             self.scroll:ClearAllPoints()
             self.scroll:SetPoint("TOPRIGHT", -3, -top - h * self.offset / n)
-            W.Color(self.scroll, "accent.primary", 0.8)
+            self.scroll:SetVertexColor(1, 1, 1, 0.25)
             self.scroll:Show()
         else
             self.scroll:Hide()
@@ -193,6 +199,9 @@ function W:Dropdown(parent, items, preview, width)
     local d = CreateFrame("Button", nil, parent)
     d:SetSize(width or W.CONTROL_WIDTH, 26)
     d.items, d.preview = items, preview
+    d.fill = W.Texture(d, "BACKGROUND", -8)
+    d.fill:SetAllPoints()
+    Skin:Border(d)
     d.strip = W.Texture(d, "BORDER")
     d.strip:SetPoint("TOPLEFT", 4, -4); d.strip:SetPoint("BOTTOMRIGHT", -24, 4)
     d.strip:Hide()
@@ -219,19 +228,27 @@ function W:Dropdown(parent, items, preview, width)
         end
     end
 
+    local E = W.EUI.dropdown
+    local function look(self)
+        local hot = self.open or (self.hover and not self.disabled)
+        self.fill:SetVertexColor(E.bg[1], E.bg[2], E.bg[3], hot and E.bgHoverA or E.bgA)
+        Skin:SetBorderColor(self, 1, 1, 1, hot and E.borderHoverA or E.borderA)
+        if not self.empty then self.label:SetTextColor(1, 1, 1, hot and E.textHoverA or E.textA) end
+        ns.Icons:Tint(self.arrow, "text.secondary")
+    end
+    d.Look = look
     Skin:Register(d, function(self)
-        Skin:Panel(self, "sunken", { border = self.open and "accent.primary" or "border.subtle" })
         Skin:Text(self.label, "body", "text.primary")
         sample(self)
-        ns.Icons:Tint(self.arrow, self.open and "accent.primary" or "text.secondary")
+        look(self)
     end)
     -- a choice cut short with "..." shows in full on hover
     d:SetScript("OnEnter", function(self)
-        if not self.open and not self.disabled then Skin:SetBorderColor(self, "border.strong") end
+        self.hover = true; look(self)
         if self.label:IsTruncated() then W.ShowTooltip(self, self.label:GetText()) end
     end)
     d:SetScript("OnLeave", function(self)
-        if not self.open then Skin:SetBorderColor(self, "border.subtle") end
+        self.hover = false; look(self)
         W.HideTooltip()
     end)
 
@@ -240,8 +257,7 @@ function W:Dropdown(parent, items, preview, width)
     end
     function d:SetOpen(open)
         self.open = open
-        Skin:SetBorderColor(self, open and "accent.primary" or "border.subtle")
-        ns.Icons:Tint(self.arrow, open and "accent.primary" or "text.secondary")
+        look(self)
     end
     function d:SetValue(v)
         self.value = v
@@ -264,8 +280,10 @@ function W:Dropdown(parent, items, preview, width)
         -- nothing chosen (or a value no longer in the list) reads "None" in muted text, never an empty box
         local empty = text == "" and self.current == nil
         if empty then self.label:SetText(L.NONE) end
+        self.empty = empty
         Skin:Text(self.label, "body", empty and "text.muted" or "text.primary")
         sample(self)
+        look(self)
     end
     function d:GetValue() return self.value end
     d.SetEnabledState = W.SetEnabledState

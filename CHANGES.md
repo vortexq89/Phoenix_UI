@@ -76,6 +76,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Dropdowns in the EllesmereUI look** (1 Nov, specs/001 T005): the box is flat warm grey with a faint white border and soft white text, and both brighten on hover or while open. The list has taller rows, shows up to 7 at a time with a thin 4 px scroll bar, and marks the hovered and chosen rows with a faint white band instead of the accent.
 - **Checkbox in the EllesmereUI look** (1 Nov, specs/001 T003): a new 18 px checkbox for the settings. It is a warm dark box with a faint border, and when ticked it fills with an accent square. It will appear in the advanced (cog) rows.
 - **Sliders and buttons in the EllesmereUI look** (1 Nov, specs/001 T004, T006): sliders have a flat thin track, an accent fill, a square accent handle and a small dark value box. Dragging follows the mouse on a timer instead of a per-frame script. Buttons are flat warm-grey with a faint white border and soft white text that brighten on hover; main buttons are filled with the accent. The picture art is gone from both.
 - **Switches in the EllesmereUI look** (1 Nov, specs/001 T001–T002): every on/off switch in the settings is now EllesmereUI's flat 40 × 20 switch with a square knob. It is grey with a dim knob when off, and the accent colour with a white knob when on. It slides and blends in under a tenth of a second (instantly with reduced motion), with no picture art. All of EllesmereUI's measured control sizes and alphas now sit in one table that the next controls will use.
