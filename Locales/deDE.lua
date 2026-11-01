@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "Erneut klicken, um alle Einstellungen von %s zurückzusetzen",
     RESET_MODULE_DONE = "%s auf Standard zurückgesetzt",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "Anzeige",
+    APPEARANCE_COLORS = "Farben",
+    APPEARANCE_COLORS_DESC = "Der Akzent und die Klassen-, Ressourcen- und Bannfarben, die jedes Modul nutzt.",
+    APPEARANCE_GLOWS = "Leuchten",
+    APPEARANCE_GLOWS_DESC = "Jede Leucht-Einstellung aller Module an einem Ort.",
+    APPEARANCE_GLOWS_INTRO = "Jede Moduleinstellung, die ein Leuchten zeichnet. Der Pfeil neben einer Zeile öffnet sie in ihrem Modul.",
     APPEARANCE_FONTS = "Schriftarten",
     APPEARANCE_FONTS_DESC = "Jede Schrift, die Phoenix zeichnet, an einem Ort.",
     APPEARANCE_FONTS_INTRO = "Jede Zeile unten ist dieselbe Einstellung wie in ihrem Modul; eine Änderung hier zeigt sich auch dort. Zeilen auf „Standard“ folgen den Schriften für Oberfläche und Einheiten unter „Allgemein“.",

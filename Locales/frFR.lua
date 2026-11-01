@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "Cliquez de nouveau pour réinitialiser tous les réglages de %s",
     RESET_MODULE_DONE = "%s réinitialisé",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "Affichage",
+    APPEARANCE_COLORS = "Couleurs",
+    APPEARANCE_COLORS_DESC = "L’accent et les couleurs de classe, de puissance et de dissipation utilisées par chaque module.",
+    APPEARANCE_GLOWS = "Lueurs",
+    APPEARANCE_GLOWS_DESC = "Tous les réglages de lueur de tous les modules, au même endroit.",
+    APPEARANCE_GLOWS_INTRO = "Chaque réglage de module qui dessine une lueur. La flèche à côté d’une ligne l’ouvre dans son module.",
     APPEARANCE_FONTS = "Polices",
     APPEARANCE_FONTS_DESC = "Toutes les polices de Phoenix, réunies au même endroit.",
     APPEARANCE_FONTS_INTRO = "Chaque ligne est le même réglage que dans son module : une modification ici s'y retrouve. Les lignes laissées sur « Par défaut » suivent les polices d'interface et d'unités choisies dans Général.",

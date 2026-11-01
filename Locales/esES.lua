@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "Vuelve a hacer clic para restablecer todos los ajustes de %s",
     RESET_MODULE_DONE = "%s restablecido",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "Pantalla",
+    APPEARANCE_COLORS = "Colores",
+    APPEARANCE_COLORS_DESC = "El color de acento y los colores de clase, poder y disipación que usa cada módulo.",
+    APPEARANCE_GLOWS = "Brillos",
+    APPEARANCE_GLOWS_DESC = "Cada ajuste de brillo de cada módulo, en un solo lugar.",
+    APPEARANCE_GLOWS_INTRO = "Cada ajuste de módulo que dibuja un brillo. La flecha junto a una fila la abre en su módulo.",
     APPEARANCE_FONTS = "Fuentes",
     APPEARANCE_FONTS_DESC = "Todas las fuentes que dibuja Phoenix, reunidas en un solo lugar.",
     APPEARANCE_FONTS_INTRO = "Cada fila es el mismo ajuste que encontrarás en su módulo, así que un cambio aquí también aparece allí. Las filas en «Predeterminado» siguen las fuentes de interfaz y de unidades elegidas en General.",

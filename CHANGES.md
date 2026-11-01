@@ -76,6 +76,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Phoenix › Colors, Fonts, Textures and Glows** (1 Nov, specs/002 T002–T004): the accent and the class, power and dispel colours moved from General to a new Colors page. Fonts now starts with the global font settings (UI and unit font, size, outline, Expressway, Blizzard fonts) and Textures with the global bar texture, above the per-module rows. A new Glows page lists every module's glow setting with an arrow to its module. They are the same saved settings as before, so profiles and presets are unchanged.
 - **Plan: global pages** (1 Nov, specs/002): the Spec Kit spec, plan and tasks for build step 2, the Colors, Fonts, Textures and Glows pages, General with the looks, and the Phoenix group order. Settings on a global page can now belong to another module and still save, reset and count there.
 - **Sync to all** (1 Nov, specs/001 T014): a setting shared by several frames can carry a ⇄ button that copies its value to all of them, like the element pages' apply-to-all (EllesmereUI's sync icon).
 - **No OnUpdate in the settings window** (1 Nov, specs/001 T015): dragging chips and the combat text preview now run on C_Timer tickers, and a smoke test keeps OnUpdate out of the widgets, window and previews.

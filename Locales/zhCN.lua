@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "再次点击以重置 %s 的全部设置",
     RESET_MODULE_DONE = "%s 已恢复默认",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "显示",
+    APPEARANCE_COLORS = "颜色",
+    APPEARANCE_COLORS_DESC = "所有模块使用的强调色以及职业、能量和驱散颜色。",
+    APPEARANCE_GLOWS = "发光",
+    APPEARANCE_GLOWS_DESC = "所有模块的发光设置集中在一处。",
+    APPEARANCE_GLOWS_INTRO = "每个绘制发光的模块设置。行旁的箭头会在其模块中打开。",
     APPEARANCE_FONTS = "字体",
     APPEARANCE_FONTS_DESC = "Phoenix 绘制的所有字体，集中在一处。",
     APPEARANCE_FONTS_INTRO = "下面每一行都与其模块中的设置相同，在这里修改也会反映到那里。保持“默认”的行会沿用“通用”中选择的界面字体和单位字体。",

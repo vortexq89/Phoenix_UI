@@ -1258,6 +1258,12 @@ ns.RegisterLocale("enUS", {
     RESET_MODULE_CONFIRM = "Click again to reset every %s setting",
     RESET_MODULE_DONE = "%s reset to defaults",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "Display",
+    APPEARANCE_COLORS = "Colors",
+    APPEARANCE_COLORS_DESC = "The accent and the class, power and dispel colours every module uses.",
+    APPEARANCE_GLOWS = "Glows",
+    APPEARANCE_GLOWS_DESC = "Every glow setting in every module, in one place.",
+    APPEARANCE_GLOWS_INTRO = "Every module setting that draws a glow. The arrow beside a row opens it in its module.",
     APPEARANCE_FONTS = "Fonts",
     APPEARANCE_FONTS_DESC = "Every font Phoenix draws, gathered in one place.",
     APPEARANCE_FONTS_INTRO = "Each row below is the same setting you find in its module, so a change here shows up there too. Rows left on Default follow the interface and unit fonts chosen under General.",

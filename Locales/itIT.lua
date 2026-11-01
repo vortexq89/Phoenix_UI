@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "Clicca di nuovo per ripristinare tutte le impostazioni di %s",
     RESET_MODULE_DONE = "%s ripristinato",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "Visualizzazione",
+    APPEARANCE_COLORS = "Colori",
+    APPEARANCE_COLORS_DESC = "L’accento e i colori di classe, potere e dissoluzione usati da ogni modulo.",
+    APPEARANCE_GLOWS = "Bagliori",
+    APPEARANCE_GLOWS_DESC = "Ogni impostazione di bagliore di ogni modulo, in un solo posto.",
+    APPEARANCE_GLOWS_INTRO = "Ogni impostazione di modulo che disegna un bagliore. La freccia accanto a una riga la apre nel suo modulo.",
     APPEARANCE_FONTS = "Caratteri",
     APPEARANCE_FONTS_DESC = "Tutti i caratteri usati da Phoenix, raccolti in un unico posto.",
     APPEARANCE_FONTS_INTRO = "Ogni riga è la stessa impostazione del suo modulo, quindi una modifica qui compare anche lì. Le righe su «Predefinito» seguono i caratteri dell'interfaccia e delle unità scelti in Generale.",

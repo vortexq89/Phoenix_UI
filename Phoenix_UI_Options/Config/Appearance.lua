@@ -32,7 +32,8 @@ local function collect(kind)
                     end
                 end
                 local function visit(item, parent)
-                    if item.type == kind and item.key and not item.get then
+                    local hit = type(kind) == "function" and kind(item) or item.type == kind
+                    if hit and item.key and not item.get then
                         local scoped = item.key:find("@", 1, true) ~= nil
                         out[#out + 1] = { group = g, m = m, item = item, parent = parent,
                             units = scoped and units or nil, unitLabels = scoped and unitLabels or nil }
@@ -62,7 +63,8 @@ local function mirrorRow(kind, e)
     end
     local first = paths(e)[1]
     return {
-        type = kind, label = label, desc = desc, allowDefault = item.allowDefault,
+        type = type(kind) == "string" and kind or item.type, values = item.values, min = item.min, max = item.max,
+        step = item.step, percent = item.percent, label = label, desc = desc, allowDefault = item.allowDefault,
         default = U.GetPath(m.defaults, first),
         get = function() return U.GetPath(m.db, first) end,
         set = function(_, v)
@@ -207,6 +209,10 @@ local function mirrorSchema(kind)
         { type = "custom", label = "SPECIMEN", fullWidth = true, height = def.specimen, build = specimenRow(kind, page) },
         { type = "custom", label = def.pick.label, build = applyRow(kind, page) },
     }
+    -- the global section first (specs/002 T003): General's own font or texture rows
+    if ns.GlobalRows and ns.GlobalRows[kind] then
+        for i, item in ipairs(ns:FilterSchema(ns.GlobalRows[kind])) do table.insert(schema, i, item) end
+    end
     local lastGroup
     for _, e in ipairs(collect(kind)) do
         if e.group ~= lastGroup then
@@ -242,6 +248,53 @@ end
 
 mirrorPage("font")
 mirrorPage("texture")
+
+---------------------------------------------------------------- colors and glows (specs/002 T002, T004)
+-- Phoenix › Colors: the accent and the class, power and dispel colours (General's settings, module = "General").
+local colors = { key = "colors", label = "APPEARANCE_COLORS", desc = "APPEARANCE_COLORS_DESC", icon = "palette",
+    locked = true, db = {}, defaults = {} }
+local colorCache
+local function getColors()
+    colorCache = colorCache or ns:FilterSchema(ns.GlobalRows and ns.GlobalRows.colors or {})
+    return colorCache
+end
+Config:RegisterPage("colors", function(parent)
+    local page = Config.BuildSchemaPage(parent, colors, getColors())
+    ns.Events:Listen("PUI_SETTING_CHANGED", page, function()
+        if page:IsShown() then for _, row in ipairs(page.rows) do row:Refresh() end end
+    end)
+    return page
+end, { label = colors.label, icon = colors.icon, object = colors, schema = getColors })
+
+-- Phoenix › Glows: every module row whose setting is a glow, each with an arrow to its module.
+local function isGlow(item)
+    return type(item.key) == "string" and item.key:lower():find("glow", 1, true) ~= nil
+        and (item.type == "toggle" or item.type == "select" or item.type == "range" or item.type == "color")
+end
+local glows = { key = "glows", label = "APPEARANCE_GLOWS", desc = "APPEARANCE_GLOWS_DESC", icon = "theme",
+    locked = true, db = {}, defaults = {} }
+local glowCache
+local function getGlows()
+    if glowCache then return glowCache end
+    glowCache = { { type = "description", text = "APPEARANCE_GLOWS_INTRO" } }
+    local lastGroup
+    for _, e in ipairs(collect(isGlow)) do
+        if e.group ~= lastGroup then
+            glowCache[#glowCache + 1] = { type = "header", label = e.group.label, icon = e.group.icon }
+            lastGroup = e.group
+        end
+        glowCache[#glowCache + 1] = mirrorRow(isGlow, e)
+    end
+    return glowCache
+end
+Config:RegisterPage("glows", function(parent)
+    local page = Config.BuildSchemaPage(parent, glows, getGlows())
+    ns.Events:Listen("PUI_SETTING_CHANGED", page, function()
+        if page:IsShown() then for _, row in ipairs(page.rows) do row:Refresh() end end
+    end)
+    return page
+end, { label = glows.label, icon = glows.icon, object = glows, schema = getGlows })
+Config.GlowRows = getGlows
 
 ---------------------------------------------------------------- sounds
 local sounds = { key = "sounds", label = "APPEARANCE_SOUNDS", desc = "APPEARANCE_SOUNDS_DESC", icon = "sound", locked = true, db = {} }

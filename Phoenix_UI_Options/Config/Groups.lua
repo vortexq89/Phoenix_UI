@@ -19,7 +19,7 @@ Config.GROUPS = {
       entries = { "Skins", "Tooltip", "GroupFinder", "DamageMeter", "SpellHistory", "MythicPlus", "Quests", "Minimap",
                   "Chat", "Bags" } },
     { key = "phoenix", label = "RAIL_PHOENIX", icon = "cat-phoenix",
-      entries = { "General", "fonts", "textures", "sounds", "profiles", "presets", "Movers", "plugins", "Bugs",
+      entries = { "General", "colors", "fonts", "textures", "glows", "sounds", "profiles", "presets", "Movers", "plugins", "Bugs",
                   "diagnostics", "about" } },
 }
 
@@ -116,5 +116,11 @@ end
 -- now, target: settings a page has, and how many plan v2 gives it (nil when it has no target).
 function Config:Depth(key)
     local now = self.CountSettings and self.CountSettings(self:SchemaOf(key) or {}) or 0
+    -- settings a module keeps on the global pages (specs/002: General's colours, fonts and texture) still count
+    for _, list in pairs(ns.GlobalRows or {}) do
+        local mine = {}
+        for _, item in ipairs(list) do if item.module == key then mine[#mine + 1] = item end end
+        if self.CountSettings then now = now + self.CountSettings(mine) end
+    end
     return now, self.DEPTH[key]
 end

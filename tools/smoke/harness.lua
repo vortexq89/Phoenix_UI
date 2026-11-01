@@ -4426,6 +4426,33 @@ try("settings window OnUpdate audit", function()
     end
     assert(#bad == 0, "OnUpdate in " .. table.concat(bad, ", "))
 end)
+-- the global pages lead with their global section and keep General's settings on General (specs/002 T002-T004)
+try("global pages", function()
+    local C, G = ns.Config, ns.modules.General
+    local colors = C:Show("colors")
+    local owners, keys = {}, {}
+    for _, r in ipairs(colors.rows) do keys[r.item.key or r.item.label] = true; owners[r.item.module or "?"] = true end
+    assert(keys["theme.preset"] and keys.GEN_CLASS_COLORS_A and keys.GEN_DISPEL_COLORS and owners.General, "Colors lacks its rows")
+    local fonts = C:Show("fonts")
+    assert(fonts.rows[1] and fonts.rows[1].item.key == "theme.expressway", "Fonts does not lead with the global font")
+    local tex = C:Show("textures")
+    assert(tex.rows[1] and tex.rows[1].item.key == "theme.barTexture", "Textures does not lead with the bar texture")
+    for _, item in ipairs(ns.options.General) do
+        assert(item.key ~= "theme.preset" and item.key ~= "theme.uiFont" and item.key ~= "theme.barTexture",
+            "General still lists " .. tostring(item.key))
+    end
+    -- a moved row still saves on General
+    local old = G.db.theme.outline
+    for _, r in ipairs(fonts.rows) do
+        if r.item.key == "theme.outline" then assert(r:IsModified() == (old ~= G.defaults.theme.outline), "owner reads General") end
+    end
+    local glows = C.GlowRows()
+    local n = 0
+    for _, item in ipairs(glows) do if item.link then n = n + 1 end end
+    assert(n >= 5, "Glows lists " .. n .. " glow settings")
+    C:Show("glows")
+    print(("  global pages: %d glow rows"):format(n))
+end)
 -- a row on a global page writes to the module it names (specs/002 T001)
 try("row owner", function()
     local G = ns.modules.General

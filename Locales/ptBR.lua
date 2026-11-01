@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "Clique de novo para redefinir todas as configurações de %s",
     RESET_MODULE_DONE = "%s redefinido para o padrão",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "Exibição",
+    APPEARANCE_COLORS = "Cores",
+    APPEARANCE_COLORS_DESC = "A cor de destaque e as cores de classe, poder e dissipação que cada módulo usa.",
+    APPEARANCE_GLOWS = "Brilhos",
+    APPEARANCE_GLOWS_DESC = "Todas as opções de brilho de todos os módulos, em um só lugar.",
+    APPEARANCE_GLOWS_INTRO = "Cada opção de módulo que desenha um brilho. A seta ao lado de uma linha a abre no seu módulo.",
     APPEARANCE_FONTS = "Fontes",
     APPEARANCE_FONTS_DESC = "Todas as fontes que o Phoenix desenha, reunidas em um só lugar.",
     APPEARANCE_FONTS_INTRO = "Cada linha é a mesma configuração do seu módulo, então uma mudança aqui aparece lá também. Linhas em Padrão seguem as fontes de interface e de unidades escolhidas em Geral.",

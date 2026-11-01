@@ -15,11 +15,11 @@ check_locales and the harness pass; then prepush, push and install.
   that module (Renderer.lua) plus a harness check
 
 ## Phase 3: User Story 1 - Global pages (P1)
-- [ ] T002 [US1] Colors page: accent, class, power and dispel colours moved from General (Appearance.lua,
+- [x] T002 [US1] Colors page: accent, class, power and dispel colours moved from General (Appearance.lua,
   General.lua, Locales)
-- [ ] T003 [US1] Fonts and Textures pages lead with the global font section and the global bar texture, moved from
+- [x] T003 [US1] Fonts and Textures pages lead with the global font section and the global bar texture, moved from
   General (Appearance.lua, General.lua)
-- [ ] T004 [US1] Glows page mirroring every module glow row (Appearance.lua, Locales)
+- [x] T004 [US1] Glows page mirroring every module glow row (Appearance.lua, Locales)
 
 ## Phase 4: User Story 2 and 3 - General and order (P2, P3)
 - [ ] T005 [US2] General › Looks takes the Presets page rows; the presets page is retired (Presets.lua,

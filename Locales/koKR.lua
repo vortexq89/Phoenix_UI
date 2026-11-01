@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "다시 클릭하면 %s의 모든 설정이 초기화됩니다",
     RESET_MODULE_DONE = "%s: 기본값으로 초기화됨",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "표시",
+    APPEARANCE_COLORS = "색상",
+    APPEARANCE_COLORS_DESC = "모든 모듈이 쓰는 강조색과 직업, 자원, 해제 색상입니다.",
+    APPEARANCE_GLOWS = "발광",
+    APPEARANCE_GLOWS_DESC = "모든 모듈의 발광 설정을 한곳에서.",
+    APPEARANCE_GLOWS_INTRO = "발광을 그리는 모든 모듈 설정입니다. 줄 옆의 화살표로 해당 모듈에서 엽니다.",
     APPEARANCE_FONTS = "글꼴",
     APPEARANCE_FONTS_DESC = "Phoenix가 그리는 모든 글꼴을 한곳에 모았습니다.",
     APPEARANCE_FONTS_INTRO = "아래 각 줄은 해당 모듈의 설정과 같아서 여기서 바꾸면 그곳에도 반영됩니다. 기본값으로 둔 줄은 일반에서 고른 인터페이스 글꼴과 유닛 글꼴을 따릅니다.",

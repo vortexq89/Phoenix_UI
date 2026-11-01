@@ -63,14 +63,49 @@ local function dispelColors()
       desc = "GEN_DISPEL_COLORS_DESC", keywords = "dispel debuff colour color magic curse poison disease bleed" }
 end
 
-ns:RegisterOptions("General", {
-    { type = "preview", kind = "theme" },
-    { type = "tab", label = "TAB_APPEARANCE" },
+-- The global rows of Phoenix › Colors, Fonts and Textures (specs/002 T002, T003). They stay General's settings
+-- (module = "General"), so profiles, reset and presets keep working; the pages are built in Config/Appearance.lua.
+local function owned(list)
+    for _, item in ipairs(list) do item.module = "General" end
+    return list
+end
+ns.GlobalRows = {
+    colors = owned({
     { type = "header", label = "APPEARANCE", icon = "theme" },
     { type = "select", key = "theme.preset", label = "THEME", desc = "THEME_DESC", values = presets, keywords = "color colour accent" },
     { type = "color", key = "theme.custom", label = "THEME_CUSTOM_COLOR",
       hidden = function(m) return m.db.theme.preset ~= "custom" end },
+    { type = "header", label = "GEN_CLASS_COLORS", icon = "palette", desc = "GEN_CLASS_COLORS_DESC" },
+    Opt.With(classColors(1, 7), { label = "GEN_CLASS_COLORS_A" }),
+    Opt.With(classColors(8, 13), { label = "GEN_CLASS_COLORS_B" }),
+    { type = "header", label = "GEN_POWER_COLORS", icon = "palette", desc = "GEN_POWER_COLORS_DESC" },
+    Opt.With(powerColors(1, 5), { label = "GEN_POWER_COLORS_A" }),
+    Opt.With(powerColors(6, 10), { label = "GEN_POWER_COLORS_B" }),
+    Opt.With(powerColors(11, 16), { label = "GEN_POWER_COLORS_C" }),
+    dispelColors(),
+    }),
+    font = owned({
+    { type = "header", label = "TYPOGRAPHY", icon = "fonts" },
+    { type = "toggle", key = "theme.expressway", label = "GEN_EXPRESSWAY", desc = "GEN_EXPRESSWAY_DESC",
+      keywords = "font expressway elvui ellesmere phoenix" },
+    { type = "font", key = "theme.uiFont", label = "UI_FONT", desc = "UI_FONT_DESC", allowDefault = true },
+    { type = "font", key = "theme.unitFont", label = "UNIT_FONT", desc = "UNIT_FONT_DESC", allowDefault = true },
+    { type = "range", key = "theme.fontScale", label = "FONT_SCALE", desc = "FONT_SCALE_DESC", min = 0.8, max = 1.4, step = 0.05,
+      percent = true, keywords = "size accessibility" },
+    { type = "select", key = "theme.outline", label = "GEN_OUTLINE", desc = "GEN_OUTLINE_DESC", values = ns.Opt.OUTLINE,
+      keywords = "font outline thick monochrome global" },
+    { type = "toggle", key = "blizzardFonts", label = "GEN_BLIZZARD_FONTS", desc = "GEN_BLIZZARD_FONTS_DESC",
+      keywords = "replace blizzard game fonts names world" },
+    }),
+    texture = owned({
+    { type = "header", label = "BAR_TEXTURE", icon = "textures" },
     { type = "texture", key = "theme.barTexture", label = "BAR_TEXTURE", desc = "BAR_TEXTURE_DESC" },
+    }),
+}
+
+ns:RegisterOptions("General", {
+    { type = "preview", kind = "theme" },
+    { type = "tab", label = "TAB_DISPLAY" },
     { type = "header", label = "GEN_SCALE", icon = "layout" },
     { type = "toggle", gate = true, key = "scale.enabled", label = "GEN_PUI_SCALE", desc = "GEN_PUI_SCALE_DESC", combat = true,
       keywords = "ui scale size uiparent" },
@@ -86,31 +121,10 @@ ns:RegisterOptions("General", {
     { type = "button", label = "GEN_PIXEL", desc = "GEN_PIXEL_DESC", button = "GEN_PIXEL_BUTTON", icon = "layout", combat = true,
       func = pixelPerfect, keywords = "pixel perfect crisp borders 768",
       disabled = function(m) return m.db.scale.enabled end },
-    { type = "tab", label = "TAB_TEXT" },
-    { type = "header", label = "TYPOGRAPHY", icon = "fonts" },
-    { type = "toggle", key = "theme.expressway", label = "GEN_EXPRESSWAY", desc = "GEN_EXPRESSWAY_DESC",
-      keywords = "font expressway elvui ellesmere phoenix" },
-    { type = "font", key = "theme.uiFont", label = "UI_FONT", desc = "UI_FONT_DESC", allowDefault = true },
-    { type = "font", key = "theme.unitFont", label = "UNIT_FONT", desc = "UNIT_FONT_DESC", allowDefault = true },
-    { type = "range", key = "theme.fontScale", label = "FONT_SCALE", desc = "FONT_SCALE_DESC", min = 0.8, max = 1.4, step = 0.05,
-      percent = true, keywords = "size accessibility" },
-    { type = "select", key = "theme.outline", label = "GEN_OUTLINE", desc = "GEN_OUTLINE_DESC", values = ns.Opt.OUTLINE,
-      keywords = "font outline thick monochrome global" },
-    { type = "toggle", key = "blizzardFonts", label = "GEN_BLIZZARD_FONTS", desc = "GEN_BLIZZARD_FONTS_DESC",
-      keywords = "replace blizzard game fonts names world" },
     { type = "header", label = "SPECICON_HEADER", icon = "user", desc = "SPECICON_HEADER_DESC" },
     { type = "select", key = "specIconStyle", label = "SPECICON_STYLE", desc = "SPECICON_STYLE_DESC",
       values = ns.SpecIcon.Values(false), keywords = "spec icon round hex diamond shield glossy" },
     { type = "custom", label = "SPECICON_SAMPLES", height = 64, build = function(row) return ns.SpecIcon.Strip(row) end },
-    { type = "tab", label = "UF_COLORS" },
-    { type = "header", label = "GEN_CLASS_COLORS", icon = "palette", desc = "GEN_CLASS_COLORS_DESC" },
-    Opt.With(classColors(1, 7), { label = "GEN_CLASS_COLORS_A" }),
-    Opt.With(classColors(8, 13), { label = "GEN_CLASS_COLORS_B" }),
-    { type = "header", label = "GEN_POWER_COLORS", icon = "palette", desc = "GEN_POWER_COLORS_DESC" },
-    Opt.With(powerColors(1, 5), { label = "GEN_POWER_COLORS_A" }),
-    Opt.With(powerColors(6, 10), { label = "GEN_POWER_COLORS_B" }),
-    Opt.With(powerColors(11, 16), { label = "GEN_POWER_COLORS_C" }),
-    dispelColors(),
     { type = "tab", label = "TAB_BEHAVIOUR" },
     { type = "header", label = "GEN_ACCESS", icon = "home" },
     { type = "toggle", label = "GEN_MINIMAP_BUTTON", desc = "GEN_MINIMAP_BUTTON_DESC", keywords = "minimap icon launcher button open",

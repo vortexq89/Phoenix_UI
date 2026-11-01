@@ -1232,6 +1232,12 @@ local T = {
     RESET_MODULE_CONFIRM = "再次點擊以重置 %s 的全部設定",
     RESET_MODULE_DONE = "%s 已恢復預設",
     ---------------------------------------------------------------- 2.0 appearance pages, diagnostics
+    TAB_DISPLAY = "顯示",
+    APPEARANCE_COLORS = "顏色",
+    APPEARANCE_COLORS_DESC = "所有模組使用的強調色以及職業、能量和驅散顏色。",
+    APPEARANCE_GLOWS = "發光",
+    APPEARANCE_GLOWS_DESC = "所有模組的發光設定集中在一處。",
+    APPEARANCE_GLOWS_INTRO = "每個繪製發光的模組設定。列旁的箭頭會在其模組中開啟。",
     APPEARANCE_FONTS = "字型",
     APPEARANCE_FONTS_DESC = "Phoenix 繪製的所有字型，集中在一處。",
     APPEARANCE_FONTS_INTRO = "下面每一列都與其模組中的設定相同，在這裡修改也會反映到那裡。保持「預設」的列會沿用「一般」中選擇的介面字型和單位字型。",
