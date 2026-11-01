@@ -11,6 +11,22 @@ local WHITE = Media.textures.WHITE
 W.ROW_HEIGHT = 30
 W.CONTROL_WIDTH = 200
 
+-- The EllesmereUI look (t222, specs/001-settings-window): measured sizes and alphas, in one place. Colours are white
+-- or black at these alphas over the theme surfaces, or the accent; the warm greys are the theme's bg.* tokens.
+W.EUI = {
+    toggle = { w = 40, h = 20, pad = 2, slide = 0.075, offRGB = 0.267, offA = 0.65, onA = 0.75, knobOffA = 0.5, knobOnA = 1 },
+    checkbox = { box = { 0.112, 0.105, 0.098 }, borderA = 0.05, checkedBorderA = 0.15 },
+    slider = { trackA = 0.16, fillA = 0.75, input = { 0.030, 0.023, 0.018 }, inputA = 0.25, inputBorderA = 0.02 },
+    dropdown = { bg = { 0.103, 0.095, 0.088 }, bgA = 0.9, bgHoverA = 0.98, borderA = 0.20, borderHoverA = 0.30,
+        textA = 0.50, textHoverA = 0.60, itemHoverA = 0.08, itemSelA = 0.04, maxHeight = 200, scrollW = 4 },
+    button = { bg = { 0.089, 0.080, 0.072 }, bgA = 0.6, bgHoverA = 0.65, borderA = 0.3, borderHoverA = 0.45,
+        textA = 0.55, textHoverA = 0.70 },
+    row = { h = 50, dualW = 350, dualGap = 42, tripleW = 180, tripleGap = 50, oddA = 0.1, evenA = 0.2 },
+    section = { textA = 0.41 },
+    window = { w = 1300, h = 946, sidebar = 295, header = 138, tabs = 40, footer = 82, pad = 45 },
+    nav = { selectedA = 1, enabledA = 0.6, disabledA = 0.11, hoverA = 0.86, hoverDisabledA = 0.39, rowH = 28, groupGap = 10 },
+}
+
 function W.Texture(parent, layer, sub, path)
     local t = parent:CreateTexture(nil, layer or "ARTWORK", nil, sub or 0)
     t:SetTexture(path or WHITE)

@@ -6719,9 +6719,16 @@ try("art kit v7.1", function()
     local PUI = env.PhoenixUI
     assert(PUI:Supports(1, 1) and PUI.OverrideArt and PUI.RegisterIcon, "plugin art API 1.1")
     assert(PUI:RegisterIcon("Test_Icon", { file = "x/i" }) and A:IconEntry("Test_Icon").file == "x/i", "plugin icon")
+end)
+try("EllesmereUI toggle and look table (specs/001 T001-T002)", function()
+    local E = ns.Widgets.EUI
+    assert(E and E.toggle.w == 40 and E.toggle.h == 20 and E.window.sidebar == 295 and E.row.h == 50, "look table")
     local tg = ns.Widgets:Toggle(env.UIParent)
+    assert(not tg.art and tg:GetWidth() == 40 and tg.knob:GetWidth() == 16, "flat 40x20, square 16 px knob")
     tg:SetValue(true)
-    assert(tg.art:IsShown(), "toggle uses the baked art")
+    assert(tg.progress == 1 and tg:GetValue() == true, "on")
+    tg:SetValue(false)
+    assert(tg.progress == 0, "off")
 end)
 try("group frames blizzard fallback", function()
     local M = ns.modules.GroupFrames
