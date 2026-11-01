@@ -4451,7 +4451,7 @@ try("global pages", function()
     local glows = C.GlowRows()
     local n = 0
     for _, item in ipairs(glows) do if item.link then n = n + 1 end end
-    assert(n >= 5, "Glows lists " .. n .. " glow settings")
+    assert(n >= 4, "Glows lists " .. n .. " glow settings") -- 5 on retail, 4 on Forever
     C:Show("glows")
     print(("  global pages: %d glow rows"):format(n))
     -- the Phoenix group in the map's order (specs/002 T006)
