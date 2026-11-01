@@ -6348,6 +6348,17 @@ try("dungeon journal opens on its own (NaowhForever Forever journal)", function(
     assert(not ej.standalone, "close ends it")
 end)
 
+try("paladin blessings (NaowhForever)", function()
+    local A = ns.modules.Automation
+    local auras = { { name = "Blessing of Might", expirationTime = 400, duration = 300 }, { name = "Blessing of Kings", expirationTime = 900, duration = 600 } }
+    local b = A.BlessingOn("party1", function(_, i) return auras[i] end, 100)
+    assert(b and b.name == "Blessing of Kings" and b.left == 800, "longest blessing")
+    assert(A.BlessingOn("party1", function() return nil end, 100) == nil, "missing")
+    local was = A.db.blessings
+    A.db.blessings = true; A:UpdateBlessings()
+    A.db.blessings = was; A:UpdateBlessings()
+end)
+
 try("gear swap bar (NaowhForever gear and trinkets)", function()
     local A = ns.modules.Automation
     local list = A.GearBarEntries(true)

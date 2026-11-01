@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Paladin blessings** (1 Nov): Automation > Paladin blessings shows paladins a small window with you and your group and your blessing on each, its time left or Missing; click a row to target that member (NaowhForever's paladin blessings). Off by default.
 - **Gear swap bar** (1 Nov): Automation > Gear swap bar puts a button for each equipment set (click to wear it, the worn one glows) and your two trinkets (click to use, with cooldowns) on a small movable bar (NaowhForever's gear and trinkets bar). Off by default.
 - **Recipes to learn** (1 Nov): Automation > Recipes to learn lists the recipes of a profession you have not learned yet, from your last visit to its trainer, the ones you can learn now first with their cost (NaowhForever's professions).
 - **Training planner** (1 Nov): Automation > Training planner remembers what your class trainer teaches each visit and shows what you can learn now with the total cost, then what comes next by level, per character (NaowhForever's training planner).
