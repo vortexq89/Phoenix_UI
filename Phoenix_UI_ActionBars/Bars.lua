@@ -30,7 +30,7 @@ local LAYOUT = [[
     local pad = self:GetAttribute("pb-pad") or 0
     local page = self:GetAttribute("pb-page")
     local flyout = self:GetAttribute("pb-flyout")
-    local empty = self:GetAttribute("pb-empty") and true or false
+    local empty = (self:GetAttribute("pb-empty") or self:GetAttribute("pb-grid")) and true or false
     local mouse = not self:GetAttribute("pb-through")
     local kind = self:GetAttribute("pb-kind")
     local layout = self:GetAttribute("pb-layout") or ""
@@ -239,6 +239,18 @@ function M:RefreshBar(key)
     ns.Combat:Run("ab.layout." .. key, layoutNow, key)
 end
 
+-- While an action is dragged, bars that hide empty slots show them so it can be dropped anywhere; only the
+-- secure layout snippet runs (no backdrop or border repaint), once at the start and once at the end.
+function B.Grid(on)
+    for _, def in ipairs(M.BARS) do
+        local h = headers[def.key]
+        if h and def.kind == nil and not M.db.bars[def.key].showEmpty then
+            h:SetAttribute("pb-grid", on and true or false)
+            SecureHandlerExecute(h, LAYOUT)
+        end
+    end
+end
+
 -- Bar 1 paging: state driver plus the optional page arrows.
 function B.Paging()
     local h = headers.bar1
@@ -437,9 +449,13 @@ function M:EnableBars()
     ns.Events:On("UPDATE_SHAPESHIFT_FORMS", self, function() self:RefreshBar("stance") end)
     -- an action placed on an empty slot must appear when empty slots are hidden
     -- (debounced: logging in or swapping specs changes every slot at once)
+    ns.Events:On("ACTIONBAR_SHOWGRID", self, function() ns.Combat:Run("ab.grid", B.Grid, true) end)
+    ns.Events:On("ACTIONBAR_HIDEGRID", self, function() ns.Combat:Run("ab.grid", B.Grid, false) end)
     local pending
     ns.Events:On("ACTIONBAR_SLOT_CHANGED", self, function()
-        if pending then return end
+        -- picking an action up empties its slot: no relayout while it is on the cursor (it flickered and hid
+        -- the slot under the cursor, t213 #2); the drop ends the drag and HIDEGRID lays the bars out once
+        if pending or (GetCursorInfo and GetCursorInfo()) then return end
         pending = true
         C_Timer.After(0.2, function()
             pending = nil

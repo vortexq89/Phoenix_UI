@@ -4193,6 +4193,29 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- dragging an action shows empty slots by the secure snippet only; the slot change mid-drag does not relayout (t213 #2)
+try("action bars drag grid", function()
+    local ab = ns.modules.ActionBars
+    local B = ab and ab.BarsEngine
+    assert(B and B.Grid, "no drag grid")
+    local seen, list = {}, {}
+    for _, def in ipairs(ab.BARS) do
+        local h = ab.GetHeader(def.key)
+        if h and def.kind == nil and not ab.db.bars[def.key].showEmpty then
+            list[#list + 1] = h
+            rawset(h, "SetAttribute", function(_, k, v) if k == "pb-grid" then seen[h] = v end end)
+        end
+    end
+    local ok, err = pcall(function()
+        B.Grid(true)
+        for _, h in ipairs(list) do assert(seen[h] == true, "drag grid not on") end
+        B.Grid(false)
+        for _, h in ipairs(list) do assert(seen[h] == false, "drag grid not off") end
+    end)
+    for _, h in ipairs(list) do rawset(h, "SetAttribute", nil) end
+    assert(ok, err)
+end)
+
 -- the AFK preview closes on a mouse move or a click and has no OnUpdate (t213 #14)
 try("AFK preview exits with the mouse", function()
     local afk = ns.modules.AFK

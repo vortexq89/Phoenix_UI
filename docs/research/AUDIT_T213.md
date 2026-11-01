@@ -15,11 +15,12 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
   STAGE_H 132) scales its own holder with `holder:SetScale(fit)` and works out y from STAGE_H/fit, so the two
   scales stack on every show. Fix: reset the measured size on each show and let self-fitting previews opt out of the stage zoom.
   **Done 1 Nov:** previews can be marked `selfFit`; the stage then neither measures nor zooms them. The action bars preview is one. Harness check added.
-- [ ] **2. Action bars flicker when you drag a spell to another slot; you can't move it properly.**
+- [x] **2. Action bars flicker when you drag a spell to another slot; you can't move it properly.**
   Cause: `Phoenix_UI_ActionBars/Bars.lua:441`: every `ACTIONBAR_SLOT_CHANGED` (picking a spell up empties its slot)
   runs `RefreshBar` on every bar whose empty slots are hidden. That hides the slot under the cursor and re-lays
   the bar in the middle of the drag. Fix: while the cursor holds an action (ACTIONBAR_SHOWGRID / HIDEGRID), show the
   empty slots and skip the refresh until the drop.
+  **Done 1 Nov:** while an action is on the cursor there is no relayout. Bars that hide empty slots show them on ACTIONBAR_SHOWGRID and hide them again on HIDEGRID; only the secure layout snippet runs, so the backdrop and border are not repainted. Harness check added.
 - [ ] **3. After /reload the micro menu skin is gone (back to Blizzard defaults); the same goes for Bags.**
   Suspected: `Phoenix_UI_Skins/MicroMenu.lua:165-178` skins once and again on PLAYER_ENTERING_WORLD. After a reload,
   Blizzard repaints the micro buttons later (its micro-menu layout / update calls), so the art comes back. Bags:
