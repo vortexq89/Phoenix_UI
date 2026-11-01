@@ -4458,6 +4458,9 @@ try("global pages", function()
     local ph
     for _, g in ipairs(C.GROUPS) do if g.key == "phoenix" then ph = table.concat(g.entries, ",") end end
     assert(ph == "General,colors,fonts,textures,glows,sounds,profiles,Movers,plugins,Bugs,diagnostics,about", "Phoenix order " .. tostring(ph))
+    -- Profiles: three page tabs (specs/002 T008)
+    local pr = C:Show("profiles")
+    assert(pr.tabList and #pr.tabList == 3 and pr.tabList[3].label == ns.L.PROFILES_TAB_SHARE, "Profiles tabs")
     -- every General setting is still counted once (SC-002): 21 before the move
     assert(C:Depth("General") >= 21, "General settings lost in the move: " .. C:Depth("General"))
 end)

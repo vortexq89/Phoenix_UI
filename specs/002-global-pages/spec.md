@@ -52,11 +52,12 @@ Diagnostics, About (map §7 group 5).
 - **FR-005**: General loses its colour and text tabs and gains Looks (the old Presets page rows); the `presets`
   page is retired from the sidebar.
 - **FR-006**: Phoenix group order per US3. New page names in 10 locales.
+- **FR-008**: the Profiles page is split into three tabs: Profile, Automatic (characters, spec, place), Share.
 - **FR-007**: no saved-variable key changes; every setting applies live.
 
 Out of scope here: Skins › Appearance stays with Blizzard Skins, which step 8 rebuilds (t225: no work on code
 about to be replaced); EllesmereUI's dark mode, combat CVars and module glow templates are new features for later
-steps; the Profiles page keeps its current content (per-spec and per-place profiles already exist).
+steps. Profiles keeps its settings (per-spec and per-place profiles already exist) and gains tabs (FR-008).
 
 ## Success Criteria *(mandatory)*
 - **SC-001**: the four global pages exist and lead with their global section (harness).

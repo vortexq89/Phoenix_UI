@@ -128,7 +128,9 @@ local function clearImport()
 end
 
 local function buildSchema()
+    -- EllesmereUI-style page tabs (specs/002 T008): your profile, which one loads automatically, share
     local schema = {
+        { type = "tab", label = "PROFILES_TAB_PROFILE" },
         { type = "header", label = "ACTIVE_PROFILE", icon = "profiles" },
         { type = "select", label = "PROFILE", desc = "PROFILE_DESC", values = function() return profileValues() end,
           get = function() return DB:GetProfileName() end, set = function(_, v) DB:SetProfile(v) end },
@@ -169,9 +171,10 @@ local function buildSchema()
     }
 
     schema[#schema + 1] = { type = "button", label = "PRESETS_LINK", desc = "PRESETS_LINK_DESC", button = "PRESETS_OPEN",
-        icon = "presets", func = function() Config:Show("presets") end }
+        icon = "presets", func = function() Config:ShowLooks() end }
 
     -- which profile every character of the account loads (this one switches now, the others on their next login)
+    schema[#schema + 1] = { type = "tab", label = "PROFILES_TAB_AUTO" }
     local chars = DB:GetCharacters()
     if #chars > 1 then
         schema[#schema + 1] = { type = "header", label = "CHARACTERS", icon = "user", desc = "CHARACTERS_DESC" }
@@ -226,6 +229,7 @@ local function buildSchema()
     end
 
     local rest = {
+        { type = "tab", label = "PROFILES_TAB_SHARE" },
         { type = "header", label = "EXPORT", icon = "export" },
         { type = "custom", label = "EXPORT_MODULES", desc = "EXPORT_MODULES_DESC", fullWidth = true, height = 210,
           keywords = "share partial", build = function(row)

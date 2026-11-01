@@ -27,6 +27,9 @@ check_locales and the harness pass; then prepush, push and install.
 - [x] T006 [US3] Phoenix group order General, Colors, Fonts, Textures, Glows, Sounds, Profiles, Layout, Plugins,
   Bugs, Diagnostics, About (Groups.lua)
 
+- [x] T008 [US2] Profiles page in three header tabs, Profile / Automatic (characters, spec, place) / Share
+  (export, import); its looks button opens General › Looks (Profiles.lua, Locales)
+
 ## Phase N: Polish
 - [x] T007 Settings count and search unchanged across the move (SC-002) in the harness
 
