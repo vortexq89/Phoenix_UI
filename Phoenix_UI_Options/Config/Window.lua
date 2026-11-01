@@ -614,11 +614,6 @@ local function buildFooter(f)
     ft.status:SetPoint("LEFT", ft.statusIcon, "RIGHT", 6, 0)
     ft.status:SetWordWrap(false)
     ft.profile = ft.saved
-    ft.reload = W:Button(ft, L.RELOAD_UI, "primary", "reload")
-    ft.reload:SetHeight(24)
-    ft.reload:SetPoint("RIGHT", -30, 0)
-    ft.reload.onClick = function() C_UI.Reload() end
-    ft.reload:Hide()
     -- Window scale: applied when the drag ends, so the slider does not move away under the cursor.
     ft.scale = W:Slider(ft, MIN_SCALE, MAX_SCALE, 0.05, true)
     ft.scale:SetWidth(120)
@@ -653,9 +648,9 @@ local function buildFooter(f)
     ft.grip:SetScript("OnEnter", function(self) W.Color(self.icon, "text.primary") end)
     ft.grip:SetScript("OnLeave", function(self) W.Color(self.icon, "text.muted") end)
     function ft:Arrange()
-        local reload = self.reload:IsShown()
+        -- no "reload to apply" button: every setting applies live (specs/001 T011)
         self.scale:ClearAllPoints()
-        if reload then self.scale:SetPoint("RIGHT", self.reload, "LEFT", -16, 0) else self.scale:SetPoint("RIGHT", -30, 0) end
+        self.scale:SetPoint("RIGHT", -30, 0)
         local pp = pixelPerfect()
         self.pixel:SetText(pp and L.PIXEL_PERFECT:format(pp) or "")
     end
@@ -697,18 +692,11 @@ function Config:SetStatus(text, token, icon)
     ft.statusArt:SetShown(art and true or false)
     ft.statusIcon:SetAlpha(art and 0 or 1)
     ft.statusIcon:SetShown((text or "") ~= "")
-    if text == L.STATUS_RELOAD then
-        ft.reload:Show()
-        ft:Arrange()
-    end
 end
 
 function Config:UpdateFooter()
     local f = self.frame
     if not f then return end
-    local reload = false
-    for _, m in ipairs(ns.moduleList) do if m.needsReload then reload = true end end
-    f.footer.reload:SetShown(reload)
     f.footer:Arrange()
     f.header.profile:SetValue(ns.DB:GetProfileName())
     if InCombatLockdown() then self:SetStatus(L.STATUS_COMBAT, "state.warning", "lock") else self:SetStatus(L.STATUS_LIVE) end

@@ -73,6 +73,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Footer without \"reload to apply\" (1 Nov, specs/001 T011) — the footer keeps the profile, Layout mode, Test frames and…",
         "Page tabs in the header (1 Nov, specs/001 T010) — a page's sub-pages are now tabs along the bottom of its header (a 4…",
         "Sidebar in EllesmereUI's order (1 Nov, specs/001 T009) — the settings sidebar now has five groups, Home, Core (bars,…",
         "Settings window in EllesmereUI proportions (1 Nov, specs/001 T008) — the window opens at 1300 × 946 (scaled down to f…",

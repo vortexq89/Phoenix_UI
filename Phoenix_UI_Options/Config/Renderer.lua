@@ -76,7 +76,6 @@ local function setValue(page, m, item, value, key)
         m.needsReload = true
         m.reloadKeys = m.reloadKeys or {}
         m.reloadKeys[item] = true
-        Config:SetStatus(L.STATUS_RELOAD, "state.warning")
         -- the row's badge turns into a "Reload needed" button: one click reloads
         for _, r in ipairs(page.rows or {}) do
             if r.item == item and r.ArmReload then r:ArmReload() end
@@ -187,7 +186,6 @@ function rowTip(page, m, item, withDesc)
         if d then lines[#lines + 1] = L.TIP_DEFAULT:format(d) end
     end
     if resettable(page, m, item) then lines[#lines + 1] = L.TIP_RESET end
-    if item.reload then lines[#lines + 1] = L.TIP_RELOAD end
     if item.combat then lines[#lines + 1] = L.TIP_COMBAT end
     return #lines > 0 and table.concat(lines, "\n") or nil
 end

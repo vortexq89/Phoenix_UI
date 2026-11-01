@@ -31,7 +31,7 @@ check_locales, the harness, then prepush, push and install.
   padding 45 (Window.lua)
 - [x] T009 [US2] Sidebar groups Core / QoL / UI Reskin / Phoenix per map §7, nav row states (Groups.lua, Window.lua)
 - [x] T010 [US2] Module pages as header tabs, last tab remembered (Window.lua, Renderer.lua)
-- [ ] T011 [US2] Footer: profile, Layout, Test frames, window-scale slider; remove every "reload to apply" text and
+- [x] T011 [US2] Footer: profile, Layout, Test frames, window-scale slider; remove every "reload to apply" text and
   its locale keys (Window.lua, Locales/*)
 - [ ] T012 [US2] Section headers (white 0.41 caps) and rows 50 high, two-up 350 + 42 + 350, three-up 180 / 50,
   shading 0.1 / 0.2 (Section.lua, Renderer.lua)

@@ -3636,6 +3636,9 @@ try("settings quality pass", function()
     assert(ns.Config.DEFAULT_W == 1300 and ns.Config.DEFAULT_H == 946, "EllesmereUI base size (T008)")
     local C = ns.Config
     local f = C:Build()
+    local ft = f.footer
+    assert(ft.profileDD and ft.layout and ft.test and ft.scale and ft.reload == nil,
+        "footer: profile, Layout, Test frames and window scale, no reload button (T011)")
     local w, h = f:GetSize()
     assert(w >= C.MIN_W and h >= C.MIN_H, "window under its minimum size " .. tostring(w) .. "x" .. tostring(h))
     assert(type(ns.Skin.Reapply) == "function" and type(C.SnapPosition) == "function", "pixel helpers")
