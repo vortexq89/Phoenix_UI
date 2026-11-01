@@ -46,10 +46,11 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
 - [ ] **16. Diagnostics shows weird icons; fix them.**
   To audit while fixing: the Diagnostics page's glyph names against `ns.Icons` (a missing glyph shows the fallback
   square). Files: Phoenix_UI_Options (About / Diagnostics section), UI icon atlas.
-- [ ] **22. The GUI window can only be dragged by the logo in the top-left; make the whole title bar and top border draggable (and remember its position).**
+- [x] **22. The GUI window can only be dragged by the logo in the top-left; make the whole title bar and top border draggable (and remember its position).**
   Cause: `Phoenix_UI_Options/Config/Window.lua:150-157`: the drag handle `h` is only `RAIL_W x HEAD_H` (the rail head
   with the logo). The rest of the top bar has no drag (the footer handle is at 602-603). Fix: one drag strip across
   the full width and top border, below the close and search buttons, saving through the existing `savePosition`.
+  **Done 1 Nov:** the window now moves from the rail head, a strip along the whole top border, and every page header (title band). The position is saved as before. Harness check added.
 - [ ] **23. Many settings and frame positions reset to defaults after /reload. Find every SavedVariables persistence bug.**
   To audit: every `## SavedVariables` / `SavedVariablesPerCharacter` in the .toc files against the tables each
   module writes, defaults merged over saved tables (overwriting instead of filling in), movers `set` writing to a

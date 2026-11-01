@@ -41,7 +41,7 @@ Before the end-to-end test. Each point is written out word for word, with its ca
 [research/AUDIT_T213.md](research/AUDIT_T213.md), which is the checklist for this list. Order: broken behaviour
 (1, 2, 3, 4, 12, 14, 15, 16, 22, 23, 10, 6, 19), then settings consolidation (5, 8, 9, 18, 11, 20), then the GUI
 rework (7, 13, 17, 21, 24, 25). Item 25 (t214): a new theme and GUI style from figma bro after the user approves
-it; the structure comes first and the styling stays token-driven. t215 (5:31 AM) replaces item 25: one theme that copies the EllesmereUI look exactly (window, tabs, sections, widgets, colours, borders, unit frames) from the read-only reference in I:\, written as Phoenix's own code; the extra theme systems are merged with a safe migration; the only Phoenix-specific option is a phoenix portrait border on the Player and Target frames. The mapping is in AUDIT_T213.md. Status: audit done 1 Nov; done: 1 (action bars preview). Portrait border (square only, off by default) waits for the user's approval of the code.
+it; the structure comes first and the styling stays token-driven. t215 (5:31 AM) replaces item 25: one theme that copies the EllesmereUI look exactly (window, tabs, sections, widgets, colours, borders, unit frames) from the read-only reference in I:\, written as Phoenix's own code; the extra theme systems are merged with a safe migration; the only Phoenix-specific option is a phoenix portrait border on the Player and Target frames. The mapping is in AUDIT_T213.md. Status: audit done 1 Nov; done: 1 (action bars preview), 22 (window drag). Portrait border (square only, off by default) waits for the user's approval of the code.
 
 ## Order of work
 

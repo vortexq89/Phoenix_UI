@@ -70,6 +70,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Settings window moves from its top (1 Nov) — you can now drag the window by its whole top border and by the page titl…",
         "Action bars preview no longer shrinks (1 Nov) — opening the Action bars tab again kept making the live preview smaller",
         "Screen review fixes (1 Nov) — the bug counter says \"1 bug\" for one, the game menu's NEW label no longer covers the Op…",
         "Live errors (1 Nov) — the quest progress sounds and the Phoenix quest log no longer error in zones with many quests (…",

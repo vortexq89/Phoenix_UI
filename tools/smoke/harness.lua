@@ -8910,6 +8910,9 @@ try("live bugs: game menu sort, PUI_ event bus, keystones, spell history font, p
     -- 6) Action bars preview fits itself: the stage must not measure and zoom it again (t213 #1, shrank per visit)
     local abDef = ns.Previews.kinds and ns.Previews.kinds.actionbar
     assert(not abDef or abDef.selfFit, "action bars preview must be selfFit")
+    -- 7) the settings window moves from its top border, not only the logo (t213 #22)
+    ns.Config:Show("home")
+    assert(ns.Config.frame and ns.Config.frame.topDrag, "settings window has no top-border drag strip")
     print("  live bugs: game menu, PUI bus, keystones, spell history font, preview scale all hold")
 end)
 

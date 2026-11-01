@@ -757,6 +757,7 @@ local function buildPageHeader(page, m, schema)
     local h = CreateFrame("Frame", nil, page)
     h:SetHeight(HEADER_H)
     h:SetFrameLevel(page:GetFrameLevel() + 20)
+    if Config.DragHandle then Config.DragHandle(h) end -- the page header moves the window (t213 #22)
     h.bg = W.Texture(h, "BACKGROUND", 0)
     h.bg:SetAllPoints()
     -- a faint accent wash from the module tile, so the header reads as the page's banner

@@ -51,6 +51,20 @@ local function savePosition(f)
     s.point, s.rel, s.x, s.y = point, rel, x, y
     s.w, s.h = f:GetSize()
 end
+-- the window moves from its whole top edge: the rail head, a strip along the top border and every page header (t213 #22)
+function Config:StartDrag() if self.frame then self.frame:StartMoving() end end
+function Config:StopDrag()
+    if not self.frame then return end
+    self.frame:StopMovingOrSizing()
+    savePosition(self.frame)
+end
+local function dragHandle(frame)
+    frame:EnableMouse(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart", function() Config:StartDrag() end)
+    frame:SetScript("OnDragStop", function() Config:StopDrag() end)
+end
+Config.DragHandle = dragHandle
 
 -- The window scale is relative to a readable base: with a very small UI scale (0.53 on a 1440p screen)
 -- the window is scaled up so its text is as large as at Blizzard's default UI scale (about 0.71).
@@ -155,6 +169,12 @@ local function buildTopBar(f)
     h:SetScript("OnDragStart", function() f:StartMoving() end)
     h:SetScript("OnDragStop", function() f:StopMovingOrSizing(); savePosition(f) end)
     f.header = h
+    -- the top border, right of the rail head up to the close button
+    local top = CreateFrame("Frame", nil, f)
+    top:SetPoint("TOPLEFT", RAIL_W, 0); top:SetPoint("TOPRIGHT", -48, 0); top:SetHeight(10)
+    top:SetFrameLevel(f:GetFrameLevel() + 55)
+    dragHandle(top)
+    f.topDrag = top
 
     h.emblem = h:CreateTexture(nil, "ARTWORK")
     h.emblem:SetSize(26, 26)

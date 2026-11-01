@@ -73,6 +73,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Settings window moves from its top** (1 Nov): you can now drag the window by its whole top border and by the page title band, not only by the logo; it stays where you leave it.
 - **Action bars preview no longer shrinks** (1 Nov): opening the Action bars tab again kept making the live preview smaller; the bars now fit the preview once and stay that size.
 - **Screen review fixes** (1 Nov): the bug counter says "1 bug" for one, the game menu's NEW label no longer covers the Options text, and the tooltip frame art no longer covers the tooltip's first line.
 - **Live errors** (1 Nov): the quest progress sounds and the Phoenix quest log no longer error in zones with many quests ("base out of range", the quest count's second value was read as a number base), and changing a Skins setting no longer errors on a window piece this game build does not have (Skin restore).
