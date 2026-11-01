@@ -22,15 +22,16 @@ ns.Config = Config
 Config.loaded = true
 Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
-local TOP_H, RAIL_W, LIST_W, FOOTER_H = 0, 236, 0, 32
-local HEAD_H = 96 -- the rail head: brand and search
+local TOP_H, RAIL_W, LIST_W, FOOTER_H = 0, 295, 0, 82 -- EllesmereUI proportions (specs/001 T008)
+local HEAD_H = 138 -- the rail head: brand and search
 local NAV_ROW, NAV_HEAD, NAV_GROUP, NAV_SUB, NAV_LINE = 28, 22, 34, 24, 16
 local DOCK_MIN, DOCK_MAX = 380, 460
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
-local DEFAULT_W, DEFAULT_H = 1400, 860
+local DEFAULT_W, DEFAULT_H = 1300, 946
 local MIN_W, MIN_H = 1100, 700
 local SCREEN_W, SCREEN_H = 0.8, 0.85 -- the window never covers more of the screen than this
 Config.RAIL_W, Config.MIN_W, Config.MIN_H = RAIL_W, MIN_W, MIN_H
+Config.HEAD_H, Config.FOOTER_H, Config.DEFAULT_W, Config.DEFAULT_H = HEAD_H, FOOTER_H, DEFAULT_W, DEFAULT_H
 
 -- info = { label = L key, icon = name, object = module-like page table, schema = table or function } names the
 -- page in the list and lets search index its rows.

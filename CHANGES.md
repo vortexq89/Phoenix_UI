@@ -76,6 +76,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Settings window in EllesmereUI proportions** (1 Nov, specs/001 T008): the window opens at 1300 × 946 (scaled down to fit smaller screens), with a 295 wide sidebar, a 138 high brand and search head, an 82 high footer and 45 of padding around the page content.
 - **Colour swatches, segmented choices and tabs in the EllesmereUI look** (1 Nov, specs/001 T007):
   - Colour swatches fill their box inside a thin white border.
   - Segmented choices show the picked one in flat accent and the rest in button grey.

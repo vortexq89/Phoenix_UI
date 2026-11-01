@@ -3630,7 +3630,9 @@ try("settings quality pass", function()
         for _, label in ipairs(tabs) do if tostring(label):find("_LOOK$") then problems[#problems + 1] = key .. ": " .. label end end
     end
     assert(#problems == 0, table.concat(problems, "; "))
-    -- v4 Flow window: resizable with a floor, the size it was given (1400 x 860 at first), scale changes re-measure borders
+    -- v4 Flow window: resizable with a floor, the size it was given (1300 x 946 at first), scale changes re-measure borders
+    assert(ns.Config.RAIL_W == 295 and ns.Config.HEAD_H == 138 and ns.Config.FOOTER_H == 82, "EllesmereUI proportions (T008)")
+    assert(ns.Config.DEFAULT_W == 1300 and ns.Config.DEFAULT_H == 946, "EllesmereUI base size (T008)")
     local C = ns.Config
     local f = C:Build()
     local w, h = f:GetSize()

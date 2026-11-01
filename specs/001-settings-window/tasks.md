@@ -27,7 +27,7 @@ check_locales, the harness, then prepush, push and install.
 - [x] T007 [P] [US1] Colour swatch 1 px border and Segmented / Tabs flat style (ColorSwatch.lua, Controls.lua)
 
 ## Phase 4: User Story 2 - Window layout (P2)
-- [ ] T008 [US2] Window proportions: base 1300 × 946 (fit to screen), sidebar 295, header 138, tab bar 40, footer 82,
+- [x] T008 [US2] Window proportions: base 1300 × 946 (fit to screen), sidebar 295, header 138, tab bar 40, footer 82,
   padding 45 (Window.lua)
 - [ ] T009 [US2] Sidebar groups Core / QoL / UI Reskin / Phoenix per map §7, nav row states (Groups.lua, Window.lua)
 - [ ] T010 [US2] Module pages as header tabs, last tab remembered (Window.lua, Renderer.lua)

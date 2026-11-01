@@ -24,7 +24,7 @@ local U = ns.Util
     by width (each goes into the shortest column, so there are no gaps); every card folds to its header, and a
     folded card shows summary chips of its current values. Inside a card, rows keep one line: label left,
     control right; rows without a description pair up two per line only in a card wide enough for it. ]]
-local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT, THREE_COLUMNS_AT = 20, 12, 32, 48, 640, 980
+local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT, THREE_COLUMNS_AT = 45, 12, 32, 48, 640, 980
 Config.CARD_GAP_MAX = CARD_GAP + 8 -- the page-spacing smoke test: more than this between two cards is an empty band
 local CELL_H, TOGGLE_CELL_H, PAIR_AT, HEADER_H = 60, 34, 560, 78
 local CARD_HEAD, CHIP_MAX = 36, 5
