@@ -4193,6 +4193,12 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- the bug viewer's Upload says what happens (t213 #15)
+try("bug upload says what happens", function()
+    local L = ns.L
+    assert(L.BUGS_UPLOAD_OFF and L.BUGS_UPLOAD_QUEUED and L.BUGS_UPLOAD_QUEUED:format(2):find("2"), "upload texts missing")
+end)
+
 -- boxes, dialogs and groups get a code border even when they ask for a picture frame (t213 #4); no tooltip art (#12)
 try("code borders on every panel", function()
     local f = CreateFrame("Frame")

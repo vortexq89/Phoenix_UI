@@ -71,6 +71,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Bug upload explains itself (1 Nov) — Upload in the Bugs window now tells you whether sending is on, how many reports…",
         "Borders drawn in code (1 Nov) — every box, dialog and group in the settings window now has a clean 1 px border in the…",
         "Micro menu and bag bar keep their skin after /reload (1 Nov) — Phoenix now skins them again after the game lays them…",
         "Moving spells on the action bars (1 Nov) — dragging a spell to another slot no longer makes the bars flicker, and bar…",

@@ -339,6 +339,8 @@ ns.RegisterLocale("enUS", {
     BUGS_CLEAR = "Clear",
     BUGS_CLEARED = "All bug reports cleared.",
     BUGS_UPLOAD = "Upload",
+    BUGS_UPLOAD_OFF = "Sending is off: switch on \"Send error reports to the author\" on this page, then /reload.",
+    BUGS_UPLOAD_QUEUED = "%d report(s) ready. They are saved when you /reload or log out; the Phoenix Uploader app then sends them and shows \"sent\" or the error in its window. Without the app nothing is sent.",
     BUGS_DROPPED = "%d repeats skipped by flood protection.",
     BUGS_OPEN = "Open",
     BUGS_NOTICE = "New %s in %s. %s",

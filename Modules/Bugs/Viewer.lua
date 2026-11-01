@@ -341,7 +341,18 @@ local function footer(f)
     end
     b.upload = W:Button(b, L.BUGS_UPLOAD, "ghost", "upload", 120)
     b.upload:SetPoint("RIGHT", b.copy, "LEFT", -8, 0)
-    b.upload.onClick = function() f:Hide(); ns.Config:Show(M.key) end
+    -- say what happens: sending off (and where to switch it on), or how many reports wait for the uploader (t213 #15)
+    b.upload.onClick = function()
+        if not Errors:GetShare() then
+            f:Hide()
+            ns.Config:Show(M.key)
+            ns:Print(L.BUGS_UPLOAD_OFF)
+            return
+        end
+        local text = L.BUGS_UPLOAD_QUEUED:format(#Errors:GetReports())
+        b.status:SetText(text)
+        ns:Print(text)
+    end
     Skin:Register(b, function(self)
         Skin:Text(self.position, "number", "text.secondary")
         Skin:Text(self.status, "small", "text.muted")

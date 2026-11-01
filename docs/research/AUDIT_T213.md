@@ -42,12 +42,13 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
   `OnUpdate` (line 78) for the clock and spin, which breaks the Ticker rule. Fix: OnMouseDown closes it, cursor moves
   are checked from the Ticker registry while it is shown, and the OnUpdate moves to the Ticker.
   **Done 1 Nov:** a click closes the AFK screen; the preview also closes on any mouse move. Spin, clock and the mouse watch run on a C_Timer ticker that stops when the screen hides (the OnUpdate is gone). Harness check added.
-- [ ] **15. Bug upload: show clearly whether it was sent (success or failure) and tell the user what happens or what to do.**
+- [x] **15. Bug upload: show clearly whether it was sent (success or failure) and tell the user what happens or what to do.**
   Cause: `Modules/Bugs/Viewer.lua:342-344`: "Upload" only opens the Bugs settings page. The sending is done outside
   the game by PhoenixUploader reading `PhoenixUIBugsDB` (Modules/Bugs/Bugs.lua:54), so the game never learns the result.
   Fix: a status line per report (Waiting: sent after /reload or logout, Sent at time, Failed with the reason and
   the next step). It reads an answer the uploader writes back into PhoenixUIBugsDB. That needs a small uploader
   change, website untouched apart from `worker/phoenix/*`.
+  **Done 1 Nov (in game):** Upload now says what happens. If sending is off, it opens the Bugs settings and says where to switch it on. If sending is on, it says how many reports are ready, that they are saved on /reload or logout, and that the Phoenix Uploader app sends them and shows sent or the error. Without the app nothing is sent. The text is in all 10 locales. **Follow-up:** an in-game sent / failed line per report needs the uploader to write its result back, which means a new uploader release.
 - [ ] **16. Diagnostics shows weird icons; fix them.**
   To audit while fixing: the Diagnostics page's glyph names against `ns.Icons` (a missing glyph shows the fallback
   square). Files: Phoenix_UI_Options (About / Diagnostics section), UI icon atlas.
