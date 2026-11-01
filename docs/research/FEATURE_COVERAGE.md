@@ -8,6 +8,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 > **Corrected 2026-10-29 (feature audit, `FEATURE_AUDIT_2026-10-29.md`).** This file was first written against an older multi-addon layout (`Phoenix_UI_HUD`, `Phoenix_UI_Sentinel`, `Core/Kernel.lua` ...) that is not on `restore/v1-ui`. Rows whose paths or status were wrong now point at this branch. Setting keys written like `vault.*`, `tt.*`, `mm.*`, `gf.*` are names from that layout; the real keys are in `Phoenix_UI_Options/Options/<Module>.lua`. Status changes: click casting, kick tracker, raid markers -> missing; damage meter windows, conditional overrides, BossBlock, gold ledger, HUD movers, Tust extras, cursor/QoL -> partial.
 
+> **User priority t213 (1 Nov 2026):** the user's 24-point list (+ item 25) is tracked in [AUDIT_T213.md](AUDIT_T213.md). It is a fix and rework list, not new coverage rows.
+
 ## Summary
 
 | Class | Features |

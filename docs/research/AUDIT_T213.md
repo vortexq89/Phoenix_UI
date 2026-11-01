@@ -1,0 +1,96 @@
+# Audit T213: the user's 24 points (+ item 25, t214)
+
+Requested 1 Nov 2026, 5:25 AM (UTC+3). Item 25 added 5:26 AM. This is the only tracker for this list. It is
+linked from [FEATURE_COVERAGE.md](FEATURE_COVERAGE.md) and summarised in [../ROADMAP.md](../ROADMAP.md).
+Order of work: crashes and broken behaviour first, then settings consolidation, then the GUI rework.
+Each fix lands in its own commit (CHANGES.md + Core/Changelog.lua) and ticks its box here.
+
+Legend: **Cause** = root cause found in the code; **Suspected** = most likely cause, to confirm while fixing.
+
+## A. Broken behaviour (first)
+
+- [ ] **1. Action bars tab: the Live Preview gets smaller every time you click the tab.**
+  Cause: `Phoenix_UI_Options/Previews/Previews.lua`: `stage:Fit` / `measure()` only ever grows `designWidth` /
+  `needHeight` and re-lays the page. On top of that, `Previews/ActionBars.lua` (lines ~171-201, STAGE_W 440 /
+  STAGE_H 132) scales its own holder with `holder:SetScale(fit)` and works out y from STAGE_H/fit, so the two
+  scales stack on every show. Fix: reset the measured size on each show and let self-fitting previews opt out of the stage zoom.
+- [ ] **2. Action bars flicker when you drag a spell to another slot; you can't move it properly.**
+  Cause: `Phoenix_UI_ActionBars/Bars.lua:441`: every `ACTIONBAR_SLOT_CHANGED` (picking a spell up empties its slot)
+  runs `RefreshBar` on every bar whose empty slots are hidden. That hides the slot under the cursor and re-lays
+  the bar in the middle of the drag. Fix: while the cursor holds an action (ACTIONBAR_SHOWGRID / HIDEGRID), show the
+  empty slots and skip the refresh until the drop.
+- [ ] **3. After /reload the micro menu skin is gone (back to Blizzard defaults); the same goes for Bags.**
+  Suspected: `Phoenix_UI_Skins/MicroMenu.lua:165-178` skins once and again on PLAYER_ENTERING_WORLD. After a reload,
+  Blizzard repaints the micro buttons later (its micro-menu layout / update calls), so the art comes back. Bags:
+  `Phoenix_UI_Bags/Chrome.lua` has the same timing problem. Fix: re-apply from a hook on Blizzard's own update and
+  layout functions (a post-hook, original code), not from a one-off event.
+- [ ] **4. Borders around every box, dialog and group: drop the border-image theme and draw them in code with colour, with better borders whose corners expand properly. Border colour doesn't change when you change the colour.**
+  Cause: frames are framed with `UI/ArtKit.lua` `A:Dress(..., {slot=..., out=...})` image pieces. Their colour is baked
+  into the texture and not repainted from the theme's border token when it changes. Fix: one code-drawn border
+  (edges plus corner pieces that grow with the size), coloured by the `border` token and repainted on theme change.
+- [ ] **12. Tooltip: the theme/border art sits inside the tooltip instead of at the edge.**
+  Cause: `UI/ArtKit.lua:501` `A:DressTooltip` (`out = 6`, scale 0.35). The art's inner padding is larger than `out`,
+  so the visible frame line lands inside. This goes away with the code-drawn border (item 4) anchored on the tooltip edge.
+- [ ] **14. AFK preview button: you can't exit it with the mouse, only with a key. Make any mouse move or click exit it.**
+  Cause: `Phoenix_UI_AFK/AFK.lua`: the screen `EnableMouse(true)` takes the mouse but has no mouse handler. It only
+  closes on PLAYER_FLAGS_CHANGED (a key press clears AFK), and a preview never was AFK. The file also uses an
+  `OnUpdate` (line 78) for the clock and spin, which breaks the Ticker rule. Fix: OnMouseDown closes it, cursor moves
+  are checked from the Ticker registry while it is shown, and the OnUpdate moves to the Ticker.
+- [ ] **15. Bug upload: show clearly whether it was sent (success or failure) and tell the user what happens or what to do.**
+  Cause: `Modules/Bugs/Viewer.lua:342-344`: "Upload" only opens the Bugs settings page. The sending is done outside
+  the game by PhoenixUploader reading `PhoenixUIBugsDB` (Modules/Bugs/Bugs.lua:54), so the game never learns the result.
+  Fix: a status line per report (Waiting: sent after /reload or logout, Sent at time, Failed with the reason and
+  the next step). It reads an answer the uploader writes back into PhoenixUIBugsDB. That needs a small uploader
+  change, website untouched apart from `worker/phoenix/*`.
+- [ ] **16. Diagnostics shows weird icons; fix them.**
+  To audit while fixing: the Diagnostics page's glyph names against `ns.Icons` (a missing glyph shows the fallback
+  square). Files: Phoenix_UI_Options (About / Diagnostics section), UI icon atlas.
+- [ ] **22. The GUI window can only be dragged by the logo in the top-left; make the whole title bar and top border draggable (and remember its position).**
+  Cause: `Phoenix_UI_Options/Config/Window.lua:150-157`: the drag handle `h` is only `RAIL_W x HEAD_H` (the rail head
+  with the logo). The rest of the top bar has no drag (the footer handle is at 602-603). Fix: one drag strip across
+  the full width and top border, below the close and search buttons, saving through the existing `savePosition`.
+- [ ] **23. Many settings and frame positions reset to defaults after /reload. Find every SavedVariables persistence bug.**
+  To audit: every `## SavedVariables` / `SavedVariablesPerCharacter` in the .toc files against the tables each
+  module writes, defaults merged over saved tables (overwriting instead of filling in), movers `set` writing to a
+  copy, and Forever .toc lines that differ from retail. Add a harness check that saves, reloads and compares.
+- [ ] **10. Talent frame borders are wrong.** Files: `Phoenix_UI_Skins/Talents.lua`. Same border system as item 4.
+- [ ] **6. Character panel is a mess: Reputation is mixed up and overlapping. Fix and polish it.**
+  Files: `Phoenix_UI_Skins/CharacterWindow.lua`, `CharacterLists.lua`, `Character.lua`. Suspected: the reputation
+  list is laid out over the character tab's own area (two owners of the same space).
+- [ ] **19. Group/raid frames: too hard; one change can push the frames entirely off screen. Need simple horizontal/vertical, width, height, spacing between members and between groups, and group numbers above each group; clamp to the screen.**
+  Files: Phoenix_UI_GroupFrames, `Phoenix_UI_Options/Options/GroupFrames.lua`. Missing: clamp to the screen
+  (SetClampedToScreen plus clamping the mover), a single orientation option, group labels.
+
+## B. Settings consolidation (second)
+
+- [ ] **5. Too many overlapping theme/colour systems: Accent, Interface>Skins, Phoenix>Presets, Interface>Skin>Appearance, Phoenix>General, Phoenix>Textures and more. Consolidate into ONE organised system with no duplicates and no conflicting settings.**
+  Files: Options/General.lua, Options/Skins.lua, the presets / textures pages, Core theme tokens. Plan: one
+  "Appearance" page (preset, accent, colours, textures, borders, fonts) that owns every token; the other pages link to it.
+- [ ] **8. MoveAny: keep only two features: (a) move ANY unmovable Blizzard frame (auction house, character panel, achievements, warband collections, group finder and all the rest), (b) Shift + mouse wheel over a frame changes its scale. Remove or merge the other MoveAny extras so nothing duplicates Layout mode.**
+  Files: `Phoenix_UI_Skins/Move.lua`, Modules/Movers, Options/Movers.lua.
+- [ ] **9. Phoenix Layout/Edit mode: per-frame background transparency while editing. Ctrl+right-click resets a frame's position; plain right-click opens a quick menu (size, scale, position, transparency and every related option), not just the small cog. Reconcile Blizzard Edit Mode and Phoenix Layout so each frame is controlled in one place.**
+  Files: Modules/Movers (mover overlay, cog menu), `Config/Window.lua` `layoutMode`, ns.EditMode.
+  *(The middle of this point was cut short in the relayed text; the wording here is rebuilt from the plan summary.)*
+- [ ] **18. Interface > Data bar: many overlapping and conflicting PANELS settings; the background doesn't cover everything when all options are added.**
+  Files: Phoenix_UI_DataTexts and Options/DataTexts.lua. Suspected: the panel background has a fixed size, not
+  sized from its slots.
+- [ ] **11. Damage meter: let the user add multiple meter windows (damage, healing, dispels, etc.).**
+  Files: Phoenix_UI_DamageMeter (Group.lua shows the extra-window pattern), Options/DamageMeter.lua.
+- [ ] **20. Chat needs corrections and improvements.** Files: Phoenix_UI_Chat, Options/Chat.lua. Includes the open
+  in-game checks: the grey strip over the top edge of the chat panel and the white outline around General.
+
+## C. GUI rework (last; structure first, styling token-driven)
+
+- [ ] **7. GUI tabs need a better list style; some tabs are in the wrong groups; many tabs are missing icons (give every tab one).**
+  Files: `Config/Window.lua` (rail), page registration in Options/*.lua.
+- [ ] **13. Live Previews: fix every one to show exactly the real result; remove previews from settings that don't need one.**
+  Files: Phoenix_UI_Options/Previews/*. It shares the stage fix from item 1.
+- [ ] **17. About page needs correction and improvement.** Files: Options About page.
+- [ ] **21. Unit frames: many issues, including in the live preview; unclear how to lock them; the GUI covers half the screen.**
+  Files: Phoenix_UI_UnitFrames, Options/UnitFrames.lua, Previews. Lock: one clear Lock / Unlock in the page header.
+  Covering: the window size and scale (`Config/Window.lua` lines 78/101).
+- [ ] **24. Overall: rework the GUI (settings, tabs, sections, dialogs, lists, live preview) to be organised, simple and professional, with fast, easy options.**
+- [ ] **25 (t214). The GUI rework also includes a NEW theme and GUI style: design, colours and icons.** The visual
+  design comes from figma bro after the user approves it. Until then: the structural rework only (organisation,
+  tabs, sections, consolidation, persistence), with every colour, size and icon read from theme tokens so the new
+  design can be dropped in.

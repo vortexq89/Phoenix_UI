@@ -13,6 +13,9 @@ are the work queue, and each row is re-rated once its system has been through a 
 
 Legend: A = ahead, E = equal, B = behind, — = EllesmereUI has no equivalent, ✗ = Phoenix has no equivalent.
 
+
+> 1 Nov 2026: GUI and settings consolidation work now follows [AUDIT_T213.md](AUDIT_T213.md) (items 5, 7, 9, 24, 25).
+
 ## 1. Modules
 | system | EllesmereUI (options labels) | Phoenix (keys) | status | notes / gap to close |
 |---|---|---|---|---|
