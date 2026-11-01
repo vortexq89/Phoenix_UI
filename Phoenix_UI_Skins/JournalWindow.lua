@@ -257,8 +257,11 @@ local ej = M.Replacement({ key = "ownJournal", frame = "EncounterJournal", title
     close = function() local f = _G.EncounterJournal; if f then HideUIPanel(f) end end })
 M.JournalReplacement = ej
 
+-- Encounters > Dungeon journal: the window on its own (NaowhForever's Forever dungeon journal).
+function M:OpenJournal() ej:OpenStandalone() end
+
 function M:SetupJournalWindow()
-    if not M.ReplacementHook(ej) then return end
+    M.ReplacementHook(ej) -- no Blizzard guide (WoW Forever): the window still opens on its own
     local events = { "EJ_LOOT_DATA_RECIEVED", "EJ_DIFFICULTY_UPDATE" }
     if _G.C_PerksActivities then
         events[#events + 1] = "PERKS_ACTIVITIES_TRACKED_UPDATED"

@@ -6338,6 +6338,16 @@ try("group item levels window (NaowhForever group inspect)", function()
     M.db.group.enabled = was; M:UpdateGroup()
 end)
 
+try("dungeon journal opens on its own (NaowhForever Forever journal)", function()
+    local S = ns.modules.Skins
+    if not (S and S.OpenJournal) then return end
+    S:OpenJournal()
+    local ej = S.JournalReplacement
+    assert(ej.standalone and ej.Open(), "standalone open")
+    if ej.win then ej.win.close.onClick() else ej.standalone = false end
+    assert(not ej.standalone, "close ends it")
+end)
+
 try("turn Phoenix off (EllesmereUI uninstall)", function()
     local C = ns.Config
     local hadA, hadUI = rawget(env, "C_AddOns"), rawget(env, "C_UI")

@@ -12,8 +12,8 @@ Installed only in one place: game folder only - BetterWardrobe, MountsJournal, M
 
 | Class | Features |
 |---|---|
-| Phoenix has | 130 |
-| partial | 1 |
+| Phoenix has | 131 |
+| partial | 0 |
 | missing | 2 |
 | out of scope | 10 |
 
@@ -193,7 +193,7 @@ Overlaps found:
 | WindTools | Smart Tab, Event Tracker, CVar editor, merchant extra pages | Phoenix has | CVar editor built 2026-10-31 (Automation > CVar editor, `Phoenix_UI_Automation/CVarEditor.lua`). Event tracker built (Data Texts > Events). Merchant extra pages built 2026-11-01 in Phoenix's own vendor window (Skins > Wide vendor window, four columns, `M.MerchantCols`; Blizzard's slots are not moved). Smart Tab stays declined (writing the chat edit box's chat type taints secure slash commands). |
 | WindTools | Combat alert banner and sound, announcements set, sound mute list by ID, world map scale | Phoenix has | Re-checked 2026-10-31: combat alert (Quality `combatAlert`), sound mute by file ID (General `GEN_MUTE`, General.lua:89), world map scale (Minimap `worldMapScale`); announcements built 2026-10-31 (Automation > Announcements: new key, instance reset, thanks; Announce.lua). |
 | NaowhForever | Training planner, profession recipes incl. unlearned, gear swap bar, paladin blessings | missing | Forever-first ideas (docs/research/naowhforever.md); data from the wowf DB2 build. |
-| NaowhForever | Forever dungeon journal, group inspect window, threat meter window | partial | Threat meter window exists (Damage Meter > Threat, `Threat.lua`). Group inspect window built 2026-11-01 (Damage Meter > Group item levels, `Group.lua`, from the meter's inspect queue). Still missing: a Forever dungeon journal window (boss abilities live in Encounters options). |
+| NaowhForever | Forever dungeon journal, group inspect window, threat meter window | Phoenix has | Threat meter window exists (Damage Meter > Threat, `Threat.lua`). Group inspect window built 2026-11-01 (Damage Meter > Group item levels, `Group.lua`, from the meter's inspect queue). Forever dungeon journal built 2026-11-01: Phoenix's journal window opens on its own (Encounters > Dungeon journal, `r:OpenStandalone`), as Forever has no Adventure Guide frame. |
 | idTip | IDs on every tooltip kind | Phoenix has | Tooltip > ids and idKinds (`Phoenix_UI_Options/Options/Tooltip.lua:93`, `Modules/Tooltip/Tooltip.lua`). |
 | sArena_Reloaded | Arena frames with layouts | Phoenix has | Arena units in `Modules/UnitFrames/Arena.lua` (trinket, spec, racial, DR) and PvP extras in `Modules/PvP/PvP.lua` (shadowsight, safe queue). |
 | sArena_Reloaded | DR tracking in Midnight | Phoenix has | `Modules/UnitFrames/Arena.lua` turns on the game's enemy DR tracking (`spellDiminishPVPEnemiesEnabled`) and re-parents its DR trays into Phoenix arena frames. |
