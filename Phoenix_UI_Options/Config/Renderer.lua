@@ -1235,7 +1235,14 @@ local function lineLook(r, first, n)
         r.sep:SetPoint("TOPLEFT", 16, 0); r.sep:SetPoint("TOPRIGHT", -16, 0)
     end
     r.sep:SetShown(not first)
-    if r.hl then W.Color(r.hl, "bg.hover", n % 2 == 1 and 0.22 or 0) end
+    -- EllesmereUI row bands (specs/001 T012): lines alternate black 0.1 / 0.2 under the controls
+    if not r.band then
+        r.band = W.Texture(r, "BACKGROUND", 1)
+        r.band:SetAllPoints()
+    end
+    local R = W.EUI.row
+    r.bandA = n % 2 == 1 and R.evenA or R.oddA
+    r.band:SetVertexColor(0, 0, 0, r.bandA)
     r.zebra = n % 2 == 1
 end
 
@@ -1251,8 +1258,10 @@ local function hiddenIn(c, row) return row.hiddenState or c.collapsed end
 -- Rows of one card, laid out: paired rows two per line when the card is wide enough. Returns the height.
 local function layoutRows(c, width)
     local cy = c.hasHeader and CARD_HEAD or 6
-    local pair = width >= PAIR_AT
-    local cellW = math.floor((width - 2) / 2)
+    -- EllesmereUI two-up lines (specs/001 T012): two 350 wide halves 42 apart, every line at least 50 high
+    local R = W.EUI.row
+    local pair = width >= math.max(PAIR_AT, 2 * R.dualW + R.dualGap)
+    local cellW = math.floor((width - 2 - R.dualGap) / 2)
     local visible = {}
     for _, row in ipairs(c.rows) do
         if row == c.gateRow then
@@ -1278,11 +1287,12 @@ local function layoutRows(c, width)
             r:SetWidth(w)
             r:Arrange(together and "cell" or "line", w)
             r:Measure()
-            r:SetPoint("TOPLEFT", c, "TOPLEFT", 1 + (j - 1) * cellW, -cy)
+            r:SetPoint("TOPLEFT", c, "TOPLEFT", 1 + (j - 1) * (cellW + R.dualGap), -cy)
             lineLook(r, first, n)
             h = math.max(h, r:GetHeight())
         end
-        if together then for _, r in ipairs(rows) do r:SetHeight(h) end end
+        if not row.item.height then h = math.max(h, R.h) end
+        for _, r in ipairs(rows) do r:SetHeight(h) end
         first = false
         n = n + 1
         cy = cy + h
@@ -1560,6 +1570,8 @@ function Config.BuildSchemaPage(parent, m, schema)
         return 1
     end
     Config.Columns = Config.Columns or columns
+    -- EllesmereUI pages are one column of sections (specs/001 T012); a page may ask for columns (columnsOK)
+    local function pageColumns(pg, width, n) return pg.columnsOK and columns(width, n) or 1 end
 
     function page:Layout()
         local width = math.max(320, child:GetWidth() - 2 * PAD)
@@ -1590,7 +1602,8 @@ function Config.BuildSchemaPage(parent, m, schema)
         for _, c in ipairs(self.cards) do
             if not self.tabs or c.tab == self.tab then onPage = onPage + 1 end
         end
-        local cols = columns(width, onPage)
+        -- EllesmereUI pages are one column of sections (specs/001 T012); Home keeps its own columns
+        local cols = pageColumns(self, width, onPage)
         local colW, colX, colWs = pixelColumns(width, cols)
         local colY = {}
         for i = 1, cols do colY[i] = y end

@@ -4408,7 +4408,7 @@ try("minimap shape live", function()
     assert(env.GetMinimapShape() == "SQUARE" and masks[#masks] ~= m.ROUND_MASK, "Square did not apply live")
     rawset(map, "SetMaskTexture", old)
 end)
--- v4 Flow: three columns on a wide page, folded cards show chips, the header counts changed settings, sub-pages in the rail
+-- EllesmereUI flow: one column of sections, folded cards show chips, the header counts changed settings, sub-pages in the rail
 try("settings flow", function()
     local C = ns.Config
     local page = C:Show("ActionBars")
@@ -4426,7 +4426,21 @@ try("settings flow", function()
     for _ in pairs(xs) do n = n + 1 end
     local spans = 0
     for _, c in ipairs(page.cards) do if c:IsShown() and c.spans then spans = spans + 1 end end
-    assert(n == 3, ("a 1160 px page does not pack its cards into 3 columns (%d columns, %d spanning)"):format(n, spans))
+    -- EllesmereUI layout (specs/001 T012): one column of sections, two-up lines at least 50 high, banded 0.1 / 0.2
+    assert(n == 0 and spans > 0, ("a 1160 px page is one column of sections (%d columns, %d spanning)"):format(n, spans))
+    local first, R = nil, ns.Widgets.EUI.row
+    for _, c in ipairs(page.cards) do if c:IsShown() and not c.collapsed then first = first or c end end
+    local bands, paired = {}, false
+    for _, c in ipairs(page.cards) do for _, r in ipairs(c:IsShown() and c.rows or {}) do
+        if r:IsShown() and r.band and r ~= c.gateRow then
+            assert(r:GetHeight() >= R.h or r.item.height, "a settings line under 50 high")
+            bands[r.bandA] = true
+            if r:GetWidth() < 600 then paired = true end
+        end
+    end end
+    assert(bands[R.oddA] and bands[R.evenA], "lines are not banded at 0.1 / 0.2")
+    assert(paired, "settings never pair up two to a line")
+    assert(first.titleA == ns.Widgets.EUI.section.textA, "section title is not white 0.41")
     local card
     for _, c in ipairs(page.cards) do if c:IsShown() and c.fold then card = c; break end end
     assert(card, "no foldable card")

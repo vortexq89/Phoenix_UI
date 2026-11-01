@@ -23,6 +23,8 @@ function W:Card(parent, title, icon)
         local art = ns.Art and ns.Art.Enabled()
         Skin:Panel(self, "raised", { border = "border.subtle", sheen = not art and 28 or nil, art = "card", alpha = "card" })
         Skin:Text(self.header, "heading", "text.secondary")
+        self.titleA = W.EUI.section.textA
+        self.header:SetTextColor(1, 1, 1, self.titleA) -- EllesmereUI section titles: white 0.41 caps (T012)
         if self.tick then
             self.tick:SetVertexColor(1, 1, 1, 1)
             Skin:Gradient(self.tick, "HORIZONTAL", "accent.primary", "accent.secondary")
