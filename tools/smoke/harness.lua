@@ -6348,6 +6348,20 @@ try("dungeon journal opens on its own (NaowhForever Forever journal)", function(
     assert(not ej.standalone, "close ends it")
 end)
 
+try("recipes to learn (NaowhForever professions)", function()
+    local A = ns.modules.Automation
+    local rec = A.TrainingStore("recipes")
+    local saved = rec.Alchemy
+    rec.Alchemy = { { name = "Elixir", level = 0, cost = 50, state = "available" }, { name = "Potion", level = 0, cost = 10, state = "used" } }
+    local found = false
+    for _, s in ipairs(A.TrainingSkills()) do if s.value == "Alchemy" then found = true end end
+    assert(found, "profession listed")
+    local lines, cost = A:TrainingLines("Alchemy")
+    assert(#lines == 1 and cost == 50, "only unlearned, cost")
+    A:OpenTraining("Alchemy"); A:TrainingWindow():Hide()
+    rec.Alchemy = saved
+end)
+
 try("training planner (NaowhForever)", function()
     local A = ns.modules.Automation
     local svc = { { "Header", nil, "header" }, { "Frostbolt", "Rank 2", "available" }, { "Blizzard", "Rank 1", "unavailable" },

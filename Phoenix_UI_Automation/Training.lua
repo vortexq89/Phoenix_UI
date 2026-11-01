@@ -154,6 +154,14 @@ function M:LayoutTraining()
     end
 end
 
+-- Professions with a remembered trainer list, as { value, label } for the options' picker.
+function M.TrainingSkills()
+    local out = {}
+    for skill in pairs(store("recipes")) do out[#out + 1] = { value = skill, label = skill } end
+    table.sort(out, function(a, b) return a.label < b.label end)
+    return out
+end
+
 -- Open the planner (kind nil: your class trainer; a profession name: that profession's recipes).
 function M:OpenTraining(kind)
     if not win then build() end

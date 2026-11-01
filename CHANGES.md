@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Recipes to learn** (1 Nov): Automation > Recipes to learn lists the recipes of a profession you have not learned yet, from your last visit to its trainer, the ones you can learn now first with their cost (NaowhForever's professions).
 - **Training planner** (1 Nov): Automation > Training planner remembers what your class trainer teaches each visit and shows what you can learn now with the total cost, then what comes next by level, per character (NaowhForever's training planner).
 - **Dungeon journal on its own** (1 Nov): Encounters > Dungeon journal opens Phoenix's dungeon and raid journal (every instance, bosses, loot, ability tree) without the game's Adventure Guide, so WoW Forever, which has none, gets a journal window too (NaowhForever's Forever journal).
 - **Group item levels** (1 Nov): Damage Meter > Group item levels shows a small window with you and your group, highest item level first in class colours with the group average on top; members are inspected out of combat, one at a time (NaowhForever's group inspect window). Off by default; movable in Layout mode.

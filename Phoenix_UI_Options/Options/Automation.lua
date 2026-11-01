@@ -1,4 +1,5 @@
 local _, ns = ...
+local recipePick -- Recipes to learn: the profession picked this session
 
 ns:RegisterOptions("Automation", {
     { type = "preview", kind = "automation" },
@@ -149,6 +150,13 @@ ns:RegisterOptions("Automation", {
     { type = "description", text = "TRAIN_TEXT" },
     { type = "button", label = "TRAIN_OPEN", desc = "TRAIN_OPEN_DESC", button = "TRAIN_OPEN_BUTTON", icon = "spec",
       keywords = "trainer training spells learn level cost planner", func = function(m) m:OpenTraining() end },
+    { type = "header", label = "TRAIN_RECIPES", icon = "items" },
+    { type = "description", text = "TRAIN_RECIPES_TEXT" },
+    { type = "select", label = "TRAIN_RECIPES_PICK", values = function(m) return m.TrainingSkills() end,
+      keywords = "profession recipes unlearned trainer",
+      get = function() return recipePick end, set = function(_, v) recipePick = v end },
+    { type = "button", label = "TRAIN_RECIPES_OPEN", desc = "TRAIN_RECIPES_OPEN_DESC", button = "TRAIN_OPEN_BUTTON", icon = "items",
+      disabled = function() return recipePick == nil end, func = function(m) m:OpenTraining(recipePick) end },
     { type = "header", label = "CVAR_EDITOR", icon = "terminal" },
     { type = "description", text = "CVAR_EDITOR_TEXT" },
     { type = "input", label = "CVAR_NAME", desc = "CVAR_NAME_DESC", keywords = "cvar console variable setting advanced",
