@@ -96,6 +96,7 @@ ns.CHANGELOG = {
         "Settings window moves from its top (1 Nov) — you can now drag the window by its whole top border and by the page titl…",
         "Action bars preview no longer shrinks (1 Nov) — opening the Action bars tab again kept making the live preview smaller",
         "Screen review fixes (1 Nov) — the bug counter says \"1 bug\" for one, the game menu's NEW label no longer covers the Op…",
+        "Quest arrow with a map pin (1 Nov) — the waypoint arrow no longer errors when you have a map pin placed.",
         "Live errors (1 Nov) — the quest progress sounds and the Phoenix quest log no longer error in zones with many quests (…",
         "Settings text fits (31 Oct, t204 screenshot review) — the version badge in the sidebar drops its build suffix when it…",
         "Self-test on WoW Forever (31 Oct) — the review 28 Layout mode check no longer expects a Mythic+ timer box on Forever…",

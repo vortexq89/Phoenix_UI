@@ -8018,6 +8018,20 @@ try("NPC locations (S17)", function()
     Q:OnSlash("collected")
     Q:OnSlash("clear")
     assert(Q:Destination() == nil or select(4, Q:Destination()) ~= "Camp", "clear")
+    -- a map pin whose position is a plain { x, y } table (no :GetXY) must not error (live report 55ac78d7)
+    do
+        local cm = env.C_Map
+        local oldHas, oldGet = rawget(cm, "HasUserWaypoint"), rawget(cm, "GetUserWaypoint")
+        rawset(cm, "HasUserWaypoint", function() return true end)
+        rawset(cm, "GetUserWaypoint", function() return { uiMapID = 2024, position = { x = 0.14, y = 0.31 } } end)
+        Q:ClearTarget()
+        local pm, px, py = Q:Destination()
+        assert(pm == 2024 and math.abs(px - 0.14) < 1e-9 and math.abs(py - 0.31) < 1e-9, "map pin with plain position")
+        rawset(cm, "GetUserWaypoint", function() return { uiMapID = 2024 } end)
+        Q:Destination()
+        rawset(cm, "HasUserWaypoint", oldHas)
+        rawset(cm, "GetUserWaypoint", oldGet)
+    end
     assert(slashes.way or slashes.pway, "/way registered")
     -- quest tooltip location line, on and off
     local added = {}

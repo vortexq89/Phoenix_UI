@@ -34,8 +34,11 @@ function M:Destination()
     if target then return target.mapID, target.x, target.y, target.title end
     if C_Map.HasUserWaypoint() then
         local p = C_Map.GetUserWaypoint()
-        if p and p.position then
-            local x, y = p.position:GetXY()
+        -- The returned point's position can arrive as a plain { x, y } table without Vector2D methods,
+        -- so read the fields rather than calling :GetXY().
+        local pos = p and p.position
+        local x, y = pos and pos.x, pos and pos.y
+        if p and p.uiMapID and type(x) == "number" and type(y) == "number" then
             return p.uiMapID, x, y, L.QUESTS_ARROW_PIN
         end
     end
