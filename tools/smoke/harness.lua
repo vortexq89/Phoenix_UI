@@ -4426,6 +4426,12 @@ try("settings window OnUpdate audit", function()
     end
     assert(#bad == 0, "OnUpdate in " .. table.concat(bad, ", "))
 end)
+-- a row on a global page writes to the module it names (specs/002 T001)
+try("row owner", function()
+    local G = ns.modules.General
+    local other = { key = "x", db = {} }
+    assert(ns.Config.RowOwner(other, { module = "General" }) == G and ns.Config.RowOwner(other, {}) == other, "row owner")
+end)
 -- sync to all copies a row's value to the settings it lists (specs/001 T014)
 try("sync to all", function()
     local m = { key = "SyncTest", label = "x", db = { a = { size = 7 }, b = { size = 1 }, c = { size = 2 } } }

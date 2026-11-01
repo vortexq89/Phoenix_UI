@@ -139,8 +139,17 @@ local function resettable(page, m, item)
     return defaultOf(page, m, item) ~= nil
 end
 
+-- A row's owner (specs/002 T001): a row on a global page may belong to another module (module = "General");
+-- it then reads, writes, resets and counts on that module, so no saved key moves.
+local function ownerOf(m, item)
+    local o = item.module and ns.modules[item.module]
+    return o or m
+end
+Config.RowOwner = ownerOf
+
 -- Restores one row (and the rows behind its cog). Returns true when something changed.
 local function resetItem(page, m, item)
+    m = ownerOf(m, item)
     local changed = false
     if item.type == "colors" then
         for _, key in ipairs(item.keys) do
@@ -439,6 +448,7 @@ local function sideIcons(row)
 end
 
 function buildRow(card, page, m, item)
+    m = ownerOf(m, item)
     local row = CreateFrame("Frame", nil, card)
     row.item = item
     local hasDesc = item.desc ~= nil
