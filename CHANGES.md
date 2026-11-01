@@ -76,6 +76,7 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Advanced settings behind the cog** (1 Nov, specs/001 T013): any settings row can now be marked advanced, and it then moves behind the cog of the setting above it, so pages show the main settings and the details are one click away (EllesmereUI's cog). Search and the settings counts still find every setting. Modules start using it in step 2.
 - **Settings pages as EllesmereUI sections** (1 Nov, specs/001 T012): a settings page is now one column of sections with dim white capital titles. Settings sit two to a line (two 350 wide halves, 42 apart) when there is room, every line is at least 50 high, and lines alternate a faint dark band (0.1 / 0.2) so long pages are easy to follow. Home keeps its columns.
 - **Footer without "reload to apply"** (1 Nov, specs/001 T011): the footer keeps the profile, Layout mode, Test frames and window scale, and no longer shows a Reload UI button or a "reload the UI to apply" status, and setting tooltips no longer say "Takes effect after /reload". The three texts are gone from every language, with the old sidebar group names.
 - **Page tabs in the header** (1 Nov, specs/001 T010): a page's sub-pages are now tabs along the bottom of its header (a 40 high bar, the open tab white with an accent underline) instead of rows under it in the sidebar. The tab you last opened on each page opens again.

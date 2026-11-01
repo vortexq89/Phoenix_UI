@@ -45,10 +45,39 @@ function ns:GetModule(key)
     return ns.modules[key]
 end
 
+-- Advanced rows (specs/001 T013, EllesmereUI's cog): a row marked advanced = true moves behind the cog of the
+-- setting row above it in the same section, so a page shows its simple settings and the details sit one click
+-- away. A row that already has a cog, a header, tab or description ends the run; an advanced row with nothing
+-- above it stays a row. The schema is not changed; rows that gain a cog are copies.
+local NO_COG = { header = true, tab = true, description = true, scope = true, preview = true }
+function ns:FoldAdvanced(list)
+    if type(list) ~= "table" then return list end
+    local out, parent, changed = {}, nil, false
+    for _, item in ipairs(list) do
+        if item.advanced and parent and not item.cog then
+            if not parent.copied then
+                local copy = {}
+                for k, v in pairs(out[parent.at]) do copy[k] = v end
+                local cog = {}
+                for i, sub in ipairs(copy.cog or {}) do cog[i] = sub end
+                copy.cog = cog
+                out[parent.at], parent.copied = copy, true
+            end
+            local cog = out[parent.at].cog
+            cog[#cog + 1] = item
+            changed = true
+        else
+            out[#out + 1] = item
+            parent = (not NO_COG[item.type] and not item.gate and not item.link) and { at = #out } or nil
+        end
+    end
+    return changed and out or list
+end
+
 -- Rows tagged with a feature this client lacks are dropped here, so search, presets and the renderer never
--- see them.
+-- see them; advanced rows go behind their row's cog.
 function ns:RegisterOptions(key, schema)
-    ns.options[key] = ns:FilterSchema(schema)
+    ns.options[key] = ns:FoldAdvanced(ns:FilterSchema(schema))
 end
 
 function ns:SortModules()

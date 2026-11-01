@@ -4408,6 +4408,20 @@ try("minimap shape live", function()
     assert(env.GetMinimapShape() == "SQUARE" and masks[#masks] ~= m.ROUND_MASK, "Square did not apply live")
     rawset(map, "SetMaskTexture", old)
 end)
+-- advanced rows move behind the cog of the row above (specs/001 T013)
+try("advanced rows behind the cog", function()
+    local a = { type = "toggle", key = "a", label = "A" }
+    local b = { type = "range", key = "b", label = "B", advanced = true }
+    local c = { type = "select", key = "c", label = "C", advanced = true }
+    local h = { type = "header", label = "H" }
+    local d = { type = "toggle", key = "d", label = "D", advanced = true }
+    local list = { a, b, c, h, d }
+    local out = ns:FoldAdvanced(list)
+    assert(#out == 3 and out[1] ~= a and out[1].cog[1] == b and out[1].cog[2] == c, "advanced rows did not fold")
+    assert(out[2] == h and out[3] == d and a.cog == nil and #list == 5, "a header ends the run; the schema is kept")
+    assert(ns:FoldAdvanced({ a }) ~= nil and #ns:FoldAdvanced({ a }) == 1, "a plain schema passes through")
+    assert(ns.Config.CountSettings(out) == ns.Config.CountSettings(list), "folding changes the settings count")
+end)
 -- EllesmereUI flow: one column of sections, folded cards show chips, the header counts changed settings, sub-pages in the rail
 try("settings flow", function()
     local C = ns.Config

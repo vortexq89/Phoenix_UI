@@ -37,7 +37,7 @@ check_locales, the harness, then prepush, push and install.
   shading 0.1 / 0.2 (Section.lua, Renderer.lua)
 
 ## Phase 5: User Story 3 - Cog and sync (P3)
-- [ ] T013 [US3] Cog popup available to every row type; advanced rows move into it (Renderer.lua, Controls.lua)
+- [x] T013 [US3] Cog popup available to every row type; advanced rows move into it (Renderer.lua, Controls.lua)
 - [ ] T014 [US3] Sync-to-all icon for settings shared by several frames (Renderer.lua)
 
 ## Phase N: Polish
