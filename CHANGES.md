@@ -76,6 +76,8 @@
 - **Resource bars** (30 Oct, ee3b916): row order, power ticks, colour modes, smooth fill.
 
 ### Fixed
+- **Sync to all** (1 Nov, specs/001 T014): a setting shared by several frames can carry a ⇄ button that copies its value to all of them, like the element pages' apply-to-all (EllesmereUI's sync icon).
+- **No OnUpdate in the settings window** (1 Nov, specs/001 T015): dragging chips and the combat text preview now run on C_Timer tickers, and a smoke test keeps OnUpdate out of the widgets, window and previews.
 - **Advanced settings behind the cog** (1 Nov, specs/001 T013): any settings row can now be marked advanced, and it then moves behind the cog of the setting above it, so pages show the main settings and the details are one click away (EllesmereUI's cog). Search and the settings counts still find every setting. Modules start using it in step 2.
 - **Settings pages as EllesmereUI sections** (1 Nov, specs/001 T012): a settings page is now one column of sections with dim white capital titles. Settings sit two to a line (two 350 wide halves, 42 apart) when there is room, every line is at least 50 high, and lines alternate a faint dark band (0.1 / 0.2) so long pages are easy to follow. Home keeps its columns.
 - **Footer without "reload to apply"** (1 Nov, specs/001 T011): the footer keeps the profile, Layout mode, Test frames and window scale, and no longer shows a Reload UI button or a "reload the UI to apply" status, and setting tooltips no longer say "Takes effect after /reload". The three texts are gone from every language, with the old sidebar group names.

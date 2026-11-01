@@ -38,12 +38,13 @@ check_locales, the harness, then prepush, push and install.
 
 ## Phase 5: User Story 3 - Cog and sync (P3)
 - [x] T013 [US3] Cog popup available to every row type; advanced rows move into it (Renderer.lua, Controls.lua)
-- [ ] T014 [US3] Sync-to-all icon for settings shared by several frames (Renderer.lua)
+- [x] T014 [US3] Sync-to-all icon for settings shared by several frames (Renderer.lua)
 
 ## Phase N: Polish
-- [ ] T015 Search re-index check (same count), harness live-apply and OnUpdate audits, screenshots compared with
+- [ ] T015 (audits done 1 Nov: settings-window OnUpdate audit in the harness, Chips and the combat text preview moved to
+  C_Timer; left: screenshots against EllesmereUI, which need the user in game) Search re-index check (same count), harness live-apply and OnUpdate audits, screenshots compared with
   EllesmereUI (SC-001..SC-004)
-- [ ] T016 Retire the unused art-kit paths in the widgets (after one release)
+- [ ] T016 (deferred by its own rule: after one release) Retire the unused art-kit paths in the widgets (after one release)
 
 ## Dependencies & Execution Order
 T001 blocks everything. T002–T007 run in parallel after T001. T008 blocks T009–T012. T012 blocks T013–T014.

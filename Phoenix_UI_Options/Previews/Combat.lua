@@ -291,10 +291,13 @@ P:Register("combattext", {
                 end
             end
         end
+        -- the sample numbers move on a C_Timer ticker while the preview shows (no OnUpdate, specs/001 T015)
+        local STEP = 1 / 30
         stage:HookScript("OnShow", function(self)
-            self:SetScript("OnUpdate", function(_, dt) clock = clock + dt; animate() end)
+            if self.anim then self.anim:Cancel() end
+            self.anim = C_Timer.NewTicker(STEP, function() clock = clock + STEP; animate() end)
         end)
-        stage:HookScript("OnHide", function(self) self:SetScript("OnUpdate", nil) end)
+        stage:HookScript("OnHide", function(self) if self.anim then self.anim:Cancel(); self.anim = nil end end)
         return function(self, scopeKey)
             local scroll = m.db.scroll
             local scale = tonumber((GetCVar("WorldTextScale_v2"))) or 1

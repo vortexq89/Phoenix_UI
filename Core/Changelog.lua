@@ -73,6 +73,8 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Sync to all (1 Nov, specs/001 T014) — a setting shared by several frames can carry a ⇄ button that copies its value t…",
+        "No OnUpdate in the settings window (1 Nov, specs/001 T015) — dragging chips and the combat text preview now run on C_…",
         "Advanced settings behind the cog (1 Nov, specs/001 T013) — any settings row can now be marked advanced, and it then m…",
         "Settings pages as EllesmereUI sections (1 Nov, specs/001 T012) — a settings page is now one column of sections with d…",
         "Footer without \"reload to apply\" (1 Nov, specs/001 T011) — the footer keeps the profile, Layout mode, Test frames and…",

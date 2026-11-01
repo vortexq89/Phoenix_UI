@@ -256,7 +256,9 @@ function W:OrderChips(parent, spec)
     function holder:BeginDrag(c)
         self.dragging = c
         c:SetAlpha(0.6)
-        self:SetScript("OnUpdate", function()
+        -- the drop marker follows the cursor on a C_Timer ticker (no OnUpdate, specs/001 T015)
+        if self.dragTicker then self.dragTicker:Cancel() end
+        self.dragTicker = C_Timer.NewTicker(0.02, function()
             local i = dropIndex()
             local sl = i and (self.slots[i] or self.slots[#self.slots])
             if not sl then self.marker:Hide(); return end
@@ -283,7 +285,7 @@ function W:OrderChips(parent, spec)
 
     function holder:EndDrag()
         local c = self.dragging
-        self:SetScript("OnUpdate", nil)
+        if self.dragTicker then self.dragTicker:Cancel(); self.dragTicker = nil end
         self.marker:Hide()
         self.dragging = nil
         if c then self:Move(c.key, dropIndex()) end

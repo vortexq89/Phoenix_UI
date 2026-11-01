@@ -384,6 +384,22 @@ local function applyToAll(page, m, item)
 end
 Config.ApplyRowToAll = applyToAll
 
+-- Sync to all (specs/001 T014, EllesmereUI's sync icon): a row with sync = { "other.path", ... } outside the
+-- element chips copies its value to every listed setting of the same module. Returns how many it set.
+local function syncToAll(m, item)
+    local v = U.GetPath(m.db, item.key)
+    local n = 0
+    for _, path in ipairs(item.sync) do
+        if path ~= item.key then
+            ns.DB:Set(m, path, type(v) == "table" and U.DeepCopy(v) or v)
+            n = n + 1
+        end
+    end
+    Config:SetStatus(L.APPLIED_TO_ALL:format(text(item.label)), "state.success", "apply-all")
+    return n
+end
+Config.SyncRowToAll = syncToAll
+
 -- Buttons beside the control: the cog (sub-options) or, on mirror rows, an arrow to the original row;
 -- on element pages the ⇄ apply-to-all button.
 local function attachSide(row, card, page, m, item)
@@ -398,7 +414,13 @@ local function attachSide(row, card, page, m, item)
             if target.Focus then C_Timer.After(0.05, function() target:Focus(item.link.item) end) end
         end
     end
-    if isScoped(page, item) then
+    if type(item.sync) == "table" and type(item.key) == "string" and not isScoped(page, item) then
+        row.applyAll = W:IconButton(row, "apply-all", 20, L.APPLY_ALL_ROW, L.APPLY_ALL_ROW_DESC)
+        row.applyAll.onClick = function()
+            syncToAll(m, item)
+            row:Flash()
+        end
+    elseif isScoped(page, item) then
         row.applyAll = W:IconButton(row, "apply-all", 20, L.APPLY_ALL_ROW, L.APPLY_ALL_ROW_DESC)
         row.applyAll.onClick = function()
             applyToAll(page, m, item)

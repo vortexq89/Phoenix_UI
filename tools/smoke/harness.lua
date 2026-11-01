@@ -4408,6 +4408,34 @@ try("minimap shape live", function()
     assert(env.GetMinimapShape() == "SQUARE" and masks[#masks] ~= m.ROUND_MASK, "Square did not apply live")
     rawset(map, "SetMaskTexture", old)
 end)
+-- the settings window and its widgets never use OnUpdate (ns.Anim's tween driver is the one allowed) (T015)
+try("settings window OnUpdate audit", function()
+    local bad = {}
+    for _, dir in ipairs({ "UI/Widgets", "Phoenix_UI_Options/Config", "Phoenix_UI_Options/Previews" }) do
+        local p = io.popen('ls "' .. ROOT .. "/" .. dir .. '"')
+        for name in p:lines() do
+            if name:match("%.lua$") then
+                local fh = io.open(ROOT .. "/" .. dir .. "/" .. name)
+                local src = fh:read("*a"); fh:close()
+                for line in src:gmatch("[^\n]+") do
+                    if line:find('SetScript("OnUpdate"', 1, true) and not line:find(", nil)", 1, true) then bad[#bad + 1] = dir .. "/" .. name end
+                end
+            end
+        end
+        p:close()
+    end
+    assert(#bad == 0, "OnUpdate in " .. table.concat(bad, ", "))
+end)
+-- sync to all copies a row's value to the settings it lists (specs/001 T014)
+try("sync to all", function()
+    local m = { key = "SyncTest", label = "x", db = { a = { size = 7 }, b = { size = 1 }, c = { size = 2 } } }
+    local item = { type = "range", key = "a.size", label = "x", sync = { "a.size", "b.size", "c.size" } }
+    local old = ns.DB.Set
+    ns.DB.Set = function(_, mod, path, v) ns.Util.SetPath(mod.db, path, v) end
+    local n = ns.Config.SyncRowToAll(m, item)
+    ns.DB.Set = old
+    assert(n == 2 and m.db.b.size == 7 and m.db.c.size == 7, "sync to all did not copy the value")
+end)
 -- advanced rows move behind the cog of the row above (specs/001 T013)
 try("advanced rows behind the cog", function()
     local a = { type = "toggle", key = "a", label = "A" }
