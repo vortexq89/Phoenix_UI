@@ -9,9 +9,10 @@ function W:ColorSwatch(parent, hasAlpha, token)
     c:SetSize(44, 24)
     c.hasAlpha = hasAlpha
     c.checker = W.Texture(c, "BACKGROUND", 1)
-    c.checker:SetPoint("TOPLEFT", 3, -3); c.checker:SetPoint("BOTTOMRIGHT", -3, 3)
+    c.checker:SetPoint("TOPLEFT", 1, -1); c.checker:SetPoint("BOTTOMRIGHT", -1, 1)
     c.swatch = W.Texture(c, "ARTWORK")
-    c.swatch:SetPoint("TOPLEFT", 3, -3); c.swatch:SetPoint("BOTTOMRIGHT", -3, 3)
+    c.swatch:SetPoint("TOPLEFT", 1, -1); c.swatch:SetPoint("BOTTOMRIGHT", -1, 1)
+    Skin:Border(c)
     c.value = { r = 1, g = 1, b = 1 }
     c.token = token
     c:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -27,13 +28,15 @@ function W:ColorSwatch(parent, hasAlpha, token)
         if self.onPaint then self.onPaint(self) end
     end
 
+    -- EllesmereUI swatch (specs/001 T007): the colour fills the box inside a 1 px white border (0.3, 0.45 hovered)
+    local E = W.EUI.button
     Skin:Register(c, function(self)
-        Skin:Panel(self, "sunken", { border = "border.strong" })
-        W.Color(self.checker, "border.strong")
+        W.Color(self.checker, "bg.sunken")
+        Skin:SetBorderColor(self, 1, 1, 1, E.borderA)
         paint(self)
     end)
-    c:SetScript("OnEnter", function(self) if not self.disabled then Skin:SetBorderColor(self, "accent.primary") end end)
-    c:SetScript("OnLeave", function(self) Skin:SetBorderColor(self, "border.strong") end)
+    c:SetScript("OnEnter", function(self) if not self.disabled then Skin:SetBorderColor(self, 1, 1, 1, E.borderHoverA) end end)
+    c:SetScript("OnLeave", function(self) Skin:SetBorderColor(self, 1, 1, 1, E.borderA) end)
 
     local function commit(self, r, g, b, a)
         self.value = { r = r, g = g, b = b, a = self.hasAlpha and a or nil }

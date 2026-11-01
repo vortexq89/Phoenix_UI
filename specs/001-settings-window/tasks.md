@@ -24,7 +24,7 @@ check_locales, the harness, then prepush, push and install.
 - [x] T005 [P] [US1] Dropdown: box and menu colours, hover / selection alphas, max height 200, 4 px scroll bar
   (UI/Widgets/Dropdown.lua)
 - [x] T006 [P] [US1] Button: flat background 0.6/0.65, border 0.3/0.45, text 0.55/0.70 (UI/Widgets/Button.lua)
-- [ ] T007 [P] [US1] Colour swatch 1 px border and Segmented / Tabs flat style (ColorSwatch.lua, Controls.lua)
+- [x] T007 [P] [US1] Colour swatch 1 px border and Segmented / Tabs flat style (ColorSwatch.lua, Controls.lua)
 
 ## Phase 4: User Story 2 - Window layout (P2)
 - [ ] T008 [US2] Window proportions: base 1300 × 946 (fit to screen), sidebar 295, header 138, tab bar 40, footer 82,

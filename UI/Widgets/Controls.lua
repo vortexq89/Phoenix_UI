@@ -14,19 +14,20 @@ function W:Segmented(parent, items, multi, segWidth)
         for _, b in ipairs(self.buttons) do
             local on
             if self.multi then on = self.value[b.value] else on = self.value == b.value end
+            -- EllesmereUI segments (specs/001 T007): the chosen one is a flat accent at 0.75 with white text; the
+            -- others are button-grey with soft white text
+            local E = W.EUI.button
+            b.label:SetShadowOffset(0, 0)
+            Skin:Text(b.label, "small", "text.primary")
             if on then
-                b.fill:SetVertexColor(1, 1, 1, 1)
-                Skin:Gradient(b.fill, "HORIZONTAL", "accent.primary", "accent.secondary")
-                b.fill:SetAlpha(b.hover and 1 or 0.92)
-                Skin:Text(b.label, "small", "bg.base")
-                b.label:SetShadowOffset(0, 0)
+                local r, g, bl = ns.Theme:Color("accent.primary")
+                b.fill:SetVertexColor(r, g, bl, b.hover and 0.9 or 0.75)
+                b.label:SetTextColor(1, 1, 1, 1)
             else
-                b.fill:SetGradient("HORIZONTAL", CreateColor(1, 1, 1, 1), CreateColor(1, 1, 1, 1))
-                W.Color(b.fill, b.hover and "bg.hover" or "bg.sunken")
-                b.fill:SetAlpha(1)
-                Skin:Text(b.label, "small", b.hover and "text.primary" or "text.secondary")
+                b.fill:SetVertexColor(E.bg[1], E.bg[2], E.bg[3], b.hover and E.bgHoverA or E.bgA)
+                b.label:SetTextColor(1, 1, 1, b.hover and E.textHoverA or E.textA)
             end
-            if b.icon then ns.Icons:Tint(b.icon, on and "bg.base" or "text.secondary") end
+            if b.icon then ns.Icons:Tint(b.icon, on and "text.primary" or "text.secondary") end
         end
     end
     s.Paint = paint
@@ -86,7 +87,8 @@ function W:Segmented(parent, items, multi, segWidth)
     function s:GetValue() return self.value end
     s.SetEnabledState = W.SetEnabledState
     Skin:Register(s, function(self)
-        Skin:Border(self, "border.subtle")
+        Skin:Border(self)
+        Skin:SetBorderColor(self, 1, 1, 1, W.EUI.button.borderA)
         paint(self)
     end)
     s:SetItems(items or {})
@@ -108,18 +110,20 @@ function W:Tabs(parent, items)
     t.line:SetHeight(1)
 
     local function paint(self)
-        W.Color(self.line, "border.subtle")
-        W.Color(self.bg, "bg.sunken", 0.9)
+        -- EllesmereUI tab bar (specs/001 T007): no fills; the open tab is white with a 2 px accent underline,
+        -- the others dim white (0.53, 0.86 hovered); a faint 1 px rule runs under the strip
+        self.line:SetVertexColor(1, 1, 1, 0.05)
+        self.bg:SetVertexColor(0, 0, 0, 0)
+        local N = W.EUI.nav
         for _, b in ipairs(self.tabs) do
             local on = b.value == self.value
-            if on then W.Color(b.fill, "accent.soft") else W.Color(b.fill, "bg.hover", b.hover and 0.8 or 0) end
+            b.fill:SetVertexColor(1, 1, 1, (b.hover and not on) and 0.03 or 0)
             b.bar:SetShown(on)
-            if on then
-                b.bar:SetVertexColor(1, 1, 1, 1)
-                Skin:Gradient(b.bar, "HORIZONTAL", "accent.primary", "accent.secondary")
-            end
-            if b.icon then W.Color(b.icon, on and "accent.primary" or (b.hover and "text.primary" or "text.muted")) end
-            Skin:Text(b.label, "body", on and "text.primary" or (b.hover and "text.primary" or "text.secondary"))
+            if on then b.bar:SetVertexColor(ns.Theme:Color("accent.primary")) end
+            local a = on and N.selectedA or (b.hover and N.hoverA or 0.53)
+            if b.icon then W.Color(b.icon, "text.primary", a) end
+            Skin:Text(b.label, "body", "text.primary")
+            b.label:SetTextColor(1, 1, 1, a)
         end
     end
 
