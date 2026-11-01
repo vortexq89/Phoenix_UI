@@ -57,3 +57,42 @@ function W:Toggle(parent)
     paint(t, false)
     return t
 end
+
+--[[ Checkbox in the EllesmereUI look (specs/001 FR-002): an 18 px warm box with a faint white border; checked
+    shows a solid accent square 2 px inside and an accent border at 0.15. Same API as the switch. ]]
+function W:Checkbox(parent)
+    local E = W.EUI.checkbox
+    local c = CreateFrame("Button", nil, parent)
+    c:SetSize(18, 18)
+    c.box = W.Texture(c, "BACKGROUND", 0)
+    c.box:SetAllPoints()
+    c.mark = W.Texture(c, "ARTWORK", 0)
+    c.mark:SetPoint("TOPLEFT", 2, -2); c.mark:SetPoint("BOTTOMRIGHT", -2, 2)
+    ns.Skin:Border(c)
+    c.value = false
+    local function paint(self)
+        local r, g, b = ns.Theme:Color("accent.primary")
+        local a = (self.value or self.hover) and 1 or 0.8
+        self.box:SetVertexColor(E.box[1], E.box[2], E.box[3], a)
+        self.mark:SetVertexColor(r, g, b, 1)
+        self.mark:SetShown(self.value)
+        if self.value then ns.Skin:SetBorderColor(self, r, g, b, E.checkedBorderA)
+        else ns.Skin:SetBorderColor(self, 1, 1, 1, E.borderA * a) end
+    end
+    c.Paint = paint
+    ns.Skin:Register(c, paint)
+    c:SetScript("OnEnter", function(self) self.hover = true; paint(self) end)
+    c:SetScript("OnLeave", function(self) self.hover = false; paint(self) end)
+    c:SetScript("OnClick", function(self)
+        if self.disabled then return end
+        self.value = not self.value
+        PlaySound(self.value and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
+        paint(self)
+        if self.onChange then self.onChange(self, self.value) end
+    end)
+    function c:SetValue(v) self.value = v and true or false; paint(self) end
+    function c:GetValue() return self.value end
+    c.SetEnabledState = W.SetEnabledState
+    paint(c)
+    return c
+end

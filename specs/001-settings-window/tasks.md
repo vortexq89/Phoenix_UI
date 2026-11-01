@@ -18,7 +18,7 @@ check_locales, the harness, then prepush, push and install.
 ## Phase 3: User Story 1 - Controls (P1) 🎯 MVP
 - [x] T002 [US1] Toggle: 40 × 20, square knob, pad 2, off #444/0.65 with knob 0.5, on accent/0.75 with knob 1, slide
   0.075 s via ns.Anim, no picture art (UI/Widgets/Toggle.lua) plus a harness check
-- [ ] T003 [P] [US1] Checkbox style (box colours, border 0.05/0.15, accent check) in Controls / Renderer check rows
+- [x] T003 [P] [US1] Checkbox widget `W:Checkbox` (18 px box, border 0.05/0.15, solid accent square) in UI/Widgets/Toggle.lua; rows adopt it in T013
 - [x] T004 [P] [US1] Slider: track white 0.16, fill accent 0.75, input box 0.030/0.023/0.018 at 0.25, border 0.02
   (UI/Widgets/Slider.lua)
 - [ ] T005 [P] [US1] Dropdown: box and menu colours, hover / selection alphas, max height 200, 4 px scroll bar
