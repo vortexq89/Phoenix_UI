@@ -59,10 +59,12 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
   with the logo). The rest of the top bar has no drag (the footer handle is at 602-603). Fix: one drag strip across
   the full width and top border, below the close and search buttons, saving through the existing `savePosition`.
   **Done 1 Nov:** the window now moves from the rail head, a strip along the whole top border, and every page header (title band). The position is saved as before. Harness check added.
-- [ ] **23. Many settings and frame positions reset to defaults after /reload. Find every SavedVariables persistence bug.**
+- [x] **23. Many settings and frame positions reset to defaults after /reload. Find every SavedVariables persistence bug.**
   To audit: every `## SavedVariables` / `SavedVariablesPerCharacter` in the .toc files against the tables each
   module writes, defaults merged over saved tables (overwriting instead of filling in), movers `set` writing to a
   copy, and Forever .toc lines that differ from retail. Add a harness check that saves, reloads and compares.
+  Findings: a round trip of all 1231 boolean and number settings (changed, stripped at logout, bound again, every module refreshed) lost none, so the save path is sound. The resets came from positions: after login or /reload, Blizzard's Edit Mode lays its frames out again from its own layout after Phoenix placed them, and only frames with a hook were placed back.
+  **Done 1 Nov:** Layout mode places every saved frame again after PLAYER_ENTERING_WORLD and EDIT_MODE_LAYOUTS_UPDATED (once per frame). Harness check added. If a setting still resets in game, the Bugs window entry or the setting's name will point to the next cause.
 - [ ] **10. Talent frame borders are wrong.** Files: `Phoenix_UI_Skins/Talents.lua`. Same border system as item 4.
 - [ ] **6. Character panel is a mess: Reputation is mixed up and overlapping. Fix and polish it.**
   Files: `Phoenix_UI_Skins/CharacterWindow.lua`, `CharacterLists.lua`, `Character.lua`. Suspected: the reputation

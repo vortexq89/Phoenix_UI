@@ -783,6 +783,16 @@ function M:OnEnable()
         end
     end)
     ns.Events:On("ADDON_LOADED", self, function() self:ApplyAll(); self:ApplyWindowScale() end) -- load-on-demand frames
+    -- after login and every /reload Blizzard's Edit Mode lays its frames out again from its own layout, after
+    -- Phoenix placed them: the saved spots went back to the defaults (t213 #23). Place them again after it.
+    local queued
+    local function again()
+        if queued then return end
+        queued = true
+        C_Timer.After(0, function() queued = nil; if self:IsEnabled() then self:ApplyAll() end end)
+    end
+    ns.Events:On("PLAYER_ENTERING_WORLD", self, again)
+    ns.Events:On("EDIT_MODE_LAYOUTS_UPDATED", self, again)
     ns.Events:On("UI_SCALE_CHANGED", self, function() if grid and grid:IsShown() then grid:Layout() end end)
     ns.Events:On("DISPLAY_SIZE_CHANGED", self, function() if grid and grid:IsShown() then grid:Layout() end end)
     EventRegistry:RegisterCallback("EditMode.Enter", function() if unlocked then self:SetUnlocked(false) end end, self)

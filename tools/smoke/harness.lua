@@ -4193,6 +4193,18 @@ try("share strings v2", function()
         "merge must keep the settings the string does not mention")
     ns.DB:Set(np, "health.size", old)
 end)
+-- saved frame spots are placed again after Blizzard's Edit Mode layout pass on login / reload (t213 #23)
+try("positions survive a reload", function()
+    local mv = ns.modules.Movers
+    assert(mv, "no movers")
+    local events, On = {}, ns.Events.On
+    ns.Events.On = function(self, ev, owner, ...) if owner == mv then events[ev] = true end; return On(self, ev, owner, ...) end
+    local ok, err = pcall(mv.OnEnable, mv)
+    ns.Events.On = On
+    assert(ok, err)
+    assert(events.EDIT_MODE_LAYOUTS_UPDATED and events.PLAYER_ENTERING_WORLD, "movers do not re-place after Edit Mode")
+end)
+
 -- the settings window always draws Phoenix glyphs; no switch to stock game icons (t213 #16)
 try("phoenix icons only", function()
     ns.DB.sv.global.icons = "game"
