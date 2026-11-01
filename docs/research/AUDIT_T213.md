@@ -79,6 +79,8 @@ Legend: **Cause** = root cause found in the code; **Suspected** = most likely ca
 
 ## B. Settings consolidation (second)
 
+**t222 (1 Nov, 8:37 AM UTC+3):** sections B and C are now planned in [ELLESMERE_REBUILD_MAP.md](ELLESMERE_REBUILD_MAP.md) (§8 build order); work on them restarts from that plan.
+
 - [~] **5. Too many overlapping theme/colour systems: Accent, Interface>Skins, Phoenix>Presets, Interface>Skin>Appearance, Phoenix>General, Phoenix>Textures and more. Consolidate into ONE organised system with no duplicates and no conflicting settings.**
   Files: Options/General.lua, Options/Skins.lua, the presets / textures pages, Core theme tokens. Plan: one
   "Appearance" page (preset, accent, colours, textures, borders, fonts) that owns every token; the other pages link to it.
