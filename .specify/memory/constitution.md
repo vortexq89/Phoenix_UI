@@ -41,6 +41,16 @@ MikScrollingBattleText; TrufiGCD; sArena Reloaded; Auctionator; idTip; Questie; 
 priority order are in docs/research/PLUGIN_AUDIT/. Frame moving follows one model: Edit Mode owns its systems,
 Phoenix Layout owns everything else, and there are no local mover modes.
 
+### VII. One spec per feature, with the feature checklist (owner t229)
+Work is spec-driven with GitHub Spec Kit: one spec folder per plugin, and inside large plugins one per feature
+(for example each unit frame), never a bundled area spec. Each folder holds spec.md, plan.md, tasks.md and a
+checklist.md copied from `.specify/templates/feature-checklist-template.md`. A feature is done only when every
+checklist line is met with evidence: every option of the original addon; the basics and standards; configuration;
+size, position and scale; editable colours, fonts and textures; a live preview; Layout support; profiles; live
+apply; retail and Forever; 10 locales; edge cases; and the unmentioned gaps found by comparing with EllesmereUI and
+Blizzard's own UI. specs/INDEX.md lists every spec with its status and the build order; nothing new is built
+before its spec is in the index.
+
 ## Quality gates
 
 - Every change has a CHANGES.md entry and a regenerated Core/Changelog.lua (tools/gen_changelog.py), and the plan
@@ -65,7 +75,7 @@ Phoenix Layout owns everything else, and there are no local mover modes.
 
 This constitution sums up the owner's standing rules and overrides any conflicting template or habit. Amendments
 come only from the owner's instructions. Each one bumps the version (MAJOR: a rule removed or redefined; MINOR: a
-rule added; PATCH: wording) and is noted in CHANGES.md. Every plan has a Constitution Check against Principles I–V
+rule added; PATCH: wording) and is noted in CHANGES.md. Every plan has a Constitution Check against Principles I–VII
 and the gates before tasks are written.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-01
+**Version**: 1.2.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-03
