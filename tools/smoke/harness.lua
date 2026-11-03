@@ -4890,18 +4890,18 @@ try("chips tighten before wrapping", function()
     c:SetWidth(300); c:Arrange()
     assert(c:GetHeight() > 22, "a too-narrow row still wraps")
 end)
--- a small sample is zoomed to fill the stage; the footprint (scale x height) stays the design height
+-- a small sample is zoomed to fill the width, and the stage is as tall as its content (t228: no box, no gaps)
 try("preview zoom small sample", function()
     local P = ns.Previews
     local stage = P:Create("castbar", CreateFrame("Frame", nil, UIParent), ns.modules.CastBars, {})
-    local base = stage.baseHeight
-    stage.contentW, stage.contentH, stage.needHeight = 120, 20, nil
+    stage.contentW, stage.contentH, stage.innerH = 120, 20, 20 + P.MARGIN * 2
     stage.designWidth = 0
     local s = stage:Fit(600)
     assert(s > 1.05 and s <= P.MAX_ZOOM, "small sample not zoomed: " .. tostring(s))
-    assert(math.abs(stage:GetHeight() * s - base) < 0.5, "zoom changed the footprint")
-    stage.contentW, stage.contentH = 560, base
-    assert(stage:Fit(600) == 1, "a sample that fills the stage was zoomed")
+    assert(math.abs(stage:GetHeight() - stage.innerH) < 0.5, "stage is not sized to its content")
+    assert(stage:GetHeight() * s <= P.MAX_HEIGHT + 0.5, "preview taller than the cap")
+    stage.contentW, stage.contentH, stage.innerH = 560, 120, 132
+    assert(stage:Fit(600) == 1, "a sample that fills the width was zoomed")
 end)
 -- geometry: the options window keeps its size and scale whatever a setting does, stays within 80% x 85% of
 -- the screen at common resolutions, and the top bar's controls never overlap (tools/smoke/geometry.lua)

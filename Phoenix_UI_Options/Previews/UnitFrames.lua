@@ -170,7 +170,7 @@ P:Register("unitframe", {
             local u = m:Unit(key)
             local scale = fit(u.width or 1, u.height or 1)
             f:SetScale(ns.Previews.ClampScale(scale))
-            f:SetPoint("CENTER", view, "CENTER", 0, 4 / scale)
+            f:SetPoint("CENTER", view, "CENTER", 0, 0) -- exactly centred: the stage sizes itself to it (t228)
             built.scaleText = built.scaleText or P.ScaleLabel(view)
             built.scaleText:Set(scale)
             built.scaleText:Show()

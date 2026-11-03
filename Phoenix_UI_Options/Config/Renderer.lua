@@ -1237,14 +1237,14 @@ local function buildPreview(page, m, item)
             self.states:ClearAllPoints()
             self.states:SetPoint("TOPLEFT", 16, -y)
             self.states:SetWidth(inner)
-            if open then y = y + self.states:GetHeight() + 10 end
+            if open then y = y + self.states:GetHeight() + 8 end
         end
         self.pane:SetShown(open)
         local scale = self.pane:Fit(inner)
         self.pane:ClearAllPoints()
         self.pane:SetPoint("TOPLEFT", self, "TOPLEFT", 16 / scale, -y / scale)
         self.pane:SetPoint("TOPRIGHT", self, "TOPRIGHT", -16 / scale, -y / scale)
-        if open then y = y + self.pane:GetHeight() * scale + 10 end
+        if open then y = y + self.pane:GetHeight() * scale + 8 end
         self.hint:SetShown(open and docked)
         if open and docked then
             self.hint:ClearAllPoints()

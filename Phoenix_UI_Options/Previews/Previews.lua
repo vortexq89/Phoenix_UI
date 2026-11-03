@@ -79,46 +79,42 @@ end
 
 ---------------------------------------------------------------- stage
 P.MAX_ZOOM = 1.6
+P.MAX_HEIGHT = 320 -- tallest a preview gets on the page; bigger content scales down
+P.MARGIN = 6 -- even space above and below the sample
 function P:Create(kind, parent, m, page)
     local def = self.kinds[kind]
     local stage = CreateFrame("Frame", nil, parent)
     stage:SetHeight(def and def.height or 120)
-    stage:SetClipsChildren(true)
+    -- No box of its own and no clipping (t228, EllesmereUI's way): the real sample is drawn straight onto the
+    -- preview card and the stage is sized to what it holds, so nothing is squeezed or cut and no empty band is left.
+    stage:SetClipsChildren(false)
     stage.states = {}
     stage.kind = kind
     -- every stage built, for the developer diagnostics' "preview fit" check (Core/DevDiag.lua)
     self.stages = self.stages or {}
     self.stages[#self.stages + 1] = stage
-    stage.floor = W.Texture(stage, "BACKGROUND", 1, Media.textures.FADE_V)
-    stage.floor:SetPoint("BOTTOMLEFT"); stage.floor:SetPoint("BOTTOMRIGHT")
-    stage.floor:SetHeight(60)
-    stage.floor:SetTexCoord(0, 1, 1, 0)
-    Skin:Register(stage, function(self)
-        Skin:Panel(self, "sunken", { border = "border.subtle" })
-        W.Color(self.floor, "accent.primary", 0.06)
-    end)
     stage.designWidth = def and def.width or 0
     -- Scales the stage so its design width fits `width`; returns the scale (1 when it already fits).
     -- The preview keeps one footprint on the page (its design height) whatever the settings do: content
     -- that grows wider or taller scales the stage down instead of pushing the page (and the rows) around.
+    -- Scales the stage so its content fits `width` and sets its height to the content (innerH, measured after
+    -- each draw) with a small even margin. Small samples are zoomed up to MAX_ZOOM so they fill the width.
     function stage:Fit(width)
         local scale = 1
         if self.designWidth > 0 and width and width > 0 and width < self.designWidth then scale = width / self.designWidth end
-        local base, need = self.baseHeight or 120, self.needHeight or self.baseHeight or 120
-        if need > base then scale = math.min(scale, base / need) end
-        -- small samples (one unit frame, one cast bar) are zoomed so they fill the stage instead of sitting tiny
-        -- in an empty panel; the footprint on the page stays the same
         local cw, ch = self.contentW, self.contentH
         if scale == 1 and cw and ch and cw > 0 and ch > 0 and width and width > 0 then
-            local zoom = math.min(P.MAX_ZOOM, (width * 0.7) / cw, (base * 0.75) / ch)
+            local zoom = math.min(P.MAX_ZOOM, (width * 0.85) / cw, P.MAX_HEIGHT / ch)
             if zoom > 1.05 then scale = zoom end
         end
+        local inner = self.innerH or self.baseHeight or 120
+        if inner * scale > P.MAX_HEIGHT then scale = P.MAX_HEIGHT / inner end
         scale = ns.Previews.ClampScale(scale)
         if math.abs((self:GetScale() or 1) - scale) > 0.001 then
             self:SetScale(scale)
             ns.Skin:Reapply() -- 1px borders inside the stage are re-measured at the new scale
         end
-        self:SetHeight(base / scale)
+        self:SetHeight(inner)
         return scale
     end
     local draw = def and def.build(stage, m)
@@ -134,7 +130,7 @@ function P:Create(kind, parent, m, page)
         if not (l0 and r0 and t0 and b0) then return end
         local l, r, t, b
         local function grow(obj)
-            if obj == stage.floor or obj.puiGrip or not obj:IsShown() then return end
+            if obj.puiGrip or obj.puiNoMeasure or not obj:IsShown() then return end
             local ol, or_, ot, ob = obj:GetLeft(), obj:GetRight(), obj:GetTop(), obj:GetBottom()
             if not (ol and or_ and ot and ob) or or_ - ol <= 0 then return end
             local s = (obj.GetEffectiveScale and obj:GetEffectiveScale() or stage:GetEffectiveScale()) / stage:GetEffectiveScale()
@@ -143,7 +139,6 @@ function P:Create(kind, parent, m, page)
             t, b = math.max(t or ot, ot), math.min(b or ob, ob)
         end
         for _, c in ipairs({ stage:GetChildren() }) do grow(c) end
-        -- the stage's own panel and floor textures span it and say nothing about the sample
         for _, g in ipairs({ stage:GetRegions() }) do if g:GetObjectType() == "FontString" and g ~= stage.emptyHint then grow(g) end end
         -- nothing drew (the sample failed or the module has nothing to show): say so instead of an empty panel,
         -- and note it for Bugs › Diagnostics (specs/004 T001)
@@ -163,17 +158,30 @@ function P:Create(kind, parent, m, page)
         if stage.emptyHint then stage.emptyHint:Hide() end
         local pad, mid = 8, (l0 + r0) / 2
         local needW = math.max(r - mid, mid - l) * 2 + pad
-        local needH = math.max(t0, t) - b + pad
-        local cw, ch = needW, t - b + pad
-        local zoomChanged = not stage.contentW or math.abs(cw - stage.contentW) > 2 or math.abs(ch - stage.contentH) > 2
-        stage.contentW, stage.contentH = cw, ch
-        local width, height = math.max(baseWidth, math.ceil(needW)), math.max(baseHeight, math.ceil(needH))
-        if width ~= stage.designWidth or math.abs(height - (stage.needHeight or baseHeight)) > 0.5 then
-            stage.designWidth = width
-            stage.needHeight = height
-            if page.Layout then page:Layout() end
-        elseif zoomChanged and page.Layout then
+        local cw, ch = needW, t - b
+        -- height from the content: centred samples get the margin on both sides; top-anchored ones keep their
+        -- top and lose the empty band below (t228: no gaps)
+        local h0 = t0 - b0
+        local gapT, gapB = t0 - t, b - b0
+        local inner
+        if math.abs(gapT - gapB) < 2 then inner = ch + P.MARGIN * 2 else inner = h0 - gapB + P.MARGIN end
+        inner = math.max(24, math.ceil(inner))
+        local changed = not stage.contentW or math.abs(cw - stage.contentW) > 2 or math.abs(ch - stage.contentH) > 2
+            or math.abs(inner - (stage.innerH or 0)) > 1
+        stage.contentW, stage.contentH, stage.innerH = cw, ch, inner
+        local width = math.max(baseWidth, math.ceil(needW))
+        stage.needHeight = inner
+        if width ~= stage.designWidth then stage.designWidth = width; changed = true end
+        if changed and page.Layout then
             page:Layout()
+            -- the new height moves centred content: measure once more until it settles
+            stage.settle = (stage.settle or 0) + 1
+            if stage.settle < 4 and not measureQueued then
+                measureQueued = true
+                C_Timer.After(0, function() ns.SafeCall(measure) end)
+            end
+        else
+            stage.settle = 0
         end
     end
     local retry
@@ -251,6 +259,7 @@ end
 -- A small "1:1" / "64%" label in a stage corner telling how much the preview is scaled down to fit.
 function P.ScaleLabel(stage)
     local fs = W.Text(stage, "small", "text.muted", "RIGHT")
+    fs.puiNoMeasure = true -- a corner note, not the sample: the stage height follows the sample only
     fs:SetPoint("BOTTOMRIGHT", -6, 4)
     function fs:Set(scale)
         self:SetText(scale < 0.995 and string.format("%d%%", math.floor(scale * 100 + 0.5)) or "1:1")
