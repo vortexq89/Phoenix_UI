@@ -317,7 +317,7 @@ local function footer(f)
     b.next.onClick = function() f:Select(view.index + 1) end
     b.status = W.Text(b, "small", "text.muted")
     b.status:SetPoint("LEFT", b.next, "RIGHT", 14, 0)
-    b.status:SetPoint("RIGHT", -380, 0)
+    b.status:SetPoint("RIGHT", -528, 0)
     b.status:SetWordWrap(false)
     b.clear = W:Button(b, L.BUGS_CLEAR, "danger", "delete", 120)
     b.clear:SetPoint("RIGHT")
@@ -331,9 +331,34 @@ local function footer(f)
         view.index, view.offset = 1, 0
         M:Refresh()
     end
+    -- export (specs/006): every report in the list as one text with the client header, selected for Ctrl+C;
+    -- the companion app saves it as PhoenixBugs_<date>.txt (an addon cannot write files)
+    b.export = W:Button(b, L.BUGS_EXPORT, "ghost", "copy", 120)
+    b.export:SetPoint("RIGHT", -520, 0)
+    b.export.onClick = function()
+        local parts = { M.ReportHeader() }
+        for _, r in ipairs(view.list) do parts[#parts + 1] = "\n" .. string.rep("-", 40) .. "\n" .. reportText(r) end
+        local e = f.detail.area.edit
+        f.detail:Show()
+        f.detail.area:SetValue(table.concat(parts, "\n"))
+        e:SetFocus(); e:HighlightText()
+        b.status:SetText(L.BUGS_EXPORT_HINT:format(#view.list))
+    end
+    b.send = W:Button(b, L.BUGS_SEND, "ghost", "user", 120)
+    b.send:SetPoint("RIGHT", b.export, "RIGHT", 128, 0)
+    b.send.onClick = function()
+        local list = view.list
+        local who = UnitIsPlayer("target") and GetUnitName("target", true) or ""
+        M.Ask(L.BUGS_SEND, L.BUGS_SEND_WHO:format(#list), L.BUGS_SEND, function(name)
+            local ok, why = M:SendBugs(name, list)
+            if not ok and why then ns:Print(L[why]) end
+        end, nil, who)
+    end
     b.copy = W:Button(b, L.BUGS_COPY, "primary", "copy", 120)
     b.copy:SetPoint("RIGHT", b.clear, "LEFT", -8, 0)
     b.copy.onClick = function()
+        local r = view.list[view.index]
+        if r then f.detail.area:SetValue(M.ReportHeader() .. "\n\n" .. reportText(r)) end -- copy for a report
         local e = f.detail.area.edit
         e:SetFocus()
         e:HighlightText()
@@ -344,9 +369,12 @@ local function footer(f)
     -- say what happens: sending off (and where to switch it on), or how many reports wait for the uploader (t213 #15)
     b.upload.onClick = function()
         if not Errors:GetShare() then
-            f:Hide()
-            ns.Config:Show(M.key)
-            ns:Print(L.BUGS_UPLOAD_OFF)
+            -- one click: ask once, then sharing is on and the reports are queued for the uploader
+            M.Ask(L.BUGS_UPLOAD, L.BUGS_UPLOAD_ASK, YES, function()
+                M:SetShare(true)
+                local t = L.BUGS_UPLOAD_QUEUED:format(#Errors:GetReports())
+                b.status:SetText(t); ns:Print(t)
+            end)
             return
         end
         local text = L.BUGS_UPLOAD_QUEUED:format(#Errors:GetReports())
@@ -404,6 +432,8 @@ local function build()
         W.SetEnabledState(b.prev, r ~= nil and view.index > 1)
         W.SetEnabledState(b.next, r ~= nil and view.index < #view.list)
         W.SetEnabledState(b.copy, r ~= nil)
+        W.SetEnabledState(b.export, #view.list > 0)
+        W.SetEnabledState(b.send, #view.list > 0)
         W.SetEnabledState(b.clear, #view.list > 0)
         if not r then return end
         local k = kindOf(r)
@@ -417,6 +447,8 @@ local function build()
         d.seen:SetText(L.BUGS_SEEN:format(stamp(r.firstSeen), stamp(r.lastSeen)))
         d.message:SetText(r.message)
         d.area:SetValue(reportText(r))
+        local font, _, flags = d.area.edit:GetFont()
+        if font then d.area.edit:SetFont(font, M.db.fontSize or 12, flags) end -- viewer font size (BugSack parity)
     end
 
     function f:Select(i)

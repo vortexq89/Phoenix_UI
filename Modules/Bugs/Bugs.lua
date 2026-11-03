@@ -12,6 +12,9 @@ local M = ns:NewModule("Bugs", {
     defaults = {
         chat = true, sound = "none", flash = true, indicator = "errors",
         warnings = true, taint = true, scope = "all",
+        -- BugSack parity (specs/006): auto popup (out of combat, at most once per popupGap s), mute in combat,
+        -- sound on the Master channel, viewer font size, Alt+click on the indicator clears the session
+        autoPopup = false, popupGap = 30, muteCombat = false, soundMaster = false, fontSize = 12, altWipe = false,
     },
     globalDefaults = { maxReports = 500 },
 })
@@ -20,7 +23,7 @@ local LINK = "addon:" .. ADDON .. ":bugs"
 local SOUND_GAP = 10 -- seconds between notification sounds
 local SOUNDS = { chime = SOUNDKIT.TELL_MESSAGE, alert = SOUNDKIT.RAID_WARNING, bell = SOUNDKIT.UI_BNET_TOAST,
     alarm = SOUNDKIT.ALARM_CLOCK_WARNING_3 }
-local indicator, lastSound, lastNotice = nil, 0, {}
+local indicator, lastSound, lastNotice, lastPopup = nil, 0, {}, -math.huge
 
 function M:Counts()
     return Errors:CountSession()
@@ -85,7 +88,9 @@ local function buildIndicator()
         W.Color(self.glow, "state.danger", 0.35)
     end)
     b:SetScript("OnClick", function(_, button)
-        if button == "RightButton" then ns.Config:Show(M.key) else M:OpenViewer() end
+        if button == "RightButton" then ns.Config:Show(M.key)
+        elseif IsAltKeyDown() and M.db.altWipe then Errors:Clear("session"); M:Refresh(); ns:Print(L.BUGS_CLEARED)
+        else M:OpenViewer() end
     end)
     b:SetScript("OnEnter", function(self)
         local unique, total = M:Counts()
@@ -122,11 +127,17 @@ local function notice(r)
         local kind = r.kind == "taint" and L.BUGS_KIND_TAINT or r.kind == "warning" and L.BUGS_KIND_WARNING or L.BUGS_KIND_ERROR
         ns:Print(L.BUGS_NOTICE, kind, r.source, link)
     end
-    if SOUNDS[db.sound] and GetTime() - lastSound > SOUND_GAP then
+    local quiet = db.muteCombat and InCombatLockdown()
+    if not quiet and SOUNDS[db.sound] and GetTime() - lastSound > SOUND_GAP then
         lastSound = GetTime()
-        PlaySound(SOUNDS[db.sound])
+        PlaySound(SOUNDS[db.sound], db.soundMaster and "Master" or nil)
     end
     if db.flash and indicator and indicator:IsShown() then pulse(indicator.glow) end
+    -- auto popup: never in combat (the viewer would cover the fight), at most once per popupGap seconds
+    if db.autoPopup and not InCombatLockdown() and GetTime() - lastPopup >= (db.popupGap or 30) then
+        lastPopup = GetTime()
+        M:OpenViewer()
+    end
 end
 
 local function onCapture(r, isNew)
@@ -177,6 +188,7 @@ function M:OnEnable()
     EventRegistry:RegisterCallback("SetItemRef", onLink, self)
     if Errors:TakeShareNotice() then ns:Print(L.BUGS_SHARE_NOTICE) end
     claimDisplay()
+    self:SetupShare() -- Share.lua: send bugs in game
     self:Refresh()
 end
 

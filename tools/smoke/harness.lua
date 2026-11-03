@@ -1020,6 +1020,24 @@ try("Quickdraw: macros, bind keys, flat sections (specs/004 T012, t228)", functi
     assert(found, "no Quickdraw rows on Automation")
     for _, c in ipairs(page.cards) do assert(c.flat, "a settings section still has a box") end
 end)
+try("Bugs: BugSack parity, send, export (specs/006)", function()
+    local B = ns.modules.Bugs
+    local list = { { kind = "error", message = "x.lua:1: boom", stack = "a\nb", locals = "", source = "Foo", count = 3 },
+        { kind = "warning", message = "w", stack = "", locals = "l", source = "Bar", count = 1 } }
+    local back = B.DecodeReports(B.EncodeReports(list))
+    assert(#back == 2 and back[1].message == list[1].message and back[1].count == 3 and back[2].locals == "l", "reports do not round-trip")
+    local chunks = B.Chunks(string.rep("z", 1000))
+    assert(#chunks == 5 and #chunks[1] <= 220, "chunks too big for an addon message")
+    local before = #ns.Errors:GetReports()
+    assert(B:TakeReceived("Friend", B.EncodeReports(list)) == 2, "received reports not taken")
+    assert(#ns.Errors:GetReports() >= before + 1, "received reports not in the sack")
+    assert(B.ReportHeader():find("Phoenix UI", 1, true), "no client header for a report")
+    for _, k in ipairs({ "autoPopup", "popupGap", "muteCombat", "soundMaster", "fontSize", "altWipe" }) do
+        assert(B.db[k] ~= nil, "Bugs has no " .. k)
+    end
+    local ok, why = B:SendBugs("", list)
+    assert(not ok and why == "BUGS_SEND_NOBODY", "send without a name was not refused")
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

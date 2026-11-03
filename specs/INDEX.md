@@ -17,7 +17,7 @@ and shipped; **Partial** = built, checklist not yet passed; **Draft** = spec, pl
 
 | Spec | Title | Parent | Audit rows | Gaps | Status |
 |---|---|---|---|---|---|
-| [006-bugsack](006-bugsack/spec.md) | Bugs: BugSack parity | — | 15 | 7 | Draft |
+| [006-bugsack](006-bugsack/spec.md) | Bugs: BugSack parity | — | 15 | 7 | Built (3 Nov), in-game check pending |
 | [007-simulationcraft](007-simulationcraft/spec.md) | Sim: SimulationCraft parity | — | 9 | 1 | Draft |
 | [008-moveany](008-moveany/spec.md) | Layout: MoveAny parity | — | 6 | 2 | Draft |
 | [009-bigwigs](009-bigwigs/spec.md) | Encounters: BigWigs and LittleWigs parity | — | 19 | 11 | Draft |

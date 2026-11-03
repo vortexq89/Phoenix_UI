@@ -3,6 +3,7 @@
     <Script file="General\General.lua"/>
     <Script file="Bugs\Bugs.lua"/>
     <Script file="Bugs\Viewer.lua"/>
+    <Script file="Bugs\Share.lua"/>
     <!-- interface -->
     <Script file="Movers\Movers.lua"/>
     <Script file="Movers\Windows.lua"/>
