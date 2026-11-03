@@ -46,7 +46,13 @@ M.WINDOWS = { "CharacterFrame", "PVEFrame", "FriendsFrame", "MerchantFrame", "Ma
     "AuctionHouseFrame", "WeeklyRewardsFrame", "CommunitiesFrame", "PlayerChoiceFrame",
     -- more of MoveAny's window list (specs/005 T005): presence-checked, load-on-demand ones scale when shown
     "InspectFrame", "TradeFrame", "LootFrame", "ClassTrainerFrame", "FlightMapFrame", "GuildBankFrame", "DressUpFrame",
-    "AddonList" }
+    "AddonList",
+    -- the rest of MoveAny's list (specs/005 T005)
+    "MacroFrame", "TimeManagerFrame", "CalendarFrame", "ItemSocketingFrame", "ItemUpgradeFrame",
+    "ChallengesKeystoneFrame", "ArchaeologyFrame", "ScrappingMachineFrame", "ExpansionLandingPage",
+    "ProfessionsBookFrame", "ProfessionsCustomerOrdersFrame", "PetStableFrame", "TabardFrame", "BlackMarketFrame",
+    "WardrobeFrame", "MajorFactionRenownFrame", "ItemInteractionFrame", "ChatConfigFrame", "TaxiFrame",
+    "PetitionFrame" }
 
 local entries, byKey = {}, {}
 for _, e in ipairs(M.BLIZZARD) do entries[#entries + 1] = e; byKey[e.key] = e end

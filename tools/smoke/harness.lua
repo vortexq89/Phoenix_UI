@@ -306,7 +306,8 @@ local libs = {
     },
     LibEditMode = {
         callbacks = {},
-        AddFrame = function() end, AddFrameSettings = function() end,
+        added = 0,
+        AddFrame = function(self) self.added = self.added + 1 end, AddFrameSettings = function() end,
         RegisterCallback = function(self, event, fn)
             self.callbacks[event] = self.callbacks[event] or {}
             table.insert(self.callbacks[event], fn)
@@ -985,6 +986,15 @@ try("Move rows open Layout on their frame (specs/005 T001, T004)", function()
     assert(row, "window moving is not on the Layout page (specs/005 T002)")
     local sk = ns.Config:Show("Skins")
     for _, r in ipairs(sk.rows) do assert(r.item.key ~= "moveWindows", "Skins still has its own window moving") end
+end)
+try("Phoenix frames are Layout only, with a grouped frame list (specs/005 T007)", function()
+    assert(env.LibStub("LibEditMode").added == 0, "a Phoenix frame was still added to Blizzard Edit Mode")
+    local page = ns.Config:Show("Movers")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.label == "MOVERS_FIND_LIST" then row = r end end
+    assert(row, "no frame list on the Layout page")
+    local vals = row.item.values(ns:GetModule("Movers"))
+    assert(#vals > 5 and vals[1].group, "frame list is empty or ungrouped")
 end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()

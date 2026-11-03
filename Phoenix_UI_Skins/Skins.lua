@@ -417,6 +417,11 @@ function M:OnEnable()
         if name:find("^Blizzard_") then M:RunSetups(); M:ApplyMedallions() end
         local mv = moveByAddon[name]
         if mv then for _, f in ipairs(mv.frames) do M:HookMovable(f) end end
+        -- Layout's window list (Inspect, Guild bank …): hook any that just loaded; already-hooked ones are skipped
+        if name:find("^Blizzard_") and M.SetupMoving then
+            local movers = ns:GetModule("Movers")
+            for _, f in ipairs(movers and movers.WINDOWS or {}) do M:HookMovable(f) end
+        end
     end)
     if self.SetupGameMenu then self:SetupGameMenu() end -- GameMenu.lua
     if self.SkinMicroMenu then self:SkinMicroMenu() end -- MicroMenu.lua

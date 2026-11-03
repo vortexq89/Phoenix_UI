@@ -79,6 +79,51 @@ for _, e in ipairs(ns:GetModule("Movers").BLIZZARD) do
 end
 schema[#schema + 1] = { type = "custom", label = "BUGS_INDICATOR", get = function() return true end,
     build = function(row, m) return frameRow(row, m, "BugIndicator") end }
+-- Find a frame (specs/005 T007): every Layout entry in one searchable list, grouped Phoenix / Blizzard / added.
+local found
+local function entryLabel(e)
+    local t = e.text or (e.label and L[e.label]) or e.key
+    return type(t) == "string" and t or tostring(e.key)
+end
+local function FRAMES(m)
+    local groups = { L.MOVERS_GROUP_PHOENIX, L.MOVERS_GROUP_BLIZZARD, L.MOVERS_GROUP_ADDED }
+    local lists = { {}, {}, {} }
+    for _, e in ipairs(m:GetEntries()) do
+        local i = e.owned and 1 or e.any and 3 or 2
+        lists[i][#lists[i] + 1] = { value = e.key, label = entryLabel(e), group = groups[i] }
+    end
+    local out = {}
+    for _, list in ipairs(lists) do
+        table.sort(list, function(a, b) return a.label < b.label end)
+        for _, it in ipairs(list) do out[#out + 1] = it end
+    end
+    return out
+end
+schema[#schema + 1] = { type = "header", label = "MOVERS_FIND", icon = "search" }
+schema[#schema + 1] = { type = "select", label = "MOVERS_FIND_LIST", desc = "MOVERS_FIND_LIST_DESC", values = FRAMES,
+    keywords = "find search frame list layout", get = function(m) return found or (FRAMES(m)[1] or {}).value end,
+    set = function(_, v) found = v end }
+schema[#schema + 1] = { type = "button", label = "MOVERS_FIND_GO", desc = "MOVERS_FIND_GO_DESC", button = "MOVERS_FIND_GO",
+    icon = "movers", combat = true, func = function(m)
+        local k = found or (FRAMES(m)[1] or {}).value
+        if k then m:Focus(k) end
+    end }
+-- Layout profiles (specs/005 T008): Phoenix spots per Edit Mode layout, and copying one set into the one in use.
+local copyFrom
+local function LAYOUTS()
+    local out = {}
+    for _, n in ipairs(ns.EditMode:Layouts()) do out[#out + 1] = { value = n, label = n } end
+    return out
+end
+local noLayouts = function() return #ns.EditMode:Layouts() == 0 end
+schema[#schema + 1] = { type = "header", label = "MOVERS_PROFILES", icon = "profiles" }
+schema[#schema + 1] = { type = "description", text = function() return L.MOVERS_PROFILES_TEXT:format(ns.EditMode:ActiveLayout()) end }
+schema[#schema + 1] = { type = "select", label = "MOVERS_PROFILES_FROM", desc = "MOVERS_PROFILES_FROM_DESC", values = LAYOUTS,
+    hidden = noLayouts, get = function() return copyFrom or ns.EditMode:Layouts()[1] end, set = function(_, v) copyFrom = v end }
+schema[#schema + 1] = { type = "button", label = "MOVERS_PROFILES_COPY", desc = "MOVERS_PROFILES_COPY_DESC",
+    button = "MOVERS_PROFILES_COPY", icon = "copy", combat = true, hidden = noLayouts, func = function()
+        if ns.EditMode:CopyLayout(copyFrom or ns.EditMode:Layouts()[1]) then copyFrom = nil end
+    end }
 -- Any frame (MoveAny level): type a name or click a frame, then it is a Layout mode entry like the ones above.
 local anyName, anyPicked = "", nil
 local function rebuild() if ns.Config.RebuildPage then ns.Config:RebuildPage("Movers") end end

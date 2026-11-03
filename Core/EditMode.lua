@@ -1,7 +1,8 @@
 local _, ns = ...
 
---[[ ns.EditMode — puts Phoenix-owned frames into Blizzard Edit Mode via LibEditMode, and into Phoenix's own
-    Layout mode (Movers) with the same saved place, so either mode moves them (review 28: the encounter bars and
+--[[ ns.EditMode — puts Phoenix-owned frames into Phoenix's Layout mode (Movers). They were also in Blizzard Edit
+    Mode via LibEditMode until specs/005 made Layout the one way to move them; LibEditMode is still used for the
+    active Edit Mode layout name, so saved spots follow Blizzard's layout switch as before (review 28: the encounter bars and
     warnings, M+ timer, spell history, XP bar and data text panels were only in Edit Mode).
     Positions are stored per Edit Mode layout in PhoenixUIDB.global.layouts[layout][key]; a place set in Layout
     mode also carries the frame's scale and opacity. Blizzard's own systems are never moved by Phoenix_UI. ]]
@@ -73,10 +74,8 @@ function EM:Register(frame, opts)
     local entry = { key = opts.key, frame = frame, default = opts.default }
     registered[opts.key] = entry
     frame.editModeName = opts.name
-    LEM:AddFrame(frame, function(_, layoutName, point, x, y)
-        store(layoutName)[opts.key] = { point = point, x = x, y = y }
-    end, opts.default, opts.name)
-    if opts.settings then LEM:AddFrameSettings(frame, opts.settings) end
+    -- Layout only (specs/005, owner t227): Phoenix frames are no longer added to Blizzard Edit Mode, so each frame
+    -- has one way to move. Saved spots stay where they were (per Edit Mode layout name, read by apply()).
     local movers = ns.GetModule and ns:GetModule("Movers")
     if movers and movers.Register then
         movers:Register("em." .. opts.key, frame, moverLabel(opts.name), moverStore(entry, opts))
@@ -97,6 +96,32 @@ function EM:Open()
     ns.Combat:Run("editmode.open", function()
         if EditModeManagerFrame and not EditModeManagerFrame:IsShown() then ShowUIPanel(EditModeManagerFrame) end
     end)
+end
+
+-- Layout profiles (specs/005 T008): Phoenix frame spots are kept per Blizzard Edit Mode layout, so switching
+-- layouts there switches them here. These let the Layout page show the set in use and copy one set to another.
+function EM:ActiveLayout() return LEM:GetActiveLayoutName() or "Default" end
+
+function EM:Layouts()
+    local out, active = {}, self:ActiveLayout()
+    for name, set in pairs(ns.DB.sv.global.layouts or {}) do
+        if name ~= active and type(set) == "table" and next(set) then out[#out + 1] = name end
+    end
+    table.sort(out)
+    return out
+end
+
+function EM:CopyLayout(from)
+    local src = (ns.DB.sv.global.layouts or {})[from]
+    if type(src) ~= "table" or from == self:ActiveLayout() then return false end
+    local dst = store()
+    for key, pos in pairs(src) do
+        local copy = {}
+        for k, v in pairs(pos) do copy[k] = v end
+        dst[key] = copy
+    end
+    for _, entry in pairs(registered) do ns.SafeCall(apply, entry) end
+    return true
 end
 
 LEM:RegisterCallback("layout", function(layoutName)
