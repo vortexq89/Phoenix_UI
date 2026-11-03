@@ -1,4 +1,6 @@
 local _, ns = ...
+local L = ns.L
+local quickPick, quickCapture -- Quickdraw: the macro picked to bind, the key-capture frame
 local recipePick -- Recipes to learn: the profession picked this session
 
 ns:RegisterOptions("Automation", {
@@ -49,6 +51,47 @@ ns:RegisterOptions("Automation", {
     { type = "button", label = "MACRO_EDITOR", desc = "MACRO_EDITOR_DESC", button = "AUTO_OPEN_PAGE", icon = "terminal",
       combat = true, keywords = "macro editor create edit icon conditionals account character",
       func = function(m) m:ShowMacroEditor() end },
+    -- Quickdraw (specs/004 T012): make a macro from a dropped spell or item, bind any macro with one key press
+    { type = "header", label = "QUICKDRAW", icon = "terminal" },
+    { type = "custom", label = "QUICKDRAW_DROP", desc = "QUICKDRAW_DROP_DESC", combat = true, get = function() return true end,
+      keywords = "quickdraw macro drag drop spell item make",
+      build = function(row, m)
+          local b = ns.Widgets:Button(row, L.QUICKDRAW_DROP_BUTTON, "secondary", "add", 200)
+          local function take()
+              local name, why = m:QuickMakeFromCursor()
+              if name then ns:Print(L.QUICKDRAW_MADE:format(name)) elseif why then ns:Print(L[why]) end
+              if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+          end
+          b:SetScript("OnReceiveDrag", take)
+          b.onClick = function() if GetCursorInfo() then take() end end
+          function b:SetValue() end
+          return b
+      end },
+    { type = "select", label = "QUICKDRAW_MACRO", desc = "QUICKDRAW_MACRO_DESC",
+      values = function() return ns.modules.Automation.QuickMacros() end,
+      keywords = "quickdraw macro bind key", get = function() return quickPick end, set = function(_, v) quickPick = v end },
+    { type = "description", text = function()
+          local keys = ns.modules.Automation.QuickKeys(quickPick)
+          return quickPick and L.QUICKDRAW_KEYS:format(keys ~= "" and keys or L.QUICKDRAW_NONE) or L.QUICKDRAW_PICK
+      end },
+    { type = "button", label = "QUICKDRAW_BIND", desc = "QUICKDRAW_BIND_DESC", button = "QUICKDRAW_BIND", icon = "keyboard",
+      combat = true, keywords = "quickdraw keybind bind key", func = function(m)
+          if not quickPick then ns:Print(L.QUICKDRAW_PICK); return end
+          local cap = quickCapture or CreateFrame("Frame", nil, UIParent)
+          quickCapture = cap
+          cap:SetAllPoints(); cap:SetFrameStrata("FULLSCREEN_DIALOG"); cap:EnableKeyboard(true)
+          ns:Print(L.QUICKDRAW_PRESS)
+          cap:SetScript("OnKeyDown", function(self, key)
+              if key == "ESCAPE" then self:Hide(); return end
+              local k = m.QuickKeyString(key)
+              if not k then return end
+              self:Hide()
+              local ok, why = m:QuickBind(quickPick, k)
+              if ok then ns:Print(L.QUICKDRAW_BOUND:format(k, quickPick)) elseif why then ns:Print(L[why]) end
+              if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+          end)
+          cap:Show()
+      end },
     { type = "input", key = "mountFlyer", label = "AUTO_MOUNT_FLYER", desc = "AUTO_MOUNT_RULES_DESC", combat = true,
       keywords = "mount flying flyer smart macro" },
     { type = "input", key = "mountGround", label = "AUTO_MOUNT_GROUND", desc = "AUTO_MOUNT_RULES_DESC", combat = true,

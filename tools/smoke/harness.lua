@@ -1010,6 +1010,16 @@ try("Social page owns the friends, guild and group rows (specs/004 T010)", funct
         end
     end
 end)
+try("Quickdraw: macros, bind keys, flat sections (specs/004 T012, t228)", function()
+    local A = ns.modules.Automation
+    assert(A.QuickMacros and A.QuickKeyString and A.QuickMakeFromCursor and A.QuickBind, "Quickdraw is missing")
+    assert(type(A.QuickMacros()) == "table", "no macro list")
+    local page = ns.Config:Show("Automation")
+    local found
+    for _, r in ipairs(page.rows) do if r.item.label == "QUICKDRAW_BIND" then found = true end end
+    assert(found, "no Quickdraw rows on Automation")
+    for _, c in ipairs(page.cards) do assert(c.flat, "a settings section still has a box") end
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames
@@ -4594,7 +4604,7 @@ try("settings flow", function()
     for _, c in ipairs(page.cards) do if c:IsShown() and c.fold then card = c; break end end
     assert(card, "no foldable card")
     card.fold:GetScript("OnClick")(card.fold)
-    assert(card.collapsed and card:GetHeight() <= 40, "a folded card kept its rows")
+    assert(card.collapsed and card:GetHeight() <= 41, "a folded card kept its rows")
     local chips = 0
     for _, ch in ipairs(card.chips or {}) do if ch:IsShown() then chips = chips + 1 end end
     assert(chips > 0, "a folded card shows no summary chips")

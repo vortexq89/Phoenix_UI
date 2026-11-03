@@ -24,10 +24,12 @@ local U = ns.Util
     by width (each goes into the shortest column, so there are no gaps); every card folds to its header, and a
     folded card shows summary chips of its current values. Inside a card, rows keep one line: label left,
     control right; rows without a description pair up two per line only in a card wide enough for it. ]]
-local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT, THREE_COLUMNS_AT = 45, 12, 32, 48, 640, 980
+-- EllesmereUI's measured page (t228): 45 px side pad, sections 40 high (title 8 px over a 1 px line), rows flush
+-- under it, and no gap between sections (the next title's own 40 px is the space)
+local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT, THREE_COLUMNS_AT = 45, 0, 32, 48, 640, 980
 Config.CARD_GAP_MAX = CARD_GAP + 8 -- the page-spacing smoke test: more than this between two cards is an empty band
 local CELL_H, TOGGLE_CELL_H, PAIR_AT, HEADER_H = 60, 34, 560, 78
-local CARD_HEAD, CHIP_MAX = 36, 5
+local CARD_HEAD, CHIP_MAX = 40, 5
 Config.HEADER_H = HEADER_H
 local POPOVER_W = 400
 -- rows that can share a line: no description, a control that fits half a card
@@ -1278,12 +1280,12 @@ function Config.BuildModulePage(parent, key)
 end
 
 -- the hairline above a row and the zebra shade: every other line a shade lighter, so a long card reads across
-local function lineLook(r, first, n)
+local function lineLook(r, _, n)
     if not r.sep then
         r.sep = W:Separator(r)
         r.sep:SetPoint("TOPLEFT", 16, 0); r.sep:SetPoint("TOPRIGHT", -16, 0)
     end
-    r.sep:SetShown(not first)
+    r.sep:SetShown(false) -- EllesmereUI rows have no hairlines, only the bands (t228)
     -- EllesmereUI row bands (specs/001 T012): lines alternate black 0.1 / 0.2 under the controls
     if not r.band then
         r.band = W.Texture(r, "BACKGROUND", 1)
@@ -1299,14 +1301,14 @@ local function placeGate(c, row)
     row:Show()
     row:Arrange("gate", 0)
     row:ClearAllPoints()
-    row:SetPoint("TOPRIGHT", c, "TOPRIGHT", -62, -4)
+    row:SetPoint("TOPRIGHT", c, "TOPRIGHT", -48, -8)
 end
 
 local function hiddenIn(c, row) return row.hiddenState or c.collapsed end
 
 -- Rows of one card, laid out: paired rows two per line when the card is wide enough. Returns the height.
 local function layoutRows(c, width)
-    local cy = c.hasHeader and CARD_HEAD or 6
+    local cy = c.hasHeader and (CARD_HEAD + 1) or 0
     -- EllesmereUI two-up lines (specs/001 T012): two 350 wide halves 42 apart, every line at least 50 high
     local R = W.EUI.row
     local pair = width >= math.max(PAIR_AT, 2 * R.dualW + R.dualGap)
@@ -1332,11 +1334,11 @@ local function layoutRows(c, width)
         for j, r in ipairs(rows) do
             r:Show()
             r:ClearAllPoints()
-            local w = together and cellW or (width - 2)
+            local w = together and cellW or width
             r:SetWidth(w)
             r:Arrange(together and "cell" or "line", w)
             r:Measure()
-            r:SetPoint("TOPLEFT", c, "TOPLEFT", 1 + (j - 1) * (cellW + R.dualGap), -cy)
+            r:SetPoint("TOPLEFT", c, "TOPLEFT", (j - 1) * (cellW + R.dualGap), -cy)
             lineLook(r, first, n)
             h = math.max(h, r:GetHeight())
         end
@@ -1406,7 +1408,7 @@ local function decorateCard(page, m, card)
     card.count = W:Badge(card, tostring(0), "text.muted")
     card.count:SetPoint("LEFT", card.header, "RIGHT", 8, 0)
     card.chev = W.Icon(card, "chevron-down", 12, "text.muted")
-    card.chev:SetPoint("TOPRIGHT", -14, -12)
+    card.chev:SetPoint("TOPRIGHT", -4, -20) -- on the title line (t228)
     card.fold = CreateFrame("Button", nil, card)
     card.fold:SetPoint("TOPLEFT", 0, 0); card.fold:SetPoint("TOPRIGHT", -36, 0); card.fold:SetHeight(CARD_HEAD - 2)
     card.fold:SetFrameLevel(card:GetFrameLevel() + 1)
@@ -1421,11 +1423,11 @@ local function decorateCard(page, m, card)
     card.fold:SetScript("OnEnter", function() W.Color(card.chev, "text.primary") end)
     card.fold:SetScript("OnLeave", function() W.Color(card.chev, "text.muted") end)
     W.AttachTooltip(card.fold, card.title or "", L.CARD_FOLD_TIP)
-    if card.reset then card.reset:ClearAllPoints(); card.reset:SetPoint("TOPRIGHT", -32, -6) end
+    if card.reset then card.reset:ClearAllPoints(); card.reset:SetPoint("TOPRIGHT", -22, -14) end
     function card:Chips()
         for _, c in ipairs(self.chips or {}) do c:Hide() end
         if not self.collapsed then return end
-        local x = 32 + self.header:GetStringWidth() + 8 + (self.count:IsShown() and self.count:GetWidth() + 10 or 0)
+        local x = 22 + self.header:GetStringWidth() + 8 + (self.count:IsShown() and self.count:GetWidth() + 10 or 0)
         local limit = (self:GetWidth() or 300) - 70
         for i, s in ipairs(summaryOf(page, m, self)) do
             local c = chip(self, i)
@@ -1434,7 +1436,7 @@ local function decorateCard(page, m, card)
             if x + w > limit then break end
             c:SetWidth(w)
             c:ClearAllPoints()
-            c:SetPoint("TOPLEFT", self, "TOPLEFT", x, -9)
+            c:SetPoint("TOPLEFT", self, "TOPLEFT", x, -17)
             c:Show()
             x = x + w + 6
         end
@@ -1458,16 +1460,17 @@ end
 
 local function newCard(page, m, child, item, tab)
     local isHead = item.type == "header"
-    local card = W:Card(child, isHead and text(item.label) or nil, isHead and item.icon or nil)
+    local card = W:Card(child, isHead and text(item.label) or nil, isHead and item.icon or nil, true)
+    card.headH = CARD_HEAD
     card.header:ClearAllPoints()
-    card.header:SetPoint("TOPLEFT", item.icon and isHead and 36 or 32, -12)
+    card.header:SetPoint("BOTTOMLEFT", card, "TOPLEFT", item.icon and isHead and 22 or 16, -(CARD_HEAD - 8))
     card.rows = {}
     card.tab = tab or 1
     card.wide = isHead and item.wide
     card.title = isHead and text(item.label) or text(m.label)
     if isHead then
         card.reset = W:IconButton(card, "reset", 22, L.RESET_CARD, L.RESET_CARD_DESC)
-        card.reset:SetPoint("TOPRIGHT", -32, -6)
+        card.reset:SetPoint("TOPRIGHT", -22, -14)
         card.reset:Hide()
         armReset(card.reset, L.RESET_CARD_CONFIRM:format(card.title), function() resetCard(page, m, card) end)
         decorateCard(page, m, card)
@@ -1596,7 +1599,7 @@ function Config.BuildSchemaPage(parent, m, schema)
     local function layoutCard(c, width)
         c:SetWidth(width)
         local cy, any = layoutRows(c, width)
-        c:SetHeight(c.collapsed and CARD_HEAD or (cy + 6))
+        c:SetHeight(c.collapsed and (CARD_HEAD + 1) or cy)
         if c.chev then
             ns.Icons:Apply(c.chev, c.collapsed and "chevron-right" or "chevron-down", 12)
             c:Chips()
@@ -1639,13 +1642,13 @@ function Config.BuildSchemaPage(parent, m, schema)
             self.scroll:SetPoint("TOPLEFT", 0, -top)
             self.scroll:SetPoint("BOTTOMRIGHT", -10, 0)
         end
-        local y = 14
+        local y = 0 -- the first section's own 40 px title band is the top space (t228)
         if self.pinned and not self.docked then
             local pc = self.pinned
             pc:SetWidth(width)
             pc:Apply(false)
             self.pinnedY = y
-            y = y + pc:GetHeight() + CARD_GAP
+            y = y + pc:GetHeight() + 8
         end
         local onPage = 0
         for _, c in ipairs(self.cards) do
@@ -1689,7 +1692,7 @@ function Config.BuildSchemaPage(parent, m, schema)
             end
         end
         -- a full PAD of room under the last card, so the last row clears the footer edge at full scroll (specs/003 T004)
-        child:SetHeight(lowest() + 2 * PAD - CARD_GAP)
+        child:SetHeight(lowest() + PAD) -- one PAD under the last row: clears the footer, no empty band (t228)
         self.scroll:UpdateBar()
         self.header:Changed()
         self:Stick()

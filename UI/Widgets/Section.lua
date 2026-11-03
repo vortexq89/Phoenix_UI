@@ -2,8 +2,11 @@ local _, ns = ...
 local W, Skin, Media = ns.Widgets, ns.Skin, ns.Media
 
 -- Card container used for option sections. icon (optional) replaces the accent tick before the title.
-function W:Card(parent, title, icon)
+-- flat = an EllesmereUI section (t228): no panel behind it, the title over a 1 px line and the rows straight
+-- under it; the page stacks sections with no gap. Non-flat cards (Home, popups) keep their raised panel.
+function W:Card(parent, title, icon, flat)
     local c = CreateFrame("Frame", nil, parent)
+    c.flat = flat and true or nil
     c.header = W.Text(c, "heading", "text.secondary")
     -- The tick (10 px) or icon (14 px) sits 6 px before the title and lines up with the 16 px row inset.
     c.header:SetPoint("TOPLEFT", icon and title and 36 or 32, -16)
@@ -20,8 +23,19 @@ function W:Card(parent, title, icon)
         c.tick:SetShown(c.hasHeader)
     end
     Skin:Register(c, function(self)
-        local art = ns.Art and ns.Art.Enabled()
-        Skin:Panel(self, "raised", { border = "border.subtle", sheen = not art and 28 or nil, art = "card", alpha = "card" })
+        if self.flat then
+            if self.hasHeader then
+                self.rule = self.rule or W.Texture(self, "ARTWORK", 0)
+                self.rule:ClearAllPoints()
+                self.rule:SetPoint("TOPLEFT", 0, -(self.headH or 40))
+                self.rule:SetPoint("TOPRIGHT", 0, -(self.headH or 40))
+                self.rule:SetHeight(PixelUtil.ConvertPixelsToUIForRegion(1, self))
+                self.rule:SetColorTexture(1, 1, 1, 0.06)
+            end
+        else
+            local art = ns.Art and ns.Art.Enabled()
+            Skin:Panel(self, "raised", { border = "border.subtle", sheen = not art and 28 or nil, art = "card", alpha = "card" })
+        end
         Skin:Text(self.header, "heading", "text.secondary")
         self.titleA = W.EUI.section.textA
         self.header:SetTextColor(1, 1, 1, self.titleA) -- EllesmereUI section titles: white 0.41 caps (T012)

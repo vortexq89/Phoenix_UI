@@ -25,4 +25,4 @@
 - [x] T011 [US3] Resource bars section was already on Unit Frames; Home's quick actions get a Resource bars button that lands on it
 
 ## Phase 7: User Story 5 (P3)
-- [ ] T012 [US5] Quickdraw: macro list, make from drag, click to bind
+- [x] T012 [US5] Quickdraw on Automation: make a macro from a dropped spell or item, pick a macro and press a key to bind it (macro list = the existing macro editor) + harness
