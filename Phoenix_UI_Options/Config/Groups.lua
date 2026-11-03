@@ -14,7 +14,7 @@ Config.GROUPS = {
       entries = { "ActionBars", "CooldownText", "NamePlates", "UnitFrames", "Auras", "Tracker", "CastBars", "GroupFrames",
                   "Encounters", "PvP" } },
     { key = "qol", label = "RAIL_QOL", icon = "content",
-      entries = { "Quality", "Automation", "AFK", "CombatText", "DataTexts", "ItemLevel", "Sim" } },
+      entries = { "Quality", "Automation", "social", "AFK", "CombatText", "DataTexts", "ItemLevel", "Sim" } },
     { key = "reskin", label = "RAIL_RESKIN", icon = "interface",
       entries = { "Skins", "Tooltip", "GroupFinder", "DamageMeter", "SpellHistory", "MythicPlus", "Quests", "Minimap",
                   "Chat", "Bags" } },

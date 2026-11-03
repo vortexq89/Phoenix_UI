@@ -44,6 +44,7 @@ Config\Search.lua
 Config\Home.lua
 Config\Profiles.lua
 Config\Appearance.lua
+Config\Social.lua
 Config\Diagnostics.lua
 Config\Presets.lua
 Config\Installer.lua

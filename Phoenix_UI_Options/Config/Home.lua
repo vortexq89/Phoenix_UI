@@ -114,6 +114,11 @@ local function buildSide(parent)
         quickAction(sd.actions, L.TEST_FRAMES, "test", function() Config.frame.header.test.onClick() end),
         quickAction(sd.actions, L.PROFILES, "profiles", function() Config:Show("profiles") end),
         quickAction(sd.actions, L.PRESETS, "presets", function() Config:ShowLooks() end),
+        -- resource bars have their own section on the Unit Frames page; one click lands on it (specs/004 T011)
+        quickAction(sd.actions, L.UF_RESOURCES, "speed", function()
+            local page = Config:Show("UnitFrames")
+            if page and page.FocusKey then page:FocusKey("resources.enabled") end
+        end),
     }
     sd.news = W:Card(sd, L.HOME_NEW, "bell")
     sd.news.lines = {}

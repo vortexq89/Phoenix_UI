@@ -996,6 +996,20 @@ try("Phoenix frames are Layout only, with a grouped frame list (specs/005 T007)"
     local vals = row.item.values(ns:GetModule("Movers"))
     assert(#vals > 5 and vals[1].group, "frame list is empty or ungrouped")
 end)
+try("Social page owns the friends, guild and group rows (specs/004 T010)", function()
+    local page = ns.Config:Show("social")
+    assert(page and page.rows, "no Social page")
+    local seen = {}
+    for _, r in ipairs(page.rows) do if r.item.key then seen[(r.item.module or "?") .. "." .. r.item.key] = true end end
+    assert(seen["Skins.ownFriends"] and seen["DataTexts.friends"] and seen["Automation.acceptInvites"], "a social row is missing")
+    for _, key in ipairs({ "Skins", "DataTexts", "Automation" }) do
+        local p = ns.Config:Show(key)
+        for _, r in ipairs(p.rows) do
+            assert(not (r.item.key == "ownFriends" or r.item.key == "acceptInvites" or (key == "DataTexts" and r.item.key == "friends")),
+                key .. " still has a social row")
+        end
+    end
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

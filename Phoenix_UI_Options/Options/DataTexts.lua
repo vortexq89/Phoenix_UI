@@ -113,8 +113,6 @@ ns:RegisterOptions("DataTexts", {
       step = 5, disabled = function(m) return not m.db.durability end },
     { type = "toggle", key = "bags", label = "DT_BAGS", desc = "DT_BAGS_DESC", keywords = "free slots inventory space" },
     { type = "toggle", key = "itemlevel", label = "DT_ITEMLEVEL", desc = "DT_ITEMLEVEL_DESC", keywords = "ilvl gear average" },
-    { type = "toggle", key = "friends", label = "DT_FRIENDS", desc = "DT_FRIENDS_DESC", keywords = "battle.net online" },
-    { type = "toggle", key = "guild", label = "DT_GUILD", desc = "DT_GUILD_DESC", keywords = "members online" },
     { type = "toggle", key = "mail", label = "DT_MAIL", desc = "DT_MAIL_DESC", keywords = "mailbox letter" },
     { type = "toggle", key = "spec", label = "DT_SPEC", desc = "DT_SPEC_DESC", keywords = "specialization loot talents" },
     { type = "toggle", key = "keystone", label = "DT_KEYSTONE", desc = "DT_KEYSTONE_DESC", feature = "mythicplus",
