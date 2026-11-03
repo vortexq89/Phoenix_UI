@@ -1,0 +1,650 @@
+AFK		preview					0
+AFK		header	AFK_SCREEN				0
+AFK		toggle	AFK_SPIN				0
+AFK		button	AFK_PREVIEW				0
+ActionBars		preview					0
+ActionBars		header	AB_STYLE				0
+ActionBars		toggle	AB_SQUARE				0
+ActionBars		range	ICON_ZOOM		0	0.3	0
+ActionBars		select	AB_BORDER				0
+ActionBars		range	BORDER_SIZE		1	6	1
+ActionBars		color	BORDER_COLOR				1
+ActionBars		header	AB_TEXT				0
+ActionBars		toggle	AB_HOTKEYS				0
+ActionBars		font	AB_HOTKEY_FONT				0
+ActionBars		range	FONT_SIZE		6	20	1
+ActionBars		select	FONT_OUTLINE				1
+ActionBars		toggle	FONT_SHADOW				1
+ActionBars		color	TEXT_COLOR				1
+ActionBars		select	TEXT_POSITION				1
+ActionBars		range	OFFSET_X		-50	50	1
+ActionBars		range	OFFSET_Y		-30	30	1
+ActionBars		font	AB_COUNT_FONT				0
+ActionBars		range	FONT_SIZE		6	20	1
+ActionBars		select	FONT_OUTLINE				1
+ActionBars		toggle	FONT_SHADOW				1
+ActionBars		color	TEXT_COLOR				1
+ActionBars		select	TEXT_POSITION				1
+ActionBars		range	OFFSET_X		-50	50	1
+ActionBars		range	OFFSET_Y		-30	30	1
+ActionBars		toggle	AB_MACRO				0
+ActionBars		font	AB_MACRO_FONT				0
+ActionBars		range	FONT_SIZE		6	16	1
+ActionBars		select	FONT_OUTLINE				1
+ActionBars		toggle	FONT_SHADOW				1
+ActionBars		color	TEXT_COLOR				1
+ActionBars		select	TEXT_POSITION				1
+ActionBars		range	OFFSET_X		-50	50	1
+ActionBars		range	OFFSET_Y		-30	30	1
+ActionBars		header	AB_FEEDBACK				0
+ActionBars		toggle	AB_RANGE				0
+ActionBars		color	AB_RANGE_COLOR				1
+ActionBars		description	AB_EDITMODE_NOTE				0
+Auras		preview					0
+Auras		header	AURAS_STYLE				0
+Auras		toggle	AURAS_SKIN				0
+Auras		range	ICON_ZOOM		0	0.3	0
+Auras		select	BORDER				0
+Auras		range	BORDER_SIZE		1	6	1
+Auras		color	BORDER_COLOR				1
+Auras		header	AURAS_TEXT				0
+Auras		font	AURAS_DURATION_FONT				0
+Auras		range	FONT_SIZE		6	18	1
+Auras		select	FONT_OUTLINE				1
+Auras		toggle	FONT_SHADOW				1
+Auras		color	TEXT_COLOR				1
+Auras		font	AURAS_COUNT_FONT				0
+Auras		range	FONT_SIZE		6	20	1
+Auras		select	FONT_OUTLINE				1
+Auras		toggle	FONT_SHADOW				1
+Auras		color	TEXT_COLOR				1
+Auras		description	AURAS_NOTE				0
+Automation		header	AUTO_VENDOR				0
+Automation		select	AUTO_REPAIR				0
+Automation		toggle	AUTO_SELL_JUNK				0
+Automation		header	AUTO_SOCIAL				0
+Automation		toggle	AUTO_ACCEPT_INVITES				0
+Automation		toggle	AUTO_DECLINE_DUELS				0
+Automation		toggle	AUTO_ACCEPT_RES				0
+Automation		header	AUTO_MISC				0
+Automation		toggle	AUTO_FILL_DELETE				0
+Automation		toggle	AUTO_RELEASE				0
+Automation		toggle	AUTO_SKIP_CINEMATICS				0
+Bags		preview					0
+Bags		header	BAGS_LOOK				0
+Bags		toggle	BAGS_SKIN				0
+Bags		toggle	BAGS_QUALITY				0
+Bags		range	BAGS_COUNT		8	18	0
+Bags		header	BAGS_INFO				0
+Bags		toggle	BAGS_UPGRADE				0
+Bags		toggle	BAGS_SIM_ARROW				0
+Bags		toggle	BAGS_ILVL				0
+Bugs		header	BUGS_CAPTURE				0
+Bugs		toggle	BUGS_WARNINGS				0
+Bugs		toggle	BUGS_TAINT				0
+Bugs		range	BUGS_MAX		100	500	0
+Bugs		button	BUGS_OPEN_VIEWER				0
+Bugs		header	BUGS_NOTIFY				0
+Bugs		toggle	BUGS_CHAT				0
+Bugs		select	BUGS_SOUND				0
+Bugs		toggle	BUGS_FLASH				0
+Bugs		select	BUGS_INDICATOR				0
+Bugs		toggle	BUGS_POPUP				0
+Bugs		header	BUGS_UPLOAD_HEADER				0
+Bugs		toggle	BUGS_SHARE				0
+Bugs		description	BUGS_UPLOAD_TEXT				0
+Bugs		custom	BUGS_WEBSITE				0
+Bugs		custom	BUGS_INSTALL_ID				0
+Bugs		header	BUGS_DATA				0
+Bugs		button	BUGS_CLEAR_ALL				0
+CastBars		scope	CB_BAR				0
+CastBars		preview					0
+CastBars		header	CB_STYLE				0
+CastBars		toggle	CB_SKIN				0
+CastBars		texture	BAR_TEXTURE				0
+CastBars		select	BORDER				0
+CastBars		range	BORDER_SIZE		1	6	1
+CastBars		color	BORDER_COLOR				1
+CastBars		range	BACKGROUND_OPACITY		0	1	0
+CastBars		color	BACKGROUND_COLOR				1
+CastBars		header	CB_COLORS				0
+CastBars		colors	CB_FILL_COLORS				0
+CastBars		toggle	CB_CLASSCOLOR				0
+CastBars		header	CB_TEXT				0
+CastBars		font	CB_SPELL_FONT				0
+CastBars		range	FONT_SIZE		6	32	1
+CastBars		select	FONT_OUTLINE				1
+CastBars		toggle	FONT_SHADOW				1
+CastBars		color	TEXT_COLOR				1
+CastBars		font	CB_TIME_FONT				0
+CastBars		range	FONT_SIZE		6	32	1
+CastBars		select	FONT_OUTLINE				1
+CastBars		toggle	FONT_SHADOW				1
+CastBars		color	TEXT_COLOR				1
+CastBars		header	CB_PLAYER				0
+CastBars		toggle	CB_ICON				0
+CastBars		range	ICON_ZOOM		0	0.3	1
+CastBars		toggle	CB_TIMER				0
+CastBars		toggle	CB_LATENCY				0
+Chat		preview					0
+Chat		header	CHAT_FEATURES				0
+Chat		toggle	CHAT_URLS				0
+Chat		color	CHAT_URL_COLOR				1
+Chat		toggle	CHAT_COPY_BUTTON				0
+Chat		toggle	CHAT_FAST_SCROLL				0
+Chat		toggle	CHAT_TAB_FLASH				0
+Chat		toggle	CHAT_WHISPER_TABS				0
+Chat		header	CHAT_TEXT				0
+Chat		toggle	CHAT_STYLE_TEXT				0
+Chat		font	CHAT_MESSAGE_FONT				0
+Chat		select	FONT_OUTLINE				1
+Chat		toggle	FONT_SHADOW				1
+Chat		font	CHAT_TAB_FONT				0
+Chat		range	FONT_SIZE		6	16	1
+Chat		select	FONT_OUTLINE				1
+Chat		toggle	FONT_SHADOW				1
+Chat		color	TEXT_COLOR				1
+Chat		header	CHAT_INPUT				0
+Chat		toggle	CHAT_ARROW_KEYS				0
+Chat		toggle	CHAT_KEEP_HISTORY				0
+Chat		button	CHAT_CLEAR_HISTORY				0
+CombatText		preview					0
+CombatText		description	FCT_INTRO				0
+CombatText		header	FCT_OUTGOING				0
+CombatText		toggle	FCT_DAMAGE				0
+CombatText		toggle	FCT_PERIODIC				0
+CombatText		toggle	FCT_PET				0
+CombatText		toggle	FCT_HEALING				0
+CombatText		range	FCT_SCALE		0.5	2.5	0
+CombatText		header	FCT_INCOMING				0
+CombatText		toggle	FCT_SELF				0
+CombatText		select	FCT_MODE				0
+CombatText		toggle	FCT_AVOIDANCE				0
+CombatText		toggle	FCT_RESISTANCES				0
+CombatText		toggle	FCT_COMBAT_STATE				0
+CombatText		toggle	FCT_REACTIVES				0
+CombatText		toggle	FCT_LOW				0
+CombatText		toggle	FCT_AURAS				0
+CombatText		toggle	FCT_ENERGY				0
+CombatText		toggle	FCT_HONOR				0
+CombatText		toggle	FCT_REP				0
+CooldownText		preview					0
+CooldownText		header	BLIZZARD_FEATURES				0
+CooldownText		toggle	CD_NUMBERS				0
+CooldownText		header	CD_STYLE				0
+CooldownText		range	FONT_SIZE		10	28	0
+CooldownText		color	CD_COLOR				0
+DamageMeter		preview					0
+DamageMeter		header	BLIZZARD_FEATURES				0
+DamageMeter		toggle	DM_ENABLE				0
+DamageMeter		header	DM_STYLE				0
+DamageMeter		toggle	DM_SKIN				0
+DamageMeter		header	DM_DETAILS				0
+DamageMeter		description	DM_DETAILS_TEXT				0
+DamageMeter		button	DM_DETAILS_APPLY				0
+DataTexts		preview					0
+DataTexts		header	DT_SEGMENTS				0
+DataTexts		toggle	DT_FPS				0
+DataTexts		toggle	DT_LATENCY				0
+DataTexts		toggle	DT_SPEED				0
+DataTexts		toggle	DT_DURABILITY				0
+DataTexts		toggle	DT_GOLD				0
+DataTexts		toggle	DT_CLOCK				0
+DataTexts		toggle	DT_CLOCK24				0
+DataTexts		toggle	DT_BUGS				0
+DataTexts		toggle	DT_BAGS				0
+DataTexts		toggle	DT_ITEMLEVEL				0
+DataTexts		toggle	DT_FRIENDS				0
+DataTexts		toggle	DT_GUILD				0
+DataTexts		toggle	DT_MAIL				0
+DataTexts		custom	DT_ORDER				0
+DataTexts		header	DT_STYLE				0
+DataTexts		toggle	DT_BACKGROUND				0
+DataTexts		range	BACKGROUND_OPACITY		0	1	1
+DataTexts		color	BACKGROUND_COLOR				1
+DataTexts		select	BORDER				1
+DataTexts		range	BORDER_SIZE		1	6	1
+DataTexts		color	BORDER_COLOR				1
+DataTexts		range	SCALE		0.6	2	0
+DataTexts		range	DT_HEIGHT		18	40	0
+DataTexts		range	DT_SPACING		4	40	0
+DataTexts		select	FRAME_STRATA				0
+DataTexts		header	DT_TEXT				0
+DataTexts		font	DT_VALUE_FONT				0
+DataTexts		range	FONT_SIZE		6	20	1
+DataTexts		select	FONT_OUTLINE				1
+DataTexts		toggle	FONT_SHADOW				1
+DataTexts		color	TEXT_COLOR				1
+DataTexts		font	DT_UNIT_FONT				0
+DataTexts		range	FONT_SIZE		6	18	1
+DataTexts		select	FONT_OUTLINE				1
+DataTexts		toggle	FONT_SHADOW				1
+DataTexts		color	TEXT_COLOR				1
+DataTexts		toggle	DT_COLOR_VALUES				0
+DataTexts		toggle	DT_ICONS				0
+DataTexts		button	DT_MOVE				0
+Encounters		preview					0
+Encounters		header	ENC_START				0
+Encounters		toggle	ENC_MASTER				0
+Encounters		button	ENC_TEST				0
+Encounters		description	<fn>				0
+Encounters	ENC_TAB_TIMELINE	tab	ENC_TAB_TIMELINE				0
+Encounters	ENC_TAB_TIMELINE	header	ENC_TIMELINE				0
+Encounters	ENC_TAB_TIMELINE	select	ENC_TIMELINE_DISPLAY				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_HIDE_LONG				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_HIDE_QUEUED				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_HIDE_ROLES				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_SEQUENCE				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_ICONOGRAPHY				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_ICONS_TANK				1
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_ICONS_HEALER				1
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_ICONS_DAMAGE				1
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_ICONS_DISPEL				1
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_ICONS_ENRAGE				1
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_ICONS_DEADLY				1
+Encounters	ENC_TAB_TIMELINE	header	ENC_BARS				0
+Encounters	ENC_TAB_TIMELINE	range	ENC_WIDTH		120	500	0
+Encounters	ENC_TAB_TIMELINE	range	ENC_HEIGHT		12	40	0
+Encounters	ENC_TAB_TIMELINE	range	ENC_SPACING		0	12	0
+Encounters	ENC_TAB_TIMELINE	range	ENC_MAX_BARS		3	15	0
+Encounters	ENC_TAB_TIMELINE	range	ENC_HORIZON		0	120	0
+Encounters	ENC_TAB_TIMELINE	select	ENC_GROW				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_SHOW_ICON				0
+Encounters	ENC_TAB_TIMELINE	texture	BAR_TEXTURE				0
+Encounters	ENC_TAB_TIMELINE	color	ENC_BAR_COLOR				0
+Encounters	ENC_TAB_TIMELINE	toggle	ENC_EMPHASIZE				0
+Encounters	ENC_TAB_TIMELINE	range	ENC_EMPHASIZE_AT		2	15	1
+Encounters	ENC_TAB_TIMELINE	color	ENC_EMPHASIZE_COLOR				1
+Encounters	ENC_TAB_TIMELINE	range	BACKGROUND_OPACITY		0	1	0
+Encounters	ENC_TAB_TIMELINE	color	BACKGROUND_COLOR				1
+Encounters	ENC_TAB_TIMELINE	select	BORDER				0
+Encounters	ENC_TAB_TIMELINE	range	BORDER_SIZE		1	6	1
+Encounters	ENC_TAB_TIMELINE	color	BORDER_COLOR				1
+Encounters	ENC_TAB_TIMELINE	font	ENC_NAME_FONT				0
+Encounters	ENC_TAB_TIMELINE	range	FONT_SIZE		6	24	1
+Encounters	ENC_TAB_TIMELINE	select	FONT_OUTLINE				1
+Encounters	ENC_TAB_TIMELINE	toggle	FONT_SHADOW				1
+Encounters	ENC_TAB_TIMELINE	color	TEXT_COLOR				1
+Encounters	ENC_TAB_TIMELINE	font	ENC_TIME_FONT				0
+Encounters	ENC_TAB_TIMELINE	range	FONT_SIZE		6	24	1
+Encounters	ENC_TAB_TIMELINE	select	FONT_OUTLINE				1
+Encounters	ENC_TAB_TIMELINE	toggle	FONT_SHADOW				1
+Encounters	ENC_TAB_TIMELINE	color	TEXT_COLOR				1
+Encounters	ENC_TAB_WARNINGS	tab	ENC_TAB_WARNINGS				0
+Encounters	ENC_TAB_WARNINGS	header	ENC_WARNINGS				0
+Encounters	ENC_TAB_WARNINGS	select	ENC_WARN_DISPLAY				0
+Encounters	ENC_TAB_WARNINGS	select	ENC_WARN_LEVEL				0
+Encounters	ENC_TAB_WARNINGS	toggle	ENC_WARN_TARGETED				0
+Encounters	ENC_TAB_WARNINGS	header	ENC_BANNER				0
+Encounters	ENC_TAB_WARNINGS	toggle	ENC_SHOW_ICON				0
+Encounters	ENC_TAB_WARNINGS	font	ENC_WARN_FONT				0
+Encounters	ENC_TAB_WARNINGS	range	FONT_SIZE		6	40	1
+Encounters	ENC_TAB_WARNINGS	select	FONT_OUTLINE				1
+Encounters	ENC_TAB_WARNINGS	toggle	FONT_SHADOW				1
+Encounters	ENC_TAB_WARNINGS	color	TEXT_COLOR				1
+Encounters	ENC_TAB_TIMERS	tab	ENC_TAB_TIMERS				0
+Encounters	ENC_TAB_TIMERS	header	ENC_PULL				0
+Encounters	ENC_TAB_TIMERS	range	ENC_PULL_SECONDS		3	30	0
+Encounters	ENC_TAB_TIMERS	button	ENC_PULL_START				0
+Encounters	ENC_TAB_TIMERS	button	ENC_PULL_CANCEL				0
+Encounters	ENC_TAB_TIMERS	header	ENC_BREAK				0
+Encounters	ENC_TAB_TIMERS	range	ENC_BREAK_MINUTES		1	30	0
+Encounters	ENC_TAB_TIMERS	toggle	ENC_BREAK_SYNC				0
+Encounters	ENC_TAB_TIMERS	button	ENC_BREAK_START				0
+Encounters	ENC_TAB_TIMERS	button	ENC_BREAK_END				0
+Encounters	ENC_TAB_SOUNDS	tab	ENC_TAB_SOUNDS				0
+Encounters	ENC_TAB_SOUNDS	header	ENC_COUNTDOWN				0
+Encounters	ENC_TAB_SOUNDS	toggle	ENC_VOICE				0
+Encounters	ENC_TAB_SOUNDS	select	ENC_VOICE_PICK				0
+Encounters	ENC_TAB_SOUNDS	range	ENC_VOICE_FROM		3	10	0
+Encounters	ENC_TAB_SOUNDS	toggle	ENC_VOICE_PULL				0
+Encounters	ENC_TAB_SOUNDS	toggle	ENC_VOICE_TIMERS				0
+Encounters	ENC_TAB_SOUNDS	button	ENC_VOICE_TEST				0
+Encounters	ENC_TAB_SOUNDS	header	ENC_WARN_SOUNDS				0
+Encounters	ENC_TAB_SOUNDS	select	ENC_SEV_HIGH				0
+Encounters	ENC_TAB_SOUNDS	select	ENC_SEV_MEDIUM				0
+Encounters	ENC_TAB_SOUNDS	select	ENC_SEV_LOW				0
+Encounters	ENC_TAB_SOUNDS	button	ENC_SOUND_TEST				0
+Encounters	ENC_TAB_BIGWIGS	tab	ENC_TAB_BIGWIGS				0
+Encounters	ENC_TAB_BIGWIGS	header	ENC_BIGWIGS				0
+Encounters	ENC_TAB_BIGWIGS	toggle	ENC_BW_STYLE				0
+Encounters	ENC_TAB_BIGWIGS	description	<fn>				0
+General		preview					0
+General		header	APPEARANCE				0
+General		select	THEME				0
+General		color	THEME_CUSTOM_COLOR				0
+General		texture	BAR_TEXTURE				0
+General		header	TYPOGRAPHY				0
+General		font	UI_FONT				0
+General		font	UNIT_FONT				0
+General		range	FONT_SCALE		0.8	1.4	0
+General		header	ACCESSIBILITY				0
+General		toggle	REDUCE_MOTION				0
+GroupFrames		preview					0
+GroupFrames		header	GF_STYLE				0
+GroupFrames		toggle	GF_TEXTURE				0
+GroupFrames		texture	BAR_TEXTURE				0
+GroupFrames		select	BORDER				0
+GroupFrames		range	BORDER_SIZE		1	6	1
+GroupFrames		color	BORDER_COLOR				1
+GroupFrames		range	BACKGROUND_OPACITY		0	1	0
+GroupFrames		color	BACKGROUND_COLOR				1
+GroupFrames		header	GF_TEXT				0
+GroupFrames		toggle	GF_FONTS				0
+GroupFrames		font	GF_NAME_FONT				0
+GroupFrames		range	FONT_SIZE		8	18	1
+GroupFrames		select	FONT_OUTLINE				1
+GroupFrames		toggle	FONT_SHADOW				1
+GroupFrames		color	TEXT_COLOR				1
+GroupFrames		font	GF_STATUS_FONT				0
+GroupFrames		range	FONT_SIZE		8	18	1
+GroupFrames		select	FONT_OUTLINE				1
+GroupFrames		toggle	FONT_SHADOW				1
+GroupFrames		color	TEXT_COLOR				1
+GroupFrames		description	GF_NOTE				0
+ItemLevel		preview					0
+ItemLevel		header	ITEMLEVEL_WHERE				0
+ItemLevel		toggle	ITEMLEVEL_CHARACTER				0
+ItemLevel		toggle	ITEMLEVEL_BAGS				0
+ItemLevel		header	ITEMLEVEL_STYLE				0
+ItemLevel		toggle	ITEMLEVEL_QUALITY				0
+ItemLevel		range	FONT_SIZE		8	18	0
+Minimap		preview					0
+Minimap		header	MINIMAP_SHAPE				0
+Minimap		toggle	MINIMAP_SQUARE				0
+Minimap		custom	MINIMAP_SIZE				0
+Minimap		toggle	MINIMAP_ZONE_TEXT				0
+Minimap		header	MINIMAP_INFO				0
+Minimap		toggle	MINIMAP_COORDS				0
+Minimap		header	MINIMAP_BIN				0
+Minimap		toggle	MINIMAP_BIN_ENABLE				0
+Minimap		range	MINIMAP_BIN_COLUMNS		1	8	0
+Minimap		button	MINIMAP_BIN_OPEN				0
+Movers		header	MOVERS_UNLOCK_HEADER				0
+Movers		description	MOVERS_INTRO				0
+Movers		button	MOVERS_UNLOCK				0
+Movers		toggle	MOVERS_GRID				0
+Movers		range	MOVERS_GRID_SIZE		8	128	0
+Movers		toggle	MOVERS_SNAP				0
+Movers		header	MOVERS_FRAMES				0
+Movers		custom	MOVERS_ZONE_TEXT				0
+Movers		custom	MOVERS_SUBZONE_TEXT				0
+Movers		custom	MOVERS_ERRORS				0
+Movers		custom	MOVERS_ALERTS				0
+Movers		custom	MOVERS_TOP_WIDGETS				0
+Movers		custom	MOVERS_BOSS_BANNER				0
+Movers		custom	MOVERS_EVENT_TOASTS				0
+Movers		custom	MOVERS_READY_CHECK				0
+Movers		custom	BUGS_INDICATOR				0
+Movers		button	MOVERS_RESET_ALL				0
+Movers		header	MOVERS_EDIT_MODE				0
+Movers		description	MOVERS_EDIT_MODE_TEXT				0
+Movers		button	MOVERS_EDIT_MODE_OPEN				0
+Movers		header	MOVERS_EXCLUDED				0
+Movers		description	MOVERS_EXCLUDED_TEXT				0
+MythicPlus		preview					0
+MythicPlus		header	MPLUS_TIMER				0
+MythicPlus		toggle	MPLUS_TIMER_SHOW				0
+MythicPlus		toggle	MPLUS_TIMER_FORCES				0
+MythicPlus		toggle	MPLUS_TIMER_BOSSES				0
+MythicPlus		toggle	MPLUS_TIMER_DEATHS				0
+MythicPlus		toggle	MPLUS_TIMER_BEST				0
+MythicPlus		toggle	MPLUS_TIMER_SPLITS				0
+MythicPlus		toggle	MPLUS_TIMER_PULL				0
+MythicPlus		button	MPLUS_TIMER_PLACE				0
+MythicPlus		header	MPLUS_KEYSTONE				0
+MythicPlus		toggle	MPLUS_AUTO_INSERT				0
+MythicPlus		toggle	MPLUS_REPORT				0
+MythicPlus		header	MPLUS_KEYS				0
+MythicPlus		toggle	MPLUS_KEYS_SHARE				0
+MythicPlus		custom	MPLUS_KEYS_LIST				0
+MythicPlus		button	MPLUS_KEYS_REQUEST				0
+NamePlates		preview					0
+NamePlates	TAB_APPEARANCE	tab	TAB_APPEARANCE				0
+NamePlates	TAB_APPEARANCE	header	NP_STYLE				0
+NamePlates	TAB_APPEARANCE	toggle	NP_TEXTURE				0
+NamePlates	TAB_APPEARANCE	texture	BAR_TEXTURE				0
+NamePlates	TAB_APPEARANCE	header	NP_FRAME				0
+NamePlates	TAB_APPEARANCE	select	BORDER				0
+NamePlates	TAB_APPEARANCE	range	BORDER_SIZE		1	6	1
+NamePlates	TAB_APPEARANCE	color	BORDER_COLOR				1
+NamePlates	TAB_APPEARANCE	range	BACKGROUND_OPACITY		0	1	0
+NamePlates	TAB_APPEARANCE	color	BACKGROUND_COLOR				1
+NamePlates	TAB_APPEARANCE	header	NP_CASTBAR				0
+NamePlates	TAB_APPEARANCE	toggle	NP_CASTBAR_STYLE				0
+NamePlates	TAB_APPEARANCE	texture	BAR_TEXTURE				0
+NamePlates	TAB_APPEARANCE	color	NP_CASTBAR_COLOR				0
+NamePlates	TAB_APPEARANCE	font	NP_CASTBAR_FONT				0
+NamePlates	TAB_APPEARANCE	range	FONT_SIZE		6	18	1
+NamePlates	TAB_APPEARANCE	select	FONT_OUTLINE				1
+NamePlates	TAB_APPEARANCE	toggle	FONT_SHADOW				1
+NamePlates	TAB_APPEARANCE	color	TEXT_COLOR				1
+NamePlates	TAB_APPEARANCE	header	NP_AURAS				0
+NamePlates	TAB_APPEARANCE	toggle	NP_AURAS_STYLE				0
+NamePlates	TAB_APPEARANCE	range	ICON_ZOOM		0	0.3	1
+NamePlates	TAB_APPEARANCE	select	BORDER				0
+NamePlates	TAB_APPEARANCE	range	BORDER_SIZE		1	6	1
+NamePlates	TAB_APPEARANCE	color	BORDER_COLOR				1
+NamePlates	TAB_COLORS	tab	TAB_COLORS				0
+NamePlates	TAB_COLORS	header	NP_HIGHLIGHT				0
+NamePlates	TAB_COLORS	toggle	NP_TARGET_COLOR				0
+NamePlates	TAB_COLORS	color	TEXT_COLOR				1
+NamePlates	TAB_COLORS	toggle	NP_FOCUS_COLOR				0
+NamePlates	TAB_COLORS	color	TEXT_COLOR				1
+NamePlates	TAB_COLORS	header	NP_THREAT				0
+NamePlates	TAB_COLORS	toggle	NP_THREAT_COLORS				0
+NamePlates	TAB_COLORS	colors	NP_THREAT_PICK				0
+NamePlates	TAB_TEXT	tab	TAB_TEXT				0
+NamePlates	TAB_TEXT	header	NP_TEXT				0
+NamePlates	TAB_TEXT	toggle	NP_HEALTH_TEXT				0
+NamePlates	TAB_TEXT	font	NP_HEALTH_FONT				0
+NamePlates	TAB_TEXT	range	FONT_SIZE		6	20	1
+NamePlates	TAB_TEXT	select	FONT_OUTLINE				1
+NamePlates	TAB_TEXT	toggle	FONT_SHADOW				1
+NamePlates	TAB_TEXT	color	TEXT_COLOR				1
+NamePlates	TAB_TEXT	select	TEXT_POSITION				1
+NamePlates	TAB_TEXT	range	OFFSET_X		-50	50	1
+NamePlates	TAB_TEXT	range	OFFSET_Y		-30	30	1
+NamePlates	TAB_TEXT	toggle	NP_NAME_STYLED				0
+NamePlates	TAB_TEXT	font	NP_NAME_FONT				0
+NamePlates	TAB_TEXT	range	FONT_SIZE		6	20	1
+NamePlates	TAB_TEXT	select	FONT_OUTLINE				1
+NamePlates	TAB_TEXT	toggle	FONT_SHADOW				1
+NamePlates	TAB_TEXT	color	TEXT_COLOR				1
+NamePlates	TAB_TEXT	toggle	NP_FORCES				0
+NamePlates	TAB_TEXT	font	NP_FORCES_FONT				0
+NamePlates	TAB_TEXT	range	FONT_SIZE		6	20	1
+NamePlates	TAB_TEXT	select	FONT_OUTLINE				1
+NamePlates	TAB_TEXT	toggle	FONT_SHADOW				1
+NamePlates	TAB_TEXT	color	TEXT_COLOR				1
+NamePlates	TAB_TEXT	header	NP_AURAS				0
+NamePlates	TAB_TEXT	font	NP_AURA_COUNT_FONT				0
+NamePlates	TAB_TEXT	range	FONT_SIZE		6	18	1
+NamePlates	TAB_TEXT	select	FONT_OUTLINE				1
+NamePlates	TAB_TEXT	toggle	FONT_SHADOW				1
+NamePlates	TAB_TEXT	color	TEXT_COLOR				1
+NamePlates	TAB_TEXT	font	NP_AURA_TIMER_FONT				0
+NamePlates	TAB_TEXT	range	FONT_SIZE		6	18	1
+NamePlates	TAB_TEXT	select	FONT_OUTLINE				1
+NamePlates	TAB_TEXT	toggle	FONT_SHADOW				1
+NamePlates	TAB_TEXT	color	TEXT_COLOR				1
+NamePlates	TAB_GAME	tab	TAB_GAME				0
+NamePlates	TAB_GAME	header	BLIZZARD_FEATURES				0
+NamePlates	TAB_GAME	toggle	NP_SHOW_ALL				0
+NamePlates	TAB_GAME	toggle	NP_SHOW_ENEMIES				0
+PvP		header	PVP_QUEUE				0
+PvP		toggle	PVP_SAFE_QUEUE				0
+PvP		header	PVP_TARGETING				0
+PvP		toggle	PVP_TAB				0
+PvP		header	PVP_ARENA				0
+PvP		toggle	PVP_SURRENDER				0
+Quality		header	QUALITY_INTERFACE				0
+Quality		toggle	HIDE_TALKING_HEAD				0
+Quality		toggle	FILTER_ERRORS				0
+Quality		toggle	ACHIEVEMENT_SCREENSHOT				0
+Quality		header	BLIZZARD_FEATURES				0
+Quality		toggle	COOLDOWN_MANAGER				0
+Sim		preview					0
+Sim		header	SIM_START				0
+Sim		description	SIM_INTRO				0
+Sim		custom	SIM_PICK				0
+Sim		custom	SIM_RUN				0
+Sim		header	SIM_FIGHT				0
+Sim		select	SIM_FIGHT_STYLE				0
+Sim		range	SIM_TARGETS		1	10	0
+Sim		range	SIM_LENGTH		60	600	0
+Sim		button	SIM_TEST				0
+Sim		header	SIM_HISTORY				0
+Sim		custom	SIM_HISTORY_LIST				0
+Sim		header	SIM_SHOW				0
+Sim		range	SIM_MAX_AGE		1	14	0
+Sim		toggle	TOOLTIP_SIM				0
+Sim		toggle	BAGS_SIM_ARROW				0
+Sim		header	SIM_APP				0
+Sim		description	SIM_APP_TEXT				0
+Skins		preview					0
+Skins		header	SKINS_WINDOWS				0
+Skins		toggle	SKINS_GAMEMENU				0
+Skins		toggle	SKINS_POPUPS				0
+Skins		toggle	SKINS_READYCHECK				0
+Skins		description	SKINS_NOTE				0
+SpellHistory		preview					0
+SpellHistory		header	SH_LAYOUT				0
+SpellHistory		range	SH_COUNT		2	12	0
+SpellHistory		range	SH_SIZE		18	64	0
+SpellHistory		range	SH_SPACING		0	16	0
+SpellHistory		select	SH_GROW				0
+SpellHistory		header	SH_BEHAVIOUR				0
+SpellHistory		range	SH_FADE		0	30	0
+SpellHistory		toggle	SH_COMBAT_ONLY				0
+SpellHistory		button	DT_MOVE				0
+Tooltip		preview					0
+Tooltip	TAB_APPEARANCE	tab	TAB_APPEARANCE				0
+Tooltip	TAB_APPEARANCE	header	TOOLTIP_STYLE				0
+Tooltip	TAB_APPEARANCE	toggle	TOOLTIP_SKIN				0
+Tooltip	TAB_APPEARANCE	range	BACKGROUND_OPACITY		0	1	0
+Tooltip	TAB_APPEARANCE	color	BACKGROUND_COLOR				1
+Tooltip	TAB_APPEARANCE	select	BORDER				0
+Tooltip	TAB_APPEARANCE	range	BORDER_SIZE		1	6	1
+Tooltip	TAB_APPEARANCE	color	BORDER_COLOR				1
+Tooltip	TAB_APPEARANCE	toggle	TOOLTIP_HEALTHBAR				0
+Tooltip	TAB_APPEARANCE	texture	BAR_TEXTURE				1
+Tooltip	TAB_APPEARANCE	range	TOOLTIP_BAR_HEIGHT		2	12	1
+Tooltip	TAB_APPEARANCE	toggle	TOOLTIP_CLASS_BORDER				0
+Tooltip	TAB_APPEARANCE	toggle	TOOLTIP_QUALITY_BORDER				0
+Tooltip	TAB_APPEARANCE	header	TOOLTIP_TEXT				0
+Tooltip	TAB_APPEARANCE	toggle	TOOLTIP_FONTS				0
+Tooltip	TAB_APPEARANCE	font	TOOLTIP_HEADER_FONT				0
+Tooltip	TAB_APPEARANCE	range	FONT_SIZE		6	24	1
+Tooltip	TAB_APPEARANCE	select	FONT_OUTLINE				1
+Tooltip	TAB_APPEARANCE	toggle	FONT_SHADOW				1
+Tooltip	TAB_APPEARANCE	color	TEXT_COLOR				1
+Tooltip	TAB_APPEARANCE	font	TOOLTIP_BODY_FONT				0
+Tooltip	TAB_APPEARANCE	range	FONT_SIZE		6	20	1
+Tooltip	TAB_APPEARANCE	select	FONT_OUTLINE				1
+Tooltip	TAB_APPEARANCE	toggle	FONT_SHADOW				1
+Tooltip	TAB_APPEARANCE	color	TEXT_COLOR				1
+Tooltip	TAB_CONTENT	tab	TAB_CONTENT				0
+Tooltip	TAB_CONTENT	header	TOOLTIP_BEHAVIOUR				0
+Tooltip	TAB_CONTENT	select	TOOLTIP_ANCHOR				0
+Tooltip	TAB_CONTENT	toggle	TOOLTIP_HIDE_COMBAT				0
+Tooltip	TAB_CONTENT	header	TOOLTIP_LINES				0
+Tooltip	TAB_CONTENT	toggle	TOOLTIP_TARGET				0
+Tooltip	TAB_CONTENT	toggle	TOOLTIP_ROLE				0
+Tooltip	TAB_CONTENT	toggle	TOOLTIP_MPLUS				0
+Tooltip	TAB_CONTENT	toggle	TOOLTIP_SIM				0
+Tooltip	TAB_CONTENT	toggle	TOOLTIP_IDS				0
+Tracker		scope	TRACKER_VIEWER				0
+Tracker		preview					0
+Tracker	TAB_APPEARANCE	tab	TAB_APPEARANCE				0
+Tracker	TAB_APPEARANCE	header	TRACKER_ICONS				0
+Tracker	TAB_APPEARANCE	toggle	TRACKER_SKIN				0
+Tracker	TAB_APPEARANCE	toggle	TRACKER_SQUARE				0
+Tracker	TAB_APPEARANCE	range	ICON_ZOOM		0	0.3	1
+Tracker	TAB_APPEARANCE	select	BORDER				0
+Tracker	TAB_APPEARANCE	range	BORDER_SIZE		1	6	1
+Tracker	TAB_APPEARANCE	color	BORDER_COLOR				1
+Tracker	TAB_APPEARANCE	toggle	TRACKER_DEBUFF_BORDER				0
+Tracker	TAB_APPEARANCE	header	TRACKER_BAR				0
+Tracker	TAB_APPEARANCE	texture	BAR_TEXTURE				0
+Tracker	TAB_APPEARANCE	color	TRACKER_BAR_COLOR				0
+Tracker	TAB_APPEARANCE	range	BACKGROUND_OPACITY		0	1	0
+Tracker	TAB_APPEARANCE	color	BACKGROUND_COLOR				1
+Tracker	TAB_TEXT	tab	TAB_TEXT				0
+Tracker	TAB_TEXT	header	TRACKER_TEXT				0
+Tracker	TAB_TEXT	font	TRACKER_TIMER_FONT				0
+Tracker	TAB_TEXT	range	FONT_SIZE		6	28	1
+Tracker	TAB_TEXT	select	FONT_OUTLINE				1
+Tracker	TAB_TEXT	toggle	FONT_SHADOW				1
+Tracker	TAB_TEXT	color	TEXT_COLOR				1
+Tracker	TAB_TEXT	font	TRACKER_COUNT_FONT				0
+Tracker	TAB_TEXT	range	FONT_SIZE		6	24	1
+Tracker	TAB_TEXT	select	FONT_OUTLINE				1
+Tracker	TAB_TEXT	toggle	FONT_SHADOW				1
+Tracker	TAB_TEXT	color	TEXT_COLOR				1
+Tracker	TAB_TEXT	font	TRACKER_NAME_FONT				0
+Tracker	TAB_TEXT	range	FONT_SIZE		6	20	1
+Tracker	TAB_TEXT	select	FONT_OUTLINE				1
+Tracker	TAB_TEXT	toggle	FONT_SHADOW				1
+Tracker	TAB_TEXT	color	TEXT_COLOR				1
+Tracker	TAB_BEHAVIOUR	tab	TAB_BEHAVIOUR				0
+Tracker	TAB_BEHAVIOUR	header	TRACKER_FADE				0
+Tracker	TAB_BEHAVIOUR	toggle	TRACKER_FADE_OOC				0
+Tracker	TAB_BEHAVIOUR	range	TRACKER_FADE_ALPHA		0	1	1
+Tracker	TAB_BEHAVIOUR	button	TRACKER_OPEN_CDM				0
+Tracker	TAB_BEHAVIOUR	description	TRACKER_NOTE				0
+UnitFrames		scope	UF_FRAME				0
+UnitFrames		preview					0
+UnitFrames	TAB_APPEARANCE	tab	TAB_APPEARANCE				0
+UnitFrames	TAB_APPEARANCE	header	UF_TESTING				0
+UnitFrames	TAB_APPEARANCE	button	UF_TEST				0
+UnitFrames	TAB_APPEARANCE	header	UF_BARS				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_TEXTURE				0
+UnitFrames	TAB_APPEARANCE	texture	BAR_TEXTURE				0
+UnitFrames	TAB_APPEARANCE	select	UF_HEALTH_BORDER				0
+UnitFrames	TAB_APPEARANCE	range	BORDER_SIZE		1	6	1
+UnitFrames	TAB_APPEARANCE	color	BORDER_COLOR				1
+UnitFrames	TAB_APPEARANCE	range	BACKGROUND_OPACITY		0	1	0
+UnitFrames	TAB_APPEARANCE	color	BACKGROUND_COLOR				1
+UnitFrames	TAB_APPEARANCE	header	UF_COLORS				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_CLASSCOLOR				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_POWERCOLOR				0
+UnitFrames	TAB_APPEARANCE	header	UF_PORTRAIT_ICONS				0
+UnitFrames	TAB_APPEARANCE	select	UF_PORTRAIT				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_ICON_LEADER				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_ICON_MARKER				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_ICON_PVP				0
+UnitFrames	TAB_APPEARANCE	header	UF_RANGE				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_RANGE_FADE				0
+UnitFrames	TAB_APPEARANCE	range	UF_RANGE_ALPHA		0.1	0.9	1
+UnitFrames	TAB_APPEARANCE	header	UF_AURAS				0
+UnitFrames	TAB_APPEARANCE	toggle	UF_AURAS_STYLE				0
+UnitFrames	TAB_APPEARANCE	range	ICON_ZOOM		0	0.3	1
+UnitFrames	TAB_APPEARANCE	select	BORDER				0
+UnitFrames	TAB_APPEARANCE	range	BORDER_SIZE		1	6	1
+UnitFrames	TAB_APPEARANCE	color	BORDER_COLOR				1
+UnitFrames	TAB_TEXT	tab	TAB_TEXT				0
+UnitFrames	TAB_TEXT	header	UF_TEXT				0
+UnitFrames	TAB_TEXT	toggle	UF_FONTS				0
+UnitFrames	TAB_TEXT	font	UF_NAME_FONT				0
+UnitFrames	TAB_TEXT	range	FONT_SIZE		6	32	1
+UnitFrames	TAB_TEXT	select	FONT_OUTLINE				1
+UnitFrames	TAB_TEXT	toggle	FONT_SHADOW				1
+UnitFrames	TAB_TEXT	color	TEXT_COLOR				1
+UnitFrames	TAB_TEXT	font	UF_HEALTH_FONT				0
+UnitFrames	TAB_TEXT	range	FONT_SIZE		6	32	1
+UnitFrames	TAB_TEXT	select	FONT_OUTLINE				1
+UnitFrames	TAB_TEXT	toggle	FONT_SHADOW				1
+UnitFrames	TAB_TEXT	color	TEXT_COLOR				1
+UnitFrames	TAB_TEXT	font	UF_POWER_FONT				0
+UnitFrames	TAB_TEXT	range	FONT_SIZE		6	32	1
+UnitFrames	TAB_TEXT	select	FONT_OUTLINE				1
+UnitFrames	TAB_TEXT	toggle	FONT_SHADOW				1
+UnitFrames	TAB_TEXT	color	TEXT_COLOR				1
+UnitFrames	TAB_TEXT	font	UF_AURA_COUNT_FONT				0
+UnitFrames	TAB_TEXT	range	FONT_SIZE		6	20	1
+UnitFrames	TAB_TEXT	select	FONT_OUTLINE				1
+UnitFrames	TAB_TEXT	toggle	FONT_SHADOW				1
+UnitFrames	TAB_TEXT	color	TEXT_COLOR				1
+UnitFrames	TAB_TEXT	description	UF_EDITMODE_NOTE				0
+UnitFrames	TAB_TEXT	description	UF_ARENA_NOTE				0

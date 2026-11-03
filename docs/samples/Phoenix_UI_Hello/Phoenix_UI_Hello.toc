@@ -1,0 +1,5 @@
+## Interface: 120105, 16001
+## Title: Phoenix UI - Hello (sample plugin)
+## Notes: Sample third-party plugin for the Phoenix UI public API.
+## Dependencies: Phoenix_UI
+Hello.lua

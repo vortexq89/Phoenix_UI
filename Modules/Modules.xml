@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- system -->
+    <Script file="General\General.lua"/>
+    <Script file="Bugs\Bugs.lua"/>
+    <Script file="Bugs\Viewer.lua"/>
+    <Script file="Bugs\Share.lua"/>
+    <!-- interface -->
+    <Script file="Movers\Movers.lua"/>
+    <Script file="Movers\Windows.lua"/>
+    <Script file="Movers\Toolbar.lua"/>
+    <Script file="Movers\Popup.lua"/>
+    <!-- combat -->
+    <Script file="CombatText\CombatText.lua"/>
+    <Script file="CombatText\Scroll.lua"/>
+    <!-- social -->
+    <!-- utility -->
+    <Script file="Quality\Quality.lua"/>
+    <Script file="Quality\Flight.lua"/>
+    <Script file="Quality\LootFeed.lua"/>
+</Ui>

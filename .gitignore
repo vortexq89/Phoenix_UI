@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.release/
+.DS_Store
+Thumbs.db
+uploader/dist/
+uploader/*.syso

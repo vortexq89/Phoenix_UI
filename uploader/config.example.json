@@ -1,0 +1,7 @@
+{
+  "endpoint": "https://vq8s.com/phoenix/api/ingest",
+  "ingestKey": "PUT-THE-PHOENIX_INGEST_KEY-HERE",
+  "wowPaths": ["D:\\Games\\World of Warcraft\\_retail_"],
+  "scanSeconds": 60,
+  "disabled": false
+}

@@ -1,0 +1,16 @@
+---
+description: Lint and test workflow before committing
+alwaysApply: false
+---
+# Lint & test
+
+Before every commit:
+1. `luacheck .` → **0 warnings** (config `.luacheckrc`, std `.luacheck/wow_std_12.1.5.lua`).
+2. `rg -n "COMBAT_LOG_EVENT|CombatLogGetCurrentEventInfo|collectgarbage|EnumerateFrames|getglobal|InterfaceOptions|EasyMenu|UIDropDownMenu_" Core UI Modules` → empty.
+3. Each `.lua` under `Core/ UI/ Modules/ Locales/` is referenced by exactly one `.xml`/TOC line, with exact case (script: `tools/audit/` loader check or a quick `rg`).
+4. New locale keys exist in `Locales/enUS.lua`; no inline English in `L[...]` fallbacks.
+5. For widget methods not covered by the std, cite the `Blizzard_APIDocumentationGenerated/*` file in the PR/commit body.
+
+Before merging to main (human, in game): the checklist in `AGENTS.md §7` (reload with all modules on/off, toggles, taintLog, forced secret CVars, Edit Mode layouts, profile round-trip, locale fonts).
+
+When the game patches: bump the TOC, regenerate the std per `tools/audit/README.md`, run luacheck and fix every new W113/W143, and read the wiki "Patch X API changes" for behaviour changes (secrets/aspects) that lint cannot see.

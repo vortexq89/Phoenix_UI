@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="phoenix.css"><style>
+.gridbg{position:absolute;inset:0;background-image:linear-gradient(rgba(255,106,26,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,106,26,.08) 1px,transparent 1px);background-size:32px 32px}
+.mv{position:absolute;border:1px dashed var(--acc);background:rgba(255,106,26,.10);color:var(--acc2);font-size:11px;display:flex;align-items:center;justify-content:center;border-radius:3px}
+.mv.sel{border-style:solid;background:rgba(255,106,26,.22);box-shadow:0 0 0 1px var(--acc),0 0 16px rgba(255,106,26,.4)}
+.pop{position:absolute;width:280px;background:var(--bg);border:1px solid var(--line2);border-radius:8px;box-shadow:0 12px 30px rgba(0,0,0,.6);padding:10px 12px}
+.bar{position:absolute;left:50%;top:14px;transform:translateX(-50%);display:flex;gap:8px;background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:6px 10px;align-items:center}
+.list{position:absolute;right:16px;top:70px;width:230px;bottom:70px;background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:10px}
+</style></head><body><div class="gridbg"></div>
+<div class="bar"><b style="color:var(--acc)">Layout mode</b><span class="chip on">Grid 32</span><span class="chip on">Snap</span><span class="chip">Snap to frames</span><span class="chip">Show Blizzard frames</span><span class="btn">Undo</span><span class="btn pri">Done</span></div>
+<div class="mv" style="left:420px;top:780px;width:500px;height:42px">Action Bar 1</div>
+<div class="mv sel" style="left:420px;top:730px;width:500px;height:42px">Action Bar 2 · 0, 96</div>
+<div class="mv" style="left:930px;top:640px;width:42px;height:180px">Bar 4</div>
+<div class="mv" style="left:330px;top:520px;width:230px;height:52px">Player</div>
+<div class="mv" style="left:780px;top:520px;width:230px;height:52px">Target</div>
+<div class="mv" style="left:1020px;top:530px;width:150px;height:30px">ToT</div>
+<div class="mv" style="left:560px;top:600px;width:220px;height:22px">Player cast bar</div>
+<div class="mv" style="left:20px;top:420px;width:300px;height:170px">Party / raid</div>
+<div class="mv" style="left:1150px;top:80px;width:200px;height:200px">Minimap</div>
+<div class="mv" style="left:20px;top:640px;width:380px;height:180px">Chat</div>
+<div class="mv" style="left:1100px;top:300px;width:250px;height:300px">Objective tracker</div>
+<div class="mv" style="left:520px;top:440px;width:300px;height:60px">Cooldown Manager · Essential</div>
+<div class="mv" style="left:1180px;top:840px;width:200px;height:24px">Data bar</div>
+<div class="pop" style="left:560px;top:560px"><div style="display:flex;align-items:center"><b>Action Bar 2</b><span class="sp"></span><span style="color:var(--t3)">✕</span></div>
+<div class="row"><div class="f"><label>X</label><div class="dd">0</div></div><div class="f"><label>Y</label><div class="dd">96</div></div></div>
+<div class="row"><div class="f"><label>Anchor</label><div class="dd">Bottom</div></div><div class="f"><label>Scale</label><div class="dd">100 %</div></div></div>
+<div style="display:flex;gap:6px;margin-top:6px"><span class="btn">Settings…</span><span class="btn">Reset</span><span class="btn">Hide</span></div>
+<div style="color:var(--t3);font-size:11px;margin-top:6px">Arrow keys nudge 1 px · Shift 10 px</div></div>
+<div class="list"><b>Frames</b><div class="search" style="margin:8px 0;flex:none;width:100%">⌕ filter</div><div class="ni">Action Bar 1<span class="dot"></span></div><div class="ni on">Action Bar 2<span class="dot"></span></div><div class="ni">Action Bar 3<span class="dot off"></span></div><div class="ni">Bar 4<span class="dot"></span></div><div class="ni">Player<span class="dot"></span></div><div class="ni">Target<span class="dot"></span></div><div class="ni">Focus<span class="dot off"></span></div><div class="ni">Party / raid<span class="dot"></span></div><div class="ni">Boss frames<span class="dot"></span></div><div class="ni">Cast bars<span class="dot"></span></div><div class="ni">Minimap<span class="dot"></span></div><div class="ni">Chat<span class="dot"></span></div><div class="ni">Tracker<span class="dot"></span></div><div class="ni">Talking head (Blizzard)<span class="dot off"></span></div><div class="ni">Loot window (Blizzard)<span class="dot off"></span></div></div>
+</body></html>

@@ -1,0 +1,234 @@
+local _, ns = ...
+local L = ns.L
+local quickPick, quickCapture -- Quickdraw: the macro picked to bind, the key-capture frame
+local recipePick -- Recipes to learn: the profession picked this session
+
+ns:RegisterOptions("Automation", {
+    { type = "preview", kind = "automation" },
+    { type = "header", label = "AUTO_VENDOR", icon = "gold" },
+    { type = "select", key = "repair", label = "AUTO_REPAIR", desc = "AUTO_REPAIR_DESC", values = {
+        { value = "off", label = "OFF" },
+        { value = "player", label = "AUTO_REPAIR_PLAYER" },
+        { value = "guild", label = "AUTO_REPAIR_GUILD" },
+    } },
+    { type = "toggle", key = "sellJunk", label = "AUTO_SELL_JUNK", desc = "AUTO_SELL_JUNK_DESC", keywords = "grey gray vendor" },
+    { type = "header", label = "AUTO_LOOT", icon = "items" },
+    { type = "toggle", key = "fastLoot", label = "AUTO_FAST_LOOT", desc = "AUTO_FAST_LOOT_DESC", keywords = "loot speed instant" },
+    { type = "toggle", key = "confirmBoP", label = "AUTO_CONFIRM_BOP", desc = "AUTO_CONFIRM_BOP_DESC",
+      keywords = "bind on pickup soulbound confirm" },
+    { type = "header", label = "AUTO_NPC", icon = "user" },
+    { type = "toggle", key = "gossip", label = "AUTO_GOSSIP", desc = "AUTO_GOSSIP_DESC", keywords = "gossip npc dialog talk" },
+    { type = "button", label = "AUTO_QUESTS_LINK", desc = "AUTO_QUESTS_LINK_DESC", button = "AUTO_OPEN_PAGE", icon = "link",
+      keywords = "quest accept turn in", func = function() ns.Config:Show("Quests") end },
+    { type = "button", label = "AUTO_ROLE_LINK", desc = "AUTO_ROLE_LINK_DESC", button = "AUTO_OPEN_PAGE", icon = "link",
+      keywords = "role check accept", feature = "lfgList", func = function() ns.Config:Show("GroupFinder") end },
+    { type = "header", label = "AUTO_ALERTS", icon = "bell" },
+    { type = "toggle", key = "lowHealth", label = "AUTO_LOW_HEALTH", desc = "AUTO_LOW_HEALTH_DESC", gate = true,
+      keywords = "low health warning sound" },
+    { type = "sound", key = "lowHealthSound", label = "AUTO_LOW_HEALTH_SOUND" },
+    { type = "header", label = "AUTO_MISC", icon = "automation" },
+    { type = "toggle", key = "fillDelete", label = "AUTO_FILL_DELETE", desc = "AUTO_FILL_DELETE_DESC" },
+    { type = "toggle", key = "bulkBuy", label = "AUTO_BULK", desc = "AUTO_BULK_DESC" },
+    { type = "toggle", key = "rareAlert", label = "AUTO_RARE", desc = "AUTO_RARE_DESC" },
+    { type = "toggle", key = "alreadyKnown", label = "AUTO_KNOWN", desc = "AUTO_KNOWN_DESC" },
+    { type = "toggle", key = "undercut", label = "AUTO_UNDERCUT", desc = "AUTO_UNDERCUT_DESC",
+      keywords = "auction house sell price undercut post" },
+    { type = "button", label = "AUTO_MACROS", desc = "AUTO_MACROS_DESC", button = "AUTO_MACROS_BUTTON", icon = "terminal",
+      combat = true, keywords = "macro healthstone potion interrupt focus mount",
+      func = function(m) m:WriteSmartMacros() end },
+    { type = "button", label = "AUTO_MACRO_HEAL", desc = "AUTO_MACRO_PICK_DESC", button = "AUTO_MACRO_PICK", icon = "terminal",
+      combat = true, keywords = "macro drag pick up bar heal",
+      func = function(m) m:PickupSmartMacro("PUI Heal") end },
+    { type = "button", label = "AUTO_MACRO_KICK", desc = "AUTO_MACRO_PICK_DESC", button = "AUTO_MACRO_PICK", icon = "terminal",
+      combat = true, keywords = "macro drag pick up bar interrupt kick",
+      func = function(m) m:PickupSmartMacro("PUI Kick") end },
+    { type = "button", label = "AUTO_MACRO_MOUNT", desc = "AUTO_MACRO_PICK_DESC", button = "AUTO_MACRO_PICK", icon = "terminal",
+      combat = true, keywords = "macro drag pick up bar mount",
+      func = function(m) m:PickupSmartMacro("PUI Mount") end },
+    { type = "button", label = "AUTO_MACRO_WINDOW", desc = "AUTO_MACRO_WINDOW_DESC", button = "AUTO_OPEN_PAGE", icon = "terminal",
+      combat = true, keywords = "macro window edit open",
+      func = function(m) m.OpenMacroWindow() end },
+    { type = "button", label = "MACRO_EDITOR", desc = "MACRO_EDITOR_DESC", button = "AUTO_OPEN_PAGE", icon = "terminal",
+      combat = true, keywords = "macro editor create edit icon conditionals account character",
+      func = function(m) m:ShowMacroEditor() end },
+    -- Quickdraw (specs/004 T012): make a macro from a dropped spell or item, bind any macro with one key press
+    { type = "header", label = "QUICKDRAW", icon = "terminal" },
+    { type = "custom", label = "QUICKDRAW_DROP", desc = "QUICKDRAW_DROP_DESC", combat = true, get = function() return true end,
+      keywords = "quickdraw macro drag drop spell item make",
+      build = function(row, m)
+          local b = ns.Widgets:Button(row, L.QUICKDRAW_DROP_BUTTON, "secondary", "add", 200)
+          local function take()
+              local name, why = m:QuickMakeFromCursor()
+              if name then ns:Print(L.QUICKDRAW_MADE:format(name)) elseif why then ns:Print(L[why]) end
+              if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+          end
+          b:SetScript("OnReceiveDrag", take)
+          b.onClick = function() if GetCursorInfo() then take() end end
+          function b:SetValue() end
+          return b
+      end },
+    { type = "select", label = "QUICKDRAW_MACRO", desc = "QUICKDRAW_MACRO_DESC",
+      values = function() return ns.modules.Automation.QuickMacros() end,
+      keywords = "quickdraw macro bind key", get = function() return quickPick end, set = function(_, v) quickPick = v end },
+    { type = "description", text = function()
+          local keys = ns.modules.Automation.QuickKeys(quickPick)
+          return quickPick and L.QUICKDRAW_KEYS:format(keys ~= "" and keys or L.QUICKDRAW_NONE) or L.QUICKDRAW_PICK
+      end },
+    { type = "button", label = "QUICKDRAW_BIND", desc = "QUICKDRAW_BIND_DESC", button = "QUICKDRAW_BIND", icon = "keyboard",
+      combat = true, keywords = "quickdraw keybind bind key", func = function(m)
+          if not quickPick then ns:Print(L.QUICKDRAW_PICK); return end
+          local cap = quickCapture or CreateFrame("Frame", nil, UIParent)
+          quickCapture = cap
+          cap:SetAllPoints(); cap:SetFrameStrata("FULLSCREEN_DIALOG"); cap:EnableKeyboard(true)
+          ns:Print(L.QUICKDRAW_PRESS)
+          cap:SetScript("OnKeyDown", function(self, key)
+              if key == "ESCAPE" then self:Hide(); return end
+              local k = m.QuickKeyString(key)
+              if not k then return end
+              self:Hide()
+              local ok, why = m:QuickBind(quickPick, k)
+              if ok then ns:Print(L.QUICKDRAW_BOUND:format(k, quickPick)) elseif why then ns:Print(L[why]) end
+              if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+          end)
+          cap:Show()
+      end },
+    { type = "input", key = "mountFlyer", label = "AUTO_MOUNT_FLYER", desc = "AUTO_MOUNT_RULES_DESC", combat = true,
+      keywords = "mount flying flyer smart macro" },
+    { type = "input", key = "mountGround", label = "AUTO_MOUNT_GROUND", desc = "AUTO_MOUNT_RULES_DESC", combat = true,
+      keywords = "mount ground smart macro" },
+    { type = "input", key = "mountSwimmer", label = "AUTO_MOUNT_SWIMMER", desc = "AUTO_MOUNT_RULES_DESC", combat = true,
+      keywords = "mount swimming underwater smart macro" },
+    { type = "toggle", key = "autoRelease", label = "AUTO_RELEASE", desc = "AUTO_RELEASE_DESC", keywords = "battleground spirit" },
+    { type = "toggle", key = "skipCinematics", label = "AUTO_SKIP_CINEMATICS", desc = "AUTO_SKIP_CINEMATICS_DESC",
+      keywords = "movie cutscene" },
+    { type = "header", label = "AUTO_PET", icon = "heart" },
+    { type = "toggle", key = "petSummon", label = "AUTO_PET_SUMMON", desc = "AUTO_PET_SUMMON_DESC",
+      keywords = "companion pet summon critter battle pet favourite favorite" },
+    { type = "select", key = "petMode", label = "AUTO_PET_MODE", desc = "AUTO_PET_MODE_DESC", values = {
+        { value = "favorite", label = "AUTO_PET_FAVORITE" },
+        { value = "last", label = "AUTO_PET_LAST" },
+    }, disabled = function(m) return not m.db.petSummon end },
+    { type = "header", label = "AUTO_FISHING", icon = "sound" },
+    { type = "toggle", key = "fishing", label = "AUTO_FISHING_ON", desc = "AUTO_FISHING_DESC",
+      keywords = "fishing bobber splash sound volume auto loot" },
+    { type = "toggle", key = "fishingQuiet", label = "AUTO_FISHING_QUIET", desc = "AUTO_FISHING_QUIET_DESC",
+      disabled = function(m) return not m.db.fishing end },
+    { type = "header", label = "JUNK", icon = "gold" },
+    { type = "toggle", key = "junkWindow", label = "JUNK_WINDOW", desc = "JUNK_WINDOW_DESC",
+      keywords = "junk grey gray poor sell destroy vendor trash" },
+    { type = "button", label = "JUNK_OPEN", button = "JUNK_OPEN_BUTTON", icon = "gold", func = function(m) m:ShowJunk() end },
+    { type = "header", label = "AUTO_LOG", icon = "test" },
+    { type = "toggle", key = "autoLog", label = "AUTO_LOG_ON_LABEL", desc = "AUTO_LOG_DESC",
+      keywords = "combat log combatlog logging warcraftlogs" },
+    { type = "toggle", key = "autoLogMplus", label = "AUTO_LOG_MPLUS", disabled = function(m) return not m.db.autoLog end },
+    { type = "toggle", key = "autoLogRaid", label = "AUTO_LOG_RAID", disabled = function(m) return not m.db.autoLog end },
+    { type = "toggle", key = "autoLogDungeon", label = "AUTO_LOG_DUNGEON", disabled = function(m) return not m.db.autoLog end },
+    { type = "header", label = "LC_TITLE", icon = "items" },
+    { type = "toggle", key = "lootCouncil", label = "LC_ON", desc = "LC_ON_DESC", keywords = "loot council drop want trade raid" },
+    { type = "toggle", key = "lootCouncilOpen", label = "LC_AUTO_OPEN", disabled = function(m) return not m.db.lootCouncil end },
+    { type = "toggle", key = "lootCouncilRaidOnly", label = "LC_RAID_ONLY", disabled = function(m) return not m.db.lootCouncil end },
+    { type = "button", label = "LC_TITLE", desc = "LC_OPEN_DESC", button = "AUTO_OPEN_PAGE", icon = "items",
+      keywords = "loot council window", func = function(m) m:ShowLootCouncil() end },
+    { type = "header", label = "LOADOUT_TITLE", icon = "spec" },
+    { type = "toggle", key = "loadoutsOn", label = "LOADOUT_ON", desc = "LOADOUT_ON_DESC",
+      keywords = "loadout talents gear equipment set switch raid dungeon arena" },
+    { type = "toggle", key = "loadoutsAuto", label = "LOADOUT_AUTO", desc = "LOADOUT_AUTO_DESC",
+      disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_CTX_RAID", desc = "LOADOUT_TALENT_DESC", values = function(m) return m.TalentChoices() end,
+      get = function(m) local e = m:LoadoutFor("raid"); return e and e.talent or 0 end,
+      set = function(m, v) m:SetLoadout("raid", "talent", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_GEAR", desc = "LOADOUT_GEAR_DESC", values = function(m) return m.GearChoices() end,
+      get = function(m) local e = m:LoadoutFor("raid"); return e and e.gear or 0 end,
+      set = function(m, v) m:SetLoadout("raid", "gear", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_CTX_DUNGEON", desc = "LOADOUT_TALENT_DESC", values = function(m) return m.TalentChoices() end,
+      get = function(m) local e = m:LoadoutFor("dungeon"); return e and e.talent or 0 end,
+      set = function(m, v) m:SetLoadout("dungeon", "talent", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_GEAR", desc = "LOADOUT_GEAR_DESC", values = function(m) return m.GearChoices() end,
+      get = function(m) local e = m:LoadoutFor("dungeon"); return e and e.gear or 0 end,
+      set = function(m, v) m:SetLoadout("dungeon", "gear", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_CTX_ARENA", desc = "LOADOUT_TALENT_DESC", values = function(m) return m.TalentChoices() end,
+      get = function(m) local e = m:LoadoutFor("arena"); return e and e.talent or 0 end,
+      set = function(m, v) m:SetLoadout("arena", "talent", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_GEAR", desc = "LOADOUT_GEAR_DESC", values = function(m) return m.GearChoices() end,
+      get = function(m) local e = m:LoadoutFor("arena"); return e and e.gear or 0 end,
+      set = function(m, v) m:SetLoadout("arena", "gear", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_CTX_PVP", desc = "LOADOUT_TALENT_DESC", values = function(m) return m.TalentChoices() end,
+      get = function(m) local e = m:LoadoutFor("pvp"); return e and e.talent or 0 end,
+      set = function(m, v) m:SetLoadout("pvp", "talent", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_GEAR", desc = "LOADOUT_GEAR_DESC", values = function(m) return m.GearChoices() end,
+      get = function(m) local e = m:LoadoutFor("pvp"); return e and e.gear or 0 end,
+      set = function(m, v) m:SetLoadout("pvp", "gear", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_CTX_WORLD", desc = "LOADOUT_TALENT_DESC", values = function(m) return m.TalentChoices() end,
+      get = function(m) local e = m:LoadoutFor("world"); return e and e.talent or 0 end,
+      set = function(m, v) m:SetLoadout("world", "talent", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "select", label = "LOADOUT_GEAR", desc = "LOADOUT_GEAR_DESC", values = function(m) return m.GearChoices() end,
+      get = function(m) local e = m:LoadoutFor("world"); return e and e.gear or 0 end,
+      set = function(m, v) m:SetLoadout("world", "gear", v) end, disabled = function(m) return not m.db.loadoutsOn end },
+    { type = "button", label = "LOADOUT_CHECK", desc = "LOADOUT_CHECK_DESC", button = "LOADOUT_APPLY", icon = "spec", combat = true,
+      func = function(m) local c = m:LoadoutChanges(m.LoadoutContext()); if c then m:ApplyLoadout(c) end end },
+    { type = "header", label = "PARTY_TITLE", icon = "palette" },
+    { type = "button", label = "PARTY_NOW", desc = "PARTY_NOW_DESC", button = "PARTY_TOGGLE", icon = "palette",
+      keywords = "party mode lights celebrate fun", func = function(m) m:ToggleParty() end },
+    { type = "toggle", key = "partyBoss", label = "PARTY_BOSS" },
+    { type = "toggle", key = "partyMplus", label = "PARTY_MPLUS" },
+    { type = "toggle", key = "partyLevel", label = "PARTY_LEVEL" },
+    { type = "toggle", key = "partySound", label = "PARTY_SOUND" },
+    { type = "range", key = "partyDuration", label = "PARTY_DURATION", desc = "PARTY_DURATION_DESC", min = 2, max = 30, step = 1 },
+    { type = "range", key = "partyStrength", label = "PARTY_STRENGTH", min = 10, max = 100, step = 5 },
+    { type = "header", label = "ANNOUNCE_TITLE", icon = "chat" },
+    { type = "toggle", key = "announceKey", label = "ANNOUNCE_KEY", desc = "ANNOUNCE_KEY_DESC", keywords = "keystone key party" },
+    { type = "toggle", key = "announceReset", label = "ANNOUNCE_RESET", desc = "ANNOUNCE_RESET_DESC", keywords = "reset instance" },
+    { type = "toggle", key = "announceThanks", label = "ANNOUNCE_THANKS", desc = "ANNOUNCE_THANKS_DESC", keywords = "thanks goodbye ty" },
+    { type = "input", key = "announceThanksText", label = "ANNOUNCE_THANKS_TEXT", desc = "ANNOUNCE_THANKS_TEXT_DESC",
+      disabled = function(m) return not m.db.announceThanks end },
+    { type = "header", label = "TRAIN_HEADER", icon = "spec" },
+    { type = "description", text = "TRAIN_TEXT" },
+    { type = "button", label = "TRAIN_OPEN", desc = "TRAIN_OPEN_DESC", button = "TRAIN_OPEN_BUTTON", icon = "spec",
+      keywords = "trainer training spells learn level cost planner", func = function(m) m:OpenTraining() end },
+    { type = "header", label = "GEARBAR", icon = "items" },
+    { type = "description", text = "GEARBAR_TEXT" },
+    { type = "toggle", key = "gearBar", label = "GEARBAR_SHOW", desc = "GEARBAR_SHOW_DESC",
+      keywords = "gear swap equipment set trinket bar" },
+    { type = "toggle", key = "gearBarTrinkets", label = "GEARBAR_TRINKETS", disabled = function(m) return not m.db.gearBar end },
+    { type = "range", key = "gearBarSize", label = "GEARBAR_SIZE", min = 20, max = 56, step = 1,
+      disabled = function(m) return not m.db.gearBar end },
+    { type = "header", label = "BLESS_HEADER", icon = "heart" },
+    { type = "toggle", key = "blessings", label = "BLESS_SHOW", desc = "BLESS_SHOW_DESC",
+      keywords = "paladin blessing buff might kings wisdom" },
+    { type = "range", key = "blessWidth", label = "UF_WIDTH", min = 140, max = 400, step = 1,
+      disabled = function(m) return not m.db.blessings end },
+    { type = "header", label = "TRAIN_RECIPES", icon = "items" },
+    { type = "description", text = "TRAIN_RECIPES_TEXT" },
+    { type = "select", label = "TRAIN_RECIPES_PICK", values = function(m) return m.TrainingSkills() end,
+      keywords = "profession recipes unlearned trainer",
+      get = function() return recipePick end, set = function(_, v) recipePick = v end },
+    { type = "button", label = "TRAIN_RECIPES_OPEN", desc = "TRAIN_RECIPES_OPEN_DESC", button = "TRAIN_OPEN_BUTTON", icon = "items",
+      disabled = function() return recipePick == nil end, func = function(m) m:OpenTraining(recipePick) end },
+    { type = "header", label = "CVAR_EDITOR", icon = "terminal" },
+    { type = "description", text = "CVAR_EDITOR_TEXT" },
+    { type = "input", label = "CVAR_NAME", desc = "CVAR_NAME_DESC", keywords = "cvar console variable setting advanced",
+      get = function(m) return m.cvarName end,
+      set = function(m, v)
+          m.cvarName = v or ""
+          if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+      end },
+    { type = "input", label = "CVAR_VALUE", desc = "CVAR_VALUE_DESC", combat = true,
+      hidden = function(m) return m.CVarInfo(m.cvarName) == nil end,
+      get = function(m) return (m.CVarInfo(m.cvarName)) end,
+      set = function(m, v) m.CVarSet(m.cvarName, v) end },
+    { type = "button", label = "CVAR_RESET", desc = "CVAR_RESET_DESC", button = "RESET", icon = "reset", combat = true,
+      hidden = function(m) local _, d = m.CVarInfo(m.cvarName); return d == nil end,
+      func = function(m)
+          m.CVarReset(m.cvarName)
+          if ns.Config.RebuildPage then ns.Config:RebuildPage("Automation") end
+      end },
+    { type = "header", label = "GAMEPAD_TITLE", icon = "keyboard" },
+    { type = "toggle", label = "GAMEPAD_ON", desc = "GAMEPAD_ON_DESC", combat = true, keywords = "gamepad controller console",
+      get = function(m) return m.GamepadGet("enable") end, set = function(m, v) m.GamepadSet("enable", v) end },
+    { type = "range", label = "GAMEPAD_YAW", min = 0.1, max = 4, step = 0.1, combat = true,
+      get = function(m) return m.GamepadGet("yaw") end, set = function(m, v) m.GamepadSet("yaw", v) end,
+      disabled = function(m) return not m.GamepadGet("enable") end },
+    { type = "range", label = "GAMEPAD_PITCH", min = 0.1, max = 4, step = 0.1, combat = true,
+      get = function(m) return m.GamepadGet("pitch") end, set = function(m, v) m.GamepadSet("pitch", v) end,
+      disabled = function(m) return not m.GamepadGet("enable") end },
+})
