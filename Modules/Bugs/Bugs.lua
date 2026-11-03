@@ -15,15 +15,34 @@ local M = ns:NewModule("Bugs", {
         -- BugSack parity (specs/006): auto popup (out of combat, at most once per popupGap s), mute in combat,
         -- sound on the Master channel, viewer font size, Alt+click on the indicator clears the session
         autoPopup = false, popupGap = 30, muteCombat = false, soundMaster = false, fontSize = 12, altWipe = false,
+        soundGap = 10, -- seconds of quiet before the sound can play again (a burst of errors keeps it quiet)
     },
     globalDefaults = { maxReports = 500 },
 })
 
 local LINK = "addon:" .. ADDON .. ":bugs"
-local SOUND_GAP = 10 -- seconds between notification sounds
 local SOUNDS = { chime = SOUNDKIT.TELL_MESSAGE, alert = SOUNDKIT.RAID_WARNING, bell = SOUNDKIT.UI_BNET_TOAST,
     alarm = SOUNDKIT.ALARM_CLOCK_WARNING_3 }
-local indicator, lastSound, lastNotice, lastPopup = nil, 0, {}, -math.huge
+-- Phoenix's own error sounds (original, Media/Sounds/Bugs, CC0): played as files
+local SOUND_DIR = ns.C.MEDIA .. "Sounds\\Bugs\\"
+local SOUND_FILES = { error = "Error.ogg", glitch = "Glitch.ogg", fatal = "Fatal.ogg", blip = "Blip.ogg" }
+local indicator, lastError, lastNotice, lastPopup = nil, -math.huge, {}, -math.huge
+M.SOUND_FILES = SOUND_FILES
+
+-- Play the picked sound (kit id or file) on the chosen channel; true when something played.
+function M.PlayPicked(name, master)
+    local channel = master and "Master" or "SFX"
+    if SOUND_FILES[name] then return PlaySoundFile(SOUND_DIR .. SOUND_FILES[name], channel) and true or false end
+    if SOUNDS[name] then PlaySound(SOUNDS[name], channel); return true end
+    return false
+end
+
+-- The burst throttle: plays only after soundGap seconds with no error at all (every error restarts the wait).
+function M.SoundDue(now, gap)
+    local due = now - lastError >= (gap or 10)
+    lastError = now
+    return due
+end
 
 function M:Counts()
     return Errors:CountSession()
@@ -128,10 +147,8 @@ local function notice(r)
         ns:Print(L.BUGS_NOTICE, kind, r.source, link)
     end
     local quiet = db.muteCombat and InCombatLockdown()
-    if not quiet and SOUNDS[db.sound] and GetTime() - lastSound > SOUND_GAP then
-        lastSound = GetTime()
-        PlaySound(SOUNDS[db.sound], db.soundMaster and "Master" or nil)
-    end
+    local due = M.SoundDue(GetTime(), db.soundGap)
+    if not quiet and due and db.sound ~= "none" then M.PlayPicked(db.sound, db.soundMaster) end
     if db.flash and indicator and indicator:IsShown() then pulse(indicator.glow) end
     -- auto popup: never in combat (the viewer would cover the fight), at most once per popupGap seconds
     if db.autoPopup and not InCombatLockdown() and GetTime() - lastPopup >= (db.popupGap or 30) then

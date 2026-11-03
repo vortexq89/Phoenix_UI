@@ -14,3 +14,15 @@ files are unchanged Ogg Vorbis conversions.
 
 The two alerts are registered with LibSharedMedia (type "sound"); the countdown voices are used by the
 Auras & Cooldowns tracker and the sound pickers.
+
+## Phoenix's own error sounds (Media/Sounds/Bugs)
+
+Made for Phoenix UI on 3 Nov 2026 with a small tone generator (no samples, nothing taken from BugSack, whose
+error.ogg ships without a licence and is not reused). Dedicated to the public domain under CC0 1.0.
+
+| File | Phoenix name | Sound |
+|---|---|---|
+| Bugs/Error.ogg | Phoenix: Error | two falling square tones |
+| Bugs/Glitch.ogg | Phoenix: Glitch | five short jumpy tones |
+| Bugs/Fatal.ogg | Phoenix: Fatal | one low falling buzz |
+| Bugs/Blip.ogg | Phoenix: Blip | one soft high blip |

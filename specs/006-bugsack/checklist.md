@@ -49,3 +49,10 @@ From `.specify/templates/feature-checklist-template.md` (constitution 1.2.0). Ti
 | A burst of errors would spam popups | popup gap; never opens in combat |
 | Huge or hostile incoming data | caps: 50 reports, 16 KB per field, accept first, one transfer per sender |
 | Two viewers when BugSack is also installed | Phoenix claims the display only when BugSack is absent (unchanged); noted for the Plugins page |
+
+## t230: error sounds (3 Nov)
+
+- [x] BugSack's sound (Media/error.ogg) checked: no licence shipped, so it is not reused; four original CC0 sounds made (Error, Glitch, Fatal, Blip), credited in Media/Sounds/SOUNDS.md
+- [x] In the Bugs sound picker, with a Test button
+- [x] Quiet time (2–120 s, default 10): plays only after that long with no new error, so a burst makes one sound (harness)
+- [x] Follows "Mute in combat" and "Master channel"

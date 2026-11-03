@@ -33,7 +33,7 @@ and shipped; **Partial** = built, checklist not yet passed; **Draft** = spec, pl
 | [019-ellesmereui](019-ellesmereui/spec.md) | EllesmereUI: every module, better (umbrella) | — | 22 | 0 | Draft |
 | [020-eui-options-window](020-eui-options-window/spec.md) | Options window (rail, header tabs, footer) | 019-ellesmereui | 1 | 0 | Draft |
 | [021-uf-player](021-uf-player/spec.md) | Unit Frames: player | 019-ellesmereui | 1 | 1 | Built (3 Nov), in-game check pending |
-| [022-uf-target](022-uf-target/spec.md) | Unit Frames: target | 019-ellesmereui | 1 | 1 | Draft |
+| [022-uf-target](022-uf-target/spec.md) | Unit Frames: target | 019-ellesmereui | 1 | 1 | Checked (3 Nov), parity; in-game check pending |
 | [023-uf-target-of-target](023-uf-target-of-target/spec.md) | Unit Frames: target of target | 019-ellesmereui | 1 | 1 | Draft |
 | [024-uf-focus](024-uf-focus/spec.md) | Unit Frames: focus | 019-ellesmereui | 1 | 1 | Draft |
 | [025-uf-focus-target](025-uf-focus-target/spec.md) | Unit Frames: focus target | 019-ellesmereui | 1 | 1 | Draft |

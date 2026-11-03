@@ -1035,6 +1035,10 @@ try("Bugs: BugSack parity, send, export (specs/006)", function()
     for _, k in ipairs({ "autoPopup", "popupGap", "muteCombat", "soundMaster", "fontSize", "altWipe" }) do
         assert(B.db[k] ~= nil, "Bugs has no " .. k)
     end
+    assert(B.db.soundGap == 10 and B.SOUND_FILES.error and B.SOUND_FILES.fatal, "no Phoenix error sounds or quiet time")
+    assert(B.SoundDue(1000, 10) and not B.SoundDue(1005, 10) and not B.SoundDue(1014, 10) and B.SoundDue(1025, 10),
+        "a burst of errors must make one sound")
+    assert(B.PlayPicked("fatal", true) ~= nil, "file sound not playable")
     local ok, why = B:SendBugs("", list)
     assert(not ok and why == "BUGS_SEND_NOBODY", "send without a name was not refused")
 end)
