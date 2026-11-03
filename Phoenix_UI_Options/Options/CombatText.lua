@@ -226,6 +226,7 @@ local schema = {
       hidden = noTrig, func = function(m) if m:RemoveTrigger(editing) then editing = math.max(1, editing - 1); rebuild() end end },
     { type = "tab", label = "FCT_TAB_CRITS" },
     { type = "header", label = "FCT_CRIT", icon = "warning" },
+    { type = "description", text = "FCT_CRIT_NEEDS_SCROLL", hidden = function(m) return not noScroll(m) end },
     scroll({ type = "select", key = "scroll.crit", label = "FCT_CRIT", desc = "FCT_CRIT_DESC", values = CRIT, keywords = "critical crit" }),
     scroll({ type = "range", key = "scroll.critScale", label = "FCT_CRIT_SCALE", min = 1, max = 3, step = 0.05, percent = true,
       disabled = function(m) return noScroll(m) or (m.db.scroll.crit ~= "grow" and m.db.scroll.crit ~= "sticky") end }),

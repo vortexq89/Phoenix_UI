@@ -187,6 +187,7 @@ function M:Glow(key) return glows[key] or glows.Soft end
 function M:List(kind)
     local out, seen = {}, {}
     if kind == "sound" then
+        out[1] = { value = "", label = ns.L.MEDIA_SOUND_NONE, group = "Phoenix" } -- "" = silent (the default)
         for _, m in ipairs(self.sounds) do
             out[#out + 1] = { value = m.key, label = ns.L[m.label], sound = m.path, group = "Phoenix" }
             seen[m.name] = true

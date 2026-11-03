@@ -1135,6 +1135,8 @@ try("media pickers", function()
         scripts[card].OnClick(card)
         assert(picked == card.item.value, kind .. ": clicking a card did not pick it")
     end
+    assert(ns.Media:List("sound")[1].value == "" and ns.Media:List("sound")[1].label == ns.L.MEDIA_SOUND_NONE,
+        "sound lists start with None (silent), so a blank sound shows a label (specs/003 T005)")
     assert(#ns.Media:List("sound") >= 2 and ns.Media:Voice("Jim", 3):find("Countdown\\Jim\\3.ogg", 1, true), "sounds")
 end)
 -- previews: every kind builds and redraws with its module's settings, and with a unit picked

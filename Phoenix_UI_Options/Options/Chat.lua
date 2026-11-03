@@ -13,7 +13,9 @@ local whisperGet, whisperSet = ns.Combat.CVarAccessors("whisperMode", "string")
 
 local function sounds()
     local out = { { value = "", label = "NONE" } }
-    for _, s in ipairs(ns.Media:List("sound")) do out[#out + 1] = { value = s.value, label = s.label } end
+    for _, s in ipairs(ns.Media:List("sound")) do
+        if s.value ~= "" then out[#out + 1] = { value = s.value, label = s.label } end
+    end
     return out
 end
 

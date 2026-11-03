@@ -40,7 +40,7 @@ function W:Slider(parent, min, max, step, isPercent)
     box:SetPoint("RIGHT")
     box:SetAutoFocus(false)
     box:SetJustifyH("CENTER")
-    box:SetTextInsets(2, 2, 0, 0)
+    box:SetTextInsets(0, 0, 0, 0) -- "150%" fits the 40 px box; with insets it scrolled to its end ("0%")
     box:SetMaxLetters(7)
     s.box = box
     box.bg = W.Texture(box, "BACKGROUND", 0)
@@ -54,7 +54,9 @@ function W:Slider(parent, min, max, step, isPercent)
         local x = math.max(0, math.min(w, w * p))
         self.fill:SetWidth(math.max(0.01, x))
         self.thumb:ClearAllPoints(); self.thumb:SetPoint("CENTER", self.bar, "LEFT", x, 0)
-        if not self.box:HasFocus() then self.box:SetText(fmt(self.value, self.step, self.isPercent)) end
+        if not self.box:HasFocus() then
+            self.box:SetText(fmt(self.value, self.step, self.isPercent)); self.box:SetCursorPosition(0) -- show the start, never the scrolled tail
+        end
     end
 
     Skin:Register(s, function(self)

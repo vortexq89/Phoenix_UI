@@ -82,8 +82,18 @@ function BW:Enable()
 end
 
 -- Text for the options page.
+-- BigWigs is installed and switched on for this character (its core loads on demand in instances).
+function BW:Installed()
+    local AO = rawget(_G, "C_AddOns")
+    if type(AO) ~= "table" or type(AO.GetAddOnEnableState) ~= "function" then return false end
+    local ok, state = pcall(AO.GetAddOnEnableState, "BigWigs", (UnitName("player")))
+    return ok and type(state) == "number" and state > 0
+end
+
+-- Text for the options page. Tries the registration again first: BigWigs may have loaded after us.
 function BW:StatusText()
+    register()
     if self.status == "registered" then return L.ENC_BW_READY end
     if self.status == "failed" then return L.ENC_BW_FAILED end
-    return L.ENC_BW_ABSENT
+    return self:Installed() and L.ENC_BW_LOD or L.ENC_BW_ABSENT
 end
