@@ -83,3 +83,4 @@ Phase 0 (now): the user's in-game pass of the restored build. Fix what it finds 
 
 ## Plugin audit (t227, 1 Nov)
 See docs/research/PLUGIN_AUDIT/00-INDEX.md: specs 003 (GUI polish) to 015 in priority order. Next: specs/003-gui-polish.
+- specs/003 built (3 Nov); specs/004 (EllesmereUI parity+) and 005 (one layout model) written, not built.

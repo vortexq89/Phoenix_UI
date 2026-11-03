@@ -116,6 +116,7 @@ ns.CHANGELOG = {
         "Code review fixes (30 Oct, 80aef95, 6ae60cf, cfce46c, 728cdee, c7c1413, 887fadd, 180e254, 44b185a, 0b7f321, fd50673,…",
         "QA fixes (30 Oct, 0ce5b9d, e559187, 7be2326) — undressed art stays hidden, no new holders on secure frames in combat,…",
         "Settings and spec icons (30 Oct, 67332c2, a07b0b2, 248ea30, a43f3da) — even ring strokes, whole-pixel columns, previe…",
+        "Plan: specs 004 and 005 (3 Nov) — specs/004-eui-parity-plus (live previews on every frame page, buff reminders, Coold…",
         "Coverage and parity (31 Oct, 55c2ebd) — FEATURE_COVERAGE refreshed for every studied addon, combat text review agains…",
     } },
     { version = "2.0.0-beta1", items = {

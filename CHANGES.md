@@ -124,6 +124,7 @@
 - **Settings and spec icons** (30 Oct, 67332c2, a07b0b2, 248ea30, a43f3da): even ring strokes, whole-pixel columns, preview scrolls away unless kept, damage meter value fade.
 
 ### Docs
+- **Plan: specs 004 and 005** (3 Nov): specs/004-eui-parity-plus (live previews on every frame page, buff reminders, Cooldown Manager naming, a Social page, a data bar that fits, Quickdraw) and specs/005-layout-model (Edit Mode owns its frames, Phoenix Layout owns everything else, every Move button opens Layout, Skins window moving merges into it) each have a spec, plan and tasks. Not built yet.
 - **Coverage and parity** (31 Oct, 55c2ebd): FEATURE_COVERAGE refreshed for every studied addon, combat text review against the real code, duplicate checks before building.
 
 ## 2.0.0-beta1
