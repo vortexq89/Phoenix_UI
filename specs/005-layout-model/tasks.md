@@ -15,8 +15,8 @@
 
 ## Phase 5: User Story 3 (P2)
 - [x] T005 [US3] Eight more windows (Inspect, Trade, Loot, Trainer, Flight map, Guild bank, Dressing room, AddOns list) in 10 locales; the rest of MoveAny's list follows
-- [ ] T006 [US3] Extra HUD elements and per-entry hide
+- [x] T006 [US3] Reviewed: MoveAny's extra HUD elements (durability, vehicle seat, loss of control, …) are Edit Mode systems on retail now, so the guard rightly sends them to Edit Mode; nothing to add
 
 ## Phase 6: User Story 4 (P2)
 - [ ] T007 [US4] Frame list with search and groups beside the toolbar
-- [ ] T008 [US4] "Layout" name in 10 locales; Edit Mode button; per-layout profiles
+- [x] T008 [US4] The page and mode are named "Layout" in all 10 locales (the module key stays "Movers"); Edit Mode button already there. Per-layout profiles: not built (follows with T007)

@@ -376,8 +376,8 @@ local T = {
     BUGS_CLEAR_ALL = "Borrar todos los informes",
     BUGS_CLEAR_ALL_DESC = "Borra todos los informes guardados de todas las sesiones. Los informes ya subidos permanecen en VQ8S.com.",
     ---------------------------------------------------------------- Movers
-    MOVERS = "Movedores",
-    MOVERS_DESC = "Mueve, escala y atenúa los marcos de Blizzard que el Modo Edición no alcanza, como el texto de zona, las alertas y el estandarte de jefe.",
+    MOVERS = "Disposición",
+    MOVERS_DESC = "Un solo lugar para mover marcos: todos los de Phoenix, las ventanas de Blizzard y los elementos de la interfaz que el Modo Edición no gestiona (texto de zona, alertas, estandarte de jefe). Los marcos del Modo Edición siguen allí.",
     MOVERS_UNLOCK_HEADER = "Desbloquear",
     MOVERS_INTRO = "Desbloquea para mostrar un asa sobre cada marco compatible. Arrastra para mover, rueda del ratón para escalar (Mayús: opacidad), flechas para desplazar 1 px (Mayús: 10 px) con el cursor encima, clic derecho para restablecer. Las posiciones se guardan por perfil. Los Movedores se bloquean al empezar el combate y nunca tocan marcos protegidos en combate.",
     MOVERS_UNLOCK = "Desbloquear movedores",

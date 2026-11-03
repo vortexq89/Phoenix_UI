@@ -376,8 +376,8 @@ local T = {
     BUGS_CLEAR_ALL = "Effacer tous les rapports",
     BUGS_CLEAR_ALL_DESC = "Supprime tous les rapports enregistrés de toutes les sessions. Les rapports déjà envoyés restent sur VQ8S.com.",
     ---------------------------------------------------------------- Movers
-    MOVERS = "Déplaceurs",
-    MOVERS_DESC = "Déplacez, redimensionnez et estompez les fenêtres de Blizzard que le Mode Édition n'atteint pas, comme le texte de zone, les alertes et la bannière de boss.",
+    MOVERS = "Disposition",
+    MOVERS_DESC = "Un seul endroit pour déplacer : tous les cadres Phoenix, les fenêtres Blizzard et les éléments que le Mode Édition ne gère pas (texte de zone, alertes, bannière de boss). Les cadres du Mode Édition y restent.",
     MOVERS_UNLOCK_HEADER = "Déverrouiller",
     MOVERS_INTRO = "Déverrouillez pour afficher une poignée sur chaque fenêtre prise en charge. Glisser pour déplacer, molette pour l'échelle (Maj : opacité), flèches pour décaler de 1 px (Maj : 10 px) au survol, clic droit pour réinitialiser. Les positions sont enregistrées par profil. Les Déplaceurs se verrouillent au début du combat et ne touchent jamais aux fenêtres protégées en combat.",
     MOVERS_UNLOCK = "Déverrouiller les Déplaceurs",

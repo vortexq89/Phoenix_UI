@@ -387,8 +387,8 @@ ns.RegisterLocale("enUS", {
     BUGS_CLEAR_ALL_DESC = "Delete every stored report from every session. Reports already uploaded stay on VQ8S.com.",
 
     ---------------------------------------------------------------- Movers
-    MOVERS = "Movers",
-    MOVERS_DESC = "Move, scale and fade the Blizzard frames Edit Mode cannot reach, like zone text, alerts and the boss banner.",
+    MOVERS = "Layout",
+    MOVERS_DESC = "One place to move frames: every Phoenix frame, Blizzard windows and the HUD elements Edit Mode does not manage (zone text, alerts, boss banner). Blizzard's own Edit Mode frames stay in Edit Mode.",
     MOVERS_UNLOCK_HEADER = "Unlock",
     MOVERS_INTRO = "Unlock to show a handle over every supported frame. Drag to move, mouse wheel to scale (Shift: opacity), arrow keys to nudge by 1 px (Shift: 10 px) while hovering, right-click to reset. Positions are saved per profile. Movers locks itself when combat starts and never touches protected frames in combat.",
     MOVERS_UNLOCK = "Unlock movers",

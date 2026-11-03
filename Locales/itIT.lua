@@ -376,8 +376,8 @@ local T = {
     BUGS_CLEAR_ALL = "Cancella tutte le segnalazioni",
     BUGS_CLEAR_ALL_DESC = "Elimina tutte le segnalazioni salvate di tutte le sessioni. Quelle già inviate restano su VQ8S.com.",
     ---------------------------------------------------------------- Movers
-    MOVERS = "Spostatori",
-    MOVERS_DESC = "Sposta, ridimensiona e sfuma le finestre Blizzard che la Modalità Modifica non raggiunge, come il testo della zona, gli avvisi e lo stendardo del boss.",
+    MOVERS = "Disposizione",
+    MOVERS_DESC = "Un solo posto per spostare: tutti i riquadri Phoenix, le finestre Blizzard e gli elementi che la Modalità Modifica non gestisce (testo della zona, avvisi, stendardo del boss). I riquadri della Modalità Modifica restano lì.",
     MOVERS_UNLOCK_HEADER = "Sblocca",
     MOVERS_INTRO = "Sblocca per mostrare una maniglia su ogni finestra supportata. Trascina per spostare, rotellina per la scala (Maiusc: opacità), frecce per spostare di 1 px (Maiusc: 10 px) col cursore sopra, clic destro per ripristinare. Le posizioni vengono salvate per profilo. Gli Spostatori si bloccano all'inizio del combattimento e non toccano mai finestre protette in combattimento.",
     MOVERS_UNLOCK = "Sblocca spostatori",

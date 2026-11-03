@@ -376,8 +376,8 @@ local T = {
     BUGS_CLEAR_ALL = "Apagar todos os relatórios",
     BUGS_CLEAR_ALL_DESC = "Exclui todos os relatórios guardados de todas as sessões. Relatórios já enviados continuam no VQ8S.com.",
     ---------------------------------------------------------------- Movers
-    MOVERS = "Movedores",
-    MOVERS_DESC = "Mova, redimensione e esmaeça janelas da Blizzard que o Modo de Edição não alcança, como o texto da zona, os alertas e o estandarte de chefe.",
+    MOVERS = "Layout",
+    MOVERS_DESC = "Um só lugar para mover quadros: todos os do Phoenix, as janelas da Blizzard e os elementos que o Modo de Edição não controla (texto da zona, alertas, faixa de chefe). Os quadros do Modo de Edição continuam lá.",
     MOVERS_UNLOCK_HEADER = "Destravar",
     MOVERS_INTRO = "Destrave para mostrar uma alça sobre cada janela suportada. Arraste para mover, roda do mouse para a escala (Shift: opacidade), setas para ajustar 1 px (Shift: 10 px) com o cursor em cima, clique direito para redefinir. As posições são salvas por perfil. Os Movedores travam sozinhos quando o combate começa e nunca mexem em janelas protegidas em combate.",
     MOVERS_UNLOCK = "Destravar movedores",
