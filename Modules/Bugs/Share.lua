@@ -153,8 +153,12 @@ function M.ReportHeader()
     local _, build = GetBuildInfo()
     local lines = { ("Phoenix UI %s · build %s · %s · %s"):format(ns.version or "?", tostring(build), GetLocale(), date("%Y-%m-%d %H:%M")) }
     local names = {}
-    for i = 1, C_AddOns.GetNumAddOns() do
-        if C_AddOns.IsAddOnLoaded(i) then names[#names + 1] = (C_AddOns.GetAddOnInfo(i)) end
+    local A = C_AddOns or {}
+    local count = A.GetNumAddOns
+    local loaded = A.IsAddOnLoaded
+    local info = A.GetAddOnInfo
+    for i = 1, tonumber(count and count()) or 0 do
+        if loaded(i) then names[#names + 1] = (info(i)) end
     end
     lines[2] = L.BUGS_FIELD_ADDONS:format(#names, table.concat(names, ", "))
     return table.concat(lines, "\n")
