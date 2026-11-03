@@ -14,9 +14,9 @@ Source: `I:\EllesmereUI*` (core, Options and 20 module folders, including WindTo
 | RaidFrames | GroupFrames (193) | partial | The preview is empty; there is a RELOAD badge |
 | Nameplates | NamePlates (140) | have | — |
 | ActionBars (+XP/rep bars) | ActionBars (113) | have | — |
-| CooldownManager | **Phoenix_UI_Tracker** (107) | partial | The folder name "Tracker" is misleading (it is the CDM); the header text is truncated and the bottom rows are cut by the footer |
+| CooldownManager | Phoenix_UI_Tracker (107) | have | The page is already named "Cooldown Manager" in all 10 locales; only the folder says Tracker |
 | ResourceBars | UnitFrames › Resources | partial | It lives inside UnitFrames rather than on its own page; decide in spec 004 |
-| AuraBuffReminders | Auras (57) | **missing** | There are no buff reminders (missing flask, food, rune or class buff) |
+| AuraBuffReminders | Cooldown Manager › Reminders | have | Corrected 3 Nov: the reminders exist (flask, food, rune, raid and class buffs, oil, pet, healthstone, mana), with click-to-use icons; Buffs now links to them |
 | Bags | Bags (39) | have | The Home "Bags" card is clipped |
 | Chat | Chat (56) | have | — |
 | DamageMeters | DamageMeter (86) | have | — |

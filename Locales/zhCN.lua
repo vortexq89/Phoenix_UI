@@ -207,6 +207,9 @@ local T = {
     AURAS_SKIN = "Phoenix 风格",
     AURAS_SKIN_DESC = "重新美化小地图旁的增益和减益图标。",
     AURAS_NOTE = "图标大小、行数和方向在编辑模式中设置。",
+    AURAS_REMINDERS = "增益提醒",
+    AURAS_REMINDERS_LINK = "缺少合剂、食物、符文和增益",
+    AURAS_REMINDERS_LINK_DESC = "提醒图标（点击使用物品或施放增益）在冷却管理器的“提醒”标签中设置。点此打开。",
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "姓名板",
     NAMEPLATES_DESC = "在暴雪姓名板上显示状态条材质、生命百分比和史诗钥石敌方部队。",
@@ -1983,6 +1986,7 @@ local T = {
     ENC_BW_FAILED = "BigWigs 的样式接口已变更，拒绝了 Phoenix 样式。请更新 Phoenix UI。",
     ENC_BW_ABSENT = "未加载 BigWigs。加载后会立即注册样式。",
     MEDIA_SOUND_NONE = "无（静音）",
+    PREVIEW_EMPTY = "暂无可显示内容。请开启模块，或使用底部的“测试框体”在屏幕上查看。",
     ENC_BW_LOD = "BigWigs 已安装，进入团队副本或地下城（或打开其设置）时会自动加载，届时注册 Phoenix 样式。",
     PREVIEW_ENC_1 = "灼热吐息",
     PREVIEW_ENC_2 = "暗影箭雨",

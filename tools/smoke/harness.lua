@@ -960,6 +960,16 @@ try("no Reload badge at rest (specs/003 T009)", function()
     row.reloadArmed = nil; row.badge:Hide()
     assert(page.header.descWraps == 2, "the page summary wraps to two lines (specs/003 T001)")
 end)
+try("Buffs links to the reminders; empty previews say so (specs/004)", function()
+    local page = ns.Config:Show("Auras")
+    local link
+    for _, r in ipairs(page.rows) do if r.item.label == "AURAS_REMINDERS_LINK" then link = r.item end end
+    assert(link and link.func, "Buffs has no link to the reminders")
+    link.func()
+    assert(ns.Config.current == "Tracker", "the reminders link did not open the Cooldown Manager")
+    local stage = ns.Previews:Create("unitframe", env.CreateFrame("Frame"), ns.modules.UnitFrames, {})
+    assert(stage.MeasureContent, "preview has no measure")
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

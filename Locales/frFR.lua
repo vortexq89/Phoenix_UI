@@ -207,6 +207,9 @@ local T = {
     AURAS_SKIN = "Style Phoenix",
     AURAS_SKIN_DESC = "Restylise les icônes d'améliorations et d'affaiblissements près de la mini-carte.",
     AURAS_NOTE = "La taille des icônes, les rangées et la direction se règlent en Mode Édition.",
+    AURAS_REMINDERS = "Rappels d'améliorations",
+    AURAS_REMINDERS_LINK = "Flacon, nourriture, rune et améliorations manquants",
+    AURAS_REMINDERS_LINK_DESC = "Les icônes de rappel (clic pour utiliser l'objet ou lancer l'amélioration) se règlent dans l'onglet Rappels du gestionnaire de temps de recharge. Ceci l'ouvre.",
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Plaques de nom",
     NAMEPLATES_DESC = "Texture des barres, pourcentage de vie et forces ennemies Mythique+ sur les plaques de nom de Blizzard.",
@@ -1983,6 +1986,7 @@ local T = {
     ENC_BW_FAILED = "BigWigs a refusé le style Phoenix car son API de styles a changé. Mettez Phoenix UI à jour.",
     ENC_BW_ABSENT = "BigWigs n'est pas chargé. Le style s'enregistre dès qu'il l'est.",
     MEDIA_SOUND_NONE = "Aucun (muet)",
+    PREVIEW_EMPTY = "Rien à afficher pour l'instant. Activez le module ou utilisez « Cadres de test » en bas pour le voir à l'écran.",
     ENC_BW_LOD = "BigWigs est installé et se charge tout seul en raid ou en donjon (ou en ouvrant ses options). Le style Phoenix s'enregistre alors.",
     PREVIEW_ENC_1 = "Souffle incendiaire",
     PREVIEW_ENC_2 = "Salve d'ombre",

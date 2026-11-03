@@ -211,6 +211,9 @@ ns.RegisterLocale("enUS", {
     AURAS_SKIN = "Phoenix style",
     AURAS_SKIN_DESC = "Restyle the buff and debuff icons near the minimap.",
     AURAS_NOTE = "Icon size, rows and direction are set in Edit Mode.",
+    AURAS_REMINDERS = "Buff reminders",
+    AURAS_REMINDERS_LINK = "Missing flask, food, rune and buffs",
+    AURAS_REMINDERS_LINK_DESC = "The reminder icons (click to use the item or cast the buff) are set up on the Cooldown Manager's Reminders tab. This opens it.",
 
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Nameplates",
@@ -2009,6 +2012,7 @@ ns.RegisterLocale("enUS", {
     ENC_BW_FAILED = "BigWigs refused the Phoenix style because its style API changed. Update Phoenix UI.",
     ENC_BW_ABSENT = "BigWigs is not loaded. The style registers as soon as it is.",
     MEDIA_SOUND_NONE = "None (silent)",
+    PREVIEW_EMPTY = "Nothing to show here yet. Turn the module on, or use Test frames in the footer to see it on screen.",
     ENC_BW_LOD = "BigWigs is installed and loads by itself when you enter a raid or dungeon (or open its options). The Phoenix style registers then.",
     PREVIEW_ENC_1 = "Searing Breath",
     PREVIEW_ENC_2 = "Shadow Volley",

@@ -144,8 +144,23 @@ function P:Create(kind, parent, m, page)
         end
         for _, c in ipairs({ stage:GetChildren() }) do grow(c) end
         -- the stage's own panel and floor textures span it and say nothing about the sample
-        for _, g in ipairs({ stage:GetRegions() }) do if g:GetObjectType() == "FontString" then grow(g) end end
-        if not l then return end
+        for _, g in ipairs({ stage:GetRegions() }) do if g:GetObjectType() == "FontString" and g ~= stage.emptyHint then grow(g) end end
+        -- nothing drew (the sample failed or the module has nothing to show): say so instead of an empty panel,
+        -- and note it for Bugs › Diagnostics (specs/004 T001)
+        if not l then
+            stage.empty = true
+            if not stage.emptyHint then
+                stage.emptyHint = W.Text(stage, "desc", "text.muted", "CENTER")
+                stage.emptyHint:SetPoint("CENTER")
+                stage.emptyHint:SetWidth(math.max(160, baseWidth - 40))
+                stage.emptyHint:SetText(ns.L.PREVIEW_EMPTY)
+            end
+            stage.emptyHint:Show()
+            ns:Debug("preview empty: %s", tostring(m.key))
+            return
+        end
+        stage.empty = false
+        if stage.emptyHint then stage.emptyHint:Hide() end
         local pad, mid = 8, (l0 + r0) / 2
         local needW = math.max(r - mid, mid - l) * 2 + pad
         local needH = math.max(t0, t) - b + pad

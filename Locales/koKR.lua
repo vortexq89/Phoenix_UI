@@ -207,6 +207,9 @@ local T = {
     AURAS_SKIN = "Phoenix 스타일",
     AURAS_SKIN_DESC = "미니맵 옆의 강화 및 약화 효과 아이콘을 새로 꾸밉니다.",
     AURAS_NOTE = "아이콘 크기, 줄 수, 방향은 편집 모드에서 설정합니다.",
+    AURAS_REMINDERS = "강화 효과 알림",
+    AURAS_REMINDERS_LINK = "빠진 영약, 음식, 룬, 강화 효과",
+    AURAS_REMINDERS_LINK_DESC = "알림 아이콘(클릭하면 아이템 사용 또는 강화 효과 시전)은 재사용 대기시간 관리자의 알림 탭에서 설정합니다. 이 버튼으로 엽니다.",
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "이름표",
     NAMEPLATES_DESC = "블리자드 이름표에 바 텍스처, 생명력 백분율, 신화+ 적 병력을 표시합니다.",
@@ -1983,6 +1986,7 @@ local T = {
     ENC_BW_FAILED = "BigWigs의 스타일 API가 바뀌어 Phoenix 스타일이 거부되었습니다. Phoenix UI를 업데이트하세요.",
     ENC_BW_ABSENT = "BigWigs가 불러와지지 않았습니다. 불러와지는 즉시 스타일이 등록됩니다.",
     MEDIA_SOUND_NONE = "없음 (무음)",
+    PREVIEW_EMPTY = "아직 표시할 것이 없습니다. 모듈을 켜거나 하단의 테스트 프레임으로 화면에서 확인하세요.",
     ENC_BW_LOD = "BigWigs가 설치되어 있으며 공격대나 던전에 들어가면(또는 설정을 열면) 자동으로 불러옵니다. 그때 Phoenix 스타일이 등록됩니다.",
     PREVIEW_ENC_1 = "불타는 숨결",
     PREVIEW_ENC_2 = "암흑 일제 사격",

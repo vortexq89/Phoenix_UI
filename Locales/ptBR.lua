@@ -207,6 +207,9 @@ local T = {
     AURAS_SKIN = "Estilo Phoenix",
     AURAS_SKIN_DESC = "Reestiliza os ícones de bônus e penalidades perto do minimapa.",
     AURAS_NOTE = "Tamanho dos ícones, linhas e direção são definidos no Modo de Edição.",
+    AURAS_REMINDERS = "Lembretes de bônus",
+    AURAS_REMINDERS_LINK = "Frasco, comida, runa e bônus em falta",
+    AURAS_REMINDERS_LINK_DESC = "Os ícones de lembrete (clique para usar o item ou lançar o bônus) são configurados na aba Lembretes do Gerenciador de Recargas. Isto a abre.",
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Placas de nome",
     NAMEPLATES_DESC = "Textura das barras, porcentagem de vida e forças inimigas da Mítica+ nas placas de nome da Blizzard.",
@@ -1983,6 +1986,7 @@ local T = {
     ENC_BW_FAILED = "O BigWigs recusou o estilo Phoenix porque a API de estilos dele mudou. Atualize o Phoenix UI.",
     ENC_BW_ABSENT = "O BigWigs não está carregado. O estilo é registrado assim que ele estiver.",
     MEDIA_SOUND_NONE = "Nenhum (mudo)",
+    PREVIEW_EMPTY = "Nada para mostrar ainda. Ligue o módulo ou use \"Quadros de teste\" no rodapé para vê-lo na tela.",
     ENC_BW_LOD = "O BigWigs está instalado e carrega sozinho ao entrar numa raide ou masmorra (ou abrir as opções dele). O estilo Phoenix é registrado então.",
     PREVIEW_ENC_1 = "Sopro Calcinante",
     PREVIEW_ENC_2 = "Rajada Sombria",

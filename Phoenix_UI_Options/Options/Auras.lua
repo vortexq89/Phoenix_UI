@@ -145,4 +145,12 @@ ns:RegisterOptions("Auras", {
       cog = { { type = "toggle", key = "private.numbers", label = "AURAS_PRIVATE_NUMBERS" } } }),
     { type = "description", text = "AURAS_LAYOUT_NOTE", hidden = blizzard },
     { type = "description", text = "AURAS_NOTE", hidden = phoenix },
+    -- missing flask / food / rune / class buff reminders live with the Cooldown Manager; this row finds them
+    -- from the Buffs page, where players look for them (specs/004 US2)
+    { type = "header", label = "AURAS_REMINDERS", icon = "bell" },
+    { type = "button", label = "AURAS_REMINDERS_LINK", desc = "AURAS_REMINDERS_LINK_DESC", button = "AUTO_OPEN_PAGE", icon = "link",
+      keywords = "reminder missing flask food rune oil buff", func = function()
+          local page = ns.Config:Show("Tracker")
+          if page and page.FocusKey then page:FocusKey("reminders.enabled") end
+      end },
 })

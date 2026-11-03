@@ -207,6 +207,9 @@ local T = {
     AURAS_SKIN = "Estilo Phoenix",
     AURAS_SKIN_DESC = "Cambia el estilo de los iconos de beneficios y perjuicios junto al minimapa.",
     AURAS_NOTE = "El tamaño de los iconos, las filas y la dirección se ajustan en el Modo Edición.",
+    AURAS_REMINDERS = "Recordatorios de beneficios",
+    AURAS_REMINDERS_LINK = "Frasco, comida, runa y beneficios que faltan",
+    AURAS_REMINDERS_LINK_DESC = "Los iconos de recordatorio (clic para usar el objeto o lanzar el beneficio) se configuran en la pestaña Recordatorios del gestor de reutilizaciones. Esto la abre.",
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Placas de nombre",
     NAMEPLATES_DESC = "Textura de barras, porcentaje de salud y fuerzas enemigas de Mítica+ en las placas de nombre de Blizzard.",
@@ -1983,6 +1986,7 @@ local T = {
     ENC_BW_FAILED = "BigWigs rechazó el estilo Phoenix porque su API de estilos cambió. Actualiza Phoenix UI.",
     ENC_BW_ABSENT = "BigWigs no está cargado. El estilo se registra en cuanto lo esté.",
     MEDIA_SOUND_NONE = "Ninguno (silencio)",
+    PREVIEW_EMPTY = "Aún no hay nada que mostrar. Activa el módulo o usa «Marcos de prueba» en el pie para verlo en pantalla.",
     ENC_BW_LOD = "BigWigs está instalado y se carga solo al entrar en una banda o mazmorra (o al abrir sus opciones). Entonces se registra el estilo Phoenix.",
     PREVIEW_ENC_1 = "Aliento abrasador",
     PREVIEW_ENC_2 = "Descarga de sombras",

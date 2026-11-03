@@ -207,6 +207,9 @@ local T = {
     AURAS_SKIN = "Stile Phoenix",
     AURAS_SKIN_DESC = "Ristilizza le icone di benefici e penalità vicino alla minimappa.",
     AURAS_NOTE = "Dimensione delle icone, righe e direzione si impostano in Modalità Modifica.",
+    AURAS_REMINDERS = "Promemoria dei benefici",
+    AURAS_REMINDERS_LINK = "Tonico, cibo, runa e benefici mancanti",
+    AURAS_REMINDERS_LINK_DESC = "Le icone dei promemoria (clic per usare l'oggetto o lanciare il beneficio) si impostano nella scheda Promemoria del gestore delle ricariche. Questo la apre.",
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Targhette",
     NAMEPLATES_DESC = "Texture delle barre, percentuale di salute e forze nemiche della Mitica+ sulle targhette Blizzard.",
@@ -1983,6 +1986,7 @@ local T = {
     ENC_BW_FAILED = "BigWigs ha rifiutato lo stile Phoenix perché la sua API degli stili è cambiata. Aggiorna Phoenix UI.",
     ENC_BW_ABSENT = "BigWigs non è caricato. Lo stile si registra appena lo sarà.",
     MEDIA_SOUND_NONE = "Nessuno (muto)",
+    PREVIEW_EMPTY = "Niente da mostrare per ora. Attiva il modulo o usa \"Riquadri di prova\" in fondo per vederlo sullo schermo.",
     ENC_BW_LOD = "BigWigs è installato e si carica da solo quando entri in un'incursione o spedizione (o apri le sue opzioni). Lo stile Phoenix si registra allora.",
     PREVIEW_ENC_1 = "Soffio rovente",
     PREVIEW_ENC_2 = "Raffica d'ombra",

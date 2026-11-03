@@ -207,6 +207,9 @@ local T = {
     AURAS_SKIN = "Phoenix-Stil",
     AURAS_SKIN_DESC = "Gestaltet die Symbole der Stärkungs- und Schwächungszauber an der Minikarte neu.",
     AURAS_NOTE = "Symbolgröße, Reihen und Richtung legst du im Bearbeitungsmodus fest.",
+    AURAS_REMINDERS = "Buff-Erinnerungen",
+    AURAS_REMINDERS_LINK = "Fehlendes Fläschchen, Essen, Rune und Buffs",
+    AURAS_REMINDERS_LINK_DESC = "Die Erinnerungssymbole (Klick benutzt den Gegenstand oder wirkt den Buff) werden im Reiter Erinnerungen des Abklingzeitenmanagers eingerichtet. Dies öffnet ihn.",
     ---------------------------------------------------------------- Nameplates
     NAMEPLATES = "Namensplaketten",
     NAMEPLATES_DESC = "Leistentextur, Gesundheit in Prozent und feindliche Streitkräfte (Mythisch+) auf Blizzards Namensplaketten.",
@@ -1983,6 +1986,7 @@ local T = {
     ENC_BW_FAILED = "BigWigs hat den Phoenix-Stil abgelehnt, weil sich seine Stil-API geändert hat. Aktualisiere Phoenix UI.",
     ENC_BW_ABSENT = "BigWigs ist nicht geladen. Der Stil wird registriert, sobald es geladen ist.",
     MEDIA_SOUND_NONE = "Keiner (stumm)",
+    PREVIEW_EMPTY = "Hier gibt es noch nichts zu sehen. Schalte das Modul ein oder nutze „Testrahmen“ in der Fußzeile, um es auf dem Bildschirm zu sehen.",
     ENC_BW_LOD = "BigWigs ist installiert und lädt von selbst, wenn du einen Schlachtzug oder Dungeon betrittst (oder seine Optionen öffnest). Dann wird der Phoenix-Stil registriert.",
     PREVIEW_ENC_1 = "Sengender Atem",
     PREVIEW_ENC_2 = "Schattensalve",
