@@ -34,12 +34,12 @@ and shipped; **Partial** = built, checklist not yet passed; **Draft** = spec, pl
 | [020-eui-options-window](020-eui-options-window/spec.md) | Options window (rail, header tabs, footer) | 019-ellesmereui | 1 | 0 | Draft |
 | [021-uf-player](021-uf-player/spec.md) | Unit Frames: player | 019-ellesmereui | 1 | 1 | Built (3 Nov), in-game check pending |
 | [022-uf-target](022-uf-target/spec.md) | Unit Frames: target | 019-ellesmereui | 1 | 1 | Checked (3 Nov), parity; in-game check pending |
-| [023-uf-target-of-target](023-uf-target-of-target/spec.md) | Unit Frames: target of target | 019-ellesmereui | 1 | 1 | Draft |
-| [024-uf-focus](024-uf-focus/spec.md) | Unit Frames: focus | 019-ellesmereui | 1 | 1 | Draft |
-| [025-uf-focus-target](025-uf-focus-target/spec.md) | Unit Frames: focus target | 019-ellesmereui | 1 | 1 | Draft |
-| [026-uf-pet](026-uf-pet/spec.md) | Unit Frames: pet | 019-ellesmereui | 1 | 1 | Draft |
-| [027-uf-party](027-uf-party/spec.md) | Unit Frames: party | 019-ellesmereui | 1 | 1 | Draft |
-| [028-uf-boss](028-uf-boss/spec.md) | Unit Frames: boss | 019-ellesmereui | 1 | 1 | Draft |
+| [023-uf-target-of-target](023-uf-target-of-target/spec.md) | Unit Frames: target of target | 019-ellesmereui | 1 | 1 | Checked (3 Nov), parity; in-game check pending |
+| [024-uf-focus](024-uf-focus/spec.md) | Unit Frames: focus | 019-ellesmereui | 1 | 1 | Checked (3 Nov), parity; in-game check pending |
+| [025-uf-focus-target](025-uf-focus-target/spec.md) | Unit Frames: focus target | 019-ellesmereui | 1 | 1 | Checked (3 Nov), parity; in-game check pending |
+| [026-uf-pet](026-uf-pet/spec.md) | Unit Frames: pet | 019-ellesmereui | 1 | 1 | Built (3 Nov), in-game check pending |
+| [027-uf-party](027-uf-party/spec.md) | Unit Frames: party | 019-ellesmereui | 1 | 1 | Checked (3 Nov), parity; in-game check pending |
+| [028-uf-boss](028-uf-boss/spec.md) | Unit Frames: boss | 019-ellesmereui | 1 | 1 | Built (3 Nov), in-game check pending |
 | [029-uf-arena](029-uf-arena/spec.md) | Unit Frames: arena | 019-ellesmereui | 1 | 1 | Draft |
 | [030-eui-raidframes](030-eui-raidframes/spec.md) | RaidFrames | 019-ellesmereui | 1 | 1 | Draft |
 | [031-eui-nameplates](031-eui-nameplates/spec.md) | Nameplates | 019-ellesmereui | 1 | 0 | Draft |

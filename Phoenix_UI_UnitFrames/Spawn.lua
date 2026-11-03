@@ -333,6 +333,7 @@ local function registerEvents()
         if f:IsVisible() then M:UpdateIndicators(f, M:SourceOf(f)) end end) end)
     E:On("PLAYER_FOCUS_CHANGED", M, function() updateKey("focus"); updateKey("focustarget"); updateKey("arena") end)
     E:On("UNIT_PET", M, function() updateKey("pet") end)
+    if M.HasHappiness then E:On("UNIT_HAPPINESS", M, function() updateKey("pet") end) end
     E:On("INSTANCE_ENCOUNTER_ENGAGE_UNIT", M, function() updateKey("boss") end)
     E:On("ARENA_OPPONENT_UPDATE", M, function() updateKey("arena") end)
     E:On("ARENA_PREP_OPPONENT_SPECIALIZATIONS", M, function() updateKey("arena") end)

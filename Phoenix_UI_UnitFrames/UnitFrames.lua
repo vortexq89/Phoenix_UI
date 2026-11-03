@@ -48,7 +48,7 @@ local function unit(o)
         texture = "", bgTexture = "",
         border = Style.Border({ style = "pixel", color = false }),
         background = Style.Background({ alpha = 0.8 }),
-        highlight = true, highlightColor = false, highlightAlpha = 0.12,
+        highlight = true, targetBorderColor = false, highlightColor = false, highlightAlpha = 0.12,
         -- when the frame shows (a secure state driver on its holder; all on = always)
         vis = { solo = true, party = true, raid = true, mounted = true, vehicle = true },
         targetBorder = o.targetBorder or false,
@@ -84,6 +84,7 @@ local function unit(o)
             leader = o.leader ~= false, marker = true, pvp = false, markerSize = 16, markerAnchor = "TOP",
             role = o.role or false, combat = o.combat or false, resting = o.resting or false,
             elite = o.elite or false, threat = o.threat or false, ready = o.ready ~= false, size = 14,
+            happiness = true, -- Forever hunter pets only (specs/026)
         },
         auras = {
             buffs = o.buffs or "off", debuffs = o.debuffs or "off", size = o.auraSize or 20, perRow = 8, max = o.auraMax or 8,

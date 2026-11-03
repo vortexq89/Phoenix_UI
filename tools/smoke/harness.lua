@@ -1054,6 +1054,16 @@ try("UF player: visibility, opacity, highlight (specs/021)", function()
     u.bar.alpha = 1; u.vis.mounted = true
     m:OnSettingChanged("units.player.vis.mounted", true)
 end)
+try("UF frames 023-028: pet happiness, target border colour", function()
+    local m = ns.modules.UnitFrames
+    assert(m.db.units.pet.icons.happiness == true and m.db.units.boss.targetBorderColor == false, "023-028 defaults missing")
+    local f = { unitKey = "pet", sample = true, Happiness = { SetShown = function() end, SetTexCoord = function() end } }
+    local h = m.UpdateHappiness(f, m.db.units.pet.icons)
+    assert(h == (m.HasHappiness and 3 or nil), "pet happiness sample wrong")
+    f.unitKey = "target"
+    assert(m.UpdateHappiness(f, m.db.units.target.icons) == nil, "happiness must be pet only")
+    m:OnSettingChanged("units.boss.targetBorderColor", { r = 1, g = 0, b = 0 })
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

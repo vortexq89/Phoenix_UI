@@ -200,6 +200,9 @@ function M:Build(parent, key, opts)
     f.Elite:Hide()
     f.Ready = L:CreateTexture(nil, "OVERLAY", nil, 3)
     f.Ready:Hide()
+    f.Happiness = L:CreateTexture(nil, "OVERLAY")
+    f.Happiness:SetTexture("Interface\\PetPaperDollFrame\\UI-PetHappiness")
+    f.Happiness:Hide()
 
     -- threat glow and the "this is my target" border live on their own frames around ours
     f.ThreatGlow = CreateFrame("Frame", nil, f)
@@ -575,8 +578,9 @@ local function layoutIndicators(f, u)
     indicator(f.PvP, f, right and "TOPRIGHT" or "TOPLEFT", s + 4, 0, 0)
     indicator(f.Elite, f, right and "BOTTOMRIGHT" or "BOTTOMLEFT", s + 2, 0, 0)
     indicator(f.Ready, f.Health, "CENTER", s + 6, 0, 0)
+    indicator(f.Happiness, f, right and "LEFT" or "RIGHT", s + 4, right and -(s + 6) or (s + 6), 0)
     Skin:BorderSpec(f.ThreatGlow, { style = "glow", size = 2, color = false }, "state.danger")
-    Skin:BorderSpec(f.TargetMark, { style = "solid", size = 1, color = false, shadow = "none" }, "accent.primary")
+    Skin:BorderSpec(f.TargetMark, { style = "solid", size = 1, color = u.targetBorderColor or false, shadow = "none" }, "accent.primary")
 end
 
 -- The side the arena icons sit on (RIGHT, or LEFT when mirrored) and the other side (the DR tray's).

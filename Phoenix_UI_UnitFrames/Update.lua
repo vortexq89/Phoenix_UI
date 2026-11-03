@@ -699,6 +699,24 @@ function M:UpdateIndicators(f, src)
     elite(f, src, ic)
     threatAndReady(f, src, ic)
     f.TargetMark:SetShown(u.targetBorder and src:IsTarget(f))
+    M.UpdateHappiness(f, ic)
+end
+
+-- Forever hunter pet happiness (1 unhappy, 2 content, 3 happy): the classic pet happiness icon (specs/026).
+local HAPPY_X = { [1] = 0.375, [2] = 0.1875, [3] = 0 }
+local getHappiness = rawget(_G, "GetPetHappiness") or (C_PetInfo and rawget(C_PetInfo, "GetPetHappiness"))
+M.HasHappiness = getHappiness ~= nil
+function M.UpdateHappiness(f, ic)
+    if not f.Happiness then return nil end
+    local h
+    if f.unitKey == "pet" and ic.happiness then
+        if f.sample then h = M.HasHappiness and 3 or nil
+        elseif getHappiness and f.unit and UnitExists(f.unit) then h = getHappiness() end
+    end
+    local x = HAPPY_X[h]
+    f.Happiness:SetShown(x ~= nil)
+    if x then f.Happiness:SetTexCoord(x, x + 0.1875, 0, 0.359375) end
+    return h
 end
 
 ---------------------------------------------------------------- range and fading
