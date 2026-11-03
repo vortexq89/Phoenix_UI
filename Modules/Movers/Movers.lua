@@ -43,7 +43,10 @@ M.BLIZZARD = {
 -- UI panel windows "Scale Blizzard windows" applies to (several load on demand; scaled when shown).
 M.WINDOWS = { "CharacterFrame", "PVEFrame", "FriendsFrame", "MerchantFrame", "MailFrame", "GossipFrame", "QuestFrame",
     "BankFrame", "PlayerSpellsFrame", "CollectionsJournal", "EncounterJournal", "AchievementFrame", "ProfessionsFrame",
-    "AuctionHouseFrame", "WeeklyRewardsFrame", "CommunitiesFrame", "PlayerChoiceFrame" }
+    "AuctionHouseFrame", "WeeklyRewardsFrame", "CommunitiesFrame", "PlayerChoiceFrame",
+    -- more of MoveAny's window list (specs/005 T005): presence-checked, load-on-demand ones scale when shown
+    "InspectFrame", "TradeFrame", "LootFrame", "ClassTrainerFrame", "FlightMapFrame", "GuildBankFrame", "DressUpFrame",
+    "AddonList" }
 
 local entries, byKey = {}, {}
 for _, e in ipairs(M.BLIZZARD) do entries[#entries + 1] = e; byKey[e.key] = e end

@@ -229,6 +229,7 @@ ns.CHANGELOG = {
         "Bugs — an error catcher in the spirit of BugGrabber + BugSack.",
         "Movers (`/pui movers`) — move, scale and fade the frames Edit Mode does not manage (zone text, error",
         "One icon set everywhere — 88 Phosphor duotone icons (MIT) in the sidebar, page and section headers,",
+        "Moving Blizzard windows is on the Layout page (3 Nov, specs/005 T002, T003, T005) — the \"Move Blizzard windows\" switc…",
         "\"Move\" buttons open Layout on that frame (3 Nov, specs/005 T001, T004) — the Move buttons for Spell History, the expe…",
     } },
 }

@@ -493,9 +493,10 @@ for _, m in ipairs(ns.moduleList or {}) do
         local key = item.key and not hiddenHere and item.key:gsub("@", unit)
         if key and not (item.get and item.set) then
             try("set " .. m.key .. "." .. key, function()
-                local v = ns.DB:Get(m, key)
-                assert(v ~= nil, "option " .. m.key .. "." .. key .. " has no default")
-                ns.DB:Set(m, key, v)
+                local om = item.module and ns.modules[item.module] or m -- a row owned by another module (Config.RowOwner)
+                local v = ns.DB:Get(om, key)
+                assert(v ~= nil, "option " .. om.key .. "." .. key .. " has no default")
+                ns.DB:Set(om, key, v)
             end)
         elseif item.get and item.set then
             try("set " .. m.key .. "." .. tostring(item.label), function() item.set(m, item.get(m)) end)
@@ -978,6 +979,12 @@ try("Move rows open Layout on their frame (specs/005 T001, T004)", function()
     local e = movers:GetEntry("em.SpellHistory")
     assert(not e or movers:GetSelected() == e, "Focus did not select the frame")
     movers:SetUnlocked(false)
+    local page = ns.Config:Show("Movers")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.key == "moveWindows" then row = r end end
+    assert(row, "window moving is not on the Layout page (specs/005 T002)")
+    local sk = ns.Config:Show("Skins")
+    for _, r in ipairs(sk.rows) do assert(r.item.key ~= "moveWindows", "Skins still has its own window moving") end
 end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()

@@ -701,6 +701,7 @@ everything else starts from fresh defaults.
   Settings landing page, AFK screen).
 
 ### Changed
+- **Moving Blizzard windows is on the Layout page** (3 Nov, specs/005 T002, T003, T005): the "Move Blizzard windows" switch and its reset button moved from Skins to Layout › Blizzard windows, next to the window scale, so there is one place for windows. Your saved window spots are kept. Eight more windows can have their own scale: Inspect, Trade, Loot, Trainer, Flight map, Guild bank, Dressing room and the AddOns list.
 - **"Move" buttons open Layout on that frame** (3 Nov, specs/005 T001, T004): the Move buttons for Spell History, the experience bar and the Mythic+ timer now open Phoenix Layout with that frame already selected, instead of Blizzard Edit Mode. The Mythic+ timer shows its sample run in Layout too, so you can see what you are placing. The Damage Meter, Minimap and Chat buttons still open Edit Mode, because those are Blizzard frames.
 - Layout belongs to Edit Mode: Phoenix no longer moves Edit Mode frames. The data bar and spell history are
   Edit Mode frames with per-layout positions; the old MoveAny mover is replaced by Movers, which only covers a

@@ -54,6 +54,11 @@ local schema = {
     { type = "input", key = "unlockKey", label = "MOVERS_KEY", desc = "MOVERS_KEY_DESC", combat = true,
       keywords = "keybind hotkey shortcut unlock" },
     { type = "header", label = "MOVERS_WINDOWS", icon = "skins" },
+    -- drag and place Blizzard windows (saved by Skins: module = "Skins", so no saved setting moved; specs/005 T002)
+    { type = "toggle", key = "moveWindows", module = "Skins", label = "SKINS_MOVE_WINDOWS", desc = "SKINS_MOVE_WINDOWS_DESC",
+      keywords = "move drag reposition blizzard windows shifter" },
+    { type = "button", label = "SKINS_MOVE_RESET", desc = "SKINS_MOVE_RESET_DESC", button = "SKINS_MOVE_RESET_BUTTON", icon = "reset",
+      func = function() local sk = ns.modules.Skins; if sk and sk.ResetWindows then sk:ResetWindows() end end },
     { type = "range", key = "windowScale", label = "MOVERS_WINDOW_SCALE", desc = "MOVERS_WINDOW_SCALE_DESC", min = 0.6, max = 1.5,
       step = 0.05, percent = true, combat = true, keywords = "scale blizzard windows character bags collections size" },
     { type = "select", label = "MOVERS_WINDOW_PICK", desc = "MOVERS_WINDOW_PICK_DESC", values = WINDOWS,

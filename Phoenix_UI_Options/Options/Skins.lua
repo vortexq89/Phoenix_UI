@@ -98,10 +98,5 @@ ns:RegisterOptions("Skins", {
     { type = "select", key = "closeStyle", label = "SKINS_CLOSE", desc = "SKINS_CLOSE_DESC", values = CLOSE },
     { type = "toggle", key = "tabs", label = "SKINS_TABS", desc = "SKINS_TABS_DESC", keywords = "tab buttons" },
     { type = "description", text = "SKINS_NOTE" },
-    { type = "tab", label = "TAB_BEHAVIOUR" },
-    { type = "header", label = "SKINS_MOVE", icon = "movers" },
-    { type = "toggle", key = "moveWindows", label = "SKINS_MOVE_WINDOWS", desc = "SKINS_MOVE_WINDOWS_DESC",
-      keywords = "move drag reposition blizzard windows shifter" },
-    { type = "button", label = "SKINS_MOVE_RESET", desc = "SKINS_MOVE_RESET_DESC", button = "SKINS_MOVE_RESET_BUTTON", icon = "reset",
-      func = function(m) m:ResetWindows() end },
+    -- moving Blizzard windows is on the Layout page with their scale (one place, specs/005 T002)
 })
