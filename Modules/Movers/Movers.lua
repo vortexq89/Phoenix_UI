@@ -168,6 +168,16 @@ end
 
 function M:GetEntries() return entries end
 function M:GetEntry(key) return byKey[key] end
+
+-- Opens Layout with one frame selected: every "Move" row in the options comes here, so there is one place to
+-- move a frame (specs/005 T001, T004). Closes the settings window while you place it.
+function M:Focus(key)
+    if ns.Config and ns.Config.frame then ns.Config.frame:Hide() end
+    self:SetUnlocked(true)
+    local e = byKey[key]
+    if e then self:Select(e) end
+    return e ~= nil
+end
 function M:IsUnlocked() return unlocked end
 function M:LabelOf(e) return e.text or L[e.label] end
 

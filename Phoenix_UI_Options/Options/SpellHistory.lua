@@ -17,6 +17,6 @@ ns:RegisterOptions("SpellHistory", {
     { type = "toggle", key = "markFailed", label = "SH_FAILED", desc = "SH_FAILED_DESC", keywords = "interrupted failed kicked cancelled" },
     { type = "range", key = "fade", label = "SH_FADE", desc = "SH_FADE_DESC", min = 0, max = 30, step = 1 },
     { type = "toggle", key = "inCombatOnly", label = "SH_COMBAT_ONLY", desc = "SH_COMBAT_ONLY_DESC" },
-    { type = "button", label = "DT_MOVE", desc = "DT_MOVE_DESC", button = "OPEN_EDIT_MODE", icon = "editmode",
-      func = function() ns.Config.frame:Hide(); ns.EditMode:Open() end },
+    { type = "button", label = "DT_MOVE", desc = "DT_MOVE_DESC", button = "LAYOUT_MODE", icon = "movers",
+      func = function() ns.EditMode:Focus("SpellHistory") end },
 })

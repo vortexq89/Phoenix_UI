@@ -633,3 +633,14 @@ end
 local LEM = LibStub("LibEditMode")
 LEM:RegisterCallback("enter", function() editing = true; update() end)
 LEM:RegisterCallback("exit", function() editing = false; update() end)
+-- Phoenix Layout shows the sample run too, so the timer can be placed there (specs/005 T004)
+ns.Events:On("PUI_MOVERS", M, function()
+    local movers = ns:GetModule("Movers")
+    local on = movers and movers.IsUnlocked and movers:IsUnlocked() or false
+    if on ~= (M.layoutEditing or false) then
+        M.layoutEditing = on
+        local em = _G.EditModeManagerFrame
+        editing = on or (em ~= nil and em:IsShown() == true)
+        update()
+    end
+end)

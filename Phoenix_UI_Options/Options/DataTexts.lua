@@ -175,6 +175,6 @@ ns:RegisterOptions("DataTexts", {
     { type = "range", key = "barHeight", label = "DT_BAR_HEIGHT", min = 4, max = 30, step = 1, disabled = noBar },
     { type = "select", key = "barTextMode", label = "DT_BAR_TEXT", values = BAR_TEXT, disabled = noBar },
     Opt.With(Opt.Text("barText", "DT_BAR_FONT", { max = 18, place = true }), { disabled = noBar }),
-    { type = "button", label = "DT_MOVE", desc = "DT_MOVE_DESC", button = "OPEN_EDIT_MODE", icon = "editmode",
-      func = function() ns.Config.frame:Hide(); ns.EditMode:Open() end },
+    { type = "button", label = "DT_MOVE", desc = "DT_MOVE_DESC", button = "LAYOUT_MODE", icon = "movers",
+      func = function() ns.EditMode:Focus("DataTextsXP") end },
 })

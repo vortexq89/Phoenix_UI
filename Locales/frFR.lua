@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "erreurs",
     DT_BUGS_UNIT_ONE = "erreur",
     DT_MOVE = "Déplacer",
-    DT_MOVE_DESC = "Placez cet élément en Mode Édition.",
+    DT_MOVE_DESC = "Ouvre Disposition avec cet élément sélectionné : faites-le glisser ou déplacez-le avec les flèches.",
     ---------------------------------------------------------------- Bugs
     BUGS = "Erreurs",
     BUGS_DESC = "Capture les erreurs Lua, les actions bloquées et les avertissements de tous les addons, avec une fenêtre pour les lire et les copier.",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "Record personnel",
     MPLUS_TIMER_BEST_DESC = "Votre donjon chronométré le plus rapide à ce niveau.",
     MPLUS_TIMER_PLACE = "Position",
-    MPLUS_TIMER_PLACE_DESC = "Le minuteur est une fenêtre du Mode Édition. Un donjon d'exemple s'affiche tant que le Mode Édition est ouvert.",
+    MPLUS_TIMER_PLACE_DESC = "Ouvre Disposition avec le chronomètre sélectionné. Une partie d'exemple s'affiche pendant le placement (aussi en mode Édition).",
     MPLUS_FORCES = "Forces ennemies",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "Record %s",

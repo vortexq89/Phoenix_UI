@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "errores",
     DT_BUGS_UNIT_ONE = "error",
     DT_MOVE = "Mover",
-    DT_MOVE_DESC = "Coloca este elemento en el Modo Edición.",
+    DT_MOVE_DESC = "Abre Disposición con este elemento seleccionado: arrástralo o muévelo con las flechas.",
     ---------------------------------------------------------------- Bugs
     BUGS = "Errores",
     BUGS_DESC = "Captura errores de Lua, acciones bloqueadas y advertencias de todos los addons, con un visor para leerlos y copiarlos.",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "Mejor marca personal",
     MPLUS_TIMER_BEST_DESC = "Tu incursión a tiempo más rápida de esta mazmorra en este nivel.",
     MPLUS_TIMER_PLACE = "Posición",
-    MPLUS_TIMER_PLACE_DESC = "El temporizador es un marco del Modo Edición. Mientras está abierto se muestra una incursión de ejemplo.",
+    MPLUS_TIMER_PLACE_DESC = "Abre Disposición con el temporizador seleccionado. Se ve una partida de ejemplo mientras lo colocas (también en el modo Edición).",
     MPLUS_FORCES = "Fuerzas enemigas",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "Mejor %s",

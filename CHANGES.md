@@ -701,6 +701,7 @@ everything else starts from fresh defaults.
   Settings landing page, AFK screen).
 
 ### Changed
+- **"Move" buttons open Layout on that frame** (3 Nov, specs/005 T001, T004): the Move buttons for Spell History, the experience bar and the Mythic+ timer now open Phoenix Layout with that frame already selected, instead of Blizzard Edit Mode. The Mythic+ timer shows its sample run in Layout too, so you can see what you are placing. The Damage Meter, Minimap and Chat buttons still open Edit Mode, because those are Blizzard frames.
 - Layout belongs to Edit Mode: Phoenix no longer moves Edit Mode frames. The data bar and spell history are
   Edit Mode frames with per-layout positions; the old MoveAny mover is replaced by Movers, which only covers a
   verified list of frames Edit Mode does not manage.

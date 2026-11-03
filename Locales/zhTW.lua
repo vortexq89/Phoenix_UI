@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "個錯誤",
     DT_BUGS_UNIT_ONE = "個錯誤",
     DT_MOVE = "移動",
-    DT_MOVE_DESC = "在編輯模式中擺放此元素。",
+    DT_MOVE_DESC = "開啟佈局並選取此元素：拖曳它，或用方向鍵微調。",
     ---------------------------------------------------------------- Bugs
     BUGS = "錯誤",
     BUGS_DESC = "捕獲所有插件的 Lua 錯誤、被阻止的操作和警告，並提供檢視器用於閱讀和複製。",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "個人最佳",
     MPLUS_TIMER_BEST_DESC = "你在此地城此層數中最快的限時通關。",
     MPLUS_TIMER_PLACE = "位置",
-    MPLUS_TIMER_PLACE_DESC = "計時器是編輯模式框架。編輯模式開啟時顯示範例進度。",
+    MPLUS_TIMER_PLACE_DESC = "開啟佈局並選取計時器。放置時會顯示範例進度（編輯模式中也會）。",
     MPLUS_FORCES = "敵方部隊",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "最佳 %s",

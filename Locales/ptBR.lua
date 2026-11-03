@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "erros",
     DT_BUGS_UNIT_ONE = "erro",
     DT_MOVE = "Mover",
-    DT_MOVE_DESC = "Posicione este elemento no Modo de Edição.",
+    DT_MOVE_DESC = "Abre Layout com este elemento selecionado: arraste-o ou mova-o com as setas.",
     ---------------------------------------------------------------- Bugs
     BUGS = "Erros",
     BUGS_DESC = "Captura erros de Lua, ações bloqueadas e avisos de todos os addons, com um visualizador para ler e copiar.",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "Recorde pessoal",
     MPLUS_TIMER_BEST_DESC = "Sua corrida no tempo mais rápida desta masmorra neste nível.",
     MPLUS_TIMER_PLACE = "Posição",
-    MPLUS_TIMER_PLACE_DESC = "O cronômetro é uma janela do Modo de Edição. Uma corrida de exemplo aparece enquanto o Modo de Edição está aberto.",
+    MPLUS_TIMER_PLACE_DESC = "Abre Layout com o cronômetro selecionado. Uma corrida de exemplo aparece enquanto você o posiciona (também no Modo de Edição).",
     MPLUS_FORCES = "Forças inimigas",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "Recorde %s",

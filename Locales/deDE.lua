@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "Fehler",
     DT_BUGS_UNIT_ONE = "Fehler",
     DT_MOVE = "Verschieben",
-    DT_MOVE_DESC = "Positioniere dieses Element im Bearbeitungsmodus.",
+    DT_MOVE_DESC = "Öffnet das Layout mit diesem Element ausgewählt: ziehe es oder verschiebe es mit den Pfeiltasten.",
     ---------------------------------------------------------------- Bugs
     BUGS = "Fehler",
     BUGS_DESC = "Fängt Lua-Fehler, blockierte Aktionen und Warnungen aller Addons ab – mit einer Anzeige zum Lesen und Kopieren.",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "Persönliche Bestzeit",
     MPLUS_TIMER_BEST_DESC = "Dein schnellster rechtzeitiger Lauf dieses Dungeons auf dieser Stufe.",
     MPLUS_TIMER_PLACE = "Position",
-    MPLUS_TIMER_PLACE_DESC = "Der Timer ist ein Fenster im Bearbeitungsmodus. Solange dieser offen ist, wird ein Beispiellauf gezeigt.",
+    MPLUS_TIMER_PLACE_DESC = "Öffnet das Layout mit ausgewähltem Timer. Während du ihn platzierst, läuft ein Beispiel (auch im Bearbeitungsmodus).",
     MPLUS_FORCES = "Feindliche Streitkräfte",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "Bestzeit %s",

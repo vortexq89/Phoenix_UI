@@ -229,5 +229,6 @@ ns.CHANGELOG = {
         "Bugs — an error catcher in the spirit of BugGrabber + BugSack.",
         "Movers (`/pui movers`) — move, scale and fade the frames Edit Mode does not manage (zone text, error",
         "One icon set everywhere — 88 Phosphor duotone icons (MIT) in the sidebar, page and section headers,",
+        "\"Move\" buttons open Layout on that frame (3 Nov, specs/005 T001, T004) — the Move buttons for Spell History, the expe…",
     } },
 }

@@ -86,6 +86,13 @@ function EM:Register(frame, opts)
     apply(entry)
 end
 
+-- Layout with this Phoenix frame selected (the frames are in Layout as "em.<key>").
+function EM:Focus(key)
+    local movers = ns.GetModule and ns:GetModule("Movers")
+    if movers and movers.Focus then return movers:Focus("em." .. key) end
+    self:Open()
+end
+
 function EM:Open()
     ns.Combat:Run("editmode.open", function()
         if EditModeManagerFrame and not EditModeManagerFrame:IsShown() then ShowUIPanel(EditModeManagerFrame) end

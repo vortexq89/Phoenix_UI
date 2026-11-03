@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "个错误",
     DT_BUGS_UNIT_ONE = "个错误",
     DT_MOVE = "移动",
-    DT_MOVE_DESC = "在编辑模式中摆放此元素。",
+    DT_MOVE_DESC = "打开布局并选中此元素：拖动它，或用方向键微调。",
     ---------------------------------------------------------------- Bugs
     BUGS = "错误",
     BUGS_DESC = "捕获所有插件的 Lua 错误、被阻止的操作和警告，并提供查看器用于阅读和复制。",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "个人最佳",
     MPLUS_TIMER_BEST_DESC = "你在此地下城此层数中最快的限时通关。",
     MPLUS_TIMER_PLACE = "位置",
-    MPLUS_TIMER_PLACE_DESC = "计时器是编辑模式框体。编辑模式打开时显示示例进度。",
+    MPLUS_TIMER_PLACE_DESC = "打开布局并选中计时器。放置时会显示示例进度（编辑模式中也会）。",
     MPLUS_FORCES = "敌方部队",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "最佳 %s",

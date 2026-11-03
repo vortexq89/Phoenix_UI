@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "errori",
     DT_BUGS_UNIT_ONE = "errore",
     DT_MOVE = "Sposta",
-    DT_MOVE_DESC = "Posiziona questo elemento in Modalità Modifica.",
+    DT_MOVE_DESC = "Apre Disposizione con questo elemento selezionato: trascinalo o spostalo con le frecce.",
     ---------------------------------------------------------------- Bugs
     BUGS = "Errori",
     BUGS_DESC = "Cattura errori Lua, azioni bloccate e avvisi di tutti gli addon, con un visualizzatore per leggerli e copiarli.",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "Record personale",
     MPLUS_TIMER_BEST_DESC = "La tua run in tempo più rapida di questa spedizione a questo livello.",
     MPLUS_TIMER_PLACE = "Posizione",
-    MPLUS_TIMER_PLACE_DESC = "Il timer è una finestra della Modalità Modifica. Mentre è aperta viene mostrata una spedizione di esempio.",
+    MPLUS_TIMER_PLACE_DESC = "Apre Disposizione con il timer selezionato. Mentre lo posizioni compare una corsa d'esempio (anche in Modalità modifica).",
     MPLUS_FORCES = "Forze nemiche",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "Record %s",

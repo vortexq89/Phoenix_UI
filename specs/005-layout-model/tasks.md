@@ -4,14 +4,14 @@
 - [x] T000 Spec, plan and tasks for 005
 
 ## Phase 2: Foundational
-- [ ] T001 `Movers:Focus(key)` + harness (opens unlock mode with the frame selected)
+- [x] T001 `Movers:Focus(key)` + harness (opens unlock mode with the frame selected)
 
 ## Phase 3: User Story 1 (P1)
 - [ ] T002 [US1] Skins window drag goes through Movers; migration "skins-windows-to-layout" + harness
 - [ ] T003 [US1] Remove the Skins move rows (locales cleaned in all 10)
 
 ## Phase 4: User Story 2 (P1)
-- [ ] T004 [US2] Spell History, Data texts, Encounters, Combat Text and CDM Move rows open Layout + harness
+- [x] T004 [US2] Spell History, the XP bar and the M+ timer "Move" rows open Layout on their frame (the M+ sample run shows in Layout too); Combat Text, CDM, bars, auras, cast bars, unit and group frames already opened Layout. The Damage Meter, Minimap and Chat rows stay on Edit Mode: those are Blizzard Edit Mode frames + harness
 
 ## Phase 5: User Story 3 (P2)
 - [ ] T005 [US3] Full window list (data, presence-checked, load-on-demand hooks)

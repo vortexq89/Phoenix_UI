@@ -970,6 +970,15 @@ try("Buffs links to the reminders; empty previews say so (specs/004)", function(
     local stage = ns.Previews:Create("unitframe", env.CreateFrame("Frame"), ns.modules.UnitFrames, {})
     assert(stage.MeasureContent, "preview has no measure")
 end)
+try("Move rows open Layout on their frame (specs/005 T001, T004)", function()
+    local movers = ns:GetModule("Movers")
+    assert(movers.Focus and ns.EditMode.Focus, "no Layout focus")
+    movers:Focus("em.SpellHistory")
+    assert(movers:IsUnlocked(), "Focus did not open Layout")
+    local e = movers:GetEntry("em.SpellHistory")
+    assert(not e or movers:GetSelected() == e, "Focus did not select the frame")
+    movers:SetUnlocked(false)
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

@@ -297,7 +297,7 @@ local T = {
     DT_BUGS_UNIT = "개 오류",
     DT_BUGS_UNIT_ONE = "개 오류",
     DT_MOVE = "이동",
-    DT_MOVE_DESC = "편집 모드에서 이 요소의 위치를 정하세요.",
+    DT_MOVE_DESC = "이 요소를 선택한 채로 배치를 엽니다. 끌어서 옮기거나 화살표 키로 조금씩 움직이세요.",
     ---------------------------------------------------------------- Bugs
     BUGS = "오류",
     BUGS_DESC = "모든 애드온의 Lua 오류, 차단된 동작, 경고를 수집하고 읽고 복사할 수 있는 뷰어를 제공합니다.",
@@ -702,7 +702,7 @@ local T = {
     MPLUS_TIMER_BEST = "개인 최고 기록",
     MPLUS_TIMER_BEST_DESC = "이 던전, 이 단계에서 시간 내 완료한 가장 빠른 기록.",
     MPLUS_TIMER_PLACE = "위치",
-    MPLUS_TIMER_PLACE_DESC = "타이머는 편집 모드 창입니다. 편집 모드가 열려 있는 동안 예시 진행이 표시됩니다.",
+    MPLUS_TIMER_PLACE_DESC = "타이머를 선택한 채로 배치를 엽니다. 배치하는 동안 예시 진행이 표시됩니다(편집 모드에서도).",
     MPLUS_FORCES = "적 병력",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "최고 %s",

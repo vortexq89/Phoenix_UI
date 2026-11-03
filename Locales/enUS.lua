@@ -306,7 +306,7 @@ ns.RegisterLocale("enUS", {
     DT_BUGS_UNIT = "bugs",
     DT_BUGS_UNIT_ONE = "bug",
     DT_MOVE = "Move",
-    DT_MOVE_DESC = "Position this element in Edit Mode.",
+    DT_MOVE_DESC = "Opens Layout with this element selected: drag it, or nudge it with the arrow keys.",
 
     ---------------------------------------------------------------- Bugs
     BUGS = "Bugs",
@@ -723,7 +723,7 @@ ns.RegisterLocale("enUS", {
     MPLUS_TIMER_BEST = "Personal best",
     MPLUS_TIMER_BEST_DESC = "Your fastest timed run of this dungeon at this level.",
     MPLUS_TIMER_PLACE = "Position",
-    MPLUS_TIMER_PLACE_DESC = "The timer is an Edit Mode frame. A sample run is shown while Edit Mode is open.",
+    MPLUS_TIMER_PLACE_DESC = "Opens Layout with the timer selected. A sample run shows while you place it (in Edit Mode too).",
     MPLUS_FORCES = "Enemy forces",
     MPLUS_DEATHS_VALUE = "%d  −%ds",
     MPLUS_BEST = "Best %s",
