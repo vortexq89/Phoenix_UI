@@ -732,6 +732,7 @@ function M:UpdateRange(f, src)
     local alpha = 1
     if u.oocFade and not f.sample and not InCombatLockdown() and not (u.oocKeep ~= false and active(f)) then alpha = u.oocAlpha end
     if f.Trinket then alpha = self:ArenaAlpha(f, alpha) end
+    if f.RangeIn then M.UpdateRangeIcon(f, src:InRange(f)) end
     if not u.rangeFade then f:SetAlpha(alpha); return end
     local inRange = src:InRange(f)
     if plain(inRange) then

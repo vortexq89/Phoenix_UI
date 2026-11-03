@@ -116,6 +116,10 @@ local function arenaExtras(u)
              border = Style.Border({ style = "pixel" }),
              text = Style.Text(10, { anchor = "CENTER", outline = "OUTLINE", shadow = false }) }
     u.widgets = { healer = true, focus = true, targets = true }
+    -- sArena parity (specs/029): the arena dampening line, and in / out of range icons (retail; Forever has no arenas)
+    u.dampening = { show = true, text = Style.Text(12, { anchor = "BOTTOM", outline = "OUTLINE", shadow = false, y = 4 }) }
+    u.rangeIcon = { show = false, mode = "both", size = 16, anchor = "RIGHT", x = 18, y = 0,
+                    inAtlas = "common-icon-checkmark-yellow", outAtlas = "common-icon-redx" }
     u.click = { left = "target", right = "togglemenu", middle = "focus", leftText = "", rightText = "", middleText = "" }
     return u
 end
@@ -322,8 +326,14 @@ tag("threat", "%P", function(f, s) return s:ThreatPercent(f) end)
 tag("level:color", "%s", function(f, s) return s:LevelColored(f) end)
 tag("spec", "%s", function(f, s) return s:SpecName(f) end)
 tag("target", "%s", function(f, s) return s:TargetName(f) end)
+-- the arena opponent's number (arena3 -> 3), as sArena's arena numbers (specs/029)
+tag("arena:number", "%s", function(f)
+    local n = tostring(f.token or f.unit or ""):match("^arena(%d)$")
+    return n or (f.sample and tostring(f.index or 1)) or ""
+end)
 -- list for the options help, in a stable order
-M.TAG_LIST = { "name", "name:short", "level", "classification", "class", "status", "group", "afk", "guild", "guild:title", "npctitle",
+M.TAG_LIST = { "arena:number",
+    "name", "name:short", "level", "classification", "class", "status", "group", "afk", "guild", "guild:title", "npctitle",
     "health:current", "health:max", "health:percent", "health:current-max", "health:current-percent", "health:deficit", "absorbs",
     "power:current", "power:max", "power:percent", "power:current-max", "altpower", "threat", "level:color", "spec",
     "target" }

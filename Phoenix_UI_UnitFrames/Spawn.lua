@@ -479,6 +479,7 @@ function M:ShowPhoenixTest(show)
     if not spawned then return show and false or true end
     M.testShown = show and true or nil
     for _, key in ipairs(M.UNITS) do ns.Combat:Run("uf.vis." .. key, M.ApplyVisibility, key) end
+    if M.LayoutDampening then ns.SafeCall(M.LayoutDampening, M) end
     for _, key in ipairs(M.UNITS) do
         local u = self:Unit(key)
         local limit = (key == "arena" or key == "arenapet") and (M:Unit("arena").testCount or 5) or #frames[key]

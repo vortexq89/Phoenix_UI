@@ -1064,6 +1064,19 @@ try("UF frames 023-028: pet happiness, target border colour", function()
     assert(m.UpdateHappiness(f, m.db.units.target.icons) == nil, "happiness must be pet only")
     m:OnSettingChanged("units.boss.targetBorderColor", { r = 1, g = 0, b = 0 })
 end)
+try("UF arena: dampening and range icons (specs/029)", function()
+    local m = ns.modules.UnitFrames
+    local u = m.db.units.arena
+    assert(u.dampening.show == true and u.rangeIcon.show == false, "arena 029 defaults missing")
+    assert(m.DampeningText(nil) == nil and m.DampeningText(0) == nil, "no dampening text at 0")
+    assert(m.DampeningText(20):find("20%", 1, true), "dampening text wrong")
+    assert(m.TAGS["arena:number"].fns[1]({ token = "arena3" }) == "3", "arena number tag wrong")
+    u.rangeIcon.show = true
+    m:OnSettingChanged("units.arena.rangeIcon.show", true)
+    m:ShowTest(true); m:ShowTest(false)
+    u.rangeIcon.show = false
+    m:OnSettingChanged("units.arena.rangeIcon.show", false)
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

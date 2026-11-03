@@ -212,7 +212,86 @@ end
 
 function M:RefreshArena()
     if not ns:Supports("arena") then return end
+    ns.SafeCall(M.LayoutDampening, M)
     ns.Combat:Run("uf.arena.cvars", syncCVars)
     ns.Combat:Run("uf.arena.adopt", adoptAll)
     for _, tray in pairs(trays) do ns.SafeCall(relayoutTray, tray) end
+end
+
+---------------------------------------------------------------- dampening and range icons (specs/029)
+--[[ Dampening: the game's commentator API gives the arena's dampening percent (plain); a one-second ticker shows
+    "Dampening: N%" over the arena frames while a match runs, as sArena does on 12.x. ]]
+local DAMPENING_ID = 110310
+local damp, dampTicker
+function M.DampeningText(percent)
+    if type(percent) ~= "number" or percent <= 0 then return nil end
+    local name = C_Spell and C_Spell.GetSpellName and C_Spell.GetSpellName(DAMPENING_ID) or nil
+    if type(name) ~= "string" or not M.plain(name) then name = "Dampening" end
+    return ("%s: %d%%"):format(name, percent)
+end
+local function dampeningPercent()
+    local C = rawget(_G, "C_Commentator")
+    if not (C and C.GetDampeningPercent) then return nil end
+    local ok, p = pcall(C.GetDampeningPercent)
+    if ok and M.plain(p) then return p end
+    return nil
+end
+local function updateDampening()
+    local u = M:Unit("arena")
+    if not damp then return end
+    local _, kind = IsInInstance()
+    local text = M.testShown and M.DampeningText(15) or (kind == "arena" and M.DampeningText(dampeningPercent()) or nil)
+    damp.text:SetText(text or "")
+    damp:SetShown(u.enabled and u.dampening.show and text ~= nil)
+end
+function M:LayoutDampening()
+    local holder = rawget(_G, "PhoenixUI_UF_arena")
+    if not holder then return end
+    if not damp then
+        damp = CreateFrame("Frame", nil, holder)
+        damp:SetSize(200, 20)
+        damp.text = damp:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        damp.text:SetAllPoints()
+    end
+    local u = M:Unit("arena")
+    damp:ClearAllPoints()
+    damp:SetPoint("BOTTOM", holder, "TOP", 0, u.dampening.text.y or 4)
+    ns.Skin:TextSpec(damp.text, u.dampening.text, "unit", "text.primary")
+    local _, kind = IsInInstance()
+    local want = u.enabled and u.dampening.show and (kind == "arena" or M.testShown)
+    if want and not dampTicker then dampTicker = C_Timer.NewTicker(1, updateDampening)
+    elseif not want and dampTicker then dampTicker:Cancel(); dampTicker = nil end
+    updateDampening()
+end
+M.UpdateDampening = updateDampening
+
+--[[ Range icons: a check mark when the enemy is in range, a red cross when not (either or both). The in-range
+    flag may be secret, so the two icons only ever take it through SetAlphaFromBoolean. ]]
+function M.LayoutRangeIcon(f, u)
+    local r = u.rangeIcon
+    if not r then return end
+    if not f.RangeIn then
+        f.RangeIn = f:CreateTexture(nil, "OVERLAY", nil, 5)
+        f.RangeOut = f:CreateTexture(nil, "OVERLAY", nil, 5)
+    end
+    for _, t in ipairs({ f.RangeIn, f.RangeOut }) do
+        t:ClearAllPoints()
+        t:SetSize(r.size, r.size)
+        t:SetPoint(r.anchor, f, r.anchor, r.x, r.y)
+    end
+    f.RangeIn:SetAtlas(r.inAtlas)
+    f.RangeOut:SetAtlas(r.outAtlas)
+    f.RangeIn:SetShown(r.show and r.mode ~= "out")
+    f.RangeOut:SetShown(r.show and r.mode ~= "in")
+end
+function M.UpdateRangeIcon(f, inRange)
+    if not f.RangeIn or not f.RangeIn:IsShown() and not f.RangeOut:IsShown() then return end
+    if f.sample then inRange = (f.index or 1) ~= 2 end
+    if M.plain(inRange) then
+        f.RangeIn:SetAlpha(inRange and 1 or 0)
+        f.RangeOut:SetAlpha(inRange and 0 or 1)
+    else
+        f.RangeIn:SetAlphaFromBoolean(inRange, 1, 0)
+        f.RangeOut:SetAlphaFromBoolean(inRange, 0, 1)
+    end
 end

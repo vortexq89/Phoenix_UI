@@ -666,6 +666,7 @@ local function layoutExtras(self, f, u, g, key)
     end
     if not f.Trinket then return end
     layoutArena(self, f, u)
+    M.LayoutRangeIcon(f, u)
 end
 
 -- The frame's size, bars, texts and indicators from its settings. Secure frames: out of combat only.

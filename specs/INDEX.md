@@ -25,7 +25,7 @@ and shipped; **Partial** = built, checklist not yet passed; **Draft** = spec, pl
 | [011-premade-groups-filter](011-premade-groups-filter/spec.md) | Group finder: Premade Groups Filter parity | — | 12 | 5 | Draft |
 | [012-msbt](012-msbt/spec.md) | Combat Text: MikScrollingBattleText parity | — | 11 | 5 | Draft |
 | [013-trufigcd](013-trufigcd/spec.md) | Spell History: TrufiGCD parity | — | 9 | 4 | Draft |
-| [014-sarena](014-sarena/spec.md) | Arena: sArena Reloaded parity | — | 14 | 7 | Draft |
+| [014-sarena](014-sarena/spec.md) | Arena: sArena Reloaded parity | — | 14 | 7 | Partial (3 Nov): dampening, range icons; 9 rows open |
 | [015-auctionator](015-auctionator/spec.md) | Auction house: Auctionator parity | — | 9 | 7 | Draft |
 | [016-idtip](016-idtip/spec.md) | Tooltip IDs: idTip parity | — | 7 | 6 | Draft |
 | [017-questie](017-questie/spec.md) | Quests: Questie parity | — | 13 | 3 | Draft |
@@ -40,7 +40,7 @@ and shipped; **Partial** = built, checklist not yet passed; **Draft** = spec, pl
 | [026-uf-pet](026-uf-pet/spec.md) | Unit Frames: pet | 019-ellesmereui | 1 | 1 | Built (3 Nov), in-game check pending |
 | [027-uf-party](027-uf-party/spec.md) | Unit Frames: party | 019-ellesmereui | 1 | 1 | Checked (3 Nov), parity; in-game check pending |
 | [028-uf-boss](028-uf-boss/spec.md) | Unit Frames: boss | 019-ellesmereui | 1 | 1 | Built (3 Nov), in-game check pending |
-| [029-uf-arena](029-uf-arena/spec.md) | Unit Frames: arena | 019-ellesmereui | 1 | 1 | Draft |
+| [029-uf-arena](029-uf-arena/spec.md) | Unit Frames: arena | 019-ellesmereui | 1 | 1 | Partial (3 Nov), with 014 |
 | [030-eui-raidframes](030-eui-raidframes/spec.md) | RaidFrames | 019-ellesmereui | 1 | 1 | Draft |
 | [031-eui-nameplates](031-eui-nameplates/spec.md) | Nameplates | 019-ellesmereui | 1 | 0 | Draft |
 | [032-eui-actionbars](032-eui-actionbars/spec.md) | ActionBars (+XP/rep bars) | 019-ellesmereui | 1 | 0 | Draft |
