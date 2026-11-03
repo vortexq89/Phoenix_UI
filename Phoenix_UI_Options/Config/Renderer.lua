@@ -196,6 +196,7 @@ function rowTip(page, m, item, withDesc)
     end
     if resettable(page, m, item) then lines[#lines + 1] = L.TIP_RESET end
     if item.combat then lines[#lines + 1] = L.TIP_COMBAT end
+    if item.reload then lines[#lines + 1] = L.TIP_RELOAD_APPLY end
     return #lines > 0 and table.concat(lines, "\n") or nil
 end
 
@@ -478,9 +479,11 @@ function buildRow(card, page, m, item)
         row.desc:SetWordWrap(true)
         row.desc:SetText(text(item.desc))
     end
-    -- only "needs a reload" earns a badge; "out of combat" is in the tooltip (a badge on half the rows was noise)
+    -- no badge at rest (specs/003 T009): a row that hands Blizzard frames over says so in its tooltip, and only
+    -- after it is changed does a "Reload needed" button appear next to its label (one click applies it)
     if item.reload then
-        row.badge = W:Badge(row, L.BADGE_RELOAD, "state.warning", "reload")
+        row.badge = W:Badge(row, L.RELOAD_NEEDED, "accent.primary", "reload")
+        row.badge:Hide()
         function row.ArmReload(self)
             local b = self.badge
             b:Set(L.RELOAD_NEEDED, "accent.primary")
@@ -489,6 +492,7 @@ function buildRow(card, page, m, item)
             b:SetScript("OnEnter", function(me) W.ShowTooltip(me, L.RELOAD_NEEDED, L.RELOAD_NEEDED_TIP) end)
             b:SetScript("OnLeave", function() W.HideTooltip() end)
             self.reloadArmed = true
+            b:Show()
             if self.Arrange and self.lastArrange then self:Arrange(unpack(self.lastArrange)) end
         end
         if m.needsReload and m.reloadKeys and m.reloadKeys[item] then row:ArmReload() end
@@ -504,7 +508,7 @@ function buildRow(card, page, m, item)
     row:EnableMouse(true)
     row:SetScript("OnEnter", function(self)
         W.Color(self.hl, "bg.hover", 0.55)
-        W.ShowTooltip(self.label, text(item.label), rowTip(page, m, item, not (self.desc and self.desc:IsShown())))
+        W.ShowTooltip(self.label, text(item.label), rowTip(page, m, item, not (self.desc and self.desc:IsShown())), true)
     end)
     row:SetScript("OnLeave", function(self) W.Color(self.hl, "bg.hover", 0); W.HideTooltip() end)
     attachReset(row, page, m, item)
@@ -608,7 +612,8 @@ function buildRow(card, page, m, item)
             arrangeLine(self, c, icons, mode, indent, width)
         end
         if self.icon then self.icon:SetPoint("RIGHT", self.label, "LEFT", -8, 0) end
-        if self.badge then
+        if self.badge and not self.reloadArmed then self.badge:Hide() end
+        if self.badge and self.reloadArmed then
             self.badge:ClearAllPoints()
             -- after the label text, but never past the text column into the control
             -- a label that would be cut short keeps its words: the badge folds to its icon (the tooltip names it)
@@ -618,7 +623,7 @@ function buildRow(card, page, m, item)
             if full then
                 self.badge:SetSize(20, 16); self.badge.icon:ClearAllPoints(); self.badge.icon:SetPoint("CENTER")
             else
-                self.badge:Set(L.BADGE_RELOAD, "state.warning")
+                self.badge:Set(L.RELOAD_NEEDED, "accent.primary")
                 self.badge.icon:ClearAllPoints(); self.badge.icon:SetPoint("LEFT", 6, 0)
             end
             local room = math.max(0, (self.textW or 140) - (self.badge:GetWidth() or 0) - 8)
@@ -713,9 +718,17 @@ local function buildDescription(card, item)
     row.item = item
     row.isDescription = true
     Skin:Register(row, function(self) Skin:Text(self.text, "desc", "text.secondary") end)
-    function row:Refresh() end
+    -- a text given as a function (a status line) is read again on every refresh, not only when built
+    function row:Refresh()
+        if type(item.text) == "function" then self.text:SetText(item.text()) end
+    end
     function row:Flash() end
-    function row:Arrange(_, width) if width then self.text:SetWidth(math.max(60, width - 32)) end end
+    -- the height follows the wrapped text at the new width; measured before the width was set, a long help
+    -- line (Unit Frames tags) kept a one-line height and ran over the rows under it (specs/003)
+    function row:Arrange(_, width)
+        if width then self.text:SetWidth(math.max(60, width - 32)) end
+        self:Measure()
+    end
     function row:Measure() self:SetHeight(math.floor(self.text:GetStringHeight() + 12.5)) end
     return row
 end
@@ -812,8 +825,12 @@ local function buildPageHeader(page, m, schema)
     h.title:SetPoint("TOPLEFT", h.crumb, "BOTTOMLEFT", 0, -4)
     h.title:SetText(text(m.label))
     h.desc = W.Text(h, "desc", "text.secondary")
-    h.desc:SetPoint("BOTTOMLEFT", h.title, "BOTTOMRIGHT", 12, 2)
-    h.desc:SetWordWrap(false)
+    -- beside the title, wrapping to two lines instead of cutting the summary off (specs/003 T001)
+    h.desc:SetPoint("LEFT", h.title, "RIGHT", 12, 0)
+    h.desc:SetJustifyV("MIDDLE")
+    h.desc:SetWordWrap(true)
+    h.desc:SetMaxLines(2)
+    h.descWraps = 2
     h.desc:SetText(text(m.desc))
     page.settingCount = Config.CountSettings(schema)
     -- "N settings" now lives in the tooltip of the title; the line under the title is the summary
@@ -1671,7 +1688,8 @@ function Config.BuildSchemaPage(parent, m, schema)
                 c:Hide()
             end
         end
-        child:SetHeight(lowest() + PAD - CARD_GAP)
+        -- a full PAD of room under the last card, so the last row clears the footer edge at full scroll (specs/003 T004)
+        child:SetHeight(lowest() + 2 * PAD - CARD_GAP)
         self.scroll:UpdateBar()
         self.header:Changed()
         self:Stick()

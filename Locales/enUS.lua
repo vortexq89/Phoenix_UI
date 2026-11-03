@@ -1848,6 +1848,7 @@ ns.RegisterLocale("enUS", {
     TIP_DEFAULT = "Default: %s",
     TIP_RESET = "Right-click the row to reset it.",
     TIP_COMBAT = "Changed in combat, it applies when combat ends.",
+    TIP_RELOAD_APPLY = "This hands whole Blizzard frames over, which the game only allows at load: after you change it, a \"Reload needed\" button appears next to the name.",
     ---------------------------------------------------------------- Slash help
     SLASH_HELP_MORE = "/pui help – this list\n/pui settings – Phoenix in the game's AddOns settings\n/pui diag – check textures, icons and fonts\n/pui bugs share on|off – error reports to the author\n/pui debug – debug output on or off",
     SLASH_UNKNOWN = "Unknown command \"%s\". Type /pui help for the full list.",

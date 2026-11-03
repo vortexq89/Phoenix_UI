@@ -1822,6 +1822,7 @@ local T = {
     TIP_DEFAULT = "Par défaut : %s",
     TIP_RESET = "Clic droit sur la ligne pour la réinitialiser.",
     TIP_COMBAT = "Modifié en combat, il s'applique à la fin du combat.",
+    TIP_RELOAD_APPLY = "Ceci reprend des cadres Blizzard entiers, ce que le jeu n'autorise qu'au chargement : après une modification, un bouton « Rechargement requis » apparaît à côté du nom.",
     ---------------------------------------------------------------- Slash help
     SLASH_HELP_MORE = "/pui help – cette liste\n/pui settings – Phoenix dans les options d'addons du jeu\n/pui diag – vérifier textures, icônes et polices\n/pui bugs share on|off – rapports d'erreurs à l'auteur\n/pui debug – sortie de débogage activée ou non",
     SLASH_UNKNOWN = "Commande inconnue « %s ». Tapez /pui help pour la liste complète.",

@@ -1822,6 +1822,7 @@ local T = {
     TIP_DEFAULT = "기본값: %s",
     TIP_RESET = "줄을 우클릭하면 초기화됩니다.",
     TIP_COMBAT = "전투 중에 바꾸면 전투가 끝난 뒤 적용됩니다.",
+    TIP_RELOAD_APPLY = "블리자드 창 전체를 넘겨받으며, 게임은 이를 불러올 때만 허용합니다. 변경하면 이름 옆에 \"재시작 필요\" 버튼이 나타납니다.",
     ---------------------------------------------------------------- Slash help
     SLASH_HELP_MORE = "/pui help – 이 목록\n/pui settings – 게임 애드온 설정의 Phoenix\n/pui diag – 텍스처, 아이콘, 글꼴 점검\n/pui bugs share on|off – 제작자에게 오류 보고 전송\n/pui debug – 디버그 출력 켜기/끄기",
     SLASH_UNKNOWN = "알 수 없는 명령 \"%s\". 전체 목록은 /pui help 를 입력하세요.",

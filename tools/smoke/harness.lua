@@ -949,6 +949,17 @@ local events = {
     { "CHALLENGE_MODE_KEYSTONE_RECEPTABLE_OPEN" }, { "CHALLENGE_MODE_COMPLETED" }, { "DUEL_REQUESTED", "Someone" },
     { "ZONE_CHANGED_NEW_AREA" }, { "UI_ERROR_MESSAGE", 1, "x" }, { "BAG_UPDATE_DELAYED" },
 }
+try("no Reload badge at rest (specs/003 T009)", function()
+    local page = ns.Config:Show("Quests")
+    local row
+    for _, r in ipairs(page.rows) do if r.item.key == "restyle" then row = r end end
+    assert(row and row.badge and not row.badge:IsShown(), "a reload row shows a badge before it is changed")
+    row:ArmReload()
+    assert(row.reloadArmed, "a changed reload row is armed")
+    assert(row.badge:IsShown(), "a changed reload row shows its Reload needed button: " .. tostring(row.mode))
+    row.reloadArmed = nil; row.badge:Hide()
+    assert(page.header.descWraps == 2, "the page summary wraps to two lines (specs/003 T001)")
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

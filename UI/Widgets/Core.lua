@@ -97,7 +97,9 @@ local function getTip()
     return tip
 end
 
-function W.ShowTooltip(owner, title, text)
+-- beside = true: the tip sits right of the owner's text, centred on it, so it never covers the rows above
+-- (a setting's label); otherwise it sits above the owner.
+function W.ShowTooltip(owner, title, text, beside)
     local t = getTip()
     t.title:SetText(title or "")
     t.text:SetText(text or "")
@@ -106,7 +108,13 @@ function W.ShowTooltip(owner, title, text)
     t.text:SetWidth(math.max(w, 1))
     t:SetSize(w + 20, t.title:GetStringHeight() + (t.text:IsShown() and t.text:GetStringHeight() + 4 or 0) + 18)
     t:ClearAllPoints()
-    t:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 6)
+    if beside and owner.GetUnboundedStringWidth then
+        local tw = math.min(owner:GetUnboundedStringWidth() or 0, owner:GetWidth() or 0)
+        t:SetPoint("LEFT", owner, "LEFT", math.floor(tw + 16), 0)
+    else
+        t:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", 0, 6)
+    end
+    t.beside = beside and true or nil
     ns.Anim:FadeIn(t, 0.1)
 end
 

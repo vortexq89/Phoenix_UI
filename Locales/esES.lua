@@ -1822,6 +1822,7 @@ local T = {
     TIP_DEFAULT = "Predeterminado: %s",
     TIP_RESET = "Haz clic derecho en la fila para restablecerla.",
     TIP_COMBAT = "Si lo cambias en combate, se aplica al terminar.",
+    TIP_RELOAD_APPLY = "Esto cede marcos completos de Blizzard, algo que el juego solo permite al cargar: tras cambiarlo aparece un botón «Hace falta recargar» junto al nombre.",
     ---------------------------------------------------------------- Slash help
     SLASH_HELP_MORE = "/pui help – esta lista\n/pui settings – Phoenix en las opciones de accesorios del juego\n/pui diag – comprobar texturas, iconos y fuentes\n/pui bugs share on|off – informes de errores al autor\n/pui debug – activar o desactivar la depuración",
     SLASH_UNKNOWN = "Comando desconocido «%s». Escribe /pui help para ver la lista.",

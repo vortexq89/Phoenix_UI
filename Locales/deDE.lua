@@ -1822,6 +1822,7 @@ local T = {
     TIP_DEFAULT = "Standard: %s",
     TIP_RESET = "Rechtsklick auf die Zeile setzt sie zurück.",
     TIP_COMBAT = "Im Kampf geändert, gilt es nach dem Kampf.",
+    TIP_RELOAD_APPLY = "Dies übergibt ganze Blizzard-Fenster, was das Spiel nur beim Laden erlaubt: Nach einer Änderung erscheint neben dem Namen eine Schaltfläche „Neu laden nötig“.",
     ---------------------------------------------------------------- Slash help
     SLASH_HELP_MORE = "/pui help – diese Liste\n/pui settings – Phoenix in den AddOn-Einstellungen des Spiels\n/pui diag – Texturen, Symbole und Schriften prüfen\n/pui bugs share on|off – Fehlerberichte an den Autor\n/pui debug – Debug-Ausgabe an oder aus",
     SLASH_UNKNOWN = "Unbekannter Befehl „%s“. /pui help zeigt alle Befehle.",

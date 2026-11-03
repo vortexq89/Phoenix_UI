@@ -74,6 +74,7 @@ ns.CHANGELOG = {
         "Ember Bevel chrome (30 Oct, f18a001, 33f5b93, b68f9af) — 76 icons and 28 window medallions in four states and themes…",
         "Group frame aura indicators (30 Oct, 8f33ac8) — six placeable indicators per profile.",
         "Resource bars (30 Oct, ee3b916) — row order, power ticks, colour modes, smooth fill.",
+        "Settings pages: no Reload badges, nothing cut or covered (3 Nov, specs/003 T001, T004, T006, T009) — the orange \"Relo…",
         "Blank sound pickers, BigWigs \"not loaded\", greyed crits (3 Nov, specs/003 T005, T008) — every sound picker now starts…",
         "Profiles in three tabs (1 Nov, specs/002 T008) — the Profiles page now has Profile (the active profile, new, copy, de…",
         "General › Looks and the Phoenix group order (1 Nov, specs/002 T005–T007) — the three looks, Undo and the setup button…",

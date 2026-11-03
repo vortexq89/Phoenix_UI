@@ -1822,6 +1822,7 @@ local T = {
     TIP_DEFAULT = "預設：%s",
     TIP_RESET = "右鍵點擊此列可重設。",
     TIP_COMBAT = "戰鬥中變更將在戰鬥結束後生效。",
+    TIP_RELOAD_APPLY = "這會接管整個暴雪框架，遊戲只允許在載入時這麼做：變更後名稱旁會出現「需要重載」按鈕。",
     ---------------------------------------------------------------- Slash help
     SLASH_HELP_MORE = "/pui help – 本列表\n/pui settings – 遊戲插件設定中的 Phoenix\n/pui diag – 檢查材質、圖示與字型\n/pui bugs share on|off – 向作者傳送錯誤報告\n/pui debug – 開關除錯輸出",
     SLASH_UNKNOWN = "未知指令「%s」。輸入 /pui help 查看完整列表。",

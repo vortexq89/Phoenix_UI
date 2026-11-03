@@ -1822,6 +1822,7 @@ local T = {
     TIP_DEFAULT = "Predefinito: %s",
     TIP_RESET = "Clic destro sulla riga per ripristinarla.",
     TIP_COMBAT = "Se cambiato in combattimento, si applica alla fine.",
+    TIP_RELOAD_APPLY = "Questo prende in carico interi riquadri Blizzard, cosa che il gioco permette solo al caricamento: dopo la modifica compare accanto al nome un pulsante \"Serve ricaricare\".",
     ---------------------------------------------------------------- Slash help
     SLASH_HELP_MORE = "/pui help – questo elenco\n/pui settings – Phoenix nelle impostazioni AddOn del gioco\n/pui diag – controlla texture, icone e caratteri\n/pui bugs share on|off – segnalazioni di errori all'autore\n/pui debug – output di debug sì o no",
     SLASH_UNKNOWN = "Comando sconosciuto \"%s\". Digita /pui help per l'elenco completo.",
