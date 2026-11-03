@@ -1038,6 +1038,18 @@ try("Bugs: BugSack parity, send, export (specs/006)", function()
     local ok, why = B:SendBugs("", list)
     assert(not ok and why == "BUGS_SEND_NOBODY", "send without a name was not refused")
 end)
+try("UF player: visibility, opacity, highlight (specs/021)", function()
+    local m = ns.modules.UnitFrames
+    local u = m.db.units.player
+    assert(u.vis and u.vis.solo and u.highlightAlpha and u.bar.alpha == 1 and u.powerBar.alpha == 1, "player defaults missing")
+    assert(m.VisibilityCondition(u) == nil, "all-on visibility should need no driver")
+    local v = { vis = { solo = false, party = true, raid = false, mounted = false, vehicle = true } }
+    assert(m.VisibilityCondition(v) == "[mounted] hide; [group:raid] hide; [group:party] show; hide", "visibility macro wrong")
+    u.bar.alpha = 0.5; u.vis.mounted = false
+    m:OnSettingChanged("units.player.bar.alpha", 0.5)
+    u.bar.alpha = 1; u.vis.mounted = true
+    m:OnSettingChanged("units.player.vis.mounted", true)
+end)
 -- scope bar: "Apply to: All" writes every unit, "Copy settings from" replaces the picked unit's settings
 try("scope apply/copy", function()
     local m = ns.modules.UnitFrames

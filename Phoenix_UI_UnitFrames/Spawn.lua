@@ -183,6 +183,7 @@ local function placeNow(key)
     holder:SetSize(horizontal and (W + (n - 1) * step) or W, horizontal and H or (H + (n - 1) * step))
     holder:ClearAllPoints()
     holder:SetPoint(u.point, UIParent, u.point, u.x / scale, u.y / scale)
+    M.ApplyVisibility(key)
     for i, f in ipairs(list) do
         M:Layout(f)
         f:ClearAllPoints()
@@ -207,6 +208,21 @@ local function placeNow(key)
     end
     -- Phoenix cast bars re-fit the anchors
     ns.Events:Fire("PUI_UF_LAYOUT", key)
+end
+
+-- The holder's show/hide driver (specs/021): off while test frames show, so they are always seen.
+function M.ApplyVisibility(key)
+    local holder = holders[key]
+    if not holder or InCombatLockdown() then return end
+    local cond = not M.testShown and M.VisibilityCondition(M:Unit(key)) or nil
+    if cond == holder.puiVis then return end
+    if cond then
+        RegisterStateDriver(holder, "visibility", cond)
+    else
+        if holder.puiVis then UnregisterStateDriver(holder, "visibility") end
+        holder:Show()
+    end
+    holder.puiVis = cond
 end
 
 function M:Place(key)
@@ -460,6 +476,8 @@ M.SampleData = sample
 
 function M:ShowPhoenixTest(show)
     if not spawned then return show and false or true end
+    M.testShown = show and true or nil
+    for _, key in ipairs(M.UNITS) do ns.Combat:Run("uf.vis." .. key, M.ApplyVisibility, key) end
     for _, key in ipairs(M.UNITS) do
         local u = self:Unit(key)
         local limit = (key == "arena" or key == "arenapet") and (M:Unit("arena").testCount or 5) or #frames[key]

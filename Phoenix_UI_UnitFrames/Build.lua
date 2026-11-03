@@ -427,7 +427,11 @@ local function layoutHealth(self, f, u, g, key)
     local shade = u.bar.gradient or 0
     f.Shade:SetShown(shade > 0)
     if shade > 0 then f.Shade:SetGradient("VERTICAL", CreateColor(0, 0, 0, shade), CreateColor(1, 1, 1, shade * 0.35)) end
-    f.Highlight:SetVertexColor(1, 1, 1, 0.12)
+    local hr, hg, hb = 1, 1, 1
+    if type(u.highlightColor) == "table" then hr, hg, hb = Skin:SpecColor(u.highlightColor, "text.primary") end
+    f.Highlight:SetVertexColor(hr, hg, hb, u.highlightAlpha or 0.12)
+    local fill = f.Health:GetStatusBarTexture()
+    if fill then fill:SetAlpha(u.bar.alpha or 1) end
 end
 
 -- How far (px) incoming heals may draw past the end of a health bar w wide: the "overheal shown" share, only for
@@ -483,6 +487,8 @@ local function layoutPower(self, f, u, g, key)
     if g.power then
         place(f.Power, f, g.power)
         f.Power:SetStatusBarTexture(self:BarTexture(key, "power"))
+        local pfill = f.Power:GetStatusBarTexture()
+        if pfill then pfill:SetAlpha(pb.alpha or 1) end
         -- fill direction: left to right (default), right to left, bottom to top, top to bottom
         local dir = pb.direction or "RIGHT"
         f.Power:SetOrientation((dir == "UP" or dir == "DOWN") and "VERTICAL" or "HORIZONTAL")

@@ -48,20 +48,23 @@ local function unit(o)
         texture = "", bgTexture = "",
         border = Style.Border({ style = "pixel", color = false }),
         background = Style.Background({ alpha = 0.8 }),
-        highlight = true, targetBorder = o.targetBorder or false,
+        highlight = true, highlightColor = false, highlightAlpha = 0.12,
+        -- when the frame shows (a secure state driver on its holder; all on = always)
+        vis = { solo = true, party = true, raid = true, mounted = true, vehicle = true },
+        targetBorder = o.targetBorder or false,
         rangeFade = o.range or false, rangeAlpha = 0.5, rangeSpell = "",
         oocFade = false, oocAlpha = 0.35, oocKeep = true,
         tooltip = "always",
         bar = {
             color = o.color or "class", fixed = false, dark = false, gradient = 0.2, smooth = true,
-            reverse = false, vertical = false, bg = "dark", bgAlpha = 0.8, bgColor = false, share = 1,
+            reverse = false, vertical = false, bg = "dark", bgAlpha = 0.8, bgColor = false, share = 1, alpha = 1,
         },
         absorb = { show = true, style = "striped", alpha = 0.6, position = "attached", healAbsorb = true, prediction = true,
                    overheal = 0 },
         powerBar = {
             show = o.power or "always", height = o.ph or 7, position = "inside", texture = "", smooth = true,
             color = "type", fixed = false, gap = 1, alt = o.alt ~= false, cost = o.cost or false,
-            width = 0, direction = "RIGHT", gradient = "none",
+            width = 0, direction = "RIGHT", gradient = "none", alpha = 1,
         },
         tags = { name = o.nameTag or "[name]", health = o.healthTag or "[health:percent]",
                  power = o.powerTag or "", info = o.infoTag or "" },
@@ -203,6 +206,21 @@ local M = ns:NewModule("UnitFrames", {
 M.UNITS, M.TOKENS, M.GROUP, M.LEGACY, M.SMALL, M.DEFAULTS = UNITS, TOKENS, GROUP, LEGACY, SMALL, DEFAULTS
 -- other modules shape their own frames' settings like a unit's (Group Frames profiles)
 M.NewUnitSettings = unit
+
+-- The visibility macro of a unit's holder from its vis flags (nil: always shown, no driver).
+function M.VisibilityCondition(u)
+    local v = type(u) == "table" and u.vis
+    if type(v) ~= "table" then return nil end
+    local function on(k) return v[k] ~= false end
+    if on("solo") and on("party") and on("raid") and on("mounted") and on("vehicle") then return nil end
+    local parts = {}
+    if not on("vehicle") then parts[#parts + 1] = "[vehicleui] hide" end
+    if not on("mounted") then parts[#parts + 1] = "[mounted] hide" end
+    parts[#parts + 1] = "[group:raid] " .. (on("raid") and "show" or "hide")
+    parts[#parts + 1] = "[group:party] " .. (on("party") and "show" or "hide")
+    parts[#parts + 1] = on("solo") and "show" or "hide"
+    return table.concat(parts, "; ")
+end
 
 local function plain(v) return not Secret.IsSecret(v) end
 M.plain = plain
