@@ -32,6 +32,15 @@ Libraries are bundled only per docs/research/LIBRARIES.md: MIT, BSD, LGPL embedd
 that allow it, with the licence verified in the files. GPL and unlicensed sources are behaviour references only.
 Other addons' media is used only where its licence allows.
 
+### VI. Better than EllesmereUI, every plugin in full (owner t227)
+The goal is not a copy of EllesmereUI. Phoenix must be of higher quality, more advanced, more user friendly and
+simpler to use. Every feature of these sources is present in full and in the Phoenix style, in exactly one place:
+EllesmereUI and all its modules; BugGrabber + BugSack; SimulationCraft; MoveAny (panels, not bars or unit frames);
+BigWigs + LittleWigs and their plugins; AutoQueue (in the group finder); Premade Groups Filter;
+MikScrollingBattleText; TrufiGCD; sArena Reloaded; Auctionator; idTip; Questie; RareScanner. The audit and the
+priority order are in docs/research/PLUGIN_AUDIT/. Frame moving follows one model: Edit Mode owns its systems,
+Phoenix Layout owns everything else, and there are no local mover modes.
+
 ## Quality gates
 
 - Every change has a CHANGES.md entry and a regenerated Core/Changelog.lua (tools/gen_changelog.py), and the plan
@@ -59,4 +68,4 @@ come only from the owner's instructions. Each one bumps the version (MAJOR: a ru
 rule added; PATCH: wording) and is noted in CHANGES.md. Every plan has a Constitution Check against Principles I–V
 and the gates before tasks are written.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-01
+**Version**: 1.1.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-01

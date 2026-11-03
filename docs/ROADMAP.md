@@ -80,3 +80,6 @@ Phase 0 (now): the user's in-game pass of the restored build. Fix what it finds 
   movers mode and one Bugs viewer.
 - Combat-log based features (closed in Midnight), WeakAuras-style custom aura engines (aura data is secret in combat).
 - Bundling other addons' code (the old `main` / `legacy-baseline` did; never again).
+
+## Plugin audit (t227, 1 Nov)
+See docs/research/PLUGIN_AUDIT/00-INDEX.md: specs 003 (GUI polish) to 015 in priority order. Next: specs/003-gui-polish.
