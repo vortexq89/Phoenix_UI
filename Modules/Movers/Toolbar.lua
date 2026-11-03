@@ -5,7 +5,7 @@ local M = ns:GetModule("Movers")
 
 --[[ Unlock-mode toolbar: which frame is selected, cycle frames, nudge, scale, opacity, reset, grid/snap,
     done. A Phoenix-owned, draggable frame; built on first unlock. ]]
-local WIDTH, HEIGHT = 820, 96
+local WIDTH, HEIGHT = 940, 104 -- room between the groups of buttons (it was cramped, specs/003 T010)
 
 -- The options page that holds the selected frame's settings, from its mover key prefix.
 local PAGES = { ab = "ActionBars", auras = "Auras", bags = "Bags", cb = "CastBars", cdm = "Tracker",
@@ -48,7 +48,7 @@ function M:BuildToolbar()
     t.prev.onClick = function() cycle(-1) end
     t.name = W.Text(t, "body", "accent.primary", "CENTER")
     t.name:SetPoint("LEFT", t.prev, "RIGHT", 4, 0)
-    t.name:SetWidth(190)
+    t.name:SetWidth(240)
     t.name:SetWordWrap(false)
     t.next = W:IconButton(t, "chevron-right", 24, L.MOVERS_NEXT_FRAME)
     t.next:SetPoint("LEFT", t.name, "RIGHT", 4, 0)

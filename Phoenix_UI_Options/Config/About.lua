@@ -33,7 +33,12 @@ local LINKS = {
 }
 
 local function linkBox(row, link)
-    return W:CopyField(row, link.url, link.icon)
+    -- wide enough for the whole address (they were cut at the default field width, specs/003)
+    local box = W:CopyField(row, link.url, link.icon)
+    box.edit:SetWidth(420)
+    box:SetWidth(420 + 70)
+    box.edit:SetCursorPosition(0)
+    return box
 end
 
 local function hero(row)

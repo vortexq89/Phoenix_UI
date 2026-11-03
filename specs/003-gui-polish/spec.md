@@ -19,7 +19,7 @@ Overlay boxes are clamped in size, labels never overlap, and the toolbar has two
 
 ## Requirements
 - FR-001 Header descriptions wrap to 2 lines (H/P4).
-- FR-002 The sidebar shows one-line titles; subtitles go to tooltips; the dots are removed (S1, S2).
+- FR-002 A closed group's page list wraps to two lines instead of being cut; the module dots stay (they are the on/off switches, as in EllesmereUI) but "off" reads clearly (S1, S2).
 - FR-003 Home fits the body or scrolls; the glow is clipped to its card; "This week" shows data or hides (H1–H3).
 - FR-004 Page scroll content ends above the footer (P6).
 - FR-005 Selects fall back to the first valid entry (V1, C1 sound).
@@ -28,7 +28,8 @@ Overlay boxes are clamped in size, labels never overlap, and the toolbar has two
 - FR-008 Movers overlays clamp to 400×200, with labels inside and a collision offset; the toolbar has 2 rows (M1–M3).
 - FR-009 Encounters detects load-on-demand BigWigs (E1).
 - FR-010 No RELOAD badges (P3).
-- Out of scope: live UF/GF previews (spec 004), the layout model (005), Sim gear grid (007), crit defaults (010).
+- Also fixed here: About links (A1), the QoL "Combat" preview word (Q1), the AFK preview model (F1).
+- Out of scope: live UF/GF previews and the crowded data bar (spec 004), the layout model (005), Sim gear grid (007), crit defaults (010).
 
 ## Success Criteria
 - SC-001 All 22 issues in 15-gui-screenshots.md are fixed or moved to a named spec.

@@ -55,7 +55,7 @@ function W:Slider(parent, min, max, step, isPercent)
         self.fill:SetWidth(math.max(0.01, x))
         self.thumb:ClearAllPoints(); self.thumb:SetPoint("CENTER", self.bar, "LEFT", x, 0)
         if not self.box:HasFocus() then
-            self.box:SetText(fmt(self.value, self.step, self.isPercent)); self.box:SetCursorPosition(0) -- show the start, never the scrolled tail
+            self.box:SetText(fmt(self.value, self.step, self.isPercent)); self.box:SetCursorPosition(0) -- the start, not the tail
         end
     end
 

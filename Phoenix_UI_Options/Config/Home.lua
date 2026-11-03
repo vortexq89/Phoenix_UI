@@ -233,10 +233,15 @@ local function buildHero(parent)
     h.glow = W.Texture(h, "BACKGROUND", 1)
     h.glow:SetAllPoints()
     h.emblem = W.Texture(h, "BORDER", 0)
-    h.emblem:SetSize(200, 200)
-    h.emblem:SetPoint("RIGHT", 40, -10)
-    ns.Icons:Brand(h.emblem, "emblem", 200)
-    ns.EmblemFX:Attach(h.emblem, 200)
+    -- the emblem sits in the top-right corner above the buttons; it used to hang past the card's edge and
+    -- its glow covered "Open Edit Mode" (specs/003 T003)
+    local EMBLEM = 96
+    h.emblem:SetSize(EMBLEM, EMBLEM)
+    h.emblem:SetPoint("TOPRIGHT", -24, -6)
+    ns.Icons:Brand(h.emblem, "emblem", EMBLEM)
+    ns.EmblemFX:Attach(h.emblem, EMBLEM)
+    h:SetClipsChildren(true)
+    h.emblemSize = EMBLEM
     h.logo = W.Texture(h, "ARTWORK", 0)
     h.logo:SetSize(300, 75)
     ns.Icons:Brand(h.logo, "logo", 300)
@@ -341,7 +346,11 @@ local function weekCard(parent)
             local t = data.tracks[r.track.key] or { slots = {}, progress = 0, done = 0 }
             for p, pip in ipairs(r.pips) do
                 local slot = t.slots[p]
-                W.Color(pip, slot and slot.done and "accent.primary" or "bg.sunken", slot and 1 or 0.6)
+                -- earned: accent; open slot: a visible muted square; no data yet: a faint outline tone
+                -- (all three used to be near-black on the card and read as blank squares)
+                if slot and slot.done then W.Color(pip, "accent.primary", 1)
+                elseif slot then W.Color(pip, "text.muted", 0.45)
+                else W.Color(pip, "border.strong", 0.35) end
             end
             local nextSlot = t.slots[t.done + 1]
             if nextSlot then
@@ -514,7 +523,7 @@ local function build(parent)
         end
         local bottom = y
         for i = 1, cols do bottom = math.max(bottom, colY[i]) end
-        child:SetHeight(bottom - GAP + PAD)
+        child:SetHeight(bottom - GAP + 2 * PAD) -- room under the last card above the footer (specs/003 T003)
         self.scroll:UpdateBar()
     end
 

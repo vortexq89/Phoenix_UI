@@ -247,7 +247,9 @@ local overlays = {}
 local function paintOverlay(o)
     local sel = selected == o.entry
     Skin:Panel(o, "raised", { border = sel and "accent.primary" or "border.strong" })
-    W.Color(o.fill, "accent.primary", sel and 0.22 or 0.1)
+    -- big boxes (combat text areas, banners) are mostly empty space: a faint fill keeps the frames under them
+    -- readable (they covered half the screen, specs/003 T010)
+    W.Color(o.fill, "accent.primary", sel and 0.22 or (o.big and 0.04 or 0.1))
     Skin:Text(o.label, o.role or "body", sel and "text.primary" or "text.secondary")
 end
 
@@ -267,7 +269,15 @@ local function syncOverlay(o)
     o.label:SetText(M.IsHidden(o.entry) and L.MOVERS_HIDDEN_BOX:format(M:LabelOf(o.entry)) or M:LabelOf(o.entry))
     o.label:SetWidth(w - 8)
     o.label:ClearAllPoints()
-    o.label:SetPoint("CENTER", 0, (roomy and M.db.coords) and 6 or 0)
+    -- a big box names itself in its top edge, so boxes that overlap (boss banner over the combat areas) do
+    -- not stack their names in the same middle spot
+    o.big = w > 360 or h > 160
+    if o.big then
+        o.label:SetPoint("TOP", 0, -8)
+    else
+        o.label:SetPoint("CENTER", 0, (roomy and M.db.coords) and 6 or 0)
+    end
+    paintOverlay(o)
     o.state:SetWidth(w - 8)
     o:SetFrameLevel(60 + math.max(0, 20 - math.floor(w * h / 20000))) -- smaller boxes on top, so each stays clickable
     local s = saved(o.entry)

@@ -255,7 +255,9 @@ local function groupHead(parent, g)
     b.line = W.Text(b, "small", "text.muted")
     b.line:SetPoint("TOPLEFT", b.label, "BOTTOMLEFT", 0, -3)
     b.line:SetPoint("RIGHT", -14, 0)
-    b.line:SetWordWrap(false)
+    -- the closed group's page list wraps to a second line instead of being cut off (specs/003 T002)
+    b.line:SetWordWrap(true)
+    b.line:SetMaxLines(2)
     b.line:SetJustifyH("LEFT")
     function b:Paint()
         local open = Config.group == self.group.key
@@ -323,7 +325,7 @@ local function paintStatus(self, m)
     if not (m and not m.locked) then self.dot:Hide(); self.status:Hide(); return end
     local token = (m.state == "errored" and "state.danger") or (m.needsReload and "state.warning")
         or (m:IsEnabled() and "state.success") or "text.muted"
-    W.Color(self.dot, token, m:IsEnabled() and 1 or 0.5)
+    W.Color(self.dot, token, m:IsEnabled() and 1 or 0.3) -- off reads clearly as off (specs/003 T002)
     local Art = ns.Art
     local art = Art and Art.IconsEnabled() and Art:Icon(self.status, Art:StatusKey(m))
     self.status:SetShown(art and true or false)
@@ -494,7 +496,10 @@ function Config:LayoutSidebar()
             b.count:SetText(tostring(#g.entries))
             b.line:SetText(table.concat(names, " \194\183 "))
             b.line:SetShown(not open)
-            place(b, open and NAV_GROUP or (NAV_GROUP + NAV_LINE - 4))
+            local lines = (not open and b.line.GetNumLines and b.line:GetNumLines() or 1)
+            lines = math.max(1, math.min(2, tonumber(lines) or 1))
+            b.lines = lines
+            place(b, open and NAV_GROUP or (NAV_GROUP + NAV_LINE * lines - 4))
             b:Paint()
             if open then
                 local single = #g.sections == 1
@@ -630,6 +635,10 @@ local function buildFooter(f)
     ft.pixel = W.Text(ft, "small", "text.muted", "RIGHT")
     ft.pixel:SetPoint("RIGHT", ft.scaleLabel, "LEFT", -18, 0)
     ft.status:SetPoint("RIGHT", ft.pixel, "LEFT", -16, 0)
+    W.AttachTooltip(ft.scale.bar, L.WINDOW_SCALE, function()
+        local pp = pixelPerfect()
+        return pp and L.PIXEL_PERFECT:format(pp) or nil
+    end)
     -- resize grip, bottom-right corner
     ft.grip = CreateFrame("Button", nil, ft)
     ft.grip:SetSize(16, 16)
@@ -651,8 +660,8 @@ local function buildFooter(f)
         -- no "reload to apply" button: every setting applies live (specs/001 T011)
         self.scale:ClearAllPoints()
         self.scale:SetPoint("RIGHT", -30, 0)
-        local pp = pixelPerfect()
-        self.pixel:SetText(pp and L.PIXEL_PERFECT:format(pp) or "")
+        -- the pixel-perfect hint lives in the scale tooltip; as footer text it crowded the bar (specs/003 T007)
+        self.pixel:SetText("")
     end
     f.footer = ft
     Skin:Register(ft, function(self)
