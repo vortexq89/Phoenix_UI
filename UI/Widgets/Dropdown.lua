@@ -231,7 +231,8 @@ function W:Dropdown(parent, items, preview, width)
     local E = W.EUI.dropdown
     local function look(self)
         local hot = self.open or (self.hover and not self.disabled)
-        self.fill:SetVertexColor(E.bg[1], E.bg[2], E.bg[3], hot and E.bgHoverA or E.bgA)
+        local fr, fg, fb = W.RGB(E.bg)
+        self.fill:SetVertexColor(fr, fg, fb, hot and E.bgHoverA or E.bgA)
         Skin:SetBorderColor(self, 1, 1, 1, hot and E.borderHoverA or E.borderA)
         if not self.empty then self.label:SetTextColor(1, 1, 1, hot and E.textHoverA or E.textA) end
         ns.Icons:Tint(self.arrow, "text.secondary")

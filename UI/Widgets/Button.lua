@@ -38,7 +38,8 @@ function W:Button(parent, text, variant, icon, width)
             self.fill:SetVertexColor(1, 1, 1, hover and 0.04 or 0)
             Skin:SetBorderColor(self, 0, 0, 0, 0)
         else
-            self.fill:SetVertexColor(E.bg[1], E.bg[2], E.bg[3], hover and E.bgHoverA or E.bgA)
+            local fr, fg, fb = W.RGB(E.bg)
+            self.fill:SetVertexColor(fr, fg, fb, hover and E.bgHoverA or E.bgA)
         end
         if v == "danger" then
             local r, g, bl = ns.Theme:Color("state.danger")

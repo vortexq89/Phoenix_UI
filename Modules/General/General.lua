@@ -20,7 +20,7 @@ local M = ns:NewModule("General", {
     label = "GENERAL", desc = "GENERAL_DESC", category = "system", order = 1, icon = "general", locked = true,
     defaults = {
         theme = {
-            preset = "eui", custom = { r = 0.047, g = 0.824, b = 0.616 }, fontScale = 1,
+            preset = "phoenix", custom = { r = 1, g = 0.490, b = 0.039 }, fontScale = 1,
             uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true,
             -- the style library defaults every module border set to "Follow Appearance" uses (Core/Style.lua)
             borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,

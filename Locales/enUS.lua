@@ -66,7 +66,7 @@ ns.RegisterLocale("enUS", {
     THEME_FROST = "Frost",
     THEME_FEL = "Fel",
     THEME_ARCANE = "Arcane",
-    THEME_EUI = "Default (green)",
+    THEME_PHOENIX = "Default (orange)",
     THEME_CLASS = "Class color",
     THEME_CUSTOM = "Custom",
     THEME_CUSTOM_COLOR = "Custom accent",

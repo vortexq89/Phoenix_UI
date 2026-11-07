@@ -24,7 +24,8 @@ function W:Segmented(parent, items, multi, segWidth)
                 b.fill:SetVertexColor(r, g, bl, b.hover and 0.9 or 0.75)
                 b.label:SetTextColor(1, 1, 1, 1)
             else
-                b.fill:SetVertexColor(E.bg[1], E.bg[2], E.bg[3], b.hover and E.bgHoverA or E.bgA)
+                local fr, fg, fb = W.RGB(E.bg)
+                b.fill:SetVertexColor(fr, fg, fb, b.hover and E.bgHoverA or E.bgA)
                 b.label:SetTextColor(1, 1, 1, b.hover and E.textHoverA or E.textA)
             end
             if b.icon then ns.Icons:Tint(b.icon, on and "text.primary" or "text.secondary") end

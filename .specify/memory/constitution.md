@@ -2,9 +2,11 @@
 
 ## Core Principles
 
-### I. EllesmereUI look, own code (NON-NEGOTIABLE)
-The settings window, its controls, the theme, colours, borders and unit frames look and behave exactly like
-EllesmereUI. The read-only reference is `I:\EllesmereUI*`, measured in docs/research/ELLESMERE_REBUILD_MAP.md and
+### I. EllesmereUI quality, Phoenix colours, own code (NON-NEGOTIABLE)
+The settings window, its controls, borders and unit frames match EllesmereUI's build quality and behaviour: its
+sizes, spacing, alphas and polish are the bar to meet or beat. The colours are Phoenix's own (owner, 7 Nov 2026):
+graphite surfaces and the Phoenix ember accent from Core/Theme.lua (plan section 18), never EllesmereUI's green or
+warm-brown palette. The read-only reference is `I:\EllesmereUI*`, measured in docs/research/ELLESMERE_REBUILD_MAP.md and
 AUDIT_T213.md. Every line of Lua is Phoenix's own: EllesmereUI code, or any other addon's code without an open
 licence, is never copied. Only openly licensed code may be adapted, and it is credited. Logos, Ember-Bevel
 class/spec/ability icons, the custom cursor, the raid-warning banner and a duplicate Teko font are never shipped.
@@ -12,8 +14,8 @@ The only Phoenix extra is the square phoenix portrait border on Player/Target, o
 owner approves it.
 
 ### II. One theme, no duplicate features
-There is one theme: EllesmereUI tokens with one accent (EllesmereUI green, class, or custom; #DCA77F by default on
-Forever). No second accent, skin, preset or texture system. A feature exists in exactly one module and one place in
+There is one theme: Phoenix tokens (Core/Theme.lua) with one accent (Phoenix ember #FF7D0A by default, class, or
+custom; #DCA77F by default on Forever). Widgets take every colour from theme tokens, never literal RGB. No second accent, skin, preset or texture system. A feature exists in exactly one module and one place in
 the GUI. Existing modules are extended rather than duplicated. A removed setting gets a migration step in
 Core/Migrations.lua that tolerates any old data shape and runs on imported profiles.
 
@@ -78,4 +80,4 @@ come only from the owner's instructions. Each one bumps the version (MAJOR: a ru
 rule added; PATCH: wording) and is noted in CHANGES.md. Every plan has a Constitution Check against Principles I–VII
 and the gates before tasks are written.
 
-**Version**: 1.2.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-03
+**Version**: 2.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-07

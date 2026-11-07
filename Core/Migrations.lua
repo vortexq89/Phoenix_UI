@@ -6,7 +6,7 @@ local Mg = {}
 ns.Migrations = Mg
 
 -- legacy (Phoenix_UI 11.x AceDB profile) path -> { module, key, transform? }
-local THEMES = { PhoenixFlame = "eui", Dark = "eui", Blizzard = "eui", Class = "class", Custom = "custom" }
+local THEMES = { PhoenixFlame = "phoenix", Dark = "phoenix", Blizzard = "phoenix", Class = "class", Custom = "custom" }
 local function bool(v) if type(v) == "boolean" then return v end end
 
 local LEGACY_MAP = {
@@ -179,6 +179,26 @@ local function oneTheme(sv)
 end
 Mg.OneTheme = oneTheme
 
+-- 7 Nov 2026: Phoenix colours. The EllesmereUI green default accent becomes Phoenix ember. A stored "eui" preset (the
+-- old default) goes back to the default; a custom colour still equal to the old green default follows it unless the
+-- profile chose "custom". Class and custom accents the player picked are kept.
+local OLD_GREEN = { r = 0.047, g = 0.824, b = 0.616 }
+local function phoenixColors(sv)
+    for _, profile in pairs(sv.profiles) do
+        local g = type(profile) == "table" and type(profile.modules) == "table" and profile.modules.General
+        local t = type(g) == "table" and type(g.theme) == "table" and g.theme
+        if t then
+            if t.preset == "eui" then t.preset = nil end
+            local cu = t.custom
+            if t.preset ~= "custom" and type(cu) == "table" and cu.r == OLD_GREEN.r and cu.g == OLD_GREEN.g
+                and cu.b == OLD_GREEN.b then
+                t.custom = nil
+            end
+        end
+    end
+end
+Mg.PhoenixColors = phoenixColors
+
 local function moveKeys(sv)
     for _, profile in pairs(sv.profiles) do moveProfile(profile) end
 end
@@ -188,6 +208,7 @@ function Mg:UpgradeProfile(profile, schema)
     if (tonumber(schema) or 0) < ns.C.SCHEMA then
         ns.SafeCall(moveProfile, profile)
         if (tonumber(schema) or 0) < 8 then ns.SafeCall(oneTheme, { profiles = { profile } }) end
+        if (tonumber(schema) or 0) < 9 then ns.SafeCall(phoenixColors, { profiles = { profile } }) end
     end
     return profile
 end
@@ -200,7 +221,8 @@ Mg.steps = {
     { version = 5, run = moveKeys },   -- Minimap.square -> Minimap.shape (CONVERTS)
     { version = 6, run = moveKeys },   -- Bags.countSize -> Bags.count.size (MOVES)
     { version = 7, run = moveKeys },   -- Quality.markers -> GroupFrames.markers.show (MODULE_MOVES)
-    { version = 8, run = oneTheme },   -- t213 #5: one theme (EllesmereUI look)
+    { version = 8, run = oneTheme },   -- t213 #5: one theme
+    { version = 9, run = phoenixColors }, -- Phoenix colours: ember default accent, graphite surfaces
 }
 
 function Mg:Run(sv)

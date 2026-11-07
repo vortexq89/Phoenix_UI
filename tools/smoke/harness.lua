@@ -6895,7 +6895,7 @@ end)
 
 try("one theme migration (t213 #5)", function()
     local T = ns.Theme
-    assert(T.presets[1].key == "eui" and #T.presets == 3, "eui, class, custom")
+    assert(T.presets[1].key == "phoenix" and #T.presets == 3, "phoenix, class, custom")
     local sv = { profiles = { a = { modules = { General = { artKit = true, chromeStyle = "bevel", art = {},
         theme = { preset = "frost", borderStyle = "ember", glowColor = { r = 1 }, surfaceAlpha = 0.5, fontScale = 1.2 } } } },
         b = { modules = { General = { theme = { preset = "custom" } } } } } }
@@ -6906,6 +6906,32 @@ try("one theme migration (t213 #5)", function()
     assert(g.theme.fontScale == 1.2 and g.artKit == nil and g.chromeStyle == nil and g.art == nil, "fonts kept, art dropped")
     assert(sv.profiles.b.modules.General.theme.preset == "custom", "custom accent kept")
     assert(ns.Migrations.steps[#ns.Migrations.steps].version == ns.C.SCHEMA, "schema matches the last step")
+end)
+try("Phoenix colours migration (step 9)", function()
+    local T = ns.Theme
+    local p = T:PresetColors("phoenix").primary
+    assert(math.abs(p[1] - 1) < 0.01 and math.abs(p[2] - 0x7D / 255) < 0.01 and math.abs(p[3] - 0x0A / 255) < 0.01,
+        "default accent is Phoenix ember FF7D0A")
+    assert(T:PresetColors("eui").primary[2] == p[2], "an unknown old key falls back to the default")
+    local r, g, b = T:Color("bg.base")
+    assert(math.abs(r - 0x0E / 255) < 0.01 and math.abs(b - 0x10 / 255) < 0.01 and r == g, "graphite surfaces")
+    assert(T.tokens["bg.control"], "checkbox token exists")
+    local green = { r = 0.047, g = 0.824, b = 0.616 }
+    local sv = { profiles = {
+        a = { modules = { General = { theme = { preset = "eui", custom = { r = green.r, g = green.g, b = green.b } } } } },
+        b = { modules = { General = { theme = { preset = "custom", custom = { r = green.r, g = green.g, b = green.b } } } } },
+        c = { modules = { General = { theme = { preset = "class" } } } },
+        d = { modules = { General = { theme = { custom = { r = 0.2, g = 0.4, b = 0.6 } } } } },
+        e = { modules = {} }, f = "junk" } }
+    ns.Migrations.PhoenixColors(sv)
+    local P = sv.profiles
+    assert(P.a.modules.General.theme.preset == nil and P.a.modules.General.theme.custom == nil, "old default moves to ember")
+    assert(P.b.modules.General.theme.preset == "custom" and P.b.modules.General.theme.custom.g == green.g,
+        "a chosen custom colour is kept, even the old green")
+    assert(P.c.modules.General.theme.preset == "class", "class accent kept")
+    assert(P.d.modules.General.theme.custom.r == 0.2, "another custom colour kept")
+    local up = ns.Migrations:UpgradeProfile({ modules = { General = { theme = { preset = "eui" } } } }, 8)
+    assert(up.modules.General.theme.preset == nil, "imported profiles get the same upgrade")
 end)
 try("art kit v7.1", function()
     ns.modules.General.db.artKit, ns.modules.General.db.chromeStyle = true, "bevel" -- t213 #5: opt-in now

@@ -11,14 +11,16 @@ local function c(h, a)
     return { r, g, b, a or 1 }
 end
 
--- ONE theme (t213 #5, t215): the EllesmereUI look. Warm near-black surfaces, white borders and text at fixed
--- alphas (they adapt to any surface), one accent. Values measured from the user's EllesmereUI copy; Phoenix's own code.
+-- ONE theme (t213 #5, t215; Phoenix colours from 7 Nov 2026): Phoenix's own palette. Neutral graphite surfaces, white
+-- borders and text at fixed alphas (they adapt to any surface), one accent: Phoenix ember by default. The build quality
+-- (sizes, alphas, spacing) stays at the EllesmereUI bar; the colours are Phoenix's (plan section 18).
 local function w(a) return { 1, 1, 1, a } end
 T.base = {
-    ["bg.base"]       = { 0.069, 0.058, 0.047, 1 },  -- panel background
-    ["bg.raised"]     = { 0.089, 0.080, 0.072, 1 },  -- buttons, cards
-    ["bg.sunken"]     = { 0.030, 0.023, 0.018, 1 },  -- inputs, wells
-    ["bg.hover"]      = { 0.103, 0.095, 0.088, 1 },  -- dropdowns, hovered rows
+    ["bg.base"]       = c("0E0E10", 1),              -- panel background
+    ["bg.raised"]     = c("161618", 1),              -- buttons, cards
+    ["bg.sunken"]     = c("08080A", 1),              -- inputs, wells
+    ["bg.hover"]      = c("1E1E22", 1),              -- dropdowns, hovered rows
+    ["bg.control"]    = c("232328", 1),              -- checkbox boxes, one step above hover
     ["bg.overlay"]    = { 0, 0, 0, 0.6 },
     ["border.subtle"] = w(0.05),                     -- the global 1 px border
     ["border.strong"] = w(0.20),                     -- dropdown / emphasised border
@@ -32,11 +34,11 @@ T.base = {
     ["state.info"]    = c("4DA3FF", 1),
 }
 
--- The accent: EllesmereUI's green (default), the class colour, or one colour you pick.
+-- The accent: Phoenix ember (default), the class colour, or one colour you pick.
 T.presets = {
-    { key = "eui",    label = "THEME_EUI",    primary = "0CD29D", secondary = "6BE6C4", glow = "0CD29D" },
-    { key = "class",  label = "THEME_CLASS" },
-    { key = "custom", label = "THEME_CUSTOM" },
+    { key = "phoenix", label = "THEME_PHOENIX", primary = "FF7D0A", secondary = "FFB547", glow = "FF5500" },
+    { key = "class",   label = "THEME_CLASS" },
+    { key = "custom",  label = "THEME_CUSTOM" },
 }
 
 -- No role below 12: smaller sizes turn into blurry, blocky glyphs once the UI scale goes under 0.7.
@@ -59,7 +61,7 @@ T.fontRoles = {
 local tokens = {}
 T.tokens = tokens
 T.settings = {
-    preset = "eui", custom = { r = 0.047, g = 0.824, b = 0.616 }, fontScale = 1,
+    preset = "phoenix", custom = { r = 1, g = 0.490, b = 0.039 }, fontScale = 1,
     uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true,
     borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
     surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = {},

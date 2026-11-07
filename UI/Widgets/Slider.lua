@@ -45,7 +45,8 @@ function W:Slider(parent, min, max, step, isPercent)
     s.box = box
     box.bg = W.Texture(box, "BACKGROUND", 0)
     box.bg:SetAllPoints()
-    box.bg:SetVertexColor(E.input[1], E.input[2], E.input[3], E.inputA)
+    local fr, fg, fb = W.RGB(E.input)
+    box.bg:SetVertexColor(fr, fg, fb, E.inputA)
     Skin:Border(box)
 
     local function layout(self)
