@@ -12,7 +12,8 @@ function W:Toggle(parent)
     t:SetSize(E.w, E.h)
     t.track = W.Texture(t, "ARTWORK", 0)
     t.track:SetAllPoints()
-    t.knob = W.Texture(t, "OVERLAY", 2)
+    ns.Skin:RoundFill(t, t.track, E.h / 2) -- a pill track and a round knob (design v2)
+    t.knob = W.Texture(t, "OVERLAY", 2, ns.Media.textures.CIRCLE)
     local knob = E.h - E.pad * 2
     t.knob:SetSize(knob, knob)
     t.value = false
@@ -68,6 +69,8 @@ function W:Checkbox(parent)
     c.box:SetAllPoints()
     c.mark = W.Texture(c, "ARTWORK", 0)
     c.mark:SetPoint("TOPLEFT", 2, -2); c.mark:SetPoint("BOTTOMRIGHT", -2, 2)
+    ns.Skin:SetRound(c, W.EUI.radius.box)
+    ns.Skin:RoundFill(c, c.box)
     ns.Skin:Border(c)
     c.value = false
     local function paint(self)

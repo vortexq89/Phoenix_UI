@@ -7,7 +7,8 @@ local M = ns.modules.DamageMeter
     players' names are secret: they go straight to StatusBar:SetValue, AbbreviateNumbers and SetFormattedText and are
     never compared, sorted, added or stored. Everything that needs arithmetic (spell tooltips, per-target lists,
     compare, report, the per-fight graph) runs only on plain values, which the game hands out after combat.
-    Never-secret fields (classFilename, specIconID, isLocalPlayer, deathRecapID) drive colours, icons, role filters
+    Normally plain fields (classFilename, specIconID, isLocalPlayer, deathRecapID; read through plainField)
+    drive colours, icons, role filters
     and pinning. Repaints are coalesced on C_Timer (no OnUpdate); the clock ticker exists only in combat.
     Views of one window: list (players), spells (one player), targets (one player), compare (two players), graph
     (your amount per recorded fight). ]]
@@ -19,6 +20,10 @@ M.meterWindows = wins
 
 local function plain(v) return v ~= nil and not Secret.IsSecret(v) end
 local function plainNumber(v) return type(v) == "number" and not Secret.IsSecret(v) end
+-- The "never-secret" fields turned out secret on some clients (WoW Forever 1.60, bug report: specIconID):
+-- read them only through these, so a secret one counts as unknown instead of raising an error.
+local function plainField(v) if Secret.IsSecret(v) then return nil end return v end
+function M.IsMine(src) return plainField(src.isLocalPlayer) == true end
 local function inCombat() return InCombatLockdown() or UnitAffectingCombat("player") end
 
 -- Meter types (Enum.DamageMeterType values), grouped for the mode menu; `rate` marks the per-second types.
@@ -130,7 +135,8 @@ function M.RoleOfIcon(icon)
         end
         if next(map) then roleByIcon = map end -- keep only a filled table (spec data may load late)
     end
-    return icon and map[icon]
+    if not plainNumber(icon) then return nil end
+    return map[icon]
 end
 
 -- Visible list for a window: filtered by role (never-secret spec icon), with the player's own row pinned to the
@@ -143,7 +149,7 @@ function M.VisibleSources(sources, db)
         if keep then
             rank = rank + 1
             if #out < db.rows then out[#out + 1] = { src = src, rank = rank }
-            elseif src.isLocalPlayer and not mine then mine = { src = src, rank = rank } end
+            elseif M.IsMine(src) and not mine then mine = { src = src, rank = rank } end
         end
     end
     if mine and db.pinSelf and #out > 0 then out[#out] = mine end
@@ -455,12 +461,14 @@ function M:PaintSource(r, mode, src, maxAmount, rank)
     local db = self.db.meter
     if mode.deaths then r:SetMinMaxValues(0, 1); r:SetValue(1)
     else r:SetMinMaxValues(0, maxAmount); r:SetValue(src.totalAmount) end
-    local class = src.classFilename
+    local class = plainField(src.classFilename)
     local cr, cg, cb = barColor(class)
     r:SetStatusBarColor(cr, cg, cb, db.barAlpha)
     if db.specIcon then
-        if src.specIconID and src.specIconID ~= 0 then
-            r.icon:SetTexture(src.specIconID)
+        -- the spec icon is secret in instanced combat: hand it to the texture untouched, never compare it
+        local icon = src.specIconID
+        if Secret.IsSecret(icon) or (plainNumber(icon) and icon ~= 0) then
+            r.icon:SetTexture(icon)
             ns.SpecIcon:Apply(r.icon, db.iconStyle, class)
         else
             r.icon:SetTexture(nil)
@@ -478,7 +486,7 @@ function M:PaintSource(r, mode, src, maxAmount, rank)
     textColor(r.name, db.nameClassColor, class, "text.primary")
     textColor(r.value, db.valueClassColor, class, "text.primary")
     M.PaintValue(r.value, mode, db.valueFormat, src.totalAmount, src.amountPerSecond)
-    if src.isLocalPlayer then Skin:Border(r.mine, "accent.primary", 1); r.mine:Show() else r.mine:Hide() end
+    if M.IsMine(src) then Skin:Border(r.mine, "accent.primary", 1); r.mine:Show() else r.mine:Hide() end
     r.src, r.rankShown = src, rank
 end
 
@@ -557,7 +565,7 @@ function M.FightSeries(meterType, limit)
         local ok, data = pcall(DM.GetCombatSessionFromID, s.sessionID, meterType)
         local amount = 0
         for _, src in ipairs(ok and data and data.combatSources or {}) do
-            if src.isLocalPlayer and plainNumber(src.totalAmount) then amount = src.totalAmount end
+            if M.IsMine(src) and plainNumber(src.totalAmount) then amount = src.totalAmount end
         end
         out[#out + 1] = { name = s.name ~= "" and s.name or L.DM_SEG_FIGHT:format(i), amount = amount,
             clock = M.Clock(s.durationSeconds) }
@@ -815,7 +823,9 @@ function M:RowTooltip(win, r)
         GameTooltip:SetSpellByID(r.spellID)
         return GameTooltip:Show()
     end
-    GameTooltip:SetText(r.name:GetText())
+    local title = r.name:GetText() -- secret names pass straight through; an empty row has no text at all
+    if not Secret.IsSecret(title) and title == nil then title = " " end
+    GameTooltip:SetText(title)
     local src = r.src
     if src and not win.view and self.db.meter.ilvl ~= "off" then
         local il = M:ItemLevelOf(src)

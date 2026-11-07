@@ -24,6 +24,8 @@ W.EUI = {
     row = { h = 50, dualW = 350, dualGap = 42, tripleW = 180, tripleGap = 50, oddA = 0.1, evenA = 0.2 },
     section = { textA = 0.41 },
     window = { w = 1300, h = 946, sidebar = 295, header = 138, tabs = 40, footer = 82, pad = 45 },
+    -- design v2: smooth corners (Skin:SetRound / Skin:RoundFill); control = buttons, fields and dropdowns
+    radius = { control = 5, box = 4, card = 10, nav = 6 },
     nav = { selectedA = 1, enabledA = 0.6, disabledA = 0.11, hoverA = 0.86, hoverDisabledA = 0.39, rowH = 28, groupGap = 10 },
 }
 

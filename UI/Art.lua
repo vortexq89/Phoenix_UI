@@ -82,7 +82,7 @@ A.DEFAULTS = {
     ["background.tint"] = { r = 1, g = 1, b = 1 }, ["background.alpha"] = 1, ["background.aspect"] = 2,
     ["logo.enabled"] = true, ["logo.image"] = ROOT .. "PhoenixUILogo", ["logo.alpha"] = 1,
     ["panel.alpha.card"] = 0.86, ["panel.alpha.rail"] = 0.86, ["panel.alpha.header"] = 0.80,
-    ["panel.alpha.preview"] = 0.76, ["panel.alpha.footer"] = 0.90, ["panel.alpha.meter"] = 0.80,
+    ["panel.alpha.preview"] = 0.76, ["panel.alpha.section"] = 0.58, ["panel.alpha.footer"] = 0.90, ["panel.alpha.meter"] = 0.80,
     ["texture.meterBG"] = ROOT .. "PhoenixMeterBG", ["meter.barTintScale"] = 0.46,
     ["icon.status.enabled"] = "status_enabled", ["icon.status.disabled"] = "status_disabled",
     ["icon.status.warning"] = "status_warning", ["icon.status.error"] = "status_error", ["icon.status.info"] = "status_info",
@@ -167,6 +167,14 @@ function A.Enabled()
     local g = general()
     return not (g and g.artKit == false)
 end
+-- the settings window's own art (design v2 "Forge"): background pictures, glass sections and accent glows.
+-- Separate from the picture kit above, which also dresses game frames; on by default (General > Window art).
+function A.WindowArt()
+    local s = ns.Theme and ns.Theme.settings
+    return not (s and s.windowArt == false)
+end
+-- the window's panels that turn to glass over the art
+A.WINDOW_PANELS = { card = true, rail = true, header = true, preview = true, footer = true, section = true }
 -- the icon art in the rail, on Home and for status (General > Chrome icons: anything but "flat")
 function A.IconsEnabled()
     local g = general()

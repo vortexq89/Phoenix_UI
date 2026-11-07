@@ -492,15 +492,15 @@ end
 function I:Finish(arrange)
     local ui = ns.DB.sv.global.ui
     ui.setupStarted, ui.stylePicked, ui.modulesPicked, ui.setupDone = true, ui.stylePicked or "skip", true, true
+    if arrange and InCombatLockdown() then ns:Print(L.MOVERS_COMBAT) return end -- keep the installer open
     if inst then inst:Hide() end
-    if self.reload then ReloadUI() return end
-    if arrange then
-        local mv = mod("Movers")
-        if mv and mv:IsEnabled() then
-            if _G.PhoenixUI_Config then _G.PhoenixUI_Config:Hide() end
-            mv:SetUnlocked(true)
-        end
+    if self.reload then
+        -- a module switch needs the reload first: Layout mode opens by itself once the UI is back (Movers.lua)
+        if arrange then ui.arrangeOnLoad = true end
+        ReloadUI()
+        return
     end
+    if arrange then Config:OpenLayout() end
 end
 
 -- Opens the installer at a step (default: the first). Not in combat: half the steps move secure frames.

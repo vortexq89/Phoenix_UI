@@ -24,17 +24,26 @@ function W:Card(parent, title, icon, flat)
     end
     Skin:Register(c, function(self)
         if self.flat then
+            -- design v2: with Window art on, a section is a smooth-cornered glass card over the window art
+            local art = ns.Art and ns.Art.WindowArt()
+            if art then
+                Skin:Panel(self, "raised", { border = "border.subtle", round = W.EUI.radius.card, alpha = "section" })
+            else
+                Skin:HidePanel(self) -- Window art off: the flat EllesmereUI section again
+            end
+            local inset = art and 16 or 0
             if self.hasHeader then
                 self.rule = self.rule or W.Texture(self, "ARTWORK", 0)
                 self.rule:ClearAllPoints()
-                self.rule:SetPoint("TOPLEFT", 0, -(self.headH or 40))
-                self.rule:SetPoint("TOPRIGHT", 0, -(self.headH or 40))
+                self.rule:SetPoint("TOPLEFT", inset, -(self.headH or 40))
+                self.rule:SetPoint("TOPRIGHT", -inset, -(self.headH or 40))
                 self.rule:SetHeight(PixelUtil.ConvertPixelsToUIForRegion(1, self))
                 self.rule:SetColorTexture(1, 1, 1, 0.06)
             end
         else
             local art = ns.Art and ns.Art.Enabled()
-            Skin:Panel(self, "raised", { border = "border.subtle", sheen = not art and 28 or nil, art = "card", alpha = "card" })
+            Skin:Panel(self, "raised", { border = "border.subtle", sheen = not art and 28 or nil, art = "card", alpha = "card",
+                round = ns.Art and ns.Art.WindowArt() and W.EUI.radius.card or 0 })
         end
         Skin:Text(self.header, "heading", "text.secondary")
         self.titleA = W.EUI.section.textA

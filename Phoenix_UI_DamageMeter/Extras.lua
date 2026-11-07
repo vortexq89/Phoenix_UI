@@ -15,7 +15,7 @@ local function plain(v) return v ~= nil and not Secret.IsSecret(v) end
 
 ---------------------------------------------------------------- item level
 function M:ItemLevelOf(src)
-    if src.isLocalPlayer then
+    if M.IsMine(src) then
         local _, equipped = GetAverageItemLevel()
         return equipped and equipped > 0 and math.floor(equipped) or nil
     end

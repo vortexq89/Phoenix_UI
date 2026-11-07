@@ -56,6 +56,8 @@ function W:Button(parent, text, variant, icon, width)
         end
     end
     local function idle(self) paint(self, false) end
+    Skin:SetRound(b, W.EUI.radius.control)
+    Skin:RoundFill(b, b.fill)
     Skin:Border(b, "border.strong")
     Skin:Register(b, idle)
     b:SetScript("OnEnter", function(self) if not self.disabled then paint(self, true) end end)

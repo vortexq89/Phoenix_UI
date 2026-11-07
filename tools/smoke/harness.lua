@@ -1243,6 +1243,54 @@ try("hover preview", function()
     assert(page.pinned.collapsed and not page.pinned.pane:IsShown(), "the preview did not fold")
     page.pinned.fold.onClick(page.pinned.fold)
     page:Stick()
+    -- Forever screenshots 11-07: at scroll 0 the preview must be on screen, not an empty band above the sections
+    page.scroll:SetVerticalScroll(0)
+    page:Stick()
+    assert(page.pinned:IsShown(), "the preview card is hidden at the top of the page")
+end)
+
+-- design v2 "Forge": smooth corners keep the fill's API, the window art follows its switch, Arrange opens Layout
+try("design v2: rounded fills, window art, arrange my UI", function()
+    local Skin = ns.Skin
+    local f = env.CreateFrame("Frame"); f:SetSize(100, 40)
+    local t = f:CreateTexture(nil, "BACKGROUND")
+    Skin:RoundFill(f, t, 6)
+    t:Hide()
+    t:Show(); t:SetVertexColor(0.2, 0.3, 0.4, 0.5); t:SetAlpha(0.5)
+    t:SetGradient("HORIZONTAL", env.CreateColor(1, 0, 0, 1), env.CreateColor(0, 0, 1, 1))
+    Skin:Panel(f, "raised", { round = 10, border = "border.subtle" })
+    assert(Skin:GetRound(f) == 10, "Panel round")
+    Skin:Panel(f, "raised", { round = 0 }); Skin:HidePanel(f)
+    assert(Skin:GetRound(f) == 0, "square again")
+    assert(Skin.ArcRadius(3) == 4 and Skin.ArcRadius(6) == 6 and Skin.ArcRadius(12) == 10, "arc radius")
+    local C = ns.Config
+    local win = C.frame or C:Build()
+    local th = ns.Theme.settings
+    th.windowArt = true; win:PaintArt()
+    assert(win.surface:IsShown() and win.embers[1]:IsShown(), "window art hidden with Window art on")
+    th.windowArt = false; win:PaintArt()
+    assert(not win.surface:IsShown() and not win.corners[1]:IsShown(), "window art shown with Window art off")
+    th.windowArt = true; win:PaintArt()
+    -- Arrange my UI: opens Layout mode (Phoenix movers, else Edit Mode); with a reload pending it comes after it
+    local mv = ns.modules.Movers
+    local unlocked, edited = nil, 0
+    local keepSet, keepOpen = mv.SetUnlocked, ns.EditMode.Open
+    mv.SetUnlocked = function(_, on) unlocked = on end
+    ns.EditMode.Open = function() edited = edited + 1 end
+    assert(C:OpenLayout() and (unlocked == true or edited == 1), "Arrange did not open Layout mode")
+    local I = ns.Config.Installer or {}
+    if I.Finish then
+        local keepReload = rawget(env, "ReloadUI")
+        local reloaded = false
+        rawset(env, "ReloadUI", function() reloaded = true end)
+        I.reload = true
+        I:Finish(true)
+        assert(reloaded and ns.DB.sv.global.ui.arrangeOnLoad == true, "a pending reload lost the Arrange request")
+        ns.DB.sv.global.ui.arrangeOnLoad = nil
+        I.reload = false
+        rawset(env, "ReloadUI", keepReload)
+    end
+    mv.SetUnlocked, ns.EditMode.Open = keepSet, keepOpen
 end)
 -- card pickers: every kind opens, filters, renders cards and picks
 try("media pickers", function()
@@ -6979,7 +7027,8 @@ try("art kit v7.1", function()
     assert(not win.phoenixArt:IsShown(), "Phoenix art off hides it")
     G.db.artKit = true
     local cw = ns.Config and ns.Config.frame
-    if cw then assert(cw.flatBG and not cw.phoenixArt and cw.phoenixLogo, "settings window: flat black and the logo") end
+    -- design v2 "Forge": graphite under the window's own art (Media/Window); the old wings picture and logo stay off
+    if cw then assert(cw.flatBG and not cw.phoenixArt and cw.surface and not cw.phoenixLogo, "settings window: Forge art") end
     local PUI = env.PhoenixUI
     assert(PUI:Supports(1, 1) and PUI.OverrideArt and PUI.RegisterIcon, "plugin art API 1.1")
     assert(PUI:RegisterIcon("Test_Icon", { file = "x/i" }) and A:IconEntry("Test_Icon").file == "x/i", "plugin icon")
@@ -9744,9 +9793,13 @@ try("phoenix damage meter", function()
     rawset(env, "C_DeathRecap", { GetRecapEvents = function(id)
         assert(id == 7, "recap id"); return { { spellName = "Fireball", amount = 5000, currentHP = 0 }, { spellName = SECRET, amount = SECRET } }
     end })
-    local secretMode, resets, count = false, 0, 12
+    local secretMode, secretAll, resets, count = false, false, 0, 12
     local function src(i)
         if secretMode then
+            if secretAll then -- WoW Forever 1.60: class, spec icon and "is me" are secret as well
+                return { name = SECRET, sourceGUID = SECRET, totalAmount = SECRET, amountPerSecond = SECRET, classFilename = SECRET,
+                    specIconID = SECRET, isLocalPlayer = SECRET, deathRecapID = SECRET }
+            end
             return { name = SECRET, sourceGUID = SECRET, totalAmount = SECRET, amountPerSecond = SECRET, classFilename = "MAGE",
                 specIconID = 135932, isLocalPlayer = i == count, deathRecapID = 0 }
         end
@@ -9831,7 +9884,33 @@ try("phoenix damage meter", function()
     assert(not w.view, "a secret GUID opened a breakdown")
     DM:RowTooltip(w, w.rows[1])
     assert(DM.ReportLines(w, 5) == nil, "report with secret values")
+    -- Forever bug report (Meter.lua:462): a secret spec icon goes to the texture untouched, a secret "is me" is not me
+    secretAll = true
+    local gotTex
+    local icon = w.rows[1].icon
+    local keepSet = rawget(icon, "SetTexture")
+    rawset(icon, "SetTexture", function(_, t) gotTex = t end)
+    db.meter.specIcon, db.meter.filter = true, "all"
+    DM:RefreshMeter()
+    rawset(icon, "SetTexture", keepSet)
+    assert(gotTex == SECRET, "a secret spec icon must reach the texture")
+    assert(DM.IsMine(w.rows[1].src) == false and DM.RoleOfIcon(SECRET) == nil, "secret fields count as unknown")
+    db.meter.filter = "DAMAGER"; DM:RefreshMeter(); db.meter.filter = "all"
+    secretAll = false
     secretMode = false
+    -- an empty row has no name text: the tooltip still opens (Meter.lua:818, SetText(nil))
+    local nameText = rawget(w.rows[1].name, "__text")
+    rawset(w.rows[1].name, "__text", nil)
+    local keepGet = rawget(w.rows[1].name, "GetText")
+    rawset(w.rows[1].name, "GetText", function() return nil end)
+    local tipText = "unset"
+    local keepTip = rawget(env.GameTooltip, "SetText")
+    rawset(env.GameTooltip, "SetText", function(_, t) tipText = t end)
+    local keepSpell = w.rows[1].spellID; w.rows[1].spellID = nil
+    DM:RowTooltip(w, w.rows[1])
+    rawset(env.GameTooltip, "SetText", keepTip); rawset(w.rows[1].name, "GetText", keepGet)
+    rawset(w.rows[1].name, "__text", nameText); w.rows[1].spellID = keepSpell
+    assert(tipText == " ", "a row without a name must not hand nil to the tooltip")
     db.meter.win1.type, db.meter.valueFormat, db.meter.barColor = 0, "both", "class"
     db.meter.nameClassColor, db.meter.valueClassColor = false, false
     -- extras: item level (cached by plain GUID, yours always), offsets, icon border, header colours, big timer

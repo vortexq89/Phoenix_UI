@@ -85,6 +85,8 @@ local T = {
     ACCESSIBILITY = "辅助功能",
     REDUCE_MOTION = "减少动画",
     REDUCE_MOTION_DESC = "关闭 Phoenix 窗口的淡入淡出和滑动效果。",
+    WINDOW_ART = "窗口美术",
+    WINDOW_ART_DESC = "设置窗口的背景图、圆角玻璃分区和强调色光效。关闭：纯石墨色。",
     ---------------------------------------------------------------- Skins
     SKINS = "皮肤",
     SKINS_DESC = "为暴雪窗口和对话框套用 Phoenix 外观，每个窗口一个开关，使用你的背景、边框和强调色。",

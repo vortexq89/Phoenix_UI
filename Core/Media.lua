@@ -69,6 +69,17 @@ M.textures = {
     -- minimap rectangle masks: the percent of the map's height that stays visible
     MINIMAP_RECT50 = T .. "MinimapRect50", MINIMAP_RECT60 = T .. "MinimapRect60", MINIMAP_RECT70 = T .. "MinimapRect70",
     MINIMAP_RECT80 = T .. "MinimapRect80", MINIMAP_RECT90 = T .. "MinimapRect90",
+    -- rounded corners (design v2): a quarter disc for fills and quarter rings for 1 px borders, per radius
+    ROUND_CORNER = T .. "RoundCorner",
+    ROUND_ARC4 = T .. "RoundArc4", ROUND_ARC6 = T .. "RoundArc6", ROUND_ARC10 = T .. "RoundArc10",
+}
+
+-- The settings window art (design v2 "Forge", tools/media/gen_window_art.py): graphite surfaces, and white
+-- accent pieces the window tints with the theme's accent.
+local WIN = ns.C.MEDIA .. "Window\\"
+M.window = {
+    SURFACE = WIN .. "Surface.png", RAIL = WIN .. "Rail.png", HEADER_GLOW = WIN .. "HeaderGlow.png",
+    CORNER = WIN .. "Corner.png", EMBERS = WIN .. "Embers.png",
 }
 
 -- Keys saved by earlier builds, kept working.

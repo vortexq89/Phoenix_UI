@@ -26,7 +26,7 @@ local U = ns.Util
     control right; rows without a description pair up two per line only in a card wide enough for it. ]]
 -- EllesmereUI's measured page (t228): 45 px side pad, sections 40 high (title 8 px over a 1 px line), rows flush
 -- under it, and no gap between sections (the next title's own 40 px is the space)
-local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT, THREE_COLUMNS_AT = 45, 0, 32, 48, 640, 980
+local PAD, CARD_GAP, ROW_H, ROW_H_DESC, TWO_COLUMNS_AT, THREE_COLUMNS_AT = 45, 12, 32, 48, 640, 980
 Config.CARD_GAP_MAX = CARD_GAP + 8 -- the page-spacing smoke test: more than this between two cards is an empty band
 local CELL_H, TOGGLE_CELL_H, PAIR_AT, HEADER_H = 60, 34, 560, 78
 local CARD_HEAD, CHIP_MAX = 40, 5
@@ -887,11 +887,19 @@ local function buildPageHeader(page, m, schema)
     h.line = W.Texture(h, "BORDER")
     h.line:SetHeight(1)
     h.line:SetPoint("BOTTOMLEFT", PAD, 0); h.line:SetPoint("BOTTOMRIGHT", -PAD, 0)
+    -- design v2: the accent line under the header fades in from the left and flares on the right (Media/Window)
+    h.flare = W.Texture(h, "OVERLAY", 0, Media.window.HEADER_GLOW)
+    h.flare:SetBlendMode("ADD")
+    h.flare:SetPoint("TOPLEFT", h, "BOTTOMLEFT", 0, 20); h.flare:SetPoint("TOPRIGHT", h, "BOTTOMRIGHT", 0, 20)
+    h.flare:SetHeight(32)
     Skin:Register(h, function(self)
-        W.Color(self.bg, "bg.base", ns.Art and ns.Art.Enabled() and ns.Art:Token("panel.alpha.header") or nil)
+        local Art = ns.Art
+        W.Color(self.bg, "bg.base", Art and (Art.Enabled() or Art.WindowArt()) and Art:Token("panel.alpha.header") or nil)
         local r, g, b = ns.Theme:Color("accent.primary")
         self.glow:SetVertexColor(1, 1, 1, 1)
-        self.glow:SetGradient("HORIZONTAL", CreateColor(r, g, b, 0.10), CreateColor(r, g, b, 0))
+        self.glow:SetGradient("HORIZONTAL", CreateColor(r, g, b, 0.06), CreateColor(r, g, b, 0))
+        self.flare:SetShown(Art and Art.WindowArt() and true or false)
+        self.flare:SetVertexColor(r, g, b, 0.85)
         W.TileColor(self.iconBg, self.icon, "accent.soft")
         W.Color(self.icon, "accent.primary")
         Skin:Text(self.crumb, "small", "text.muted")
@@ -1287,10 +1295,10 @@ local function lineLook(r, _, n)
     end
     r.sep:SetShown(false) -- EllesmereUI rows have no hairlines, only the bands (t228)
     -- EllesmereUI row bands (specs/001 T012): lines alternate black 0.1 / 0.2 under the controls
-    if not r.band then
-        r.band = W.Texture(r, "BACKGROUND", 1)
-        r.band:SetAllPoints()
-    end
+    if not r.band then r.band = W.Texture(r, "BACKGROUND", 1) end
+    -- inside a glass section (Window art) the bands stop short of its rounded edges
+    local inset = ns.Art and ns.Art.WindowArt() and 8 or 0
+    r.band:ClearAllPoints(); r.band:SetPoint("TOPLEFT", inset, 0); r.band:SetPoint("BOTTOMRIGHT", -inset, 0)
     local R = W.EUI.row
     r.bandA = n % 2 == 1 and R.evenA or R.oddA
     r.band:SetVertexColor(0, 0, 0, r.bandA)
@@ -1599,7 +1607,9 @@ function Config.BuildSchemaPage(parent, m, schema)
     local function layoutCard(c, width)
         c:SetWidth(width)
         local cy, any = layoutRows(c, width)
-        c:SetHeight(c.collapsed and (CARD_HEAD + 1) or cy)
+        -- a glass section (Window art) keeps a little room under its last row, clear of the rounded corners
+        local foot = (ns.Art and ns.Art.WindowArt() and not c.collapsed and cy > CARD_HEAD + 1) and 8 or 0
+        c:SetHeight(c.collapsed and (CARD_HEAD + 1) or (cy + foot))
         if c.chev then
             ns.Icons:Apply(c.chev, c.collapsed and "chevron-right" or "chevron-down", 12)
             c:Chips()
@@ -1707,7 +1717,9 @@ function Config.BuildSchemaPage(parent, m, schema)
             return
         end
         local top = self.pinnedY - self.scroll:GetVerticalScroll()
-        local stuck = top < STICK_TOP
+        -- stuck only once its slot has really scrolled away: the slot starts at 0, and "< STICK_TOP" hid the card
+        -- on every page at scroll 0, leaving its empty band above the first section (Forever screenshots 11-07)
+        local stuck = top < 0
         -- not kept on screen: once its slot scrolls under the header the preview gets out of the way
         pc:SetShown(not stuck or pc.keep)
         if stuck and not pc.keep then

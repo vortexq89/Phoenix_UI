@@ -47,6 +47,108 @@ ns.Events:On("DISPLAY_SIZE_CHANGED", Sk, reapplyAll)
 ---------------------------------------------------------------- borders
 local SIDES = { "top", "bottom", "left", "right" }
 
+---------------------------------------------------------------- rounded corners (design v2)
+--[[ Smooth corners without a mask: a fill texture becomes a plus-shaped body (itself plus a top and a bottom band)
+    and four quarter discs; a border becomes four shortened 1 px lines and four quarter rings. The corner art
+    (Media/Textures/RoundCorner, RoundArc4/6/10, tools/media/gen_window_art.py) is a top-left corner, mirrored
+    by texcoords for the others. Callers keep using the fill texture as before: colour, alpha and visibility
+    calls on it reach the extra pieces. ]]
+local CORNERS = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }
+local CORNER_TC = { TOPLEFT = { 0, 1, 0, 1 }, TOPRIGHT = { 1, 0, 0, 1 }, BOTTOMLEFT = { 0, 1, 1, 0 }, BOTTOMRIGHT = { 1, 0, 1, 0 } }
+Sk.CORNERS, Sk.CORNER_TC = CORNERS, CORNER_TC
+
+local ARC_FILE = { [4] = Media.textures.ROUND_ARC4, [6] = Media.textures.ROUND_ARC6, [10] = Media.textures.ROUND_ARC10 }
+-- the generated ring closest to a radius (its stroke is about one screen pixel at that size)
+function Sk.ArcRadius(R)
+    if R <= 5 then return 4 elseif R <= 8 then return 6 end
+    return 10
+end
+
+-- Rounds the borders (and Panel fills) made for frame from now on; 0 or nil goes back to square corners.
+function Sk:SetRound(frame, radius)
+    st(frame).round = (radius and radius > 0) and radius or nil
+end
+function Sk:GetRound(frame) local s = state[frame]; return s and s.round or 0 end
+
+local FORWARD = { "SetVertexColor", "SetAlpha", "Show", "Hide", "SetShown" }
+-- ix / iy (optional): the rounded fill sits that far inside the frame's left/right and top/bottom edges
+function Sk:RoundFill(frame, tex, radius, ix, iy)
+    local R = radius or (state[frame] and state[frame].round) or 6
+    ix, iy = ix or 0, iy or 0
+    local s = st(frame)
+    local rf = s.roundFill
+    if not rf or rf.tex ~= tex then
+        local layer, sub = tex:GetDrawLayer()
+        rf = { tex = tex, parts = {} }
+        rf.top = frame:CreateTexture(nil, layer, nil, sub)
+        rf.bottom = frame:CreateTexture(nil, layer, nil, sub)
+        rf.parts[1], rf.parts[2] = rf.top, rf.bottom
+        for _, c in ipairs(CORNERS) do
+            local t = frame:CreateTexture(nil, layer, nil, sub)
+            t:SetTexture(Media.textures.ROUND_CORNER)
+            t:SetTexCoord(unpack(CORNER_TC[c]))
+            rf[c] = t
+            rf.parts[#rf.parts + 1] = t
+        end
+        rf.top:SetTexture(WHITE); rf.bottom:SetTexture(WHITE)
+        -- the fill keeps its API: colour, alpha and visibility follow on the extra pieces
+        for _, name in ipairs(FORWARD) do
+            local orig = tex[name]
+            if orig then
+                tex[name] = function(self, ...)
+                    orig(self, ...)
+                    if rf.active then for _, p in ipairs(rf.parts) do p[name](p, ...) end end
+                end
+            end
+        end
+        -- a gradient on the body: the bands share it, each corner takes the colour of its end
+        local setGradient = tex.SetGradient
+        if setGradient then
+            tex.SetGradient = function(self, orientation, minC, maxC)
+                setGradient(self, orientation, minC, maxC)
+                if not rf.active then return end
+                local horiz = orientation == "HORIZONTAL"
+                for _, c in ipairs(CORNERS) do
+                    local isMax = horiz and c:find("RIGHT") or (not horiz and c:find("TOP"))
+                    local col = isMax and maxC or minC
+                    rf[c]:SetVertexColor(col.r, col.g, col.b, col.a)
+                end
+                if horiz then
+                    rf.top:SetGradient(orientation, minC, maxC); rf.bottom:SetGradient(orientation, minC, maxC)
+                else
+                    rf.top:SetVertexColor(maxC.r, maxC.g, maxC.b, maxC.a)
+                    rf.bottom:SetVertexColor(minC.r, minC.g, minC.b, minC.a)
+                end
+            end
+        end
+        local setColor = tex.SetColorTexture
+        if setColor then
+            tex.SetColorTexture = function(self, r, g, b, a)
+                setColor(self, r, g, b, a)
+                if rf.active then for _, p in ipairs(rf.parts) do p:SetVertexColor(r, g, b, a or 1) end end
+            end
+        end
+        s.roundFill = rf
+    end
+    rf.radius, rf.active = R, true
+    tex:ClearAllPoints()
+    tex:SetPoint("TOPLEFT", frame, "TOPLEFT", ix, -R - iy)
+    tex:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -ix, R + iy)
+    rf.top:ClearAllPoints()
+    rf.top:SetPoint("TOPLEFT", frame, "TOPLEFT", R + ix, -iy); rf.top:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", -R - ix, -R - iy)
+    rf.bottom:ClearAllPoints()
+    rf.bottom:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", R + ix, R + iy)
+    rf.bottom:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -R - ix, iy)
+    local sx = { TOPLEFT = 1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = -1 }
+    local sy = { TOPLEFT = -1, TOPRIGHT = -1, BOTTOMLEFT = 1, BOTTOMRIGHT = 1 }
+    for _, c in ipairs(CORNERS) do
+        rf[c]:ClearAllPoints(); rf[c]:SetPoint(c, frame, c, sx[c] * ix, sy[c] * iy); rf[c]:SetSize(R, R)
+    end
+    local r, g, b, a = tex:GetVertexColor()
+    for _, p in ipairs(rf.parts) do p:SetVertexColor(r or 1, g or 1, b or 1, a or 1); p:SetShown(tex:IsShown()) end
+    return tex
+end
+
 function Sk:Border(frame, token, size, layer)
     local s = st(frame)
     local b = s.border
@@ -60,14 +162,36 @@ function Sk:Border(frame, token, size, layer)
         s.border = b
     end
     local thick = px(frame, size or 1)
-    b.top:ClearAllPoints(); b.top:SetPoint("TOPLEFT"); b.top:SetPoint("TOPRIGHT"); b.top:SetHeight(thick)
-    b.bottom:ClearAllPoints(); b.bottom:SetPoint("BOTTOMLEFT"); b.bottom:SetPoint("BOTTOMRIGHT"); b.bottom:SetHeight(thick)
-    b.left:ClearAllPoints(); b.left:SetPoint("TOPLEFT"); b.left:SetPoint("BOTTOMLEFT"); b.left:SetWidth(thick)
-    b.right:ClearAllPoints(); b.right:SetPoint("TOPRIGHT"); b.right:SetPoint("BOTTOMRIGHT"); b.right:SetWidth(thick)
+    local R = s.round or 0 -- rounded (Sk:SetRound): the straight lines stop where the corner arcs begin
+    b.top:ClearAllPoints(); b.top:SetPoint("TOPLEFT", R, 0); b.top:SetPoint("TOPRIGHT", -R, 0); b.top:SetHeight(thick)
+    b.bottom:ClearAllPoints(); b.bottom:SetPoint("BOTTOMLEFT", R, 0); b.bottom:SetPoint("BOTTOMRIGHT", -R, 0); b.bottom:SetHeight(thick)
+    b.left:ClearAllPoints(); b.left:SetPoint("TOPLEFT", 0, -R); b.left:SetPoint("BOTTOMLEFT", 0, R); b.left:SetWidth(thick)
+    b.right:ClearAllPoints(); b.right:SetPoint("TOPRIGHT", 0, -R); b.right:SetPoint("BOTTOMRIGHT", 0, R); b.right:SetWidth(thick)
+    if R > 0 then
+        b.arcs = b.arcs or {}
+        local file = ARC_FILE[Sk.ArcRadius(R)]
+        for _, c in ipairs(CORNERS) do
+            local t = b.arcs[c] or frame:CreateTexture(nil, layer or "BORDER", nil, 7)
+            b.arcs[c] = t
+            t:SetTexture(file)
+            t:SetTexCoord(unpack(CORNER_TC[c]))
+            t:ClearAllPoints(); t:SetPoint(c); t:SetSize(R, R)
+            t:Show()
+        end
+    elseif b.arcs then
+        for _, t in pairs(b.arcs) do t:Hide() end
+    end
     self:SetBorderColor(frame, token or "border.subtle")
     for _, side in ipairs(SIDES) do b[side]:Show() end
     return b
 end
+
+-- hides a border made by Sk:Border, arcs included
+local function hideBorder(b)
+    for _, side in ipairs(SIDES) do b[side]:Hide() end
+    if b.arcs then for _, t in pairs(b.arcs) do t:Hide() end end
+end
+Sk.HideBorder = function(_, frame) local s = state[frame]; if s and s.border then hideBorder(s.border) end end
 
 function Sk:SetBorderColor(frame, token, ...)
     local b = state[frame] and state[frame].border
@@ -75,6 +199,7 @@ function Sk:SetBorderColor(frame, token, ...)
     local r, g, bl, a
     if type(token) == "number" then r, g, bl, a = token, ... else r, g, bl, a = Theme:Color(token) end
     for _, side in ipairs(SIDES) do b[side]:SetVertexColor(r, g, bl, a or 1) end
+    if b.arcs then for _, t in pairs(b.arcs) do t:SetVertexColor(r, g, bl, a or 1) end end
 end
 
 ---------------------------------------------------------------- panels
@@ -98,13 +223,20 @@ function Sk:Panel(frame, style, opts)
     s.bg:SetTexCoord(0, 1, 0, 1)
     if s.bg.ClearTextureSlice then s.bg:ClearTextureSlice() end
     local r, g, b, a = Theme:Color("bg." .. (style or "base"))
-    local pa = opts.alpha and Art and Art.Enabled() and Art:Token("panel.alpha." .. opts.alpha)
+    local pa = opts.alpha and Art and (Art.Enabled() or (Art.WindowArt() and Art.WINDOW_PANELS[opts.alpha]))
+        and Art:Token("panel.alpha." .. opts.alpha)
+    if opts.round ~= nil then self:SetRound(frame, opts.round) end
     s.bg:SetVertexColor(r, g, b, pa or a or 1)
     s.bg:Show()
+    if s.round then self:RoundFill(frame, s.bg, s.round)
+    elseif s.roundFill and s.roundFill.tex == s.bg then
+        s.roundFill.active = false -- square again: the extra pieces go
+        for _, p in ipairs(s.roundFill.parts) do p:Hide() end
+    end
     if opts.border ~= false then
         self:Border(frame, opts.border or "border.subtle")
     elseif s.border then
-        for _, side in ipairs(SIDES) do s.border[side]:Hide() end
+        hideBorder(s.border)
     end
     if opts.sheen then
         if not s.sheen then
@@ -122,13 +254,23 @@ function Sk:Panel(frame, style, opts)
     return s.bg
 end
 
+-- Takes a Panel away again (fill, rounded pieces and border); the next Panel call brings it back.
+function Sk:HidePanel(frame)
+    local s = state[frame]
+    if not s then return end
+    if s.roundFill then s.roundFill.active = false; for _, p in ipairs(s.roundFill.parts) do p:Hide() end end
+    if s.bg then s.bg:Hide() end
+    if s.border then hideBorder(s.border) end
+end
+
 -- alphaKey: a panel.alpha.* name (v7.1): the fill lets the background art through while the art kit is on
 function Sk:SetPanelColor(frame, token, alphaKey)
     local s = state[frame]
     if not (s and s.bg) then return end
     local r, g, b, a = Theme:Color(token)
     local Art = ns.Art
-    local pa = alphaKey and Art and Art.Enabled() and Art:Token("panel.alpha." .. alphaKey)
+    local pa = alphaKey and Art and (Art.Enabled() or (Art.WindowArt() and Art.WINDOW_PANELS[alphaKey]))
+        and Art:Token("panel.alpha." .. alphaKey)
     s.bg:SetVertexColor(r, g, b, pa or a or 1)
 end
 

@@ -85,6 +85,8 @@ local T = {
     ACCESSIBILITY = "Barrierefreiheit",
     REDUCE_MOTION = "Bewegung reduzieren",
     REDUCE_MOTION_DESC = "Schaltet Ein- und Ausblendungen in Phoenix-Fenstern ab.",
+    WINDOW_ART = "Fenstergrafik",
+    WINDOW_ART_DESC = "Hintergrundgrafik des Einstellungsfensters, Glasabschnitte mit runden Ecken und Akzentleuchten. Aus: schlichtes Graphit.",
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",
     SKINS_DESC = "Die Phoenix-Optik für Blizzards Fenster und Dialoge, ein Schalter pro Fenster, mit deinem Hintergrund, Rahmen und Akzent.",

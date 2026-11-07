@@ -821,6 +821,12 @@ function M:OnEnable()
         C_Timer.After(0, function() queued = nil; if self:IsEnabled() then self:ApplyAll() end end)
     end
     ns.Events:On("PLAYER_ENTERING_WORLD", self, again)
+    -- "Arrange my UI" in the installer when a module switch needed a reload first: open Layout mode now
+    local ui = ns.DB.sv.global.ui
+    if ui and ui.arrangeOnLoad then
+        ui.arrangeOnLoad = nil
+        C_Timer.After(1, function() if self:IsEnabled() and not unlocked then self:SetUnlocked(true) end end)
+    end
     ns.Events:On("EDIT_MODE_LAYOUTS_UPDATED", self, again)
     ns.Events:On("UI_SCALE_CHANGED", self, function() if grid and grid:IsShown() then grid:Layout() end end)
     ns.Events:On("DISPLAY_SIZE_CHANGED", self, function() if grid and grid:IsShown() then grid:Layout() end end)

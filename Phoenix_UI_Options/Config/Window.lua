@@ -153,10 +153,23 @@ local function toggleTestFrames()
     if not ok then Config:SetStatus(L.UF_TEST_COMBAT, "state.warning", "warning") end
 end
 
+-- One way into Layout mode for the window, the installer and the setup wizard. Phoenix's movers when the module
+-- runs, Blizzard's Edit Mode otherwise; in combat it says so instead of closing windows and doing nothing.
+function Config:OpenLayout()
+    if InCombatLockdown() then ns:Print(L.MOVERS_COMBAT) return false end
+    if _G.PhoenixUI_Config then _G.PhoenixUI_Config:Hide() end
+    local movers = ns.modules.Movers
+    if movers and movers:IsEnabled() and movers.SetUnlocked then
+        movers:SetUnlocked(true)
+        if movers.IsUnlocked == nil or movers:IsUnlocked() then return true end
+    end
+    ns.EditMode:Open()
+    return true
+end
+
 local function layoutMode(f)
     f:Hide()
-    local movers = ns.modules.Movers
-    if movers and movers:IsEnabled() and movers.SetUnlocked then movers:SetUnlocked(true) else ns.EditMode:Open() end
+    Config:OpenLayout()
 end
 
 
@@ -339,7 +352,8 @@ local function navRow(parent, key)
     r:SetHeight(NAV_ROW)
     r.key = key
     r.bg = W.Texture(r, "BACKGROUND")
-    r.bg:SetPoint("TOPLEFT", 6, -1); r.bg:SetPoint("BOTTOMRIGHT", -6, 1)
+    -- design v2: hover and the open page are a smooth pill; the accent bar inside it is as tall as the pill's body
+    Skin:RoundFill(r, r.bg, W.EUI.radius.nav, 6, 1)
     r.bar = W.Texture(r, "ARTWORK")
     r.bar:SetPoint("TOPLEFT", r.bg, "TOPLEFT"); r.bar:SetPoint("BOTTOMLEFT", r.bg, "BOTTOMLEFT")
     r.bar:SetWidth(2)
@@ -381,11 +395,12 @@ local function navRow(parent, key)
     function r:Paint()
         local m = ns.modules[self.key]
         local Art = ns.Art
-        local hl = self.active and Art and Art.Enabled() and Art:Paint(self.hl, "rail_selected")
-        self.hl:SetShown(hl and true or false)
+        local hl = false -- the atlas highlight gave way to the rounded pill (design v2)
+        self.hl:SetShown(false)
         if Art then Art:SyncModuleIcon(self.art) end
         if self.active then
-            W.Color(self.bg, "accent.soft", hl and 0 or nil)
+            local ar, ag, ab = Theme:Color("accent.primary")
+            self.bg:SetVertexColor(ar, ag, ab, hl and 0 or 0.14)
             self.bar:SetVertexColor(1, 1, 1, 1)
             Skin:Gradient(self.bar, "VERTICAL", "accent.secondary", "accent.primary")
             self.bar:Show()
@@ -571,6 +586,102 @@ function Config:LayoutShell()
     if page and page.SetDocked and page.docked then page:SetDocked(nil) end
 end
 
+---------------------------------------------------------------- window art (design v2 "Forge")
+--[[ The art behind the window, in the spirit of EllesmereUI's painted window backgrounds but drawn from Phoenix's
+    own generated files (Media/Window, tools/media/gen_window_art.py):
+      surface   graphite stone with the Phoenix wings as a grey watermark, behind the pages (cover-fit, top anchored)
+      rail      darker brushed graphite behind the sidebar, a soft accent glow behind the brand
+      corners   accent light and sparks rising from the two bottom corners of the page area
+      embers    sparks drifting up over the foot of the page (one slow loop; still with Reduce motion)
+    Surfaces are neutral; the accent pieces are white and tinted with the theme's accent, so class colour and
+    custom colours light the window too. Textures are dropped while the window is hidden. ]]
+local SURFACE_ASPECT, RAIL_ASPECT = 1600 / 1200, 512 / 1200
+local EMBER_RISE, EMBER_TIME = 46, 16
+
+local function emberLayer(parent, delay)
+    local t = W.Texture(parent, "BACKGROUND", 3)
+    t:SetBlendMode("ADD")
+    t:SetPoint("BOTTOMLEFT"); t:SetPoint("BOTTOMRIGHT"); t:SetHeight(380)
+    local ag = t:CreateAnimationGroup()
+    ag:SetLooping("REPEAT")
+    local move = ag:CreateAnimation("Translation")
+    move:SetOffset(0, EMBER_RISE); move:SetDuration(EMBER_TIME); move:SetStartDelay(delay)
+    local fadeIn = ag:CreateAnimation("Alpha")
+    fadeIn:SetFromAlpha(0); fadeIn:SetToAlpha(1); fadeIn:SetDuration(EMBER_TIME * 0.3); fadeIn:SetStartDelay(delay)
+    local fadeOut = ag:CreateAnimation("Alpha")
+    fadeOut:SetFromAlpha(1); fadeOut:SetToAlpha(0); fadeOut:SetDuration(EMBER_TIME * 0.3)
+    fadeOut:SetStartDelay(delay + EMBER_TIME * 0.7)
+    t.anim = ag
+    return t
+end
+
+local function buildArt(f)
+    local Art, WIN = ns.Art, Media.window
+    local c, sb = f.content, f.sidebar
+    f.surface = W.Texture(f, "BACKGROUND", -6)
+    f.surface:SetPoint("TOPLEFT", c, "TOPLEFT"); f.surface:SetPoint("BOTTOMRIGHT", c, "BOTTOMRIGHT")
+    sb.art = W.Texture(sb, "BACKGROUND", -7)
+    sb.art:SetPoint("TOPLEFT"); sb.art:SetPoint("BOTTOMRIGHT", -1, 0)
+    sb.glow = W.Texture(sb, "BACKGROUND", -6)
+    sb.glow:SetBlendMode("ADD")
+    sb.glow:SetPoint("TOPLEFT"); sb.glow:SetSize(RAIL_W, RAIL_W)
+    f.corners = {}
+    for i, side in ipairs({ "BOTTOMLEFT", "BOTTOMRIGHT" }) do
+        local t = W.Texture(c, "BACKGROUND", 2)
+        t:SetBlendMode("ADD")
+        t:SetPoint(side); t:SetSize(340, 340)
+        t.flip = i == 2
+        f.corners[i] = t
+    end
+    f.embers = { emberLayer(c, 0), emberLayer(c, EMBER_TIME / 2) }
+
+    local function fit()
+        local on = Art and Art.WindowArt()
+        if not on then return end
+        f.surface:SetTexCoord(Art.CoverCoords(c:GetWidth(), c:GetHeight(), SURFACE_ASPECT, "TOP"))
+        sb.art:SetTexCoord(Art.CoverCoords(sb:GetWidth(), sb:GetHeight(), RAIL_ASPECT, "TOP"))
+    end
+    local function animate(play)
+        local still = ns.Anim and ns.Anim:ReduceMotion()
+        for _, e in ipairs(f.embers) do
+            if play and not still then e.anim:Play() else e.anim:Stop() end
+            e:SetAlpha((play and still) and 0.6 or 1)
+        end
+    end
+    function f:PaintArt()
+        local on = Art and Art.WindowArt()
+        local regions = { f.surface, sb.art, sb.glow, f.corners[1], f.corners[2], f.embers[1], f.embers[2] }
+        for _, t in ipairs(regions) do t:SetShown(on and true or false) end
+        if not on then animate(false) return end
+        f.surface:SetTexture(WIN.SURFACE)
+        sb.art:SetTexture(WIN.RAIL)
+        local r, g, b = Theme:Color("accent.primary")
+        local gr, gg, gb = Theme:Color("accent.glow")
+        sb.glow:SetTexture(WIN.CORNER)
+        sb.glow:SetTexCoord(0, 1, 1, 0) -- the corner art rises from the bottom: flipped, it hangs from the top
+        sb.glow:SetVertexColor(r, g, b, 0.16)
+        for _, t in ipairs(f.corners) do
+            t:SetTexture(WIN.CORNER)
+            if t.flip then t:SetTexCoord(1, 0, 0, 1) else t:SetTexCoord(0, 1, 0, 1) end
+            t:SetVertexColor(gr, gg, gb, 0.3)
+        end
+        for _, e in ipairs(f.embers) do
+            e:SetTexture(WIN.EMBERS)
+            e:SetVertexColor(r, g, b, 0.3)
+        end
+        fit()
+        animate(f:IsShown())
+    end
+    c:HookScript("OnSizeChanged", fit)
+    f:HookScript("OnShow", function() f:PaintArt() end)
+    f:HookScript("OnHide", function()
+        animate(false)
+        -- the big textures go while the window is closed; PaintArt sets them again on show
+        f.surface:SetTexture(nil); sb.art:SetTexture(nil)
+        for _, e in ipairs(f.embers) do e:SetTexture(nil) end
+    end)
+end
+
 ---------------------------------------------------------------- footer
 local function buildFooter(f)
     local ft = CreateFrame("Frame", nil, f)
@@ -730,20 +841,14 @@ function Config:Build()
     setScale(f, math.max(MIN_SCALE, math.min(MAX_SCALE, tonumber(s.scale) or 1)))
     Skin:Register(f, function(self)
         Skin:Panel(self, "base", { border = "border.strong", shadow = 18 })
-        -- Flat black again (31 Oct): the wings art, its ash and its bottom logo are no longer drawn. To undo, call
-        -- ns.Art:Background(self) here again; Media/Art/PhoenixWingsBG and UI/Art.lua are kept.
+        -- design v2 "Forge" (7 Nov): graphite under everything (never pure black), the window art on top of it
+        -- (buildArt); General > Window art off leaves the plain graphite.
         if not self.flatBG then
             self.flatBG = W.Texture(self, "BACKGROUND", -7, Media.textures.WHITE)
             self.flatBG:SetPoint("TOPLEFT", 1, -1); self.flatBG:SetPoint("BOTTOMRIGHT", -1, 1)
         end
-        self.flatBG:SetVertexColor(0, 0, 0, 1)
-        -- the "Phoenix UI By VortexQ8" fire logo, small, in the middle of the window (hidden with Phoenix art off)
-        if ns.Art then
-            local logo = ns.Art:Logo(self, 240, "BACKGROUND")
-            logo:SetDrawLayer("BACKGROUND", -6)
-            logo:ClearAllPoints()
-            logo:SetPoint("CENTER", self, "CENTER", 0, 0)
-        end
+        W.Color(self.flatBG, "bg.base", 1)
+        if self.PaintArt then self:PaintArt() end
     end)
     self.frame = f
     for _, ev in ipairs({ "DISPLAY_SIZE_CHANGED", "UI_SCALE_CHANGED" }) do
@@ -764,6 +869,8 @@ function Config:Build()
     f.ambient = W.Texture(content, "BACKGROUND", 1, Media.textures.FADE_V)
     f.ambient:SetPoint("TOPLEFT"); f.ambient:SetPoint("TOPRIGHT"); f.ambient:SetHeight(160)
     Skin:Register(f.ambient, function(t) W.Color(t, "accent.primary", 0.04) end)
+    buildArt(f)
+    f:PaintArt()
 
     self:BuildRail()
     self:BuildList()

@@ -85,6 +85,8 @@ local T = {
     ACCESSIBILITY = "접근성",
     REDUCE_MOTION = "움직임 줄이기",
     REDUCE_MOTION_DESC = "Phoenix 창의 페이드와 슬라이드 효과를 끕니다.",
+    WINDOW_ART = "창 아트",
+    WINDOW_ART_DESC = "설정 창의 배경 아트, 둥근 모서리의 유리 섹션과 강조 빛. 끄면 단색 그래파이트입니다.",
     ---------------------------------------------------------------- Skins
     SKINS = "스킨",
     SKINS_DESC = "블리자드 창과 대화 상자에 Phoenix 스타일 — 창마다 스위치, 배경·테두리·강조색은 내 설정.",

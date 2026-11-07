@@ -82,7 +82,7 @@ def gradient(w, h, g, alpha):
     return img
 
 
-def paste(canvas, img, x, y, clip, s):
+def paste(canvas, img, x, y, clip, s, add=False):
     if clip:
         cx0, cy0, cx1, cy1 = [int(round(v * s)) for v in clip]
         l, t = max(x, cx0), max(y, cy0)
@@ -91,6 +91,21 @@ def paste(canvas, img, x, y, clip, s):
             return
         img = img.crop((l - x, t - y, r - x, b - y))
         x, y = l, t
+    if add:  # blend mode ADD: the texture's colour times its alpha is added to what is under it
+        l, t = max(0, x), max(0, y)
+        r, b = min(canvas.width, x + img.width), min(canvas.height, y + img.height)
+        if r <= l or b <= t:
+            return
+        src = img.crop((l - x, t - y, r - x, b - y))
+        base = canvas.crop((l, t, r, b))
+        sr, sg, sb, sa = [ch.point(lambda v: v) for ch in src.split()]
+        from PIL import ImageChops
+        k = sa
+        lit = Image.merge('RGB', [ImageChops.multiply(c, k) for c in (sr, sg, sb)])
+        out = ImageChops.add(base.convert('RGB'), lit)
+        out.putalpha(base.getchannel('A'))
+        canvas.paste(out, (l, t))
+        return
     canvas.alpha_composite(img, (x, y)) if x >= 0 and y >= 0 else canvas.paste(img, (x, y), img)
 
 
@@ -123,15 +138,21 @@ def draw_tex(canvas, it, s):
             return
         tc = it.get('tc') or [0, 1, 0, 1]
         sw, sh = src.size
-        box = (int(round(tc[0] * sw)), int(round(tc[2] * sh)), int(round(tc[1] * sw)), int(round(tc[3] * sh)))
+        fx, fy = tc[0] > tc[1], tc[2] > tc[3]  # mirrored texcoords flip the picture
+        u0, u1, v0, v1 = min(tc[0], tc[1]), max(tc[0], tc[1]), min(tc[2], tc[3]), max(tc[2], tc[3])
+        box = (int(round(u0 * sw)), int(round(v0 * sh)), int(round(u1 * sw)), int(round(v1 * sh)))
         if box[2] <= box[0] or box[3] <= box[1]:
             return
         part = src.crop(box).resize((Wd, Ht), Image.LANCZOS)
+        if fx:
+            part = part.transpose(Image.FLIP_LEFT_RIGHT)
+        if fy:
+            part = part.transpose(Image.FLIP_TOP_BOTTOM)
         r, g, b, a = part.split()
         r = r.point(lambda v: v * col[0] // 255); g = g.point(lambda v: v * col[1] // 255)
         b = b.point(lambda v: v * col[2] // 255); a = a.point(lambda v: v * col[3] // 255)
         img = Image.merge('RGBA', (r, g, b, a))
-    paste(canvas, img, X, Y, it.get('clip'), s)
+    paste(canvas, img, X, Y, it.get('clip'), s, it.get('blend') == 'ADD')
 
 
 def wrap_lines(text, f, width):

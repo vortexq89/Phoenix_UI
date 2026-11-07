@@ -27,6 +27,11 @@ local function media()
     for _, b in ipairs(ns.TextureData.borders) do add("border", T .. b.file, 128, 16) end
     add("shape", T .. "Circle", 32, 32); add("shape", T .. "Rounded", 32, 32)
     add("shape", T .. "Pill", 64, 32); add("shape", T .. "FadeV", 8, 64)
+    add("shape", T .. "RoundCorner", 64, 64)
+    for _, r in ipairs({ 4, 6, 10 }) do add("shape", T .. "RoundArc" .. r, 64, 64) end
+    local win = ns.Media.window
+    add("window", win.SURFACE, 1600, 1200); add("window", win.RAIL, 512, 1200); add("window", win.HEADER_GLOW, 1024, 64)
+    add("window", win.CORNER, 512, 512); add("window", win.EMBERS, 1024, 512)
     return list
 end
 

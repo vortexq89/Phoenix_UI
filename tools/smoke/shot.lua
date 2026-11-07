@@ -58,6 +58,7 @@ function S.Install(ctx)
     end
     rm.SetTexture = function(self, t) rawset(self, "__tex", type(t) == "string" and t or (t and tostring(t)) or nil) end
     rm.GetTexture = function(self) return rawget(self, "__tex") end
+    rm.SetBlendMode = function(self, m) rawset(self, "__blend", m) end
     rm.SetAtlas = function(self, a) rawset(self, "__atlas", a) end
     rm.SetTexCoord = function(self, a, b, c, d, ...)
         if select("#", ...) > 0 then rawset(self, "__tc", { a, (...), c, d }) else rawset(self, "__tc", { a, b, c, d }) end
@@ -293,7 +294,7 @@ function S.Run(ctx)
                     local l, b, w, h = Geo.Rect(r)
                     if l and w and h and w > 0 and h > 0 then
                         item.rect = { l, H0 - b - h, w, h }
-                        item.tex = rawget(r, "__tex"); item.tc = rawget(r, "__tc"); item.vc = rawget(r, "__vc"); item.grad = rawget(r, "__grad")
+                        item.tex = rawget(r, "__tex"); item.tc = rawget(r, "__tc"); item.vc = rawget(r, "__vc"); item.grad = rawget(r, "__grad"); item.blend = rawget(r, "__blend")
                         if item.tex or item.vc or item.grad then items[#items + 1] = item end
                     end
                 else

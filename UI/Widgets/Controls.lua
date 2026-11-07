@@ -118,9 +118,11 @@ function W:Tabs(parent, items)
         local N = W.EUI.nav
         for _, b in ipairs(self.tabs) do
             local on = b.value == self.value
-            b.fill:SetVertexColor(1, 1, 1, (b.hover and not on) and 0.03 or 0)
+            local ar, ag, ab = ns.Theme:Color("accent.primary")
+            if on then b.fill:SetVertexColor(ar, ag, ab, 0.12)
+            else b.fill:SetVertexColor(1, 1, 1, b.hover and 0.04 or 0) end
             b.bar:SetShown(on)
-            if on then b.bar:SetVertexColor(ns.Theme:Color("accent.primary")) end
+            if on then b.bar:SetVertexColor(ar, ag, ab, 1) end
             local a = on and N.selectedA or (b.hover and N.hoverA or 0.53)
             if b.icon then W.Color(b.icon, "text.primary", a) end
             Skin:Text(b.label, "body", "text.primary")
@@ -135,6 +137,7 @@ function W:Tabs(parent, items)
         b.value = item.value
         b.fill = W.Texture(b, "BACKGROUND", 1)
         b.fill:SetAllPoints()
+        Skin:RoundFill(b, b.fill, 6) -- design v2: the open tab sits on a soft accent pill
         b.bar = W.Texture(b, "ARTWORK", 2)
         b.bar:SetPoint("BOTTOMLEFT"); b.bar:SetPoint("BOTTOMRIGHT"); b.bar:SetHeight(2)
         local left = TAB_PAD

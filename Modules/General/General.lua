@@ -21,7 +21,7 @@ local M = ns:NewModule("General", {
     defaults = {
         theme = {
             preset = "phoenix", custom = { r = 1, g = 0.490, b = 0.039 }, fontScale = 1,
-            uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true,
+            uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true, windowArt = true,
             -- the style library defaults every module border set to "Follow Appearance" uses (Core/Style.lua)
             borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
             surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = CLASS_DEFAULTS,

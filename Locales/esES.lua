@@ -85,6 +85,8 @@ local T = {
     ACCESSIBILITY = "Accesibilidad",
     REDUCE_MOTION = "Reducir movimiento",
     REDUCE_MOTION_DESC = "Desactiva los fundidos y deslizamientos de las ventanas de Phoenix.",
+    WINDOW_ART = "Arte de la ventana",
+    WINDOW_ART_DESC = "Fondo ilustrado de la ventana de opciones, secciones de cristal con esquinas suaves y brillos de acento. Desactivado: grafito liso.",
     ---------------------------------------------------------------- Skins
     SKINS = "Aspectos",
     SKINS_DESC = "El aspecto Phoenix para las ventanas y diálogos de Blizzard, un interruptor por ventana, con tu fondo, borde y acento.",

@@ -201,6 +201,8 @@ function W:Dropdown(parent, items, preview, width)
     d.items, d.preview = items, preview
     d.fill = W.Texture(d, "BACKGROUND", -8)
     d.fill:SetAllPoints()
+    Skin:SetRound(d, W.EUI.radius.control)
+    Skin:RoundFill(d, d.fill)
     Skin:Border(d)
     d.strip = W.Texture(d, "BORDER")
     d.strip:SetPoint("TOPLEFT", 4, -4); d.strip:SetPoint("BOTTOMRIGHT", -24, 4)

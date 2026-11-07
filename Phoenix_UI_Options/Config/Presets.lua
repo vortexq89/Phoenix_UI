@@ -392,11 +392,7 @@ function Config:ShowSetupFinish(force)
         finish.close.onClick = close
         finish.arrange.onClick = function()
             close()
-            local mv = ns.modules.Movers
-            if mv and mv:IsEnabled() then
-                if _G.PhoenixUI_Config then _G.PhoenixUI_Config:Hide() end
-                mv:SetUnlocked(true)
-            end
+            Config:OpenLayout()
         end
     end
     finish.scale:SetValue(gen and gen.db and gen.db.scale and gen.db.scale.enabled and "pixel" or "game")

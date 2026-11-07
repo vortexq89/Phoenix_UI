@@ -62,7 +62,7 @@ local tokens = {}
 T.tokens = tokens
 T.settings = {
     preset = "phoenix", custom = { r = 1, g = 0.490, b = 0.039 }, fontScale = 1,
-    uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true,
+    uiFont = "", unitFont = "", expressway = true, barTexture = "Satin", reduceMotion = false, emblemFX = true, windowArt = true,
     borderStyle = "solid", borderSize = 1, borderColor = false, shadowAlpha = 0.75, glowColor = false,
     surfaceAlpha = 1, outline = "NONE", soundChannel = "Master", classColors = {},
     powerColors = {}, dispelColors = {},
