@@ -7,16 +7,30 @@ local W, Skin, Media = ns.Widgets, ns.Skin, ns.Media
       single: value is the picked key; Shift-click adds or removes a chip in :GetExtra() (the "also edit" set)
       multi:  value is a set { [value] = true }
     :SetWidth(w) re-wraps; the height follows the rows (:GetHeight()). onChange(self, value, shift). ]]
-local H, GAP, PADX = 22, 6, 12
+local H, GAP, PADX, R = 26, 6, 12, 10
+local LABEL_SIZE = 13
 
+--[[ design v2: a chip is a smooth rounded segment drawn with the crisp corner pieces (Skin:RoundFill and a rounded
+    1 px border), not the stretched pill texture whose soft edge turned into jagged pixels at small UI scales. Idle:
+    a faint glass fill; hover: brighter; picked: an accent-tinted fill with an accent border and white text;
+    Shift-picked ("also edit"): the secondary accent border. ]]
 local function paintChip(c, on, extra)
     local hover = c.hover and not c.owner.disabled
-    W.Color(c.edge, on and "accent.primary" or (extra and "accent.secondary") or (hover and "border.strong" or "border.subtle"),
-        (on or extra) and 0.9 or 1)
-    W.Color(c.fill, on and "accent.soft" or (hover and "bg.hover" or "bg.sunken"))
-    -- accent.soft is translucent: it lies over a sunken base so an active chip reads on any panel
-    W.Color(c.base, "bg.sunken")
-    Skin:Text(c.label, "small", on and "accent.text" or ((hover or extra) and "text.primary" or "text.secondary"))
+    local ar, ag, ab = ns.Theme:Color("accent.primary")
+    if on then
+        c.fill:SetVertexColor(ar, ag, ab, hover and 0.30 or 0.22)
+        Skin:SetBorderColor(c, ar, ag, ab, 0.95)
+    elseif extra then
+        local sr, sg, sb = ns.Theme:Color("accent.secondary")
+        c.fill:SetVertexColor(sr, sg, sb, 0.12)
+        Skin:SetBorderColor(c, sr, sg, sb, 0.8)
+    else
+        c.fill:SetVertexColor(1, 1, 1, hover and 0.09 or 0.045)
+        Skin:SetBorderColor(c, 1, 1, 1, hover and 0.22 or 0.11)
+    end
+    Skin:Text(c.label, "body", "text.primary", LABEL_SIZE)
+    c.label:SetShadowOffset(0, 0)
+    c.label:SetTextColor(1, 1, 1, on and 1 or ((hover or extra) and 0.92 or 0.70))
     if c.icon then ns.Icons:Tint(c.icon, on and "accent.primary" or "text.muted") end
 end
 
@@ -43,8 +57,10 @@ function W:Chips(parent, items, multi)
         for _, c in ipairs(self.chips) do
             if c:IsShown() and set[c.value] then
                 if not c.glow then
-                    c.glow = W.Texture(c, "ARTWORK", 3, Media.textures.PILL)
-                    c.glow:SetAllPoints()
+                    c.glowFrame = CreateFrame("Frame", nil, c)
+                    c.glowFrame:SetAllPoints()
+                    c.glow = W.Texture(c.glowFrame, "ARTWORK", 3)
+                    Skin:RoundFill(c.glowFrame, c.glow, R)
                     c.glow:SetAlpha(0)
                 end
                 W.Color(c.glow, "accent.primary", 1)
@@ -60,13 +76,12 @@ function W:Chips(parent, items, multi)
         c = CreateFrame("Button", nil, s)
         c.owner = s
         c:SetHeight(H)
-        c.edge = W.Texture(c, "BACKGROUND", 0, Media.textures.PILL)
-        c.edge:SetAllPoints()
-        c.base = W.Texture(c, "BACKGROUND", 1, Media.textures.PILL)
-        c.base:SetPoint("TOPLEFT", 1, -1); c.base:SetPoint("BOTTOMRIGHT", -1, 1)
-        c.fill = W.Texture(c, "BACKGROUND", 2, Media.textures.PILL)
-        c.fill:SetPoint("TOPLEFT", 1, -1); c.fill:SetPoint("BOTTOMRIGHT", -1, 1)
-        c.label = W.Text(c, "small", "text.secondary", "CENTER")
+        c.fill = W.Texture(c, "BACKGROUND", 2)
+        Skin:RoundFill(c, c.fill, R)
+        Skin:SetRound(c, R)
+        Skin:Border(c, "border.subtle")
+        c.label = W.Text(c, "body", "text.primary", "CENTER")
+        c.label:SetWordWrap(false)
         c:SetScript("OnEnter", function(self)
             self.hover = true
             s:Paint()
@@ -130,6 +145,7 @@ function W:Chips(parent, items, multi)
         for i, item in ipairs(list) do
             local c = chip(i)
             c.value, c.tip = item.value, item.tip
+            Skin:Text(c.label, "body", "text.primary", LABEL_SIZE) -- measured in the size it is drawn in
             c.label:SetText(item.label or tostring(item.value))
             if item.icon then
                 c.icon = c.icon or W.Icon(c, item.icon, 11)
@@ -195,7 +211,7 @@ function W:OrderChips(parent, spec)
         c:RegisterForDrag("LeftButton")
         c:RegisterForClicks("RightButtonUp")
         c.key = key
-        Skin:Register(c, function(self) Skin:Panel(self, "sunken", { border = "border.default" }) end)
+        Skin:Register(c, function(self) Skin:Panel(self, "sunken", { border = "border.default", round = R }) end)
         c:SetScript("OnEnter", function(self) W.ShowTooltip(self, spec.label(key), spec.tip and spec.tip(key)) end)
         c:SetScript("OnLeave", W.HideTooltip)
         c:SetScript("OnDragStart", function(self) holder:BeginDrag(self) end)

@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Chips redesigned** (8 Nov, owner's screenshot): the element, filter and preview-state chips (Bar 1 … Item bar, Enemy / Friendly, Low health …) are smooth rounded segments drawn with crisp corner pieces instead of the stretched pill texture that looked jagged at small UI scales. Slightly taller (26 px) with clearer text: no shadow, white at 70 % idle, full white when picked; the picked chip has an accent-tinted fill and an accent border. Drag-to-reorder chips (Data Texts, bag categories) get the same rounded corners.
 - **GUI polish, step 2** (8 Nov, English first):
   - **Editing toolbar:** the element chips (Bar 1…, Enemy / Friendly, Player / Target…) sit in one smooth glass toolbar: what you edit and the Shift hint on top, the chips on the left, and on the right "Copy settings from…" and an "Edit all" switch (no label stacked over the dropdown any more).
   - **Fonts / Textures / Glows pages** name each row by its section ("Nameplates › Cast bar · Bar texture"), so rows no longer look like duplicates.
