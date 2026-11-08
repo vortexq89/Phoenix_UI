@@ -936,8 +936,8 @@ ns.RegisterLocale("enUS", {
     ICON_GROWTH = "Growth direction",
     ---------------------------------------------------------------- options layout
     EDITING = "Editing",
-    APPLY_ALL = "All",
-    COPY_SETTINGS_FROM = "Apply all settings from",
+    APPLY_ALL = "Edit all",
+    COPY_SETTINGS_FROM = "Copy settings from\226\128\166",
     COPIED_FROM = "Copied every setting from %s",
     LIVE_PREVIEW = "Live preview",
     PREVIEW_HINT = "Sample data, redrawn as you change settings",

@@ -31,16 +31,23 @@ local function collect(kind)
                         for i, v in ipairs(vals) do units[i], unitLabels[i] = v.value, L[v.label] or v.label end
                     end
                 end
+                -- the section (header) each row sits in names it: four rows all called "Nameplates · Bar texture"
+                -- were four different settings (GUI polish plan §3)
+                local section
                 local function visit(item, parent)
                     local hit = type(kind) == "function" and kind(item) or item.type == kind
                     if hit and item.key and not item.get then
                         local scoped = item.key:find("@", 1, true) ~= nil
-                        out[#out + 1] = { group = g, m = m, item = item, parent = parent,
+                        out[#out + 1] = { group = g, m = m, item = item, parent = parent, section = section,
                             units = scoped and units or nil, unitLabels = scoped and unitLabels or nil }
                     end
                     for _, sub in ipairs(item.cog or {}) do visit(sub, item) end
                 end
-                for _, item in ipairs(schema) do visit(item) end
+                for _, item in ipairs(schema) do
+                    if item.type == "header" then section = item.label
+                    elseif item.type == "tab" then section = nil end
+                    visit(item)
+                end
             end
         end
     end
@@ -56,7 +63,10 @@ end
 
 local function mirrorRow(kind, e)
     local m, item = e.m, e.item
-    local label = L[m.label] .. "  ·  " .. L[(e.parent and e.parent.label) or item.label]
+    local own = L[(e.parent and e.parent.label) or item.label] or ""
+    local section = e.section and (L[e.section] or e.section)
+    local label = L[m.label] .. "  \226\128\186  "
+        .. ((section and section ~= own) and (section .. "  \194\183  ") or "") .. own
     local desc
     if e.units then
         desc = L.MIRROR_EVERY_UNIT:format(table.concat(e.unitLabels, ", "))
@@ -131,8 +141,11 @@ end
 local function specimenRow(kind, page)
     return function(row)
         local s = CreateFrame("Frame", nil, row)
+        -- a set height, so the row makes room for it under its label (the sample bars ran past the panel)
         s:SetPoint("TOPLEFT", 16, -8)
-        s:SetPoint("BOTTOMRIGHT", -16, 8)
+        s:SetPoint("TOPRIGHT", -16, -8)
+        s:SetHeight(kind == "font" and 104 or 96)
+        s.natural = true
         Skin:Register(s, function(self) Skin:Panel(self, "sunken", { border = "border.subtle" }) end)
         if kind == "font" then
             s.big = s:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -157,8 +170,8 @@ local function specimenRow(kind, page)
                 s.bars[i] = b
             end
             s.bars[1]:SetPoint("TOPLEFT", 14, -12); s.bars[1]:SetPoint("TOPRIGHT", -14, -12)
-            s.bars[2]:SetPoint("TOPLEFT", s.bars[1], "BOTTOMLEFT", 0, -8); s.bars[2]:SetPoint("RIGHT", -14, 0)
-            s.bars[3]:SetPoint("TOPLEFT", s.bars[2], "BOTTOMLEFT", 0, -6); s.bars[3]:SetPoint("RIGHT", -14, 0)
+            s.bars[2]:SetPoint("TOPLEFT", s.bars[1], "BOTTOMLEFT", 0, -8); s.bars[2]:SetPoint("TOPRIGHT", s.bars[1], "BOTTOMRIGHT", 0, -8)
+            s.bars[3]:SetPoint("TOPLEFT", s.bars[2], "BOTTOMLEFT", 0, -6); s.bars[3]:SetPoint("TOPRIGHT", s.bars[2], "BOTTOMRIGHT", 0, -6)
         end
         s.name = W.Text(s, "small", "text.muted", "RIGHT")
         s.name:SetPoint("BOTTOMRIGHT", -12, 8)

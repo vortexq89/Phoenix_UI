@@ -280,9 +280,10 @@ function W:Dropdown(parent, items, preview, width)
             self.icon:Hide()
             self.label:SetPoint("LEFT", 10, 0)
         end
-        -- nothing chosen (or a value no longer in the list) reads "None" in muted text, never an empty box
+        -- nothing chosen (or a value no longer in the list) reads its placeholder ("Copy settings from…") or "None"
+        -- in muted text, never an empty box
         local empty = text == "" and self.current == nil
-        if empty then self.label:SetText(L.NONE) end
+        if empty then self.label:SetText(self.placeholder or L.NONE) end
         self.empty = empty
         Skin:Text(self.label, "body", empty and "text.muted" or "text.primary")
         sample(self)

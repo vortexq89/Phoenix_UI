@@ -1250,6 +1250,49 @@ try("hover preview", function()
     assert(page.pinned:IsShown(), "the preview card is hidden at the top of the page")
 end)
 
+-- GUI polish plan §8, performance budget: a page is built once and reused (opening it again makes nothing new),
+-- no page grows past its frame budget, and nothing in the settings window runs an OnUpdate while it is idle
+try("settings window performance budget", function()
+    local C = ns.Config
+    C:Show("home")
+    local function under(fr, root)
+        local p = fr
+        while p do if p == root then return true end; p = Geo.parent[p] end
+        return false
+    end
+    local function visible(fr)
+        local p = fr
+        while p do if rawget(p, "__shown") == false then return false end; p = Geo.parent[p] end
+        return true
+    end
+    local FRAME_BUDGET = 1600 -- frames one page may own; the largest today (Unit Frames) has about 1150
+    local worst, worstKey = 0, nil
+    local keys = {}
+    for key in pairs(C.navRows) do keys[#keys + 1] = key end
+    table.sort(keys)
+    for _, key in ipairs(keys) do
+        local page = C:Show(key)
+        local n = 0
+        for _, fr in ipairs(frames) do if under(fr, page) then n = n + 1 end end
+        if n > worst then worst, worstKey = n, key end
+        assert(n <= FRAME_BUDGET, ("%s owns %d frames (budget %d)"):format(key, n, FRAME_BUDGET))
+        C:Show("home")
+        local f1 = #frames
+        C:Show(key)
+        assert(#frames == f1, key .. " made new frames when opened again: pages must be reused")
+        -- idle: nothing visible on the page runs an OnUpdate, except a live preview's sample (a cast bar filling)
+        local busy = {}
+        for _, fr in ipairs(frames) do
+            if scripts[fr] and scripts[fr].OnUpdate and under(fr, page) and visible(fr)
+                and not (page.pinned and under(fr, page.pinned)) then
+                busy[#busy + 1] = tostring(rawget(fr, "__type") or "Frame")
+            end
+        end
+        assert(#busy == 0, key .. ": " .. #busy .. " visible frames run an OnUpdate while idle (" .. table.concat(busy, ", ") .. ")")
+    end
+    print(("  performance budget: %d pages, largest %s with %d frames"):format(#keys, tostring(worstKey), worst))
+end)
+
 -- design v2 "Forge": smooth corners keep the fill's API, the window art follows its switch, Arrange opens Layout
 try("design v2: rounded fills, window art, arrange my UI", function()
     local Skin = ns.Skin

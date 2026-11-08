@@ -558,6 +558,19 @@ function buildRow(card, page, m, item)
         return math.min(r.controlW, math.max(112, math.floor((width or 400) * 0.42)))
     end
 
+    -- A full-width control sits under its label. One with its own height (c.natural) keeps it and the row grows
+    -- to fit it, instead of being squeezed into the row (the Textures specimen ran past its panel: layout_lint).
+    local function placeFullWidth(c)
+        local topY = hasDesc and -48 or -32
+        c:SetPoint("TOPLEFT", 16, topY)
+        if c.natural then
+            c:SetPoint("TOPRIGHT", -16, topY)
+            row:SetHeight(math.max(item.height or 0, math.floor(-topY + c:GetHeight() + 12 + 0.5)))
+        else
+            c:SetPoint("BOTTOMRIGHT", -16, 12)
+        end
+    end
+
     local function arrangeLine(self, c, icons, mode, indent, width)
         if c then
             c:ClearAllPoints()
@@ -565,8 +578,7 @@ function buildRow(card, page, m, item)
             if STRETCH[item.type] then c:SetWidth(controlWidth(row, width)) end
         end
         if c and item.fullWidth then
-            c:SetPoint("TOPLEFT", 16, hasDesc and -48 or -32)
-            c:SetPoint("BOTTOMRIGHT", -16, 12)
+            placeFullWidth(c)
         elseif c then
             c:SetPoint("RIGHT", mode == "cell" and -14 or -16, 0)
         end
@@ -643,6 +655,7 @@ function buildRow(card, page, m, item)
                 -- the control sits under the wrapped description, never on top of it
                 local base = item.height or ROW_H_DESC
                 self.control:SetPoint("TOPLEFT", 16, -math.floor(top + 8))
+                if self.control.natural then self.control:SetPoint("TOPRIGHT", -16, -math.floor(top + 8)) end
                 -- and the row is as tall as the control really is (chips that wrap to a second line ran into
                 -- the next row: layout_lint, Bags › Categories)
                 local ch = tonumber(self.control.GetHeight and self.control:GetHeight()) or 0
@@ -1002,8 +1015,9 @@ local function buildScope(page, m, item)
         local out = {}
         for _, v in ipairs(values) do if v.value ~= scope.unit then out[#out + 1] = v end end
         return out
-    end, nil, 150)
-    bar.copy.placeholder = L.COPY_SETTINGS_FROM
+    end, nil, 170)
+    bar.copy.placeholder = L.COPY_SETTINGS_FROM -- "Copy settings from…": the dropdown names itself
+    bar.copy:SetValue(nil)
     bar.copyLabel = W.Text(bar, "small", "text.secondary", "RIGHT")
     bar.copyLabel:SetText(L.COPY_SETTINGS_FROM:upper())
 
@@ -1022,25 +1036,33 @@ local function buildScope(page, m, item)
         return { scope.unit }
     end
 
+    -- GUI polish plan §1: one toolbar card. Top line: what is being edited and the Shift hint; under it the element
+    -- chips on the left and, on the right, "Copy settings from…" and the Edit all switch (no label stacked over the
+    -- dropdown any more). Narrow pages put the tools on their own line under the chips.
+    local INSET, TOOL_GAP = 12, 16
     function bar:Arrange(width)
         self:SetWidth(width)
-        self.all:ClearAllPoints(); self.all:SetPoint("TOPRIGHT", 0, -20)
-        self.allLabel:ClearAllPoints(); self.allLabel:SetPoint("RIGHT", self.all, "LEFT", -8, 0)
-        self.copy:ClearAllPoints(); self.copy:SetPoint("RIGHT", self.allLabel, "LEFT", -18, 0)
-        self.copyLabel:ClearAllPoints(); self.copyLabel:SetPoint("BOTTOMLEFT", self.copy, "TOPLEFT", 0, 5)
-        local room = width - (150 + 18 + self.allLabel:GetStringWidth() + 8 + 38) - 24
+        self.copyLabel:Hide()
+        self.title:ClearAllPoints(); self.title:SetPoint("TOPLEFT", INSET, -10)
+        local toolsW = self.copy:GetWidth() + TOOL_GAP + self.allLabel:GetStringWidth() + 8 + self.all:GetWidth()
+        local room = width - 2 * INSET - toolsW - 24
+        self.units:ClearAllPoints(); self.units:SetPoint("TOPLEFT", INSET, -30)
+        local function tools(anchor, y)
+            self.all:ClearAllPoints(); self.all:SetPoint("TOPRIGHT", anchor, "TOPRIGHT", -INSET, y)
+            self.allLabel:ClearAllPoints(); self.allLabel:SetPoint("RIGHT", self.all, "LEFT", -8, 0)
+            self.copy:ClearAllPoints(); self.copy:SetPoint("RIGHT", self.allLabel, "LEFT", -TOOL_GAP, 0)
+        end
         if room < 220 then
-            -- narrow pages: chips get a line of their own above the tools
-            self.units:SetWidth(width)
+            self.units:SetWidth(width - 2 * INSET)
             self.units:Arrange() -- wrap now: OnSizeChanged comes a frame later, after the height below is read
-            self.all:ClearAllPoints(); self.all:SetPoint("TOPRIGHT", self.units, "BOTTOMRIGHT", 0, -10)
-            self.copy:ClearAllPoints(); self.copy:SetPoint("RIGHT", self.allLabel, "LEFT", -18, 0)
-            self.copyLabel:ClearAllPoints(); self.copyLabel:SetPoint("RIGHT", self.copy, "LEFT", -8, 0)
-            self:SetHeight(20 + self.units:GetHeight() + 10 + 26 + 4)
+            local h = self.units:GetHeight()
+            tools(self, -(30 + h + 8))
+            self:SetHeight(30 + h + 8 + 26 + 10)
         else
             self.units:SetWidth(room)
             self.units:Arrange()
-            self:SetHeight(20 + math.max(self.units:GetHeight(), 26) + 6)
+            tools(self, -30)
+            self:SetHeight(30 + math.max(self.units:GetHeight(), 26) + 10)
         end
     end
 
@@ -1104,6 +1126,11 @@ local function buildScope(page, m, item)
         page:Refresh()
     end
     Skin:Register(bar, function(self)
+        if ns.Art and ns.Art.WindowArt() then
+            Skin:Panel(self, "raised", { border = "border.subtle", round = W.EUI.radius.card, alpha = "section" })
+        else
+            Skin:HidePanel(self)
+        end
         Skin:Text(self.title, "heading", "text.muted")
         Skin:Text(self.hint, "small", "text.muted")
         Skin:Text(self.allLabel, "small", "text.secondary")

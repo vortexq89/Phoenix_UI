@@ -3,6 +3,11 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **GUI polish, step 2** (8 Nov, English first):
+  - **Editing toolbar:** the element chips (Bar 1…, Enemy / Friendly, Player / Target…) sit in one smooth glass toolbar: what you edit and the Shift hint on top, the chips on the left, and on the right "Copy settings from…" and an "Edit all" switch (no label stacked over the dropdown any more).
+  - **Fonts / Textures / Glows pages** name each row by its section ("Nameplates › Cast bar · Bar texture"), so rows no longer look like duplicates.
+  - **Performance budget:** a test fails when a settings page builds more than its frame budget, when opening a page again builds anything new (pages are reused), or when anything in the settings window runs an OnUpdate while idle. `/pui dev perf` prints the memory and the game's per-frame CPU time of every loaded Phoenix addon.
+  - **Duplicate scan:** `tools/check_dupes.py` lists game options set from more than one page (none today) and the same idea set separately per frame family (unit frames, group frames, nameplates), for the unification review.
 - **GUI polish, step 1: measured layout** (8 Nov, GUI polish plan): a layout lint now lays out every page and every tab of the settings window with the real font files and reports text that runs into other text, text cut off with "…" and text outside the window (`tools/smoke/layout_lint.py`, scenes from `PUI_SHOT_PAGES=ALL`); `tools/smoke/layout_matrix.sh` repeats it at other window sizes, font scales and languages, and `tools/smoke/contact_sheet.py` renders every page into contact sheets and before/after pictures. The first run found 492 overlaps; fixed:
   - **Tabs** are measured and never overlap: when they do not fit they tighten, then the rest go into a "More" menu, and the open tab always stays on the strip. Idle tabs are easier to read.
   - **Page header**: the summary has its own line under the title (full text in its tooltip) instead of wrapping into the breadcrumb and the buttons.

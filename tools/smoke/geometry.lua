@@ -67,7 +67,9 @@ function G.Rect(f, depth)
             if a.frac == 0 then lo = a.at elseif a.frac == 1 then hi = a.at end
         end
         if lo and hi then return lo, hi - lo end
+        -- one edge anchor and a centre one (TOPLEFT + RIGHT): the edge places the frame on that axis, as in game
         local a = list[1]
+        for _, e in ipairs(list) do if e.frac ~= 0.5 then a = e; break end end
         size = (size or 0) * s
         return a.at - size * a.frac, size
     end

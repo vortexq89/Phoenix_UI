@@ -699,11 +699,44 @@ function D:Slash(rest)
         end) then ns:Print("dev page audit: not in combat") end
     elseif rest:match("^selftest") then
         ST:Slash(rest:match("^selftest%s*(.-)%s*$"))
+    elseif rest == "perf" then
+        for _, line in ipairs(self:PerfLines()) do ns:Print(line) end
     elseif rest == "clear" then
         db().last = nil
         wipe(taint); wipe(localeMiss); wipe(localeOrder)
         ns:Print("dev diagnostics cleared")
     else
-        ns:Print("/pui dev [on|off|audit|pages|clear|selftest on|off|shots on|off]")
+        ns:Print("/pui dev [on|off|audit|pages|perf|clear|selftest on|off|shots on|off]")
     end
+end
+
+--[[ /pui dev perf (GUI polish plan §8): memory and the game's recent average CPU time per frame of every loaded
+    Phoenix addon, from C_AddOnProfiler, with the plan's budget for the settings window beside it. Read-only. ]]
+D.PERF_BUDGET_MS = 0.2 -- the settings window open and idle, per frame
+function D:PerfLines()
+    local out = {}
+    local upd, mem = api("UpdateAddOnMemoryUsage"), api("GetAddOnMemoryUsage")
+    local metric = api("GetAddOnMetric", "C_AddOnProfiler")
+    local recent = Enum and Enum.AddOnProfilerMetric and Enum.AddOnProfilerMetric.RecentAverageTime
+    local count = api("GetNumAddOns", "C_AddOns")
+    local info = api("GetAddOnInfo", "C_AddOns")
+    local loaded = api("IsAddOnLoaded", "C_AddOns")
+    if upd then upd() end
+    local totalKB, totalMs = 0, 0
+    for i = 1, (count and count() or 0) do
+        local name = info and info(i)
+        if type(name) == "string" and name:find("^" .. ADDON) and loaded and loaded(name) then
+            local kb = mem and num(mem(name)) or 0
+            local ms
+            if metric and recent then
+                local ok, v = pcall(metric, name, recent)
+                ms = ok and num(v) or nil
+            end
+            totalKB, totalMs = totalKB + kb, totalMs + (ms or 0)
+            out[#out + 1] = ("%-28s %7d KB  %s"):format(name, round(kb), ms and ("%.3f ms/frame"):format(ms) or "-")
+        end
+    end
+    table.insert(out, 1, ("perf: %d KB, %.3f ms per frame in all (settings window budget %.1f ms open and idle)")
+        :format(round(totalKB), totalMs, D.PERF_BUDGET_MS))
+    return out
 end
