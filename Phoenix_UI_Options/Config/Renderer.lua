@@ -832,10 +832,14 @@ local function buildPageHeader(page, m, schema)
     h.title:SetText(text(m.label))
     h.desc = W.Text(h, "desc", "text.secondary")
     -- the summary has its own line under the title (GUI polish plan §1): beside the title it wrapped into the
-    -- breadcrumb and the buttons (layout_lint). One line as wide as the title's box; a long one ends in "…" and
-    -- the full text is the tooltip of that line.
-    h.desc:SetPoint("TOPLEFT", h.title, "BOTTOMLEFT", 0, -3)
-    h.desc:SetPoint("TOPRIGHT", h.title, "BOTTOMRIGHT", 0, -3)
+    -- breadcrumb and the buttons (layout_lint). One line, under the buttons' row; a long one ends in "…" and the
+    -- full text is the tooltip of that line.
+    -- (its own box from under the title to the header's right edge: the buttons' row is above it)
+    h.descArea = CreateFrame("Frame", nil, h)
+    h.descArea:SetPoint("TOPLEFT", h.title, "BOTTOMLEFT", 0, -3)
+    h.descArea:SetPoint("BOTTOMRIGHT", h, "BOTTOMRIGHT", -56, 0)
+    h.desc:SetPoint("TOPLEFT", h.descArea, "TOPLEFT")
+    h.desc:SetPoint("TOPRIGHT", h.descArea, "TOPRIGHT")
     h.desc:SetJustifyH("LEFT")
     h.desc:SetWordWrap(false)
     h.desc:SetMaxLines(1)

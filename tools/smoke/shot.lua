@@ -376,6 +376,12 @@ function S.Run(ctx)
             end
             if page.Layout then page:Layout() end
             C:LayoutSidebar()
+            -- the game fires OnSizeChanged once anchors give a frame its real size (tab strips measure then)
+            settle()
+            for _, fr in ipairs(frames) do
+                local sc = scripts[fr] and scripts[fr].OnSizeChanged
+                if sc and fr ~= page.scroll and shown(fr) then pcall(sc, fr, rawget(fr, "__w"), rawget(fr, "__h")) end
+            end
         end
         sizeTexts()
         settle()
