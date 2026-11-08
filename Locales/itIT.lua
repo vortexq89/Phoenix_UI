@@ -88,6 +88,7 @@ local T = {
     WINDOW_ART = "Grafica della finestra",
     WINDOW_ART_DESC = "Sfondo illustrato della finestra delle impostazioni, sezioni in vetro con angoli arrotondati e bagliori d'accento. Disattivato: grafite semplice.",
     TABS_MORE = "Altro",
+    PREVIEW_BAND_HINT = "Fai clic su una parte dell'anteprima per andare alla sua impostazione",
     ---------------------------------------------------------------- Skins
     SKINS = "Aspetti",
     SKINS_DESC = "L'aspetto Phoenix per finestre e dialoghi Blizzard, un interruttore per finestra, con sfondo, bordo e accento scelti.",
@@ -917,7 +918,6 @@ local T = {
     COPY_SETTINGS_FROM = "Applica tutte le impostazioni da",
     COPIED_FROM = "Copiate tutte le impostazioni da %s",
     LIVE_PREVIEW = "Anteprima dal vivo",
-    PREVIEW_HINT = "Dati di esempio, ridisegnati a ogni modifica",
     MORE_OPTIONS = "Altre opzioni",
     COLOR_THEME_HINT = "Clic destro per seguire di nuovo il colore del tema",
     ---------------------------------------------------------------- nameplates 2.1

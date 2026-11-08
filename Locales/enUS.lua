@@ -86,6 +86,7 @@ ns.RegisterLocale("enUS", {
     WINDOW_ART = "Window art",
     WINDOW_ART_DESC = "The settings window's background art, glass sections with smooth corners and the accent glows. Off: plain graphite.",
     TABS_MORE = "More",
+    PREVIEW_BAND_HINT = "Click a part of the preview to jump to its setting",
 
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",
@@ -940,7 +941,6 @@ ns.RegisterLocale("enUS", {
     COPY_SETTINGS_FROM = "Copy settings from\226\128\166",
     COPIED_FROM = "Copied every setting from %s",
     LIVE_PREVIEW = "Live preview",
-    PREVIEW_HINT = "Sample data, redrawn as you change settings",
     MORE_OPTIONS = "More options",
     COLOR_THEME_HINT = "Right-click to follow the theme colour again",
     ---------------------------------------------------------------- nameplates 2.1

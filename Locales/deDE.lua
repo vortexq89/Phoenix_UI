@@ -88,6 +88,7 @@ local T = {
     WINDOW_ART = "Fenstergrafik",
     WINDOW_ART_DESC = "Hintergrundgrafik des Einstellungsfensters, Glasabschnitte mit runden Ecken und Akzentleuchten. Aus: schlichtes Graphit.",
     TABS_MORE = "Mehr",
+    PREVIEW_BAND_HINT = "Klicke auf einen Teil der Vorschau, um zu seiner Einstellung zu springen",
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",
     SKINS_DESC = "Die Phoenix-Optik für Blizzards Fenster und Dialoge, ein Schalter pro Fenster, mit deinem Hintergrund, Rahmen und Akzent.",
@@ -917,7 +918,6 @@ local T = {
     COPY_SETTINGS_FROM = "Alle Einstellungen übernehmen von",
     COPIED_FROM = "Alle Einstellungen von %s kopiert",
     LIVE_PREVIEW = "Live-Vorschau",
-    PREVIEW_HINT = "Beispieldaten, neu gezeichnet bei jeder Änderung",
     MORE_OPTIONS = "Weitere Optionen",
     COLOR_THEME_HINT = "Rechtsklick, um wieder der Designfarbe zu folgen",
     ---------------------------------------------------------------- nameplates 2.1

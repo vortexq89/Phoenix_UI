@@ -88,6 +88,7 @@ local T = {
     WINDOW_ART = "視窗美術",
     WINDOW_ART_DESC = "設定視窗的背景圖、圓角玻璃區塊與強調色光效。關閉：純石墨色。",
     TABS_MORE = "更多",
+    PREVIEW_BAND_HINT = "點擊預覽中的部件即可跳到對應設定",
     ---------------------------------------------------------------- Skins
     SKINS = "外觀",
     SKINS_DESC = "為暴雪視窗和對話框套用 Phoenix 外觀，每個視窗一個開關，使用你的背景、邊框和強調色。",
@@ -917,7 +918,6 @@ local T = {
     COPY_SETTINGS_FROM = "應用全部設定自",
     COPIED_FROM = "已從 %s 複製全部設定",
     LIVE_PREVIEW = "即時預覽",
-    PREVIEW_HINT = "範例資料，隨設定更改重新繪製",
     MORE_OPTIONS = "更多選項",
     COLOR_THEME_HINT = "右鍵點選以重新跟隨主題顏色",
     ---------------------------------------------------------------- nameplates 2.1

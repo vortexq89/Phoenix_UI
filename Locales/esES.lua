@@ -88,6 +88,7 @@ local T = {
     WINDOW_ART = "Arte de la ventana",
     WINDOW_ART_DESC = "Fondo ilustrado de la ventana de opciones, secciones de cristal con esquinas suaves y brillos de acento. Desactivado: grafito liso.",
     TABS_MORE = "Más",
+    PREVIEW_BAND_HINT = "Haz clic en una parte de la vista previa para ir a su ajuste",
     ---------------------------------------------------------------- Skins
     SKINS = "Aspectos",
     SKINS_DESC = "El aspecto Phoenix para las ventanas y diálogos de Blizzard, un interruptor por ventana, con tu fondo, borde y acento.",
@@ -917,7 +918,6 @@ local T = {
     COPY_SETTINGS_FROM = "Aplicar todos los ajustes de",
     COPIED_FROM = "Copiados todos los ajustes de %s",
     LIVE_PREVIEW = "Vista previa en directo",
-    PREVIEW_HINT = "Datos de ejemplo, redibujados al cambiar cada ajuste",
     MORE_OPTIONS = "Más opciones",
     COLOR_THEME_HINT = "Clic derecho para volver a seguir el color del tema",
     ---------------------------------------------------------------- nameplates 2.1

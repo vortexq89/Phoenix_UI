@@ -159,6 +159,9 @@ function P:Create(kind, parent, m, page)
         local pad, mid = 8, (l0 + r0) / 2
         local needW = math.max(r - mid, mid - l) * 2 + pad
         local cw, ch = needW, t - b
+        -- how far the drawn sample sits off the stage's centre: the preview band shifts the stage by it, so every
+        -- sample shows centred as in EllesmereUI, however its preview lays it out
+        stage.contentShift = (l + r) / 2 - mid
         -- height from the content: centred samples get the margin on both sides; top-anchored ones keep their
         -- top and lose the empty band below (t228: no gaps)
         local h0 = t0 - b0

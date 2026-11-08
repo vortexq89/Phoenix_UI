@@ -1217,6 +1217,8 @@ local function buildPreview(page, m, item)
         if hot and hot.suppress then hot.suppress = nil; return end
         if page.FocusKey then page:FocusKey(key) end
         quickEdit(page, m, key, hot)
+        local ui = ns.DB.sv.global.ui
+        if not ui.previewHintDismissed then ui.previewHintDismissed = true; page:Layout() end
     end
     -- drag the preview to size and place the element (Config/PreviewDrag.lua)
     ns.PreviewDrag:Attach(card.pane, page, m)
@@ -1279,61 +1281,92 @@ local function buildPreview(page, m, item)
         end
         W.AttachTooltip(card.states, L.PREVIEW_STATES, L.PREVIEW_STATES_DESC)
     end
-    card.hint = W.Text(card, "small", "text.muted")
-    card.hint:SetWordWrap(true)
-    card.hint:SetText(L.PREVIEW_HINT)
+    card.hint = W.Text(card, "small", "text.primary", "CENTER")
+    card.hint:SetWordWrap(false)
+    card.hint:SetText(L.PREVIEW_BAND_HINT)
     local world = item.world or worldAction(m)
     if world then
-        card.world = W:Button(card, L.PREVIEW_WORLD, "secondary", "test")
-        card.world:SetHeight(26)
+        card.world = W:Button(card, L.PREVIEW_WORLD, "ghost", "test")
+        card.world:SetHeight(24)
         card.world.onClick = function() world(m, page) end
     end
+    -- the band look: no card panel, title or keep pin (the band never scrolls away)
+    card.band = true
+    card.header:Hide()
+    if card.icon then card.icon:Hide() end
+    if card.tick then card.tick:Hide() end
+    card.keepBtn:Hide()
+    card.tag:SetAlpha(0) -- the toolbar's picked chip already says which element the preview shows
+    card.wash = W.Texture(card, "BACKGROUND", -8)
+    card.wash:SetAllPoints()
+    card.rule = W.Texture(card, "BORDER", 0)
+    card.rule:SetPoint("BOTTOMLEFT"); card.rule:SetPoint("BOTTOMRIGHT")
+    Skin:Register(card, function(self)
+        Skin:HidePanel(self)
+        self.wash:SetColorTexture(0, 0, 0, 0.10)
+        self.rule:SetColorTexture(1, 1, 1, 0.06)
+        self.rule:SetHeight(PixelUtil.ConvertPixelsToUIForRegion(1, self))
+    end)
     Skin:Register(card.shade, function(t)
         t:SetTexCoord(0, 1, 0, 1)
         W.Color(t, "bg.base", 0.9)
     end)
-    Skin:Register(card.hint, function(fs) Skin:Text(fs, "small", "text.muted") end)
+    Skin:Register(card.hint, function(fs)
+        Skin:Text(fs, "small", "text.primary")
+        fs:SetTextColor(1, 1, 1, 0.45)
+    end)
     function card:Tag()
         self.tag:SetText(page.scope and page.scope:Label():upper() or "")
     end
-    -- docked: fills the column, states and hint wrap under the title; pinned: compact, beside the page
-    function card:Apply(docked)
+    --[[ EllesmereUI's live preview (owner, 8 Nov): a fixed band across the whole content width between the editing
+        toolbar and the settings, never scrolling away. No card, no title: a faint dark wash with a hairline under
+        it, the real frame centred with 20 px above and below, and one muted line under it that says a click on a part
+        jumps to its setting (gone for good after the first such click). Phoenix's extras sit in a slim row at the top:
+        the preview states on the left; Size & position, Show in world and fold on the right. ]]
+    local BAND_PAD, TOOL_ROW_H, HINT_H = 20, 26, 29
+    function card:Apply()
         local width = self:GetWidth()
         if not width or width < 50 then width = 360 end
-        local inner = width - 32
-        local y = 40
+        local inner = width - 2 * PAD
         local open = not self.collapsed
+        local y = 12
         if self.states then
             self.states:SetShown(open)
             self.states:ClearAllPoints()
-            self.states:SetPoint("TOPLEFT", 16, -y)
-            self.states:SetWidth(inner)
-            if open then y = y + self.states:GetHeight() + 8 end
-        end
-        self.pane:SetShown(open)
-        local scale = self.pane:Fit(inner)
-        self.pane:ClearAllPoints()
-        self.pane:SetPoint("TOPLEFT", self, "TOPLEFT", 16 / scale, -y / scale)
-        self.pane:SetPoint("TOPRIGHT", self, "TOPRIGHT", -16 / scale, -y / scale)
-        if open then y = y + self.pane:GetHeight() * scale + 8 end
-        self.hint:SetShown(open and docked)
-        if open and docked then
-            self.hint:ClearAllPoints()
-            self.hint:SetPoint("TOPLEFT", 16, -y)
-            self.hint:SetWidth(inner)
-            y = y + self.hint:GetStringHeight() + 10
+            self.states:SetPoint("TOPLEFT", PAD, -y)
+            self.states:SetWidth(math.max(120, inner - 360))
         end
         if self.world then
             self.world:SetShown(open)
-            if open then
-                self.world:ClearAllPoints()
-                self.world:SetPoint("TOPLEFT", 16, -y)
-                self.world:SetPoint("TOPRIGHT", -16, -y)
-                y = y + 26 + 12
-            end
+            self.world:ClearAllPoints()
+            self.world:SetPoint("RIGHT", self.fold, "LEFT", -6, 0)
+        end
+        if self.size then
+            self.size:ClearAllPoints()
+            self.size:SetPoint("RIGHT", (self.world and self.world:IsShown()) and self.world or self.fold, "LEFT", -6, 0)
+        end
+        self.fold:ClearAllPoints(); self.fold:SetPoint("TOPRIGHT", -PAD + 4, -y)
+        local rowH = math.max(TOOL_ROW_H, open and self.states and self.states:GetHeight() or 0)
+        y = y + rowH
+        self.pane:SetShown(open)
+        if open then
+            y = y + BAND_PAD - 8
+            local scale = self.pane:Fit(inner)
+            local dx = -(self.pane.contentShift or 0) -- centre the drawn sample in the band
+            self.pane:ClearAllPoints()
+            self.pane:SetPoint("TOPLEFT", self, "TOPLEFT", PAD / scale + dx, -y / scale)
+            self.pane:SetPoint("TOPRIGHT", self, "TOPRIGHT", -PAD / scale + dx, -y / scale)
+            y = y + self.pane:GetHeight() * scale + BAND_PAD
+        end
+        local hint = open and not ns.DB.sv.global.ui.previewHintDismissed
+        self.hint:SetShown(hint)
+        if hint then
+            self.hint:ClearAllPoints()
+            self.hint:SetPoint("BOTTOM", self, "BOTTOM", 0, 17)
+            y = y + HINT_H - 12
         end
         ns.Icons:Apply(self.fold.icon, self.collapsed and "preview" or "hide", 11)
-        self:SetHeight(open and (y + 4) or 40)
+        self:SetHeight(open and y or (12 + TOOL_ROW_H + 10))
         self:Tag()
     end
     page.preview = card.pane
@@ -1696,6 +1729,18 @@ function Config.BuildSchemaPage(parent, m, schema)
     -- EllesmereUI pages are one column of sections (specs/001 T012); a page may ask for columns (columnsOK)
     local function pageColumns(pg, width, n) return pg.columnsOK and columns(width, n) or 1 end
 
+    -- the live preview band sits in the fixed area too, across the whole content width; returns the new top
+    function page:PlaceBand(top, width)
+        local pc = self.pinned
+        if not pc or self.docked then return top end
+        pc:ClearAllPoints()
+        pc:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -top)
+        pc:SetWidth(width + 2 * PAD)
+        pc:Apply()
+        pc:Show()
+        return top + pc:GetHeight()
+    end
+
     function page:Layout()
         local width = math.max(320, child:GetWidth() - 2 * PAD)
         -- the fixed area: header, then the element chips; the scroll starts under them
@@ -1707,6 +1752,7 @@ function Config.BuildSchemaPage(parent, m, schema)
             top = top + 10 + t:GetHeight()
         end
         if #self.tops > 0 then top = top + 6 end
+        top = self:PlaceBand(top, width)
         if self.fixedTop ~= top then
             self.fixedTop = top
             self.scroll:ClearAllPoints()
@@ -1714,13 +1760,7 @@ function Config.BuildSchemaPage(parent, m, schema)
             self.scroll:SetPoint("BOTTOMRIGHT", -10, 0)
         end
         local y = 0 -- the first section's own 40 px title band is the top space (t228)
-        if self.pinned and not self.docked then
-            local pc = self.pinned
-            pc:SetWidth(width)
-            pc:Apply(false)
-            self.pinnedY = y
-            y = y + pc:GetHeight() + 8
-        end
+        if self.pinned and not self.docked then y = 12 end -- a little air under the preview band
         local onPage = 0
         for _, c in ipairs(self.cards) do
             if not self.tabs or c.tab == self.tab then onPage = onPage + 1 end
