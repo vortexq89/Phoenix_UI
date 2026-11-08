@@ -238,10 +238,14 @@ P:Register("itemlevel", {
         stats.caption = caption(stage, stats, L.ITEMLEVEL_STATS)
         return function(self)
             local db = m.db
-            local w = self:GetWidth()
-            gear:ClearAllPoints(); gear:SetPoint("CENTER", self, "LEFT", w * 0.27, 8)
-            bags:ClearAllPoints(); bags:SetPoint("CENTER", self, "LEFT", w * 0.6, 8)
-            stats:ClearAllPoints(); stats:SetPoint("CENTER", self, "LEFT", w * 0.88, 8)
+            -- side by side with a fixed gap, centred as a group: placing each at a share of the width made the
+            -- worn and the bag samples overlap on a narrow stage (layout_lint)
+            local GAP = 28
+            local total = gear:GetWidth() + bags:GetWidth() + stats:GetWidth() + 2 * GAP
+            local x = math.max(8, (self:GetWidth() - total) / 2)
+            gear:ClearAllPoints(); gear:SetPoint("LEFT", self, "LEFT", x, 8)
+            bags:ClearAllPoints(); bags:SetPoint("LEFT", gear, "RIGHT", GAP, 0)
+            stats:ClearAllPoints(); stats:SetPoint("LEFT", bags, "RIGHT", GAP, 0)
             paintStats(stats, db.statsPanel)
             for gi, group in ipairs({ { gear, db.character }, { bags, db.bags } }) do
                 local holder, on = group[1], group[2]

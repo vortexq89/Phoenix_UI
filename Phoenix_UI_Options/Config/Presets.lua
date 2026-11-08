@@ -103,6 +103,7 @@ local function lookCard(parent, p, width, onApply)
     c.desc:SetPoint("TOPLEFT", c.title, "BOTTOMLEFT", 0, -6)
     c.desc:SetPoint("RIGHT", -14, 0)
     c.desc:SetWordWrap(true)
+    c.desc:SetMaxLines(2) -- a third line ran into the sample bars (layout_lint); the full text is the card tooltip
     c.bars = {}
     for i, v in ipairs({ 0.86, 0.6, 0.34 }) do
         local b = CreateFrame("StatusBar", nil, c)
@@ -119,9 +120,10 @@ local function lookCard(parent, p, width, onApply)
     c.bars[3]:SetPoint("TOPLEFT", c.bars[2], "BOTTOMLEFT", 0, -4); c.bars[3]:SetPoint("RIGHT", -14, 0)
     c.name = c.bars[1]:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     c.name:SetPoint("LEFT", 6, 0)
-    c.apply = W:Button(c, L.PRESET_APPLY, "primary", "check", 110)
+    c.apply = W:Button(c, L.PRESET_APPLY, "primary", "check") -- sized to its label: "Use this look" was cut
     c.apply:SetPoint("BOTTOMRIGHT", -12, 10)
     c.apply.onClick = function() onApply(p) end
+    W.AttachTooltip(c, L[p.label], L[p.desc])
     local function paint(self)
         local colors = Theme:PresetColors(p.general.preset)
         local pr, pg, pb = unpack(colors.primary)

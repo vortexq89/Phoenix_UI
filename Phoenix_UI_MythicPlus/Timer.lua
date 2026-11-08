@@ -213,14 +213,15 @@ local function build(parent)
     f.limit = W.Text(f, "number", "text.muted")
     f.limit:SetPoint("BOTTOMLEFT", f.clock, "BOTTOMRIGHT", 6, 2)
     f.pb = W.Text(f, "small", "text.muted", "RIGHT")
-    f.pb:SetPoint("RIGHT", f, "RIGHT", -PAD, 0)
-    f.pb:SetPoint("BOTTOM", f.clock, "BOTTOM", 0, 2)
 
     f.bar = CreateFrame("StatusBar", nil, f)
     f.bar:SetHeight(BAR_H)
     f.bar:SetPoint("TOPLEFT", f.clock, "BOTTOMLEFT", 0, -8)
     f.bar:SetPoint("RIGHT", -PAD, 0)
     f.bar:SetMinMaxValues(0, 1)
+    -- one corner anchor: "RIGHT" of the frame plus "BOTTOM" of the clock pinned the label's centre to the middle of
+    -- the frame too, which dropped "Best 28:32" onto the chest timers (layout_lint). The clock's foot is 8 px over the bar.
+    f.pb:SetPoint("BOTTOMRIGHT", f.bar, "TOPRIGHT", 0, 10)
     f.shade = f.bar:CreateTexture(nil, "ARTWORK", nil, 2)
     f.shade:SetTexture(ns.Media.textures.WHITE)
     f.ticks = {}

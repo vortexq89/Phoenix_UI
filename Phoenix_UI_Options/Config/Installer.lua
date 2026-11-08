@@ -200,7 +200,7 @@ step({ key = "accent", label = "INST_ACCENT", icon = "palette",
             pv.sw[i] = { t, tok }
         end
         pv.toggle = W:Toggle(pv); pv.toggle:SetPoint("TOPLEFT", 16, -96); pv.toggle:SetValue(true)
-        pv.btn = W:Button(pv, L.PRESET_APPLY, "primary", "check", 120); pv.btn:SetPoint("TOPLEFT", 16, -132)
+        pv.btn = W:Button(pv, L.PRESET_APPLY, "primary", "check"); pv.btn:SetPoint("TOPLEFT", 16, -132)
         pv.btn2 = W:Button(pv, L.RELOAD_NEEDED, "secondary", "reload", 140); pv.btn2:SetPoint("LEFT", pv.btn, "RIGHT", 8, 0)
         pv.slider = W:Slider(pv, 0, 1, 0.01, true); pv.slider:SetPoint("TOPLEFT", 16, -176); pv.slider:SetPoint("RIGHT", -16, 0)
         pv.slider:SetValue(0.6)

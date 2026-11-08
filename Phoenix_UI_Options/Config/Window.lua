@@ -24,7 +24,7 @@ Config.pages, Config.builders, Config.navRows = {}, {}, {}
 
 local TOP_H, RAIL_W, LIST_W, FOOTER_H = 0, 295, 0, 82 -- EllesmereUI proportions (specs/001 T008)
 local HEAD_H = 138 -- the rail head: brand and search
-local NAV_ROW, NAV_HEAD, NAV_GROUP, NAV_LINE = 28, 22, 34, 16
+local NAV_ROW, NAV_HEAD, NAV_GROUP = 28, 22, 34
 local DOCK_MIN, DOCK_MAX = 380, 460
 local MIN_SCALE, MAX_SCALE = 0.7, 1.4
 local DEFAULT_W, DEFAULT_H = 1300, 946
@@ -283,8 +283,11 @@ local function groupHead(parent, g)
         ns.Icons:Apply(self.chev, open and "chevron-down" or "chevron-right", 11)
         W.Color(self.chev, "text.muted")
     end
-    b:SetScript("OnEnter", function(self) self.hover = true; self:Paint() end)
-    b:SetScript("OnLeave", function(self) self.hover = false; self:Paint() end)
+    b:SetScript("OnEnter", function(self)
+        self.hover = true; self:Paint()
+        if Config.group ~= self.group.key and self.pages then W.ShowTooltip(self, self.label:GetText(), self.pages) end
+    end)
+    b:SetScript("OnLeave", function(self) self.hover = false; self:Paint(); W.HideTooltip() end)
     b:SetScript("OnClick", function(self)
         PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
         if Config.group == self.group.key and Config:GroupOf(Config.current) == self.group then
@@ -509,12 +512,13 @@ function Config:LayoutSidebar()
             local names = {}
             for _, key in ipairs(g.entries) do names[#names + 1] = (self:EntryInfo(key)) end
             b.count:SetText(tostring(#g.entries))
+            -- GUI polish plan §2: a closed group is one clean line (icon, name, count, chevron); the wrapped page
+            -- list under it ran into the next group (layout_lint), so the pages are the head's tooltip now
             b.line:SetText(table.concat(names, " \194\183 "))
-            b.line:SetShown(not open)
-            local lines = (not open and b.line.GetNumLines and b.line:GetNumLines() or 1)
-            lines = math.max(1, math.min(2, tonumber(lines) or 1))
-            b.lines = lines
-            place(b, open and NAV_GROUP or (NAV_GROUP + NAV_LINE * lines - 4))
+            b.line:Hide()
+            b.pages = table.concat(names, "\n")
+            b.lines = 0
+            place(b, NAV_GROUP)
             b:Paint()
             if open then
                 local single = #g.sections == 1

@@ -85,6 +85,7 @@ ns.RegisterLocale("enUS", {
     REDUCE_MOTION_DESC = "Turn off fades and slides in Phoenix windows.",
     WINDOW_ART = "Window art",
     WINDOW_ART_DESC = "The settings window's background art, glass sections with smooth corners and the accent glows. Off: plain graphite.",
+    TABS_MORE = "More",
 
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",

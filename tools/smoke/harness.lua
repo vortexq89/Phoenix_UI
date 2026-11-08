@@ -960,7 +960,8 @@ try("no Reload badge at rest (specs/003 T009)", function()
     assert(row.reloadArmed, "a changed reload row is armed")
     assert(row.badge:IsShown(), "a changed reload row shows its Reload needed button: " .. tostring(row.mode))
     row.reloadArmed = nil; row.badge:Hide()
-    assert(page.header.descWraps == 2, "the page summary wraps to two lines (specs/003 T001)")
+    -- GUI polish plan §1: the summary has its own line under the title, the full text in its tooltip
+    assert(page.header.descWraps == 1 and page.header.descHit, "the page summary sits on its own line")
 end)
 try("Buffs links to the reminders; empty previews say so (specs/004)", function()
     local page = ns.Config:Show("Auras")
@@ -7065,6 +7066,20 @@ try("EllesmereUI slider and button (specs/001 T004, T006)", function()
     local seg = W:Segmented(env.UIParent, { { value = "a" }, { value = "b" } }); seg:SetValue("a")
     local tabs = W:Tabs(env.UIParent, { { value = 1, label = "One" }, { value = 2, label = "Two" } }); tabs:SetValue(2)
     assert(tabs.tabs[2].bar:IsShown() and not tabs.tabs[1].bar:IsShown(), "open tab underlined")
+    -- GUI polish plan §1: tabs that do not fit tighten, then go to "More"; the open tab always stays on the strip
+    local many = {}
+    for i = 1, 9 do many[i] = { value = i, label = "Sub-page number " .. i } end
+    local strip = W:Tabs(env.UIParent, many)
+    strip:SetWidth(5000); strip:Arrange()
+    assert(not strip.overflow and not strip.more:IsShown() and strip.pad == W.TAB_PAD, "a wide strip shows every tab")
+    strip:SetWidth(420); strip:SetValue(9)
+    assert(strip.overflow and strip.more:IsShown(), "a narrow strip puts the rest in More")
+    assert(strip.tabs[9]:IsShown() and strip.tabs[9].bar:IsShown(), "the open tab stays on the strip")
+    local right = 0
+    for _, b in ipairs(strip.tabs) do
+        if b:IsShown() then right = math.max(right, b.x + b:GetWidth()) end
+    end
+    assert(strip.more.x >= right and strip.more.x + strip.more:GetWidth() <= 420 + 1, "the tabs and More fit the strip: " .. right)
     local b = W:Button(env.UIParent, "x")
     assert(not b.art and not b.shine, "no picture art on buttons")
 end)

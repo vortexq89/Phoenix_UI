@@ -87,6 +87,7 @@ local T = {
     REDUCE_MOTION_DESC = "Disattiva dissolvenze e scorrimenti nelle finestre di Phoenix.",
     WINDOW_ART = "Grafica della finestra",
     WINDOW_ART_DESC = "Sfondo illustrato della finestra delle impostazioni, sezioni in vetro con angoli arrotondati e bagliori d'accento. Disattivato: grafite semplice.",
+    TABS_MORE = "Altro",
     ---------------------------------------------------------------- Skins
     SKINS = "Aspetti",
     SKINS_DESC = "L'aspetto Phoenix per finestre e dialoghi Blizzard, un interruttore per finestra, con sfondo, bordo e accento scelti.",

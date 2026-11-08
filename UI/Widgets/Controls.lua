@@ -97,13 +97,18 @@ function W:Segmented(parent, items, multi, segWidth)
 end
 
 ---------------------------------------------------------------- tabs
--- Segmented tab strip for sub-modules: one compact rail, each tab an icon (from our set) and a label, the open tab
--- filled with the accent tint and underlined. items: { {value=, label=, icon=}, ... }
-local TAB_H, TAB_PAD, TAB_GAP = 30, 12, 2
+--[[ Tab strip for sub-pages (GUI polish plan §1). Each tab is measured with its real font; when the strip runs out
+    of room it first tightens its padding, then moves the tabs that do not fit into a "More" menu at the end, so tabs
+    never run over each other, the page header or the buttons. The open tab is always on the strip (it takes the
+    last visible place when it would be in the menu). Open tab: white on a soft accent pill with a 2 px accent
+    underline; the others white 0.62 (0.86 hovered). items: { {value=, label=, icon=}, ... } ]]
+local TAB_H, TAB_PAD, TAB_PAD_TIGHT, TAB_GAP = 30, 12, 7, 2
+W.TAB_PAD, W.TAB_PAD_TIGHT = TAB_PAD, TAB_PAD_TIGHT
 function W:Tabs(parent, items)
     local t = CreateFrame("Frame", nil, parent)
     t:SetHeight(TAB_H + 4)
     t.tabs = {}
+    t.items = items
     t.bg = W.Texture(t, "BACKGROUND")
     t.bg:SetPoint("TOPLEFT"); t.bg:SetPoint("BOTTOMLEFT")
     t.line = W.Texture(t, "BORDER")
@@ -111,63 +116,131 @@ function W:Tabs(parent, items)
     t.line:SetHeight(1)
 
     local function paint(self)
-        -- EllesmereUI tab bar (specs/001 T007): no fills; the open tab is white with a 2 px accent underline,
-        -- the others dim white (0.53, 0.86 hovered); a faint 1 px rule runs under the strip
         self.line:SetVertexColor(1, 1, 1, 0.05)
         self.bg:SetVertexColor(0, 0, 0, 0)
         local N = W.EUI.nav
-        for _, b in ipairs(self.tabs) do
-            local on = b.value == self.value
-            local ar, ag, ab = ns.Theme:Color("accent.primary")
+        local ar, ag, ab = ns.Theme:Color("accent.primary")
+        local all = { unpack(self.tabs) }
+        if self.more then all[#all + 1] = self.more end
+        for _, b in ipairs(all) do
+            local on = b.value ~= nil and b.value == self.value
             if on then b.fill:SetVertexColor(ar, ag, ab, 0.12)
             else b.fill:SetVertexColor(1, 1, 1, b.hover and 0.04 or 0) end
             b.bar:SetShown(on)
             if on then b.bar:SetVertexColor(ar, ag, ab, 1) end
-            local a = on and N.selectedA or (b.hover and N.hoverA or 0.53)
+            local a = on and N.selectedA or (b.hover and N.hoverA or 0.62)
             if b.icon then W.Color(b.icon, "text.primary", a) end
             Skin:Text(b.label, "body", "text.primary")
             b.label:SetTextColor(1, 1, 1, a)
         end
     end
 
-    local x = 2
-    for i, item in ipairs(items) do
+    local function select(value)
+        if t.value == value then return end
+        PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+        t.value = value
+        t:Arrange()
+        if t.onChange then t.onChange(t, value) end
+    end
+
+    local function tab(item)
         local b = CreateFrame("Button", nil, t)
         b:SetHeight(TAB_H)
-        b.value = item.value
+        b.value = item and item.value
         b.fill = W.Texture(b, "BACKGROUND", 1)
         b.fill:SetAllPoints()
         Skin:RoundFill(b, b.fill, 6) -- design v2: the open tab sits on a soft accent pill
         b.bar = W.Texture(b, "ARTWORK", 2)
-        b.bar:SetPoint("BOTTOMLEFT"); b.bar:SetPoint("BOTTOMRIGHT"); b.bar:SetHeight(2)
-        local left = TAB_PAD
-        if item.icon then
-            b.icon = W.Icon(b, item.icon, 14)
-            b.icon:SetPoint("LEFT", TAB_PAD, 0)
-            left = TAB_PAD + 20
-        end
+        b.bar:SetPoint("BOTTOMLEFT", 6, 0); b.bar:SetPoint("BOTTOMRIGHT", -6, 0); b.bar:SetHeight(2)
+        if item and item.icon then b.icon = W.Icon(b, item.icon, 14) end
         b.label = W.Text(b, "body", "text.secondary", "LEFT")
-        b.label:SetPoint("LEFT", left, 0)
-        b.label:SetText(item.label)
-        b:SetWidth(math.floor(b.label:GetStringWidth() + left + TAB_PAD + 0.5))
-        b:SetPoint("BOTTOMLEFT", x, 1)
-        x = x + b:GetWidth() + TAB_GAP
+        b.label:SetWordWrap(false)
         b:SetScript("OnEnter", function(btn) btn.hover = true; paint(t) end)
         b:SetScript("OnLeave", function(btn) btn.hover = false; paint(t) end)
-        b:SetScript("OnClick", function(btn)
-            if t.value == btn.value then return end
-            PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-            t.value = btn.value
-            paint(t)
-            if t.onChange then t.onChange(t, btn.value) end
-        end)
+        return b
+    end
+
+    for i, item in ipairs(items) do
+        local b = tab(item)
+        b.label:SetText(item.label)
+        b:SetScript("OnClick", function(btn) select(btn.value) end)
         t.tabs[i] = b
     end
-    t.bg:SetWidth(x)
+    -- the overflow menu: "More" lists the tabs that did not fit; it shows the open tab's name when that is inside
+    t.more = tab(nil)
+    t.more.chev = W.Icon(t.more, "chevron-down", 10)
+    t.more:SetScript("OnClick", function(btn)
+        local hidden = {}
+        for _, b in ipairs(t.tabs) do if not b:IsShown() then hidden[#hidden + 1] = b end end
+        if #hidden == 0 or not (MenuUtil and MenuUtil.CreateContextMenu) then return end
+        MenuUtil.CreateContextMenu(btn, function(_, root)
+            for _, b in ipairs(hidden) do
+                root:CreateRadio(b.label:GetText() or "", function() return t.value == b.value end, function() select(b.value) end)
+            end
+        end)
+    end)
+    t.more:Hide()
+
+    local function natural(b, pad)
+        local left = pad + (b.icon and 20 or 0)
+        return math.floor(b.label:GetUnboundedStringWidth() + left + pad + (b.chev and 14 or 0) + 0.5), left
+    end
+    local function place(b, x, pad)
+        local w, left = natural(b, pad)
+        b:SetWidth(w)
+        b:ClearAllPoints()
+        b:SetPoint("BOTTOMLEFT", x, 1)
+        b.x = x
+        if b.icon then b.icon:ClearAllPoints(); b.icon:SetPoint("LEFT", pad, 0) end
+        b.label:ClearAllPoints(); b.label:SetPoint("LEFT", left, 0)
+        if b.chev then b.chev:ClearAllPoints(); b.chev:SetPoint("LEFT", b.label, "RIGHT", 5, 0) end
+        b:Show()
+        return x + w + TAB_GAP
+    end
+
+    -- lays the tabs out for the strip's width: full padding, then tight padding, then the More menu
+    function t:Arrange()
+        -- the labels get their font before they are measured (a stale font made German tabs overlap: layout_lint)
+        for _, b in ipairs(self.tabs) do Skin:Text(b.label, "body", "text.primary") end
+        Skin:Text(self.more.label, "body", "text.primary")
+        local avail = self:GetWidth()
+        if type(avail) ~= "number" or avail <= 0 then avail = math.huge end
+        local function width(pad, list)
+            local x = 2
+            for _, b in ipairs(list) do x = x + natural(b, pad) + TAB_GAP end
+            return x
+        end
+        local pad = width(TAB_PAD, self.tabs) <= avail and TAB_PAD or TAB_PAD_TIGHT
+        local shown = { unpack(self.tabs) }
+        self.overflow = width(pad, shown) > avail
+        if self.overflow then
+            self.more.label:SetText(ns.L and ns.L.TABS_MORE or "More")
+            local moreW = natural(self.more, pad) + TAB_GAP
+            while #shown > 1 and width(pad, shown) + moreW > avail do table.remove(shown) end
+            -- the open tab is always on the strip: it takes the last visible place
+            local open
+            for _, b in ipairs(self.tabs) do if b.value == self.value then open = b end end
+            local visible = false
+            for _, b in ipairs(shown) do if b == open then visible = true end end
+            if open and not visible then
+                shown[#shown] = open
+                while #shown > 1 and width(pad, shown) + moreW > avail do table.remove(shown, #shown - 1) end
+            end
+        end
+        for _, b in ipairs(self.tabs) do b:Hide() end
+        local x = 2
+        for _, b in ipairs(shown) do x = place(b, x, pad) end
+        if self.overflow then x = place(self.more, x, pad) else self.more:Hide() end
+        self.pad = pad
+        self.bg:SetWidth(x)
+        paint(self)
+    end
+
     t.value = items[1] and items[1].value
-    function t:SetValue(v) self.value = v; paint(self) end
+    function t:SetValue(v) self.value = v; self:Arrange() end
     function t:GetValue() return self.value end
-    Skin:Register(t, paint)
+    t:SetScript("OnSizeChanged", function(self) self:Arrange() end)
+    Skin:Register(t, function(self) self:Arrange() end)
     return t
 end
 

@@ -87,6 +87,7 @@ local T = {
     REDUCE_MOTION_DESC = "Désactive les fondus et glissements dans les fenêtres de Phoenix.",
     WINDOW_ART = "Décor de la fenêtre",
     WINDOW_ART_DESC = "Fond illustré de la fenêtre des réglages, sections vitrées aux coins arrondis et lueurs d'accent. Désactivé : graphite uni.",
+    TABS_MORE = "Plus",
     ---------------------------------------------------------------- Skins
     SKINS = "Apparences",
     SKINS_DESC = "Le style Phoenix pour les fenêtres et dialogues de Blizzard, un interrupteur par fenêtre, avec votre fond, bordure et accent.",

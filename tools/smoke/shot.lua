@@ -73,6 +73,7 @@ function S.Install(ctx)
     rm.GetTextColor = function(self) local c = rawget(self, "__tcol") or { 1, 1, 1, 1 }; return c[1], c[2], c[3], c[4] end
     rm.SetJustifyH = function(self, j) rawset(self, "__jh", j) end
     rm.SetJustifyV = function(self, j) rawset(self, "__jv", j) end
+    rm.SetMaxLines = function(self, n) rawset(self, "__maxl", tonumber(n) or 0) end
     -- text measured with the real advance widths (PUI_SHOT_METRICS, tools/smoke/shot_metrics.py)
     local mpath = os.getenv("PUI_SHOT_METRICS")
     local metrics = mpath and dofile(mpath) or {}
@@ -173,6 +174,24 @@ function S.Run(ctx)
     local W0, H0 = 1600, 960
     Geo.root, Geo.rootW, Geo.rootH = UI, W0, H0
     rawset(UI, "__w", W0); rawset(UI, "__h", H0)
+    -- PUI_SHOT_LOCALE=deDE: the settings in that language (its strings over enUS, as the client does)
+    local loc = os.getenv("PUI_SHOT_LOCALE")
+    if loc and loc ~= "enUS" then
+        local chunk = assert(loadfile((ctx.root or ".") .. "/Locales/" .. loc .. ".lua"))
+        local got
+        local saved = env.GetLocale
+        rawset(env, "GetLocale", function() return loc end)
+        setfenv(chunk, env)
+        chunk("Phoenix_UI", { RegisterLocale = function(_, t) got = t end, L = ns.L })
+        rawset(env, "GetLocale", saved)
+        for k, v in pairs(got or {}) do ns.L[k] = v end
+    end
+    -- PUI_SHOT_FONTSCALE=1.2: General > Font scale
+    local fs = tonumber(os.getenv("PUI_SHOT_FONTSCALE") or "")
+    if fs then ns.Theme.settings.fontScale = fs; ns.Events:Fire("PUI_THEME_CHANGED") end
+    -- PUI_SHOT_SIZE=1100x700: the window size the player gave it
+    local sw, sh = (os.getenv("PUI_SHOT_SIZE") or ""):match("^(%d+)x(%d+)$")
+    if sw then ns.DB.sv.global.ui.w, ns.DB.sv.global.ui.h, ns.DB.sv.global.ui.v = tonumber(sw), tonumber(sh), 4 end
     ctx.slashes.pui("")
     local C = ns.Config
     local f = C:Build()
@@ -306,6 +325,7 @@ function S.Run(ctx)
                         item.h = (not rawget(r, "__autoh")) and rawget(r, "__h") or nil
                         item.font = rawget(r, "__font"); item.col = rawget(r, "__tcol"); item.jh = rawget(r, "__jh"); item.jv = rawget(r, "__jv")
                         item.wrap = rawget(r, "__wrap"); item.scale = Geo.EffectiveScale(r)
+                        item.maxl = rawget(r, "__maxl")
                         items[#items + 1] = item
                     end
                 end
@@ -369,11 +389,32 @@ function S.Run(ctx)
         settle()
         dump(name)
     end
+    -- PUI_SHOT_PAGES="ALL": every page of the sidebar and every tab of each (page__tabN), for tools/smoke/layout_lint.py
+    local want = os.getenv("PUI_SHOT_PAGES") or ""
+    if want == "ALL" then
+        local keys = {}
+        for key in pairs(C.navRows) do keys[#keys + 1] = key end
+        if not C.navRows.home then keys[#keys + 1] = "home" end
+        table.sort(keys)
+        for _, key in ipairs(keys) do
+            local ok, err = pcall(function()
+                local page = C:Show(key)
+                local n = page and page.tabs and #page.tabList or 1
+                for i = 1, n do
+                    if n > 1 then page.tabs.onChange(page.tabs, i) end
+                    shoot(key, key:lower() .. (n > 1 and ("__tab" .. i) or ""))
+                end
+                if n > 1 then page.tabs.onChange(page.tabs, 1) end
+            end)
+            if not ok then print("  shot " .. key .. " failed: " .. tostring(err)) end
+        end
+        return
+    end
     shoot("ActionBars", "actionbars")
     shoot("UnitFrames", "unitframes")
     shoot("home", "home")
     -- PUI_SHOT_PAGES="DamageMeter,Chat": extra pages, one scene each (named after the page key, lower case)
-    for key in (os.getenv("PUI_SHOT_PAGES") or ""):gmatch("[^,%s]+") do shoot(key, key:lower()) end
+    for key in want:gmatch("[^,%s]+") do shoot(key, key:lower()) end
 end
 
 return S

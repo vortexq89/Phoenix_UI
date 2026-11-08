@@ -147,8 +147,23 @@ function M:LayoutBar(f, w, h)
     placeText(f.Name, f.Texts, b.text)
     placeText(f.Time, f.Texts, b.time)
     placeText(f.Target, f.Texts, b.target)
-    f.Name:SetWidth(math.max(20, g.bar[3] * ((b.time.show ~= false and b.timeFormat ~= "none") and 0.7 or 0.95)))
-    f.Time:SetShown(b.time.show ~= false and b.timeFormat ~= "none")
+    -- the spell name stops before the timer (a fixed 70 % ran into "1.1" on narrow nameplate cast bars: layout_lint);
+    -- the timer's room is measured on a sample, never on its own text, which can be secret
+    local timeOn = b.time.show ~= false and b.timeFormat ~= "none"
+    local room = g.bar[3] - 4 - math.abs(b.text.x or 0)
+    if timeOn then
+        f.Measure = f.Measure or f.Texts:CreateFontString(nil, "OVERLAY")
+        f.Measure:SetFont(f.Time:GetFont())
+        f.Measure:SetText("88.8")
+        f.Measure:Hide()
+        local reserve = (f.Measure:GetUnboundedStringWidth() or 0) + 10 + math.abs(b.time.x or 0)
+        -- a centred name grows both ways: it keeps the timer's room on both sides
+        local anchor = b.text.anchor or "CENTER"
+        local centred = not anchor:find("LEFT") and not anchor:find("RIGHT")
+        room = room - (centred and 2 or 1) * reserve
+    end
+    f.Name:SetWidth(math.max(20, room))
+    f.Time:SetShown(timeOn)
     -- overlays
     f.Latency:SetVertexColor(self:Color("latency"))
     f.Latency:SetAlpha(0.5)

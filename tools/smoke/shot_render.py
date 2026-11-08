@@ -177,7 +177,8 @@ def ellipsize(line, f, width):
     return line + '\u2026'
 
 
-def draw_text(canvas, it, s):
+def layout_text(it, s):
+    """Where a font string's text lands, as the game would lay it out (used by the renderer and layout_lint.py)."""
     fnt = it.get('font') or ['', 13, '']
     sc = it.get('scale', 1)
     size = max(6, int(round(float(fnt[1] or 13) * sc * s)))
@@ -196,6 +197,9 @@ def draw_text(canvas, it, s):
     lines = wrap_lines(text, f, width) if (it.get('wrap') and width) else [text]
     if not it.get('wrap') and width:
         lines = [ellipsize(lines[0], f, width)]
+    maxl = int(it.get('maxl') or 0)
+    if maxl > 0 and len(lines) > maxl:  # SetMaxLines: the last kept line ends in an ellipsis, as in game
+        lines = lines[:maxl - 1] + [ellipsize(lines[maxl - 1] + '\u2026', f, width)]
     asc, desc = f.getmetrics()
     lh = int(round(size * 1.18))
     bh = lh * len(lines)
@@ -223,6 +227,16 @@ def draw_text(canvas, it, s):
         jv = it.get('jv') or 'MIDDLE'
         top = top + (0 if jv == 'TOP' else (box_h - bh if jv == 'BOTTOM' else (box_h - bh) / 2))
     jh = it.get('jh') or 'CENTER'
+    cut = bool(width) and not it.get('wrap') and lines[0].endswith('\u2026') and not text.endswith('\u2026')
+    return {'f': f, 'size': size, 'lines': lines, 'left': left, 'top': top, 'width': width, 'lh': lh, 'bh': bh,
+            'asc': asc, 'desc': desc, 'jh': jh, 'cut': cut, 'text': text}
+
+
+def draw_text(canvas, it, s):
+    L = layout_text(it, s)
+    f, size, lines, left, top, width, lh, bh, asc, desc, jh = (L[k] for k in
+        ('f', 'size', 'lines', 'left', 'top', 'width', 'lh', 'bh', 'asc', 'desc', 'jh'))
+    fnt = it.get('font') or ['', 13, '']
     col = rgba(it.get('col'), it.get('alpha', 1))
     layer = Image.new('RGBA', (int(width + 8 * s) + 4, int(bh + 6 * s) + 4), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)

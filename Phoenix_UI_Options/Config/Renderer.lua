@@ -643,7 +643,11 @@ function buildRow(card, page, m, item)
                 -- the control sits under the wrapped description, never on top of it
                 local base = item.height or ROW_H_DESC
                 self.control:SetPoint("TOPLEFT", 16, -math.floor(top + 8))
-                self:SetHeight(math.max(base, math.floor(base - 48 + top + 8 + 0.5)))
+                -- and the row is as tall as the control really is (chips that wrap to a second line ran into
+                -- the next row: layout_lint, Bags › Categories)
+                local ch = tonumber(self.control.GetHeight and self.control:GetHeight()) or 0
+                local room = math.max(base - 48, ch + 10)
+                self:SetHeight(math.max(base, math.floor(top + 8 + room + 0.5)))
             else
                 self:SetHeight(math.max(item.height or ROW_H_DESC, math.floor(top + 10 + 0.5)))
             end
@@ -821,26 +825,32 @@ local function buildPageHeader(page, m, schema)
         h.bevel.onSync = tile
     end
     h.crumb = W.Text(h, "small", "text.muted")
-    h.crumb:SetPoint("TOPLEFT", h.iconBg, "TOPRIGHT", 14, -2)
+    h.crumb:SetPoint("TOPLEFT", h.iconBg, "TOPRIGHT", 14, 2)
     h.crumb:SetWordWrap(false)
     h.title = W.Text(h, "title", "text.primary")
     h.title:SetPoint("TOPLEFT", h.crumb, "BOTTOMLEFT", 0, -4)
     h.title:SetText(text(m.label))
     h.desc = W.Text(h, "desc", "text.secondary")
-    -- beside the title, wrapping to two lines instead of cutting the summary off (specs/003 T001)
-    h.desc:SetPoint("LEFT", h.title, "RIGHT", 12, 0)
-    h.desc:SetJustifyV("MIDDLE")
-    h.desc:SetWordWrap(true)
-    h.desc:SetMaxLines(2)
-    h.descWraps = 2
+    -- the summary has its own line under the title (GUI polish plan §1): beside the title it wrapped into the
+    -- breadcrumb and the buttons (layout_lint). One line as wide as the title's box; a long one ends in "…" and
+    -- the full text is the tooltip of that line.
+    h.desc:SetPoint("TOPLEFT", h.title, "BOTTOMLEFT", 0, -3)
+    h.desc:SetPoint("TOPRIGHT", h.title, "BOTTOMRIGHT", 0, -3)
+    h.desc:SetJustifyH("LEFT")
+    h.desc:SetWordWrap(false)
+    h.desc:SetMaxLines(1)
+    h.descWraps = 1
     h.desc:SetText(text(m.desc))
+    h.descHit = CreateFrame("Frame", nil, h)
+    h.descHit:SetAllPoints(h.desc)
+    W.AttachTooltip(h.descHit, text(m.label), text(m.desc))
     page.settingCount = Config.CountSettings(schema)
     -- "N settings" now lives in the tooltip of the title; the line under the title is the summary
     h.count = W.Text(h, "small", "text.muted")
     h.count:SetText(L.SETTINGS_COUNT:format(page.settingCount))
     h.count:Hide()
     h.state = W:Badge(h, "", "state.success")
-    h.state:SetPoint("LEFT", h.crumb, "RIGHT", 10, 0)
+
     h.state:Hide()
     local anchor
     if not m.locked then
@@ -870,6 +880,25 @@ local function buildPageHeader(page, m, schema)
     end
     h.changed = W:Badge(h, "", "accent.primary")
     h.changed:SetPoint("RIGHT", anchor, "LEFT", -10, 0)
+    -- the breadcrumb and the title stop before the buttons (a long German title ran under "Modul zurücksetzen":
+    -- layout_lint); a cut one ends in "…", and the full name is in the summary's tooltip
+    h.state:ClearAllPoints()
+    h.state:SetPoint("RIGHT", h.changed, "LEFT", -8, 0)
+    -- (a box from the tile to the badges: TOP* anchors only, since a RIGHT anchor would also pin the text's
+    -- vertical centre to the badge row)
+    h.textArea = CreateFrame("Frame", nil, h)
+    h.textArea:SetPoint("TOPLEFT", h.iconBg, "TOPRIGHT", 14, 2)
+    h.textArea:SetPoint("BOTTOMRIGHT", h.state, "BOTTOMLEFT", -12, -40)
+    h.crumb:ClearAllPoints()
+    h.crumb:SetPoint("TOPLEFT", h.textArea, "TOPLEFT")
+    h.crumb:SetPoint("TOPRIGHT", h.textArea, "TOPRIGHT")
+    h.title:ClearAllPoints()
+    h.title:SetPoint("TOPLEFT", h.crumb, "BOTTOMLEFT", 0, -4)
+    h.title:SetPoint("TOPRIGHT", h.crumb, "BOTTOMRIGHT", 0, -4)
+    for _, fs in ipairs({ h.crumb, h.title }) do
+        fs:SetJustifyH("LEFT")
+        fs:SetWordWrap(false)
+    end
     h.changed:Hide()
     W.AttachTooltip(h.changed, L.CHANGED_TITLE, L.CHANGED_DESC)
     -- clicking the count walks through the changed settings, one per click
@@ -883,7 +912,6 @@ local function buildPageHeader(page, m, schema)
         h.walk = (h.walk or 0) % #list + 1
         page:Focus(list[h.walk].item)
     end)
-    h.desc:SetPoint("RIGHT", h.changed, "LEFT", -16, 0)
     h.line = W.Texture(h, "BORDER")
     h.line:SetHeight(1)
     h.line:SetPoint("BOTTOMLEFT", PAD, 0); h.line:SetPoint("BOTTOMRIGHT", -PAD, 0)
@@ -1000,12 +1028,14 @@ local function buildScope(page, m, item)
         if room < 220 then
             -- narrow pages: chips get a line of their own above the tools
             self.units:SetWidth(width)
+            self.units:Arrange() -- wrap now: OnSizeChanged comes a frame later, after the height below is read
             self.all:ClearAllPoints(); self.all:SetPoint("TOPRIGHT", self.units, "BOTTOMRIGHT", 0, -10)
             self.copy:ClearAllPoints(); self.copy:SetPoint("RIGHT", self.allLabel, "LEFT", -18, 0)
             self.copyLabel:ClearAllPoints(); self.copyLabel:SetPoint("RIGHT", self.copy, "LEFT", -8, 0)
             self:SetHeight(20 + self.units:GetHeight() + 10 + 26 + 4)
         else
             self.units:SetWidth(room)
+            self.units:Arrange()
             self:SetHeight(20 + math.max(self.units:GetHeight(), 26) + 6)
         end
     end

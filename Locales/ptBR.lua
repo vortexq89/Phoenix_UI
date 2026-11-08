@@ -87,6 +87,7 @@ local T = {
     REDUCE_MOTION_DESC = "Desliga os esmaecimentos e deslizamentos nas janelas do Phoenix.",
     WINDOW_ART = "Arte da janela",
     WINDOW_ART_DESC = "Fundo ilustrado da janela de opções, seções de vidro com cantos suaves e brilhos de destaque. Desligado: grafite liso.",
+    TABS_MORE = "Mais",
     ---------------------------------------------------------------- Skins
     SKINS = "Visuais",
     SKINS_DESC = "O visual Phoenix para janelas e diálogos da Blizzard, um interruptor por janela, com seu fundo, borda e destaque.",
