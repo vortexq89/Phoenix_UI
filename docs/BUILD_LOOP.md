@@ -52,8 +52,6 @@ One turn, in this order:
 3. **Action Bars preview**: hot spots on the hotkey and count texts (needs a text hot spot that does not start a size drag).
 4. **Row flash** exists (`row:Flash()` on every jump); compare its strength with EllesmereUI in game.
 5. **Simple view, fine pass**: review which rows count as fine-tuning page by page (`advanced = true / false` on the row overrides the key rule in Renderer.lua).
-8. **Concept consistency** across frame families (same order, wording, ranges) and Copy from between families.
-9. **Anchor conflict clean-up** (layout lint warnings), then make them fail the build.
 10. **Other nine locales** reviewed by page.
 11. **Audit waves 0 to 4** from `PUI_AUDIT_2026-11-07`.
 
@@ -67,3 +65,4 @@ One turn, in this order:
 - **10 Nov 2026, turn 9**: search results highlight the typed words; up, down and Enter work from the search box. Needs an in-game look: the edit box passes the arrow keys (OnKeyDown) on both clients.
 - **10 Nov 2026, turns 10 and 11**: custom Cooldown Manager bars are edited in the preview (right-click remove, drag reorder, click to the list, with Undo). Previews audit finished for Data texts, Tooltip, Cooldown text, Mythic+ timer (hot spots). Needs an in-game look: drag reorder inside the preview, Undo after a removal.
 - **10 Nov 2026, turn 12**: Simple view (footer button, off by default): rows whose key ends in a fine-tuning word hide; a jump from search or the preview reveals the row. Needs an in-game look: the footer still fits at the smallest window width; the choice of hidden rows feels right.
+- **10 Nov 2026, turn 13**: full render of 98 views: 0 overlaps, 0 outside the window, 9 one-line header descriptions cut by design (full text in the tooltip). Anchor conflicts (72, then fewer after the description row fix): the remaining ones are a top corner plus RIGHT on regions with an explicit or text height, which the game resolves from the top and the height, so they stay warnings and are not rewritten blind. Range differences between frame families (9) reviewed: they follow the elements' real sizes (a nameplate cast bar is smaller than a unit frame's), left as they are. Spell list texts translated in nine languages.

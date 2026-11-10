@@ -803,7 +803,7 @@ local function buildDescription(card, item)
     row.text = W.Text(row, "desc", "text.secondary")
     row.text:SetWordWrap(true)
     row.text:SetPoint("TOPLEFT", 16, -4)
-    row.text:SetPoint("RIGHT", -16, 0)
+    row.text:SetPoint("TOPRIGHT", -16, -4)
     row.text:SetText(type(item.text) == "function" and item.text() or text(item.text))
     row.item = item
     row.isDescription = true

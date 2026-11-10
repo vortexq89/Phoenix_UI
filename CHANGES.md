@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **Build loop turn 13** (10 Nov): every page and tab was rendered again after today's changes (98 views): no overlapping text and none outside the window. Description rows are anchored by their top corners. The spell list texts are translated in all nine other languages.
 - **Simple view** (10 Nov, build loop turn 12): a Simple view button in the footer hides the fine-tuning settings on every page (offsets, layering, zoom, gaps, text formats, growth directions and the like), so each page shows the essentials. It is off by default. Search and the live preview still jump to a hidden setting and show it; Show all settings brings everything back.
 - **Build loop turns 10 and 11** (10 Nov): a custom Cooldown Manager bar can be edited in its preview: right-click an icon to take it out, drag it onto another to reorder, click it to jump to the list (Undo takes each change back). The Data texts, Tooltip, Cooldown text and Mythic+ timer previews are hot spots to their size settings, so every remaining preview can be clicked and edge-dragged.
 - **Search: highlighted words and keyboard** (10 Nov, build loop turn 9): the words you type are shown in the accent colour inside each result, the up and down arrows move through the results, and Enter opens the picked one (the first when none is picked).
