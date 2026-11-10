@@ -122,6 +122,20 @@ local function drawArena(m, view, built, key, st)
     end
 end
 
+-- every part of the frame jumps to its own settings
+local function partHots(view, f)
+    local L = ns.L
+    P.Hot(view, f.NameText, "units.@.tags.name", L.UF_TAG_NAME)
+    P.Hot(view, f.HealthText, "units.@.tags.health", L.UF_TAG_HEALTH)
+    P.Hot(view, f.PowerText, "units.@.tags.power", L.UF_TAG_POWER)
+    P.Hot(view, f.PortraitHolder, "units.@.portrait", L.UF_TAB_PORTRAIT)
+    P.Hot(view, f.Marker, "units.@.icons.marker", L.PREVIEW_STATE_MARKER)
+    for _, kind in ipairs({ "Buffs", "Debuffs" }) do
+        local first = f[kind].buttons and f[kind].buttons[1]
+        if first then P.Hot(view, first, "units.@.auras.size", L.UF_TAB_INDICATORS) end
+    end
+end
+
 P:Register("unitframe", {
     module = "UnitFrames",
     width = W,
@@ -176,6 +190,7 @@ P:Register("unitframe", {
             built.scaleText:Show()
             m:UpdateAll(f)
             P.Hot(view, f, "units.@.width", ns.L.UF_WIDTH)
+            partHots(view, f)
             -- (the fading rows act on the real frames; the preview shows the range fade only when asked)
             if not st.range then f:SetAlpha(1) end
             f:Show()

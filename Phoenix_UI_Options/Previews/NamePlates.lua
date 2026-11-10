@@ -139,6 +139,8 @@ P:Register("nameplate", {
                 s.name = real.name or s.name
                 if real.level then s.level = real.level end
             end
+            -- the cast is one of your own spells, named as the game names it ("bolt" is the first real icon)
+            if P.real and s.cast then s.cast.name = P.real[1].name end
             s.frozen = ns.Anim:ReduceMotion() and true or false
             s.target = st.target and true or false
             s.hover = false
@@ -152,6 +154,12 @@ P:Register("nameplate", {
             m:DrawSample(plate, s)
             P.Hot(stage, plate.Health, "styles.@.width", L.UF_WIDTH)
             P.Hot(stage, plate.Cast, "styles.@.cast.height", L.NP_CASTBAR)
+            P.Hot(stage, plate.Name, "styles.@.nameTag", L.UF_TAG_NAME)
+            P.Hot(stage, plate.HealthText, "styles.@.healthTag", L.UF_TAG_HEALTH)
+            P.Hot(stage, plate.Marker, "styles.@.icons.marker", L.PREVIEW_STATE_MARKER)
+            P.Hot(stage, plate.ClassPower, "target.classPower", L.UF_TAB_RESOURCES)
+            local first = plate.Debuffs.buttons and plate.Debuffs.buttons[1]
+            if first then P.Hot(stage, first, "styles.@.auras.size", L.NP_AURAS) end
         end
     end,
 })

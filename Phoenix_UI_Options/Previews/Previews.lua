@@ -119,6 +119,7 @@ function P:Create(kind, parent, m, page)
         self:SetHeight(inner)
         return scale
     end
+    ns.SafeCall(P.UseRealIcons)
     local draw = def and def.build(stage, m)
     local baseWidth, baseHeight = stage.designWidth, def and def.height or 120
     stage.baseHeight = baseHeight
@@ -234,16 +235,18 @@ local function api(name, space)
 end
 P.API = api
 
--- Up to n { name, icon } from the main action bar (first page), skipping empty slots and non-spells.
+-- Up to n { name, icon } of the player's own spells, in action bar order (every bar page), each spell once.
 function P.RealSpells(n)
     local out = {}
     if InCombatLockdown() then return out end
     local info, tex = api("GetActionInfo", "C_ActionBar"), api("GetActionTexture", "C_ActionBar")
     local spellName = api("GetSpellName", "C_Spell")
     if not (info and tex) then return out end
-    for slot = 1, 12 do
+    local seen = {}
+    for slot = 1, 120 do
         local kind, id = info(slot)
-        if kind == "spell" and id then
+        if kind == "spell" and id and not seen[id] then
+            seen[id] = true
             local name = spellName and spellName(id)
             local icon = tex(slot)
             if name and icon then out[#out + 1] = { name = name, icon = icon } end
@@ -251,6 +254,35 @@ function P.RealSpells(n)
         if #out >= n then break end
     end
     return out
+end
+
+--[[ The samples wear the player's own spells: the stock sample icons (the shared set here and the named set the
+    unit frame, nameplate and cast bar samples use) are swapped for the icons of the spells on the player's bars,
+    so a preview and the Test frames look like the player's own game. Out of combat only; with fewer than four
+    spells on the bars the stock art stays. ]]
+local STOCK
+function P.UseRealIcons()
+    local UF = ns.modules.UnitFrames
+    local named = UF and UF.SAMPLE_ICONS
+    if not STOCK then
+        STOCK = { list = {}, named = {} }
+        for i, v in ipairs(P.SAMPLE.icons) do STOCK.list[i] = v end
+        for k, v in pairs(named or {}) do STOCK.named[k] = v end
+    end
+    local real = P.RealSpells(12)
+    P.real = #real >= 4 and real or nil
+    for i in ipairs(STOCK.list) do
+        P.SAMPLE.icons[i] = P.real and real[(i - 1) % #real + 1].icon or STOCK.list[i]
+    end
+    if named then
+        local i = 0
+        for _, k in ipairs({ "bolt", "pain", "flame", "bomb", "fireball", "storm", "sentry", "shield", "shout", "watch" }) do
+            if STOCK.named[k] then
+                i = i + 1
+                named[k] = P.real and real[(i - 1) % #real + 1].icon or STOCK.named[k]
+            end
+        end
+    end
 end
 
 -- name, class token, level and reaction of a unit that exists (out of combat), else nil.
@@ -298,7 +330,9 @@ function P.Hot(stage, part, key, tip)
     hot.key, hot.tip = key, tip
     hot:ClearAllPoints()
     hot:SetAllPoints(part)
-    hot:SetFrameLevel((part:GetFrameLevel() or 1) + 20)
+    -- a text or texture part sits on its parent frame's level, one above so it wins over a hot spot on that frame
+    local host = part.GetFrameLevel and part or part:GetParent()
+    hot:SetFrameLevel((host and host:GetFrameLevel() or 1) + (host == part and 20 or 21))
     hot:SetShown(part:IsShown())
     return hot
 end

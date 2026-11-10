@@ -1430,6 +1430,23 @@ try("previews", function()
     for _, key in ipairs({ "SpellHistory", "DamageMeter", "Minimap", "ItemLevel", "Skins", "AFK", "Chat", "Bags", "Quests" }) do
         if ns.Config:EntryExists(key) then assert(not ns.Config:Show(key).pinned, key .. " has a preview it does not need") end
     end
+    -- the samples wear the player's own spells when the bars hold at least four, the stock art otherwise
+    do
+        local P = ns.Previews
+        local stock = P.SAMPLE.icons[1]
+        local oa, osp = rawget(env, "C_ActionBar"), rawget(env, "C_Spell")
+        local bar = { GetActionInfo = function(slot) if slot <= 6 then return "spell", 1000 + slot end end,
+            GetActionTexture = function(slot) return "real" .. slot end }
+        rawset(env, "C_ActionBar", bar)
+        rawset(env, "C_Spell", setmetatable({ GetSpellName = function(id) return "Spell " .. id end }, { __index = osp }))
+        P.UseRealIcons()
+        assert(P.real and #P.real == 6 and P.SAMPLE.icons[1] == "real1" and P.SAMPLE.icons[7] == "real1", "real spell icons not used")
+        assert(ns.modules.UnitFrames.SAMPLE_ICONS.bolt == "real1", "the named sample icons kept their stock art")
+        bar.GetActionInfo = function() end
+        P.UseRealIcons()
+        assert(not P.real and P.SAMPLE.icons[1] == stock, "stock icons not restored")
+        rawset(env, "C_ActionBar", oa); rawset(env, "C_Spell", osp)
+    end
     -- a tab that styles nothing on the sample hides the band
     local np = ns.Config:Show("NamePlates")
     np.tab = #np.tabList; np:Layout()

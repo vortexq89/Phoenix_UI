@@ -3,6 +3,8 @@
 Instructions for any AI agent or contributor working in this repository. Read this first, then
 `docs/ARCHITECTURE.md` (the contract) and `docs/AUDIT.md` (what the legacy code did and why it is being replaced).
 Scoped rules live in `.cursor/rules/*.mdc`.
+Then `docs/BUILD_LOOP.md`: the standing brief for GUI and feature work (mission, the loop to follow each
+session, the page checklist, the backlog and the log). Do one turn of that loop and log it.
 
 ## 1. Target
 
