@@ -48,7 +48,7 @@ One turn, in this order:
 
 ## Backlog (top first)
 
-1. **Spell and item lists as rows with pickers** (`W:SpellList`): Tracker custom list, aura glows, aura bars, reminders, action bar item list and ring, cast bar custom ticks, combat text trigger spell, unit frame range spell. Rows with icon and name, a picker of the character's spellbook and bags with search, drag to reorder, typed ID still accepted.
+1. **Single-spell pickers**: cast bar custom ticks, combat text trigger spell and unit frame range spell still take a typed ID; give them the same picker (`ns.Opt.SpellList` covers the lists since turn 3). Show names under the tiles when a list is short.
 2. **Tracker preview as the real bar**: the viewer's real spells, click a slot to pick, drag to reorder (EllesmereUI's cooldown manager method).
 3. **Previews audit, one per turn**: Group Frames, Action Bars, Cast Bars, Auras, Data texts, Mythic+ timer, Tooltip, Combat text, Cooldown text, Encounters against the checklist (hot spot on every part, real data, live motion).
 4. **Row flash** when a hot spot jumps to a setting (check strength against EllesmereUI in game).
@@ -64,3 +64,4 @@ One turn, in this order:
 
 - **10 Nov 2026, turn 1**: preview policy applied (13 pages keep a preview, 17 lost it, tabs can opt out with `preview = false`). Nameplate preview is one full plate with a live cast. Needs an in-game look: plate centring.
 - **10 Nov 2026, turn 2**: samples wear the character's own spells (icons from the action bars, cast named after the real spell) in every preview and in Test frames. Every part of the nameplate and unit frame samples is a hot spot (name, health text, power text, portrait, marker, auras, cast bar, class resource); edges of a part drag its size where the page has a size row. This file written. Needs an in-game look: real icons appear, hot spots land on the right rows.
+- **10 Nov 2026, turn 3**: `ns.Opt.SpellList` (Config/SpellList.lua): lists of spells and items are tiles with real icons, right-click to remove, drag to reorder, a + tile with a spellbook or bag picker and search, the list still editable as text. Applied to six lists (Tracker custom bars, aura glows, wanted auras, aura bars; Action Bars item bar and ring). Needs an in-game look: icons resolve for names and items, drag reorder lands on the right tile, the picker popover position.

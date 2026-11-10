@@ -42,6 +42,7 @@ Config\Appearance.lua
 Config\Social.lua
 Config\Diagnostics.lua
 Config\Presets.lua
+Config\SpellList.lua
 Config\Installer.lua
 Config\About.lua
 Config\Plugins.lua

@@ -6141,6 +6141,25 @@ try("cooldown manager picker and bars", function()
     local l, added = O.ToggleListSpell("100", 6544)
     assert(l == "100, 6544" and added, "a click adds a spell")
     assert(type(O.SpellbookSpells()) == "table", "spellbook list is safe without the API")
+    -- spell lists are tiles: what an entry is, right-click removes, the stored text keeps every typed form
+    local d = O.SpellListDescribe
+    assert(d("item:5").kind == "item" and d("trinket2").id == 14 and d("11366=48108").id == 11366
+        and d("1459:MAGE").kind == "spell" and d("Fireball").kind == "name" and d("77", true).kind == "item", "list entries")
+    local AB = ns.modules.ActionBars
+    local abPage, listRow = ns.Config:Show("ActionBars"), nil
+    for _, r in ipairs(abPage.rows) do if r.item.key == "ring.list" then listRow = r end end
+    assert(listRow and listRow.control and listRow.control.tiles, "the ring list is not a tile list")
+    local before = AB.db.ring.list
+    ns.DB:Set(AB, "ring.list", "100, item:5, Fireball?300")
+    listRow.control:SetValue()
+    assert(listRow.control.count == 3 and listRow.control.tiles[3]:IsShown(), "three entries, three tiles")
+    local t2 = listRow.control.tiles[2]
+    scripts[t2].OnClick(t2, "RightButton")
+    assert(AB.db.ring.list == "100, Fireball?300", "right-click did not take the entry out: " .. tostring(AB.db.ring.list))
+    scripts[listRow.control.add].OnClick(listRow.control.add)
+    assert(listRow.control.picker and listRow.control.picker.cells[1], "the + tile opens no picker")
+    ns.Widgets.HidePopover()
+    ns.DB:Set(AB, "ring.list", before)
     local T = ns.modules.Tracker
     assert(T:Viewer("custom1").display == "icons" and T:Viewer("custom1").barWidth == 180, "custom bar display defaults")
     if T.CustomBarPart then
