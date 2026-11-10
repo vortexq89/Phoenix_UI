@@ -1978,7 +1978,7 @@ function Config.BuildSchemaPage(parent, m, schema)
                     foldStore()[row.card.foldKey] = nil
                 end
                 self:Layout()
-                local clear = (self.pinned and not self.docked) and (self.pinned:GetHeight() + 30) or 40
+                local clear = 40 -- the preview band sits above the scroll area now, so nothing covers the row
                 local top = child:GetTop() - row:GetTop() - clear
                 self.scroll:SetVerticalScroll(math.max(0, math.min(self.scroll:GetVerticalScrollRange(), top)))
                 self.scroll:UpdateBar()

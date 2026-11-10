@@ -3,6 +3,7 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **GUI polish, step 4** (10 Nov): tooltips open beside the pointer (below and right of it, above it near the foot of the screen) instead of on top of the row they explain. Scroll bars are a 4 px rounded thumb in their own gutter: brighter while you point at the list, accent while dragged, and they can now be dragged or clicked to jump. Buttons ease into a clearer hover. Jumping to a setting (search, preview clicks) lands it just under the preview band instead of too far down.
 - **GUI polish, step 3** (10 Nov, English first):
   - **Undo**: the footer has an Undo button that takes back the last change made in the settings window (up to 50 steps; a slider drag counts as one step). Its tooltip names the setting it will undo.
   - **A module that is off says so**: one banner at the top of its page ("Nameplates is off. Its settings are kept and apply as soon as you turn it on.") with a Turn on button, instead of a page of settings that seem to do nothing.

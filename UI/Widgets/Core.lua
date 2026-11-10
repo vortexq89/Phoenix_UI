@@ -19,7 +19,7 @@ W.EUI = {
     slider = { trackA = 0.16, fillA = 0.75, input = "bg.sunken", inputA = 0.25, inputBorderA = 0.02 },
     dropdown = { bg = "bg.hover", bgA = 0.9, bgHoverA = 0.98, borderA = 0.20, borderHoverA = 0.30,
         textA = 0.50, textHoverA = 0.60, itemHoverA = 0.08, itemSelA = 0.04, maxHeight = 200, scrollW = 4 },
-    button = { bg = "bg.raised", bgA = 0.6, bgHoverA = 0.65, borderA = 0.3, borderHoverA = 0.45,
+    button = { bg = "bg.raised", bgA = 0.6, bgHoverA = 0.9, borderA = 0.3, borderHoverA = 0.45,
         textA = 0.55, textHoverA = 0.70 },
     row = { h = 50, dualW = 350, dualGap = 42, tripleW = 180, tripleGap = 50, oddA = 0.1, evenA = 0.2 },
     section = { textA = 0.41 },
@@ -116,7 +116,18 @@ function W.ShowTooltip(owner, title, text, beside)
     t.text:SetWidth(math.max(w, 1))
     t:SetSize(w + 20, t.title:GetStringHeight() + (t.text:IsShown() and t.text:GetStringHeight() + 4 or 0) + 18)
     t:ClearAllPoints()
-    if beside and owner.GetUnboundedStringWidth then
+    -- beside the pointer (GUI polish plan §6): below and right of it, or above it near the foot of the screen, so the
+    -- tip never lies on the row or the control it explains. Placed once when it opens; it does not chase the pointer.
+    local cx, cy = GetCursorPosition()
+    local scale = UIParent:GetEffectiveScale()
+    if type(cx) == "number" and type(cy) == "number" and scale and scale > 0 and (cx > 0 or cy > 0) then
+        local x, y = cx / scale + 18, cy / scale
+        if y - 22 - t:GetHeight() < 0 then
+            t:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y + 14)
+        else
+            t:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y - 22)
+        end
+    elseif beside and owner.GetUnboundedStringWidth then
         local tw = math.min(owner:GetUnboundedStringWidth() or 0, owner:GetWidth() or 0)
         t:SetPoint("LEFT", owner, "LEFT", math.floor(tw + 16), 0)
     else

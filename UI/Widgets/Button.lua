@@ -39,7 +39,15 @@ function W:Button(parent, text, variant, icon, width)
             Skin:SetBorderColor(self, 0, 0, 0, 0)
         else
             local fr, fg, fb = W.RGB(E.bg)
-            self.fill:SetVertexColor(fr, fg, fb, hover and E.bgHoverA or E.bgA)
+            -- the fill eases to its hover strength over 0.12 s (jumps with Reduce motion)
+            local to = hover and E.bgHoverA or E.bgA
+            local from = self.fillA or E.bgA
+            self.fillA = to
+            if from ~= to and ns.Anim and not ns.Anim:ReduceMotion() then
+                ns.Anim:Tween(self.fill, 0.12, from, to, function(a) self.fill:SetVertexColor(fr, fg, fb, a) end)
+            else
+                self.fill:SetVertexColor(fr, fg, fb, to)
+            end
         end
         if v == "danger" then
             local r, g, bl = ns.Theme:Color("state.danger")
