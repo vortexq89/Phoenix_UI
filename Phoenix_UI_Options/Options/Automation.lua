@@ -4,7 +4,6 @@ local quickPick, quickCapture -- Quickdraw: the macro picked to bind, the key-ca
 local recipePick -- Recipes to learn: the profession picked this session
 
 ns:RegisterOptions("Automation", {
-    { type = "preview", kind = "automation" },
     { type = "header", label = "AUTO_VENDOR", icon = "gold" },
     { type = "select", key = "repair", label = "AUTO_REPAIR", desc = "AUTO_REPAIR_DESC", values = {
         { value = "off", label = "OFF" },

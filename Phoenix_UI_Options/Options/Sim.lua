@@ -401,7 +401,6 @@ local function styles()
 end
 
 ns:RegisterOptions("Sim", {
-    { type = "preview", kind = "sim" },
     { type = "header", label = "SIM_START", icon = "sim", wide = true },
     { type = "description", text = "SIM_INTRO" },
     { type = "toggle", key = "bank", label = "SIM_BANK", desc = "SIM_BANK_DESC", keywords = "bank warband gear include" },

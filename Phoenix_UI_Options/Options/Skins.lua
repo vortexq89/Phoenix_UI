@@ -9,7 +9,6 @@ local LOOT_SORT = { { value = "quality", label = "LOOTW_SORT_QUALITY" }, { value
 local CLOSE = { { value = "phoenix", label = "SKINS_TITLE_PHOENIX" }, { value = "blizzard", label = "SKINS_TITLE_BLIZZARD" } }
 
 ns:RegisterOptions("Skins", {
-    { type = "preview", kind = "skins" },
     { type = "tab", label = "SKINS_TAB_WINDOWS" },
     { type = "header", label = "SKINS_DIALOGS", icon = "skins" },
     { type = "toggle", key = "gameMenu", label = "SKINS_GAMEMENU", desc = "SKINS_GAMEMENU_DESC", keywords = "escape menu" },

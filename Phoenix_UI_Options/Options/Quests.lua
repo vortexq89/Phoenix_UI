@@ -34,7 +34,6 @@ local function dataMissing(m)
 end
 
 ns:RegisterOptions("Quests", {
-    { type = "preview", kind = "quests" },
     { type = "description", text = "QUESTS_DATA_MISSING", hidden = function(m) return not dataMissing(m) end },
     ------------------------------------------------------------ Tracker
     { type = "tab", label = "QUESTS_TAB_TRACKER" },

@@ -179,7 +179,7 @@ local schema = {
     scroll({ type = "range", key = "scroll.areas.@.width", label = "FCT_AREA_WIDTH", min = 100, max = 600, step = 10 }),
     scroll({ type = "range", key = "scroll.areas.@.height", label = "FCT_AREA_HEIGHT", min = 60, max = 500, step = 10 }),
     ------------------------------------------------------------ events
-    { type = "tab", label = "FCT_TAB_EVENTS" },
+    { type = "tab", label = "FCT_TAB_EVENTS", preview = false },
     { type = "header", label = "FCT_INCOMING", icon = "arrow-down" },
     event("damage", { label = "FCT_EV_DAMAGE", desc = "FCT_EV_DAMAGE_DESC", keywords = "melee hits taken" }),
     event("spell", { label = "FCT_EV_SPELL", desc = "FCT_EV_SPELL_DESC", keywords = "spell damage taken" }),
@@ -201,7 +201,7 @@ local schema = {
     event("xp", { label = "FCT_EV_XP", desc = "FCT_EV_XP_DESC", keywords = "experience xp level" }),
     { type = "header", label = "FCT_AREA_POWER", icon = "speed" },
     ------------------------------------------------------------ crits
-    { type = "tab", label = "FCT_TAB_TRIGGERS" },
+    { type = "tab", label = "FCT_TAB_TRIGGERS", preview = false },
     { type = "header", label = "FCT_TRIGGERS", icon = "bell" },
     { type = "description", text = "FCT_TRIGGERS_TEXT" },
     { type = "button", label = "FCT_MSBT_IMPORT", desc = "FCT_MSBT_IMPORT_DESC", button = "FCT_MSBT_IMPORT_BUTTON", icon = "import",
@@ -224,7 +224,7 @@ local schema = {
     trow({ type = "sound", label = "FCT_EV_SOUND" }, "sound"),
     { type = "button", label = "FCT_TRIGGER_REMOVE", desc = "FCT_TRIGGER_REMOVE_DESC", button = "DELETE", icon = "delete",
       hidden = noTrig, func = function(m) if m:RemoveTrigger(editing) then editing = math.max(1, editing - 1); rebuild() end end },
-    { type = "tab", label = "FCT_TAB_CRITS" },
+    { type = "tab", label = "FCT_TAB_CRITS", preview = false },
     { type = "header", label = "FCT_CRIT", icon = "warning" },
     { type = "description", text = "FCT_CRIT_NEEDS_SCROLL", hidden = function(m) return not noScroll(m) end },
     scroll({ type = "select", key = "scroll.crit", label = "FCT_CRIT", desc = "FCT_CRIT_DESC", values = CRIT, keywords = "critical crit" }),

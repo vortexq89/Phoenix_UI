@@ -137,7 +137,7 @@ ns:RegisterOptions("CastBars", {
     px({ type = "range", key = "bars.@.decimals", label = "UF_DECIMALS", min = 0, max = 2, step = 1 }),
     px({ type = "range", key = "bars.@.nameLength", label = "CB_NAME_LENGTH", desc = "CB_NAME_LENGTH_DESC", min = 0, max = 40, step = 1 }),
     ------------------------------------------------------------ behaviour
-    { type = "tab", label = "TAB_BEHAVIOUR" },
+    { type = "tab", label = "TAB_BEHAVIOUR", preview = false },
     { type = "header", label = "CB_END", icon = "error" },
     px({ type = "range", key = "bars.@.hold", label = "CB_HOLD", desc = "CB_HOLD_DESC", min = 0, max = 3, step = 0.1 }),
     px({ type = "toggle", key = "bars.@.flash", label = "CB_FLASH", desc = "CB_FLASH_DESC", keywords = "interrupted flash success" }),

@@ -104,7 +104,6 @@ ns.GlobalRows = {
 }
 
 local generalRows = {
-    { type = "preview", kind = "theme" },
     { type = "tab", label = "TAB_DISPLAY" },
     { type = "header", label = "GEN_SCALE", icon = "layout" },
     { type = "toggle", gate = true, key = "scale.enabled", label = "GEN_PUI_SCALE", desc = "GEN_PUI_SCALE_DESC", combat = true,

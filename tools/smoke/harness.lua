@@ -1422,11 +1422,20 @@ try("previews", function()
             n = n + 1
         end
     end
-    assert(n >= 19, "expected a preview for every visual module, have " .. n)
-    -- every visual module's page carries one
-    for _, key in ipairs({ "CooldownText", "SpellHistory", "DamageMeter", "Minimap", "ItemLevel", "Skins", "CombatText", "AFK" }) do
+    assert(n >= 10, "expected a preview for every module with an on-screen element to style, have " .. n)
+    -- a preview only where an on-screen element is styled (as in EllesmereUI); list and behaviour pages carry none
+    for _, key in ipairs({ "CooldownText", "CombatText", "NamePlates", "UnitFrames", "ActionBars", "CastBars" }) do
         assert(ns.Config:Show(key).pinned, key .. " has no preview")
     end
+    for _, key in ipairs({ "SpellHistory", "DamageMeter", "Minimap", "ItemLevel", "Skins", "AFK", "Chat", "Bags", "Quests" }) do
+        if ns.Config:EntryExists(key) then assert(not ns.Config:Show(key).pinned, key .. " has a preview it does not need") end
+    end
+    -- a tab that styles nothing on the sample hides the band
+    local np = ns.Config:Show("NamePlates")
+    np.tab = #np.tabList; np:Layout()
+    assert(not np.pinned:IsShown(), "the nameplates Game settings tab still shows the preview")
+    np.tab = 1; np:Layout()
+    assert(np.pinned:IsShown(), "the nameplates Plates tab lost its preview")
 end)
 -- Auras & Cooldowns: item frames of the Cooldown Manager are dressed (the countdown voice moved to Encounters)
 try("tracker", function()
@@ -4652,8 +4661,8 @@ try("preview drag", function()
         ab:Redraw()
         assert(ab.hots and ab.hots[1] and ab.hots[1].puiEdges, "preview parts have no edge grips")
         assert(ab.hots[1]:GetScript("OnDragStart"), "preview parts cannot be dragged to move")
-        assert(withPreview >= 20, "too few preview pages: " .. withPreview)
-        assert(sized >= 12, "too few previews can be resized by dragging: " .. sized)
+        assert(withPreview >= 10, "too few preview pages: " .. withPreview)
+        assert(sized >= 8, "too few previews can be resized by dragging: " .. sized)
         -- Step: snapping, height grows downward, move offsets
         local pick = { w = { key = "a.width", min = 10, max = 100, step = 5 }, h = { key = "a.height", min = 1, max = 50, step = 1 },
             x = { key = "a.x", min = -50, max = 50, step = 1 }, y = { key = "a.y", min = -50, max = 50, step = 1 } }
@@ -8307,10 +8316,9 @@ try("remaining modules styling and previews (S16)", function()
         assert(#items <= 1 and (not items[1] or items[1].source == "bank"), "bank item lost its source")
         assert(type(S:ExtraItems()) == "table", "extra items")
     end
-    local kinds = { "quality", "pvp", "afk", "damagemeter", "combattext", "spellhistory", "itemlevel", "theme" }
+    local kinds = { "combattext", "cooldowntext" }
     if RETAIL then kinds[#kinds + 1] = "mplustimer" end
-    local mods = { quality = "Quality", pvp = "PvP", afk = "AFK", damagemeter = "DamageMeter", combattext = "CombatText",
-        spellhistory = "SpellHistory", itemlevel = "ItemLevel", mplustimer = "MythicPlus", theme = "General" }
+    local mods = { combattext = "CombatText", cooldowntext = "CooldownText", mplustimer = "MythicPlus" }
     for _, kind in ipairs(kinds) do
         local stage = ns.Previews:Create(kind, env.CreateFrame("Frame"), ns.modules[mods[kind]], {})
         assert(stage, "no preview " .. kind)

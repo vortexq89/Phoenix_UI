@@ -301,7 +301,7 @@ local schema = {
       cog = { { type = "range", key = "auras.zoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01 } } }),
     bz(Opt.With(Opt.Border("auras.border"), { disabled = noAuras })),
     ------------------------------------------------------------ contexts
-    { type = "tab", label = "NP_TAB_CONTEXTS" },
+    { type = "tab", label = "NP_TAB_CONTEXTS", preview = false },
     { type = "header", label = "NP_CONTEXTS", icon = "maps" },
     px({ type = "toggle", gate = true, key = "contexts.enabled", label = "NP_CONTEXTS_ENABLE", desc = "NP_CONTEXTS_ENABLE_DESC",
       keywords = "instance dungeon raid pvp arena battleground world zone" }),
@@ -311,7 +311,7 @@ for _, key in ipairs({ "world", "instance", "pvp" }) do
 end
 local game = {
     ------------------------------------------------------------ client CVars
-    { type = "tab", label = "TAB_GAME" },
+    { type = "tab", label = "TAB_GAME", preview = false },
     { type = "header", label = "NP_STACKING", icon = "grid" },
     stacking("Enemy", { label = "NP_STACK_ENEMY", desc = "NP_STACK_ENEMY_DESC" }),
     stacking("Friendly", { label = "NP_STACK_FRIENDLY", desc = "NP_STACK_FRIENDLY_DESC" }),

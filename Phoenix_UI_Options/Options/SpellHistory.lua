@@ -1,7 +1,6 @@
 local _, ns = ...
 
 ns:RegisterOptions("SpellHistory", {
-    { type = "preview", kind = "spellhistory" },
     { type = "header", label = "SH_LAYOUT", icon = "grid" },
     { type = "range", key = "count", label = "SH_COUNT", min = 2, max = 12, step = 1 },
     { type = "range", key = "size", label = "SH_SIZE", min = 18, max = 64, step = 1 },

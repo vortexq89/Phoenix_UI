@@ -1713,7 +1713,7 @@ function Config.BuildSchemaPage(parent, m, schema)
         local t = item.type
         if t == "tab" then
             tab = #page.tabList + 1
-            page.tabList[tab] = { value = tab, label = text(item.label), icon = item.icon }
+            page.tabList[tab] = { value = tab, label = text(item.label), icon = item.icon, noPreview = item.preview == false }
             card = nil
         elseif t == "scope" then
             page.tops[#page.tops + 1] = buildScope(page, m, item)
@@ -1824,6 +1824,10 @@ function Config.BuildSchemaPage(parent, m, schema)
     function page:PlaceBand(top, width)
         local pc = self.pinned
         if not pc or self.docked then return top end
+        -- a tab that styles nothing on the sample (zones, sounds, behaviour) shows no preview, as in EllesmereUI
+        local tl = self.tabList and self.tabList[self.tab or 1]
+        self.bandHidden = tl and tl.noPreview or false
+        if self.bandHidden then pc:Hide(); return top end
         pc:ClearAllPoints()
         pc:SetPoint("TOPLEFT", self, "TOPLEFT", 0, -top)
         pc:SetWidth(width + 2 * PAD)
@@ -1852,7 +1856,7 @@ function Config.BuildSchemaPage(parent, m, schema)
             self.scroll:SetPoint("BOTTOMRIGHT", -10, 0)
         end
         local y = 0 -- the first section's own 40 px title band is the top space (t228)
-        if self.pinned and not self.docked then y = 12 end -- a little air under the preview band
+        if self.pinned and not self.docked and not self.bandHidden then y = 12 end -- a little air under the preview band
         local onPage = 0
         for _, c in ipairs(self.cards) do
             if not self.tabs or c.tab == self.tab then onPage = onPage + 1 end

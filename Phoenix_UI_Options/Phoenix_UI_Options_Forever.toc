@@ -26,17 +26,11 @@ Previews\ActionBars.lua
 Previews\Auras.lua
 Previews\DataTexts.lua
 Previews\Tooltip.lua
-Previews\Chat.lua
 Previews\MythicPlus.lua
-Previews\General.lua
 Previews\Combat.lua
-Previews\Interface.lua
 Previews\Tracker.lua
 Previews\Encounters.lua
 Previews\Sim.lua
-Previews\Quests.lua
-Previews\GroupFinder.lua
-Previews\Tools.lua
 Config\Window.lua
 Config\Groups.lua
 Config\PreviewDrag.lua

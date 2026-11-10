@@ -38,7 +38,6 @@ end
 local pickedWindow = WINDOWS[1].value
 
 local schema = {
-    { type = "preview", kind = "movers" },
     { type = "header", label = "MOVERS_UNLOCK_HEADER", icon = "movers" },
     { type = "description", text = "MOVERS_INTRO" },
     { type = "button", label = "MOVERS_UNLOCK", desc = "MOVERS_UNLOCK_DESC", button = "MOVERS_UNLOCK_BUTTON", icon = "movers",

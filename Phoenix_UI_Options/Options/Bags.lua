@@ -62,7 +62,6 @@ local function categoryRow(row, m)
 end
 
 ns:RegisterOptions("Bags", {
-    { type = "preview", kind = "bags" },
     { type = "tab", label = "TRACKER_TAB_LAYOUT" },
     { type = "header", label = "BAGS_LAYOUT", icon = "items" },
     { type = "select", key = "view", label = "BAGS_VIEW", desc = "BAGS_VIEW_DESC", values = VIEWS,

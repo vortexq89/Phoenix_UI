@@ -203,9 +203,6 @@
   "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew": {
    "fileDataID": 357854
   },
-  "Interface\\DialogFrame\\UI-DialogBox-Background-Dark": {
-   "fileDataID": 312922
-  },
   "Interface\\Icons\\Ability_Hunter_BeastCall": {
    "fileDataID": 132161
   },
@@ -383,9 +380,6 @@
   "Interface\\Minimap\\MiniMap-TrackingBorder": {
    "fileDataID": 136430
   },
-  "Interface\\Minimap\\MinimapArrow": {
-   "fileDataID": 136431
-  },
   "Interface\\Minimap\\UI-Minimap-Background": {
    "fileDataID": 136467
   },
@@ -400,9 +394,6 @@
   },
   "Interface\\TargetingFrame\\UI-RaidTargetingIcons": {
    "fileDataID": 137009
-  },
-  "Interface\\TargetingFrame\\UI-StatusBar": {
-   "fileDataID": 137012
   }
  },
  "soundkits": {

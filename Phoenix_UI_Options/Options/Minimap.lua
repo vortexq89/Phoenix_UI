@@ -28,7 +28,6 @@ local RECTS = {}
 for _, pct in ipairs({ 50, 60, 70, 80, 90 }) do RECTS[#RECTS + 1] = { value = pct, label = ("%d%%"):format(pct) } end
 
 ns:RegisterOptions("Minimap", {
-    { type = "preview", kind = "minimap" },
     { type = "tab", label = "TAB_APPEARANCE" },
     { type = "header", label = "MINIMAP_SHAPE", icon = "minimap" },
     { type = "select", key = "shape", label = "MINIMAP_SHAPE_PICK", desc = "MINIMAP_SHAPE_PICK_DESC",

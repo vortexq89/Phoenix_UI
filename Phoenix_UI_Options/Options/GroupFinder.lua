@@ -34,7 +34,6 @@ local KEYS = {
 local function sorts(m) return m.SORT_LIST end
 
 ns:RegisterOptions("GroupFinder", {
-    { type = "preview", kind = "groupfinder" },
     ------------------------------------------------------------ Filters
     { type = "tab", label = "LFG_TAB_FILTERS" },
     { type = "header", label = "LFG_PANEL", icon = "filter" },

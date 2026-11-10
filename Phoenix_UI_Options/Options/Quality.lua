@@ -27,7 +27,6 @@ local function QUIET_VALUES(m)
 end
 
 ns:RegisterOptions("Quality", {
-    { type = "preview", kind = "quality" },
     { type = "tab", label = "QUALITY_TAB_INTERFACE" },
     { type = "header", label = "QUALITY_INTERFACE", icon = "quality" },
     { type = "toggle", key = "hideTalkingHead", label = "HIDE_TALKING_HEAD", desc = "HIDE_TALKING_HEAD_DESC" },

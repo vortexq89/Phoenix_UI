@@ -10,23 +10,6 @@ local SAMPLE = {
     { sample = "PREVIEW_PARTY_DPS2", class = "ROGUE" },
 }
 
-P:Register("keystones", {
-    module = "MythicPlus",
-    width = 450,
-    height = 140,
-    build = function(stage, m)
-        local K = m.Keystones
-        local list = K:NewList(stage)
-        list:SetSize(420, list.height)
-        list:SetPoint("CENTER")
-        local rows = {}
-        for i, s in ipairs(SAMPLE) do
-            rows[i] = { name = L[s.sample], class = s.class, level = s.level, rating = s.rating,
-                dungeon = s.dungeon }
-        end
-        return function() K:Paint(list, rows) end
-    end,
-})
 
 -- The run timer, drawn by MythicPlus:StyleTimer and its renderer on a sample run.
 P:Register("mplustimer", {

@@ -38,7 +38,6 @@ local function sizeRow(row)
 end
 
 ns:RegisterOptions("Chat", {
-    { type = "preview", kind = "chat" },
     { type = "tab", label = "CHAT_TAB_WINDOW" },
     { type = "header", label = "CHAT_WINDOW", icon = "chat" },
     { type = "toggle", key = "skinWindows", label = "CHAT_SKIN_WINDOWS", desc = "CHAT_SKIN_WINDOWS_DESC",

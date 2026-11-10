@@ -332,7 +332,7 @@ ns:RegisterOptions("Tracker", {
         hidden = function(_, key) return key == "buffs" or key == "bars" end } }),
     Opt.Text("viewers.@.name", "TRACKER_NAME_FONT", { max = 20, row = { disabled = unstyled, hidden = notBars } }),
     ------------------------------------------------------------ Reminders
-    { type = "tab", label = "TRACKER_TAB_REMINDERS" },
+    { type = "tab", label = "TRACKER_TAB_REMINDERS", preview = false },
     { type = "header", label = "TRACKER_REMINDERS", icon = "bell" },
     { type = "toggle", gate = true, key = "reminders.enabled", label = "TRACKER_R_ENABLE", desc = "TRACKER_R_ENABLE_DESC",
       keywords = "reminder flask food rune oil buff pet healthstone missing" },
@@ -384,7 +384,7 @@ ns:RegisterOptions("Tracker", {
       disabled = function(m) return not m.db.auraBars.enabled end },
     { type = "description", text = "TRACKER_NOTE" },
     ------------------------------------------------------------ Visibility
-    { type = "tab", label = "TAB_BEHAVIOUR" },
+    { type = "tab", label = "TAB_BEHAVIOUR", preview = false },
     { type = "header", label = "AB_VISIBILITY", icon = "opacity" },
     { type = "select", key = "viewers.@.visibility.mode", label = "TRACKER_VIS", desc = "TRACKER_VIS_DESC", values = VIS,
       keywords = "show hide combat target visibility" },

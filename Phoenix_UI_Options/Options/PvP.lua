@@ -2,7 +2,6 @@ local _, ns = ...
 local Opt = ns.Opt
 
 ns:RegisterOptions("PvP", {
-    { type = "preview", kind = "pvp" },
     { type = "header", label = "PVP_QUEUE", icon = "bell" },
     { type = "toggle", key = "safeQueue", label = "PVP_SAFE_QUEUE", desc = "PVP_SAFE_QUEUE_DESC", keywords = "leave queue" },
     { type = "toggle", key = "showTimer", label = "PVP_TIMER", desc = "PVP_TIMER_DESC", keywords = "queue timer countdown" },

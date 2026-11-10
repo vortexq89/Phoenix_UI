@@ -323,7 +323,7 @@ ns:RegisterOptions("GroupFrames", splice({
     { indicators = true }, -- the indicator slots go here (spliced below)
     ------------------------------------------------------------ auras
     ------------------------------------------------------------ click casting (ClickCast.lua)
-    { type = "tab", label = "GF_TAB_CLICK" },
+    { type = "tab", label = "GF_TAB_CLICK", preview = false },
     { type = "header", label = "GF_TAB_CLICK", icon = "keyboard" },
     px({ type = "toggle", key = "clickCast.enabled", label = "GF_CC_ENABLE", desc = "GF_CC_ENABLE_DESC", combat = true,
       keywords = "click casting clique bindings healer mouseover" }),

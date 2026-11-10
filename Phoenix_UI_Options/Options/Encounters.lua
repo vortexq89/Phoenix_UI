@@ -158,7 +158,7 @@ ns:RegisterOptions("Encounters", flat({
     { type = "description", text = "ENC_BIG_BARS_TEXT" },
     barRows("timeline.big", noBig, "state.danger"),
 
-    { type = "tab", label = "ENC_TAB_BOSSES", feature = "encounterTimeline" },
+    { type = "tab", label = "ENC_TAB_BOSSES", feature = "encounterTimeline", preview = false },
     { type = "header", label = "ENC_BOSSES", icon = "boss" },
     { type = "description", text = "ENC_BOSSES_TEXT" },
     { type = "button", label = "EJW_OPEN", desc = "EJW_OPEN_DESC", button = "EJW_OPEN_BUTTON", icon = "boss",
@@ -203,7 +203,7 @@ ns:RegisterOptions("Encounters", flat({
       keywords = "flash screen edge red critical bigwigs" },
     Opt.Text("warnings.text", "ENC_WARN_FONT", { max = 40, row = { disabled = notBanner } }),
 
-    { type = "tab", label = "ENC_TAB_TIMERS" },
+    { type = "tab", label = "ENC_TAB_TIMERS", preview = false },
     { type = "header", label = "ENC_PULL", icon = "encounters" },
     { type = "range", key = "pull.seconds", label = "ENC_PULL_SECONDS", min = 3, max = 30, step = 1 },
     { type = "button", label = "ENC_PULL_START", desc = "ENC_PULL_START_DESC", button = "ENC_PULL_BUTTON", icon = "encounters",
@@ -224,7 +224,7 @@ ns:RegisterOptions("Encounters", flat({
     { type = "button", label = "ENC_BREAK_END", desc = "ENC_BREAK_END_DESC", button = "ENC_CANCEL", icon = "close",
       func = function(m) m:Break(0) end },
 
-    { type = "tab", label = "ENC_TAB_SOUNDS" },
+    { type = "tab", label = "ENC_TAB_SOUNDS", preview = false },
     { type = "header", label = "ENC_COUNTDOWN", icon = "sound" },
     { type = "toggle", gate = true, key = "countdown.enabled", label = "ENC_VOICE", desc = "ENC_VOICE_DESC",
       keywords = "pull timer countdown voice sound" },
@@ -246,7 +246,7 @@ ns:RegisterOptions("Encounters", flat({
     { type = "button", label = "ENC_SOUND_TEST", desc = "ENC_SOUND_TEST_DESC", button = "MEDIA_PLAY", icon = "sound",
       feature = "encounterWarnings", func = function(m) m:PlayWarningSound(2) end },
 
-    { type = "tab", label = "ENC_TAB_BIGWIGS" },
+    { type = "tab", label = "ENC_TAB_BIGWIGS", preview = false },
     { type = "header", label = "ENC_BIGWIGS", icon = "addon" },
     { type = "toggle", key = "bigwigs", label = "ENC_BW_STYLE", desc = "ENC_BW_STYLE_DESC", keywords = "bigwigs littlewigs bars style" },
     { type = "description", text = function() return M and M.BigWigs and M.BigWigs:StatusText() or L.ENC_BW_ABSENT end },

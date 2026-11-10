@@ -2,7 +2,6 @@ local _, ns = ...
 local Opt = ns.Opt
 
 ns:RegisterOptions("AFK", {
-    { type = "preview", kind = "afk" },
     { type = "header", label = "AFK_SCREEN", icon = "afk" },
     { type = "toggle", key = "notInInstances", label = "AFK_NOT_INSTANCES", desc = "AFK_NOT_INSTANCES_DESC",
       keywords = "dungeon raid instance" },

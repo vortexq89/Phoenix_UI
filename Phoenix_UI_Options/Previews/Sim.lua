@@ -1,5 +1,5 @@
 local _, ns = ...
-local L, P, W, Skin, Theme = ns.L, ns.Previews, ns.Widgets, ns.Skin, ns.Theme
+local L, W, Skin, Theme = ns.L, ns.Widgets, ns.Skin, ns.Theme
 
 --[[ The Sim results card: DPS, the compared sets with their gain or loss, or the stat weights. One painter for
     the page's results card and the pinned preview (sample result), so both always look the same. ]]
@@ -168,22 +168,3 @@ function C:Current(m)
     return m:Sample(), true
 end
 
-P:Register("sim", {
-    module = "Sim",
-    height = 222,
-    build = function(stage, m)
-        local card = C:New(stage)
-        card:SetPoint("TOPLEFT", 24, -18)
-        card:SetPoint("TOPRIGHT", -24, -18)
-        card:SetHeight(card.height)
-        card.badge = W:Badge(stage, L.SIM_SAMPLE_BADGE, "state.info", "test")
-        card.badge:SetPoint("BOTTOMRIGHT", -12, 10)
-        ns.Events:Listen("PUI_SIM_CHANGED", stage, function() if stage:IsVisible() then stage:Redraw() end end)
-        return function()
-            local r, sample = C:Current(m)
-            if sample and m.db.mode == "weights" then r.mode = "weights" end
-            C:Paint(card, r)
-            card.badge:SetShown(sample)
-        end
-    end,
-})

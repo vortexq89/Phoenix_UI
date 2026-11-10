@@ -117,44 +117,41 @@ P:Register("nameplate", {
         local holder = CreateFrame("Frame", nil, stage)
         holder:SetAllPoints()
         local drawOld = legacy(holder, m)
-        local plates
-        return function(view)
+        local plate
+        -- One plate, the kind picked in the scope bar, centred at its real size with every part on it (cast bar
+        -- filling, auras with stacks and timers, marker, class resource): what that plate looks like in the world.
+        -- Each part is a hot spot that jumps to its settings.
+        return function(view, kind)
             local phoenix = m.db.mode == "phoenix" and m.BuildPlate ~= nil
             holder:SetShown(not phoenix)
-            for _, p in ipairs(plates or {}) do p:SetShown(phoenix) end
+            if plate then plate:SetShown(phoenix) end
             if not phoenix then drawOld(view); return end
-            if not plates then
-                plates = {}
-                for i = 1, 4 do
-                    local p = m:BuildPlate(stage, { preview = true, sample = true })
-                    p:EnableMouse(false)
-                    plates[i] = p
-                end
+            if not plate then
+                plate = m:BuildPlate(stage, { preview = true, sample = true })
+                plate:EnableMouse(false)
             end
             local st = view.states
             local samples = m.Samples()
-            -- the first plate wears your real target (or the nearest real unit you have) when there is one
-            local real = P.RealUnit("target") or P.RealUnit("focus")
-            if real and samples[1] then
-                samples[1].name = real.name or samples[1].name
-                if real.level then samples[1].level = real.level end
+            local s = kind == "friendly" and samples[3] or samples[1]
+            -- an enemy plate wears your real target (or focus) when there is one
+            local real = kind ~= "friendly" and (P.RealUnit("target") or P.RealUnit("focus"))
+            if real then
+                s.name = real.name or s.name
+                if real.level then s.level = real.level end
             end
-            local w = view:GetWidth()
-            for i, p in ipairs(plates) do
-                local s = samples[i]
-                s.frozen = true
-                s.target = st.target and i == 1 or false
-                s.hover = i == 3
-                if not st.marker then s.marker = nil end
-                s.quest = st.quest and i == 2 or false
-                if st.absorb then s.absorb = math.floor((s.hpMax or 1) * 0.15) else s.absorb = 0 end
-                if st.low and i == 1 then s.hp = math.floor((s.hpMax or 1) * 0.14) end
-                p:ClearAllPoints()
-                p:SetPoint("CENTER", stage, "LEFT", w * (i - 0.5) / #plates, 4)
-                p:Show()
-                m:DrawSample(p, s)
-                P.Hot(stage, p, "styles.@.width", L.UF_WIDTH)
-            end
+            s.frozen = ns.Anim:ReduceMotion() and true or false
+            s.target = st.target and true or false
+            s.hover = false
+            if not st.marker then s.marker = nil end
+            s.quest = st.quest and true or false
+            s.absorb = st.absorb and math.floor((s.hpMax or 1) * 0.15) or 0
+            if st.low then s.hp = math.floor((s.hpMax or 1) * 0.14) end
+            plate:ClearAllPoints()
+            plate:SetPoint("CENTER", stage, "CENTER", 0, 0)
+            plate:Show()
+            m:DrawSample(plate, s)
+            P.Hot(stage, plate.Health, "styles.@.width", L.UF_WIDTH)
+            P.Hot(stage, plate.Cast, "styles.@.cast.height", L.NP_CASTBAR)
         end
     end,
 })

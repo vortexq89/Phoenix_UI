@@ -13,7 +13,6 @@ local function textRow()
 end
 
 ns:RegisterOptions("ItemLevel", {
-    { type = "preview", kind = "itemlevel" },
     { type = "header", label = "ITEMLEVEL_WHERE", icon = "itemlevel" },
     { type = "toggle", key = "character", label = "ITEMLEVEL_CHARACTER", desc = "ITEMLEVEL_CHARACTER_DESC", keywords = "ilvl gear" },
     { type = "toggle", key = "inspect", label = "ITEMLEVEL_INSPECT", desc = "ITEMLEVEL_INSPECT_DESC",

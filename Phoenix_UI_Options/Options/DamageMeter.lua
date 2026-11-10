@@ -39,7 +39,6 @@ end
 
 local function customOff(m) return notPhoenix(m) or m.db.meter.barColor ~= "custom" end
 local rows = {
-    { type = "preview", kind = "damagemeter" },
     { type = "header", label = "DM_ENGINE", icon = "damagemeter" },
     { type = "select", key = "engine", label = "DM_ENGINE", desc = "DM_ENGINE_DESC", values = {
         { value = "phoenix", label = "DM_ENGINE_PHOENIX" }, { value = "blizzard", label = "DM_ENGINE_BLIZZARD" },
