@@ -97,6 +97,8 @@ P:Register("auras", {
                 end
                 m:ShowSample(b, s, key)
                 b:Show()
+                -- drag an icon's edge to size the icons; a click jumps to the size setting
+                if i == 1 then P.Hot(stage, b, "headers.@.size", ns.L.UF_SIZE) end
             end
         end
     end,

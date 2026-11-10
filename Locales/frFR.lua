@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "Apparence",
     TAB_TEXT = "Texte",
-    TAB_GAME = "Options du jeu",
     TAB_CONTENT = "Contenu",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "Neutre",
     NP_TAB_PLATES = "Plaques",
     NP_TAB_TARGET = "Cible",
-    NP_TAB_CONTEXTS = "Zones",
+    NP_TAB_WORLD = "Zones et jeu",
+    GF_TAB_BARS = "Vie et ressource",
     NP_MODE = "Plaques dessinées par",
     NP_MODE_DESC = "Phoenix dessine ses propres plaques par-dessus celles du jeu (vie, barre d'incantation, auras, icônes). Blizzard garde les plaques du jeu et Phoenix ne fait que les restyler. Nécessite un rechargement.",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "Affiche un faux groupe à la place des cadres, pour les régler hors groupe. Le combat met fin au test.",
     GF_TEST_BUTTON = "Basculer le groupe de test",
     GF_TEST_SIZE = "Taille du groupe de test",
-    GF_TAB_MARKERS = "Marqueurs",
     GF_MARKERS = "Barre de marqueurs de raid",
     GF_MARK_SHOW = "Afficher la barre de marqueurs de raid",
     GF_MARK_SHOW_DESC = "Boutons pour marquer la cible, poser des marqueurs au sol, lancer un appel et un compte à rebours de pull. En raid, il faut être chef ou assistant.",

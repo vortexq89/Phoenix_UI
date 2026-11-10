@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "Aspetto",
     TAB_TEXT = "Testo",
-    TAB_GAME = "Impostazioni di gioco",
     TAB_CONTENT = "Contenuto",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "Neutrale",
     NP_TAB_PLATES = "Targhe",
     NP_TAB_TARGET = "Bersaglio",
-    NP_TAB_CONTEXTS = "Zone",
+    NP_TAB_WORLD = "Zone e gioco",
+    GF_TAB_BARS = "Salute ed energia",
     NP_MODE = "Targhe disegnate da",
     NP_MODE_DESC = "Phoenix disegna le proprie targhe sopra quelle del gioco (salute, barra di lancio, aure, icone). Blizzard mantiene le targhe del gioco e Phoenix le ridisegna soltanto. Richiede un ricaricamento.",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "Mostra un gruppo fittizio dove si trovano i riquadri, per configurarli fuori dal gruppo. Il combattimento termina la prova.",
     GF_TEST_BUTTON = "Attiva/disattiva gruppo di prova",
     GF_TEST_SIZE = "Dimensione del gruppo di prova",
-    GF_TAB_MARKERS = "Segnalini",
     GF_MARKERS = "Barra segnalini incursione",
     GF_MARK_SHOW = "Mostra la barra segnalini incursione",
     GF_MARK_SHOW_DESC = "Pulsanti per segnare il bersaglio, segnalini a terra, appello e conto alla rovescia del pull. In incursione servono capo o assistente.",

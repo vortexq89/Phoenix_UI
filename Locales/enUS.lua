@@ -1230,7 +1230,6 @@ ns.RegisterLocale("enUS", {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "Appearance",
     TAB_TEXT = "Text",
-    TAB_GAME = "Game settings",
     TAB_CONTENT = "Content",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2516,7 +2515,8 @@ ns.RegisterLocale("enUS", {
     NP_NEUTRAL = "Neutral",
     NP_TAB_PLATES = "Plates",
     NP_TAB_TARGET = "Target",
-    NP_TAB_CONTEXTS = "Zones",
+    NP_TAB_WORLD = "Zones and game",
+    GF_TAB_BARS = "Health and power",
     NP_MODE = "Plates drawn by",
     NP_MODE_DESC = "Phoenix draws its own plates on top of the game's (health, cast bar, auras, badges). Blizzard keeps the game's plates and Phoenix only restyles them. Needs a reload.",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2660,7 +2660,6 @@ ns.RegisterLocale("enUS", {
     GF_TEST_DESC = "Shows a fake group where the frames sit, to set them up outside a group. Combat ends the test.",
     GF_TEST_BUTTON = "Toggle test group",
     GF_TEST_SIZE = "Test group size",
-    GF_TAB_MARKERS = "Markers",
     GF_MARKERS = "Raid marker bar",
     GF_MARK_SHOW = "Show the raid marker bar",
     GF_MARK_SHOW_DESC = "Buttons for target markers, world markers, a ready check and a pull countdown. Markers need leader or assist in a raid.",

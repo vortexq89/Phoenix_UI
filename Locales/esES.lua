@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "Apariencia",
     TAB_TEXT = "Texto",
-    TAB_GAME = "Ajustes del juego",
     TAB_CONTENT = "Contenido",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "Neutral",
     NP_TAB_PLATES = "Placas",
     NP_TAB_TARGET = "Objetivo",
-    NP_TAB_CONTEXTS = "Zonas",
+    NP_TAB_WORLD = "Zonas y juego",
+    GF_TAB_BARS = "Salud y poder",
     NP_MODE = "Placas dibujadas por",
     NP_MODE_DESC = "Phoenix dibuja sus propias placas sobre las del juego (salud, barra de lanzamiento, auras, iconos). Blizzard mantiene las placas del juego y Phoenix solo las reestiliza. Requiere recargar.",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "Muestra un grupo ficticio donde están los marcos, para configurarlos fuera de grupo. El combate termina la prueba.",
     GF_TEST_BUTTON = "Alternar grupo de prueba",
     GF_TEST_SIZE = "Tamaño del grupo de prueba",
-    GF_TAB_MARKERS = "Marcadores",
     GF_MARKERS = "Barra de marcadores de banda",
     GF_MARK_SHOW = "Mostrar la barra de marcadores de banda",
     GF_MARK_SHOW_DESC = "Botones para marcar objetivos, marcadores de mundo, comprobación de listos y cuenta atrás de pull. En banda los marcadores necesitan líder o ayudante.",

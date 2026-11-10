@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "Darstellung",
     TAB_TEXT = "Text",
-    TAB_GAME = "Spieleinstellungen",
     TAB_CONTENT = "Inhalt",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "Neutral",
     NP_TAB_PLATES = "Plaketten",
     NP_TAB_TARGET = "Ziel",
-    NP_TAB_CONTEXTS = "Zonen",
+    NP_TAB_WORLD = "Zonen und Spiel",
+    GF_TAB_BARS = "Gesundheit und Energie",
     NP_MODE = "Plaketten gezeichnet von",
     NP_MODE_DESC = "Phoenix zeichnet eigene Plaketten über die des Spiels (Gesundheit, Zauberleiste, Auren, Symbole). Blizzard behält die Plaketten des Spiels, Phoenix gestaltet sie nur um. Benötigt ein Neuladen.",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "Zeigt eine Beispielgruppe dort, wo die Fenster sitzen, um sie außerhalb einer Gruppe einzurichten. Kampf beendet den Test.",
     GF_TEST_BUTTON = "Testgruppe umschalten",
     GF_TEST_SIZE = "Größe der Testgruppe",
-    GF_TAB_MARKERS = "Markierungen",
     GF_MARKERS = "Schlachtzugsmarkierungsleiste",
     GF_MARK_SHOW = "Schlachtzugsmarkierungsleiste anzeigen",
     GF_MARK_SHOW_DESC = "Tasten für Zielmarkierungen, Weltmarkierungen, einen Bereitschaftscheck und einen Pull-Countdown. Markierungen brauchen im Schlachtzug Leiter- oder Assistentenrechte.",

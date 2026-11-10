@@ -5045,6 +5045,8 @@ try("tab consistency", function()
         if not m.hidden and C:EntryExists(m.key) then
             local page = C:Show(m.key)
             if page and page.tabList and #page.tabList > 1 then
+                -- at most six tabs a page (docs/BUILD_LOOP.md, page checklist "Organising")
+                if #page.tabList > 6 then problems[#problems + 1] = m.key .. " has " .. #page.tabList .. " tabs (six at most)" end
                 local perTab, seen = {}, {}
                 for _, r in ipairs(page.rows) do
                     local tab = r.card and r.card.tab or 1

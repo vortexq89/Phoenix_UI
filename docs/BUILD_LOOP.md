@@ -50,10 +50,9 @@ One turn, in this order:
 
 1. **Cooldown Manager preview, direct editing**: click a slot in the preview to open the picker on that slot, drag slots to reorder (the preview shows the real list since turn 5).
 2. **Names under the tiles** when a spell list is short.
-3. **Previews audit, one per turn**: Group Frames, Action Bars, Auras, Data texts, Mythic+ timer, Tooltip, Combat text, Cooldown text, Encounters against the checklist (hot spot on every part, real data, live motion).
-4. **Row flash** when a hot spot jumps to a setting (check strength against EllesmereUI in game).
+3. **Previews audit, one per turn**: Action Bars (hot spots on hotkey and count text), Data texts, Mythic+ timer, Tooltip, Combat text, Cooldown text, Encounters against the checklist (hot spot on every part, real data, live motion).
+4. **Row flash** exists (`row:Flash()` on every jump); compare its strength with EllesmereUI in game.
 5. **Simple / Advanced**: mark each row common or advanced; advanced behind the cog or a per-page switch.
-6. **Tabs to six or fewer** per page; regroup Nameplates (9) and Group Frames (8).
 7. **Search highlight and keyboard**: matched words highlighted; arrows and Enter in results.
 8. **Concept consistency** across frame families (same order, wording, ranges) and Copy from between families.
 9. **Anchor conflict clean-up** (layout lint warnings), then make them fail the build.
@@ -66,3 +65,4 @@ One turn, in this order:
 - **10 Nov 2026, turn 2**: samples wear the character's own spells (icons from the action bars, cast named after the real spell) in every preview and in Test frames. Every part of the nameplate and unit frame samples is a hot spot (name, health text, power text, portrait, marker, auras, cast bar, class resource); edges of a part drag its size where the page has a size row. This file written. Needs an in-game look: real icons appear, hot spots land on the right rows.
 - **10 Nov 2026, turn 3**: `ns.Opt.SpellList` (Config/SpellList.lua): lists of spells and items are tiles with real icons, right-click to remove, drag to reorder, a + tile with a spellbook or bag picker and search, the list still editable as text. Applied to six lists (Tracker custom bars, aura glows, wanted auras, aura bars; Action Bars item bar and ring). Needs an in-game look: icons resolve for names and items, drag reorder lands on the right tile, the picker popover position.
 - **10 Nov 2026, turns 4 to 6**: pickers on the three single-spell fields (`single`, `store = "name"`, `addSuffix`). Custom Cooldown Manager bars preview their own spells; the preview is a hot spot to the list. Cast Bars preview audited: live casts, hot spots on icon, name and timer. Needs an in-game look: the picker inside the range-fade cog popover, the trigger spell stored by name.
+- **10 Nov 2026, turns 7 and 8**: Group Frames and Auras previews audited (hot spots). Tabs: no page over six (Nameplates 9 to 6, Group Frames 8 to 5, Unit Frames 7 to 6), guarded by a harness test. Needs an in-game look: the merged tabs read well and are not too long.

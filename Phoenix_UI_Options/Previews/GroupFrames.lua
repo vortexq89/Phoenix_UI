@@ -91,6 +91,13 @@ P:Register("groupframe", {
                 for _, f in ipairs(pool) do f:SetAlpha(1) end
             end
             root:Show()
+            -- the first frame carries the hot spots: its body sizes the frames, its texts jump to their formats
+            local f = pool[1]
+            if f then
+                P.Hot(stage, f, "profiles.@.width", ns.L.UF_WIDTH)
+                P.Hot(stage, f.NameText, "profiles.@.tags.name", ns.L.UF_TAG_NAME)
+                P.Hot(stage, f.HealthText, "profiles.@.tags.health", ns.L.UF_TAG_HEALTH)
+            end
         end
     end,
 })

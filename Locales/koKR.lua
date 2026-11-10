@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "외형",
     TAB_TEXT = "텍스트",
-    TAB_GAME = "게임 설정",
     TAB_CONTENT = "내용",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "중립",
     NP_TAB_PLATES = "이름표",
     NP_TAB_TARGET = "대상",
-    NP_TAB_CONTEXTS = "지역",
+    NP_TAB_WORLD = "지역 및 게임",
+    GF_TAB_BARS = "생명력 및 자원",
     NP_MODE = "이름표 그리기",
     NP_MODE_DESC = "Phoenix는 게임 이름표 위에 자체 이름표(생명력, 시전 바, 효과, 아이콘)를 그립니다. Blizzard는 게임 이름표를 유지하고 Phoenix는 스타일만 바꿉니다. UI 재시작이 필요합니다.",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "창이 있는 위치에 가짜 그룹을 표시해 그룹 밖에서도 설정할 수 있습니다. 전투가 시작되면 테스트가 끝납니다.",
     GF_TEST_BUTTON = "테스트 그룹 전환",
     GF_TEST_SIZE = "테스트 그룹 크기",
-    GF_TAB_MARKERS = "징표",
     GF_MARKERS = "공격대 징표 바",
     GF_MARK_SHOW = "공격대 징표 바 표시",
     GF_MARK_SHOW_DESC = "대상 징표, 위치 표시기, 전투 준비 확인, 풀링 카운트다운 버튼입니다. 공격대에서는 공격대장이나 부공격대장 권한이 필요합니다.",

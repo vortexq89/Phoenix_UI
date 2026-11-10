@@ -125,7 +125,6 @@ local schema = {
       disabled = noClick, keywords = "click through friendly" }),
     { type = "description", text = "NP_CLICK_NOTE" },
     ------------------------------------------------------------ health
-    { type = "tab", label = "UF_TAB_HEALTH" },
     { type = "header", label = "UF_HEALTH_BAR", icon = "border" },
     px({ type = "texture", key = "styles.@.texture", label = "NP_KIND_TEXTURE", desc = "NP_KIND_TEXTURE_DESC", allowDefault = true }),
     px({ type = "toggle", key = "styles.@.reverse", label = "CB_REVERSE", desc = "NP_REVERSE_DESC", keywords = "fill direction" }),
@@ -271,7 +270,6 @@ local schema = {
       keywords = "elite rare boss star" }),
     px({ type = "range", key = "styles.@.icons.size", label = "UF_ICON_SIZE", min = 8, max = 32, step = 1 }),
     ------------------------------------------------------------ auras
-    { type = "tab", label = "NP_AURAS" },
     { type = "header", label = "UF_DEBUFFS", icon = "auras" },
     px({ type = "select", key = "styles.@.auras.debuffs", label = "UF_DEBUFF_FILTER", desc = "NP_DEBUFFS_DESC", values = DEBUFFS,
       keywords = "debuff dots mine important filter" }),
@@ -301,7 +299,7 @@ local schema = {
       cog = { { type = "range", key = "auras.zoom", label = "ICON_ZOOM", min = 0, max = 0.3, step = 0.01 } } }),
     bz(Opt.With(Opt.Border("auras.border"), { disabled = noAuras })),
     ------------------------------------------------------------ contexts
-    { type = "tab", label = "NP_TAB_CONTEXTS", preview = false },
+    { type = "tab", label = "NP_TAB_WORLD", preview = false },
     { type = "header", label = "NP_CONTEXTS", icon = "maps" },
     px({ type = "toggle", gate = true, key = "contexts.enabled", label = "NP_CONTEXTS_ENABLE", desc = "NP_CONTEXTS_ENABLE_DESC",
       keywords = "instance dungeon raid pvp arena battleground world zone" }),
@@ -311,7 +309,6 @@ for _, key in ipairs({ "world", "instance", "pvp" }) do
 end
 local game = {
     ------------------------------------------------------------ client CVars
-    { type = "tab", label = "TAB_GAME", preview = false },
     { type = "header", label = "NP_STACKING", icon = "grid" },
     stacking("Enemy", { label = "NP_STACK_ENEMY", desc = "NP_STACK_ENEMY_DESC" }),
     stacking("Friendly", { label = "NP_STACK_FRIENDLY", desc = "NP_STACK_FRIENDLY_DESC" }),

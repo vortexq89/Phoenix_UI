@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "Aparência",
     TAB_TEXT = "Texto",
-    TAB_GAME = "Configurações do jogo",
     TAB_CONTENT = "Conteúdo",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "Neutro",
     NP_TAB_PLATES = "Placas",
     NP_TAB_TARGET = "Alvo",
-    NP_TAB_CONTEXTS = "Zonas",
+    NP_TAB_WORLD = "Zonas e jogo",
+    GF_TAB_BARS = "Vida e poder",
     NP_MODE = "Placas desenhadas por",
     NP_MODE_DESC = "Phoenix desenha suas próprias placas sobre as do jogo (vida, barra de lançamento, auras, ícones). Blizzard mantém as placas do jogo e Phoenix só as reestiliza. Requer recarregar.",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "Mostra um grupo fictício onde ficam os quadros, para configurá-los fora de grupo. O combate encerra o teste.",
     GF_TEST_BUTTON = "Alternar grupo de teste",
     GF_TEST_SIZE = "Tamanho do grupo de teste",
-    GF_TAB_MARKERS = "Marcadores",
     GF_MARKERS = "Barra de marcadores de raide",
     GF_MARK_SHOW = "Mostrar a barra de marcadores de raide",
     GF_MARK_SHOW_DESC = "Botões para marcar o alvo, marcadores de mundo, verificação de prontidão e contagem de pull. Em raide, marcadores exigem líder ou assistente.",

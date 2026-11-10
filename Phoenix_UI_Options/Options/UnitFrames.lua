@@ -242,7 +242,7 @@ ns:RegisterOptions("UnitFrames", {
       cog = { { type = "range", key = "units.@.oocAlpha", label = "UF_OOC_ALPHA", min = 0, max = 1, step = 0.05, percent = true },
               { type = "toggle", key = "units.@.oocKeep", label = "UF_OOC_KEEP", desc = "UF_OOC_KEEP_DESC" } } }),
     ------------------------------------------------------------ health
-    { type = "tab", label = "UF_TAB_HEALTH" },
+    { type = "tab", label = "GF_TAB_BARS" },
     { type = "header", label = "UF_HEALTH_BAR", icon = "heart" },
     px({ type = "select", key = "units.@.bar.color", label = "UF_HEALTH_COLOR", desc = "UF_HEALTH_COLOR_DESC", values = HEALTH_COLOR,
       keywords = "class colour reaction gradient",
@@ -290,7 +290,6 @@ ns:RegisterOptions("UnitFrames", {
     px({ type = "color", key = "colors.fixed", label = "UF_THEME_COLOR", desc = "UF_THEME_COLOR_DESC", token = "bg.raised",
       reset = true, classToken = true }),
     ------------------------------------------------------------ power
-    { type = "tab", label = "UF_TAB_POWER" },
     { type = "header", label = "UF_POWER_BAR", icon = "speed" },
     px({ type = "select", key = "units.@.powerBar.show", label = "UF_POWER_SHOW", values = POWER_SHOW, combat = true }),
     px({ type = "range", key = "units.@.powerBar.height", label = "UF_POWER_HEIGHT", min = 2, max = 30, step = 1, combat = true }),

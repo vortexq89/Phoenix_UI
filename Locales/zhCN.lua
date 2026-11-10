@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "外观",
     TAB_TEXT = "文字",
-    TAB_GAME = "游戏设置",
     TAB_CONTENT = "内容",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "中立",
     NP_TAB_PLATES = "姓名板",
     NP_TAB_TARGET = "目标",
-    NP_TAB_CONTEXTS = "区域",
+    NP_TAB_WORLD = "区域与游戏",
+    GF_TAB_BARS = "生命与能量",
     NP_MODE = "姓名板绘制方",
     NP_MODE_DESC = "Phoenix 在游戏姓名板上方绘制自己的姓名板（生命值、施法条、光环、图标）。Blizzard 保留游戏姓名板，Phoenix 只重新美化。需要重载界面。",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "在框体所在位置显示一个虚拟队伍，便于在队伍外设置。进入战斗会结束测试。",
     GF_TEST_BUTTON = "切换测试队伍",
     GF_TEST_SIZE = "测试队伍规模",
-    GF_TAB_MARKERS = "标记",
     GF_MARKERS = "团队标记条",
     GF_MARK_SHOW = "显示团队标记条",
     GF_MARK_SHOW_DESC = "目标标记、世界标记、就位确认和开怪倒计时按钮。团队中需要团长或助理权限。",

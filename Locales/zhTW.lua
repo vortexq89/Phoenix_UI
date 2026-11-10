@@ -1207,7 +1207,6 @@ local T = {
     ---------------------------------------------------------------- tabs
     TAB_APPEARANCE = "外觀",
     TAB_TEXT = "文字",
-    TAB_GAME = "遊戲設定",
     TAB_CONTENT = "內容",
     ---------------------------------------------------------------- nameplates
     ---------------------------------------------------------------- groupframes
@@ -2490,7 +2489,8 @@ local T = {
     NP_NEUTRAL = "中立",
     NP_TAB_PLATES = "名條",
     NP_TAB_TARGET = "目標",
-    NP_TAB_CONTEXTS = "區域",
+    NP_TAB_WORLD = "區域與遊戲",
+    GF_TAB_BARS = "生命與能量",
     NP_MODE = "名條繪製方",
     NP_MODE_DESC = "Phoenix 在遊戲名條上方繪製自己的名條（生命值、施法條、光環、圖示）。Blizzard 保留遊戲名條，Phoenix 只重新美化。需要重新載入介面。",
     NP_MODE_PHOENIX = "Phoenix",
@@ -2634,7 +2634,6 @@ local T = {
     GF_TEST_DESC = "在框架所在位置顯示一個虛擬隊伍，便於在隊伍外設定。進入戰鬥會結束測試。",
     GF_TEST_BUTTON = "切換測試隊伍",
     GF_TEST_SIZE = "測試隊伍規模",
-    GF_TAB_MARKERS = "標記",
     GF_MARKERS = "團隊標記條",
     GF_MARK_SHOW = "顯示團隊標記條",
     GF_MARK_SHOW_DESC = "目標標記、世界標記、準備確認和開怪倒數按鈕。團隊中需要團長或助理權限。",
