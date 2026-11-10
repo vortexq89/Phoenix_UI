@@ -48,9 +48,8 @@ One turn, in this order:
 
 ## Backlog (top first)
 
-1. **Cooldown Manager preview, direct editing**: click a slot in the preview to open the picker on that slot, drag slots to reorder (the preview shows the real list since turn 5).
 2. **Names under the tiles** when a spell list is short.
-3. **Previews audit, one per turn**: Action Bars (hot spots on hotkey and count text), Data texts, Mythic+ timer, Tooltip, Combat text, Cooldown text, Encounters against the checklist (hot spot on every part, real data, live motion).
+3. **Action Bars preview**: hot spots on the hotkey and count texts (needs a text hot spot that does not start a size drag).
 4. **Row flash** exists (`row:Flash()` on every jump); compare its strength with EllesmereUI in game.
 5. **Simple / Advanced**: mark each row common or advanced; advanced behind the cog or a per-page switch.
 8. **Concept consistency** across frame families (same order, wording, ranges) and Copy from between families.
@@ -66,3 +65,4 @@ One turn, in this order:
 - **10 Nov 2026, turns 4 to 6**: pickers on the three single-spell fields (`single`, `store = "name"`, `addSuffix`). Custom Cooldown Manager bars preview their own spells; the preview is a hot spot to the list. Cast Bars preview audited: live casts, hot spots on icon, name and timer. Needs an in-game look: the picker inside the range-fade cog popover, the trigger spell stored by name.
 - **10 Nov 2026, turns 7 and 8**: Group Frames and Auras previews audited (hot spots). Tabs: no page over six (Nameplates 9 to 6, Group Frames 8 to 5, Unit Frames 7 to 6), guarded by a harness test. Needs an in-game look: the merged tabs read well and are not too long.
 - **10 Nov 2026, turn 9**: search results highlight the typed words; up, down and Enter work from the search box. Needs an in-game look: the edit box passes the arrow keys (OnKeyDown) on both clients.
+- **10 Nov 2026, turns 10 and 11**: custom Cooldown Manager bars are edited in the preview (right-click remove, drag reorder, click to the list, with Undo). Previews audit finished for Data texts, Tooltip, Cooldown text, Mythic+ timer (hot spots). Needs an in-game look: drag reorder inside the preview, Undo after a removal.

@@ -77,6 +77,7 @@ P:Register("tooltip", {
         return function()
             local db = m.db
             local mage = { ns.Util.ClassColor("MAGE") }
+            P.Hot(stage, tt, "scale", L.SCALE)
             if db.skin then
                 m:StyleFrame(tt)
                 if db.classBorder then ns.Skin:SetBorderColor(tt, mage[1], mage[2], mage[3], 1)

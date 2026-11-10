@@ -45,6 +45,7 @@ P:Register("datatexts", {
                 o2.frame:SetScale(ns.Previews.ClampScale(scale))
                 o2.frame:SetAlpha(db.mouseover and 0.35 or 1)
             end
+            P.Hot(stage, o.frame, "width", L.DT_WIDTH)
             xp:SetShown(db.xpBar)
             if db.xpBar then
                 m:PaintDataBar(xp, db.barHonor and HONOR or XP, true, true)

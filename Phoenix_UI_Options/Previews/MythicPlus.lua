@@ -28,6 +28,7 @@ P:Register("mplustimer", {
             f:ClearAllPoints()
             f:SetPoint("TOPLEFT", self, "TOPLEFT", 12, -8)
             redraw()
+            P.Hot(self, f, "width", L.MPLUS_TIMER_WIDTH)
             keys:ClearAllPoints()
             keys:SetPoint("TOPLEFT", f, "TOPRIGHT", 14, -4)
             keys:SetShown(m.db.partyKeys and m.db.keysWindow)

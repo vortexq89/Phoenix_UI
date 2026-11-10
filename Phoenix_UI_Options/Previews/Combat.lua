@@ -48,6 +48,7 @@ P:Register("cooldowntext", {
                 b:ClearAllPoints()
                 b:SetPoint("CENTER", self, "LEFT", w * (i - 0.5) / #buttons, 0)
                 m.PaintCountdown(b.text, m:SizeFor(44))
+                if i == 1 then P.Hot(self, b, "size", L.FONT_SIZE) end
                 b.text:SetText(countdown(db, left))
                 if db.byRemaining then
                     local which = (left < db.expiring and "expiring") or (left < 60 and "seconds") or "minutes"

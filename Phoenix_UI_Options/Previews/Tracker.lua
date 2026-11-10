@@ -1,5 +1,5 @@
 local _, ns = ...
-local L, P, Skin, Media = ns.L, ns.Previews, ns.Skin, ns.Media
+local L, P, Skin, Media, W = ns.L, ns.Previews, ns.Skin, ns.Media, ns.Widgets
 
 -- The viewer or custom bar picked in the scope bar with sample cooldowns, buffs or bars, laid out by the same grid
 -- code as the real items (Tracker M.Grid: size, per row, rows, row size step, spacing, growth, wrap, centre) and
@@ -100,6 +100,58 @@ local function glow(m, key, a, which, on, style)
     end
 end
 
+--[[ Direct editing of a custom bar in its preview (docs/BUILD_LOOP.md backlog 1): each icon of the bar's own list
+    gets a button over it. Right-click takes the entry out, dragging it onto another icon moves it there, a click
+    jumps to the list (where the + tile adds). The change goes through the same path as a settings row, so Undo
+    takes it back. ]]
+local function editButton(stage, m, row, a)
+    local e = a.editBtn
+    if e then return e end
+    e = CreateFrame("Button", nil, stage)
+    e:SetAllPoints(a)
+    e:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    e:RegisterForDrag("LeftButton")
+    local function write(parts)
+        local path = "viewers." .. e.key .. ".list"
+        ns.Config.RecordUndo(m, path, path)
+        ns.DB:Set(m, path, table.concat(parts, ", "))
+        if ns.Config.UpdateUndo then ns.Config:UpdateUndo() end
+        if m.RefreshCustom then m:RefreshCustom() end
+    end
+    e:SetScript("OnEnter", function(self) W.ShowTooltip(self, ns.L.TRACKER_CUSTOM_LIST, ns.L.SPELLLIST_TIP) end)
+    e:SetScript("OnLeave", W.HideTooltip)
+    e:SetScript("OnClick", function(self, button)
+        if button == "RightButton" then
+            local parts = ns.Opt.SpellListSplit(m:Viewer(self.key).list)
+            table.remove(parts, self.index)
+            write(parts)
+        elseif stage.onHot then
+            stage.onHot("viewers.@.list", row.puiHot)
+        end
+    end)
+    e:SetScript("OnDragStart", function(self) self.dragging = true; a:SetAlpha(0.5) end)
+    e:SetScript("OnDragStop", function(self)
+        a:SetAlpha(1)
+        if not self.dragging then return end
+        self.dragging = nil
+        local x, y = GetCursorPosition()
+        local sc = stage:GetEffectiveScale()
+        x, y = x / sc, y / sc
+        for _, other in ipairs(row.items) do
+            local o = other.editBtn
+            if o and o ~= self and o:IsShown() and o:GetLeft() and x >= o:GetLeft() and x <= o:GetRight()
+                and y >= o:GetBottom() and y <= o:GetTop() then
+                local parts = ns.Opt.SpellListSplit(m:Viewer(self.key).list)
+                local moved = table.remove(parts, self.index)
+                if moved then table.insert(parts, math.min(o.index, #parts + 1), moved); write(parts) end
+                return
+            end
+        end
+    end)
+    a.editBtn = e
+    return e
+end
+
 local function drawIcons(stage, m, key, row)
     local v = m:Viewer(key)
     local list = sampleFor(key)
@@ -149,6 +201,16 @@ local function drawIcons(stage, m, key, row)
             a.keybind:SetText(v.keybinds and key ~= "buffs" and ("S" .. i) or "")
             glow(m, key, a, "proc", d[4], v.procGlow)
             glow(m, key, a, "ready", i == 3 and not onCD, v.readyGlow)
+        end
+        -- the bar's own entries can be edited in place
+        local editable = p ~= nil and d ~= nil and d.icon ~= nil
+        if editable or a.editBtn then
+            local e = editButton(stage, m, row, a)
+            e.key, e.index = key, i
+            stage.edits = stage.edits or {}
+            stage.edits[i] = e
+            e:SetFrameLevel(row:GetFrameLevel() + 30)
+            e:SetShown(editable)
         end
     end
 end

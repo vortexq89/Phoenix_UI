@@ -1455,6 +1455,22 @@ try("previews", function()
         assert(not P.real and P.SAMPLE.icons[1] == stock, "stock icons not restored")
         rawset(env, "C_ActionBar", oa); rawset(env, "C_Spell", osp)
     end
+    -- a custom Cooldown Manager bar is edited in its preview: right-click an icon takes its entry out, Undo restores it
+    do
+        local T = ns.modules.Tracker
+        local keep = T:Viewer("custom1").list
+        ns.DB:Set(T, "viewers.custom1.list", "100, 200, 300")
+        local st = ns.Previews:Create("tracker", env.CreateFrame("Frame"), T, { scope = { unit = "custom1" } })
+        st:SetSize(600, 128)
+        st:Redraw()
+        local btn = st.edits and st.edits[2]
+        assert(btn, "the custom bar preview has no edit buttons")
+        scripts[btn].OnClick(btn, "RightButton")
+        assert(T:Viewer("custom1").list == "100, 300", "right-click in the preview did not remove: " .. tostring(T:Viewer("custom1").list))
+        ns.Config:Undo()
+        assert(T:Viewer("custom1").list == "100, 200, 300", "Undo did not restore the entry")
+        ns.DB:Set(T, "viewers.custom1.list", keep)
+    end
     -- a tab that styles nothing on the sample hides the band
     local np = ns.Config:Show("NamePlates")
     np.tab = #np.tabList; np:Layout()
