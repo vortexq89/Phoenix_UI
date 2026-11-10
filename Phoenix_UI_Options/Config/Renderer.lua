@@ -159,6 +159,29 @@ function Config.IsMixed(page, m, item)
     return false
 end
 
+--[[ Simple view (docs/BUILD_LOOP.md backlog): fine-tuning rows are told by the last part of their key (offsets,
+    strata, zoom, text formats …) or by `advanced = true / false` on the row. Off by default: every row shows. ]]
+local ADVANCED_LEAF = {}
+for leaf in ("strata x y point zoom iconZoom smooth reverse gradient gap decimals nameLength wrap hold vertical " ..
+    "healAbsorb clickThrough rowDelta keepInPlace oocKeep hSpacing vSpacing spacingX spacingY rangeSpell attach " ..
+    "iconGap iconDetached markerPos markerAnchor bgAlpha bgColor timeFormat growth grow order swipe desat " ..
+    "nameTag healthTag levelTag infoTag tag customTicks direction separateOwn sort"):gmatch("%S+") do
+    ADVANCED_LEAF[leaf] = true
+end
+function Config.IsAdvanced(item)
+    if item.advanced ~= nil then return item.advanced end
+    local k = item.key
+    if type(k) ~= "string" then return false end
+    local parent, leaf = k:match("([^.]+)%.([^.]+)$")
+    if parent == "tags" then return true end
+    return ADVANCED_LEAF[leaf or k] or false
+end
+
+-- Simple view hides fine-tuning rows; a row a search or the preview jumped to stays shown
+function Config.SimpleHides(page, item)
+    return ns.DB.sv.global.ui.simple and Config.IsAdvanced(item) and not (page.reveal and page.reveal[item]) or false
+end
+
 Config.SetRowValue = setValue -- the path every control takes (the smoke harness drives it directly)
 Config.GetRowValue = getValue
 
@@ -722,6 +745,7 @@ function buildRow(card, page, m, item)
 
     function row:Refresh()
         local hidden = item.hidden and item.hidden(m, page.scope and page.scope.unit)
+        hidden = hidden or Config.SimpleHides(page, item)
         self.hiddenState = hidden
         local c = self.control
         if c and c.SetValue and item.type == "colors" then
@@ -1970,6 +1994,11 @@ function Config.BuildSchemaPage(parent, m, schema)
     function page:Focus(item)
         for _, row in ipairs(self.rows) do
             if owns(row, item) then
+                if row.hiddenState and Config.IsAdvanced(row.item) then
+                    self.reveal = self.reveal or {}
+                    self.reveal[row.item] = true
+                    row:Refresh()
+                end
                 if self.tabs and row.card.tab ~= self.tab then
                     self.tab = row.card.tab
                     self.tabs:SetValue(self.tab)
@@ -1995,6 +2024,14 @@ function Config.BuildSchemaPage(parent, m, schema)
         W.HidePopover()
         endHover()
     end)
+    -- Simple view switched (footer): every row re-decides whether it shows
+    function page:RefreshAll()
+        self.simpleGen = Config.simpleGen
+        for _, row in ipairs(self.rows) do row:Refresh() end
+        for _, row in ipairs(self.cogRows or {}) do row:Refresh() end
+        self:Layout()
+    end
+    page:HookScript("OnShow", function(self) if self.simpleGen ~= Config.simpleGen then self:RefreshAll() end end)
     page.scroll:HookScript("OnVerticalScroll", function() page:Stick() end)
     -- the first layout can run before the scroll frame has a size; columns are settled once it has one
     page.scroll:HookScript("OnSizeChanged", function() page:Layout() end)

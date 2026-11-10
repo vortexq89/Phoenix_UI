@@ -96,6 +96,9 @@ local T = {
     UNDO_DESC_NAMED = "Desfaz sua última alteração: %s.",
     UNDO_DONE = "Última alteração desfeita",
     UNDO_DONE_NAMED = "Desfeito: %s",
+    SIMPLE_VIEW = "Vista simples",
+    SIMPLE_VIEW_ALL = "Mostrar tudo",
+    SIMPLE_VIEW_DESC = "Oculta os ajustes finos (deslocamentos, camadas, zoom, formatos de texto e afins) para que cada página mostre o essencial. A busca e a prévia ainda chegam até eles.",
     ---------------------------------------------------------------- Skins
     SKINS = "Visuais",
     SKINS_DESC = "O visual Phoenix para janelas e diálogos da Blizzard, um interruptor por janela, com seu fundo, borda e destaque.",

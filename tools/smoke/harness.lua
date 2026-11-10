@@ -1201,6 +1201,23 @@ try("search pages and groups", function()
     assert(C:SearchEnter() and not C.results:IsShown(), "Enter did not open the picked result")
     C:Search("")
 end)
+-- Simple view: fine-tuning rows hide, a jump to one shows it again, switching back shows everything
+try("simple view", function()
+    local C = ns.Config
+    assert(C.IsAdvanced({ key = "styles.@.cast.gap" }) and C.IsAdvanced({ key = "units.@.tags.name" })
+        and not C.IsAdvanced({ key = "styles.@.width" }) and not C.IsAdvanced({ key = "x", advanced = false }), "advanced rows")
+    local page = C:Show("NamePlates")
+    local function hidden() local n = 0; for _, r in ipairs(page.rows) do if r.hiddenState then n = n + 1 end end; return n end
+    local before = hidden()
+    C:SetSimple(true)
+    assert(hidden() > before + 5, "Simple view hid nothing")
+    local adv
+    for _, r in ipairs(page.rows) do if r.hiddenState and C.IsAdvanced(r.item) and r.item.key then adv = r; break end end
+    page:Focus(adv.item)
+    assert(not adv.hiddenState, "a jump to a hidden row did not show it")
+    C:SetSimple(false)
+    assert(hidden() == before, "leaving Simple view did not bring every row back")
+end)
 -- resets: a row, a card and a whole module go back to their defaults; the module keeps its on/off state
 try("resets", function()
     local C, U = ns.Config, ns.Util

@@ -96,6 +96,9 @@ local T = {
     UNDO_DESC_NAMED = "Nimmt deine letzte Änderung zurück: %s.",
     UNDO_DONE = "Letzte Änderung rückgängig gemacht",
     UNDO_DONE_NAMED = "Rückgängig: %s",
+    SIMPLE_VIEW = "Einfache Ansicht",
+    SIMPLE_VIEW_ALL = "Alle Einstellungen",
+    SIMPLE_VIEW_DESC = "Blendet Feineinstellungen (Versatz, Ebenen, Zoom, Textformate und Ähnliches) aus, sodass jede Seite das Wesentliche zeigt. Suche und Live-Vorschau erreichen sie weiterhin.",
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",
     SKINS_DESC = "Die Phoenix-Optik für Blizzards Fenster und Dialoge, ein Schalter pro Fenster, mit deinem Hintergrund, Rahmen und Akzent.",

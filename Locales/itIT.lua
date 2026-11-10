@@ -96,6 +96,9 @@ local T = {
     UNDO_DESC_NAMED = "Annulla l'ultima modifica: %s.",
     UNDO_DONE = "Ultima modifica annullata",
     UNDO_DONE_NAMED = "Annullato: %s",
+    SIMPLE_VIEW = "Vista semplice",
+    SIMPLE_VIEW_ALL = "Mostra tutto",
+    SIMPLE_VIEW_DESC = "Nasconde le regolazioni fini (spostamenti, livelli, zoom, formati di testo e simili) così ogni pagina mostra l'essenziale. La ricerca e l'anteprima le raggiungono comunque.",
     ---------------------------------------------------------------- Skins
     SKINS = "Aspetti",
     SKINS_DESC = "L'aspetto Phoenix per finestre e dialoghi Blizzard, un interruttore per finestra, con sfondo, bordo e accento scelti.",

@@ -94,6 +94,9 @@ ns.RegisterLocale("enUS", {
     UNDO_DESC_NAMED = "Takes back your last change: %s.",
     UNDO_DONE = "Last change undone",
     UNDO_DONE_NAMED = "Undone: %s",
+    SIMPLE_VIEW = "Simple view",
+    SIMPLE_VIEW_ALL = "Show all settings",
+    SIMPLE_VIEW_DESC = "Hides the fine-tuning settings (offsets, layering, zoom, text formats and the like) so each page shows the essentials. Search and the live preview still reach them.",
 
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",

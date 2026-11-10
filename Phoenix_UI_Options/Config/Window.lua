@@ -729,11 +729,25 @@ local function buildFooter(f)
         ft.undo:SetEnabledState(self.CanUndo ~= nil and self:CanUndo())
     end
     Config:UpdateUndo()
+    -- Simple view: hides the fine-tuning rows on every page (Renderer.lua decides which)
+    ft.simple = W:Button(ft, L.SIMPLE_VIEW, "ghost", "hide", 160)
+    ft.simple:SetHeight(26)
+    ft.simple:SetPoint("LEFT", ft.undo, "RIGHT", 6, 0)
+    W.AttachTooltip(ft.simple, L.SIMPLE_VIEW, L.SIMPLE_VIEW_DESC)
+    function Config:SetSimple(on)
+        ns.DB.sv.global.ui.simple = on and true or false
+        self.simpleGen = (self.simpleGen or 0) + 1
+        ft.simple:SetText(on and L.SIMPLE_VIEW_ALL or L.SIMPLE_VIEW)
+        local page = self.current and self.pages and self.pages[self.current]
+        if page and page.RefreshAll then page:RefreshAll() end
+    end
+    ft.simple.onClick = function() Config:SetSimple(not ns.DB.sv.global.ui.simple) end
+    if ns.DB.sv.global.ui.simple then ft.simple:SetText(L.SIMPLE_VIEW_ALL) end
     h.profile, h.layout, h.test = ft.profileDD, ft.layout, ft.test
     h.editmode = ft.layout -- older callers (and the slash help) know it by this name
 
     ft.savedIcon = W.Icon(ft, "success", 12, "state.success")
-    ft.savedIcon:SetPoint("LEFT", ft.undo, "RIGHT", 18, 0)
+    ft.savedIcon:SetPoint("LEFT", ft.simple, "RIGHT", 18, 0)
     ft.savedArt = W.Texture(ft, "OVERLAY", 2) -- v7.1 status art over the flat glyphs (flame, warning, error, info)
     ft.savedArt:SetSize(14, 14)
     ft.savedArt:SetPoint("CENTER", ft.savedIcon, "CENTER")
