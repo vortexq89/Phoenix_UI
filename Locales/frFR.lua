@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "Fond illustré de la fenêtre des réglages, sections vitrées aux coins arrondis et lueurs d'accent. Désactivé : graphite uni.",
     TABS_MORE = "Plus",
     PREVIEW_BAND_HINT = "Cliquez sur une partie de l'aperçu pour aller à son réglage",
+    MODULE_OFF_BANNER = "%s est désactivé. Ses réglages sont conservés et s'appliquent dès que vous l'activez.",
+    MODULE_OFF_TURN_ON = "Activer",
+    UNDO = "Annuler",
+    UNDO_DESC = "Annule la dernière modification faite dans cette fenêtre.",
+    UNDO_DESC_NAMED = "Annule votre dernière modification : %s.",
+    UNDO_DONE = "Dernière modification annulée",
+    UNDO_DONE_NAMED = "Annulé : %s",
     ---------------------------------------------------------------- Skins
     SKINS = "Apparences",
     SKINS_DESC = "Le style Phoenix pour les fenêtres et dialogues de Blizzard, un interrupteur par fenêtre, avec votre fond, bordure et accent.",

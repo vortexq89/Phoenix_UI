@@ -414,7 +414,7 @@ ns:RegisterOptions("UnitFrames", {
       combat = true }),
     px({ type = "range", key = "units.@.auras.spacing", label = "ICON_SPACING", min = 0, max = 10, step = 1, disabled = auraOff,
       combat = true }),
-    px({ type = "range", key = "units.@.auras.gap", label = "UF_AURA_GAP", min = 0, max = 20, step = 1, disabled = auraOff,
+    px({ type = "range", key = "units.@.auras.gap", label = "UF_AURA_GAP", min = 0, max = 30, step = 1, disabled = auraOff,
       combat = true }),
     px({ type = "select", key = "units.@.auras.growth", label = "ICON_GROWTH", values = AURA_GROW, disabled = auraOff, combat = true }),
     px({ type = "toggle", key = "units.@.auras.dispel", label = "UF_DISPEL", desc = "UF_DISPEL_DESC", disabled = auraOff }),

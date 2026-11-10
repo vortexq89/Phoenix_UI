@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "Fundo ilustrado da janela de opções, seções de vidro com cantos suaves e brilhos de destaque. Desligado: grafite liso.",
     TABS_MORE = "Mais",
     PREVIEW_BAND_HINT = "Clique em uma parte da prévia para ir até sua configuração",
+    MODULE_OFF_BANNER = "%s está desligado. As configurações ficam salvas e valem assim que você ligar.",
+    MODULE_OFF_TURN_ON = "Ligar",
+    UNDO = "Desfazer",
+    UNDO_DESC = "Desfaz a última alteração feita nesta janela.",
+    UNDO_DESC_NAMED = "Desfaz sua última alteração: %s.",
+    UNDO_DONE = "Última alteração desfeita",
+    UNDO_DONE_NAMED = "Desfeito: %s",
     ---------------------------------------------------------------- Skins
     SKINS = "Visuais",
     SKINS_DESC = "O visual Phoenix para janelas e diálogos da Blizzard, um interruptor por janela, com seu fundo, borda e destaque.",

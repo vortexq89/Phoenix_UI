@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "Sfondo illustrato della finestra delle impostazioni, sezioni in vetro con angoli arrotondati e bagliori d'accento. Disattivato: grafite semplice.",
     TABS_MORE = "Altro",
     PREVIEW_BAND_HINT = "Fai clic su una parte dell'anteprima per andare alla sua impostazione",
+    MODULE_OFF_BANNER = "%s è disattivato. Le impostazioni restano salvate e si applicano appena lo attivi.",
+    MODULE_OFF_TURN_ON = "Attiva",
+    UNDO = "Annulla",
+    UNDO_DESC = "Annulla l'ultima modifica fatta in questa finestra.",
+    UNDO_DESC_NAMED = "Annulla l'ultima modifica: %s.",
+    UNDO_DONE = "Ultima modifica annullata",
+    UNDO_DONE_NAMED = "Annullato: %s",
     ---------------------------------------------------------------- Skins
     SKINS = "Aspetti",
     SKINS_DESC = "L'aspetto Phoenix per finestre e dialoghi Blizzard, un interruttore per finestra, con sfondo, bordo e accento scelti.",

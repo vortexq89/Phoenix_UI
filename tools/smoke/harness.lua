@@ -1293,6 +1293,56 @@ try("settings window performance budget", function()
     print(("  performance budget: %d pages, largest %s with %d frames"):format(#keys, tostring(worstKey), worst))
 end)
 
+-- GUI polish plan §8: every text colour reads at 4.5:1 or better on every surface the window uses (WCAG AA)
+try("text contrast", function()
+    local T = ns.Theme
+    local function lum(r, g, b)
+        local function ch(v) return v <= 0.03928 and v / 12.92 or ((v + 0.055) / 1.055) ^ 2.4 end
+        return 0.2126 * ch(r) + 0.7152 * ch(g) + 0.0722 * ch(b)
+    end
+    for _, surface in ipairs({ "bg.base", "bg.raised", "bg.hover", "bg.sunken" }) do
+        local br, bg, bb = T:Color(surface)
+        for _, token in ipairs({ "text.primary", "text.secondary", "text.muted" }) do
+            local r, g, b, a = T:Color(token)
+            a = a or 1
+            local fr, fg, fb = br + (r - br) * a, bg + (g - bg) * a, bb + (b - bb) * a
+            local l1, l2 = lum(fr, fg, fb), lum(br, bg, bb)
+            local ratio = (math.max(l1, l2) + 0.05) / (math.min(l1, l2) + 0.05)
+            assert(ratio >= 4.5, ("%s on %s is %.2f:1 (needs 4.5)"):format(token, surface, ratio))
+        end
+    end
+end)
+
+-- GUI polish plan §8: Undo takes back the last change made in the window; a module that is off shows one banner
+try("settings undo and module-off banner", function()
+    local C, U = ns.Config, ns.Util
+    local page = C:Show("Quests")
+    local m = ns.modules.Quests
+    local row
+    for _, r in ipairs(page.rows) do
+        local it = r.item
+        if it.type == "toggle" and it.key and not it.set and not it.reload and not it.key:find("@", 1, true)
+            and r.control and r.control.onChange and it.key ~= "enabled" then row = r; break end
+    end
+    assert(row, "no plain toggle row on Quests")
+    local key = row.item.key
+    local before = U.GetPath(m.db, key)
+    for i = #C.undo, 1, -1 do C.undo[i] = nil end
+    row.control.onChange(row.control, not before)
+    assert(U.GetPath(m.db, key) == not before, "the toggle did not change its setting")
+    assert(C:CanUndo() and C.undo[#C.undo].label, "the change was not recorded for Undo")
+    assert(C:Undo() and U.GetPath(m.db, key) == before, "Undo did not put the old value back")
+    assert(not C:CanUndo() and not C:Undo(), "Undo with nothing left must do nothing")
+    -- the banner
+    local keep = rawget(m, "IsEnabled")
+    m.IsEnabled = function() return false end
+    page:Layout()
+    assert(page.offBanner and page.offBanner:IsShown(), "a module that is off shows no banner")
+    m.IsEnabled = keep
+    page:Layout()
+    assert(not page.offBanner:IsShown(), "the banner stays after the module is on again")
+end)
+
 -- design v2 "Forge": smooth corners keep the fill's API, the window art follows its switch, Arrange opens Layout
 try("design v2: rounded fills, window art, arrange my UI", function()
     local Skin = ns.Skin
@@ -5071,7 +5121,8 @@ try("preview zoom small sample", function()
     stage.contentW, stage.contentH, stage.innerH = 120, 20, 20 + P.MARGIN * 2
     stage.designWidth = 0
     local s = stage:Fit(600)
-    assert(s > 1.05 and s <= P.MAX_ZOOM, "small sample not zoomed: " .. tostring(s))
+    -- real size, as in EllesmereUI (owner, 8 Nov): a small sample is not zoomed up any more
+    assert(s == 1 and P.MAX_ZOOM == 1, "a small sample must show at real size: " .. tostring(s))
     assert(math.abs(stage:GetHeight() - stage.innerH) < 0.5, "stage is not sized to its content")
     assert(stage:GetHeight() * s <= P.MAX_HEIGHT + 0.5, "preview taller than the cap")
     stage.contentW, stage.contentH, stage.innerH = 560, 120, 132

@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "設定視窗的背景圖、圓角玻璃區塊與強調色光效。關閉：純石墨色。",
     TABS_MORE = "更多",
     PREVIEW_BAND_HINT = "點擊預覽中的部件即可跳到對應設定",
+    MODULE_OFF_BANNER = "%s 已關閉。設定會保留，開啟後立即生效。",
+    MODULE_OFF_TURN_ON = "開啟",
+    UNDO = "復原",
+    UNDO_DESC = "復原在此視窗中的最後一次變更。",
+    UNDO_DESC_NAMED = "復原你的最後一次變更：%s。",
+    UNDO_DONE = "已復原最後一次變更",
+    UNDO_DONE_NAMED = "已復原：%s",
     ---------------------------------------------------------------- Skins
     SKINS = "外觀",
     SKINS_DESC = "為暴雪視窗和對話框套用 Phoenix 外觀，每個視窗一個開關，使用你的背景、邊框和強調色。",

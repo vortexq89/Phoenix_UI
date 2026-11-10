@@ -87,6 +87,13 @@ ns.RegisterLocale("enUS", {
     WINDOW_ART_DESC = "The settings window's background art, glass sections with smooth corners and the accent glows. Off: plain graphite.",
     TABS_MORE = "More",
     PREVIEW_BAND_HINT = "Click a part of the preview to jump to its setting",
+    MODULE_OFF_BANNER = "%s is off. Its settings are kept and apply as soon as you turn it on.",
+    MODULE_OFF_TURN_ON = "Turn on",
+    UNDO = "Undo",
+    UNDO_DESC = "Takes back the last change made in this window.",
+    UNDO_DESC_NAMED = "Takes back your last change: %s.",
+    UNDO_DONE = "Last change undone",
+    UNDO_DONE_NAMED = "Undone: %s",
 
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",

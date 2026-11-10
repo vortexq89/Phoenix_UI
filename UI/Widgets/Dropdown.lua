@@ -204,8 +204,10 @@ function W:Dropdown(parent, items, preview, width)
     Skin:SetRound(d, W.EUI.radius.control)
     Skin:RoundFill(d, d.fill)
     Skin:Border(d)
+    -- the chosen texture as a small swatch at the left, in a neutral light tint so its own shading shows (it was
+    -- an accent-tinted bar under the whole label, which read as an orange button)
     d.strip = W.Texture(d, "BORDER")
-    d.strip:SetPoint("TOPLEFT", 4, -4); d.strip:SetPoint("BOTTOMRIGHT", -24, 4)
+    d.strip:SetPoint("LEFT", 8, 0); d.strip:SetSize(46, 12)
     d.strip:Hide()
     d.label = W.Text(d, "body", "text.primary")
     d.label:SetPoint("LEFT", 10, 0)
@@ -221,10 +223,12 @@ function W:Dropdown(parent, items, preview, width)
         if self.preview == "font" and item then self.label:SetFont(fontOf(item), 12, "") end
         if self.preview == "bar" and item then
             self.strip:SetTexture(barOf(item))
-            W.Color(self.strip, "accent.primary", 0.7)
+            self.strip:SetVertexColor(0.86, 0.86, 0.9, 0.95)
             self.strip:Show()
-            self.label:SetShadowColor(0, 0, 0, 1)
-            self.label:SetShadowOffset(1, -1)
+            self.label:SetShadowOffset(0, 0)
+            self.label:ClearAllPoints()
+            self.label:SetPoint("LEFT", self.strip, "RIGHT", 8, 0)
+            self.label:SetPoint("RIGHT", -26, 0)
         else
             self.strip:Hide()
         end

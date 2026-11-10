@@ -53,8 +53,52 @@ local function getValue(page, m, item)
     return U.GetPath(m.db, resolve(page, item.key))
 end
 
+--[[ Undo (GUI polish plan §8): every change made in the settings window is recorded with the values it replaced,
+    newest last, up to UNDO_MAX steps. A slider drag (or any quick run of changes to the same setting) is one step.
+    Rows with their own setter (item.set) are not recorded: their change is not one saved value. ]]
+local UNDO_MAX, UNDO_MERGE = 50, 1.5
+Config.undo = Config.undo or {}
+local function record(m, path, nowKey)
+    local stack, now = Config.undo, GetTime()
+    local top = stack[#stack]
+    if top and top.key == nowKey and now - top.at < UNDO_MERGE then
+        top.at = now
+        for _, e in ipairs(top) do if e.m == m and e.path == path then return end end
+    else
+        top = { key = nowKey, at = now, label = nil }
+        stack[#stack + 1] = top
+        if #stack > UNDO_MAX then table.remove(stack, 1) end
+    end
+    local old = U.GetPath(m.db, path)
+    top[#top + 1] = { m = m, path = path, old = type(old) == "table" and U.DeepCopy(old) or old }
+end
+Config.RecordUndo = record
+-- names the newest step after its row ("Undo: Bar texture") and refreshes the footer button
+function Config.NameUndo(undoKey, item)
+    local top = Config.undo[#Config.undo]
+    if top and top.key == undoKey and item.label then top.label = text(item.label) end
+    if Config.UpdateUndo then Config:UpdateUndo() end
+end
+
+function Config:CanUndo() return #self.undo > 0 end
+function Config:Undo()
+    local step = table.remove(self.undo)
+    if not step then return false end
+    for i = #step, 1, -1 do
+        local e = step[i]
+        ns.DB:Set(e.m, e.path, type(e.old) == "table" and U.DeepCopy(e.old) or e.old)
+    end
+    local page = self.current and self.pages[self.current]
+    if page and page.Refresh then page:Refresh() end
+    if page and page.preview then page.preview:Redraw() end
+    self:SetStatus(step.label and L.UNDO_DONE_NAMED:format(step.label) or L.UNDO_DONE, "state.success", "reset")
+    if self.UpdateUndo then self:UpdateUndo() end
+    return true
+end
+
 local function setValue(page, m, item, value, key)
     key = key or item.key
+    local undoKey = m.key .. ":" .. tostring(key)
     if item.set then
         item.set(m, value, page.scope and page.scope.unit)
         ns.Events:Fire("PUI_SETTING_CHANGED", m.key, key or item.label, value)
@@ -66,14 +110,17 @@ local function setValue(page, m, item, value, key)
         local delta = item.relative and tonumber(value) and (value - (tonumber(U.GetPath(m.db, (key:gsub("@", page.scope.unit)))) or value))
         for _, unit in ipairs(targets) do
             local path = key:gsub("@", unit)
+            record(m, path, undoKey)
             local v = value
             if delta and unit ~= page.scope.unit then v = (tonumber(U.GetPath(m.db, path)) or 0) + delta end
             ns.DB:Set(m, path, type(v) == "table" and U.DeepCopy(v) or v)
         end
         if #targets > 1 and page.scope.bar then page.scope.bar.units:Flash(targets) end
     else
+        record(m, key, undoKey)
         ns.DB:Set(m, key, value)
     end
+    Config.NameUndo(undoKey, item)
     if item.reload then
         m.needsReload = true
         m.reloadKeys = m.reloadKeys or {}
@@ -1730,6 +1777,50 @@ function Config.BuildSchemaPage(parent, m, schema)
     local function pageColumns(pg, width, n) return pg.columnsOK and columns(width, n) or 1 end
 
     -- the live preview band sits in the fixed area too, across the whole content width; returns the new top
+    -- A module that is off says so once, with its switch, instead of a page of settings that seem to do nothing
+    -- (GUI polish plan §8). The settings stay editable and apply when it is turned on. Returns the new top.
+    function page:PlaceOffBanner(top, width)
+        local off = m and not m.locked and not m.placeholder and m.IsEnabled and not m:IsEnabled()
+        local b = self.offBanner
+        if not off then
+            if b then b:Hide() end
+            return top
+        end
+        if not b then
+            b = CreateFrame("Frame", nil, self)
+            b:SetHeight(44)
+            b:SetFrameLevel(self.scroll:GetFrameLevel() + 12)
+            b.icon = W.Icon(b, "warning", 16, "state.warning")
+            b.icon:SetPoint("LEFT", 16, 0)
+            b.text = W.Text(b, "body", "text.primary", "LEFT")
+            b.text:SetPoint("LEFT", b.icon, "RIGHT", 10, 0)
+            b.text:SetWordWrap(false)
+            b.on = W:Button(b, L.MODULE_OFF_TURN_ON, "primary", "check")
+            b.on:SetHeight(28)
+            b.on:SetPoint("RIGHT", -12, 0)
+            b.text:SetPoint("RIGHT", b.on, "LEFT", -12, 0)
+            b.on.onClick = function() ns:SetModuleEnabled(m.key, true) end
+            b.fill = W.Texture(b, "BACKGROUND", 0)
+            Skin:RoundFill(b, b.fill, W.EUI.radius.card)
+            Skin:SetRound(b, W.EUI.radius.card)
+            Skin:Border(b)
+            Skin:Register(b, function(f)
+                local r, g, bl = ns.Theme:Color("state.warning")
+                f.fill:SetVertexColor(r, g, bl, 0.10)
+                Skin:SetBorderColor(f, r, g, bl, 0.45)
+                W.Color(f.icon, "state.warning")
+                Skin:Text(f.text, "body", "text.primary")
+            end)
+            self.offBanner = b
+        end
+        b.text:SetText(L.MODULE_OFF_BANNER:format(text(m.label)))
+        b:ClearAllPoints()
+        b:SetPoint("TOPLEFT", self, "TOPLEFT", PAD, -(top + 10))
+        b:SetWidth(width)
+        b:Show()
+        return top + 10 + b:GetHeight() + 4
+    end
+
     function page:PlaceBand(top, width)
         local pc = self.pinned
         if not pc or self.docked then return top end
@@ -1753,6 +1844,7 @@ function Config.BuildSchemaPage(parent, m, schema)
         end
         if #self.tops > 0 then top = top + 6 end
         top = self:PlaceBand(top, width)
+        top = self:PlaceOffBanner(top, width)
         if self.fixedTop ~= top then
             self.fixedTop = top
             self.scroll:ClearAllPoints()

@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "设置窗口的背景图、圆角玻璃分区和强调色光效。关闭：纯石墨色。",
     TABS_MORE = "更多",
     PREVIEW_BAND_HINT = "点击预览中的部件即可跳转到对应设置",
+    MODULE_OFF_BANNER = "%s 已关闭。设置会保留，开启后立即生效。",
+    MODULE_OFF_TURN_ON = "开启",
+    UNDO = "撤销",
+    UNDO_DESC = "撤销在此窗口中的最后一次更改。",
+    UNDO_DESC_NAMED = "撤销你的最后一次更改：%s。",
+    UNDO_DONE = "已撤销最后一次更改",
+    UNDO_DONE_NAMED = "已撤销：%s",
     ---------------------------------------------------------------- Skins
     SKINS = "皮肤",
     SKINS_DESC = "为暴雪窗口和对话框套用 Phoenix 外观，每个窗口一个开关，使用你的背景、边框和强调色。",

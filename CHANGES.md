@@ -3,6 +3,13 @@
 ## 2.0.0-beta2 (in progress, 30–31 Oct 2026)
 
 ### New
+- **GUI polish, step 3** (10 Nov, English first):
+  - **Undo**: the footer has an Undo button that takes back the last change made in the settings window (up to 50 steps; a slider drag counts as one step). Its tooltip names the setting it will undo.
+  - **A module that is off says so**: one banner at the top of its page ("Nameplates is off. Its settings are kept and apply as soon as you turn it on.") with a Turn on button, instead of a page of settings that seem to do nothing.
+  - **Previews at real size**, as in EllesmereUI: small samples are no longer zoomed up; large ones still scale down to fit.
+  - **Texture pickers** show the chosen texture as a small neutral swatch beside its name, instead of an orange bar under the whole label.
+  - **Readable hints**: muted text (hints, captions) is brighter, so every text colour now reads at 4.5:1 or better on every surface; a test keeps it that way.
+  - **Same idea, same range**: the duplicate scan now also lists settings that mean the same thing but move over different ranges; the nameplate cast bar's hold time (now up to 3 s) and the unit frames' aura distance (now up to 30) match their twins.
 - **Live preview in the EllesmereUI layout** (8 Nov, owner): the preview is no longer a card inside the page that scrolls away. It is a fixed band across the whole content width between the editing toolbar and the settings, as in EllesmereUI: a faint dark wash with a hairline under it, no title, the real frame centred with 20 px of air above and below, and one muted line "Click a part of the preview to jump to its setting" under it, which goes away for good after the first such click. Phoenix's extras stay in a slim row at the top of the band: the preview states (Low health, Targeted …) on the left, and Size & position, Show in world and fold on the right. Every sample is centred, however its preview lays it out.
 - **Chips redesigned** (8 Nov, owner's screenshot): the element, filter and preview-state chips (Bar 1 … Item bar, Enemy / Friendly, Low health …) are smooth rounded segments drawn with crisp corner pieces instead of the stretched pill texture that looked jagged at small UI scales. Slightly taller (26 px) with clearer text: no shadow, white at 70 % idle, full white when picked; the picked chip has an accent-tinted fill and an accent border. Drag-to-reorder chips (Data Texts, bag categories) get the same rounded corners.
 - **GUI polish, step 2** (8 Nov, English first):

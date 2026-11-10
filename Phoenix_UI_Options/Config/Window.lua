@@ -712,11 +712,24 @@ local function buildFooter(f)
     ft.test:SetPoint("LEFT", ft.layout, "RIGHT", 6, 0)
     ft.test.onClick = toggleTestFrames
     W.AttachTooltip(ft.test, L.TEST_FRAMES, L.TEST_FRAMES_DESC)
+    -- Undo: takes back the last change made in this window (Renderer.lua keeps the steps)
+    ft.undo = W:Button(ft, L.UNDO, "ghost", "reset")
+    ft.undo:SetHeight(26)
+    ft.undo:SetPoint("LEFT", ft.test, "RIGHT", 6, 0)
+    ft.undo.onClick = function() Config:Undo() end
+    W.AttachTooltip(ft.undo, L.UNDO, function()
+        local top = Config.undo and Config.undo[#Config.undo]
+        return top and top.label and L.UNDO_DESC_NAMED:format(top.label) or L.UNDO_DESC
+    end)
+    function Config:UpdateUndo()
+        ft.undo:SetEnabledState(self.CanUndo ~= nil and self:CanUndo())
+    end
+    Config:UpdateUndo()
     h.profile, h.layout, h.test = ft.profileDD, ft.layout, ft.test
     h.editmode = ft.layout -- older callers (and the slash help) know it by this name
 
     ft.savedIcon = W.Icon(ft, "success", 12, "state.success")
-    ft.savedIcon:SetPoint("LEFT", ft.test, "RIGHT", 18, 0)
+    ft.savedIcon:SetPoint("LEFT", ft.undo, "RIGHT", 18, 0)
     ft.savedArt = W.Texture(ft, "OVERLAY", 2) -- v7.1 status art over the flat glyphs (flame, warning, error, info)
     ft.savedArt:SetSize(14, 14)
     ft.savedArt:SetPoint("CENTER", ft.savedIcon, "CENTER")

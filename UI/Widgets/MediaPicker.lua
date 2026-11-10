@@ -236,8 +236,10 @@ function W:MediaPicker(parent, kind, items, width)
     local d = CreateFrame("Button", nil, parent)
     d:SetSize(width or W.CONTROL_WIDTH, 26)
     d.kind, d.items = kind, items
+    -- the chosen texture as a small neutral swatch before its name (an accent-tinted bar under the whole label read
+    -- as an orange button: GUI polish plan §6)
     d.strip = W.Texture(d, "BORDER")
-    d.strip:SetPoint("TOPLEFT", 4, -4); d.strip:SetPoint("BOTTOMRIGHT", -24, 4)
+    d.strip:SetPoint("LEFT", 8, 0); d.strip:SetSize(46, 12)
     d.strip:Hide()
     d.label = W.Text(d, "body", "text.primary")
     d.label:SetPoint("LEFT", kind == "sound" and 30 or 10, 0)
@@ -256,17 +258,19 @@ function W:MediaPicker(parent, kind, items, width)
             if item and item.font then self.label:SetFont(item.font, 13, "") else Skin:Text(self.label, "body", "text.primary") end
         elseif self.kind == "statusbar" and item then
             self.strip:SetTexture(item.texture or Media:Bar(item.value))
-            W.Color(self.strip, "accent.primary", 0.75)
+            self.strip:SetVertexColor(0.86, 0.86, 0.9, 0.95)
             self.strip:Show()
-            self.label:SetShadowColor(0, 0, 0, 1)
-            self.label:SetShadowOffset(1, -1)
+            self.label:SetShadowOffset(0, 0)
+            self.label:ClearAllPoints()
+            self.label:SetPoint("LEFT", self.strip, "RIGHT", 8, 0)
+            self.label:SetPoint("RIGHT", self.play and self.play:IsShown() and self.play or self.arrow, "LEFT", -6, 0)
         else
             self.strip:Hide()
         end
     end
 
     Skin:Register(d, function(self)
-        Skin:Panel(self, "sunken", { border = self.open and "accent.primary" or "border.subtle" })
+        Skin:Panel(self, "sunken", { border = self.open and "accent.primary" or "border.subtle", round = W.EUI.radius.control })
         Skin:Text(self.label, "body", "text.primary")
         sample(self)
         ns.Icons:Tint(self.arrow, self.open and "accent.primary" or "text.secondary")

@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "설정 창의 배경 아트, 둥근 모서리의 유리 섹션과 강조 빛. 끄면 단색 그래파이트입니다.",
     TABS_MORE = "더 보기",
     PREVIEW_BAND_HINT = "미리보기의 요소를 클릭하면 해당 설정으로 이동합니다",
+    MODULE_OFF_BANNER = "%s 모듈이 꺼져 있습니다. 설정은 저장되어 있으며 켜는 즉시 적용됩니다.",
+    MODULE_OFF_TURN_ON = "켜기",
+    UNDO = "되돌리기",
+    UNDO_DESC = "이 창에서 한 마지막 변경을 되돌립니다.",
+    UNDO_DESC_NAMED = "마지막 변경을 되돌립니다: %s.",
+    UNDO_DONE = "마지막 변경을 되돌렸습니다",
+    UNDO_DONE_NAMED = "되돌림: %s",
     ---------------------------------------------------------------- Skins
     SKINS = "스킨",
     SKINS_DESC = "블리자드 창과 대화 상자에 Phoenix 스타일 — 창마다 스위치, 배경·테두리·강조색은 내 설정.",

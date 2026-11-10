@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "Fondo ilustrado de la ventana de opciones, secciones de cristal con esquinas suaves y brillos de acento. Desactivado: grafito liso.",
     TABS_MORE = "Más",
     PREVIEW_BAND_HINT = "Haz clic en una parte de la vista previa para ir a su ajuste",
+    MODULE_OFF_BANNER = "%s está desactivado. Sus ajustes se guardan y se aplican en cuanto lo actives.",
+    MODULE_OFF_TURN_ON = "Activar",
+    UNDO = "Deshacer",
+    UNDO_DESC = "Deshace el último cambio hecho en esta ventana.",
+    UNDO_DESC_NAMED = "Deshace tu último cambio: %s.",
+    UNDO_DONE = "Último cambio deshecho",
+    UNDO_DONE_NAMED = "Deshecho: %s",
     ---------------------------------------------------------------- Skins
     SKINS = "Aspectos",
     SKINS_DESC = "El aspecto Phoenix para las ventanas y diálogos de Blizzard, un interruptor por ventana, con tu fondo, borde y acento.",

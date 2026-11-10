@@ -89,6 +89,13 @@ local T = {
     WINDOW_ART_DESC = "Hintergrundgrafik des Einstellungsfensters, Glasabschnitte mit runden Ecken und Akzentleuchten. Aus: schlichtes Graphit.",
     TABS_MORE = "Mehr",
     PREVIEW_BAND_HINT = "Klicke auf einen Teil der Vorschau, um zu seiner Einstellung zu springen",
+    MODULE_OFF_BANNER = "%s ist aus. Die Einstellungen bleiben erhalten und gelten, sobald du es einschaltest.",
+    MODULE_OFF_TURN_ON = "Einschalten",
+    UNDO = "Rückgängig",
+    UNDO_DESC = "Nimmt die letzte Änderung in diesem Fenster zurück.",
+    UNDO_DESC_NAMED = "Nimmt deine letzte Änderung zurück: %s.",
+    UNDO_DONE = "Letzte Änderung rückgängig gemacht",
+    UNDO_DONE_NAMED = "Rückgängig: %s",
     ---------------------------------------------------------------- Skins
     SKINS = "Skins",
     SKINS_DESC = "Die Phoenix-Optik für Blizzards Fenster und Dialoge, ein Schalter pro Fenster, mit deinem Hintergrund, Rahmen und Akzent.",

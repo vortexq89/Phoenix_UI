@@ -78,7 +78,9 @@ function P.Caption(parent, text)
 end
 
 ---------------------------------------------------------------- stage
-P.MAX_ZOOM = 1.6
+-- 1 = real size, never zoomed up (EllesmereUI's previews show the frame exactly as it is in the world; owner, 8 Nov).
+-- Bigger samples still scale down to fit.
+P.MAX_ZOOM = 1
 P.MAX_HEIGHT = 320 -- tallest a preview gets on the page; bigger content scales down
 P.MARGIN = 6 -- even space above and below the sample
 function P:Create(kind, parent, m, page)
@@ -98,7 +100,7 @@ function P:Create(kind, parent, m, page)
     -- The preview keeps one footprint on the page (its design height) whatever the settings do: content
     -- that grows wider or taller scales the stage down instead of pushing the page (and the rows) around.
     -- Scales the stage so its content fits `width` and sets its height to the content (innerH, measured after
-    -- each draw) with a small even margin. Small samples are zoomed up to MAX_ZOOM so they fill the width.
+    -- each draw) with a small even margin. Small samples could be zoomed up to MAX_ZOOM (1: real size).
     function stage:Fit(width)
         local scale = 1
         if self.designWidth > 0 and width and width > 0 and width < self.designWidth then scale = width / self.designWidth end

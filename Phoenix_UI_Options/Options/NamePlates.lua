@@ -223,7 +223,7 @@ local schema = {
     cx({ type = "select", key = "styles.@.cast.timeFormat", label = "CB_TIME_FORMAT", values = TIME }),
     cx({ type = "range", key = "styles.@.cast.nameLength", label = "CB_NAME_LENGTH", desc = "CB_NAME_LENGTH_DESC", min = 0, max = 40,
       step = 1 }),
-    cx({ type = "range", key = "styles.@.cast.hold", label = "CB_HOLD", desc = "CB_HOLD_DESC", min = 0, max = 2, step = 0.1 }),
+    cx({ type = "range", key = "styles.@.cast.hold", label = "CB_HOLD", desc = "CB_HOLD_DESC", min = 0, max = 3, step = 0.1 }),
     cx({ type = "toggle", key = "styles.@.cast.flash", label = "CB_FLASH", desc = "CB_FLASH_DESC" }),
     bz({ type = "header", label = "NP_CASTBAR", icon = "castbars" }),
     bz({ type = "toggle", gate = true, key = "castbar.style", label = "NP_CASTBAR_STYLE", desc = "NP_CASTBAR_STYLE_DESC" }),
