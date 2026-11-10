@@ -174,7 +174,9 @@ P:Register("castbar", {
                 f:ClearAllPoints()
                 f:SetPoint("TOP", stage, "TOP", shift, (-18 - (i - 1) * pitch * scale) / scale)
                 local s = samples[i]
-                s.frozen = true
+                -- the casts run (and loop) as in the world; they stand still with Reduce motion or the interrupted state
+                s.frozen = (ns.Anim:ReduceMotion() or view.states.interrupted) and true or false
+                s.loop = not s.frozen
                 m:StartSample(f, s)
                 if view.states.interrupted and i == 1 then
                     f.sample = nil
@@ -185,6 +187,9 @@ P:Register("castbar", {
                 f:SetAlpha(1)
                 f:Show()
                 P.Hot(stage, f, "bars.@.width", L.UF_WIDTH)
+                P.Hot(stage, f.Icon, "bars.@.iconSize", L.ICON_SIZE)
+                P.Hot(stage, f.Name, "bars.@.nameLength", L.UF_TAG_NAME)
+                P.Hot(stage, f.Time, "bars.@.timeFormat", L.CB_TIME_FORMAT)
             end
             if key == "player" then drawExtras(stage, m, built, list[1], -18 - #list * pitch * scale) end
         end

@@ -2405,7 +2405,7 @@ ns.RegisterLocale("enUS", {
     CB_TICKS_DESC = "Marks where your channelled spells tick. Built-in counts are a starting point; the list below overrides them.",
     CB_TICK_COLOR = "Tick colour",
     CB_CUSTOM_TICKS = "Own tick counts",
-    CB_CUSTOM_TICKS_DESC = "spellID:ticks pairs, separated by commas or spaces (e.g. 15407:6, 234153:5).",
+    CB_CUSTOM_TICKS_DESC = "Channelled spells and how many ticks each has. Pick a spell with +, then set its tick count in the list as text (spellID:ticks, e.g. 15407:6).",
     CB_EMPOWER = "Empower stages",
     CB_EMPOWER_DESC = "Marks each stage of an empowered spell.",
     CB_STAGE_COLOR = "Stage colour",

@@ -8,7 +8,9 @@ local W, Skin, L = ns.Widgets, ns.Skin, ns.L
     conditions such as ?ID or :MAGE, pairs such as 11366=48108) is kept as typed and can still be edited as text
     in the picker.
 
-    ns.Opt.SpellList{ key, label, desc, items = bool, rows = n, … } returns the schema row. ]]
+    ns.Opt.SpellList{ key, label, desc, items = bool, rows = n, … } returns the schema row. single = true keeps one
+    entry (a pick replaces it); store = "name" writes the spell's name instead of its ID; addSuffix is appended to
+    a picked entry (":4" for spellID:ticks pairs). ]]
 local TILE, GAP = 30, 4
 local PICK_COLS, PICK_ROWS, PICK_TILE = 10, 4, 30
 local UNKNOWN = 134400 -- the question mark icon (file id)
@@ -63,6 +65,9 @@ local function look(d)
     return icon or UNKNOWN, name
 end
 
+ns.Opt.SpellListLook = function(part, items) return look(describe(part, items)) end
+ns.Opt.SpellListSplit = split
+
 -- The items in the bags that can be used, each once: { id, name, icon }.
 local function bagItems()
     local out, seen = {}, {}
@@ -103,6 +108,13 @@ local function gameTip(owner, d, hint)
     else GameTooltip:SetText(d.name or "") end
     if hint then GameTooltip:AddLine(hint, 0.6, 0.6, 0.6, true) end
     GameTooltip:Show()
+end
+
+-- is the list entry d the picker cell (a spell or item with .id and .name)?
+local function matches(d, cell)
+    if d.kind == "slot" then return false end
+    if d.id then return d.id == cell.id end
+    return d.name and cell.name and d.name:lower() == cell.name:lower() or false
 end
 
 local function build(row, m, page, item)
@@ -206,10 +218,12 @@ local function build(row, m, page, item)
             b:SetScript("OnClick", function(self)
                 local parts, found = split(value()), false
                 for k = #parts, 1, -1 do
-                    local d = describe(parts[k], item.items)
-                    if d.id == self.id and d.kind ~= "slot" then table.remove(parts, k); found = true end
+                    if matches(describe(parts[k], item.items), self) then table.remove(parts, k); found = true end
                 end
-                if not found then parts[#parts + 1] = tostring(self.id) end
+                if item.single then parts = {} end
+                if not found then
+                    parts[#parts + 1] = (item.store == "name" and self.name or tostring(self.id)) .. (item.addSuffix or "")
+                end
                 store(parts)
             end)
             p.cells[i] = b
@@ -225,6 +239,7 @@ local function build(row, m, page, item)
             for _, part in ipairs(split(value())) do
                 local d = describe(part, item.items)
                 if d.id and d.kind ~= "slot" then have[d.id] = true end
+                if d.kind == "name" then have[d.name:lower()] = true end
             end
             local q = (self.search:GetText() or ""):lower()
             local n = 0
@@ -233,7 +248,8 @@ local function build(row, m, page, item)
                 if q == "" or tostring(s.name):lower():find(q, 1, true) then
                     n = n + 1
                     local b = self.cells[n]
-                    b.id, b.on = s.id, have[s.id] or false
+                    b.id, b.name = s.id, tostring(s.name)
+                    b.on = have[s.id] or have[b.name:lower()] or false
                     b.icon:SetTexture(s.icon)
                     Skin:Border(b.edge, b.on and "accent.primary" or "border.subtle")
                     b:Show()

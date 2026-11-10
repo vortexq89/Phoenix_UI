@@ -103,6 +103,16 @@ end
 local function drawIcons(stage, m, key, row)
     local v = m:Viewer(key)
     local list = sampleFor(key)
+    -- a custom bar shows its own spells and items (the sample states stay, so timers and glows still show)
+    local own = m.IsCustom(key) and ns.Opt.SpellListSplit and ns.Opt.SpellListSplit(v.list) or {}
+    if #own > 0 then
+        local real = {}
+        for i, part in ipairs(own) do
+            local d = list[(i - 1) % #list + 1]
+            real[i] = { d[1], d[2], d[3], d[4], icon = (ns.Opt.SpellListLook(part)) }
+        end
+        list = real
+    end
     local L_ = {}
     for k, val in pairs(v.layout) do L_[k] = val end
     local n = math.min(#list, MAX_ICONS)
@@ -121,7 +131,7 @@ local function drawIcons(stage, m, key, row)
             a.ring:SetPoint("BOTTOMRIGHT", size * 0.18, -size * 0.16)
             a:ClearAllPoints()
             a:SetPoint("TOPLEFT", row, "TOPLEFT", p.x * k, -p.y * k)
-            a.tex:SetTexture(P.SAMPLE.icons[(d[1] - 1) % #P.SAMPLE.icons + 1])
+            a.tex:SetTexture(d.icon or P.SAMPLE.icons[(d[1] - 1) % #P.SAMPLE.icons + 1])
             round(a, not (v.style and v.square))
             if v.style then
                 m:StyleIcon(key, a.tex, a.edge, a.timer, a.count, a.keybind)
@@ -178,6 +188,12 @@ P:Register("tracker", {
             bars:SetShown(key == "bars")
             if key == "bars" then return drawBars(m, key, bars) end
             drawIcons(stage, m, key, rows[rowKey])
+            -- click the bar to jump to its spells (a custom bar) or its icon size; drag an edge to size the icons
+            if m.IsCustom(key) then
+                P.Hot(stage, rows[rowKey], "viewers.@.list", ns.L.TRACKER_CUSTOM_LIST)
+            else
+                P.Hot(stage, rows[rowKey], "viewers.@.layout.size", ns.L.UF_SIZE)
+            end
         end
     end,
 })

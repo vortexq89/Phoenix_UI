@@ -6158,6 +6158,13 @@ try("cooldown manager picker and bars", function()
     assert(AB.db.ring.list == "100, Fireball?300", "right-click did not take the entry out: " .. tostring(AB.db.ring.list))
     scripts[listRow.control.add].OnClick(listRow.control.add)
     assert(listRow.control.picker and listRow.control.picker.cells[1], "the + tile opens no picker")
+    -- a click on a picker cell adds the spell, a second click takes it out
+    local cell = listRow.control.picker.cells[1]
+    cell.id, cell.name = 4242, "Test Spell"
+    scripts[cell].OnClick(cell)
+    assert(AB.db.ring.list == "100, Fireball?300, 4242", "the picker did not add: " .. tostring(AB.db.ring.list))
+    scripts[cell].OnClick(cell)
+    assert(AB.db.ring.list == "100, Fireball?300", "the picker did not take the spell out again")
     ns.Widgets.HidePopover()
     ns.DB:Set(AB, "ring.list", before)
     local T = ns.modules.Tracker
