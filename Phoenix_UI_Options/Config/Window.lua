@@ -228,6 +228,10 @@ local function buildTopBar(f)
     h.searchIcon = W.Icon(h.search, "search", 14)
     h.searchIcon:SetPoint("LEFT", 11, 0)
     h.search.onTextChanged = function(_, text) Config:Search(text) end
+    h.search.onChange = function() Config:SearchEnter() end
+    h.search:HookScript("OnKeyDown", function(_, key)
+        if key == "DOWN" then Config:SearchMove(1) elseif key == "UP" then Config:SearchMove(-1) end
+    end)
     h.search:HookScript("OnEscapePressed", function(self) self:SetValue(""); Config:Search("") end)
 
     function h:Arrange()

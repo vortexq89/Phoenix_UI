@@ -53,7 +53,6 @@ One turn, in this order:
 3. **Previews audit, one per turn**: Action Bars (hot spots on hotkey and count text), Data texts, Mythic+ timer, Tooltip, Combat text, Cooldown text, Encounters against the checklist (hot spot on every part, real data, live motion).
 4. **Row flash** exists (`row:Flash()` on every jump); compare its strength with EllesmereUI in game.
 5. **Simple / Advanced**: mark each row common or advanced; advanced behind the cog or a per-page switch.
-7. **Search highlight and keyboard**: matched words highlighted; arrows and Enter in results.
 8. **Concept consistency** across frame families (same order, wording, ranges) and Copy from between families.
 9. **Anchor conflict clean-up** (layout lint warnings), then make them fail the build.
 10. **Other nine locales** reviewed by page.
@@ -66,3 +65,4 @@ One turn, in this order:
 - **10 Nov 2026, turn 3**: `ns.Opt.SpellList` (Config/SpellList.lua): lists of spells and items are tiles with real icons, right-click to remove, drag to reorder, a + tile with a spellbook or bag picker and search, the list still editable as text. Applied to six lists (Tracker custom bars, aura glows, wanted auras, aura bars; Action Bars item bar and ring). Needs an in-game look: icons resolve for names and items, drag reorder lands on the right tile, the picker popover position.
 - **10 Nov 2026, turns 4 to 6**: pickers on the three single-spell fields (`single`, `store = "name"`, `addSuffix`). Custom Cooldown Manager bars preview their own spells; the preview is a hot spot to the list. Cast Bars preview audited: live casts, hot spots on icon, name and timer. Needs an in-game look: the picker inside the range-fade cog popover, the trigger spell stored by name.
 - **10 Nov 2026, turns 7 and 8**: Group Frames and Auras previews audited (hot spots). Tabs: no page over six (Nameplates 9 to 6, Group Frames 8 to 5, Unit Frames 7 to 6), guarded by a harness test. Needs an in-game look: the merged tabs read well and are not too long.
+- **10 Nov 2026, turn 9**: search results highlight the typed words; up, down and Enter work from the search box. Needs an in-game look: the edit box passes the arrow keys (OnKeyDown) on both clients.

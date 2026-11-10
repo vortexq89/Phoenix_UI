@@ -132,7 +132,7 @@ local function resultRow(parent, i)
     r.go = W.Icon(r, "chevron-right", 12)
     r.go:SetPoint("RIGHT", -16, 0)
     local function paint(self)
-        W.Color(self.bg, "bg.hover", self.hover and 0.7 or 0)
+        W.Color(self.bg, "bg.hover", (self.hover or self.selected) and 0.7 or 0)
         W.TileColor(self.iconBg, self.icon, "accent.soft")
         W.Color(self.icon, "accent.primary")
         W.Color(self.go, self.hover and "accent.primary" or "text.muted")
@@ -143,14 +143,68 @@ local function resultRow(parent, i)
     Skin:Register(r, paint)
     r:SetScript("OnEnter", function(self) self.hover = true; paint(self) end)
     r:SetScript("OnLeave", function(self) self.hover = false; paint(self) end)
-    r:SetScript("OnClick", function(self)
-        local e = self.entry
-        Config.frame.header.search:SetValue("")
-        Config:Search("")
-        local page = Config:Show(e.key)
-        if e.item and page.Focus then C_Timer.After(0.05, function() page:Focus(e.item) end) end
-    end)
+    r:SetScript("OnClick", function(self) Config:OpenResult(self.entry) end)
     return r
+end
+
+function Config:OpenResult(e)
+    if not e then return end
+    self.frame.header.search:SetValue("")
+    self:Search("")
+    local page = self:Show(e.key)
+    if e.item and page.Focus then C_Timer.After(0.05, function() page:Focus(e.item) end) end
+end
+
+-- The words typed, shown in the accent colour inside a result's label (plain, case-blind match).
+local function highlight(label, words)
+    local lower, marks = label:lower(), {}
+    for _, w in ipairs(words) do
+        local from = 1
+        while true do
+            local a, b = lower:find(w, from, true)
+            if not a then break end
+            marks[#marks + 1] = { a, b }
+            from = b + 1
+        end
+    end
+    if #marks == 0 then return label end
+    table.sort(marks, function(x, y) return x[1] < y[1] end)
+    local r, g, b = ns.Theme:Color("accent.text")
+    local open = ("|cff%02x%02x%02x"):format(r * 255, g * 255, b * 255)
+    local out, at = {}, 1
+    for _, m in ipairs(marks) do
+        if m[1] >= at then
+            out[#out + 1] = label:sub(at, m[1] - 1) .. open .. label:sub(m[1], m[2]) .. "|r"
+            at = m[2] + 1
+        end
+    end
+    out[#out + 1] = label:sub(at)
+    return table.concat(out)
+end
+Config.SearchHighlight = highlight
+
+-- Arrow keys move through the results, Enter opens the picked one (the first when none was picked).
+function Config:SearchMove(step)
+    local f = self.results
+    if not (f and f:IsShown()) or (f.count or 0) == 0 then return end
+    f.sel = math.max(1, math.min(f.count, (f.sel or 0) + step))
+    for i = 1, f.count do
+        local row = f.rows[i]
+        row.selected = i == f.sel
+        row:Paint()
+    end
+    -- keep the picked row in view
+    local top, h = (f.sel - 1) * RESULT_H, f.scroll:GetHeight() or 0
+    local at = f.scroll:GetVerticalScroll()
+    if top < at then f.scroll:SetVerticalScroll(top)
+    elseif h > 0 and top + RESULT_H > at + h then f.scroll:SetVerticalScroll(top + RESULT_H - h) end
+    f.scroll:UpdateBar()
+end
+function Config:SearchEnter()
+    local f = self.results
+    if not (f and f:IsShown()) or (f.count or 0) == 0 then return false end
+    self:OpenResult(f.rows[f.sel or 1].entry)
+    return true
 end
 
 local function getResults()
@@ -199,12 +253,14 @@ function Config:Search(query)
             f.rows[n] = row
             row.entry = e
             ns.Icons:Apply(row.icon, e.icon or "search", 14)
-            row.label:SetText(e.label)
+            row.label:SetText(highlight(e.label, words))
             row.path:SetText(e.path)
+            row.selected = false
             row:Paint()
             row:Show()
         end
     end
+    f.count, f.sel = n, nil
     for i = n + 1, #f.rows do f.rows[i]:Hide() end
     f.title:SetText((n == 1 and L.SEARCH_RESULT or L.SEARCH_RESULTS:format(n)):upper())
     Skin:Text(f.title, "heading", "text.muted")

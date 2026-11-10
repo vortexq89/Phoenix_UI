@@ -1191,6 +1191,14 @@ try("search pages and groups", function()
     assert(e, "a rail group name does not find its pages")
     assert(find("hp", function(x) return x.item and (ns.L[x.item.label] or ""):lower():find("health") end),
         "the synonym hp does not find health options")
+    -- typed words are highlighted in the results; arrows pick a result and Enter opens it
+    local hl = C.SearchHighlight("Health text", { "hea", "ex" })
+    assert(hl:find("|cff%x%x%x%x%x%xHea|r") and hl:find("|cff%x%x%x%x%x%xex|r"), "search words are not highlighted: " .. hl)
+    assert(C.SearchHighlight("Width", { "zz" }) == "Width", "a label without the word changed")
+    C:Search("nameplates")
+    C:SearchMove(1); C:SearchMove(1); C:SearchMove(-1)
+    assert(C.results.sel == 1 and C.results.rows[1].selected, "arrow keys do not pick a result")
+    assert(C:SearchEnter() and not C.results:IsShown(), "Enter did not open the picked result")
     C:Search("")
 end)
 -- resets: a row, a card and a whole module go back to their defaults; the module keeps its on/off state
