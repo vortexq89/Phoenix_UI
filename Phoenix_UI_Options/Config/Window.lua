@@ -808,7 +808,21 @@ local function buildFooter(f)
         self.scale:SetPoint("RIGHT", -30, 0)
         -- the pixel-perfect hint lives in the scale tooltip; as footer text it crowded the bar (specs/003 T007)
         self.pixel:SetText("")
+        -- "Changes save automatically" gives way when the bar is too narrow for it (small window, long languages):
+        -- the tick stays and carries the sentence as its tooltip
+        local used = 14 + self.profileDD:GetWidth() + 8 + self.layout:GetWidth() + 6 + self.test:GetWidth() + 6
+            + self.undo:GetWidth() + 6 + self.simple:GetWidth() + 18 + 12 + 6
+        local right = 30 + self.scale:GetWidth() + 8 + self.scaleLabel:GetStringWidth() + 18 + 16
+        local total = self:GetWidth()
+        self.saved:SetText(L.AUTO_SAVED)
+        local fits = type(total) ~= "number" or total <= 0 or used + self.saved:GetStringWidth() + right <= total
+        if not fits then self.saved:SetText("") end
+        self.savedShort = not fits
     end
+    ft.savedHit = CreateFrame("Frame", nil, ft)
+    ft.savedHit:SetAllPoints(ft.savedIcon)
+    ft.savedHit:EnableMouse(true)
+    W.AttachTooltip(ft.savedHit, L.AUTO_SAVED)
     f.footer = ft
     Skin:Register(ft, function(self)
         Skin:Panel(self, "sunken", { border = "border.subtle", alpha = "footer" })
@@ -927,6 +941,7 @@ function Config:Build()
     end)
     f:SetScript("OnSizeChanged", function()
         f.header:Arrange()
+        f.footer:Arrange()
         self:LayoutShell()
         local page = self.current and self.pages[self.current]
         if page and page.Layout and f:IsShown() then page:Layout() end

@@ -71,6 +71,11 @@ function W:Slider(parent, min, max, step, isPercent)
         self.box:SetFont(Theme:Font("number"))
         local tr, tg, tb = Theme:Color("text.secondary")
         self.box:SetTextColor(tr, tg, tb, 1)
+        -- the value box grows with General > Font scale, so "100%" is never cut (layout matrix, font x1.3)
+        local fs = Theme.settings and tonumber(Theme.settings.fontScale) or 1
+        local bw = math.floor(40 * math.max(1, fs) + 0.5)
+        self.box:SetWidth(bw)
+        self.bar:SetPoint("RIGHT", -(bw + 12), 0)
         layout(self)
     end)
 

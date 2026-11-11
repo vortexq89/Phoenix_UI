@@ -21,9 +21,10 @@ local function api(name, space)
     return type(fn) == "function" and fn or nil
 end
 
-local function split(list)
+-- items = true: a list of item IDs, which older builds also accepted separated by spaces
+local function split(list, items)
     local parts = {}
-    for part in tostring(list or ""):gmatch("[^,;\n]+") do
+    for part in tostring(list or ""):gmatch(items and "[^,;%s]+" or "[^,;\n]+") do
         local p = part:gsub("^%s+", ""):gsub("%s+$", "")
         if p ~= "" then parts[#parts + 1] = p end
     end
@@ -161,7 +162,7 @@ local function build(row, m, page, item)
         t:SetScript("OnLeave", function() GameTooltip:Hide() end)
         t:SetScript("OnClick", function(self, button)
             if button ~= "RightButton" then return end
-            local parts = split(value())
+            local parts = split(value(), item.items)
             table.remove(parts, self.index)
             GameTooltip:Hide()
             store(parts)
@@ -173,7 +174,7 @@ local function build(row, m, page, item)
             self.dragging = nil
             local to = indexAtCursor()
             if not to or to == self.index then return end
-            local parts = split(value())
+            local parts = split(value(), item.items)
             local moved = table.remove(parts, self.index)
             if moved then table.insert(parts, math.min(to, #parts + 1), moved); store(parts) end
         end)
@@ -182,7 +183,7 @@ local function build(row, m, page, item)
     end
 
     function h:SetValue()
-        local parts = split(value())
+        local parts = split(value(), item.items)
         local w = self:GetWidth()
         local cols = math.max(4, math.floor(((w and w > 0) and w or 560) / (TILE + GAP)))
         local room = cols * (item.rows or 2) - 1
@@ -216,7 +217,7 @@ local function build(row, m, page, item)
             b:SetScript("OnEnter", function(self) gameTip(self, { kind = item.items and "item" or "spell", id = self.id }) end)
             b:SetScript("OnLeave", function() GameTooltip:Hide() end)
             b:SetScript("OnClick", function(self)
-                local parts, found = split(value()), false
+                local parts, found = split(value(), item.items), false
                 for k = #parts, 1, -1 do
                     if matches(describe(parts[k], item.items), self) then table.remove(parts, k); found = true end
                 end
@@ -233,10 +234,10 @@ local function build(row, m, page, item)
         p.textLabel:SetText(L.SPELLLIST_TEXT)
         p.text = W:Input(p, PICK_COLS * (PICK_TILE + GAP) - GAP)
         p.text:SetPoint("TOPLEFT", p.textLabel, "BOTTOMLEFT", 0, -4)
-        p.text.onChange = function(_, v) store(split(v)) end
+        p.text.onChange = function(_, v) store(split(v, item.items)) end
         function p:Refresh()
             local have = {}
-            for _, part in ipairs(split(value())) do
+            for _, part in ipairs(split(value(), item.items)) do
                 local d = describe(part, item.items)
                 if d.id and d.kind ~= "slot" then have[d.id] = true end
                 if d.kind == "name" then have[d.name:lower()] = true end

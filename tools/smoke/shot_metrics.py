@@ -15,7 +15,7 @@ for path in sorted(glob.glob(os.path.join(ROOT, 'Media', 'Fonts', '*.ttf'))):
     f = TTFont(path)
     cmap, hmtx = f.getBestCmap(), f['hmtx']
     upm = f['head'].unitsPerEm
-    adv = []
+    adv = ['[0]=%d' % hmtx[f.getGlyphOrder()[0]][0]]  # .notdef: what a missing glyph (Cyrillic) is drawn with
     for cp in range(32, 0x250):
         g = cmap.get(cp)
         if g:

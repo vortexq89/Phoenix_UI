@@ -84,7 +84,7 @@ function S.Install(ctx)
         local m = f and metrics[(tostring(f[1]):match("([^\\/]+)$"))]
         if not m then return #line * size * 0.5 end
         local w = 0
-        for _, cp in utf8codes(line) do w = w + (m.adv[cp] or m.adv[32] or m.upm / 2) end
+        for _, cp in utf8codes(line) do w = w + (m.adv[cp] or m.adv[0] or m.adv[32] or m.upm / 2) end
         return w * size / m.upm
     end
     local function lines(self)

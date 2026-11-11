@@ -214,7 +214,7 @@ local T = {
     CB_LATENCY = "Latenz",
     CB_LATENCY_DESC = "Schattiert den Teil des Zaubers, den deine Latenz abdeckt.",
     ---------------------------------------------------------------- Auras
-    AURAS = "Stärkungs- & Schwächungszauber",
+    AURAS = "Buffs & Debuffs",
     AURAS_DESC = "Beschnittene Symbole, klare Rahmen und lesbare Timer.",
     AURAS_STYLE = "Stil",
     AURAS_SKIN = "Phoenix-Stil",
@@ -925,7 +925,7 @@ local T = {
     ---------------------------------------------------------------- options layout
     EDITING = "Bearbeitung",
     APPLY_ALL = "Alle",
-    COPY_SETTINGS_FROM = "Alle Einstellungen übernehmen von",
+    COPY_SETTINGS_FROM = "Übernehmen von",
     COPIED_FROM = "Alle Einstellungen von %s kopiert",
     LIVE_PREVIEW = "Live-Vorschau",
     MORE_OPTIONS = "Weitere Optionen",

@@ -1329,7 +1329,8 @@ local function buildPreview(page, m, item)
     end
     find(type(page.schema) == "function" and page.schema() or page.schema, 0)
     if sizeKey then
-        card.size = W:Button(card, L.SIZE_POSITION, "secondary", "resize", 150)
+        card.size = W:Button(card, L.SIZE_POSITION, "secondary", "resize")
+        card.size:SetWidth(math.max(150, card.size:GetWidth()))
         card.size:SetHeight(24)
         card.size:SetPoint("RIGHT", card.tag, "LEFT", -10, 0)
         card.size.onClick = function(b) quickEdit(page, m, sizeKey, b) end

@@ -1202,6 +1202,22 @@ try("search pages and groups", function()
     C:Search("")
 end)
 -- Simple view: fine-tuning rows hide, a jump to one shows it again, switching back shows everything
+try("footer fit", function()
+    -- the "changes save automatically" sentence gives way when the bar has no room; the slider box grows with the font
+    ns.Config:Show("General")
+    local ft = ns.Config.frame.footer
+    ft:SetWidth(1300); ft:Arrange()
+    assert(not ft.savedShort, "wide footer hides the sentence")
+    ft:SetWidth(700); ft:Arrange()
+    assert(ft.savedShort and ft.saved:GetStringWidth() == 0, "narrow footer keeps the sentence")
+    ft:SetWidth(1300); ft:Arrange()
+    local was = ns.Theme.settings.fontScale
+    ns.Theme.settings.fontScale = 1.3
+    local sl = ns.Widgets:Slider(ns.Config.frame, 0, 1, 0.05, true)
+    assert(sl.box:GetWidth() == 52, "slider box at font x1.3: " .. tostring(sl.box:GetWidth()))
+    ns.Theme.settings.fontScale = was
+end)
+
 try("simple view", function()
     local C = ns.Config
     assert(C.IsAdvanced({ key = "styles.@.cast.gap" }) and C.IsAdvanced({ key = "units.@.tags.name" })
@@ -6210,6 +6226,8 @@ try("cooldown manager picker and bars", function()
     assert(AB.db.ring.list == "100, Fireball?300", "the picker did not take the spell out again")
     ns.Widgets.HidePopover()
     ns.DB:Set(AB, "ring.list", before)
+    -- item lists also split on spaces (the form older builds stored); spell lists keep names with spaces whole
+    assert(#O.SpellListSplit("5512 6948, 13444", true) == 3 and #O.SpellListSplit("Arcane Intellect, 1459") == 2, "split")
     local T = ns.modules.Tracker
     assert(T:Viewer("custom1").display == "icons" and T:Viewer("custom1").barWidth == 180, "custom bar display defaults")
     if T.CustomBarPart then
