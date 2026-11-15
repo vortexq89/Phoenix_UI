@@ -1,0 +1,32 @@
+# Feature checklist: Unit Frames: party
+
+From `.specify/templates/feature-checklist-template.md` (constitution 1.2.0). Tick with evidence.
+
+- [x] **Original options**: Every option of the original addon is listed and present, or its absence is justified in the spec
+- [x] **Basics and standards**: The feature works with no setup: sane defaults, Blizzard behaviour kept where it is the standard
+- [x] **Configuration**: Every behaviour has a setting in exactly one place in the GUI; no slash commands
+- [x] **Size, position, scale**: Width, height, scale and position are settable; nothing is fixed in code
+- [x] **Colours, fonts, textures**: Colours, font (Phoenix Font by default), size, outline and bar textures are editable
+- [x] **Live preview**: The page shows the real frame drawn by the module's own code, sized to its content, no box, no clipping
+- [x] **Layout**: Movable frames are in Phoenix Layout only (never also in Edit Mode); saved per Edit Mode layout
+- [x] **Profiles**: Settings live in the profile; import, export, copy and reset work; migrations for removed keys
+- [x] **Live apply**: Every setting applies at once; none needs a reload (sim requests excepted)
+- [x] **Retail and Forever**: Both TOCs load; missing APIs fall back; check_api / check_ids and the harness pass on both
+- [x] **10 locales**: Every string in enUS, deDE, esES, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW; check_locales clean
+- [x] **Edge cases**: Combat lockdown, secret values, missing data, load-on-demand addons, empty lists, huge values, small screens
+- [x] **Unmentioned gaps**: Compared with EllesmereUI and Blizzard's own UI: what neither the original addon nor this spec mentions, listed and decided
+
+## Original options (T001)
+
+| Original option (EllesmereUI has no party unit frame (party lives in its raid frames)) | Phoenix row | Status |
+|---|---|---|
+| - | Group Frames: party (Phoenix_UI_GroupFrames, own spec) | have |
+
+## Unmentioned gaps (EllesmereUI and Blizzard)
+
+| Gap | Phoenix row | Status |
+|---|---|---|
+| Blizzard: party frames in Edit Mode | Group Frames party, Layout only | have |
+| Hide party frames when in a raid | Group Frames visibility | have |
+
+Built: no new code; party is built in Group Frames. Evidence: harness "UF frames 023-028" on retail and Forever; luacheck and check_locales clean. In-game check by the owner pending.

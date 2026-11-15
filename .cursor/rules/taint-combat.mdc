@@ -1,0 +1,22 @@
+---
+description: Taint and combat-lockdown rules for any code touching Blizzard frames
+globs: ["**/*.lua", "**/*.xml"]
+alwaysApply: false
+---
+# Taint & combat lockdown
+
+Taint = our (insecure) code touching data Blizzard secure code reads. In 12.x tainted execution also cannot use secret values, so taint now turns into hard errors as well as "Action blocked" popups.
+
+**Never**
+- Assign to Blizzard globals or fields: `GameTooltip.foo = …`, `PowerBarColor.MANA.r = …`, `StaticPopupDialogs` keys not prefixed `PHOENIXUI_`, `ColorPickerFrame.func = …` (use `ColorPickerFrame:SetupColorPickerAndShow(info)`), `CHAT_FRAME_*` constants, `UIPARENT_MANAGED_FRAME_POSITIONS`, `LFGListFrame.*`.
+- Replace Blizzard functions (`SetItemRef = …`, `UnitFrame_UpdateTooltip = …`). Use `hooksecurefunc` (post-hook) or `EventRegistry`/`TooltipDataProcessor` callbacks.
+- `SetScript` on a Blizzard frame. Use `HookScript`.
+- `SetPoint`/`ClearAllPoints`/`SetParent`/`SetSize`/`Show`/`Hide`/`SetAttribute` on protected or Edit-Mode-managed frames (action bars, unit frames, compact raid frames, nameplates' unit frames, `EditModeManagerFrame` systems). Hide Blizzard art by setting alpha on *non-protected child regions*, or with `RegisterStateDriver` on our own secure frames.
+- Call `:SetCooldown`/`:Clear` on protected cooldowns from tainted code (12.1.5 blocks it) — use `ActionButton_ApplyCooldown` patterns / Duration objects on our own cooldown frames.
+- Iterate all frames (`EnumerateFrames`), touch forbidden frames, or call `UpdateAddOnMemoryUsage`/`collectgarbage` at runtime.
+
+**Always**
+- Check `InCombatLockdown()` before protected work; queue with `ns.Combat:Run(key, fn)`, which re-runs at `PLAYER_REGEN_ENABLED`.
+- Create secure stuff (state drivers, secure headers, click-casting attributes) only out of combat, and only on our own frames.
+- Prefer Blizzard extension points: `TooltipDataProcessor.AddTooltipPostCall`, `Menu.ModifyMenu`, `EventRegistry:RegisterCallback`, `EventUtil.ContinueOnAddOnLoaded`, mixin hooks (`hooksecurefunc(CastingBarMixin, "OnLoad", …)` only for future instances; plus a pass over existing instances).
+- Test with `/console taintLog 2` and read `Logs/taint.log` for `Phoenix_UI` lines.

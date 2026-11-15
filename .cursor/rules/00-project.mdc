@@ -1,0 +1,13 @@
+---
+description: Phoenix_UI project baseline — target API, sources of truth, non-negotiables
+alwaysApply: true
+---
+# Phoenix_UI — project baseline
+
+- Target **WoW Retail 12.1.5 Midnight**, `## Interface: 120105`, build **12.1.5.70448**, plus **WoW Forever 1.60.1** (`*_Forever.toc`, 16001, same Mainline UI). Differences go through `ns:Supports(feature)` (`Core/Flavor.lua`, ARCHITECTURE §17), never `if ns.flavor == …` scattered in modules. Never add Classic branches (`WOW_PROJECT_*_CLASSIC`, `C_AddOns` fallbacks to old globals, etc.).
+- Contract: `docs/ARCHITECTURE.md`. Background: `docs/AUDIT.md`. Workflow: `AGENTS.md`. Prompts: `docs/PROMPTS.md`.
+- **Verify every API before using it** against `Blizzard_APIDocumentationGenerated` / mainline FrameXML in wow-ui-source `live` (see `AGENTS.md §2`). If it is only in `Blizzard_Deprecated*` (`.luacheck/deprecated_12.1.5.json`) it is unavailable. Do not rely on memory of pre-12.0 APIs.
+- `luacheck .` with the generated std must be clean. A W113/W143 on a Blizzard name means the API does not exist. Fix the code, never the std.
+- Zero globals, zero taint, zero duplication, display-only handling of secret values. Each is a review blocker.
+- Blizzard owns layout (Edit Mode). Phoenix owns looks and adds non-protected extras.
+- Do not push, open PRs or touch GitHub unless the user explicitly asks.

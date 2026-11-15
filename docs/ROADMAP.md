@@ -1,0 +1,90 @@
+# Phoenix UI roadmap (restored design, from 28 Oct 2026)
+
+The original Phoenix design (`restore/v1-ui`) is the base again. This roadmap brings the valuable parts of the v2
+work and of the addon research **into that design**, one item at a time. It replaces the 2.0.0 roadmap, which is
+kept as [plan_v2/ROADMAP_2.0.0.md](plan_v2/ROADMAP_2.0.0.md).
+
+Sources: [research/addons/README.md](research/addons/README.md) (86 addon folders studied),
+[v2-reference/](v2-reference/README.md) (v2 plan, deferred list, review, in-game checks, release notes) and
+[research/RECOVERY_REPORT.md](research/RECOVERY_REPORT.md).
+
+## Rules for every item
+
+1. **One owner.** Each feature goes into the existing module named in the table: its code in
+   `Modules/<Module>/`, its settings on that module's page (`Phoenix_UI_Options/Options/<Module>.lua`), its sample
+   in that page's preview. No new addon folder, no second page for the same thing, no duplicate setting.
+2. **Original code only.** The research describes ideas; nothing is copied from another addon (most are All
+   Rights Reserved or GPL; EllesmereUI and WindTools forbid reuse).
+3. **Game art for game things.** Spell, ability, aura, cooldown and item icons are always the game's own icons.
+   Phoenix glyphs are only for Phoenix's own chrome (window buttons, headers, status markers).
+4. **Live and safe.** Settings apply live with no `/reload`; protected changes wait for the end of combat
+   (`ns.Combat:Run`); secret values are passed to widgets, never compared; no `OnUpdate` for polling.
+5. **Fits.** The options layout check and the default-position check in `tools/smoke/harness.lua` must stay at
+   zero problems; previews fit their card.
+6. **Done means:** luac, `tools/check_api.py`, `tools/check_ids.py`, `tools/check_locales.py` and the offline load
+   test pass for retail and Forever, CI is green, **and an in-game screenshot of the feature with zero errors in
+   the Bugs window** (`/pui bugs count` = 0 Phoenix reports) is attached to its pull request. One item per pull
+   request.
+
+## Status 31 Oct 2026 (parity pass, t169 / t191-t197)
+
+Done (see CHANGES.md 2.0.0-beta2 for dates and commits): Cooldown Manager, aura reminders and aura bars, Mythic+ timer art, minimap bin bar, auto combat logging, movement alert, Quickdraw hold mode, data texts v9.1 art, art kits v7.1 / v8.1 / v9.1, code-review and QA fixes, GUI for every slash feature, macros Pick up, upgrade calculator, What's new full changelog, loot council, loadouts, party mode, gamepad, combat text user areas, combat text MSBT styles on built-in animations, an icon on every combat text line, no double combat text, combat font pick, combat text substitutions, macro editor, combat text money and XP notifications, combat text user triggers, MSBT import, Layout mode any frame (MoveAny level), rare alert killed and seen today, announcements, Layout mode hide a frame and a scale per window (MoveAny parity complete), combat text per-event always sticky / message / icon / font, gold ledger, quiet mode for instances (boss emotes, where to hide), review 28 Encounters (BigWigs-level bars, voice, flash) and Layout mode for every Edit Mode frame, review 29 Minimap (info line, vault and lockouts, difficulty text, tracking / calendar clicks, fade rules), review 30 Reminders (click to fix, class buffs, right-click hide, glow), review 31 Resource bars (spark, gradient, absorbs, power threshold colour, visibility rules), review 32 quiet mode (instance list, boss fight sound with a CVar ledger; BossBlock parity complete).
+
+In progress: the FEATURE_COVERAGE partial rows (review pass of Minimap, Reminders, Encounters and Resource bars done, REVIEW_LOG 28-31; BossBlock row done, REVIEW_LOG 32). Partial rows left: EllesmereUI conditional overrides and first-install picker, MSBT outgoing attribution and trigger conditions (limited by 12.x secrets), Tust_EUI LFG badges and nameplate rules, LittleWigs-style warnings, RareScanner loot marks, NaowhForever windows.
+
+Still missing (docs/research/FEATURE_COVERAGE.md): RareScanner loot marks (needs per-rare loot data), LittleWigs-style dungeon warnings, WindTools and NaowhForever ideas, then the EllesmereUI 'equal' rows. Localization polish last.
+CVar editor (WindTools) and simpler minor-enemy plates (Tust), rare loot marks (RareScanner) done 31 Oct. Profiles per place (EllesmereUI conditional overrides), Turn off Phoenix UI (EllesmereUI uninstall), combat text cast names (MSBT attribution), cast triggers (MSBT triggers), the group finder leader's realm (Tust LFG region), the wide vendor window (WindTools merchant pages), the group item levels window (NaowhForever group inspect), the standalone dungeon journal (NaowhForever Forever journal), the training planner, recipes to learn, the gear swap bar and paladin blessings (NaowhForever) done 1 Nov. Polish (t211): live errors of 1 Nov 3:59 AM fixed 1 Nov (done) - Quests/Progress.lua:64 and Skins/QuestLogWindow.lua:28 "base out of range" (tonumber gets GetNumQuestLogEntries' second return; wrap in parentheses), Core/Skin.lua:509 "table index is nil" in Skin:Restore from Skins Redress on a settings dropdown change (nil window piece); Screenshot review of the bugs\shots captures from 3:33-3:59 AM done 1 Nov: "1 bugs" now "1 bug", the game menu NEW label moved off the Options text, tooltip frame art moved outside the first line. To check in game: the grey strip over the top edge of the chat and Loot-Drops panels, the white outline around the General chat, the level badge above the player frame touching the first buff. v11 art kit wired and shipped 1 Nov (class kits, painted border styles and the v11.2 icons / class bars / panels not wired yet). BigWigs / LittleWigs parity (t201) done 1 Nov (role options from the boss data closed it): step 1 boss modules from the journal with per-ability choices done; t202 bar groups (emphasised, pull / break) with own style, anchor and preview section done; per-boss data for every expansion (tools/sync/boss_data.py, rerun by the daily sync) and important-cast announcements (trash warnings) done; role options (abilities for other roles hidden on Phoenix bars by the data's role) done. The daily sync keeps the boss data current.
+
+## Libraries (t220/t221, 1 Nov 2026)
+
+Audit done: [research/LIBRARIES.md](research/LIBRARIES.md). Next (needs a plan, not started): LibDataBroker in Data texts, register Phoenix media in LibSharedMedia; AceDB only if item 23 needs the storage layer replaced. CurseForge logo made (branding/, outside the repo).
+
+## User priority t213 (1 Nov 2026): 24 points + item 25
+
+Before the end-to-end test. Each point is written out word for word, with its cause and files, in
+[research/AUDIT_T213.md](research/AUDIT_T213.md), which is the checklist for this list. Order: broken behaviour
+(1, 2, 3, 4, 12, 14, 15, 16, 22, 23, 10, 6, 19), then settings consolidation (5, 8, 9, 18, 11, 20), then the GUI
+rework (7, 13, 17, 21, 24, 25). Item 25 (t214): a new theme and GUI style from figma bro after the user approves
+it; the structure comes first and the styling stays token-driven. t215 (5:31 AM) replaces item 25: one theme that copies the EllesmereUI look exactly (window, tabs, sections, widgets, colours, borders, unit frames) from the read-only reference in I:\, written as Phoenix's own code; the extra theme systems are merged with a safe migration; the only Phoenix-specific option is a phoenix portrait border on the Player and Target frames. The mapping is in AUDIT_T213.md. Status: audit done 1 Nov; done: 1 (action bars preview), 22 (window drag), 14 (AFK preview exit), 2 (action bar drag), 3 (micro menu / bags skin after reload), 4 + 12 (code borders, tooltip border on the edge), 15 (upload says what happens; per-report sent/failed needs an uploader release), 16 (Phoenix icons only), 23 (frame spots kept after reload), 10 (talent node borders follow the node shape), 19 (group frames clamped, group numbers), 5 part 1 (one theme and accent, old theme options migrated). **t222 (8:37 AM):** the remaining consolidation and GUI items are replaced by the rebuild plan in [research/ELLESMERE_REBUILD_MAP.md](research/ELLESMERE_REBUILD_MAP.md) (plan only; build order in its §8). **t223:** work runs through Spec Kit: the constitution is in `.specify/memory/constitution.md`, and step 1 is `specs/001-settings-window/` (tasks.md shows progress). Item 6 (character panel) waits for an in-game screenshot of the overlap. Portrait border (square only, off by default) waits for the user's approval of the code.
+
+## Order of work
+
+Phase 0 (now): the user's in-game pass of the restored build. Fix what it finds before anything below.
+
+| # | Item | Module (existing) | Source | Acceptance criteria (plus rule 6) |
+|---|---|---|---|---|
+| 1 | Keystone sharing in the common `LibKS` format (level, map, rating; request "R"), so `/keys` sees BigWigs, DBM and EllesmereUI users | MythicPlus (`Keystones.lua` already speaks part of it) | research #1 | A party member running only BigWigs shows in the keystone list with level and dungeon; no duplicate when they also run Phoenix |
+| 2 | Auto item bars: flasks, food, potions, healthstones, runes, oils, trinkets, quest items, own list; filled from bags | ActionBars (`Extras.lua` item bar grows into up to 3 item bars) | v2 #66 | Each bar fills from real bags with game item icons; size, layout, fade and show rules on the Action Bars page with a live preview; nothing in Forever that Forever lacks |
+| 3 | Battle res button and shared charge counter for classes that have one | ActionBars (item bar slot) + MythicPlus timer (charges) | v2 #66 | Druid/DK/warlock/paladin see the button with charges and recharge time; others never see it |
+| 4 | Compact loot roll bars | Skins (loot roll is a Blizzard window) | v2 #69 | Need/Greed/Transmog/Pass work in a group; item icon and quality from the game; `/pui loottest` sample |
+| 5 | Party cooldown and interrupt tracker on party frames (cast events, own cooldown table; fill in from LibOpenRaid when another addon loaded it) | GroupFrames | v2 #68, research #2 | Icons are the spells' game icons; shows interrupts and major defensives of a 5-player group; off by default; honest "hidden in instance" behaviour |
+| 6 | "Casts on me" targeted spell bars | CastBars | research #5 | A mob casting at the player shows a bar with the spell's icon and time; secret-safe; off by default |
+| 7 | Tank active-mitigation bars (Ironfur, Ignore Pain, Shield Block …) next to stagger | UnitFrames (`Resources.lua`) | research #7 | Correct uptime/charges for each tank spec; spell icons from the game |
+| 8 | Talent conditions on Cooldown Manager / custom bar entries | Tracker | research #6 | An entry tied to a talent hides when the talent is not taken, live on respec |
+| 9 | Move Blizzard windows (Shift-drag saves, Ctrl-drag for the session) | Movers (`M.WINDOWS` already scales them) | research #8 | Character, Spellbook, Collections etc. remember their place; never a protected frame in combat |
+| 10 | "What's new" popup once per version | General (Home page already has the hook) | research #9 | Shows once after an update, closable, links to the changelog; never in combat |
+| 11 | Mythic+ teleport flyout and hearthstones | MythicPlus | v2 #70 | Only teleports the character knows, game spell icons, secure buttons built out of combat |
+| 12 | Paragon progress on the reputation data text | DataTexts | v2 #70 | Paragon factions show progress and reward-ready |
+| 13 | Rare and treasure alerts with a waypoint (vignettes) | Quests (`Collector.lua` already reads vignettes; `Arrow.lua` is the waypoint) | v2 #71, research RareScanner | Alert once per rare, click sets the arrow; no alert spam in cities |
+| 14 | Masque support for action bars, item bars and tracker icons | ActionBars, Tracker | v2 #67 | Does nothing without Masque; with Masque every button skins and Phoenix's border yields |
+| 15 | Already Known tint at merchants, AH and collections | Quality | research #9 | Known recipes, mounts, pets, toys tinted; game icons untouched |
+| 16 | Mail alt list | Automation | research #9 | Alts of the account listed beside Send Mail; click fills the recipient |
+| 17 | Arabic text shaping (letters joined, right to left) for the Arabic locale | Locales + Core (one shaper) | v2 Core/Shaper | Arabic strings render joined and in order on every page; no effect on other locales |
+| 18 | Per-dungeon trash data (dangerous casts, priority mobs) and boss timer data | NamePlates, Encounters | research #3, #4 | Needs the user's in-game runs first; data files load on demand per instance |
+| 19 | Uploader and signed "fixed errors" list (v2 FIXED_SYNC) | Bugs | v2-reference/FIXED_SYNC.md | Only after the bug flow above is proven in daily use |
+| 20 | Small wins: spell queue slider (exists in Quality, verify), focus key (exists in UnitFrames `quickFocus`, verify), AFK screen (exists, verify), mute list (exists in General) | various | v2 #70, #71 | Each verified in game; nothing rebuilt that already exists |
+
+## Not doing
+
+- A second UI framework, Studio, Sentinel, or any v2 window: the restored design keeps one options window, one
+  movers mode and one Bugs viewer.
+- Combat-log based features (closed in Midnight), WeakAuras-style custom aura engines (aura data is secret in combat).
+- Bundling other addons' code (the old `main` / `legacy-baseline` did; never again).
+
+## Plugin audit (t227, 1 Nov)
+See docs/research/PLUGIN_AUDIT/00-INDEX.md: specs 003 (GUI polish) to 015 in priority order. Next: specs/003-gui-polish.
+- specs/003 built (3 Nov); specs/004 (EllesmereUI parity+) and 005 (one layout model) written, not built.
+
+## Spec-driven from t229 (3 Nov)
+
+One spec per plugin and per feature: see specs/INDEX.md for every spec, its status and the build order.

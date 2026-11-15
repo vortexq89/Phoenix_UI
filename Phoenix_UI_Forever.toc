@@ -1,0 +1,40 @@
+# WoW Forever. Generated from Phoenix_UI.toc by tools/gen_tocs.py; edit that file instead.
+## Interface: 16001
+## Title: |cffff6a1aPhoenix|r |cffffb23fUI|r
+## Notes: Restyles the default interface and adds small quality-of-life features. Type /pui for settings.
+## Notes-deDE: Gestaltet die Standardoberfläche neu und ergänzt kleine Komfortfunktionen. Gib /pui für die Einstellungen ein.
+## Notes-frFR: Restylise l'interface par défaut et ajoute de petites fonctions de confort. Tapez /pui pour les options.
+## Notes-esES: Cambia el estilo de la interfaz predeterminada y añade pequeñas mejoras de comodidad. Escribe /pui para las opciones.
+## Notes-esMX: Cambia el estilo de la interfaz predeterminada y añade pequeñas mejoras de comodidad. Escribe /pui para las opciones.
+## Notes-ruRU: Переоформляет стандартный интерфейс и добавляет мелкие удобства. Введите /pui, чтобы открыть настройки.
+## Notes-zhCN: 重新美化默认界面并加入实用的小功能。输入 /pui 打开设置。
+## Notes-zhTW: 重新美化預設介面並加入實用的小功能。輸入 /pui 開啟設定。
+## Notes-koKR: 기본 인터페이스를 새로 꾸미고 작은 편의 기능을 더합니다. 설정은 /pui를 입력하세요.
+## Notes-ptBR: Reestiliza a interface padrão e adiciona pequenos recursos de conveniência. Digite /pui para as opções.
+## Notes-itIT: Ristilizza l'interfaccia predefinita e aggiunge piccole comodità. Scrivi /pui per le impostazioni.
+## Author: VortexQ8
+#@debug@
+## Version: 2.0.0-beta1
+#@end-debug@
+#@non-debug@
+# ## Version: @project-version@
+#@end-non-debug@
+## Category: User Interface
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Textures\Emblem64
+## SavedVariables: PhoenixUIDB, PhoenixUIBugsDB, PhoenixUIDevDB, Phoenix_UIDB, PhoenixUISimDB
+## SavedVariablesPerCharacter: Phoenix_UIPerCharDB
+## OptionalDeps: !BugGrabber, Details
+## X-License: MIT
+## X-Website: https://github.com/vortexq89/Phoenix_UI
+## X-Curse-Project-ID: 1242528
+## X-Wago-ID: jK8XQjKy
+
+Libs\Libs.xml
+Locales\Locales.xml
+Core\Core.xml
+UI\UI.xml
+Modules\Modules.xml
+Sim\Results.lua
+Core\Changelog.lua
+Core\Init.lua
+UI\MinimapButton.lua
