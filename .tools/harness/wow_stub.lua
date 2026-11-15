@@ -1298,4 +1298,15 @@ function RollOnLoot(id, kind) H.rolled[#H.rolled + 1] = { id, kind } end
 H.paragon = {}
 C_Reputation.IsFactionParagon = function(id) return H.paragon[id] ~= nil end
 C_Reputation.GetFactionParagonInfo = function(id) local p = H.paragon[id]; if p then return p[1], p[2], nil, p[3] end end
+H.afk, H.vignettes, H.mapPos = nil, nil, nil
+function UnitIsAFK() return H.afk == true end
+C_VignetteInfo = rawget(_G, "C_VignetteInfo") or {}
+C_VignetteInfo.GetVignetteInfo = function(g) return H.vignettes and H.vignettes[g] end
+C_VignetteInfo.GetVignettes = function() local out = {}; for g in pairs(H.vignettes or {}) do out[#out + 1] = g end; return out end
+local baseMapPos = C_Map.GetPlayerMapPosition
+C_Map.GetPlayerMapPosition = function(...) local p = H.mapPos; if p then return { GetXY = function() return p.x, p.y end } end return baseMapPos(...) end
+C_Map.GetMapWorldSize = function() local p = H.mapPos; if p then return p.w, p.h end return 0, 0 end
+function GetPlayerFacing() return H.mapPos and H.mapPos.facing end
+C_PlayerInfo = rawget(_G, "C_PlayerInfo") or {}
+C_PlayerInfo.GetPlayerMythicPlusRatingSummary = rawget(C_PlayerInfo, "GetPlayerMythicPlusRatingSummary") or function() return { currentSeasonScore = 0 } end
 return H

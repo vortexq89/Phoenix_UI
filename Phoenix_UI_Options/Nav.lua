@@ -49,6 +49,8 @@ local INFO = {
   Friends = { "friends", "Friends", "Friends list look, notes and search.", "Friends" },
   Forever = { "forever", "Forever", "Flight timer and pet happiness (Forever client).", "Forever" },
   LootRoll = { "flow", "Loot Rolls", "Compact Need, Greed, Transmog and Pass rolls with item level.", "LootRoll" },
+  AFKScreen = { "flow", "AFK Screen", "Your character, details and an away timer while AFK.", "AFKScreen" },
+  Vignettes = { "minimap", "Rare Alerts", "Sound, flash or chat when a rare or treasure appears.", "Vignettes" },
   QoL = { "chat", "Announcements", "One router for quest, key, reset and interrupt messages." },
   Fonts = { "theme", "Fonts", "One font everywhere, outline, shadow, sizes and per-module fonts, with specimens." },
   Colors = { "theme", "Colours", "Class, power and reaction colours and colour-blind palettes." },
@@ -60,7 +62,7 @@ local INFO = {
 Nav.INFO = INFO
 
 Nav.GROUPS = {
-  { "Interface", { "Core", "Theme", "Fonts", "Colors", "Glows", "Cursor", "Celebrations", "Studio", "Minimap", "Tooltip", "DataBars", "QuestTracker", "Skins" } },
+  { "Interface", { "Core", "Theme", "Fonts", "Colors", "Glows", "Cursor", "Celebrations", "Studio", "Minimap", "Tooltip", "DataBars", "Vignettes", "AFKScreen", "QuestTracker", "Skins" } },
   { "Combat", { "UnitFrames", "ActionBars", "ResourceBars", "CooldownManager", "Nameplates", "Reminders", "ClickCast", "Arena", "Pulse", "Spark", "CastHistory", "PvP" } },
   { "Group", { "RaidFrames", "PartyCD", "GroupFinder", "Ascent", "Embers", "Loadouts", "RaidTools" } },
   { "Social & Chat", { "Chat", "Flow", "LootRoll", "Friends", "QoL" } },

@@ -4,6 +4,12 @@ All notable changes to Phoenix UI on `main-v2`. Newest first. Every merged PR ad
 
 ## Unreleased (canary)
 
+### AFK screen, rare alerts, waypoint arrow, spell queue, branch feat/qol-b
+- AFK screen (off by default): themed overlay with your character model (optional slow turn), level/class/item level/gold/M+ rating/guild and an away timer; moving, combat or a click removes it. /pui afktest.
+- Rare alerts (on by default): sound and chat line once per rare/treasure as it appears on the minimap (events and taskbar flash opt-in), open world only unless enabled, with an ignore list.
+- Waypoint arrow (on by default): arrow and yard distance toward the game's user waypoint (Quest Tracker /way or a map pin), movable, clears on arrival (10 yd) or right-click; dims when the position is unavailable or secret.
+- Spell queue window slider (0 = leave the game value) through the CVar ledger, restored when set back to 0.
+
 ### Teleports, paragon and focus key, branch feat/qol-a
 - Auto item bars: "Mythic+ teleports" category (retail; Hero's Path spells you know, optional current-season-only filter from C_ChallengeMode.GetMapTable) and "Hearthstones" category (hearthstone items, plus owned hearthstone toys on retail as secure toy buttons). Bar 5 has both ticked (bar 5 stays off by default).
 - Data Bars: paragon progress on the XP/reputation bar and the reputation block for factions past their maximum (a + marks a reward chest waiting); toggle, on by default.

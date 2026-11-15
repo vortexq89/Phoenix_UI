@@ -54,6 +54,7 @@ Core\Coexist.lua
 Core\Items.lua
 Core\Masque.lua
 Core\FocusKey.lua
+Core\Waypoint.lua
 Core\Movers.lua
 Core\Windows.lua
 Core\Queue.lua
@@ -87,3 +88,4 @@ Tests\Deferred_test.lua
 Tests\Look_test.lua
 Tests\Plugins_test.lua
 Tests\Shaper_test.lua
+Tests\Waypoint_test.lua
