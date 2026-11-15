@@ -295,7 +295,10 @@ function Region:GetStatusBarTexture()
   return t
 end
 function Region:SetTimerDuration(d, interp, dir) self.timer = { d, interp, dir } end
-function Region:SetAlphaFromBoolean(flag, a, b) self.alphaFlag = flag end
+function Region:SetAlphaFromBoolean(flag, a, b)
+  self.alphaFlag = flag
+  if H.secrets[flag] == nil then self.alpha = flag and (a or 1) or (b or 0) end -- the engine resolves plain flags at once
+end
 function Region:SetCooldownFromDurationObject(d) self.cooldown = d end
 function Region:SetTexture(t) self.texture = t end
 function Region:SetSpriteSheetCell(cell) self.cell = cell end
@@ -345,6 +348,8 @@ FocusFrame.totFrame = CreateFrame("Frame", nil, FocusFrame); FocusFrame.totFrame
 H.units = { player = true, target = true }
 local function exists(u) return H.units[u] == true end
 function UnitExists(u) return exists(u) end
+H.hostile = H.hostile or {}
+function UnitCanAttack(a, b) return H.hostile[b] == true end
 function UnitHealth(u) return maybe(exists(u) and 800 or 0) end
 function UnitHealthMax(u) return maybe(exists(u) and 1000 or 0) end
 function UnitHealthMissing(u) return maybe(exists(u) and 200 or 0) end
@@ -478,7 +483,11 @@ H.privateAnchors, H.nextAnchor = {}, 0
 C_UnitAuras = {
   AddPrivateAuraAnchor = function(args) H.nextAnchor = H.nextAnchor + 1; H.privateAnchors[H.nextAnchor] = args; return H.nextAnchor end,
   RemovePrivateAuraAnchor = function(id) H.privateAnchors[id] = nil end,
-  GetAuraDataByIndex = function(u, i, filter) if H.dispellable and H.dispellable[u] then return { auraInstanceID = maybe(7) } end return nil end,
+  GetAuraDataByIndex = function(u, i, filter)
+    local set = (type(filter) == "string" and filter:find("HELPFUL")) and H.purgeable or H.dispellable
+    if set and set[u] then return { auraInstanceID = maybe(7) } end
+    return nil
+  end,
 }
 for _, n in ipairs({ "PartyFrame", "CompactRaidFrameContainer", "CompactRaidFrameManager" }) do
   local f = CreateFrame("Frame", n, UIParent); f.parent = UIParent
@@ -775,6 +784,43 @@ H.secretAuras = false
 C_Secrets.ShouldAurasBeSecret = function() return H.secretAuras == true end
 H.callbacks = {}
 EventRegistry = { RegisterCallback = function(_, event, fn, owner) H.callbacks[event] = H.callbacks[event] or {}; table.insert(H.callbacks[event], fn) end }
+
+-- Phase 4: group frames (dispel colours, corner indicators, arena targeting).
+C_UnitAuras.GetAuraDispelTypeColor = function(u, id, curve) H.dispelColorCalls = (H.dispelColorCalls or 0) + 1; return CreateColor(0.2, 0.6, 1, 1) end
+H.unitAuras = {}
+C_UnitAuras.GetUnitAuraBySpellID = function(u, id) local a = H.unitAuras[u]; if a and a[id] then return { auraInstanceID = maybe(id) } end return nil end
+C_UnitAuras.GetAuraDataBySpellName = function(u, name, filter) local a = H.unitAuras[u]; local id = tonumber(tostring(name):match("%d+") or 0)
+  if a and a[id] then return { auraInstanceID = maybe(id) } end return nil end
+H.unitTargets = {}
+local baseUnitIsUnit = UnitIsUnit
+function UnitIsUnit(a, b)
+  local enemy = type(a) == "string" and a:match("^(.+)target$")
+  if enemy and H.unitTargets[enemy] then return maybe(H.unitTargets[enemy] == b) end
+  return baseUnitIsUnit(a, b)
+end
+
+-- Phase 5: nameplates step 5 (reaction, NPC ids, forces, important casts, font strings).
+function Region:SetFont(path, size, flags) self.fontPath, self.fontSize, self.fontFlags = path, size, flags end
+H.reaction = {}
+function UnitReaction(u) return maybe(H.reaction[u] or (H.friendly[u] and 5 or 2)) end
+H.creatureIDs = {}
+function UnitCreatureID(u) return maybe(H.creatureIDs[u]) end
+H.forces = {}
+C_ScenarioInfo.GetUnitCriteriaProgressValues = function(u) local f = H.forces[u]; if f then return maybe(f[1]), maybe(f[2]), maybe(f[3]) end end
+H.important = {}
+C_Spell.IsSpellImportant = function(id) return maybe(H.important[id] == true) end
+H.unitThreat = {}
+H.targetUnit, H.focusUnit = nil, nil
+local npUnitIsUnit = UnitIsUnit
+function UnitIsUnit(a, b)
+  if a == "target" and H.targetUnit then return maybe(b == H.targetUnit) end
+  if a == "focus" and H.focusUnit then return maybe(b == H.focusUnit) end
+  return npUnitIsUnit(a, b)
+end
+local baseThreat = UnitThreatSituation
+function UnitThreatSituation(a, b) if H.unitThreat[a] ~= nil then return maybe(H.unitThreat[a]) end return baseThreat(a, b) end
+for k, v in pairs({ nameplateMotion = "0", nameplateGlobalScale = "1", nameplateOverlapV = "1.1", nameplateMaxDistance = "41",
+  nameplateSelectedScale = "1.2" }) do H.cvars[k] = v end
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,

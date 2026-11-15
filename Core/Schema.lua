@@ -90,6 +90,12 @@ function Schema:Validate(def, value)
     local n = 0
     for k in pairs(value) do n = n + 1; if type(k) ~= "number" then return false, "list keys must be 1..n" end end
     for i = 1, n do if type(value[i]) ~= "string" then return false, "list items must be text" end end
+    if def.itemValidate then
+      for i = 1, n do
+        local ok, why = def.itemValidate(value[i])
+        if not ok then return false, "item " .. i .. ": " .. tostring(why) end
+      end
+    end
     if def.maxItems and n > def.maxItems then return false, "more than " .. def.maxItems .. " items" end
   elseif def.type == "grid" then
     local rows, cols = {}, {}

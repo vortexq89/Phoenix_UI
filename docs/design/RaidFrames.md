@@ -16,5 +16,13 @@ Child addon `Phoenix_UI_RaidFrames` (depends on `Phoenix_UI`, optional dependenc
 - Private auras: `C_UnitAuras.AddPrivateAuraAnchor` slots the game fills; removed on unit change, setting change and disable.
 - Click-casting writes attributes only out of combat; mouse bindings use `<mods>type<n>`; keyboard bindings are hovercast (`SetBindingClick` in the restricted OnEnter, `ClearBindings` on leave). With Clique loaded Phoenix writes nothing and only registers frames in `ClickCastFrames`.
 
+## Step 4 additions (feat/groupframes)
+- `Indicators.lua`: debuff/buff/defensive containers on `PUI.Auras` (lockout exclusions on debuffs), corner indicators (`POINT:spellID[:mine|any][:RRGGBB]`, per-class heal presets), private-aura anchors with placement, enemy-target dots painted from `PUI.Targeting` (`SetAlphaFromBoolean(UnitIsUnit(enemy.."target", unit))`, never compared).
+- Size tiers party / ≤10 / ≤20 / ≤40 (auto by group size or fixed), Mythic cap `groupFilter 1,2,3,4`; header attributes changed only out of combat (CombatQueue).
+- `Core/Prediction.lua` shared renderer: incoming heals, absorbs, heal absorbs, overflow marks from the calculator's clamped flags.
+- Dispel highlight styles border / glow / tint / both, type colour from `GetAuraDispelTypeColor` with a step curve.
+- Test mode builds unsecured sample buttons (refused and ended in combat); the Options preview uses the same `Build` / `Layout` / `PaintSample`.
+- Click-cast `cc.list` (one binding per item, validated), composer in Options, hovercast keys reserved in `PUI.Bindings` for one conflict check.
+
 ## Not in this phase (reported)
-`AuraContainer` Debuff Manager (boss/CC/important/custom priority tiles) and Buff Manager (spell indicators), dispel-type colours, self-first sort through `nameList`, FrameSort compatibility check, pet frames, friendly boss frames, tank duplicates, party target buttons, absorb coalescer, range spell refiner, role-aware layout presets.
+Debuff priority tiles per instance, bar / health-colour indicator types, per-spec indicator lists, self-first sort through `nameList`, FrameSort compatibility check, pet frames, friendly boss frames, tank duplicates, party target buttons, absorb coalescer, range spell refiner, role-aware layout presets.

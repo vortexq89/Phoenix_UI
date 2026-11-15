@@ -1,6 +1,6 @@
 ## Interface: 120100, 120105, 16001
 ## Title: Phoenix UI - Raid and Party Frames
-## Notes: Phoenix UI group frames: secure party and raid headers, status icons, range fade, dispel highlight, private auras and click-casting.
+## Notes: Phoenix UI group frames: layouts by group size, sorting, role icons, dispel highlight, aura icons and corner indicators, private auras, heal prediction, range fade, test mode and click-casting.
 ## Author: VortexQ8
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
@@ -12,6 +12,7 @@
 ## OptionalDeps: Clique
 
 Elements.lua
+Indicators.lua
 RaidFrames.lua
 ClickCast.lua
 Tests\RaidFrames_test.lua

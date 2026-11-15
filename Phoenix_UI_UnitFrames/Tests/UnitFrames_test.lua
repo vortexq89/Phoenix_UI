@@ -232,3 +232,34 @@ Tests:Add("UnitFrames", "player frame hosts Resource Bars when attached", functi
   Schema:Set("uf.player.resources", "separate")
   t:eq(RB.Host(), nil, "kept separate (Studio places them)")
 end)
+
+Tests:Add("UnitFrames", "dispel slots, lockout preset, purge glow and overflow marks apply live", function(t)
+  if not H then return end
+  local units = enable(t, "uf.target.dispel.enabled", "uf.target.auras.debuffs.hideLockouts", "uf.purgeGlow", "uf.overflow")
+  local o = units.target
+  -- Dispel slots: their own engine group on the dispellable filter.
+  t:ok(o.dispelHandle, "target has a dispel-slot group")
+  local st = o.dispelHandle:GroupState("dispel")
+  t:eq(st and st.filter, PUI.Auras.Filter("HARMFUL", "RAID_PLAYER_DISPELLABLE"), "dispel slots use the dispellable filter")
+  Schema:Set("uf.target.dispel.enabled", false)
+  t:ok(not o.dispelHolder:IsShown(), "dispel slots turn off live")
+  -- Lockout preset on debuffs.
+  t:eq(#(o.auras.debuffs.exclusions or {}), #PUI.Auras.LOCKOUTS, "lockouts excluded by default")
+  Schema:Set("uf.target.auras.debuffs.hideLockouts", false)
+  t:eq(#(o.auras.debuffs.exclusions or {}), 0, "lockout preset turns off live")
+  -- Purge glow: only with an offensive dispel known, a hostile unit and a purgeable buff.
+  H.known[370], H.hostile.target, H.purgeable = true, true, { target = true }
+  t:cleanup(function() H.known[370], H.hostile.target, H.purgeable = nil, nil, nil end)
+  E.UpdatePurge(o)
+  t:ok(o.purging, "purge glow shows")
+  Schema:Set("uf.purgeGlow", false)
+  E.UpdatePurge(o)
+  t:ok(not o.purging, "purge glow turns off live")
+  -- Overflow marks never compare the secret clamped flag.
+  H.secretMode = true
+  t:cleanup(function() H.secretMode = false end)
+  Schema:Set("uf.overflow", true)
+  o.calc = o.calc or CreateUnitHealPredictionCalculator()
+  E.UpdatePrediction(o)
+  t:ok(o.healAbsorbOver and o.absorbOver, "overflow marks exist")
+end)

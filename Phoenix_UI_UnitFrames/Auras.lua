@@ -93,6 +93,8 @@ function A.Setup(o, group, c)
         if h.container then h.container:ClearAllPoints(); h.container:SetPoint(layout.anchor, frame, layout.anchor) end
       end
       h:Configure({ { key = kind, filter = A.FilterFor(kind, a.filter), max = a.max, sort = a.sort, size = a.size } })
+      -- Lockout preset (Sated, Forbearance...): only where the client has the setter.
+      if kind == "debuffs" and h.SetExclusions then h:SetExclusions(a.hideLockouts and Auras.LOCKOUTS or {}) end
       if h.container then h.container:Show() end
     elseif h then
       h:Configure({ { key = kind, filter = A.FilterFor(kind, a.filter), enabled = false } })
@@ -105,8 +107,56 @@ function A.Setup(o, group, c)
 end
 
 function A.Off(o)
+  if o.dispelHandle then
+    o.dispelHandle:Configure({ { key = "dispel", filter = Auras.Filter("HARMFUL", "RAID_PLAYER_DISPELLABLE"), enabled = false } })
+    if o.dispelHandle.container then o.dispelHandle.container:Hide() end
+  end
   for kind, h in pairs(o.auras or {}) do
     h:Configure({ { key = kind, filter = A.FilterFor(kind, "all"), enabled = false } })
     if h.container then h.container:Hide() end
   end
+end
+
+-- Dispel slots: a third aura group with only debuffs the player can dispel,
+-- big and apart from the debuff row. The engine filters (no Lua reads).
+A.DISPEL_FILTER = "HARMFUL|RAID_PLAYER_DISPELLABLE"
+function A.SetupDispel(o, group, c)
+  local d = c.dispel
+  local h = o.dispelHandle
+  local on = d and d.enabled and o.live
+  if not on then
+    if h then
+      h:Configure({ { key = "dispel", filter = Auras.Filter("HARMFUL", "RAID_PLAYER_DISPELLABLE"), enabled = false } })
+      if h.container then h.container:Hide() end
+    end
+    if o.dispelHolder then o.dispelHolder:Hide() end
+    return
+  end
+  local f = o.dispelHolder
+  if not f then
+    f = PUI:CreateFrame("Frame", nil, o.body, nil, OWNER)
+    o.dispelHolder = f
+  end
+  local w = d.max * (d.size + 2) - 2
+  f:SetSize(w, d.size)
+  f:SetFrameLevel(o.button:GetFrameLevel() + 8)
+  f:ClearAllPoints()
+  local b = o.button
+  if d.position == "left" then f:SetPoint("RIGHT", b, "LEFT", -3, 0)
+  elseif d.position == "right" then f:SetPoint("LEFT", b, "RIGHT", 3, 0)
+  elseif d.position == "above" then f:SetPoint("BOTTOMRIGHT", b, "TOPRIGHT", 0, 3)
+  else f:SetPoint("CENTER", b, "CENTER") end
+  f:Show()
+  local growX = d.position == "left" and "LEFT" or "RIGHT"
+  local layout = { anchor = growX == "LEFT" and "TOPRIGHT" or "TOPLEFT", growX = growX, growY = "DOWN", padding = 2,
+    lineSize = d.max, size = d.size }
+  if not h then
+    h = Auras:Create(OWNER, f, o.unit, layout)
+    o.dispelHandle = h
+  else
+    h:SetLayout(layout)
+  end
+  if h.container then h.container:ClearAllPoints(); h.container:SetPoint(layout.anchor, f, layout.anchor); h.container:Show() end
+  h:Configure({ { key = "dispel", filter = Auras.Filter("HARMFUL", "RAID_PLAYER_DISPELLABLE"), max = d.max, sort = "expiration",
+    size = d.size } })
 end

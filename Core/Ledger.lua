@@ -156,6 +156,30 @@ function Bindings:Claim(owner, key, action)
   return true, k
 end
 
+-- Reserve(owner, key, label): records a key Phoenix uses without an override
+-- binding (click-cast hovercast keys bound by a secure snippet on mouse-over).
+-- It shows in List and Conflicts so every key Phoenix touches is in one place,
+-- and is never applied. Unreserve(owner) clears all of one owner's reservations.
+Bindings.reserved = {}
+function Bindings:Reserve(owner, key, label)
+  assert(type(owner) == "string" and owner ~= "", "Bindings:Reserve needs an owner")
+  local k = normalise(key)
+  if not k then return false, "not a key" end
+  self.reserved[k] = self.reserved[k] or {}
+  self.reserved[k][owner] = label or "hover"
+  return true, k
+end
+
+function Bindings:Unreserve(owner, key)
+  local k = key and normalise(key)
+  for rk, r in pairs(self.reserved) do
+    if (k == nil or rk == k) and r[owner] then
+      r[owner] = nil
+      if next(r) == nil then self.reserved[rk] = nil end
+    end
+  end
+end
+
 function Bindings:Release(owner, key)
   local k = key and normalise(key)
   for ck, c in pairs(self.claims) do
@@ -180,6 +204,13 @@ function Bindings:Conflicts(key, owner)
     table.sort(names)
     for _, o in ipairs(names) do out[#out + 1] = { kind = "phoenix", owner = o, action = c[o].command or c[o].click } end
   end
+  local r = self.reserved[k]
+  if r then
+    local names = {}
+    for o in pairs(r) do if o ~= owner then names[#names + 1] = o end end
+    table.sort(names)
+    for _, o in ipairs(names) do out[#out + 1] = { kind = "phoenix", owner = o, action = r[o], reserved = true } end
+  end
   local blizz = GetBindingAction and GetBindingAction(k, false)
   if blizz and blizz ~= "" then out[#out + 1] = { kind = "blizzard", action = blizz } end
   return out
@@ -189,6 +220,9 @@ function Bindings:List()
   local out = {}
   for k, c in pairs(self.claims) do
     for o, a in pairs(c) do out[#out + 1] = { key = k, owner = o, action = a.command or a.click } end
+  end
+  for k, r in pairs(self.reserved) do
+    for o, label in pairs(r) do out[#out + 1] = { key = k, owner = o, action = label, reserved = true } end
   end
   table.sort(out, function(a, b) if a.key ~= b.key then return a.key < b.key end return a.owner < b.owner end)
   return out
@@ -315,5 +349,6 @@ PUI.Kernel:On("MODULE_DISABLED", function(name)
   if type(name) ~= "string" then return end
   CVars:Restore(name)
   Bindings:Release(name)
+  Bindings:Unreserve(name)
   FrameLedger:Release(name)
 end)

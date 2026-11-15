@@ -119,6 +119,13 @@ function E.Build(o)
   Bars.Color(o.absorb, 0.85, 0.9, 1, 0.55)
   o.healAbsorb = overlayBar(o, o.health)
   Bars.TokenColor(o.healAbsorb, "danger", 0.45)
+  -- Overflow marks: shown from the calculator's "clamped" flags (secret-safe).
+  o.absorbOver = o.health:CreateTexture(nil, "OVERLAY", nil, 6)
+  o.absorbOver:SetColorTexture(0.9, 0.95, 1, 0.95)
+  o.absorbOver:SetAlpha(0)
+  o.healAbsorbOver = o.health:CreateTexture(nil, "OVERLAY", nil, 6)
+  o.healAbsorbOver:SetColorTexture(1, 0.3, 0.38, 0.95)
+  o.healAbsorbOver:SetAlpha(0)
 
   local textLayer = PUI:CreateFrame("Frame", nil, body, nil, OWNER)
   textLayer:SetAllPoints(body)
@@ -244,6 +251,16 @@ function E.Layout(o, c)
   o.incoming:SetWidth(w)
   o.absorb:SetWidth(w)
   o.healAbsorb:SetWidth(w)
+  -- Absorb overflow sits on the far edge; heal-absorb overflow on the near edge.
+  local far, near = c.reverse and "LEFT" or "RIGHT", c.reverse and "RIGHT" or "LEFT"
+  o.absorbOver:ClearAllPoints()
+  o.absorbOver:SetPoint("TOP" .. far, o.health, "TOP" .. far)
+  o.absorbOver:SetPoint("BOTTOM" .. far, o.health, "BOTTOM" .. far)
+  o.absorbOver:SetWidth(2 * px)
+  o.healAbsorbOver:ClearAllPoints()
+  o.healAbsorbOver:SetPoint("TOP" .. near, o.health, "TOP" .. near)
+  o.healAbsorbOver:SetPoint("BOTTOM" .. near, o.health, "BOTTOM" .. near)
+  o.healAbsorbOver:SetWidth(2 * px)
   o.fill:SetAlpha(s.fillAlpha)
   -- chrome
   layoutBorder(o.border, o.button, px)
@@ -347,11 +364,43 @@ function E.UpdatePrediction(o)
   UnitGetDetailedHealPrediction(unit, "player", calc)
   local maxHealth = UnitHealthMax(unit)
   if s.absorbs then
-    Bars:SetValues(o.absorb, maxHealth, (calc:GetDamageAbsorbs()))
-    Bars:SetValues(o.healAbsorb, maxHealth, (calc:GetHealAbsorbs()))
+    local absorbs, absorbClamped = calc:GetDamageAbsorbs()
+    local healAbsorbs, healClamped = calc:GetHealAbsorbs()
+    Bars:SetValues(o.absorb, maxHealth, absorbs)
+    Bars:SetValues(o.healAbsorb, maxHealth, healAbsorbs)
+    -- "clamped" may be secret: it goes straight to the alpha setter.
+    if s.overflow and type(absorbClamped) ~= "nil" then o.absorbOver:SetAlphaFromBoolean(absorbClamped, 1, 0)
+    else o.absorbOver:SetAlpha(0) end
+    if s.overflow and type(healClamped) ~= "nil" then o.healAbsorbOver:SetAlphaFromBoolean(healClamped, 1, 0)
+    else o.healAbsorbOver:SetAlpha(0) end
+  else
+    o.absorbOver:SetAlpha(0)
+    o.healAbsorbOver:SetAlpha(0)
   end
   if s.healPrediction then
     Bars:SetValues(o.incoming, maxHealth, (calc:GetIncomingHeals()))
+  end
+end
+
+-- Purge glow: enemy frames glow while the unit has a buff the player can
+-- purge or steal. Only the nil-ness of the aura result is read (never a field),
+-- so it works with secret auras; gated on knowing an offensive dispel.
+E.PURGE_GROUPS = { target = true, focus = true, boss = true, arena = true }
+E.PURGE_SPELLS = { 370, 528, 30449, 19801, 278326, 32375, 2908 }
+function E.CanPurge()
+  local SB = rawget(_G, "C_SpellBook")
+  if not (SB and SB.IsSpellKnown) then return false end
+  for _, id in ipairs(E.PURGE_SPELLS) do if SB.IsSpellKnown(id) then return true end end
+  return false
+end
+function E.UpdatePurge(o)
+  local s = ns.settings
+  local on = s.purgeGlow and E.PURGE_GROUPS[o.group] and o.live and UnitExists(o.unit) and UnitCanAttack("player", o.unit)
+    and E.CanPurge() and type(C_UnitAuras.GetAuraDataByIndex(o.unit, 1, "HELPFUL|DISPELLABLE")) ~= "nil"
+  if on then
+    if not o.purging then PUI.Glow:Start(o.button, "pulse", { r = 0.35, g = 0.75, b = 1, a = 1 }); o.purging = true end
+  elseif o.purging then
+    PUI.Glow:Stop(o.button); o.purging = false
   end
 end
 
@@ -499,6 +548,7 @@ function E.UpdateAll(o)
   E.UpdatePortrait(o)
   E.UpdateCast(o)
   E.UpdateThreat(o)
+  E.UpdatePurge(o)
   E.UpdateIndicators(o)
   if o.look and o.look.borderColor == "class" then E.PaintBorder(o) end
 end
