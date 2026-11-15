@@ -171,7 +171,10 @@ def check_files(root, files, rep, catalog):
                 for m in ns_re.finditer(cl):
                     name = m.group(1)
                     e = apis.get(name)
-                    if not e or "live" not in e["in"]:
+                    ctx = "\n".join(code_lines[max(0, ln - 5):ln])
+                    if e and "live" not in e["in"] and "forever" in e["in"] and "IS_FOREVER" in ctx:
+                        pass  # Forever-only API gated by PUI.IS_FOREVER in the 5 lines above (Forever child)
+                    elif not e or "live" not in e["in"]:
                         rep.add("api", where, name + " is not in the live API catalog")
                     elif "forever" not in e["in"]:
                         ctx = "\n".join(code_lines[max(0, ln - 5):ln])

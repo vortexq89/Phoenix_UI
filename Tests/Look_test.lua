@@ -1,0 +1,80 @@
+local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
+-- /pui test: global Fonts, Colours and Glows pages, themes, palettes, icon
+-- shapes and Phoenix icon sets (review gaps 2026-10-27).
+local H = rawget(_G, "HARNESS")
+local Tests, Schema, Look, Media, Theme = PUI.Tests, PUI.Schema, PUI.Look, PUI.Media, PUI.Theme
+
+Tests:Add("Look", "every new key has a label, tooltip, mode and live apply", function(t)
+  local simple = {}
+  for k, d in pairs(Schema.defs) do
+    if k:find("^fonts%.") or k:find("^colors%.") or k:find("^glows%.") or k:find("^theme%.preset") or k:find("^theme%.icon") or k:find("^theme%.classIcons") or k:find("^theme%.roleIcons") then
+      t:ok(type(d.apply) == "function" and d.label and d.tooltip, k .. " complete")
+      if d.mode == "simple" then simple[d.owner] = true end
+    end
+  end
+  t:ok(simple.Fonts and simple.Colors and simple.Glows and simple.Theme, "each page has Simple keys")
+end)
+
+Tests:Add("Look", "fonts: one font everywhere, outline, shadow and sizes apply live", function(t)
+  Tests.Keep(t, "fonts.everywhere", "fonts.outline", "fonts.headerSize", "fonts.shadow", "fonts.quests")
+  local obj = Media:FontObject("header")
+  Schema:Set("fonts.headerSize", 20)
+  local _, size = obj:GetFont()
+  t:eq(size, math.floor(20 * (Media.fontScale or 1) + 0.5), "heading size live")
+  Schema:Set("fonts.outline", "OUTLINE")
+  t:eq(select(3, obj:GetFont()), "OUTLINE", "outline live")
+  local name = Media.fontOrder[2]
+  Schema:Set("fonts.everywhere", name)
+  t:eq(Media:Font("Friz Quadrata"), Media.fonts[name], "every font request follows the one font")
+  Schema:Set("fonts.everywhere", "keep")
+  Schema:Set("fonts.quests", name)
+  t:eq(Look.FontFor("quests"), Media.fonts[name], "quest tracker font")
+end)
+
+Tests:Add("Look", "colours: class override, power, secret class tokens and palettes", function(t)
+  Tests.Keep(t, "colors.classOverride", "colors.class.MAGE", "colors.power.MANA", "colors.palette", "colors.reaction.hostile")
+  Schema:Set("colors.class.MAGE", { r = 0.1, g = 0.2, b = 0.3, a = 1 })
+  local r = Look.ClassRGB("MAGE")
+  t:ok(math.abs(r - 0.1) > 0.01, "override off: game colour")
+  Schema:Set("colors.classOverride", true)
+  r = Look.ClassRGB("MAGE")
+  t:ok(math.abs(r - 0.1) < 0.01, "override on: my colour")
+  Look.ClassRGB(H.secret("MAGE"))
+  t:ok(true, "secret token goes to the game without a compare or an error")
+  Schema:Set("colors.power.MANA", { r = 0.9, g = 0.9, b = 0.9, a = 1 })
+  t:ok(math.abs(Look.PowerRGB("MANA") - 0.9) < 0.01, "power override")
+  t:eq(Look.PowerRGB(H.secret("MANA")), nil, "secret power token: default path")
+  Schema:Set("colors.palette", "deuteranopia")
+  t:eq(Theme.TOKENS.err, "E69F00", "palette swaps the error token")
+  local hr = Look.ReactionRGB("hostile")
+  t:ok(math.abs(hr - 0.9) < 0.01, "palette changes the hostile default")
+  Schema:Set("colors.palette", "standard")
+  t:eq(Theme.TOKENS.err, Look.BASE.err, "standard restores tokens")
+end)
+
+Tests:Add("Look", "themes, glows, icon shapes and Phoenix icon sets", function(t)
+  Tests.Keep(t, "theme.preset", "glows.thickness", "glows.reducedMotion", "glows.accent", "theme.iconShape", "theme.roleIcons", "theme.classIcons")
+  Schema:Set("theme.preset", "horde")
+  t:eq(Theme.TOKENS.bg1, "170B0B", "horde surfaces")
+  Schema:Set("theme.preset", "ember")
+  t:eq(Theme.TOKENS.bg1, Look.BASE.bg1, "ember restores")
+  local target = CreateFrame("Frame")
+  Schema:Set("glows.reducedMotion", true)
+  local g = PUI.Glow:Start(target, "pulse")
+  t:eq(g.style, "solid", "reduced motion: solid")
+  Schema:Set("glows.thickness", 4)
+  t:eq(g.edges[3]:GetWidth(), 4, "thickness restyles live")
+  PUI.Glow:Stop(target)
+  local f = CreateFrame("Frame")
+  local tex = f:CreateTexture()
+  Schema:Set("theme.iconShape", "circle")
+  t:ok(Look.Shape(tex, f), "mask on")
+  Schema:Set("theme.iconShape", "square")
+  t:ok(not Look.masked[tex].on, "square removes the mask live")
+  Schema:Set("theme.roleIcons", "phoenix")
+  t:ok(Look.RoleIcon("TANK"):find("Roles\\tank", 1, true), "phoenix role icon")
+  t:eq(Look.RoleIcon(H.secret("TANK")), nil, "secret role: game icon")
+  Schema:Set("theme.classIcons", "phoenix")
+  t:ok(Look.ClassIcon("DRUID"):find("Classes\\druid", 1, true), "phoenix class icon")
+  t:eq(#Look.EMOJI, 16, "sixteen Phoenix emoji")
+end)

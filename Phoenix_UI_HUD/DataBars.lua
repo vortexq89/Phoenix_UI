@@ -69,6 +69,8 @@ local BLOCKS = {
   rep = { label = "Watched reputation", text = function()
     local d = C_Reputation.GetWatchedFactionData()
     if type(d) ~= "table" or not d.name then return "" end
+    local pc, pm, reward = DB.Paragon(d)
+    if pc then return string.format("%s P %d%%%s", d.name, pct(pc, pm), reward and " +" or "") end
     local span = (d.nextReactionThreshold or 0) - (d.currentReactionThreshold or 0)
     return string.format("%s %d%%", d.name, pct((d.currentStanding or 0) - (d.currentReactionThreshold or 0), span))
   end },
@@ -205,12 +207,14 @@ function DB.PaintBar(b, list, c, sample)
 end
 
 local function onClick(bar, button)
-  if button ~= "LeftButton" or InCombatLockdown() then return end
+  if InCombatLockdown() then return end
   local x = select(1, GetCursorPosition()) / (bar:GetEffectiveScale() or 1) - (bar:GetLeft() or 0)
   local slots = DB.Solve(bar:GetWidth(), #bar.list)
   for j, slot in ipairs(slots) do
     if x >= slot.x and x < slot.x + slot.w then
       local blk = BLOCKS[bar.list[j].name]
+      if blk and blk.run then blk.run(bar.list[j].arg, bar, button); return end
+      if button ~= "LeftButton" then return end
       local fn = blk and blk.click and PUI.Minimap and PUI.Minimap.Resolve(blk.click)
       if type(fn) == "function" then if blk.clickArg then fn(blk.clickArg) else fn() end end
       return
@@ -224,7 +228,7 @@ local function bar(i)
   if b then return b end
   b = PUI:CreateFrame("Button", "PhoenixUI_DataBar" .. i, UIParent, nil, OWNER)
   Theme:Backdrop(b, "surface.1")
-  b:RegisterForClicks("LeftButtonUp")
+  b:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   b:SetScript("OnClick", onClick)
   b:SetScript("OnEnter", function(self) if cfg[i].mouseover then self:SetAlpha(1) end end)
   b:SetScript("OnLeave", function(self) if cfg[i].mouseover then self:SetAlpha(0) end end)
@@ -261,9 +265,20 @@ end
 
 ------------------------------------------------------------------------------
 -- XP / reputation / honor progress bar (owner: Data Bars).
-local P = { enabled = false, mode = "auto", width = 480, height = 8, text = "percent", rested = true,
+local P = { paragon = true, enabled = false, mode = "auto", width = 480, height = 8, text = "percent", rested = true,
   xpColor = { r = 0.58, g = 0.24, b = 0.86, a = 1 }, repColor = { r = 0.2, g = 0.75, b = 0.35, a = 1 }, honorColor = { r = 0.95, g = 0.45, b = 0.1, a = 1 } }
 DB.progress = P
+
+-- Paragon progress for a watched faction at max renown/reputation:
+-- value within the current paragon cycle, cycle size, reward waiting.
+-- Plain numbers from the game; nil when not a paragon faction or turned off.
+function DB.Paragon(d)
+  if not (P.paragon and d and d.factionID and C_Reputation.IsFactionParagon) then return nil end
+  if not C_Reputation.IsFactionParagon(d.factionID) then return nil end
+  local value, threshold, _, hasReward = C_Reputation.GetFactionParagonInfo(d.factionID)
+  if type(value) ~= "number" or type(threshold) ~= "number" or threshold <= 0 then return nil end
+  return value % threshold, threshold, hasReward == true
+end
 
 -- Which kind the bar shows now: xp below max level, else watched rep, else honor.
 function DB.ProgressKind()
@@ -280,6 +295,8 @@ function DB.ProgressValues(kind)
   if kind == "rep" then
     local d = C_Reputation.GetWatchedFactionData()
     if type(d) ~= "table" then return 0, 1 end
+    local pc, pm = DB.Paragon(d)
+    if pc then return pc, pm end
     return (d.currentStanding or 0) - (d.currentReactionThreshold or 0), math.max(1, (d.nextReactionThreshold or 1) - (d.currentReactionThreshold or 0))
   end
   return UnitHonor("player"), UnitHonorMax("player")
@@ -412,6 +429,8 @@ pkey("width", { type = "range", default = 480, min = 100, max = 1920, step = 1, 
 pkey("height", { type = "range", default = 8, min = 2, max = 30, step = 1, label = "Progress bar height", tooltip = "Height of the progress bar.", mode = "advanced" })
 pkey("rested", { type = "toggle", default = true, label = "Rested marker", tooltip = "Marks rested experience on the bar.", mode = "advanced" })
 pkey("xpColor", { type = "color", default = { r = 0.58, g = 0.24, b = 0.86, a = 1 }, label = "Experience colour", tooltip = "Fill colour for experience.", mode = "advanced" })
+pkey("paragon", { type = "toggle", default = true, label = "Paragon progress",
+  tooltip = "For a reputation past its maximum, the bar and the reputation block show paragon progress toward the next reward chest (a + marks a chest waiting).", mode = "simple" })
 pkey("repColor", { type = "color", default = { r = 0.2, g = 0.75, b = 0.35, a = 1 }, label = "Reputation colour", tooltip = "Fill colour for reputation.", mode = "advanced" })
 pkey("honorColor", { type = "color", default = { r = 0.95, g = 0.45, b = 0.1, a = 1 }, label = "Honor colour", tooltip = "Fill colour for honor.", mode = "advanced" })
 Layout:RegisterElement("db.progress", { label = "XP / reputation bar", owner = OWNER, size = { 480, 8 }, default = { point = "BOTTOM", x = 0, y = 24 } })

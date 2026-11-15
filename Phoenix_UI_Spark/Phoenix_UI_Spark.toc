@@ -1,0 +1,17 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Spark
+## Notes: Phoenix UI Spark: scrolling combat text in four areas with a live preview, combat in/out, item ready, loot, money, reputation and XP text. Turns Blizzard's combat text off while on (restored when off).
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Logo\PhoenixUI_Icon_64
+## Category: Phoenix UI
+## Group: Phoenix_UI
+## Dependencies: Phoenix_UI
+
+Engine.lua
+Feed.lua
+Spark.lua
+Extras.lua
+Tests\Spark_test.lua

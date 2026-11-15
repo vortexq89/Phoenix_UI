@@ -1,7 +1,7 @@
 local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- Tooltip IDs (plan 5.7, mockup 13; owner of tooltip IDs per 1.O: the only
 -- place IDs are added - Cast History, Vault, Group Finder never add ID lines).
--- 27 ID kinds in four groups (Items, Spells, World, Collections), derived IDs
+-- 28 ID kinds in four groups (Items, Spells, World, Collections), derived IDs
 -- (icon, use-spell, enchant, bonus, gems, expansion, set, mount, transmog),
 -- repeats merged into one plural line per kind, bonus and trait IDs off by
 -- default, an optional modifier gate, colours per group, short or full labels,
@@ -26,6 +26,7 @@ IDs.KINDS = {
   { "spell", "Spell", "spells", true }, { "talent", "Talent", "spells", true }, { "traitNode", "Trait node", "spells", false },
   { "traitEntry", "Trait entry", "spells", false }, { "traitDefinition", "Trait definition", "spells", false },
   { "artifactPower", "Artifact power", "spells", true }, { "petAbility", "Pet ability", "spells", true }, { "macro", "Macro", "spells", true },
+  { "garrisonAbility", "Follower ability", "spells", true },
   { "npc", "NPC", "world", true }, { "object", "Object", "world", true }, { "quest", "Quest", "world", true },
   { "achievement", "Achievement", "world", true }, { "criteria", "Criteria", "world", true }, { "currency", "Currency", "world", true },
   { "areaPoi", "Area POI", "world", true }, { "vignette", "Vignette", "world", true },

@@ -1,0 +1,15 @@
+from nu import *
+tabs=['Journeys',"Traveler's Log",'Suggested','Dungeons','Raids','Item Sets','Tutorials']
+bl=''.join(f'<div class="row{" hl" if i==1 else ""}" style="height:34px;font-size:11.5px">{ic(GL[i],CL[i],26)} {n}</div>' for i,n in enumerate(['Ashen Warden','Ember Lord','Cinder Twins','Phoenix Matriarch','The Burning Heart']))
+ab=''.join(f'<div style="border-bottom:1px solid var(--line);padding:5px 0;font-size:11px"><b>{"▾" if i==0 else "▸"} {n}</b> <span class="mut">{r}</span>'+('<div class="tx2" style="padding-left:14px;font-size:10.5px">Inflicts 120,000 Fire damage to all players. Healers: dispel Ember Mark.</div>' if i==0 else '')+'</div>' for i,(n,r) in enumerate([('Inferno Burst','🛡 ✚'),('Ember Mark','✚ Magic'),('Searing Wings','⚔ Tank')]))
+b=at(60,6,'<div style="display:flex;gap:8px;width:720px">'+dd('The War Within',140)+inp('⌕ Search',200)+'<span style="margin-left:auto">'+dd('Mythic',90)+btn('🗺 Map')+btn('‹')+btn('›')+'</span></div>')
+b+=at(10,42,'<div style="width:230px"><div class="mut" style="font-size:10px">Raids › Ashen Spire</div>'+bl+'</div>')
+b+=at(250,42,'<div style="width:500px"><div style="display:flex;justify-content:space-between"><b style="font-size:16px">Ember Lord</b><span class="mut">Overview · <span class="acc">Abilities</span> · Loot · Model</span></div><div class="tx2" style="font-size:11px;margin:4px 0 8px">The Ember Lord rules the spire\'s furnace heart.</div>'+ab+'</div>')
+b+=at(764,60,'<div class="rtab">'+''.join(f'<span class="{"on" if i==1 else ""}" style="font-size:10px;width:30px;height:30px">{s}</span>' for i,s in enumerate(['📖','⚔','💰','👁']))+'</div>')
+w=bwin(X,Y,800,496,'Adventure Guide',b,icon='Icons__Modules__64__vault',btabs=tabs,on=4)
+ins=card('Instance select (Raids tab)','<div style="display:grid;grid-template-columns:repeat(4,64px);gap:6px">'+''.join(f'<div style="height:44px;border-radius:6px;background:linear-gradient(135deg,{CL[i]},#111);font-size:9px;padding:3px">{n}</div>' for i,n in enumerate(['Ashen Spire','Nerub-ar','Liberation','Manaforge']))+'</div>',300)
+lo=card('Loot tab',dd('Monk: Windwalker',140)+dd('All slots',90)+'<div style="display:flex;gap:4px;margin-top:6px">'+''.join(ic(GL[i],CL[i],32,q='epic') for i in range(6))+'</div>',300)
+jo=card('Journeys tab','<div style="display:flex;gap:6px">'+''.join(f'<div class="card" style="padding:5px;width:84px;font-size:10px">{n}<br><span class="acc">Renown {r}</span>{bar(r/25,h=4)}</div>' for n,r in [('Council',18),('Ember Court',9),('Arathi',22)])+'</div>',300)
+tl=card("Traveler's Log",rows([('Complete 5 dungeons','3/5'),('Win a pet battle','✓')])+'<div style="margin-top:4px">'+bar(.6,h=6)+'<span class="mut" style="font-size:9.5px">Threshold reward at 1,000</span></div>',300)
+fl=fly(X+816,Y,'Adventure Guide',[('Spec loot only','<span class="tg on"></span>'),('Open from Pulse timers','<span class="tg on"></span>')])
+page2('16_encounter_journal','Blizzard EncounterJournal (bottom tabs, boss list, right-edge info tabs) · Ember',w+fl+at(X+816,Y+150,'<div style="display:flex;flex-direction:column;gap:8px">'+ins+lo+jo+tl+'</div>',z=12))

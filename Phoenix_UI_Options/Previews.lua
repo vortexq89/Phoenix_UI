@@ -234,6 +234,7 @@ end
 local SAMPLE_KEYS = { "1", "2", "3", "4", "5", "SHIFT-1", "CTRL-2", "BUTTON4", "MOUSEWHEELUP", "F", "ALT-Q", "NUMPAD5" }
 local STATES = { [2] = "cooldown", [3] = "proc", [6] = "range", [7] = "power", [8] = "unusable", [10] = "assist" }
 function Previews.ActionBars(card, tab)
+  if tab and tab:match("^ibar") and Previews.AutoItemBarSample then return Previews.AutoItemBarSample(card, tab) end
   local barId = (tab and tab:match("^bar%d+$")) and tab or "bar1"
   local size = math.min(52, get("ab." .. barId .. ".size", 40) or 40)
   local perRow = math.max(1, math.min(12, get("ab." .. barId .. ".perRow", 6) or 6))
@@ -550,16 +551,28 @@ function Previews.Minimap(card)
   local Bin = PUI.ButtonBin
   if Bin then
     local bs = Bin.settings
-    local cells = Bin.Grid(14, bs.columns, math.min(bs.size, 24), bs.spacing)
-    for i = 1, #cells do
+    local cell = math.min(bs.size, 24)
+    local hidden = #(bs.hidden or {})
+    local n = math.max(1, 14 - hidden) + (bs.compartment and 2 or 0)
+    local cells = Bin.Grid(n, bs.columns, cell, bs.spacing, bs.grow, 8, 30)
+    for i = 1, math.max(#cells, #h.bin) do
       local b = h.bin[i]
-      if not b then b = h:CreateTexture(nil, "ARTWORK"); h.bin[i] = b end
-      b:ClearAllPoints()
-      b:SetSize(math.min(bs.size, 24), math.min(bs.size, 24))
-      b:SetPoint("TOPLEFT", h, "TOPLEFT", cells[i].x, -size - 30 + cells[i].y + 30)
-      b:SetColorTexture(0.25 + (i % 5) * 0.1, 0.3, 0.45 - (i % 3) * 0.1, 1)
-      b:SetShown(bs.enabled)
+      if not b and cells[i] then b = h:CreateTexture(nil, "ARTWORK"); h.bin[i] = b end
+      if b then
+        b:ClearAllPoints()
+        b:SetSize(cell, cell)
+        if cells[i] then b:SetPoint("TOPLEFT", h, "TOPLEFT", cells[i].x, -size - 30 + cells[i].y + 30) end
+        b:SetColorTexture(0.25 + (i % 5) * 0.1, 0.3, 0.45 - (i % 3) * 0.1, 1)
+        if b.SetMask then b:SetMask(bs.skin and bs.shape == "round" and "Interface\\Masks\\CircleMaskScalable" or "Interface\\Buttons\\WHITE8X8") end
+        b:SetShown(bs.enabled and cells[i] ~= nil)
+      end
     end
+    if not rawget(h, "binNote") then h.binNote = h:CreateFontString(nil, "OVERLAY"); h.binNote:SetFontObject(PUI.Media:FontObject("small")) end
+    h.binNote:ClearAllPoints()
+    h.binNote:SetPoint("TOPLEFT", h, "TOPLEFT", 8, -size - 4)
+    h.binNote:SetText(string.format("%s, grows %s, %s%s%s", bs.layout == "bar" and "Docked bar" or "Popup grid", bs.grow,
+      bs.sort == "custom" and "my order" or "A-Z", bs.badge and string.format(", badge %d", n) or "", bs.hideInCombat and ", hides in combat" or ""))
+    h.binNote:SetShown(bs.enabled)
   end
 end
 
@@ -887,6 +900,303 @@ function Previews.Reminders(card)
   st(card).rmIcons = math.min(8, #sample)
 end
 
+-- Group Finder: sample rows through the module's own filter, row text, row
+-- colours and count line, so the preview shows exactly what the filter keeps.
+function Previews.GroupFinder(card)
+  local GF = PUI.GroupFinder
+  if not GF then return end
+  local h = hudHolder(card, "gf")
+  h.lines = rawget(h, "lines") or {}
+  local act = { name = "Ara-Kara", mplus = true, maxPlayers = 5, category = "dungeon" }
+  local function sample(id, score, t, he, d, age, extra)
+    local v = { mprating = score, tanks = t, heals = he, dps = d, members = t + he + d, age = age, bestkey = 12, pvprating = 0,
+      partyfit = d < 3, delisted = false, mythicplus = true, declined = false, new = false, hasbl = d > 1, needbl = d <= 1, friends = 0 }
+    for k, x in pairs(extra or {}) do v[k] = x end
+    return { id = id, vars = v, meta = { activity = act, classes = {} } }
+  end
+  local rows = { sample(1, 3105, 1, 1, 1, 2, { new = true }), sample(2, 2890, 1, 0, 2, 6), sample(3, 2710, 0, 1, 3, 14),
+    sample(4, 3010, 1, 1, 1, 1, { declined = true }), sample(5, 2400, 1, 0, 1, 22), sample(6, 2050, 1, 1, 2, 9) }
+  local cat = "dungeon"
+  local shown, why = GF.Filters.Evaluate(cat, rows, GF.FilterGet)
+  shown = GF.Filters.Sort(shown, GF.FilterGet(cat, "sort"))
+  local out = { { GF.Filters.CountLine(#shown, #rows, why), "small" } }
+  local built = GF.Filters.BuildExpression(cat, GF.FilterGet)
+  out[#out + 1] = { "|cff9ad0ff" .. (built ~= "" and built or "no chips set") .. "|r", "small" }
+  for i = 1, math.min(6, #shown) do
+    local l, r = GF.Panel.RowText(shown[i])
+    local c = GF.RowColor({ declined = shown[i].vars.declined, vars = shown[i].vars, new = shown[i].vars.new })
+    local hex = c and string.format("|cff%02x%02x%02x", c.r * 255, c.g * 255, c.b * 255) or ""
+    out[#out + 1] = { hex .. l .. (hex ~= "" and "|r" or "") .. "   " .. r, "small" }
+  end
+  for i, x in ipairs(out) do
+    local fs = line(h, h.lines, i, x[2])
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 18)
+    fs:SetText(x[1])
+  end
+  hideFrom(h.lines, #out)
+  st(card).gfLines = #out
+  st(card).gfShown = #shown
+end
+
+-- Flow: the Quiet mode grid as it applies here and now, per content type.
+function Previews.Flow(card)
+  local FL = PUI.Flow
+  local QM = FL and FL.Quiet
+  if not QM then return end
+  local h = hudHolder(card, "flow")
+  h.lines = rawget(h, "lines") or {}
+  local cols = PUI.Profiles.CONTENT
+  local head = "Quiet mode       "
+  for _, c in ipairs(cols) do head = head .. c:sub(1, 4) .. " " end
+  local out = { head }
+  local on = 0
+  for _, o in ipairs(QM.OPTIONS) do
+    local row = string.format("%-16s ", o.id)
+    for _, c in ipairs(cols) do
+      local v = QM.Cell(o.id, c, nil)
+      if v then on = on + 1 end
+      row = row .. (v and "|cff40ff40 on |r " or "|cff606060 -- |r ")
+    end
+    out[#out + 1] = row
+  end
+  out[#out + 1] = string.format("%d overrides for single instances", #(PUI.Schema:Get("flow.quiet.instances") or {}))
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, "small")
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 16)
+    fs:SetText(text)
+  end
+  hideFrom(h.lines, #out)
+  st(card).flowOn = on
+end
+
+-- Raid Tools: the bar layout and the stats card with sample pulls.
+function Previews.RaidTools(card)
+  local RT = PUI.RaidTools
+  if not RT then return end
+  local S = RT.settings
+  local h = hudHolder(card, "rt")
+  h.lines = rawget(h, "lines") or {}
+  local parts = {}
+  if S.markers then parts[#parts + 1] = "8 target markers" end
+  if S.worldMarkers then parts[#parts + 1] = "8 world markers + clear" end
+  if S.readyButton then parts[#parts + 1] = "Ready" end
+  if S.pullButton then parts[#parts + 1] = "Pull " .. S.pullSeconds .. "s / Break " .. S.breakMinutes .. "m" end
+  local e = { name = "Vexie", kills = 4, wipes = 31, best = 342, longestWipe = 301, last = { seconds = 350, success = true, prevBest = 342 },
+    history = { { s = 130, ok = false, t = 1761500000 }, { s = 210, ok = false, t = 1761590000 }, { s = 301, ok = false, t = 1761680000 } } }
+  local out = {
+    "Bar (" .. S.bar .. "): " .. (#parts > 0 and table.concat(parts, "  |  ") or "empty"),
+    "Pull countdown preview: Pull " .. S.pullSeconds,
+    "Encounter stats" .. (RT.Stats.settings.enabled and "" or " (off)"),
+    "Vexie  Mythic  kills 4  wipes 31  best 5:42   " .. RT.Stats.Compare(e),
+    RT.Stats.TrendText(e),
+  }
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, i == 3 and "header" or "small")
+    fs:ClearAllPoints()
+    fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 18)
+    fs:SetText(text)
+  end
+  hideFrom(h.lines, #out)
+  st(card).rtLines = #out
+end
+
+-- Pulse: sample boss bars in the live bar style, the combat timer line and
+-- the fight history (drawn by Pulse's own bar group, so it never disagrees).
+function Previews.Pulse(card)
+  local PL = PUI.Pulse
+  if not PL then return end
+  local h = hudHolder(card, "pulse")
+  h.lines = rawget(h, "lines") or {}
+  local s = st(card)
+  if not s.pulseGroup then s.pulseGroup = PL.Bars.NewGroup("Pulse", "preview", PL.style, h) end
+  local g = s.pulseGroup
+  g.anchor:ClearAllPoints(); g.anchor:SetPoint("TOPLEFT", h, "TOPLEFT", 6, -26)
+  g:ReleaseAll()
+  local S = PL.settings
+  local now = GetTime()
+  if S.timeline then
+    for i, x in ipairs(PL.SAMPLES) do
+      g:Acquire("p" .. i):Fill({ name = x[1], icon = x[2], start = now, length = x[3], sortKey = x[3], autoRelease = false,
+        color = (S.severityColors and (i == 1 and S.colorHigh or (i == 2 and S.colorMedium))) or S.colorNormal, emphasis = i == 1 and S.highlight })
+    end
+  end
+  if S.countdownBar then g:Acquire("pc"):Fill({ name = "Pull", icon = 136106, color = S.colorCountdown, start = now, length = 10, sortKey = 0, autoRelease = false }) end
+  local out = { "Boss timer bars" .. (S.timeline and "" or " (off)") }
+  local top = -32 - math.min(g:Count(), PL.style.max) * (PL.style.height + PL.style.gap)
+  local extra = { S.timer and ("Combat timer: " .. (S.timerLabel and "Vexie  " or "") .. (S.timerFormat == "tenths" and "1:05.4" or "1:05")) or "Combat timer: off" }
+  for _, l in ipairs(PL.HistoryLines(3)) do extra[#extra + 1] = l end
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, "header"); fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, -4); fs:SetText(text)
+  end
+  for i, text in ipairs(extra) do
+    local fs = line(h, h.lines, i + 1, "small"); fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, top - (i - 1) * 16); fs:SetText(text)
+  end
+  hideFrom(h.lines, #extra + 1)
+  s.pulseBars = g:Count()
+end
+
+-- Arena: sample enemies in the live size, colours, trinket, racial and the DR
+-- tray drawn by Arena's own tray paint.
+function Previews.Arena(card)
+  local AR = PUI.Arena
+  if not AR then return end
+  local h = hudHolder(card, "arena")
+  local S = AR.settings
+  h.rows = rawget(h, "rows") or {}
+  h.lines = rawget(h, "lines") or {}
+  local n = S.testCount
+  local scale = math.min(1, 300 / (S.width + S.trinketSize * 2 + S.drSize * 3 + 40))
+  for i = 1, 5 do
+    local r = h.rows[i]
+    if not r then
+      r = CreateFrame("Frame", nil, h)
+      r.bar = bar(r, 10, 10); r.bar:SetPoint("TOPLEFT")
+      r.name = Kit.Text(r.bar, "small", "text.primary", "OVERLAY"); r.name:SetPoint("LEFT", 4, 0)
+      r.hp = Kit.Text(r.bar, "small", "text.primary", "OVERLAY"); r.hp:SetPoint("RIGHT", -4, 0)
+      r.trinket = r:CreateTexture(nil, "ARTWORK"); r.racial = r:CreateTexture(nil, "ARTWORK")
+      r.tray = AR.DR.BuildTray(r)
+      h.rows[i] = r
+    end
+    local x = AR.SAMPLE[i]
+    r:SetShown(i <= n)
+    if i <= n then
+      r:SetScale(scale)
+      r:SetSize(S.width, S.height)
+      r:ClearAllPoints(); r:SetPoint("TOPLEFT", h, "TOPLEFT", S.mirrored and (S.trinketSize * 2 + 20) or 6, -24 - (i - 1) * (S.height + S.spacing))
+      r.bar:SetSize(S.width, S.height - (S.showPower and S.powerHeight or 0))
+      local c = S.classColors and C_ClassColor.GetClassColor(x.class)
+      if c then paintBar(r.bar, x.hp * 100, c.r, c.g, c.b) else paintBar(r.bar, x.hp * 100, 0.3, 0.72, 0.36) end
+      r.name:SetText(S.name and x.name or "")
+      r.hp:SetText(S.healthText ~= "none" and string.format("%d%%", x.hp * 100) or "")
+      r:SetAlpha(x.life == "left" and S.staleAlpha or 1)
+      for _, t in ipairs({ r.trinket, r.racial }) do t:SetSize(S.trinketSize, S.trinketSize); t:ClearAllPoints() end
+      r.trinket:SetTexture(1322720); r.racial:SetTexture(136129)
+      if S.mirrored then r.trinket:SetPoint("RIGHT", r, "LEFT", -4, 0); r.racial:SetPoint("RIGHT", r.trinket, "LEFT", -2, 0)
+      else r.trinket:SetPoint("LEFT", r, "RIGHT", 4, 0); r.racial:SetPoint("LEFT", r.trinket, "RIGHT", 2, 0) end
+      r.trinket:SetShown(S.trinket); r.racial:SetShown(S.racial)
+      local entries = {}
+      if S.drBlizzard and S.drTray then
+        for _, d in ipairs(x.dr) do
+          entries[#entries + 1] = { key = "p" .. d.cat, category = d.cat, plain = true, stage = d.stage,
+            info = { category = d.cat, startTime = GetTime(), duration = 18, isImmune = d.stage >= 3 } }
+        end
+      end
+      AR.DR.Paint(r.tray, entries, AR.Frames.TrayStyle(S))
+      r.tray:ClearAllPoints()
+      local anchor = (S.drAnchor == "racial" and S.racial and r.racial) or (S.drAnchor == "frame" and r) or (S.trinket and r.trinket) or r
+      if S.mirrored then r.tray:SetPoint("RIGHT", anchor, "LEFT", -4 + S.drX, S.drY) else r.tray:SetPoint("LEFT", anchor, "RIGHT", 4 + S.drX, S.drY) end
+    end
+  end
+  local note = S.drBlizzard and "DR from the game's own tracking, right of the trinket (movable)." or "DR tracking is off: turn on \"DR tracking (game's own)\" to see DR."
+  local head = (S.matchTimer and "Match 2:41  " or "") .. (S.dampening and "Dampening 12%  " or "") .. (S.shadowsight and "Shadowsight up" or "")
+  for i, text in ipairs({ head ~= "" and head or "Arena (test data)", note }) do
+    local fs = line(h, h.lines, i, i == 1 and "header" or "small")
+    fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, i == 1 and -4 or (-30 - n * (S.height + S.spacing) * scale))
+    fs:SetText(text)
+  end
+  st(card).arenaFrames = n
+  st(card).arenaNote = note
+end
+
+-- Spark: the four areas with sample lines in their live size, colour and alignment.
+function Previews.Spark(card)
+  local SP = PUI.Spark
+  if not SP then return end
+  local h = hudHolder(card, "spark")
+  h.boxes = rawget(h, "boxes") or {}
+  local S = SP.settings
+  local SAMPLE = {
+    incoming = { { "inDamage", "-12.4K", true }, { "inHeal", "+8.4K Rejuv" }, { "inAvoid", "Dodge" } },
+    outgoing = { { "outDamage", "48.2K Mortal Strike", true }, { "outDamage", "Rend 6K x5" }, { "outHeal", "+6.2K Heal" } },
+    notification = { { "combatIn", "+Combat" }, { "itemReady", "Healthstone ready" }, { "money", "+1g 20s" } },
+    static = { { "itemReady", "Hearthstone ready" } },
+  }
+  local shown = 0
+  for i, id in ipairs(SP.Engine.AREAS) do
+    local A = S.areas[id]
+    local b = h.boxes[i]
+    if not b then
+      b = CreateFrame("Frame", nil, h)
+      b.bg = b:CreateTexture(nil, "BACKGROUND"); b.bg:SetAllPoints(); b.bg:SetColorTexture(1, 1, 1, 0.04)
+      b.title = Kit.Text(b, "small", "text.secondary", "OVERLAY"); b.title:SetPoint("TOPLEFT", 4, -3)
+      b.lines = {}
+      h.boxes[i] = b
+    end
+    b:SetSize(186, 138)
+    b:ClearAllPoints(); b:SetPoint("TOPLEFT", h, "TOPLEFT", 6 + ((i - 1) % 2) * 192, -6 - math.floor((i - 1) / 2) * 144)
+    b:SetShown(A.enabled)
+    if A.enabled then
+      shown = shown + 1
+      b.title:SetText(SP.Engine.AREA_LABELS[id] .. " - " .. A.behaviour .. ", " .. A.direction)
+      for j, x in ipairs(SAMPLE[id]) do
+        local fs = b.lines[j]
+        if not fs then fs = b:CreateFontString(nil, "OVERLAY"); b.lines[j] = fs end
+        local R = S.rows[x[1]]
+        local size = A.size * ((x[3] and S.master.critScale) or 1) * 0.6
+        fs:SetFont(PUI.Media:FontObject("normal"):GetFont(), math.floor(size + 0.5), S.master.outline ~= "NONE" and S.master.outline or "")
+        fs:ClearAllPoints()
+        local y = A.direction == "down" and (-22 - (j - 1) * 30) or (-108 + (j - 1) * 30)
+        fs:SetPoint(A.align, b, A.align, A.align == "LEFT" and 6 or (A.align == "RIGHT" and -6 or 0), 0)
+        fs:SetPoint("TOP", b, "TOP", 0, y)
+        local c = R.color or { r = 1, g = 1, b = 1 }
+        fs:SetTextColor(c.r, c.g, c.b, A.alpha)
+        fs:SetText(R.on and x[2] or "")
+        fs:Show()
+      end
+      hideFrom(b.lines, #SAMPLE[id])
+    end
+  end
+  st(card).sparkAreas = shown
+end
+
+-- Cast History: one sample strip in the live size, count, direction, glow and crosses.
+function Previews.CastHistory(card)
+  local CH = PUI.CastHistory
+  if not CH then return end
+  local h = hudHolder(card, "ch")
+  h.icons = rawget(h, "icons") or {}
+  h.lines = rawget(h, "lines") or {}
+  local S = CH.settings
+  local n = S.count
+  local size = math.min(S.iconSize, math.floor(360 / math.max(1, n)) - S.spacing)
+  local d = CH.Strip.DIR[S.direction] or CH.Strip.DIR.LEFT
+  local ids = { 133, 116, 2948, 11366, 108853, 190319, 31661, 45438, 1953, 2139, 30449, 80353 }
+  for i = 1, math.max(n, #h.icons) do
+    local b = h.icons[i]
+    if not b and i <= n then
+      b = CreateFrame("Frame", nil, h)
+      b.tex = b:CreateTexture(nil, "ARTWORK"); b.tex:SetAllPoints()
+      b.cross = b:CreateTexture(nil, "OVERLAY"); b.cross:SetAllPoints(); b.cross:SetAtlas("common-icon-redx")
+      h.icons[i] = b
+    end
+    if b then
+      b:SetShown(i <= n)
+      if i <= n then
+        b:SetSize(size, size)
+        b:ClearAllPoints()
+        local off = (i - 1) * (size + S.spacing)
+        local ox = d[1] ~= 0 and (d[1] < 0 and (360 - size - off) or off) or 0
+        local oy = d[2] ~= 0 and (d[2] > 0 and (-120 + off) or -off) or 0
+        b:SetPoint("TOPLEFT", h, "TOPLEFT", 6 + ox, -30 + (d[2] ~= 0 and oy or 0))
+        b.tex:SetTexture(C_Spell.GetSpellTexture(ids[((i - 1) % #ids) + 1]))
+        b.tex:SetTexCoord(S.zoom and 0.08 or 0, S.zoom and 0.92 or 1, S.zoom and 0.08 or 0, S.zoom and 0.92 or 1)
+        b.cross:SetShown(i == 2 and S.showInterrupted)
+        if i == 1 and S.glowNewest then PUI.Glow:Start(b, S.glowStyle) else PUI.Glow:Stop(b) end
+      end
+    end
+  end
+  local out = { "Cast history - " .. (S.mode == "move" and "moving strip" or "still and fade") .. ", newest " .. S.direction:lower() .. " side",
+    string.format("%d blocked spells, %d blocked items%s", #(S.blockSpells or {}), #(S.blockItems or {}), S.builtIn and ", auto attacks hidden" or "") }
+  for i, text in ipairs(out) do
+    local fs = line(h, h.lines, i, i == 1 and "header" or "small")
+    fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, i == 1 and -4 or (-40 - size - (d[2] ~= 0 and n * (size + S.spacing) or 0)))
+    fs:SetText(text)
+  end
+  st(card).chIcons = n
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {}, st(card).cdm or {} }) do
     for _, f in pairs(list) do f:Hide() end
@@ -901,6 +1211,82 @@ local function hideAll(card)
   if st(card).rfPreset then st(card).rfPreset:Hide() end
   if st(card).npHolder then st(card).npHolder:Hide() end
   for _, h in pairs(st(card).hud or {}) do h:Hide() end
+  if st(card).pulseGroup then st(card).pulseGroup:ReleaseAll() end -- stops its text Ticker entry
+end
+
+-- PvP: the rated card drawn by PvP's own Lines() with sample brackets, a
+-- sample scoreboard header in your column order and the leave countdown.
+local function textLines(card, keyName, out)
+  local h = hudHolder(card, keyName)
+  h.lines = rawget(h, "lines") or {}
+  for i, l in ipairs(out) do
+    local fs = line(h, h.lines, i, l[2] or "small")
+    fs:ClearAllPoints(); fs:SetPoint("TOPLEFT", 6, -4 - (i - 1) * 17); fs:SetText(l[1])
+  end
+  hideFrom(h.lines, #out)
+  st(card)[keyName .. "Lines"] = #out
+  return h
+end
+function Previews.PvP(card)
+  local PV = PUI.PvP
+  if not PV then return end
+  local S = PV.settings
+  local snap = { ["3v3"] = { rating = 2184, best = 2240, weekWon = 14, weekPlayed = 23 }, shuffle = { rating = 1950, best = 2010, roundsWeek = 18, roundsWeekWon = 11 } }
+  local db = { history = { { bracketLabel = "3v3", change = 16, rating = 2184 } }, progress = { [0] = { gladiator = 31 } } }
+  local out = { { "Rated card", "header" } }
+  for _, l in ipairs(PV.Card.Lines(S, db, 0, snap)) do out[#out + 1] = l end
+  local heads = {}
+  for _, c in ipairs(PV.Columns:Pick(S.columns)) do heads[#heads + 1] = c.label end
+  out[#out + 1] = { "Scoreboard: " .. table.concat(heads, "  |  ") .. "   (sorted by " .. tostring(S.sortBy) .. (S.sortDesc and ", highest first)" or ")"), "small" }
+  out[#out + 1] = { S.leave and string.format("Battleground over: leaving in 0:%02d  [Leave now] [Stay]%s", S.leaveSeconds, S.leaveNotInCombat and "  - never in combat" or "") or "Leave countdown: off", "small" }
+  textLines(card, "pvp", out)
+end
+
+-- Friends: sample rows painted with the same rules as the list.
+function Previews.Friends(card)
+  local F = PUI.Friends
+  if not F then return end
+  local S = F.settings
+  local rows = {
+    F.Data.FromBNet(1, { accountName = "Kael", battleTag = "Kael#2211", gameAccountInfo = { isOnline = true, clientProgram = "WoW", characterName = "Vex", areaName = "Silvermoon", richPresence = "Mythic+ +16", regionID = 3, factionName = "Horde" } }),
+    F.Data.FromBNet(2, { accountName = "Lumi", isAFK = true, gameAccountInfo = { isOnline = true, clientProgram = "WoW", characterName = "Lumi", areaName = "Nagrand Arena", richPresence = "Arena 3v3", regionID = 3 } }),
+    F.Data.FromBNet(3, { accountName = "Nyx", isDND = true, gameAccountInfo = { isOnline = true, clientProgram = "WoW", characterName = "Nyx", areaName = "Dornogal", regionID = 1 } }),
+    F.Data.FromBNet(4, { accountName = "Rae", battleTag = "Rae#1001", gameAccountInfo = { isOnline = true, clientProgram = "BSAp" } }),
+  }
+  rows = F.Data.Sort(F.Data.Filter(rows, { hideAppOnly = S.hideAppOnly }), S.sort)
+  local out = { { "Friends  -  " .. #rows .. " online", "header" } }
+  for _, e in ipairs(rows) do
+    local tag = (S.statusOrb and ("(" .. e.status .. ") ") or "") .. (e.name or "?")
+    local info = e.zone or (e.appOnly and "Battle.net app") or ""
+    if S.activity and e.activity then info = info .. "  -  " .. e.activity end
+    out[#out + 1] = { tag .. "   " .. (S.zoneLine and info or "") .. (S.regionIcons and e.region and ("   " .. e.region) or ""), "small" }
+  end
+  out[#out + 1] = { "Invite accept: friends " .. (S.inviteFriends and "on" or "off") .. ", guild " .. (S.inviteGuild and "on" or "off") .. " (never queued or in combat)", "small" }
+  textLines(card, "friends", out)
+end
+
+-- Sentinel: the alert popup, the badge and the viewer header as configured.
+function Previews.Sentinel(card)
+  local S = PUI.Sentinel
+  if not S then return end
+  local g = function(k) return PUI.Schema:Get("sentinel." .. k) end
+  local alerts = {}
+  if g("toast") then alerts[#alerts + 1] = "popup" end
+  if g("alertBadge") then alerts[#alerts + 1] = "badge \"3 new\"" end
+  if g("alertSound") then alerts[#alerts + 1] = "sound (" .. g("alertSoundName") .. ")" end
+  if g("alertChat") then alerts[#alerts + 1] = "chat line" end
+  if g("autoOpen") then alerts[#alerts + 1] = "opens the viewer (after combat)" end
+  textLines(card, "sentinel", {
+    { "Error reporter", "header" },
+    { "New error: " .. (#alerts > 0 and table.concat(alerts, ", ") or "counted only") .. "; same error again after " .. g("throttle") .. " s", "small" },
+    { "[x4] Phoenix_UI_HUD/Minimap.lua:212: attempt to index nil (field 'host')", "small" },
+    { "Viewer opens on: " .. g("viewerSession") .. ", " .. g("viewerSource") .. (g("captureOthers") and "  - other addons captured on this PC" or ""), "small" },
+    { "Layout: " .. (g("viewerGroup") == "addon" and ("one section per addon" .. (g("viewerCollapsed") and ", collapsed" or ", open")) or "one newest-first list"), "small" },
+    { "  - Phoenix_UI  1 / x4      + WeakAuras  2 / x9      + Blizzard  1 / x1", "small" },
+    { "Auto-upload via Companion: " .. (g("optIn") and "on" or "off") .. (g("uploadOthers") and " (full log, every addon)" or " (Phoenix errors only)")
+      .. (g("uploadAddonList") and " + addon list" or ""), "small" },
+    { "Names: " .. (g("redactNames") and "[player], GUIDs keep only their kind" or "kept") .. "   Shared with you: " .. g("shareAccept"), "small" },
+  })
 end
 
 function Previews.Update(owner, card, key)
@@ -912,7 +1298,7 @@ end
 
 -- wrap builders so switching page/tab always starts clean
 for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager", "Minimap", "Tooltip", "DataBars", "Chat", "Vault",
-  "Embers", "Ascent", "QuestTracker", "Reminders" }) do
+  "Embers", "Ascent", "QuestTracker", "Reminders", "GroupFinder", "Flow", "RaidTools", "Pulse", "Arena", "Spark", "CastHistory", "PvP", "Friends", "Sentinel" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end

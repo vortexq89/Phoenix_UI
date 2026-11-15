@@ -40,6 +40,12 @@ function Dialogs:Copy(title, text, hint)
   if d then return d:Copy(title, tostring(text or ""), hint) end
 end
 
+function Dialogs:Paste(title, hint, onText)
+  assert(type(onText) == "function", "Dialogs:Paste needs a callback")
+  local d = impl()
+  if d then return d:Paste(title, hint, onText) end
+end
+
 function Dialogs:Close()
   local d = PUI.Options and PUI.Options.Dialogs
   if d then d:Close() end

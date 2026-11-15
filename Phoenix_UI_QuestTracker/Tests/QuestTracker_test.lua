@@ -182,3 +182,40 @@ Tests:Add("QuestTracker", "live preview follows the tracker settings", function(
   P.QuestTracker(card)
   t:eq(P.State(card).qtLines, n - 2, "finished quest and M+ line follow the settings")
 end)
+
+Tests:Add("QuestTracker", "quest item buttons (secure, out of combat) and auto-share", function(t)
+  if not H then return end
+  enable(t, "qt.itemButtons", "qt.autoShare", "qt.itemSize")
+  local X = QT.Extras
+  seed()
+  H.questItems[10] = { link = "item:1234", icon = 134400, charges = 3 }
+  t:cleanup(function() H.questItems[10] = nil; H.inCombat = false; H.pushable = {}; H.pushed = {}; H.group = nil end)
+  QT.frame.GetLeft = function() return 1500 end
+  for _, r in ipairs(QT.rows) do r.GetTop = function() return 700 end end
+  QT.Refresh()
+  for _, r in ipairs(QT.rows) do r.GetTop = function() return 700 end end
+  QT.Refresh()
+  t:eq(X.count, 1, "one button for the quest with an item")
+  local b = X.buttons[1]
+  t:eq(b:GetAttribute("type"), "item", "secure item button")
+  t:eq(b:GetAttribute("item"), "item:1234", "quest item link")
+  t:eq(b.count:GetText(), "3", "charges")
+  Schema:Set("qt.itemSize", 30)
+  t:eq(b:GetWidth(), 30, "size live")
+  H.inCombat = true
+  Schema:Set("qt.itemButtons", false)
+  t:ok(b:IsShown(), "nothing moves in combat")
+  H.inCombat = false
+  CQ.Drain()
+  t:eq(b:IsShown(), false, "hidden after combat when off")
+  -- auto-share
+  t:eq(X.OnAccepted(10), false, "off by default")
+  Schema:Set("qt.autoShare", true)
+  H.group = { "party1" }
+  t:eq(X.OnAccepted(10), false, "not pushable")
+  H.pushable[10] = true
+  t:ok(X.OnAccepted(10), "shared")
+  t:eq(H.pushed[1], 10, "pushed by log index")
+  H.inCombat = true
+  t:eq(X.OnAccepted(10), false, "never in combat")
+end)

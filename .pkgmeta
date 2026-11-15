@@ -22,6 +22,14 @@ move-folders:
   Phoenix_UI/Phoenix_UI_Oracle: Phoenix_UI_Oracle
   Phoenix_UI/Phoenix_UI_Wisdom: Phoenix_UI_Wisdom
   Phoenix_UI/Phoenix_UI_Loadouts: Phoenix_UI_Loadouts
+  Phoenix_UI/Phoenix_UI_RaidTools: Phoenix_UI_RaidTools
+  Phoenix_UI/Phoenix_UI_Pulse: Phoenix_UI_Pulse
+  Phoenix_UI/Phoenix_UI_Arena: Phoenix_UI_Arena
+  Phoenix_UI/Phoenix_UI_Spark: Phoenix_UI_Spark
+  Phoenix_UI/Phoenix_UI_CastHistory: Phoenix_UI_CastHistory
+  Phoenix_UI/Phoenix_UI_PvP: Phoenix_UI_PvP
+  Phoenix_UI/Phoenix_UI_Friends: Phoenix_UI_Friends
+  Phoenix_UI/Phoenix_UI_Forever: Phoenix_UI_Forever
   Phoenix_UI/Phoenix_UI_GroupFinder: Phoenix_UI_GroupFinder
   Phoenix_UI/Phoenix_UI_Locales: Phoenix_UI_Locales
   Phoenix_UI/Phoenix_UI_Media: Phoenix_UI_Media

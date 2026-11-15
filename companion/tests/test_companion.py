@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from sentinel_companion import core, exportstring, luasv, payload, redact
+from sentinel_companion import core, exportstring, fixedin, luasv, payload, redact
 from sentinel_companion.config import Config
 from sentinel_companion.state import State
 
@@ -58,6 +58,13 @@ class PayloadTests(unittest.TestCase):
         p, why = payload.build(d)
         self.assertIsNone(p)
         self.assertIn("off", why)
+
+    def test_outbox_from_game_is_used_as_is(self):
+        db = {"installId": "abc", "optIn": True, "incidents": {"x": {"hash": "x", "kind": "error", "message": "raw Vexie"}},
+              "outbox": {"reports": {1: {"id": "abc-1-1", "kind": "error", "message": "[player] failed"}}}}
+        p, why = payload.build(db)
+        self.assertIsNone(why)
+        self.assertEqual([r["message"] for r in p["reports"]], ["[player] failed"])
 
     def test_stable_n_matches_addon(self):
         self.assertEqual(payload.stable_n("0000000a"), 10)
@@ -140,6 +147,48 @@ class ExportStringTests(unittest.TestCase):
             self.assertEqual(exportstring.decode(exportstring.encode(p, wbits)), json.loads(json.dumps(p, sort_keys=True)))
         with self.assertRaises(ValueError):
             exportstring.decode("nope")
+
+
+class FixedInTests(unittest.TestCase):
+    def test_dashboard_issues_to_string(self):
+        issues = {"issues": [
+            {"hash": "1A2B3C4D", "status": "fixed", "fixedIn": "1.4.2"},
+            {"hash": "deadbeef", "status": "new", "fixedIn": "1.4.2"},
+            {"hash": "cafebabe", "status": "fixed", "fixed_in": "1.4.3"},
+            {"hash": "1a2b3c4d", "status": "fixed", "fixedIn": "1.4.2"},
+            {"hash": "nothex!!", "status": "fixed", "fixedIn": "1.0"},
+            {"hash": "abcdef01", "status": "fixed", "fixedIn": "bad version!"},
+        ]}
+        out = exportstring.decode(fixedin.build(issues))
+        self.assertEqual(out["kind"], "fixed-in")
+        self.assertEqual(out["fixed"], [{"hash": "1a2b3c4d", "fixedIn": "1.4.2"}, {"hash": "cafebabe", "fixedIn": "1.4.3"}])
+
+    def test_refuses_empty_and_oversized(self):
+        with self.assertRaises(ValueError):
+            fixedin.build([])
+        many = [{"hash": "%08x" % i, "fixedIn": "1.0"} for i in range(fixedin.MAX + 1)]
+        with self.assertRaises(ValueError):
+            fixedin.build(many)
+
+
+class FlavorTests(unittest.TestCase):
+    def test_outbox_keeps_flavor_session_and_addon_list(self):
+        from sentinel_companion import payload
+        db = {"installId": "ab" * 8, "optIn": True, "outbox": {"flavor": "forever", "session": 7,
+              "addons": {1: {"name": "WeakAuras", "version": "5.0", "enabled": True, "loaded": True}},
+              "reports": {1: {"id": "x", "flavor": "forever"}}}}
+        out, why = payload.build(db)
+        assert why is None
+        assert out["flavor"] == "forever" and out["session"] == 7
+        assert out["addons"][0]["name"] == "WeakAuras"
+        assert out["reports"][0]["flavor"] == "forever"
+
+
+    def test_flavor_of_interface(self):
+        from sentinel_companion.payload import flavor_of
+        assert flavor_of(120105) == "retail"
+        assert flavor_of(16000) == "forever"
+        assert flavor_of(None) is None
 
 
 if __name__ == "__main__":

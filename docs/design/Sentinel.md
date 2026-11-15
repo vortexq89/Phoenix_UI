@@ -48,3 +48,14 @@ Subcommands: `/pui sentinel export|send|clear|induce|enable <module>`.
 
 ## Mockup
 Not yet produced (Canva/Figma export to `docs/design/img/` is pending the maintainer's design pass); the layout table above is the spec for Phase 1.
+
+## Error reporter, diagnostics and profiler (step 9c)
+
+- `Store.lua`: Phoenix incidents + other addons' errors (`db.others`, this PC only), sessions, sources, plain search, fingerprints, resolved states (`db.resolved`, persist).
+- `Alerts.lua`: popup (Toast) + badge on; sound, chat line, auto-open off; per-signature throttle; BugSack picker `core.coexist.sentinel.display`.
+- `Share.lua`: addon prefix `PUISEN`, whisper. Offer -> accept prompt -> chunks (220 bytes, 4 per second on one Ticker entry) -> checksum check.
+- `Privacy.lua`: whole-word own name -> `[player]`, GUID kind only; applied to exports, shares and the outbox.
+- `Upload.lua`: Preview text, status line, `db.outbox` written at logout and before Send now; the Companion uploads it as-is.
+- `Reporter.lua`: the viewer window with Errors, Diagnostics and Profiler tabs.
+- Safe mode is retired (hidden, inert); errors are never hidden.
+- Core: `Core/Diag.lua` (`PUI.Diag`, `/pui diag`), `Core/Profiler.lua` (`PUI.Profiler`, `/pui profile`, zero cost while off).

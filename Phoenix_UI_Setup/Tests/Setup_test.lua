@@ -6,15 +6,16 @@ local Tests, Schema, CQ = PUI.Tests, PUI.Schema, PUI.CombatQueue
 local SU, P = ns.SU, ns.P
 
 local function snapshot(t)
-  local keys = { "setup.state", "layout.positions", "theme.accent", "theme.panel", "core.locale" }
+  local keys = { "setup.state", "layout.positions", "theme.accent", "theme.panel", "core.locale", "module.Skins" }
   for _, m in ipairs(P.MANAGED) do if Schema:Def("module." .. m) then keys[#keys + 1] = "module." .. m end end
   local saved = {}
   for i = 1, #keys do saved[i] = Schema:Get(keys[i]) end
   t:cleanup(function() for i = #keys, 1, -1 do Schema:Set(keys[i], saved[i]) end; CQ.Drain() end)
 end
 
-Tests:Add("Setup", "five steps, five role presets, three layouts, four looks", function(t)
-  t:eq(#SU.STEPS, 5, "five steps")
+Tests:Add("Setup", "six steps, five role presets, three layouts, four looks", function(t)
+  t:eq(#SU.STEPS, 6, "six steps")
+  t:eq(SU.STEPS[6], "skins", "skins is the last step")
   t:eq(#P.ROLE_ORDER, 5, "role presets")
   t:eq(#P.LAYOUT_ORDER, 3, "layout presets")
   t:eq(#P.LOOK_ORDER, 4, "looks")
@@ -62,9 +63,17 @@ Tests:Add("Setup", "wizard navigation and cycling", function(t)
   t:eq(Schema:Get("theme.accent"), "frost", "accent previews live")
   SU.choices.scale = 0.7
   SU.Go(1)
+  t:eq(SU.STEPS[SU.step], "skins", "skins step after look")
+  t:ok(SU.frame.pages.skins:IsShown(), "skins page shown")
+  t:eq(#SU.frame.pages.skins.cards, 2, "Phoenix and Blizzard cards with previews")
+  t:ok(SU.frame.pages.skins.cards[1].preview ~= nil, "preview drawn")
+  SU.frame.pages.skins.cards[1]:GetScript("OnClick")()
+  t:eq(SU.choices.skins, true, "Phoenix skins chosen")
+  SU.Go(1)
   t:ok(SU.frame.pages.finish:IsShown(), "finish page after applying")
   t:eq(H.cvars.uiScale, "0.7", "fine-tuned scale applied")
   t:eq(SU.State().wizardDone, true, "done without a reload")
+  t:eq(Schema:Get("module.Skins"), true, "skins turned on live from the wizard")
   SU.Go(1)
   t:ok(not SU.frame:IsShown(), "enter the game closes")
 end)

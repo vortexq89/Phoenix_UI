@@ -191,7 +191,7 @@ local function onEnable(mod)
   mod:RegisterEvent("SCENARIO_CRITERIA_UPDATE", function() NP.ForAll(P.UpdateForces) end)
   mod:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", function() updateRole(); NP.RefreshAll() end)
   mod:RegisterEvent("PLAYER_ENTERING_WORLD", NP.UpdateContent)
-  mod:RegisterEvent("ZONE_CHANGED_NEW_AREA", NP.UpdateContent)
+  mod:RegisterEvent("ZONE_CHANGED_NEW_AREA", function() NP.UpdateContent(); if NP.DataPacks then NP.DataPacks.OnZone() end end)
   mod:RegisterEvent("GROUP_ROSTER_UPDATE", function() if s.colors.offTank then NP.ForAll(P.UpdateColor) end end)
   for _, plate in ipairs(C_NamePlate.GetNamePlates(false) or {}) do
     local unit = plate.namePlateUnitToken

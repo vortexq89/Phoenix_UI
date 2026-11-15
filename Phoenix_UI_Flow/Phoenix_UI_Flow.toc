@@ -11,4 +11,10 @@
 ## Dependencies: Phoenix_UI
 
 Flow.lua
+Quiet.lua
+Extras.lua
+LootRoll.lua
+AFK.lua
 Tests\Flow_test.lua
+Tests\LootRoll_test.lua
+Tests\AFK_test.lua

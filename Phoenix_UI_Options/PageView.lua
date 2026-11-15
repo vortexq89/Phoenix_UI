@@ -7,6 +7,27 @@ local Options, Theme = PUI.Options, PUI.Theme
 local Model, Schema, Kit, Nav, Widgets = Options.Model, PUI.Schema, Options.Kit, Options.Nav, Options.Widgets
 local PageView = {}
 Options.PageView = PageView
+
+-- Reset (review gap): a click resets this module (every key the page owns,
+-- simple and advanced) after a confirm; Shift-click resets everything.
+function PageView.AskReset(everything)
+  local page = Options.page
+  local label = (Model.PAGE_LABEL and Model.PAGE_LABEL[page]) or page or "this page"
+  if everything then
+    local n = #Model.ChangedKeys(nil)
+    return PUI.Dialogs:Confirm({ title = "Reset everything", danger = true, accept = "Reset everything",
+      text = n .. " changed setting(s) across every Phoenix module go back to default. Your profiles stay; this changes the active one.",
+      onAccept = function() PUI.Slash.Print(Model.ResetEverything() .. " setting(s) reset to default.") end })
+  end
+  local n = #Model.ChangedKeys(page)
+  return PUI.Dialogs:Confirm({ title = "Reset " .. tostring(label), accept = "Reset this module",
+    text = n .. " changed setting(s) on this module (simple and advanced) go back to default. Shift-click Reset to reset everything.",
+    onAccept = function()
+      local done = Model.ResetModule(page)
+      if done == 0 then done = Model.ResetPage(Model.Mode(), page) end
+      PUI.Slash.Print(done .. " setting(s) reset to default.")
+    end })
+end
 Options.views = Options.views or {}
 
 local PREVIEW_W = 420
@@ -18,7 +39,8 @@ local TAB_LABEL = { player = "Player", target = "Target", targettarget = "Target
   defensive = "Defensives", enemy = "Enemy", friendly = "Friendly", colors = "Colours", auras = "Aura lanes",
   icons = "Indicators", resource = "Class resource", rules = "NPC colours", system = "Game settings",
   text = "Texts", coords = "Coordinates", queue = "Queue eye", extra = "Extras", hide = "Blizzard parts", bin = "Button bin",
-  ids = "Tooltip IDs", lines = "Info lines", style = "Style", progress = "XP / rep bar", bar1 = "Bar 1", bar2 = "Bar 2", bar3 = "Bar 3", bar4 = "Bar 4" }
+  ids = "Tooltip IDs", lines = "Info lines", style = "Style", progress = "XP / rep bar", bar1 = "Bar 1", bar2 = "Bar 2", bar3 = "Bar 3", bar4 = "Bar 4",
+  ibars = "Auto item bars", ibar1 = "Auto bar 1", ibar2 = "Auto bar 2", ibar3 = "Auto bar 3", ibar4 = "Auto bar 4", ibar5 = "Auto bar 5" }
 
 local function tabLabel(id)
   if TAB_LABEL[id] then return TAB_LABEL[id] end
@@ -64,10 +86,7 @@ local function build(host)
   v.desc:SetPoint("TOPLEFT", v.title, "BOTTOMLEFT", 0, -4)
   v.toggle = Kit.Toggle(v, function(on) if v.moduleKey then Model.Commit(v.moduleKey, on) end end)
   v.toggle:SetPoint("TOPRIGHT", -30, -56)
-  v.reset = Kit.Button(v, "Reset", 70, function()
-    local n = Model.ResetPage(Model.Mode(), Options.page)
-    PUI.Slash.Print(n .. " setting(s) reset to default.")
-  end, "ghost")
+  v.reset = Kit.Button(v, "Reset", 70, function() PageView.AskReset(IsShiftKeyDown()) end, "ghost")
   v.reset:SetPoint("RIGHT", v.toggle, "LEFT", -10, 0)
   v.studio = Kit.Button(v, "Move in Studio", 150, function() PUI.OptionsHost:OpenStudio() end, "secondary",
     Options.Assets.Icon("studio"))

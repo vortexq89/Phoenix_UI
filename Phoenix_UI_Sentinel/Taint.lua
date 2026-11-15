@@ -12,7 +12,14 @@ local function isPhoenix(addon)
 end
 
 function Taint:OnAction(event, addon, func)
-  if not isPhoenix(addon) then return end
+  if not isPhoenix(addon) then
+    -- Another addon's blocked action: kept with its other errors (BugGrabber parity).
+    if not PUI.SentinelHook.captureOthers then return end
+    local name = (type(addon) == "string" and not PUI.Secret.IsSecret(addon)) and addon or "Unknown"
+    local inc = S.Store:OnOther({ addon = name, message = event .. ": " .. PUI.Secret.ToText(func, 200), stack = debugstack(2), combat = InCombatLockdown() and true or false })
+    inc.kind = "taint"
+    return inc
+  end
   local fn = PUI.Secret.ToText(func, 200)
   return S.Capture:Report("taint", addon == PUI.ADDON_NAME and "Core" or (addon:match("^Phoenix_UI_(%w+)") or "Core"), {
     message = event .. ": " .. fn,

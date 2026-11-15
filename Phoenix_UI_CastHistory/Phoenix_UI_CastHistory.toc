@@ -1,0 +1,17 @@
+## Interface: 120100, 120105, 16001
+## Title: Phoenix UI - Cast History
+## Notes: Phoenix UI Cast History: a strip of recent casts for you, your target, focus, party and arena enemies, with spell and item blocklists. The one owner of spell history.
+## Author: VortexQ8
+## Version: @project-version@
+## X-License: All Rights Reserved (source-visible); see LICENSE
+## X-Website: https://www.vq8s.com/phoenix-ui
+## IconTexture: Interface\AddOns\Phoenix_UI\Media\Logo\PhoenixUI_Icon_64
+## Category: Phoenix UI
+## Group: Phoenix_UI
+## Dependencies: Phoenix_UI
+
+Tracker.lua
+Strip.lua
+CastHistory.lua
+Extras.lua
+Tests\CastHistory_test.lua

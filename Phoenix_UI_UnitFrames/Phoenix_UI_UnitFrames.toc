@@ -17,4 +17,5 @@ Auras.lua
 Blizzard.lua
 AuraBars.lua
 UnitFrames.lua
+TextSlots.lua
 Tests\UnitFrames_test.lua

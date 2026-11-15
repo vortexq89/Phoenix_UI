@@ -25,7 +25,9 @@ function Ticker:Register(key, interval, fn, owner)
   assert(type(interval) == "number" and interval >= 0, "Ticker:Register needs an interval >= 0 (seconds)")
   assert(type(fn) == "function", "Ticker:Register needs a function")
   self:Unregister(key)
-  local entry = { key = key, interval = interval, fn = fn, owner = owner or "Core" }
+  local entry = { key = key, interval = interval, fn = fn, rawFn = fn, owner = owner or "Core" }
+  -- Profiler (1.32): only while it runs does a new job get a timed wrapper.
+  if self.probe then entry.fn = self.probe(entry) end
   if interval == 0 then
     self.perFrame[key] = entry
     self.perFrameCount = self.perFrameCount + 1

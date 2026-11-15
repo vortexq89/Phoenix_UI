@@ -119,3 +119,35 @@ Tests:Add("Reminders", "live preview follows icon settings", function(t)
   P.Reminders(card)
   t:eq(P.State(card).rmIcons, n - 1, "pet icon follows the setting")
 end)
+
+Tests:Add("Reminders", "weapon oil, talents by instance, sound and icon per reminder", function(t)
+  if not H or PUI.IS_FOREVER then return end
+  enable(t, "rm.weaponOil", "rm.talentZones", "rm.overrides", "rm.consumables")
+  local X = RM.Extras
+  local function find(out, k) for _, r in ipairs(out.custom) do if r.key == k then return r end end end
+  t:cleanup(function() H.instance = nil; H.instanceInfo = nil; H.weaponEnchant = true; H.inventory[16] = nil; H.config = 100 end)
+  H.instance, H.instanceInfo = true, { "Ara-Kara", "party", 8, "", 5, 0, false, 2660 }
+  H.inventory[16] = 5000
+  H.weaponEnchant = false
+  t:eq(find(RM.Evaluate(), "oil"), nil, "oil reminder off by default")
+  Schema:Set("rm.weaponOil", true)
+  t:ok(find(RM.Evaluate(), "oil"), "no temporary enchant in an instance")
+  H.weaponEnchant = true
+  t:eq(find(RM.Evaluate(), "oil"), nil, "oiled")
+  t:ok(X.SaveZone(), "loadout saved for the instance")
+  t:eq(Schema:Get("rm.talentZones")[2660], 100, "instance -> loadout")
+  t:eq(find(RM.Evaluate(), "talents"), nil, "same loadout: no reminder")
+  H.config = 200
+  local r = find(RM.Evaluate(), "talents")
+  t:eq(r and r.label, "Talents: Loadout 100", "other loadout: reminder names the saved one")
+  Schema:Set("rm.overrides", { "talents: sound=Phoenix icon=12345" })
+  t:same(X.ParseOverrides({ "oil: icon=9 sound=Ding" }).oil, { sound = "Ding", icon = 9 }, "override parsed")
+  X.seen = {}
+  RM.Show(RM.Evaluate())
+  local icons = RM.pools.custom.icons
+  local got
+  for _, ic in ipairs(icons) do if rawget(ic.tex, "texture") == 12345 then got = true end end
+  t:ok(got, "icon override")
+  t:ok(X.SaveZone(true), "cleared")
+  t:eq(find(RM.Evaluate(), "talents"), nil, "no reminder after clearing")
+end)

@@ -25,3 +25,5 @@ jobs:
         run: python3 .tools/test_agent_sweep.py
       - name: Locale keys
         run: python3 .tools/locales.py --check
+      - name: Locale token parity self-test
+        run: python3 .tools/test_locale_tokens.py

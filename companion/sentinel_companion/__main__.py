@@ -1,11 +1,11 @@
-"""sentinel-companion [once|watch|status|decode <string>|send-export <string>] [--config PATH] [--dry-run]"""
+"""sentinel-companion [once|watch|status|decode <string>|send-export <string>|fixed-string [file.json]] [--config PATH] [--dry-run]"""
 import argparse
 import json
 import os
 import sys
 import time
 
-from . import VERSION, exportstring
+from . import VERSION, exportstring, fixedin
 from .config import Config
 from .core import run_once
 from .state import State
@@ -24,7 +24,7 @@ def _mtimes(cfg):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="sentinel-companion", description="Phoenix UI Sentinel Companion " + VERSION)
-    ap.add_argument("command", nargs="?", default="watch", choices=["once", "watch", "status", "decode", "send-export"])
+    ap.add_argument("command", nargs="?", default="watch", choices=["once", "watch", "status", "decode", "send-export", "fixed-string"])
     ap.add_argument("text", nargs="?", help="a !PUI_SEN string (decode / send-export)")
     ap.add_argument("--config")
     ap.add_argument("--dry-run", action="store_true")
@@ -34,6 +34,11 @@ def main(argv=None):
         print(repr(cfg))
         print("SavedVariables found: %d" % len(cfg.saved_variables()))
         print("reports already sent: %d" % len(State(cfg.state_path).sent))
+        return 0
+    if a.command == "fixed-string":
+        # a JSON file path, or JSON on stdin: prints the string to paste in game
+        raw = open(a.text, encoding="utf-8").read() if a.text else sys.stdin.read()
+        print(fixedin.build(json.loads(raw)))
         return 0
     if a.command in ("decode", "send-export"):
         payload = exportstring.decode(a.text or sys.stdin.read())

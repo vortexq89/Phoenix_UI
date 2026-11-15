@@ -12,7 +12,7 @@ local _, ns = ...
 local Schema, CQ, Ticker, Media, Theme, Secret = PUI.Schema, PUI.CombatQueue, PUI.Ticker, PUI.Media, PUI.Theme, PUI.Secret
 local OWNER = "Minimap"
 
-local MM = { active = false, saved = {} }
+local MM = { active = false, saved = {}, replaced = {} }
 ns.MM = MM
 PUI.Minimap = MM
 
@@ -57,6 +57,7 @@ MM.PART_ORDER = { "zoom", "tracking", "calendar", "mail", "craft", "expansion", 
 
 local function partHidden(name)
   if name == "border" or name == "zonebar" or name == "compass" then return s.hideCluster end
+  if MM.replaced[name] then return true end -- Phoenix draws its own (MinimapButtons.lua)
   return s.hide[name] == true
 end
 

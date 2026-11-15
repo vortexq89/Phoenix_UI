@@ -394,8 +394,8 @@ function P.ColorName(f, s)
   local isPlayer = UnitIsPlayer(unit)
   if s.friendly.classNames and isPlayer ~= nil and (Secret.IsSecret(isPlayer) or isPlayer) then
     local _, token = UnitClass(unit)
-    local color = token ~= nil and C_ClassColor.GetClassColor(token)
-    if color then return f.name:SetTextColor(color:GetRGB()) end
+    local r, g, b = PUI.Look.ClassRGB(token)
+    if r then return f.name:SetTextColor(r, g, b) end
   end
   if plain(isPlayer) and not isPlayer then return f.name:SetTextColor(rgb(s.colors.friendly)) end
   f.name:SetTextColor(1, 1, 1)

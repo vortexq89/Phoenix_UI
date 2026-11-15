@@ -140,6 +140,26 @@ function D:KeepOrRevert(spec)
   return win
 end
 
+-- Paste box (deferred batch D): an empty editable box; Accept passes its text.
+function D:Paste(title, hint, onText)
+  if self:IsShown() then self:Cancel() end
+  local spec = { title = title, accept = "Import", cancel = "Cancel" }
+  spec.onAccept = function() onText(win.box:GetText() or "") end
+  reset(spec)
+  win.body:SetText("")
+  win.box:SetPoint("TOPLEFT", 20, -58)
+  win.box:SetPoint("RIGHT", win, "RIGHT", -20, 0)
+  win.box:SetHeight(150)
+  win.box:Show()
+  win.hint:SetText(hint or "Paste with Ctrl+V, then Import.")
+  win.hint:SetPoint("TOPLEFT", win.box, "BOTTOMLEFT", 2, -8)
+  win.hint:Show()
+  win:SetHeight(58 + 150 + 30 + 70)
+  win:Show()
+  win.box:SetFocus()
+  return win
+end
+
 function D:Copy(title, text, hint)
   if self:IsShown() then self:Cancel() end
   reset({ title = title, accept = "Done", cancel = false })

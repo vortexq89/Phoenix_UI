@@ -242,3 +242,48 @@ Tests:Add("Embers", "live preview uses the module's look, pinned row and number 
   t:ok(h.mrows[6].l:GetText():find("You", 1, true), "your row pinned in the preview")
   t:ok(h.mrows[1].r:GetText():find("K", 1, true), "forced unit applied")
 end)
+
+Tests:Add("Embers", "hotkeys through the binding ledger, window snapping and the threat warning", function(t)
+  if not H then return end
+  enable(t)
+  local X = EM.Extras
+  for _, k in ipairs({ "embers.keyToggle", "embers.keyReset", "embers.snap", "embers.threatWarn" }) do Tests.Keep(t, k) end
+  t:cleanup(function() H.threatPct = {}; CQ.Drain() end)
+  Schema:Set("embers.windows", 2)
+  Schema:Set("embers.keyToggle", "CTRL-SHIFT-M")
+  Schema:Set("embers.keyReset", "CTRL-SHIFT-R")
+  CQ.Drain()
+  t:eq(H.overrideBindings["CTRL-SHIFT-M"].button, "PhoenixUI_EmbersToggle", "toggle key is an override binding")
+  t:eq(H.overrideBindings["CTRL-SHIFT-R"].button, "PhoenixUI_EmbersReset", "reset key")
+  X.ToggleAll()
+  t:eq(EM.windows[1].frame:IsShown(), false, "all windows hidden")
+  X.ToggleAll()
+  t:ok(EM.windows[1].frame:IsShown() and EM.windows[2].frame:IsShown(), "and back")
+  H.meter.reset = nil
+  X.Reset()
+  t:ok(H.meter.reset, "reset through the game's meter")
+  Schema:Set("embers.keyToggle", ""); Schema:Set("embers.keyReset", ""); CQ.Drain()
+  t:eq(H.overrideBindings["CTRL-SHIFT-M"], nil, "key released when cleared")
+  Schema:Set("embers.snap", "right")
+  local p = rawget(EM.windows[2].frame, "point")
+  t:ok(p and p[2] == EM.windows[1].frame and p[3] == "TOPRIGHT", "window 2 docks right of window 1")
+  -- threat warning
+  H.threatPct.player = 85
+  t:eq(X.CheckThreat(), false, "off at 0")
+  Schema:Set("embers.threatWarn", 80)
+  H.units.target = true
+  t:cleanup(function() H.units.target = nil; H.notTanking = nil end)
+  t:eq(X.CheckThreat(), false, "tanking: no warning")
+  H.notTanking = true
+  local n = #H.sounds
+  t:ok(X.CheckThreat(), "warning at 85% of the tank's threat")
+  t:eq(#H.sounds, n + 1, "sound played")
+  t:eq(X.CheckThreat(), false, "once per crossing")
+  H.threatPct.player = 60
+  X.CheckThreat()
+  H.threatPct.player = 90
+  t:ok(X.CheckThreat(), "again after dropping back")
+  H.secretMode = true
+  X.warned = false
+  t:eq(X.CheckThreat(), false, "secret threat never compared")
+end)

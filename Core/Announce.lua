@@ -22,6 +22,7 @@ Announce.TOPICS = {
   { id = "meter", label = "Damage meter reports" },
   { id = "loadout", label = "Loadout mismatch" },
   { id = "goodbye", label = "Goodbye after a run" },
+  { id = "raid", label = "Raid tools (breaks) and encounter stats" },
 }
 Announce.CHANNELS = { "self", "auto", "PARTY", "RAID", "INSTANCE_CHAT", "SAY", "YELL", "GUILD" }
 Announce.CHANNEL_LABELS = { self = "Only me (local line)", auto = "Group (party, raid or instance)", PARTY = "Party", RAID = "Raid",

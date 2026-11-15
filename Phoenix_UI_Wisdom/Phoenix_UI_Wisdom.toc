@@ -12,4 +12,5 @@
 
 Pack.lua
 Wisdom.lua
+SimC.lua
 Tests\Wisdom_test.lua

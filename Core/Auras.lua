@@ -152,6 +152,35 @@ function Handle:SetExclusions(list)
   return false
 end
 
+-- Per-group button options the engine draws itself (no Lua per aura, so
+-- secret auras stay secret): kind "dispelTexture" (CustomAuraButtonDispelType
+-- TextureOptions: purge / important borders) and "durationText"
+-- (CustomAuraButtonDurationTextOptions: colour by remaining percent, the
+-- pandemic window). Options are normalised through C_AuraContainerUtil and
+-- handed to the container only when the client exposes a setter for them
+-- (feature-detected, never assumed); they are always stored so a later
+-- client or a reload picks them up. Returns true when the engine took them.
+Handle.BUTTON_SETTERS = {
+  dispelTexture = { "SetAuraGroupDispelTypeTextureOptions", "SetAuraGroupButtonDispelTypeTextureOptions" },
+  durationText = { "SetAuraGroupDurationTextOptions", "SetAuraGroupButtonDurationTextOptions" },
+}
+local PROCESS = { dispelTexture = "ProcessCustomAuraButtonDispelTypeTextureOptions", durationText = "ProcessCustomAuraButtonDurationTextOptions" }
+function Handle:SetButtonOptions(key, kind, opts)
+  assert(Handle.BUTTON_SETTERS[kind], "unknown button option kind " .. tostring(kind))
+  self.buttonOptions = self.buttonOptions or {}
+  self.buttonOptions[key] = self.buttonOptions[key] or {}
+  self.buttonOptions[key][kind] = opts
+  local c = self.container
+  if not c then return false end
+  local util = C_AuraContainerUtil
+  if opts and util and util[PROCESS[kind]] then opts = util[PROCESS[kind]](opts) end
+  for _, name in ipairs(Handle.BUTTON_SETTERS[kind]) do
+    if c[name] then c[name](c, key, opts); return true end
+  end
+  return false
+end
+function Handle:ButtonOptions(key, kind) local b = self.buttonOptions and self.buttonOptions[key]; return b and b[kind] end
+
 function Handle:GroupState(key) local g = self.groups[key]; return g and { filter = g.filter, cap = g.cap } end
 function Handle:Groups() return self.order end
 

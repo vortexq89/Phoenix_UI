@@ -71,7 +71,7 @@ function Panel:Build()
     button(f, "", 140, function() Panel:Flip("sentinel.optIn") end),
     button(f, "", 140, function() Panel:Flip("sentinel.taintLogSession") end),
     button(f, "", 140, function() Panel:Flip("sentinel.perfSampler") end),
-    button(f, "", 140, function() Panel:Flip("sentinel.safeMode") end),
+    button(f, "", 140, function() Panel:Flip("sentinel.testerMode") end),
   }
   local row2 = {
     button(f, "Incidents", 140, function() Panel:ShowList() end),
@@ -111,7 +111,7 @@ function Panel:Refresh()
   f.toggles[1]:SetText(toggleLabel("sentinel.optIn", "Sharing: on", "Sharing: off"))
   f.toggles[2]:SetText(toggleLabel("sentinel.taintLogSession", "Taint log: on", "Taint log: off"))
   f.toggles[3]:SetText(toggleLabel("sentinel.perfSampler", "Sampler: on", "Sampler: off"))
-  f.toggles[4]:SetText(toggleLabel("sentinel.safeMode", "Safe mode: on", "Safe mode: off"))
+  f.toggles[4]:SetText(toggleLabel("sentinel.testerMode", "Tester mode: on", "Tester mode: off"))
 end
 
 function Panel:ShowList()
@@ -123,7 +123,6 @@ function Panel:ShowList()
     lines[#lines + 1] = string.format("%d. [%s][%s][%s] x%d  %s", i, inc.severity or "?", inc.kind, inc.module, inc.count, inc.message:sub(1, 160))
   end
   if #list > 0 then lines[#lines + 1] = "\nUse 'Older >' to open an incident, then 'Copy'." end
-  for name in pairs(S.db.safeModed) do lines[#lines + 1] = "Safe mode: " .. name .. " (use /pui sentinel enable " .. name .. ")" end
   if #lines == 0 then lines[1] = "No incidents. Use /pui sentinel induce to create a test error." end
   self.frame.box:SetText(table.concat(lines, "\n"))
   self:Refresh()
@@ -148,6 +147,7 @@ function Panel:SendNow()
   end
   S.db.lastSent = { at = time(), reports = 0, via = "companion" }
   for _ in pairs(S.db.incidents) do S.db.lastSent.reports = S.db.lastSent.reports + 1 end
+  if S.Upload then S.Upload:MarkSaved() end
   C_UI.Reload()
 end
 

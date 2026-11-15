@@ -1,0 +1,14 @@
+from nu import *
+def tt(h,w=280,extra=''): return f'<div class="card" style="background:var(--bg1);width:{w}px;padding:8px 10px;font-size:11px;line-height:1.45;box-shadow:0 8px 24px #000;{extra}">{h}</div>'
+item=tt('<b style="color:#a335ee;font-size:12.5px">Band of Embers</b><div class="gold">Item Level 636</div><div>Binds when picked up · Unique-Equipped</div><div>Finger</div><div>+1,204 Stamina</div><div class="ok">+412 Critical Strike</div><div class="ok">+390 Haste</div><div class="ok">Equip: Your attacks ignite foes.</div><div class="mut">Sell price: '+money(120)+'</div>'+px('<div class="mono mut">ItemID 212401 (Shift)</div>',False))
+cmp=tt('<div class="mut">Currently Equipped</div><b style="color:#0070dd">Ashen Loop</b><div class="gold">Item Level 619</div><div>+1,050 Stamina</div><div class="ok">+380 Mastery</div>',240)
+unit=tt('<b style="color:#c41e3a;font-size:12.5px">Thrall</b> <span class="mut">&lt;Ashen Wing&gt;</span><div>Level 90 Orc Warrior (Player)</div>'+bar(.72,h=8,c='#2fbf4a')+px('<div><span class="acc">M+ 3,140</span> · Target: <b>You</b> · iLvl 641</div>',False))
+spl=tt('<div style="display:flex;gap:8px">'+ic('flame','#a05010',34)+'<div><b>Inferno Strike</b><div class="mut">40 yd · 1.5 sec cast · 12 sec cd</div></div></div><div class="gold">Hurls fire, dealing 82,000 damage.</div>'+px('<div class="mono mut">SpellID 432011</div>',False))
+aura=tt('<b>Ember Shield</b><div>Absorbs 120,000 damage.</div><div class="mut">8 sec remaining</div>',220)
+emb=tt('<b>Quest rewards</b><div style="display:flex;gap:8px;margin-top:4px;align-items:center">'+ic('hood','#3a5a8a',34,q='rare')+'<div><b style="color:#0070dd">Ash Hood</b><div class="mut">Head · Cloth · ilvl 610</div></div></div>',260)
+ref=tt('<div style="display:flex;justify-content:space-between"><b style="color:#ff8000">Ashbringer</b><span>✕</span></div><div class="gold">Item Level 700</div><div class="mut">Linked from chat · draggable</div>',240)
+pet=tt('<div style="display:flex;gap:8px">'+ic('ghost','#1f6a5a',40)+'<div><b style="color:#0070dd">Ember Whelp</b><div class="mut">Level 25 · Dragonkin</div><div>❤ 1,546 · ⚔ 289 · ⚡ 260</div></div></div>',240)
+poi=tt('<b>Ashen Spire</b><div class="mut">Raid · Isle of Dorn</div><div class="ok">Click to open Adventure Guide</div>',220)
+b=at(X,Y,'<div style="display:flex;gap:12px;align-items:flex-start">'+item+cmp+'</div>')+at(X,Y+300,unit)+at(X+300,Y+300,spl)+at(X,Y+440,aura)+at(X+240,Y+440,emb)+at(X,Y+560,ref)+at(X+260,Y+560,pet)+at(X+520,Y+560,poi)
+fl=fly(X+560,Y,'Tooltips',[('Info lines','<span class="tg on"></span>'),('IDs on Shift','<span class="tg on"></span>'),('Anchor','<span class="dd" style="width:80px;height:20px">Cursor</span>'),('Scale','<span class="dd" style="width:60px;height:20px">100%</span>')],'/pui → Tooltip')
+page2('21_tooltips','Blizzard GameTooltip family (item+compare, unit, spell, aura, embedded, ref, pet, POI) · Ember',b+fl)

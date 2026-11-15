@@ -1,0 +1,16 @@
+from sk2 import *
+from common import GL,CL
+X,Y,W,H=40,96,560,740
+it=[('potion_ball','common','Ember Draught',money(12)),('health_potion','common','Cinder Tonic',money(8,50)),('scroll_unfurled','unc','Glyph of Ash',money(40)),('stars_stack','epic','Gilded Crest','<span class=gold>15 ◈</span>'),('anvil','rare','Smith\'s Hammer',money(2,10)),('diamond_hard','rare','Radiant Gem',money(120)),('beer_stein','common','Ashbrew Ale',money(0,30)),('campfire','common','Kindling',money(0,5)),('fire_ring','epic','Band of Embers','<span class=gold>2,000 Honor</span>'),('hood','rare','Ash Hood',money(55))]
+cells=''.join(f'<div style="display:flex;gap:8px;align-items:center;height:66px;{"opacity:.45" if i==5 else ""}">{ic(g,CL[i%8],46,q=q)}<div style="min-width:0"><div style="font-weight:600;color:{Q[q]};font-size:11.5px">{n}</div><div style="font-size:10.5px">{p}</div>'+(px('<span class="ok" style="font-size:9.5px">✓ appearance known</span>') if i==9 else '')+'</div></div>' for i,(g,q,n,p) in enumerate(it))
+b=at(56,6,'<div style="display:flex;gap:8px;width:490px"><div class="dd" style="width:140px">Monk ▾</div>'+px('<div class="srch" style="width:180px;height:26px">⌕ Search vendor</div>')+'</div>')
+b+=at(16,46,f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;width:526px">{cells}</div>')
+b+=at(16,410,'<div style="display:flex;justify-content:space-between;width:526px;align-items:center"><span class="mut">Page 1 of 3</span><span>'+btn('‹ Prev')+btn('Next ›')+'</span></div>')
+b+=at(16,450,'<div class="card" style="width:526px;padding:8px 10px;display:flex;gap:10px;align-items:center">'+ic('fist','#2a4a7a',40,q='poor')+'<div><div class="lbl">Buyback</div><div style="font-size:11px">Worn Gloves · '+money(3)+'</div></div><span style="margin-left:auto;display:flex;gap:6px">'+''.join(f'<span class="ic" style="width:40px;height:40px;display:grid;place-items:center;background:var(--bg3);font-size:16px">{s}</span>' for s in ['🔨','⚒','🏛','🗑'])+'</span></div>')
+b+=at(16,510,'<div class="mut" style="font-size:10px;width:526px">Repair item (cursor) · Repair all · Guild repair · Sell all junk — Blizzard button order, Phoenix icons</div>')
+b+=at(16,540,'<div style="width:526px;text-align:right">'+money(284512,40,12)+'</div>')
+b+=at(16,570,'<div class="mut" style="font-size:10px">Shift-click to buy a stack (split box)</div>')
+w=bwin(X,Y,W,H-110,'Ashen Supplier',b,icon='Icons__Modules__64__vault',btabs=['Merchant','Buyback'],on=0)
+bb=bwin(X+W+16,Y+232,330,260,'Buyback',at(8,6,'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;width:314px">'+''.join(f'<div style="display:flex;gap:6px;align-items:center">{ic(GL[i],CL[i],34,q="poor")}<div style="font-size:10px">{n}<br>{money(p)}</div></div>' for i,(n,p) in enumerate([('Worn Gloves',3),('Old Ring',12),('Grey Pelt',0),('Broken Tooth',0),('Rusty Key',1),('Cracked Gem',4)]))+'</div>'),cog=False,portrait=False,z=11,sub='tab 2 · 12 slots')
+fl=fly(X+W+16,Y,'Merchant',[('Dim unusable','<span class="tg on"></span>'),('Known appearance','<span class="tg on"></span>'),('Vendor search','<span class="tg on"></span>')])
+page2('11_merchant','Blizzard MerchantFrame layout (2 × 5 items, paging, repair row) · Ember',w+bb+fl)

@@ -239,9 +239,23 @@ end
 
 function Movers:ApplyAll()
   local saved = Schema:Get("studio.blizzard.positions")
+  Layout:RefreshFade(Schema:Get("layout.positions"))
   for id in pairs(self.applied) do if not (saved[id] and self:Enabled()) then self:ApplyOne(id) end end
   if not self:Enabled() then return end
   for id, r in pairs(saved) do self:ApplyOne(id, r) end
+end
+
+-- Re-applies the alpha of every faded Blizzard element for the current state
+-- (Layout's fade refresher calls this on combat, mount, resting ... events).
+function Movers:Refade()
+  local state = PUI.Visibility and PUI.Visibility.state or {}
+  for id, r in pairs(Schema:Get("studio.blizzard.positions")) do
+    local e = self.byId[id]
+    local f = e and self.applied[id] and frameOf(e.frame)
+    if f and r.fade and not r.hide and f.SetAlpha then
+      f:SetAlpha(Layout.FadeAlpha(r.fade, state, false) or r.alpha or 1)
+    end
+  end
 end
 
 function Movers:UsesFade()
@@ -335,6 +349,48 @@ function Import.MoveAny(db, profileName)
       plan.blizzard[id] = r
       plan.count = plan.count + 1
     end
+  end
+  return plan
+end
+
+-- One-time ElvUI importer: read-only. ElvUI keeps its movers per profile as
+-- "POINT,parent,RELPOINT,x,y" strings; the ones with a Phoenix element are
+-- turned into a plan of Phoenix positions (previewed in Studio, kept on Save).
+Import.ELVUI = {
+  ElvUF_PlayerMover = "uf.player", ElvUF_TargetMover = "uf.target", ElvUF_FocusMover = "uf.focus", ElvUF_PetMover = "uf.pet",
+  ElvUF_TargetTargetMover = "uf.targettarget", ElvUF_FocusTargetMover = "uf.focustarget", BossHeaderMover = "uf.boss",
+  ElvUF_PartyMover = "rf.party", ElvUF_RaidMover = "rf.medium", ElvUF_Raid1Mover = "rf.medium", ElvUF_Raid2Mover = "rf.large",
+  ElvUF_Raid3Mover = "rf.large", PetAB = "ab.pet", ShiftAB = "ab.stance",
+  ElvUIPlayerBuffsMover = "uf.auraBars.buffs", ElvUIPlayerDebuffsMover = "uf.auraBars.debuffs",
+}
+for i = 1, 10 do Import.ELVUI["ElvAB_" .. i] = "ab.bar" .. i end
+function Import.ParseElvPoint(text)
+  if type(text) ~= "string" then return nil end
+  local point, parent, rel, x, y = text:match("^(%u+),([^,]+),(%u+),(%-?[%d%.]+),(%-?[%d%.]+)$")
+  if not (point and Schema.POINTS[point] and point == rel) then return nil end
+  if parent ~= "ElvUIParent" and parent ~= "UIParent" then return nil end
+  return { point = point, x = math.floor(tonumber(x) + 0.5), y = math.floor(tonumber(y) + 0.5) }
+end
+function Import.ElvUI(db, profileName)
+  db = db or rawget(_G, "ElvDB")
+  if type(db) ~= "table" or type(db.profiles) ~= "table" then return nil, "ElvUI settings were not found (is ElvUI enabled?)" end
+  local name = profileName
+  if not name and type(db.profileKeys) == "table" then
+    local who = (UnitName("player") or "") .. " - " .. (GetRealmName() or "")
+    name = db.profileKeys[who]
+  end
+  name = name or "Default"
+  local prof = db.profiles[name]
+  if type(prof) ~= "table" then return nil, "ElvUI profile '" .. tostring(name) .. "' was not found" end
+  local movers = type(prof.movers) == "table" and prof.movers or {}
+  local plan = { profile = name, positions = {}, skipped = {}, count = 0 }
+  local names = {}
+  for k in pairs(movers) do if type(k) == "string" then names[#names + 1] = k end end
+  table.sort(names)
+  for _, mover in ipairs(names) do
+    local id = Import.ELVUI[mover]
+    local r = id and Layout:Element(id) and Import.ParseElvPoint(movers[mover])
+    if r then plan.positions[id] = r; plan.count = plan.count + 1 else plan.skipped[#plan.skipped + 1] = mover end
   end
   return plan
 end
