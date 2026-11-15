@@ -295,7 +295,10 @@ function Region:GetStatusBarTexture()
   return t
 end
 function Region:SetTimerDuration(d, interp, dir) self.timer = { d, interp, dir } end
-function Region:SetAlphaFromBoolean(flag, a, b) self.alphaFlag = flag end
+function Region:SetAlphaFromBoolean(flag, a, b)
+  self.alphaFlag = flag
+  if H.secrets[flag] == nil then self.alpha = flag and (a or 1) or (b or 0) end -- the engine resolves plain flags at once
+end
 function Region:SetCooldownFromDurationObject(d) self.cooldown = d end
 function Region:SetTexture(t) self.texture = t end
 function Region:SetSpriteSheetCell(cell) self.cell = cell end
@@ -795,6 +798,29 @@ function UnitIsUnit(a, b)
   if enemy and H.unitTargets[enemy] then return maybe(H.unitTargets[enemy] == b) end
   return baseUnitIsUnit(a, b)
 end
+
+-- Phase 5: nameplates step 5 (reaction, NPC ids, forces, important casts, font strings).
+function Region:SetFont(path, size, flags) self.fontPath, self.fontSize, self.fontFlags = path, size, flags end
+H.reaction = {}
+function UnitReaction(u) return maybe(H.reaction[u] or (H.friendly[u] and 5 or 2)) end
+H.creatureIDs = {}
+function UnitCreatureID(u) return maybe(H.creatureIDs[u]) end
+H.forces = {}
+C_ScenarioInfo.GetUnitCriteriaProgressValues = function(u) local f = H.forces[u]; if f then return maybe(f[1]), maybe(f[2]), maybe(f[3]) end end
+H.important = {}
+C_Spell.IsSpellImportant = function(id) return maybe(H.important[id] == true) end
+H.unitThreat = {}
+H.targetUnit, H.focusUnit = nil, nil
+local npUnitIsUnit = UnitIsUnit
+function UnitIsUnit(a, b)
+  if a == "target" and H.targetUnit then return maybe(b == H.targetUnit) end
+  if a == "focus" and H.focusUnit then return maybe(b == H.focusUnit) end
+  return npUnitIsUnit(a, b)
+end
+local baseThreat = UnitThreatSituation
+function UnitThreatSituation(a, b) if H.unitThreat[a] ~= nil then return maybe(H.unitThreat[a]) end return baseThreat(a, b) end
+for k, v in pairs({ nameplateMotion = "0", nameplateGlobalScale = "1", nameplateOverlapV = "1.1", nameplateMaxDistance = "41",
+  nameplateSelectedScale = "1.2" }) do H.cvars[k] = v end
 
 -- Strict globals: any other undefined global is a missing stub or a typo.
 local OPTIONAL = { PawnUIFrame = true, ClickCastFrames = true, Clique = true, BugGrabber = true, C_PhoenixFake = true, PhoenixUIDB = true, PhoenixUISentinelDB = true,

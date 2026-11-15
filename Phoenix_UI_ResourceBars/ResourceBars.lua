@@ -12,6 +12,7 @@ local GCD_SPELL = 61304 -- the global cooldown spell
 local RB = { active = false, bars = {}, ticks = {} }
 ns.RB = RB
 PUI.ResourceBars = RB
+RB.ClassResource = CR -- read-only resolver for the target-plate resource (Nameplates)
 
 local ORDER = { "health", "power", "class", "cast", "gcd", "totem" }
 RB.ORDER = ORDER

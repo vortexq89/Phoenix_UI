@@ -359,6 +359,37 @@ function Previews.RaidFrames(card, tab)
   rfTools(card)
 end
 
+-- Nameplates: four sample plates built by the module's own builder and
+-- painter (PUI.Nameplates.Plate), so the preview always matches the game:
+-- your target with arrows and forces text, a threat-coloured quest enemy
+-- with the focus outline, a friendly name-only player, and a low-health
+-- enemy in execute range.
+function Previews.Nameplates(card)
+  local NP = PUI.Nameplates
+  if not (NP and NP.Plate) then return end
+  local s = st(card)
+  if not s.npHolder then
+    s.npHolder = CreateFrame("Frame", nil, card)
+    s.npHolder:SetPoint("TOPLEFT", 18, -64)
+    s.npHolder:SetSize(384, 260)
+    s.np = {}
+  end
+  s.npHolder:Show()
+  local S = NP.settings
+  for i = 1, #NP.Plate.SAMPLES do
+    local f = s.np[i]
+    if not f then
+      f = NP.Plate.Build()
+      f:SetParent(s.npHolder)
+      s.np[i] = f
+    end
+    f:ClearAllPoints()
+    f:SetPoint("TOP", s.npHolder, "TOP", 0, -24 - (i - 1) * 60)
+    NP.Plate.PaintSample(f, S, i)
+    f:Show()
+  end
+end
+
 local function hideAll(card)
   for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {} }) do
     for _, f in pairs(list) do f:Hide() end
@@ -368,6 +399,7 @@ local function hideAll(card)
   if st(card).rfHolder then st(card).rfHolder:Hide() end
   for _, b in pairs(st(card).rfTest or {}) do b:Hide() end
   if st(card).rfPreset then st(card).rfPreset:Hide() end
+  if st(card).npHolder then st(card).npHolder:Hide() end
 end
 
 function Previews.Update(owner, card, key)
@@ -378,7 +410,7 @@ function Previews.Update(owner, card, key)
 end
 
 -- wrap builders so switching page/tab always starts clean
-for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames" }) do
+for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end
