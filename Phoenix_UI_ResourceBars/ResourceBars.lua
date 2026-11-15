@@ -3,6 +3,11 @@ local PUI = _G.PhoenixUI if not (PUI and PUI.gateOpen) then return end
 -- player - health, power (with hash lines), class resource, cast, global
 -- cooldown and totems. Each bar is opt-in per setting; events are registered
 -- only for the bars that are on, and the module owns nothing while disabled.
+-- Step 6 (plan 5.6, 13.7, 1.O): the player cast bar is the shared PUI.CastBar
+-- element (one 13-event dispatcher for every cast bar, engine timing, own
+-- colours and parts as settings); health and power text, power colour modes
+-- and the "attach under the player frame / keep separate" host setting live
+-- here as well as on the Unit Frames page.
 local _, ns = ...
 local Schema, Layout, CQ, Ticker, Bars, Theme, Media = PUI.Schema, PUI.Layout, PUI.CombatQueue, PUI.Ticker, PUI.Bars, PUI.Theme, PUI.Media
 local CR = ns.ClassResource
@@ -20,7 +25,10 @@ local DEFAULTS = {
   health = { on = false, h = 10 }, power = { on = true, h = 10 }, class = { on = true, h = 8 },
   cast = { on = false, h = 14 }, gcd = { on = false, h = 3 }, totem = { on = false, h = 14 },
 }
-local cfg = { width = 240, spacing = 2, ticks = {}, smooth = false, hideBlizzardCast = false }
+local cfg = { width = 240, spacing = 2, ticks = {}, smooth = false, hideBlizzardCast = false, matchHost = true,
+  healthText = "none", powerText = "none", powerColor = "power",
+  castStyle = { icon = true, iconSide = "LEFT", spellName = true, timer = true, shield = false, kick = false, fadeOut = 0.35,
+    colors = { cast = { r = 1, g = 0.62, b = 0.18 }, channel = { r = 0.36, g = 0.7, b = 1 } } } }
 RB.cfg = cfg
 for k, d in pairs(DEFAULTS) do cfg[k] = { on = d.on, height = d.h } end
 
@@ -38,14 +46,14 @@ local function container()
   RB.slots = slots
   local health = Bars:Create(slots.health, OWNER); health:SetAllPoints(slots.health)
   local power = Bars:Create(slots.power, OWNER); power:SetAllPoints(slots.power)
-  local cast = Bars:Create(slots.cast, OWNER); cast:SetAllPoints(slots.cast)
-  cast.text = cast:CreateFontString(nil, "OVERLAY")
-  cast.text:SetFontObject(Media:FontObject("small"))
-  cast.text:SetPoint("LEFT", cast, "LEFT", 3, 0)
-  Bars.TokenColor(cast, "accent")
+  for _, b in ipairs({ health, power }) do
+    b.valueText = b:CreateFontString(nil, "OVERLAY")
+    b.valueText:SetFontObject(Media:FontObject("number"))
+    b.valueText:SetPoint("CENTER", b, "CENTER", 0, 0)
+  end
   local gcd = Bars:Create(slots.gcd, OWNER); gcd:SetAllPoints(slots.gcd)
   Bars.TokenColor(gcd, "text.secondary")
-  RB.bars = { health = health, power = power, cast = cast, gcd = gcd, totem = {} }
+  RB.bars = { health = health, power = power, gcd = gcd, totem = {} }
   Layout:Place(f, "rb.stack")
   return f
 end
@@ -67,7 +75,7 @@ function RB.Layout()
   if not f then return end
   local width = cfg.width
   local host = RB.host
-  if host and host.matchWidth and host.frame:GetWidth() > 0 then width = math.floor(host.frame:GetWidth() + 0.5) end
+  if host and host.matchWidth and cfg.matchHost and host.frame:GetWidth() > 0 then width = math.floor(host.frame:GetWidth() + 0.5) end
   RB.widthNow = width
   local y = 0
   CR.kind = nil
@@ -97,6 +105,7 @@ function RB.Layout()
   end
   RB.LayoutTicks()
   if cfg.class.on then CR.Configure(RB.slots.class, width, cfg.class.height) end
+  RB.LayoutCast(width)
   local n = 0
   if cfg.totem.on then n = GetNumTotemSlots() end
   for i = 1, n do
@@ -107,6 +116,40 @@ function RB.Layout()
     bar:ClearAllPoints()
     bar:SetSize(w - h - 1, h)
     bar:SetPoint("LEFT", RB.slots.totem, "LEFT", (i - 1) * (w + 2) + h + 1, 0)
+  end
+end
+
+-- Player cast bar on the shared PUI.CastBar element (created on first use).
+function RB.CastStyle(width)
+  local c, st = cfg.cast, cfg.castStyle
+  local h = c.height
+  local s = PUI.Schema.Copy(st)
+  s.width = math.max(20, width - (st.icon and (h + 2) or 0))
+  s.height = h
+  local base = PUI.CastBar.DEFAULT_STYLE.colors
+  s.colors = { cast = st.colors.cast, channel = st.colors.channel, empower = base.empower, locked = base.locked,
+    failed = base.failed, done = base.done }
+  return s
+end
+
+function RB.LayoutCast(width)
+  local bar = RB.castBar
+  if not (RB.active and cfg.cast.on) then
+    if bar then bar:Disable() end
+    return
+  end
+  if not bar then
+    bar = PUI.CastBar:Create(OWNER, RB.slots.cast, "player", RB.CastStyle(width))
+    RB.castBar = bar
+  else
+    bar:ApplyStyle(RB.CastStyle(width))
+    bar:Enable()
+  end
+  bar.frame:ClearAllPoints()
+  if cfg.castStyle.icon and cfg.castStyle.iconSide == "RIGHT" then
+    bar.frame:SetPoint("LEFT", RB.slots.cast, "LEFT", 0, 0)
+  else
+    bar.frame:SetPoint("RIGHT", RB.slots.cast, "RIGHT", 0, 0)
   end
 end
 
@@ -144,36 +187,39 @@ function RB.LayoutTicks()
 end
 
 -- Updates ---------------------------------------------------------------------------
+-- Value text: engine values go straight to the font string (may be secret).
+local Format = PUI.Format
+function RB.ValueText(fs, mode, value, pct)
+  if mode == "none" then fs:SetText("") return end
+  if mode == "percent" then fs:SetFormattedText("%.0f%%", pct) return end
+  if mode == "value" then fs:SetText(Format.Number(value)) return end
+  fs:SetFormattedText("%s - %.0f%%", Format.Number(value), pct)
+end
+
 function RB.UpdateHealth()
   Bars:SetValues(RB.bars.health, UnitHealthMax("player"), UnitHealth("player"), cfg.smooth)
   Bars.ClassColor(RB.bars.health, "player")
+  RB.ValueText(RB.bars.health.valueText, cfg.healthText, UnitHealth("player"), UnitHealthPercent("player", true, CurveConstants.ScaleTo100))
 end
 
 function RB.UpdatePower()
-  if cfg.power.on then Bars:SetValues(RB.bars.power, UnitPowerMax("player"), UnitPower("player"), cfg.smooth) end
+  if cfg.power.on then
+    Bars:SetValues(RB.bars.power, UnitPowerMax("player"), UnitPower("player"), cfg.smooth)
+    RB.ValueText(RB.bars.power.valueText, cfg.powerText, UnitPower("player"), UnitPowerPercent("player", nil, false, CurveConstants.ScaleTo100))
+  end
   if cfg.class.on then CR.Update() end
 end
 
-function RB.UpdatePowerType()
-  Bars.PowerColor(RB.bars.power, "player")
-  RB.Reconfigure()
+function RB.PaintPower()
+  local bar = RB.bars.power
+  if cfg.powerColor == "class" then Bars.ClassColor(bar, "player")
+  elseif cfg.powerColor == "accent" then Bars.TokenColor(bar, "accent")
+  else Bars.PowerColor(bar, "player") end
 end
 
-function RB.UpdateCast()
-  local cast = RB.bars.cast
-  local direction = Enum.StatusBarTimerDirection
-  local name = UnitCastingInfo("player")
-  local duration, dir = nil, direction.ElapsedTime
-  if type(name) ~= "nil" then
-    duration = UnitCastingDuration("player")
-  else
-    name = UnitChannelInfo("player")
-    if type(name) ~= "nil" then duration, dir = UnitChannelDuration("player"), direction.RemainingTime end
-  end
-  if type(duration) == "nil" then cast:Hide() return end
-  cast:SetTimerDuration(duration, Enum.StatusBarInterpolation.Immediate, dir)
-  cast.text:SetText(name)
-  cast:Show()
+function RB.UpdatePowerType()
+  RB.PaintPower()
+  RB.Reconfigure()
 end
 
 function RB.UpdateGCD()
@@ -200,21 +246,17 @@ end
 function RB.UpdateAll()
   if not RB.active then return end
   if cfg.health.on then RB.UpdateHealth() end
-  Bars.PowerColor(RB.bars.power, "player")
+  RB.PaintPower()
   RB.UpdatePower()
-  if cfg.cast.on then RB.UpdateCast() else RB.bars.cast:Hide() end
+  if RB.castBar and cfg.cast.on then RB.castBar:Refresh() end
   if cfg.gcd.on then RB.UpdateGCD() end
   if cfg.totem.on then RB.UpdateTotems() end
 end
 
 -- Event wiring: only the events the enabled bars need ---------------------------------
-local CAST_EVENTS = { "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_INTERRUPTED",
-  "UNIT_SPELLCAST_DELAYED", "UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_UPDATE", "UNIT_SPELLCAST_CHANNEL_STOP",
-  "UNIT_SPELLCAST_EMPOWER_START", "UNIT_SPELLCAST_EMPOWER_STOP" }
 local ALL = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_POWER_UPDATE", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER", "RUNE_POWER_UPDATE",
   "PLAYER_SPECIALIZATION_CHANGED", "UPDATE_SHAPESHIFT_FORM", "TRAIT_CONFIG_UPDATED", "SPELL_UPDATE_COOLDOWN",
   "PLAYER_TOTEM_UPDATE", "PLAYER_ENTERING_WORLD" }
-for _, ev in ipairs(CAST_EVENTS) do ALL[#ALL + 1] = ev end
 RB.ALL_EVENTS = ALL
 
 function RB.Wire()
@@ -238,9 +280,6 @@ function RB.Wire()
     mod:RegisterEvent("TRAIT_CONFIG_UPDATED", function() RB.Reconfigure() end)
     if CR.kind == "runes" then mod:RegisterEvent("RUNE_POWER_UPDATE", function() CR.Update() end) end
     if CR.kind == "stagger" then Ticker:Register("rb.stagger", 0.1, function() CR.Update() end, OWNER) end
-  end
-  if cfg.cast.on then
-    for _, ev in ipairs(CAST_EVENTS) do mod:RegisterUnitEvent(ev, RB.UpdateCast, "player") end
   end
   if cfg.gcd.on then mod:RegisterEvent("SPELL_UPDATE_COOLDOWN", RB.UpdateGCD) end
   if cfg.totem.on then mod:RegisterEvent("PLAYER_TOTEM_UPDATE", RB.UpdateTotems) end
@@ -282,6 +321,7 @@ end
 
 local function onDisable()
   RB.active = false
+  if RB.castBar then RB.castBar:Disable() end
   if RB.frame then RB.frame:Hide() end
   blizzardCast()
 end
@@ -321,6 +361,36 @@ key("rb.power.ticks", { type = "text", default = "", label = "Power hash lines",
 key("rb.cast.hideBlizzard", { type = "toggle", default = false, label = "Hide Blizzard cast bar",
   tooltip = "Hides the default player cast bar while the Phoenix cast bar is shown.", mode = "advanced" },
   function(v) cfg.hideBlizzardCast = v end)
+key("rb.matchHostWidth", { type = "toggle", default = true, label = "Match the player frame width when attached",
+  tooltip = "When Unit Frames attaches these bars under your player frame, they take its width. Off keeps the width set here.",
+  mode = "advanced", searchTags = { "attach", "player frame", "width" } }, function(v) cfg.matchHost = v end)
+local TEXT = { "none", "percent", "value", "both" }
+local TEXT_LABELS = { none = "No text", percent = "Percent", value = "Value", both = "Value and percent" }
+key("rb.health.text", { type = "select", default = "none", choices = TEXT, choiceLabels = TEXT_LABELS, label = "Health bar text",
+  tooltip = "Text on the health bar.", mode = "advanced" }, function(v) cfg.healthText = v end)
+key("rb.power.text", { type = "select", default = "none", choices = TEXT, choiceLabels = TEXT_LABELS, label = "Power bar text",
+  tooltip = "Text on the power bar.", mode = "simple" }, function(v) cfg.powerText = v end)
+key("rb.power.color", { type = "select", default = "power", choices = { "power", "class", "accent" },
+  choiceLabels = { power = "Power type (mana blue, rage red...)", class = "Class colour", accent = "Phoenix accent" },
+  label = "Power bar colour", tooltip = "How the power bar is coloured.", mode = "advanced" }, function(v) cfg.powerColor = v end)
+local function castKey(name, def, set)
+  key("rb.cast." .. name, def, function(v) set(cfg.castStyle, v) end)
+end
+castKey("icon", { type = "toggle", default = true, label = "Cast bar icon", tooltip = "Shows the spell icon beside the cast bar.",
+  mode = "simple" }, function(st, v) st.icon = v end)
+castKey("iconSide", { type = "select", default = "LEFT", choices = { "LEFT", "RIGHT" }, choiceLabels = { LEFT = "Left", RIGHT = "Right" },
+  label = "Cast bar icon side", tooltip = "Which side of the cast bar the icon sits on.", mode = "advanced" }, function(st, v) st.iconSide = v end)
+castKey("spellName", { type = "toggle", default = true, label = "Cast bar spell name", tooltip = "Shows the spell name on the cast bar.",
+  mode = "advanced" }, function(st, v) st.spellName = v end)
+castKey("timer", { type = "toggle", default = true, label = "Cast bar time", tooltip = "Shows the time left on the cast bar.",
+  mode = "advanced" }, function(st, v) st.timer = v end)
+castKey("fadeOut", { type = "range", default = 0.35, min = 0, max = 1.5, step = 0.05, label = "Cast bar fade out",
+  tooltip = "Seconds the finished or interrupted cast stays visible while fading (0 hides it at once).", mode = "advanced" },
+  function(st, v) st.fadeOut = v end)
+castKey("castColor", { type = "color", default = { r = 1, g = 0.62, b = 0.18, a = 1 }, label = "Cast bar colour",
+  tooltip = "Colour of the cast bar while casting.", mode = "advanced" }, function(st, v) st.colors.cast = v end)
+castKey("channelColor", { type = "color", default = { r = 0.36, g = 0.7, b = 1, a = 1 }, label = "Channel bar colour",
+  tooltip = "Colour of the cast bar while channelling.", mode = "advanced" }, function(st, v) st.colors.channel = v end)
 local LABELS = { health = "Health bar", power = "Power bar", class = "Class resource", cast = "Cast bar",
   gcd = "Global cooldown bar", totem = "Totem bars" }
 for _, name in ipairs(ORDER) do
@@ -332,6 +402,12 @@ for _, name in ipairs(ORDER) do
     tooltip = "Height of the " .. LABELS[name]:lower() .. ".", mode = "advanced" }, function(v) cfg[name].height = v end)
 end
 
+local Coexist = PUI.Coexist
+local ckey, cdef = Coexist:Define("resourcebars", { module = OWNER, job = "Personal resource bars",
+  addons = { "EllesmereUIResourceBars", "SenseiClassResourceBar", "PersonalResourceReskin" } })
+cdef.owner = OWNER
+schema[ckey] = cdef
+
 Layout:RegisterElement("rb.stack", { label = "Resource bars", owner = OWNER, size = { 240, 30 },
   default = { point = "CENTER", x = 0, y = -178 } })
 
@@ -339,8 +415,9 @@ RB.module = PUI:RegisterModule(OWNER, {
   label = "Resource bars",
   tooltip = "Personal health, power, class resource, cast, global cooldown and totem bars.",
   enabledByDefault = false,
+  loadCondition = function() return Coexist:Allows("resourcebars") end,
   schema = schema,
   onEnable = onEnable,
   onDisable = onDisable,
 })
-for name, def in pairs(schema) do def.apply(Schema:Get(name)) end
+for name, def in pairs(schema) do if name ~= ckey then def.apply(Schema:Get(name)) end end

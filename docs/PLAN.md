@@ -413,7 +413,11 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - NPC rules engine as visual rule rows (NPC, colour, scale, glow).
 - **Study (WAPI):** unit-scoped events; no aura events when no aura lane is on; click insets from visual bounds with a minimum hit height; forbidden plates untouched.
 
-### 5.4 Action Bars — 105 keys (ActionBars.lua, Buttons.lua)
+### 5.4 Action Bars — step 6 built (ActionBars.lua, Buttons.lua, Special.lua, KeybindMode.lua; 238 keys)
+
+- **Step 6 status (feat/bars, stacked on feat/nameplates):** ten bars with size, per row, spacing, scale, opacity, button order and row direction, click-through, per-spec overrides on layout and fade keys; "where to show" on `PUI.Visibility` split into the parts a secure state driver tests in combat (combat, vehicle, pet battle, mounted, skyriding) and the parts evaluated out of combat (content, group, spec, resting) with the "why hidden" readout; raw macro string as the advanced override; fade out of combat and/or until mouse-over with linked reveal; bar 1 form and skyriding paging switches and modifier paging on any bar (one restricted snippet); keybind text with short names (S1, C5, M4, WU), size and colour; macro/count sizes; cooldown numbers (game countdown) on/off and size, edge, swipe darkness, dim on cooldown (duration `IsZero` flag to `SetAlphaFromBoolean`), loss-of-control swipe; out of range as overlay, icon tint or off; unusable and not-enough-power colours (`EvaluateColorFromBoolean` chain, secret-safe); never-dim spell list (Swiftmend default); icon zoom, border size and colour; proc glow and assisted-combat highlight on `PUI.Glow` (assist polled by one Ticker entry only while on); Blizzard bar keys redirected through the binding ledger (`PUI.Bindings`, owner ActionBars); keybind mode `/pui kb` (hover + key, Delete clears, conflicts reported from the ledger and Blizzard, undo, discard, refused in combat; stored as Phoenix override bindings, never in the saved binding set); stance bar (form spells), pet bar (`type=pet`, autocast mark), vehicle exit (`/leavevehicle` under `[canexitvehicle]`), and the clickable item bar fed by the new shared `PUI.ItemList` (Core: `items.list`, on-use trinkets, hide missing), each movable in Studio with size, per row, spacing, mouse-over fade and "hide Blizzard"; conflict notice entry for Bartender4, Dominos, ElvUI, EllesmereUI Action Bars, ConsolePort and LUI through the new `PUI.Coexist` (1.35): Phoenix bars stay dormant until the user picks; live preview drawn by the module's own button painter with sample states. 8 new offline tests.
+- **Deferred to the polish pass (reported):** micro menu and bag bar; extra action / zone ability movers; flyout reskin; pet autocast toggle on right-click; mouse-button capture in keybind mode and a printable key sheet; per-button overrides; Blizzard/Classic looks and masks; threshold colours on cooldown numbers (needs a secret-safe curve on the countdown); "hide in housing" and gamepad hide; first-install capture of the Edit Mode layout; reverse CDM dedupe (hide a bar button already in the CDM).
+
 
 | Feature | Status |
 |---|---|
@@ -440,7 +444,11 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Game Menu button inside the Esc menu (standing rule, D1).
 - **Study (WAPI):** secure buttons via attributes/state drivers only; two event tiers (all buttons vs filled buttons); pooled proc glows; step aside for vehicle/override bars; fit-to-space vertical bars with a minimum scale then fold; AnimationGroup slides; "missing from my bars" helper after talent swaps; keybind mode on Blizzard's listener model with conflict report, rollback and save to the current binding set (feeds 1.20).
 
-### 5.5 Cooldown Manager — 22 keys
+### 5.5 Cooldown Manager — step 6 built (CooldownManager.lua; 34 keys)
+
+- **Step 6 status:** restyle of Blizzard's Cooldown Viewer children (icon zoom, border kept in a weak side table, cooldown numbers on/off and size), right/left/centred rows, layout and visibility keys overridable per specialization; "leave out cooldowns already on your bars" (alpha 0, never Hide/SetParent; secret spell IDs never compared); "missing from my bars" notice after talent/spec changes and `/pui cdm missing`; tracked buff IDs exported for the Player Aura Bars dedupe with a `CDM_TRACKED_CHANGED` signal so the dedupe re-applies live; display-only custom bar for the shared item list (Action Bars owns the clickable one); share string exports scalar keys only; conflict notice entry (EllesmereUI CDM, BetterCooldownManager, CooldownManagerCentered); live preview. 3 new offline tests.
+- **Deferred:** spell picker page, glow conditions, tracking-bar reskin (thresholds, ticks, stacks), focus kick bar, rotation assist icon, audio cues, per-spell import, crafted-quality rank.
+
 
 | Feature | Status |
 |---|---|
@@ -462,7 +470,11 @@ Each table lists what exists against the spec. "Competitor extra" lists parity i
   - Spell Picker page (add/swap/move/replace) with live preview and presets; Focus Kick bar; Mirror Key Presses; pandemic sync with nameplates. Buff bars stay on Blizzard viewer data.
 - **Study (WAPI):** keep skinning Blizzard's Cooldown Viewer; resolution aura > linked > override > base; late-join aura handling; reconcile saved order (drop missing, append new); class+spec-tagged layouts with last-used memory; events only while shown; edit-mode placeholders with paused timers and a minimum item count; one ordered visibility function; stable hidden slots; search cache invalidated on talent change.
 
-### 5.6 Resource Bars — 18 keys (ResourceBars.lua, ClassResource.lua)
+### 5.6 Resource Bars — step 6 built (ResourceBars.lua, ClassResource.lua; 30 keys)
+
+- **Step 6 status:** the player cast bar now runs on the shared `PUI.CastBar` (no cast events of its own; icon, icon side, spell name, time, fade-out and cast/channel colours as settings; no kick marker on your own bar); health and power text (none/percent/value/both; secret values straight to the font string); power colour by power type, class or accent; "match the player frame width when attached" next to the Unit Frames attach/keep-separate choice (owned by `uf.player.resources`, one key, no mirror); conflict notice entry; preview shows the cast colour and power text. 2 new offline tests.
+- **Deferred:** latency overlay and channel ticks, empower stages, GCD bar instance/instant-only modes, swing timer (Forever), spec helpers on hidden aura slots, threshold colour curves, bar shifting when a resource is missing.
+
 
 | Feature | Status |
 |---|---|

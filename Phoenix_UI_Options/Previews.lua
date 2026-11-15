@@ -10,6 +10,7 @@ local Previews = {}
 local state = setmetatable({}, { __mode = "k" }) -- card -> { uf, icons, rb, cast }
 local function st(card) state[card] = state[card] or {}; return state[card] end
 Options.Previews = Previews
+function Previews.State(card) return st(card) end -- tests read the sample widgets
 
 local function get(key, fallback)
   if Schema:Def(key) then return Schema:Get(key) end
@@ -226,33 +227,111 @@ function Previews.UnitFrames(card, tab)
   ufTools(card, tab)
 end
 
--- Action bars: 12 ability icons, size and per-row from bar 1 settings.
+-- Action bars (mockup 05): twelve sample buttons skinned by the module's own
+-- button painter (ActionBars.Buttons.Skin/ApplyLook), so zoom, border, fonts,
+-- range/power/unusable colours, cooldown numbers and the proc glow match the
+-- game. Sample states: cooldown, proc, out of range, no power, unusable.
+local SAMPLE_KEYS = { "1", "2", "3", "4", "5", "SHIFT-1", "CTRL-2", "BUTTON4", "MOUSEWHEELUP", "F", "ALT-Q", "NUMPAD5" }
+local STATES = { [2] = "cooldown", [3] = "proc", [6] = "range", [7] = "power", [8] = "unusable", [10] = "assist" }
 function Previews.ActionBars(card, tab)
   local barId = (tab and tab:match("^bar%d+$")) and tab or "bar1"
   local size = math.min(52, get("ab." .. barId .. ".size", 40) or 40)
   local perRow = math.max(1, math.min(12, get("ab." .. barId .. ".perRow", 6) or 6))
+  local gap = get("ab." .. barId .. ".spacing", 2) or 2
+  local AB = PUI.ActionBars
+  local Btn = AB and AB.Buttons
   st(card).icons = st(card).icons or {}
-  local span = perRow * (size + 4)
+  local span = perRow * (size + gap)
   for i = 1, 12 do
     local b = st(card).icons[i]
     if not b then
       b = CreateFrame("Frame", nil, card)
-      b.tex = b:CreateTexture(nil, "ARTWORK")
-      b.tex:SetPoint("TOPLEFT", 1, -1)
-      b.tex:SetPoint("BOTTOMRIGHT", -1, 1)
-      b.tex:SetTexture(A.abilities[i])
-      b.tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-      b.edge = Theme:Slice(b, A.border1, 4, "OVERLAY")
-      b.edge:SetVertexColor(0, 0, 0, 1)
-      b.key = Kit.Text(b, "small", "text.primary", "OVERLAY")
-      b.key:SetPoint("TOPRIGHT", -3, -3)
+      if Btn then
+        Btn.Skin(b)
+        b.icon:SetTexture(A.abilities[i])
+      else
+        b.icon = b:CreateTexture(nil, "ARTWORK")
+        b.icon:SetAllPoints()
+        b.icon:SetTexture(A.abilities[i])
+        b.hotkey = Kit.Text(b, "small", "text.primary", "OVERLAY")
+        b.hotkey:SetPoint("TOPRIGHT", -3, -3)
+      end
+      b.sample = b:CreateFontString(nil, "OVERLAY")
+      b.sample:SetFontObject(PUI.Media:FontObject("number"))
+      b.sample:SetPoint("CENTER")
       st(card).icons[i] = b
     end
     b:SetSize(size, size)
     b:ClearAllPoints()
     local col, row = (i - 1) % perRow, math.floor((i - 1) / perRow)
-    b:SetPoint("TOPLEFT", card, "TOP", -span / 2 + col * (size + 4), -60 - row * (size + 4))
-    b.key:SetText(get("ab.hotkeys", true) and tostring(i % 10) or "")
+    b:SetPoint("TOPLEFT", card, "TOP", -span / 2 + col * (size + gap), -60 - row * (size + gap))
+    b.sample:SetText("")
+    if Btn then
+      local S = Btn.S
+      Btn.ApplyLook(b)
+      b.icon:SetVertexColor(1, 1, 1, 1)
+      b.range:SetAlpha(0)
+      b.dim:SetAlpha(0)
+      PUI.Glow:Stop(b)
+      local state = STATES[i]
+      if state == "cooldown" then
+        if S.cdText then b.sample:SetText("18") end
+        b.dim:SetAlpha(S.dimOnCooldown and S.dimAlpha or 0.35)
+      elseif state == "proc" and S.procGlow ~= "none" then PUI.Glow:Start(b, S.procGlow, S.procColor)
+      elseif state == "range" and S.rangeMode == "overlay" then b.range:SetAlpha(1)
+      elseif state == "range" and S.rangeMode == "tint" then b.icon:SetVertexColor(S.rangeColor.r, S.rangeColor.g, S.rangeColor.b, 1)
+      elseif state == "power" then b.icon:SetVertexColor(S.manaColor.r, S.manaColor.g, S.manaColor.b, 1)
+      elseif state == "unusable" then b.icon:SetVertexColor(S.unusableColor.r, S.unusableColor.g, S.unusableColor.b, 1)
+      elseif state == "assist" and S.assist then PUI.Glow:Start(b, "solid", S.assistColor) end
+      b.hotkey:SetText(Btn.KeyText(SAMPLE_KEYS[i]))
+    else
+      b.hotkey:SetText(get("ab.hotkeys", true) and SAMPLE_KEYS[i] or "")
+    end
+    b:Show()
+  end
+  local n = st(card).abNote
+  if not n then
+    n = Kit.Text(card, "small", "text.secondary", "OVERLAY")
+    st(card).abNote = n
+  end
+  n:ClearAllPoints()
+  n:SetPoint("TOP", card, "TOP", 0, -70 - math.ceil(12 / perRow) * (size + gap))
+  n:SetText("2 cooldown  3 proc  6 out of range  7 no power  8 unusable  10 assisted")
+  n:Show()
+end
+
+-- Cooldown Manager: sample essential row with the restyle settings.
+function Previews.CooldownManager(card)
+  local size = math.min(52, get("cdm.essential.size", 40) or 40)
+  local gap = get("cdm.essential.spacing", 2) or 2
+  local zoom, px = get("cdm.zoom", 0.08) or 0.08, get("cdm.border", 1) or 1
+  local bc = get("cdm.borderColor", { r = 0, g = 0, b = 0, a = 1 })
+  st(card).cdm = st(card).cdm or {}
+  local n = 8
+  for i = 1, n do
+    local b = st(card).cdm[i]
+    if not b then
+      b = CreateFrame("Frame", nil, card)
+      b.tex = b:CreateTexture(nil, "ARTWORK")
+      b.tex:SetTexture(A.abilities[i])
+      b.edge = {}
+      for e = 1, 4 do b.edge[e] = b:CreateTexture(nil, "OVERLAY") end
+      b.num = Kit.Text(b, "body", "text.primary", "OVERLAY")
+      b.num:SetPoint("CENTER")
+      st(card).cdm[i] = b
+    end
+    b:SetSize(size, size)
+    b:ClearAllPoints()
+    b:SetPoint("TOPLEFT", card, "TOP", -(n * (size + gap)) / 2 + (i - 1) * (size + gap), -70)
+    b.tex:ClearAllPoints(); b.tex:SetAllPoints()
+    b.tex:SetTexCoord(zoom, 1 - zoom, zoom, 1 - zoom)
+    local e = b.edge
+    e[1]:ClearAllPoints(); e[1]:SetPoint("TOPLEFT"); e[1]:SetPoint("TOPRIGHT"); e[1]:SetHeight(math.max(px, 0.01))
+    e[2]:ClearAllPoints(); e[2]:SetPoint("BOTTOMLEFT"); e[2]:SetPoint("BOTTOMRIGHT"); e[2]:SetHeight(math.max(px, 0.01))
+    e[3]:ClearAllPoints(); e[3]:SetPoint("TOPLEFT"); e[3]:SetPoint("BOTTOMLEFT"); e[3]:SetWidth(math.max(px, 0.01))
+    e[4]:ClearAllPoints(); e[4]:SetPoint("TOPRIGHT"); e[4]:SetPoint("BOTTOMRIGHT"); e[4]:SetWidth(math.max(px, 0.01))
+    for k = 1, 4 do e[k]:SetColorTexture(bc.r, bc.g, bc.b, bc.a or 1); e[k]:SetShown(px > 0) end
+    b.num:SetText((get("cdm.cdText", true) and (i == 2 or i == 5)) and (i == 2 and "18" or "42") or "")
     b:Show()
   end
 end
@@ -271,9 +350,29 @@ function Previews.ResourceBars(card)
     bb:SetPoint("TOP", 0, y)
     y = y - bb:GetHeight() - (get("rb.spacing", 4) or 4)
     local c = colours[i]
+    if i == 3 then
+      local cc = get("rb.cast.castColor", { r = ar, g = ag, b = ab })
+      c = { cc.r, cc.g, cc.b, 40 }
+    elseif i == 2 and get("rb.power.color", "power") == "class" then c = { r, g, b, 64 }
+    elseif i == 2 and get("rb.power.color", "power") == "accent" then c = { ar, ag, ab, 64 } end
     paintBar(bb, c[4], c[1], c[2], c[3])
     bb:SetShown(i ~= 3 or get("rb.cast.enabled", true))
   end
+  local s = st(card)
+  if not s.rbCast then
+    s.rbCast = Kit.Text(card, "small", "text.primary", "OVERLAY")
+  end
+  local castBar = s.rb[3]
+  s.rbCast:ClearAllPoints()
+  s.rbCast:SetPoint("LEFT", castBar, "LEFT", 6, 0)
+  s.rbCast:SetText(get("rb.cast.spellName", true) and "Fireball   1.2" or "")
+  s.rbCast:SetShown(castBar:IsShown())
+  local pt = get("rb.power.text", "none")
+  s.rbPower = s.rbPower or Kit.Text(card, "small", "text.primary", "OVERLAY")
+  s.rbPower:ClearAllPoints()
+  s.rbPower:SetPoint("CENTER", s.rb[2], "CENTER", 0, 0)
+  s.rbPower:SetText(pt == "percent" and "64%" or pt == "value" and "64K" or pt == "both" and "64K - 64%" or "")
+  s.rbPower:Show()
 end
 
 -- Raid & Party (mockup 03): sample members drawn by the module's own element
@@ -391,10 +490,13 @@ function Previews.Nameplates(card)
 end
 
 local function hideAll(card)
-  for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {} }) do
+  for _, list in pairs({ st(card).uf or {}, st(card).icons or {}, st(card).rb or {}, st(card).cdm or {} }) do
     for _, f in pairs(list) do f:Hide() end
   end
   if st(card).cast then st(card).cast:Hide() end
+  if st(card).abNote then st(card).abNote:Hide() end
+  if st(card).rbCast then st(card).rbCast:Hide() end
+  if st(card).rbPower then st(card).rbPower:Hide() end
   if st(card).testBtn then st(card).testBtn:Hide(); st(card).copyBtn:Hide() end
   if st(card).rfHolder then st(card).rfHolder:Hide() end
   for _, b in pairs(st(card).rfTest or {}) do b:Hide() end
@@ -410,7 +512,7 @@ function Previews.Update(owner, card, key)
 end
 
 -- wrap builders so switching page/tab always starts clean
-for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates" }) do
+for _, owner in ipairs({ "UnitFrames", "ActionBars", "ResourceBars", "RaidFrames", "Nameplates", "CooldownManager" }) do
   local fn = Previews[owner]
   Previews[owner] = function(card, tab) hideAll(card); fn(card, tab) end
 end

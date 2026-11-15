@@ -1,6 +1,6 @@
 ## Interface: 120100, 120105, 16001
 ## Title: Phoenix UI - Action Bars
-## Notes: Phoenix UI action bars: secure action buttons with paging, keybinds, cooldowns, range and proc glow.
+## Notes: Phoenix UI action bars: secure action buttons with paging, where-to-show rules, keybind mode, cooldowns, range and proc glow, stance/pet/vehicle/item bars.
 ## Author: VortexQ8
 ## Version: @project-version@
 ## X-License: All Rights Reserved (source-visible); see LICENSE
@@ -11,5 +11,7 @@
 ## Dependencies: Phoenix_UI
 
 Buttons.lua
+Special.lua
+KeybindMode.lua
 ActionBars.lua
 Tests\ActionBars_test.lua
