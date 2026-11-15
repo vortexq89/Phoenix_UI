@@ -34,6 +34,20 @@ D.BREZ = PUI.IS_RETAIL and { DRUID = { 20484 }, DEATHKNIGHT = { 61999 }, WARLOCK
   or { DRUID = { 20748, 20747, 20742, 20739, 20484 } }
 D.BREZ_SHARED = 20484 -- the spell the game reports pooled charges on
 
+-- Mythic+ teleports (Hero's Path spells) -> Mythic+ map ID, retail only.
+-- Shown when the player knows the spell; "current season only" keeps the
+-- ones whose map is in C_ChallengeMode.GetMapTable().
+D.TELEPORTS = PUI.IS_RETAIL and {
+  [445417] = 503, [445416] = 502, [445414] = 505, [445269] = 501, [445424] = 507, [445444] = 499, [445443] = 500,
+  [445441] = 504, [445440] = 506, [1216786] = 525, [445418] = 353, [464256] = 353, [467553] = 247, [467555] = 247,
+  [373274] = 370, [354464] = 375, [354462] = 376, [354465] = 378, [354467] = 382, [367416] = 391, [410071] = 245,
+  [393764] = 200, [393222] = 403, [424197] = 463, [1237215] = 542,
+} or {}
+-- Hearthstones: bag items (both flavors) and toys (retail).
+D.HEARTH_ITEMS = { 6948, 140192, 110560 }
+D.HEARTH_TOYS = PUI.IS_RETAIL and { 54452, 64488, 93672, 142542, 162973, 163045, 165669, 165670, 165802, 166746, 166747, 168907,
+  172179, 180290, 182773, 183716, 184353, 188952, 190237, 193588, 200630, 206195, 208704, 209035, 212337, 228940 } or {}
+
 -- Sample items for the Options preview (icons only).
 D.SAMPLE = { flask = 13510, food = 2287, combat = 5634, healing = 5512, rune = 224572, oil = 20749, trinket = 19950,
-  gear = 10587, quest = 6948, custom = 6948, brez = 20484 }
+  gear = 10587, quest = 6948, custom = 6948, brez = 20484, teleport = 445417, hearth = 6948 }

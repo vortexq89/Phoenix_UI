@@ -18,5 +18,6 @@ TooltipIDs.lua
 TooltipExtras.lua
 DataBars.lua
 DataBarsExtras.lua
+Vignettes.lua
 Tests\HUD_test.lua
 Tests\HUDExtras_test.lua

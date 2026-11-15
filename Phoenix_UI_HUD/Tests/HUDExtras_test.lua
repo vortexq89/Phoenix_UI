@@ -193,3 +193,62 @@ Tests:Add("HUD", "data bars: LDB feeds, secure hearth and profession blocks, per
   DB.Refresh()
   t:eq(DB.bars[1].list[1].name, "gold", "cleared spec uses the normal list")
 end)
+
+Tests:Add("HUDExtras", "paragon progress on the reputation bar and block", function(t)
+  if not H then return end
+  local DB = PUI.DataBars
+  if not (DB and DB.Paragon) then return end
+  local saved = H.watched
+  t:cleanup(function() H.watched = saved; H.paragon[2600] = nil end)
+  H.watched = { name = "Council", factionID = 2600, currentStanding = 42000, currentReactionThreshold = 42000, nextReactionThreshold = 42000 }
+  H.paragon[2600] = { 12500, 10000, true }
+  local cur, max, reward = DB.Paragon(H.watched)
+  t:eq(cur, 2500, "value within the cycle")
+  t:eq(max, 10000, "cycle size")
+  t:eq(reward, true, "chest waiting")
+  local c2, m2 = DB.ProgressValues("rep")
+  t:eq(c2 .. "/" .. m2, "2500/10000", "bar uses paragon values")
+  H.paragon[2600] = nil
+  t:eq(DB.Paragon(H.watched), nil, "not paragon: normal reputation")
+end)
+
+Tests:Add("HUDExtras", "focus key sets a secure focus click on unit frames, out of combat", function(t)
+  local FK = PUI.FocusKey
+  local keys = { "focuskey.modifier", "focuskey.button" }
+  local saved = { Schema:Get(keys[1]), Schema:Get(keys[2]) }
+  t:cleanup(function() Schema:Set(keys[1], saved[1]); Schema:Set(keys[2], saved[2]); PUI.CombatQueue.Drain() end)
+  local b = CreateFrame("Button")
+  Schema:Set("focuskey.modifier", "shift"); PUI.CombatQueue.Drain()
+  FK.Apply(b, false)
+  t:eq(b:GetAttribute("shift-type1"), "focus", "shift-click focuses")
+  Schema:Set("focuskey.button", "2"); PUI.CombatQueue.Drain()
+  FK.Apply(b, false)
+  t:eq(b:GetAttribute("shift-type1"), nil, "old attribute cleared")
+  t:eq(b:GetAttribute("shift-type2"), "focus", "right button")
+  FK.Apply(b, true)
+  t:eq(b:GetAttribute("shift-type2"), nil, "group frames only when asked")
+end)
+
+Tests:Add("HUDExtras", "rare and treasure alerts: once each, ignore list, secret names never compared", function(t)
+  if not H then return end
+  local VG = PUI.Vignettes
+  local keys = { "module.Vignettes", "vignette.ignore", "vignette.chat" }
+  local saved = {}
+  for i, k in ipairs(keys) do saved[i] = Schema:Get(k) end
+  t:cleanup(function() for i = #keys, 1, -1 do Schema:Set(keys[i], saved[i]) end; H.vignettes = nil; wipe(VG.seen); VG.last = nil end)
+  Schema:Set("module.Vignettes", true)
+  H.vignettes = { ["v1"] = { name = "Old Bones", atlasName = "VignetteKill" }, ["v2"] = { name = "Chest", atlasName = "VignetteLoot" },
+    ["v3"] = { name = H.secret("Hidden"), atlasName = "VignetteKillElite" } }
+  t:eq(VG.Kind(H.vignettes.v1), "rare", "rare from the atlas")
+  t:eq(VG.Kind(H.vignettes.v2), "treasure", "treasure")
+  H.fire("VIGNETTE_MINIMAP_UPDATED", "v1", true)
+  t:eq(VG.last and VG.last.name, "Old Bones", "alerted")
+  VG.last = nil
+  H.fire("VIGNETTE_MINIMAP_UPDATED", "v1", true)
+  t:eq(VG.last, nil, "once per vignette")
+  Schema:Set("vignette.ignore", { "chest" })
+  H.fire("VIGNETTE_MINIMAP_UPDATED", "v2", true)
+  t:eq(VG.last, nil, "ignored by name")
+  H.fire("VIGNETTE_MINIMAP_UPDATED", "v3", true)
+  t:eq(VG.last and VG.last.kind, "rare", "secret name still alerts, never compared")
+end)

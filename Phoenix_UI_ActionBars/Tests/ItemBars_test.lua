@@ -166,3 +166,28 @@ Tests:Add("ItemBars", "grow direction, size and visibility rules apply live", fu
   Schema:Set("ab.ibar1.mouseover", true); CQ.Drain()
   t:eq(IB.bars[1].header:GetAlpha(), 0.3, "faded until mouse-over")
 end)
+
+Tests:Add("ItemBars", "Mythic+ teleports the player knows and hearthstones (items and toys)", function(t)
+  if not H then return end
+  enable(t, "ab.ibar1.enabled", "ab.ibar2.enabled", "ab.ibar3.enabled", "ab.ibars.seasonOnly", "ab.ibars.hearthToys")
+  bags(t, { { id = 6948, n = 1 } })
+  Schema:Set("ab.ibar2.enabled", false); Schema:Set("ab.ibar3.enabled", false)
+  only(1, { teleport = true, hearth = true })
+  local toy = rawget(_G, "PlayerHasToy")
+  t:cleanup(function() H.known[445417] = nil; rawset(_G, "PlayerHasToy", toy) end)
+  rawset(_G, "PlayerHasToy", function(id) return id == 54452 end)
+  if PUI.IS_RETAIL then H.known[445417] = true end
+  Schema:Set("ab.ibar1.enabled", true); CQ.Drain()
+  local bar = IB.bars[1]
+  if PUI.IS_RETAIL then
+    t:eq(bar.n, 3, "teleport + hearthstone + toy")
+    t:eq(bar.buttons[1]:GetAttribute("spell"), 445417, "known teleport as a secure spell")
+    t:eq(bar.buttons[3]:GetAttribute("type"), "toy", "hearthstone toy")
+    t:eq(bar.buttons[3]:GetAttribute("toy"), 54452, "toy item ID")
+    Schema:Set("ab.ibars.seasonOnly", true); CQ.Drain()
+    t:eq(bar.n, 2, "teleport outside this season's maps left off")
+  else
+    t:eq(bar.n, 1, "Forever: the hearthstone only")
+  end
+  t:eq(bar.buttons[PUI.IS_RETAIL and 1 or 1]:GetAttribute("type") ~= nil, true, "secure type set")
+end)
